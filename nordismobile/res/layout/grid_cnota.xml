@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" > 
+
+      <TextView
+          android:id="@+id/cntextv_fecha"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentLeft="true"
+          android:text="Fecha : "
+          android:textColor="@color/Teal"
+          android:textSize="12px" />
+
+      <TextView
+          android:id="@+id/cntextv_detallefecha"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_toRightOf="@+id/cntextv_fecha"
+          android:text="Datalle..."
+          android:textColor="@color/Black"
+          android:textSize="12px" />
+
+      <TextView
+          android:id="@+id/cntextv_autor"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_toRightOf="@+id/cntextv_detallefecha"
+          android:text="Autor : "
+          android:textColor="@color/Teal"
+          android:textSize="12px" />
+
+      <TextView
+          android:id="@+id/cntextv_detalleautor"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_toRightOf="@+id/cntextv_autor"
+          android:lines="2" 
+          android:text="Datalle..."
+          android:textColor="@color/Black"
+          android:textSize="12px"  />
+
+      <TextView
+          android:id="@+id/cntextv_concepto"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@+id/cntextv_fecha"
+          android:text="Concepto : "
+          android:textColor="@color/Teal"
+          android:textSize="12px" />
+
+      <TextView
+          android:id="@+id/cntextv_detalleconcepto"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@+id/cntextv_fecha"
+          android:layout_toRightOf="@+id/cntextv_concepto" 
+          android:lines="2" 
+          android:text="Datalle..."
+          android:textColor="@color/Black"
+          android:textSize="12px" />
+
+      <TextView
+          android:id="@+id/cntextv_nota"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@+id/cntextv_concepto"
+          android:text="Nota : "
+          android:textColor="@color/Teal"
+          android:textSize="12px" />
+
+      <TextView
+          android:id="@+id/cntextv_detallenota"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@+id/cntextv_concepto"
+          android:layout_toRightOf="@+id/cntextv_nota" 
+          android:lines="2" 
+          android:text="Datalle..."
+          android:textColor="@color/Black"
+          android:textSize="12px" />
+    
+</RelativeLayout>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.panzyma.nordismobile"
+    android:versionCode="1"
+    android:versionName="1.0" android:installLocation="preferExternal">
+
+    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="17" />
+    <uses-permission android:name="android.permission.INTERNET" /> 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> 
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.READ_PHONE_STATE"/> 
+
+     <application
+        android:name="com.panzyma.nm.NMApp" 
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
+        <activity
+            android:name="com.panzyma.nm.Main"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>         
+        
+        <activity
+           android:name="com.panzyma.nm.FeedbackActivity"
+            android:label="@string/app_name"  
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>  
+        
+        <activity
+            android:name="com.panzyma.nm.view.ViewProducto"
+            android:label="@string/app_name"  
+            android:configChanges="orientation"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
+        <activity
+            android:name="com.panzyma.nm.view.ViewPedidoEdit"
+            android:label="@string/app_name" 
+            android:configChanges="orientation"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
+        
+        <activity
+            android:name=".ui.ReciboColector_A"
+            android:label="@string/app_name"            
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
+        <activity
+            android:name="com.panzyma.nm.view.ViewCliente"
+            android:label="@string/app_name"  
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        </activity> 
+        
+        <activity
+            android:name="com.panzyma.nm.view.vCliente"
+            android:label="@string/app_name"  
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        </activity>
+        
+        <activity
+            android:name=".ui.Devolucion_A"
+            android:label="@string/app_name" 
+           
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
+        <activity
+            android:name="com.panzyma.nm.view.ViewConfiguracion"
+            android:label="@string/app_name"      
+            android:configChanges="orientation"     
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" > 
+        </activity>  
+        
+          
+          <provider  android:name="com.panzyma.nm.datastore.DatabaseProvider"              
+                     android:authorities="com.panzyma.nm.datastore.databaseprovider">              
+          </provider>  
+      
+          
+    </application>
+</manifest>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <TableLayout   xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1">
+ 
+    <TableRow>
+        
+       		<RelativeLayout
+		         android:layout_width="0dip"
+		         android:layout_height="wrap_content"  
+		         android:layout_weight="1" 
+		         android:orientation="vertical">
+		         
+       		    	<TextView
+			        android:id="@+id/gp_productonom"
+			        style="@style/StyleFontTexViewMediumLarge"
+			        android:textStyle="bold"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content" 
+			        android:layout_marginLeft="5dp" 
+			        android:layout_marginTop="5dp"
+			        /> 
+			         
+			        <TextView
+			        android:id="@+id/gp_productocod"
+			        style="@style/StyleFontTexViewNormal"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_below="@+id/gp_productonom"
+			        android:layout_alignParentLeft="true"  
+			        android:textColor="@android:color/black"
+			        android:textStyle="bold" >
+			        </TextView>
+			
+			        <TextView 
+					android:id="@+id/gp_productodisp"   
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"   
+			        android:textColor="@color/Blue"
+			        android:textStyle="bold"
+			        android:textSize="20dp"	
+			        android:layout_marginLeft="10dp" 
+					android:layout_below="@+id/gp_productonom"
+					android:layout_toRightOf="@+id/gp_productocod"   
+			        /> 
+       		    
+       		    
+       		</RelativeLayout>
+       		<LinearLayout 
+		         android:layout_width="0dip"
+		         android:layout_height="wrap_content"  
+		         android:layout_weight="0.20" >
+		         
+       		    	<CheckBox
+       		    	    android:layout_width="wrap_content"
+       		    	    android:layout_height="wrap_content"
+       		    	    ></CheckBox>
+       		    
+       		    
+       		</LinearLayout>
+      
+    </TableRow>
+</TableLayout>
+ 
+ 
+		 

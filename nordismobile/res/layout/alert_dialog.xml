@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/bgdialog2" 
+    android:orientation="vertical" >    
+    	<!-- This is for the info image -->
+    <ImageView
+	    android:id="@+id/icon_dialog_alert"
+	    android:layout_width="30dp"
+	    android:layout_height="30dp" 
+	    android:layout_alignParentLeft="true"
+	    android:padding="0dp"
+	    android:src="@android:drawable/ic_menu_info_details" 
+	/>    
+    	<!-- Title -->
+    <TextView 
+        android:id="@+id/tittle_dialog_alert"
+        android:layout_width="210dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dip"   
+        android:text="Tittle"
+        android:textColor="@color/White"
+        android:textSize="14dip" 
+        android:textStyle="normal"  
+        android:typeface="normal"
+        android:layout_toRightOf="@+id/icon_dialog_alert"
+    />
+   
+    <View
+        android:id="@+id/separator_dialog_alert"
+		android:layout_width="260dp"
+		android:layout_height="0.1dip"
+		android:background="@color/DarkCyan" 
+		android:layout_marginTop="10dp"
+	    android:layout_marginBottom="5dp"
+		android:layout_below="@+id/tittle_dialog_alert"/>
+    
+     <!-- The message -->
+
+    <TextView
+        android:id="@+id/bodymessage_dialog_alert"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/tittle_dialog_alert"
+        android:layout_below="@+id/separator_dialog_alert"
+        android:layout_marginBottom="8dp"
+        android:paddingLeft="15dp" 
+        android:text="Message"
+        android:textColor="@color/White"
+        android:textSize="11dip"
+        android:textStyle="normal"
+        android:typeface="normal" 
+        android:focusable="true" 
+        android:nextFocusDown="@+id/btnaceptar_dialog_alert"
+        android:nextFocusLeft="@+id/btnaceptar_dialog_alert"/>
+
+    <TableRow 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_below="@+id/bodymessage_dialog_alert"
+        android:layout_centerHorizontal="true" 
+        >
+	    <Button 
+	        android:id="@+id/btnaceptar_dialog_alert" 
+	        android:layout_width="60dp"
+	        android:layout_height="20dp" 
+	        android:paddingTop="2dp"
+	        android:paddingBottom="2dp"
+	        android:layout_marginRight="5dp"
+	        android:background="@drawable/buttomdialog_state"
+	        android:text="Aceptar"
+	        android:textSize="11dip"
+	        android:textColor="@drawable/buttom_text_state" 
+	        android:textAppearance="?android:attr/textAppearanceLarge" 
+	        android:textStyle="normal"
+	        android:typeface="normal"
+	        android:focusable="true"          
+	        /> 
+	</TableRow>
+ 
+</RelativeLayout>

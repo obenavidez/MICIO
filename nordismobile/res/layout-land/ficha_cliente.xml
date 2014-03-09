@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/White">  
+    
+   	     <!--<include 
+   	    android:id="@+id/fc_header"
+   	    android:layout_marginTop="1dp"
+   	    android:layout_width="fill_parent" 
+   	    android:layout_height="wrap_content" 
+   	    layout="@layout/header"
+   	    /> 
+			 Included header.xml here -->
+	    <ViewStub android:id="@+id/fcHeader" 
+	    android:inflatedId="@+id/header" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"  
+		android:layout="@layout/header" />
+     	<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"			
+			android:orientation="vertical">
+			
+     	    <TextView 
+		          android:id="@+id/fctextv_header"
+			      android:layout_width="fill_parent"
+			      android:layout_height="wrap_content" 
+			      android:text="Datos del Cliente" 
+			      android:textColor="@color/DodgerBlue" 
+			      android:textStyle="bold"
+			      android:textSize="13sp" 
+		    />     
+			<View
+			    android:layout_width="fill_parent"
+			    android:layout_height="1dp"
+			    android:background="@color/Gray"/>
+
+			<ScrollView
+			    android:id="@+id/ScrollView01"
+			    android:layout_width="fill_parent"
+			    android:layout_height="155dp"
+			    android:layout_marginBottom="3dip">
+
+			    <HorizontalScrollView android:id="@+id/HorizontalScrollView01"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content">
+                  
+		    	     <RelativeLayout
+				        android:layout_width="fill_parent"
+				        android:layout_height="wrap_content"
+				        android:layout_marginLeft="3dp"
+				        android:layout_marginRight="3dp"
+				        android:layout_marginTop="3dp"
+				        android:orientation="vertical" >
+			             	
+			            <TextView
+			                android:id="@+id/fclbl_cliente"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left"
+			                android:text="Cliente"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+		
+			            <TextView
+			                android:id="@+id/fctextv_detallecliente"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_toRightOf="@+id/fclbl_cliente" 
+			                android:lines="2"
+			                android:text="Detalle Cliente"
+			                android:textColor="@color/DarkGray" 
+			                android:isScrollContainer="true"
+			                />
+		
+			            <TextView
+			                android:id="@+id/fclbl_sucursal"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_cliente"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left" 
+			                android:text="Sucursal"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+		
+			            <TextView
+			                android:id="@+id/fctextv_detallesucursal"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_cliente"
+			                android:layout_toRightOf="@+id/fclbl_sucursal"
+			                android:lines="2"
+			                android:text="Detalle Sucursal"
+			                android:textColor="@color/DarkGray" />
+			             	
+			            <TextView
+			                android:id="@+id/fclbl_direccion"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_sucursal"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left"
+			                android:text="Dirección :"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+			            
+			            <TextView
+			                android:id="@+id/fctextv_detalledireccion"
+			                android:layout_width="fill_parent"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_sucursal"
+			                android:layout_toRightOf="@+id/fclbl_direccion"
+			                android:text="Detalle Dirección"
+			                android:textColor="@color/DarkGray" />
+		
+			            <TextView
+			                android:id="@+id/fclbl_telefono"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_direccion"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left"
+			                android:text="Teléfono :"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+	
+			            <TextView
+			                android:id="@+id/fctextv_detalletelefono"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_direccion"
+			                android:layout_toRightOf="@+id/fclbl_telefono"
+			                android:text="Detalle Teléfono"
+			                android:textColor="@color/DarkGray" />
+		
+			            <TextView
+			                android:id="@+id/fclbl_tipo"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_telefono"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left"
+			                android:text="Tipo :"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+	
+			            <TextView
+			                android:id="@+id/fctextv_detalletipo"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_telefono"
+			                android:layout_toRightOf="@+id/fclbl_tipo"
+			                android:text="Detalle Tipo"
+			                android:textColor="@color/DarkGray" />
+		
+			            <TextView
+			                android:id="@+id/fclbl_categoria"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_tipo"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left"
+			                android:text="Categoria :"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+	
+			            <TextView
+			                android:id="@+id/fctextv_detallecategoria"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_tipo"
+			                android:layout_toRightOf="@+id/fclbl_categoria"
+			                android:text="Detalle Categoria"
+			                android:textColor="@color/DarkGray" />
+		
+			            <TextView
+			                android:id="@+id/fclbl_precioventa"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_categoria"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left"
+			                android:text="Precio Venta :"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+	
+			            <TextView
+			                android:id="@+id/fctextv_detalleprecioventa"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_categoria"
+			                android:layout_toRightOf="@+id/fclbl_precioventa"
+			                android:text="Detalle Precio Venta"
+			                android:textColor="@color/DarkGray" />
+		
+			            <TextView
+			                android:id="@+id/fclbl_limitecredito"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_precioventa"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left"
+			                android:text="Limite Credito :"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+	
+			            <TextView
+			                android:id="@+id/fctextv_detallelimitecredito"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_precioventa"
+			                android:layout_toRightOf="@+id/fclbl_limitecredito"
+			                android:text="Detalle Limite Credito"
+			                android:textColor="@color/DarkGray" />
+		
+			            <TextView
+			                android:id="@+id/fclbl_plazocredito"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_limitecredito"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left"
+			                android:text="Plazo Credito :"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+	
+			            <TextView
+			                android:id="@+id/fctextv_detalleplazocredito"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_limitecredito"
+			                android:layout_toRightOf="@+id/fclbl_plazocredito"
+			                android:text="Detalle Plazo Credito"
+			                android:textColor="@color/DarkGray" />
+							
+			            <TextView
+			                android:id="@+id/fclbl_plazodescuento"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_plazocredito"
+			                android:layout_marginRight="3dp"
+			                android:gravity="left"
+			                android:text="Plazo Descuento :"
+			                android:textColor="@color/Black"
+			                android:width="112dp" />
+	
+			            <TextView
+			                android:id="@+id/fctextv_detalleplazodescuento"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_plazocredito"
+			                android:layout_toRightOf="@+id/fclbl_plazodescuento"
+			                android:text="Detalle Plazo Descuento"
+			                android:textColor="@color/DarkGray" />
+		
+			             <TextView
+			                 android:id="@+id/fclbl_minabono"
+			                 android:layout_width="wrap_content"
+			                 android:layout_height="wrap_content"
+			                 android:layout_below="@+id/fclbl_plazodescuento"
+			                 android:layout_marginRight="3dp"
+			                 android:gravity="left"
+			                 android:text="Min Abono :"
+			                 android:textColor="@color/Black"
+			                 android:width="112dp" />
+	
+			            <TextView
+			                android:id="@+id/fctextv_detalleminabono"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_plazodescuento"
+			                android:layout_toRightOf="@+id/fclbl_minabono"
+			                android:text="Detalle Min Abono"
+			                android:textColor="@color/DarkGray" />
+		
+			             <TextView
+			                 android:id="@+id/fclbl_descuentos"
+			                 android:layout_width="wrap_content"
+			                 android:layout_height="wrap_content"
+			                 android:layout_below="@+id/fclbl_minabono"
+			                 android:layout_marginRight="3dp"
+			                 android:gravity="left"
+			                 android:text="Descuentos :"
+			                 android:textColor="@color/Black"
+			                 android:width="112dp" />
+			
+			            <TextView
+			                android:id="@+id/fctextv_detalledescuento"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:layout_below="@+id/fclbl_minabono"
+			                android:layout_toRightOf="@+id/fclbl_descuentos"
+			                android:lines="2"
+			                android:text="Detalle Descuentos"
+			                android:textColor="@color/DarkGray" />
+	
+			        </RelativeLayout> 
+		        </HorizontalScrollView>
+		  </ScrollView> 
+		
+			    <TextView 
+				    android:id="@+id/fctextv_header2"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content" 
+				    android:text="Notas del Cliente" 
+				    android:textColor="@color/DodgerBlue" 
+				    android:textStyle="bold"
+				    android:textSize="13sp" 
+				 />
+			    <View
+				    android:layout_width="fill_parent"
+				    android:layout_height="1dp"
+				    android:background="@color/Gray"/>
+						
+			    <ListView
+				    android:id="@+id/fclvnotas"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:choiceMode="singleChoice"
+				    android:divider="@color/DarkGray"
+				    android:dividerHeight="0.3sp"
+				    android:listSelector="@drawable/statelist"
+				    android:scrollingCache="false" >
+			
+			     </ListView>
+			     
+			     <TextView
+				    android:id="@+id/fctxtview_enty"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:gravity="center_horizontal"
+				    android:text="@string/txtclient_entymessage"
+				    android:textColor="@color/Black"
+				    android:textSize="12dp"
+				    android:visibility="gone" />  
+
+     	</LinearLayout>
+  	 
+     	
+</LinearLayout>

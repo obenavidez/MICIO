@@ -1,0 +1,128 @@
+package com.panzyma.nm.model;
+
+import java.lang.reflect.Type;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.ksoap2.serialization.PropertyInfo;
+
+import android.content.Context;
+import android.content.SharedPreferences; 
+
+import com.panzyma.nm.auxiliar.NMComunicacion;
+import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.auxiliar.NMTranslate;
+import com.panzyma.nm.auxiliar.Parameters;  
+import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.serviceproxy.DataConfigurationResult;
+import com.panzyma.nm.serviceproxy.LoginUserResult;
+import com.panzyma.nm.serviceproxy.Usuario;
+import com.panzyma.nm.viewmodel.vmConfiguracion;
+
+public class ModelConfiguracion {
+
+	static SharedPreferences pref;
+	static SharedPreferences.Editor edit;
+	 
+	public ModelConfiguracion(){}
+	
+	public  static Usuario getDatosUsuario(String Credentials,String LoginUsuario) throws Exception
+	{
+		Parameters params=new Parameters((new String[]{"Credentials","LoginUsuario"}),
+				 (new Object[]{Credentials,LoginUsuario}),
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.STRING_CLASS}));
+		return  (NMTranslate.ToObject(( NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetDatosUsuario)),new Usuario()));		
+    }
+	
+	public  static int get_DEVISE_PREFIX(String Credentials,String PIN) throws Exception
+	{
+		return (NMComunicacion.InvokeService(NMConfig.URL2+NMConfig.MethodName.GetDevicePrefix+"/"+Credentials+"/"+PIN)).getInt("getDevicePrefixResult");
+    }
+	
+	public static vmConfiguracion getVMConfiguration(Context view)
+	{ 
+		pref=view.getSharedPreferences("ViewConfiguracion",Context.MODE_PRIVATE);  
+		
+		return vmConfiguracion.setConfiguration(
+										 pref.getString("url_server","http://www.panzyma.com/nordisserverprod"), 
+										 pref.getString("device_id",""),
+										 pref.getString("enterprise","dp"), 
+										 pref.getString("name_user",""),
+										 pref.getString("password",""),
+										 pref.getInt("max_idpedido",0),
+										 pref.getInt("max_idrecibo",0));
+	}
+	
+	public static LoginUserResult verifyLogin(String Credentials,String Roll) throws Exception
+	{
+		return NMTranslate.ToObject(NMComunicacion.InvokeService(NMConfig.URL2+NMConfig.MethodName.LoginUser+"/"+Credentials+"/"+Roll),new LoginUserResult());		 
+	}
+	
+	public static DataConfigurationResult getDataConfiguration(String Credentials,String LoginUsuario,String PIN) throws Exception
+	{
+		PIN="21C5D535";
+		return NMTranslate.ToObject(NMComunicacion.InvokeService(NMConfig.URL2+NMConfig.MethodName.getDataConfiguration+"/"+Credentials+"/"+LoginUsuario+"/"+PIN),new DataConfigurationResult());
+	}
+	
+	public static void saveConfiguration(Context view,vmConfiguracion setting)throws Exception
+	{
+		pref=view.getSharedPreferences("ViewConfiguracion",Context.MODE_PRIVATE);
+		edit=pref.edit();		
+		edit.putString("url_server",setting.getAppServerURL());
+		edit.putString("device_id",setting.getDeviceId());
+		edit.putString("enterprise",setting.getEnterprise());
+		edit.putString("name_user",setting.getNameUser());
+		edit.putString("password",setting.getPassword());
+		edit.putInt("max_idpedido",setting.getMax_IdPedido());
+		edit.putInt("max_idrecibo",setting.getMax_Idrecibo());
+		edit.commit();		
+	}
+	
+  
+	public static JSONArray getSystemPerams(String Credentials) throws Exception{		
+		return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetParams+"/"+Credentials);
+	}
+	
+ 
+	public static JSONArray getValoresCatalogo(String Credentials,String NombresCatalogo) throws Exception{		
+		return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetValoresCatalogo+"/"+Credentials+"/"+NombresCatalogo);
+	}
+	
+	public static JSONArray getTasasDeCambio(String Credentials)throws Exception{
+		return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetTasasDeCambio+"/"+Credentials);
+	}
+	
+ 
+	
+	public static JSONArray getPromocionesPaged(String Credentials,String LoginUsuario,int Pages,int RowPages)throws Exception
+	{ 
+		return  NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetPromocionesPaged+"/"+Credentials+"/"+LoginUsuario+"/"+Pages+"/"+RowPages);
+    }
+	
+	public static void saveSystemParam(Context view,JSONArray params)throws Exception
+	{
+		pref=view.getSharedPreferences("SystemParams",Context.MODE_PRIVATE);
+		edit=pref.edit();
+		for(int i=0; i<params.length();i++)
+		{
+			JSONObject obj=params.getJSONObject(i);
+			edit.putString(obj.getString("Nombre"),obj.getString("Valor"));		    
+		}
+		edit.commit();	
+		
+	} 
+	
+	public synchronized static void saveValorCatalogoSystem(Context view,JSONArray objL)throws Exception
+	{
+		DatabaseProvider.RegistrarCatalogos(objL,view);		
+	}
+	
+	public synchronized static void savePromociones(Context view,JSONArray objL,int page)throws Exception
+	{
+		DatabaseProvider.RegistrarPromociones(objL,view,page);		
+	}
+	
+	public synchronized static void saveTasasDeCambio(Context view,JSONArray objL)throws Exception
+	{
+		DatabaseProvider.RegistrarTasaCambios(objL,view);		
+	}
+}

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/White"
+    android:orientation="vertical" >
+
+    <!-- Included header.xml here -->
+
+    <ViewStub
+        android:id="@+id/vsHeader"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inflatedId="@+id/header"
+        android:layout="@layout/header" />
+
+    <ScrollView
+        android:id="@+id/ScrollView01"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="3dip" >
+
+            <RelativeLayout
+                android:id="@+id/rl1"
+                android:layout_width="match_parent"
+                android:layout_height="514dp"
+                android:layout_marginTop="10dp" >
+
+                <TextView
+                    android:id="@+id/pddlbl_fecha"
+                    android:layout_width="55dp"
+                    android:layout_height="wrap_content"
+                    android:text="Fecha :"
+                    android:textColor="@color/Black"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/pddetextv_detalle_fecha"
+                    android:layout_width="90dp"
+                    android:layout_height="25dp"
+                    android:layout_toRightOf="@+id/pddlbl_fecha"
+                    android:background="@drawable/style_textbox" />
+                
+                <TextView
+		        android:id="@+id/pddlbl_numref"
+		        android:layout_width="45dp"
+		        android:layout_height="wrap_content" 
+		        android:text="No.Ref :" 
+		        android:textSize="12dp" 
+		        android:layout_toRightOf="@+id/pddetextv_detalle_fecha"
+		        android:textStyle="bold"
+			    android:textColor="@color/Black"
+		        />
+				
+
+				<EditText
+			    android:id="@+id/pdddetextv_detalle_numref"
+			    android:layout_width="100dp"
+			    android:layout_height="25dp"
+			    android:layout_toRightOf="@+id/pddlbl_numref"
+			    android:background="@drawable/style_textbox"
+			    android:scrollHorizontally="true" />
+				
+				<TextView     	     
+				android:id="@+id/pddlbl_cliente"
+				android:layout_width="58dp"
+				android:layout_height="wrap_content"
+				android:text="Cliente :"
+				android:layout_below="@+id/pddlbl_fecha"
+				android:layout_marginTop="30dp"
+				android:textStyle="bold"
+			    android:textColor="@color/Black" />
+				
+				<EditText
+				    android:id="@+id/pddtextv_detallecliente"
+				    android:layout_width="250dp"
+				    android:layout_height="40dp"
+				    android:layout_below="@+id/pddlbl_fecha"
+				    android:layout_marginTop="10dp"
+				    android:layout_toRightOf="@+id/pddlbl_cliente"
+				    android:background="@drawable/style_textbox"
+				    android:paddingTop="10dp"
+				    android:inputType="text"
+				    android:scrollHorizontally="true" />
+                
+				<TextView     	     
+				android:id="@+id/pddlbl_precio"
+				android:layout_width="55dp"
+				android:layout_height="wrap_content"
+				android:text="Precio :"
+				android:layout_below="@+id/pddlbl_cliente"
+				android:layout_marginTop="30dp"
+				android:textStyle="bold"
+			    android:textColor="@color/Black"
+				/>
+				
+
+				<TextView
+			    android:id="@+id/pddtextv_detalleprecio"
+			    android:layout_width="250dp"
+			    android:layout_height="40dp"
+			    android:layout_below="@+id/pddlbl_cliente" 
+			    android:layout_toRightOf="@+id/pddlbl_precio"
+			    android:background="@drawable/style_textbox"
+			    android:layout_marginTop="5dp"
+			    android:paddingTop="15dp"
+			    android:scrollHorizontally="true" 
+			    
+			    />
+				
+				<TextView     	     
+				android:id="@+id/pddlbl_tipo"
+				android:layout_width="45dp"
+				android:layout_height="40dp"
+				android:text="Tipo :"
+				android:layout_below="@+id/pddlbl_precio"  
+				android:layout_marginTop="20dp"
+				android:textStyle="bold"
+			    android:textColor="@color/Black"
+				/>
+				
+				<Spinner
+			    android:id="@+id/pddcombox_detalletipo"
+			    android:layout_width="270dp"
+			    android:layout_height="45dp" 
+			    android:layout_below="@+id/pddlbl_precio" 
+				android:layout_toRightOf="@+id/pddlbl_tipo"
+				android:layout_marginTop="10dp" 
+				/>
+				
+				<TextView     	     
+				android:id="@+id/pddlbl_totales"
+				android:layout_width="58dp"
+				android:layout_height="wrap_content"
+				android:text="Totales :"
+				android:layout_below="@+id/pddlbl_tipo"
+				android:layout_marginTop="10dp"
+				android:textStyle="bold"
+			    android:textColor="@color/Black"
+				/> 
+
+				<EditText
+			    android:id="@+id/pddtextv_detalletotales"
+			    android:layout_width="260dp"
+			    android:layout_height="60dp"
+			    android:layout_below="@+id/pddlbl_tipo" 
+			    android:layout_toRightOf="@+id/pddlbl_totales" 
+			    android:paddingTop="10dp"
+			    android:background="@drawable/style_textbox" 
+			    android:lines="2"
+				 />    
+
+				<include
+				    android:id="@+id/pddgrilla"
+				    android:layout_width="320dp"
+				    android:layout_height="280dp"
+				    android:layout_below="@+id/pddtextv_detalletotales"
+				    android:layout_marginTop="5dp"
+				    layout="@layout/grilla" />
+
+            </RelativeLayout> 
+            
+    </ScrollView>
+
+</LinearLayout>

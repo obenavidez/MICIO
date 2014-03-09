@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:background="@color/White"
+	android:orientation="vertical">
+			
+            <TextView 
+         	android:id="@+id/header"
+			style="StyleFontTextViewActionBar"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="Encabezado de la Lista"
+			android:gravity="center"
+			android:textColor="@color/White"
+			android:background="@color/Gray"	             
+      	    />
+    	           
+			<ListView 
+			    android:id="@+id/data_items"  
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"	
+			    android:divider="@color/DarkGray"
+			    android:dividerHeight="0.3sp"
+			    android:scrollingCache="false" 
+			    android:choiceMode="singleChoice"
+			    android:listSelector="@drawable/statelist"
+			    android:fastScrollEnabled="true"
+	 	        android:drawSelectorOnTop="false">  
+			</ListView>
+				 
+			<TextView
+			 android:id="@+id/txtview_enty"
+			 android:textSize="12dp"
+			 android:textColor="@color/Black"
+			 android:layout_width="fill_parent"
+			 android:layout_height="wrap_content"
+			 android:gravity="center"
+			 android:text="@string/txtclient_entymessage"
+			 android:visibility="gone"
+			 />
+        	<Button
+	          android:id="@+id/btnmenu"
+	          android:layout_width="fill_parent"
+	          android:layout_height="wrap_content"
+	          android:layout_gravity="left"
+	          android:visibility="gone"/>
+</LinearLayout>

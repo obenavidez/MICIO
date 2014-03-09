@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"    
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/White">  
+
+	     <!-- Included header.xml here -->
+		<ViewStub android:id="@+id/vsHeader" 
+		    android:inflatedId="@+id/header" 
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 
+			android:layout="@layout/header" />
+		
+		<RelativeLayout 
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:background="@color/White" > 
+		    
+		    	<TextView     	      
+		    	android:id="@+id/ccategoria1"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Conexión"  		
+				android:textColor="@color/Blue"
+				android:layout_marginTop="20dp" 
+				/> 
+				
+		    	<View     
+		    	android:id="@+id/separator1"
+		        android:layout_width="fill_parent"
+		    	android:layout_height="1dp" 
+		    	android:background="@color/LightSeaGreen"
+		    	android:layout_below="@+id/ccategoria1"
+		    	/>
+		    
+			 	<TextView     	     
+				android:id="@+id/cfglbl_urlws"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Url Servidor :"  
+				android:layout_marginTop="20dp"
+				android:layout_marginLeft="10dp"
+				android:layout_below="@+id/separator1"
+				/> 
+			
+				<EditText
+			    android:id="@+id/cfgtextv_detalleurlws"
+			    android:layout_width="fill_parent"
+			    android:layout_height="28dp"   
+			    android:textStyle="bold"
+			    android:textSize="12dp" 
+			    android:layout_marginLeft="10dp"  
+			    android:paddingTop="8dp"
+			    android:paddingBottom="1dp"
+			    android:background="@drawable/style_textbox" 
+			    android:layout_below="@+id/cfglbl_urlws" 
+			    android:scrollHorizontally="true"
+			    android:singleLine="true"
+			    android:nextFocusRight="@+id/cfgtextv_detallecodempresa"
+			    android:nextFocusDown="@+id/cfgtextv_detallecodempresa"
+			    android:enabled="false"
+			    />
+							
+				<TextView     	      
+		    	android:id="@+id/ccategoria2"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Aplicación"  
+				android:layout_marginTop="20dp"
+				android:layout_below="@+id/cfgtextv_detalleurlws"
+				android:textColor="@color/Blue"
+				/> 
+				
+		    	<View     
+		    	android:id="@+id/separator2"
+		        android:layout_width="fill_parent"
+		    	android:layout_height="1dp" 
+		    	android:background="@color/LightSeaGreen"
+		    	android:layout_below="@+id/ccategoria2"
+		    	/>
+		    	
+		    	
+		    	<TextView     	     
+				android:id="@+id/cfglbl_deviceid"
+				android:layout_width="85dp"
+				android:layout_height="wrap_content"
+				android:text="Devise Id :"  
+				android:layout_marginTop="10dp"
+				android:layout_marginLeft="10dp"
+				android:layout_below="@+id/separator2"
+				/> 
+			
+				<EditText
+			    android:id="@+id/cfgtextv_detalledeviceid"
+			    android:layout_width="50dp"
+			    android:layout_height="25dp"  
+			    android:layout_below="@+id/separator2"
+			    android:layout_toRightOf="@+id/cfglbl_deviceid"
+			    android:textStyle="bold"
+			    android:textSize="12dp" 
+			    android:layout_marginLeft="10dp"  
+			    android:paddingTop="8dp"
+			    android:paddingBottom="1dp"
+			    android:background="@drawable/style_textbox"
+			    android:enabled="false"
+			    android:lines="1"/>
+			    
+				
+				
+				
+				<TextView     	      
+		    	android:id="@+id/ccategoria3"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Datos del Usuario"  
+				android:layout_marginTop="20dp"
+				android:layout_below="@+id/cfglbl_deviceid"
+				android:textColor="@color/Blue"
+				/> 
+				
+		    	<View     
+		    	android:id="@+id/separator3"
+		        android:layout_width="fill_parent"
+		    	android:layout_height="1dp" 
+		    	android:background="@color/LightSeaGreen"
+		    	android:layout_below="@+id/ccategoria3"
+		    	/>
+		    	
+		    	
+		    	<TextView     	     
+				android:id="@+id/cfglbl_codempresa"
+				android:layout_width="85dp"
+				android:layout_height="wrap_content"
+				android:text="Empresa :"  
+				android:layout_marginTop="10dp"
+				android:layout_marginLeft="10dp"
+				android:layout_below="@+id/separator3"
+				/> 
+			
+				<EditText
+			    android:id="@+id/cfgtextv_detallecodempresa"
+			    android:layout_width="fill_parent"
+			    android:layout_height="28dp"  
+			    android:layout_below="@+id/separator3"
+			    android:layout_toRightOf="@+id/cfglbl_codempresa"
+			    android:textStyle="bold"
+			    android:textSize="12dp" 
+			    android:layout_marginLeft="10dp"  
+			    android:paddingTop="8dp"
+			    android:paddingBottom="1dp"
+			    android:background="@drawable/style_textbox"
+			    android:singleLine="true"
+			    android:nextFocusUp="@+id/cfgtextv_detalleurlws"
+			    android:nextFocusRight="@+id/cfgtextv_detalleuser"
+			    android:nextFocusDown="@+id/cfgtextv_detalleuser"
+			    android:enabled="false"
+			    /> 
+			    
+				<TextView     	     
+				android:id="@+id/cfglbl_user"
+				android:layout_width="85dp"
+				android:layout_height="wrap_content"
+				android:text="Usuario :"  
+				android:layout_marginTop="10dp"
+				android:layout_marginLeft="10dp"
+				android:layout_below="@+id/cfglbl_codempresa"
+				/> 
+			
+				<EditText
+			    android:id="@+id/cfgtextv_detalleuser"
+			    android:layout_width="fill_parent"
+			    android:layout_height="28dp"  
+			    android:layout_below="@+id/cfglbl_codempresa"
+			    android:layout_toRightOf="@+id/cfglbl_user"
+			    android:textStyle="bold"
+			    android:textSize="12dp" 
+			    android:layout_marginLeft="10dp"  
+			    android:paddingTop="8dp"
+			    android:paddingBottom="1dp"
+			    android:background="@drawable/style_textbox"  
+			    android:singleLine="true"
+			    android:nextFocusUp="@+id/cfgtextv_detallecodempresa" 
+			    android:enabled="false"/> 
+		    	
+		</RelativeLayout>
+		<Button
+			        android:id="@+id/btn_menu" 
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="bottom"
+			        android:visibility="gone"
+	    /> 
+</LinearLayout>

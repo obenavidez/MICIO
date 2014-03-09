@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<TableLayout  
+    xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:id="@+id/tableLayout1"  
+    android:layout_width="match_parent"  
+    android:layout_height="match_parent"  
+    android:gravity="center"
+    android:shrinkColumns="*"  
+    android:stretchColumns="*"
+    android:background="@color/White">  
+    
+   		 <TableRow  
+            android:id="@+id/tableRow0"  
+            android:layout_height="wrap_content"  
+            android:layout_width="fill_parent">  
+            
+				    <ViewStub android:id="@+id/vsHeader" 
+				    android:inflatedId="@+id/header" 
+					android:layout_width="fill_parent" 
+					android:layout_height="wrap_content" 
+					android:layout="@layout/header" 
+					android:layout_span="3"
+					android:layout_marginBottom="5dp"/> 
+			    		     
+
+         </TableRow>	
+    
+        <TableRow  
+            android:id="@+id/tableRow1"  
+            android:layout_height="wrap_content"  
+            android:layout_width="match_parent">  
+            	  <LinearLayout
+	              android:layout_width="wrap_content"
+	              android:layout_height="wrap_content" 
+	              android:gravity="center_horizontal"
+	              android:orientation="vertical" > 
+		              <Button
+		                  android:id="@+id/hbtnpedido"
+		                  android:layout_width="wrap_content"
+		                  android:layout_height="wrap_content"
+		                  android:background="@drawable/btnpedido_state"
+		                  android:focusable="true"
+		                  android:onClick="onButtonClicker">
+		                  <requestFocus/>
+		              </Button>
+		
+		              <TextView
+		                  android:layout_width="wrap_content"
+		                  android:layout_height="wrap_content"
+		                  android:text="Pedidos" 
+		                  android:textColor="@color/Black"
+		                  android:textStyle="bold"/>
+	          	</LinearLayout>
+	          	
+            	 <LinearLayout
+	              android:layout_width="wrap_content"
+	              android:layout_height="wrap_content" 
+	              android:gravity="center_horizontal"
+	              android:orientation="vertical" > 
+
+		              <Button
+		                  android:id="@+id/hbtnrecibocollector"
+		                  android:layout_width="wrap_content"
+		                  android:layout_height="wrap_content"
+		                  android:background="@drawable/btnrecibocollector_state"
+		                  android:focusable="true"
+		                  android:onClick="onButtonClicker" />
+		
+		              <TextView
+		                  android:layout_width="wrap_content"
+		                  android:layout_height="wrap_content"
+		                  android:gravity="center_horizontal"
+		                  android:text="Recibos Colector" 
+		                  android:textColor="@color/Black"
+		                  android:textStyle="bold"/>
+	             </LinearLayout> 
+            	 <LinearLayout
+	              android:layout_width="wrap_content"
+	              android:layout_height="wrap_content" 
+	              android:gravity="center_horizontal"
+	              android:orientation="vertical" > 
+
+		              <Button
+		                  android:id="@+id/hbtndevolucion"
+		                  android:layout_width="wrap_content"
+		                  android:layout_height="wrap_content"
+		                  android:background="@drawable/btndevolucion_state"
+		                  android:focusable="true"
+		                  android:onClick="onButtonClicker" />
+		
+		              <TextView
+		                  android:layout_width="wrap_content"
+		                  android:layout_height="wrap_content"
+		                  android:gravity="center_horizontal" 
+		                  android:text="Devolucion" 
+		                  android:textColor="@color/Black"
+		                  android:textStyle="bold"/>
+	             </LinearLayout>
+            	  
+        </TableRow>   
+        <TableRow  
+            android:layout_height="wrap_content"  
+            android:id="@+id/tableRow2"  
+            android:layout_width="match_parent"> 
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical" >
+
+                    <Button
+                        android:id="@+id/hbtncliente"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btncliente_state"
+                        android:focusable="true"
+                        android:onClick="onButtonClicker" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Clientes"
+                        android:textColor="@color/Black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical" >
+
+                    <Button
+                        android:id="@+id/hbtnproducto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btnproducto_state"
+                        android:focusable="true"
+                        android:onClick="onButtonClicker" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Productos"
+                        android:textColor="@color/Black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical" >
+
+                    <Button
+                        android:id="@+id/hbtnpreferencia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btnpreferencia_state"
+                        android:focusable="true"
+                        android:onClick="onButtonClicker" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="Preferencia"
+                        android:textColor="@color/Black"
+                        android:textStyle="bold" />
+                </LinearLayout> 
+        </TableRow>  
+        <TableRow  
+            android:layout_height="wrap_content"  
+            android:id="@+id/tableRow2"  
+            android:layout_width="match_parent">  
+            
+            
+            	<LinearLayout 
+	              android:layout_width="wrap_content"
+	              android:layout_height="wrap_content"      
+	              android:gravity="center_horizontal"     
+	              android:orientation="vertical" >  
+
+		              <Button
+		                  android:id="@+id/hbtnconfiguracion"
+		                  android:layout_width="wrap_content"
+		                  android:layout_height="wrap_content"
+		                  android:background="@drawable/btnconfiguracion_state"
+		                  android:focusable="true"
+		                  android:onClick="onButtonClicker" />
+		
+		              <TextView
+		                  android:layout_width="wrap_content"
+		                  android:layout_height="wrap_content"
+		                  android:gravity="center_horizontal"
+		                  android:text="Configuracion" 
+		                  android:textColor="@color/Black"
+		                  android:textStyle="bold"/>
+	
+	          </LinearLayout>
+            
+        </TableRow>  
+    </TableLayout>  

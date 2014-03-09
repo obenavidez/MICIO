@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/White"> 
+             
+             
+        <TextView 
+   	        android:layout_width="fill_parent"
+   	        android:layout_height="wrap_content"
+   	        android:text="Nordis Mobile | Cuentas X Cobrar"
+   	        android:textColor="@color/White"
+   	        android:textSize="16sp"
+   	        android:textStyle="bold" 
+   	        android:shadowColor="@color/Black"
+   	        android:shadowDx="1"
+   	        android:shadowDy="1"
+   	        android:shadowRadius="1"
+   	        android:gravity="center"
+   	        android:background="@drawable/bg_actionbar29"
+   	        android:layout_marginTop="1dp" />
+        
+        <LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"			
+			android:orientation="vertical">
+		
+
+     	    <TextView
+     	        android:id="@+id/cctextv_header"
+     	        android:layout_width="fill_parent"
+     	        android:layout_height="wrap_content"
+     	        android:text="Info. General"
+     	        android:textColor="@color/DodgerBlue"
+     	        android:textSize="14sp"
+     	        android:textStyle="bold" />
+     
+			<View
+			    android:layout_width="fill_parent"
+			    android:layout_height="1dp"
+			    android:background="@color/Gray"/> 
+                  
+
+    	    <RelativeLayout
+    	         android:layout_width="fill_parent"
+    	         android:layout_height="wrap_content"
+    	         android:layout_marginLeft="3dp"
+    	         android:layout_marginRight="3dp"
+    	         android:layout_marginTop="3dp"
+    	         android:orientation="vertical" >
+
+
+    	         <TextView
+    	             android:id="@+id/cclbl_cliente"
+    	             android:layout_width="wrap_content"
+    	             android:layout_height="wrap_content"
+    	             android:layout_marginRight="3dp"
+    	             android:gravity="left"
+    	             android:text="Cliente"
+    	             android:textColor="@color/Black"
+    	             android:width="60dp" />
+
+
+
+
+    	         <TextView
+    	             android:id="@+id/cctextv_detallecliente"
+    	             android:layout_width="fill_parent"
+    	             android:layout_height="wrap_content"
+    	             android:layout_toRightOf="@+id/cclbl_cliente"
+    	             android:isScrollContainer="true"
+    	             android:text="Detalle Cliente"
+    	             android:textColor="@color/DarkGray" />
+
+
+    	         <TextView
+    	             android:id="@+id/cclbl_saldo"
+    	             android:layout_width="wrap_content"
+    	             android:layout_height="wrap_content"
+    	             android:layout_below="@+id/cclbl_cliente"
+    	             android:layout_marginRight="3dp"
+    	             android:gravity="left"
+    	             android:text="Saldo :"
+    	             android:textColor="@color/Black" />
+
+
+
+
+
+    	         <TextView
+    	             android:id="@+id/cctextv_detallesaldo"
+    	             android:layout_width="wrap_content"
+    	             android:layout_height="wrap_content"
+    	             android:layout_below="@+id/cclbl_cliente"
+    	             android:layout_toRightOf="@+id/cclbl_saldo"
+    	             android:text="Detalle Saldo"
+    	             android:textColor="@color/DarkGray" 
+    	             android:layout_marginLeft="3dp"
+    	             android:layout_marginRight="10dp"/>
+
+
+
+
+
+    	         <TextView
+    	             android:id="@+id/cclbl_disponible"
+    	             android:layout_width="wrap_content"
+    	             android:layout_height="wrap_content"
+    	             android:layout_below="@+id/cclbl_cliente"
+    	             android:layout_toRightOf="@+id/cctextv_detallesaldo"
+    	             android:text="Disponible :"
+    	             android:textColor="@color/Black" />
+    	         
+    	         <TextView
+    	             android:id="@+id/cctextv_detalledisponible"
+    	             android:layout_width="fill_parent"
+    	             android:layout_height="wrap_content"
+    	             android:layout_below="@+id/cclbl_cliente"
+    	             android:layout_toRightOf="@+id/cclbl_disponible"
+    	             android:text="Detalle Disponible"
+    	             android:textColor="@color/DarkGray" 
+    	             android:layout_marginLeft="3dp"/>
+    	         
+
+
+    	         <TextView
+    	             android:id="@+id/cclbl_limitecredito"
+    	             android:layout_width="wrap_content"
+    	             android:layout_height="wrap_content"
+    	             android:layout_below="@+id/cclbl_saldo"
+    	             android:text="Limite Crédito :"
+    	             android:textColor="@color/Black" />
+    	         
+
+    	         <TextView
+    	             android:id="@+id/cctextv_detallelimitecredito"
+    	             android:layout_width="wrap_content"
+    	             android:layout_height="wrap_content"
+    	             android:layout_below="@+id/cclbl_saldo"
+    	             android:layout_marginLeft="3dp"
+    	             android:layout_toRightOf="@+id/cclbl_limitecredito"
+    	             android:text="Detalle Limite Crédito"
+    	             android:textColor="@color/DarkGray" />
+
+    	    </RelativeLayout> 
+		
+
+		    <TextView
+		        android:id="@+id/cxctextv_header2"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content" 
+		        android:textColor="@color/DodgerBlue"
+		        android:textSize="14sp" 
+		        android:gravity="center_horizontal"
+		        android:textStyle="bold" />
+
+		    <View
+			    android:layout_width="fill_parent"
+			    android:layout_height="1dp"
+			    android:background="@color/Gray"/>  
+			 
+		   <LinearLayout 
+			    android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="horizontal">
+			    
+					  <TextView
+				        android:id="@+id/cxctextv_detalle_generico"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"  
+				        android:textColor="@color/Gray"
+				        android:layout_gravity="center"
+				        android:textSize="12sp"
+				        android:textStyle="bold" 
+				        android:layout_marginRight="20dp"/>
+		
+				    
+					  <Button
+			            android:id="@+id/cxcbtnfilter"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content" 
+			            android:layout_gravity="right"
+			            android:background="@drawable/filter_state" />
+			    
+			</LinearLayout>
+			     
+		    <LinearLayout  
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"> 
+			
+				     <ListView
+					    android:id="@+id/cxclvgeneric"
+					    android:layout_width="fill_parent"
+					    android:layout_height="wrap_content"
+					    android:divider="@color/DarkGray"
+					    android:dividerHeight="0.3sp"
+					    android:scrollingCache="false" 
+					    android:choiceMode="singleChoice"
+					    android:listSelector="@drawable/statelist" >
+				
+				     </ListView>
+				     
+				     <TextView
+					    android:id="@+id/cctxtview_enty"
+					    android:layout_width="fill_parent"
+					    android:layout_height="wrap_content"
+					    android:gravity="center_horizontal"
+					    android:text="@string/txtclient_entymessage"
+					    android:textColor="@color/Black"
+					    android:textSize="12dp"
+					    android:visibility="gone" />  
+				    	
+				     <ProgressBar
+			     	    android:id="@+id/cxcprogressbar"
+			     	    android:layout_width="wrap_content"
+			     	    android:layout_height="wrap_content"
+			     	    android:layout_gravity="center"/> 
+			     
+			     
+			    </LinearLayout> 
+		    
+
+      </LinearLayout> 
+	     
+</LinearLayout>

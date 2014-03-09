@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/White" >
+
+    <!-- Included header.xml here -->
+    
+	<ViewStub android:id="@+id/vsHeader" 
+	    android:inflatedId="@+id/header" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 
+		android:layout="@layout/header" />
+
+	<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:padding="6dip">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+    
+         <Button android:id="@+id/main_btn_pedido"
+            style="@style/HomeButton"
+            android:onClick="onButtonClicker"
+            android:nextFocusRight="@+id/main_btn_recib_coll"
+            android:nextFocusDown="@+id/main_btn_cliente"
+            android:focusable="true"
+            android:textSize="10dp"
+            android:text="@string/PedidoActivityTitle"
+            android:drawableTop="@drawable/android_gingerbread_logo"
+            />
+         
+        <Button android:id="@+id/main_btn_recib_coll"
+            style="@style/HomeButton"
+            android:onClick="onButtonClicker"
+            android:nextFocusRight="@+id/main_btn_dev"
+            android:nextFocusDown="@+id/main_btn_producto"
+            android:focusable="true"
+            android:textSize="10dp"
+            android:text="@string/ReciboCollActivityTitle"
+            android:drawableTop="@drawable/android_honeycomb_logo"
+            />
+        
+         <Button android:id="@+id/main_btn_dev"
+            style="@style/HomeButton"
+            android:onClick="onButtonClicker"
+            android:focusable="true"
+            android:textSize="10dp"
+            android:text="@string/DevolucionActivityTitle"
+            android:drawableTop="@drawable/android_ics_logo"
+            />
+        
+        
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+         
+         <Button android:id="@+id/main_btn_cliente"
+            style="@style/HomeButton"
+            android:onClick="onButtonClicker"
+            android:focusable="true"
+            android:textSize="10dp"
+            android:text="@string/ClientActivityTitle"
+            android:drawableTop="@drawable/android_eclair_logo"
+            />
+        <Button android:id="@+id/main_btn_producto"
+            style="@style/HomeButton"
+            android:onClick="onButtonClicker"
+            android:focusable="true"
+            android:textSize="10dp"
+            android:text="@string/ProductoActivityTitle"
+            android:drawableTop="@drawable/android__logo_froyo"
+            /> 
+            
+         <Button android:id="@+id/main_btn_dev"
+	         style="@style/HomeButton"
+	         android:onClick="onButtonClicker"
+	         android:focusable="true"
+	         android:textSize="10dp"
+	         android:text="@string/DevolucionActivityTitle"
+	         android:drawableTop="@drawable/android_ics_logo"
+         />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+        <Button android:id="@+id/main_btn_dev"
+            style="@style/HomeButton"
+            android:onClick="onButtonClicker"
+            android:focusable="true"
+            android:textSize="10dp"
+            android:text="@string/DevolucionActivityTitle"
+            android:drawableTop="@drawable/android_ics_logo"
+            />
+        <Button android:id="@+id/main_btn_config"
+            style="@style/HomeButton"
+            android:onClick="onButtonClicker"
+            android:focusable="true"
+            android:textSize="10dp"
+            android:text="@string/ConfiguracionActivityTitle"
+            android:drawableTop="@drawable/android_jellybean_logo"
+            />
+    </LinearLayout>
+
+</LinearLayout>
+
+
+</LinearLayout>

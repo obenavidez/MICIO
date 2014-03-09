@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" > 
+				   
+    <RelativeLayout 
+				        android:layout_width="fill_parent"
+					    android:layout_height="fill_parent"> 
+				                   
+			        	 <LinearLayout 
+			        	    android:id="@+id/cxc_layout"
+			        	    android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:orientation="horizontal">
+			        	     
+			        	     <TextView
+							android:id="@+id/cxclbl_sucursal"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content" 
+							android:text="Sucursal :"
+							android:textColor="@color/Teal"
+							android:textSize="12dp" /> 
+
+
+			            <TextView
+			                android:id="@+id/cxctextv_detalle_sucursal"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content" 
+			                android:layout_toRightOf="@+id/cxclbl_sucursal" 
+			                android:textColor="@color/White"
+			                android:textSize="12dp" /> 	
+			        	     
+			        	     
+			        	 </LinearLayout>
+		                     
+
+					    <RelativeLayout
+					        android:id="@+id/rl1"
+					        android:layout_width="wrap_content"
+					        android:layout_height="wrap_content" 
+					        android:layout_marginRight="5dp"
+					        android:layout_marginBottom="5dp"
+					        android:layout_below="@+id/cxc_layout">
+					    	
+					        
+					       
+					        
+					        
+					        
+					        <TextView
+					           android:id="@+id/cxclbl_nofactura"
+					           android:layout_width="85dp"
+					           android:layout_height="wrap_content" 
+					           android:text="No Factura :"
+					           android:textColor="@color/Teal"
+					           android:textSize="12dp"  />
+					
+					
+					
+					        <TextView
+					           android:id="@+id/cxctextv_detalle_nofactura"
+					           android:layout_width="wrap_content"
+					           android:layout_height="wrap_content"  
+					           android:layout_toRightOf="@+id/cxclbl_nofactura" 
+					           android:textColor="@color/Black"
+					           android:textSize="12dp" />
+					        
+					        <TextView
+				                android:id="@+id/cxclbl_nopedido"
+				                android:layout_width="85dp"
+				                android:layout_height="wrap_content" 
+				                android:text="No.Pedido :"
+				                android:textColor="@color/Teal"
+				                android:textSize="12dp" 
+				                android:layout_below="@+id/cxclbl_nofactura"/>
+					        	
+
+				        	<TextView
+				        	    android:id="@+id/cxctextv_detalle_nopedido"
+				        	    android:layout_width="wrap_content"
+				        	    android:layout_height="wrap_content"
+				        	    android:layout_below="@+id/cxclbl_nofactura"
+				        	    android:layout_toRightOf="@+id/cxclbl_nopedido"
+				        	    android:textColor="@color/Black"					        	   
+				        	    android:textSize="12dp" 
+				        	    android:lines="1"
+				        	    android:ellipsize="marquee"
+						        android:marqueeRepeatLimit="marquee_forever" 
+						        android:scrollHorizontally="true" />
+					        
+					        <TextView
+					           android:id="@+id/cxclbl_estado"
+					           android:layout_width="85dp"
+					           android:layout_height="wrap_content"
+					           android:layout_alignParentLeft="false"
+					           android:layout_alignParentTop="false"
+					           android:layout_below="@+id/cxclbl_nopedido"
+					           android:text="Estado :"
+					           android:textColor="@color/Teal"
+					           android:textSize="12dp" />
+					
+					
+					
+					       <TextView
+					           android:id="@+id/cxctextv_detalle_estado"
+					           android:layout_width="wrap_content"
+					           android:layout_height="wrap_content" 
+					           android:layout_below="@+id/cxclbl_nopedido"
+					           android:layout_toRightOf="@+id/cxclbl_estado" 
+					           android:textColor="@color/Black"
+					           android:textSize="12dp" /> 
+					       
+						   
+					       <TextView
+					                android:id="@+id/cxclbl_tipo"
+					                android:layout_width="85dp"
+					                android:layout_height="wrap_content" 
+					                android:text="Tipo :"
+					                android:textColor="@color/Teal"
+					                android:textSize="12dp"
+					                android:layout_below="@+id/cxclbl_estado" />
+
+						        <TextView
+						            android:id="@+id/cxctextv_detalle_tipo"
+						            android:layout_width="wrap_content"
+						            android:layout_height="wrap_content"
+						            android:layout_below="@+id/cxclbl_estado"
+						            android:layout_toRightOf="@+id/cxclbl_tipo"
+						            android:textColor="@color/Black"
+						            android:textSize="12dp"
+						            android:lines="1"
+					        	    android:ellipsize="marquee"
+							        android:marqueeRepeatLimit="marquee_forever" 
+							        android:scrollHorizontally="true"  />
+				                
+				                
+				                
+					       
+					    </RelativeLayout>  
+		    
+					    <RelativeLayout 
+					        android:id="@+id/rl2" 
+					        android:layout_below="@+id/cxc_layout"
+					        android:layout_width="wrap_content"
+					        android:layout_height="wrap_content"
+					        android:layout_toRightOf="@+id/rl1" 
+					        android:layout_marginRight="10dp"
+					        android:layout_marginBottom="10dp">
+					        
+						        
+						        
+						        <TextView
+					                android:id="@+id/cxclbl_fecha"
+					                android:layout_width="85dp"
+					                android:layout_height="wrap_content" 
+					                android:text="Fecha :"
+					                android:textColor="@color/Teal"
+					                android:textSize="12dp" />
+	
+
+								<TextView
+								    android:id="@+id/cxctextv_detalle_fecha"
+								    android:layout_width="wrap_content"
+								    android:layout_height="wrap_content"
+								    android:layout_toRightOf="@+id/cxclbl_fecha"
+								    android:textColor="@color/Black"
+								    android:textSize="12dp" 
+								    android:lines="1"
+					        	    android:ellipsize="marquee"
+							        android:marqueeRepeatLimit="marquee_forever" 
+							        android:scrollHorizontally="true" />
+								
+								
+								
+								
+								
+								<TextView
+				                android:id="@+id/cxclbl_fechavence"
+				                android:layout_width="85dp"
+				                android:layout_height="wrap_content" 
+				                android:layout_below="@+id/cxclbl_fecha" 
+				                android:text="Fecha Venc :"
+				                android:textColor="@color/Teal"
+				                android:textSize="12dp" />
+			
+
+				                <TextView
+				                    android:id="@+id/cxctextv_detalle_fechavence"
+				                    android:layout_width="wrap_content"
+				                    android:layout_height="wrap_content"
+				                    android:layout_below="@+id/cxclbl_fecha"
+				                    android:layout_toRightOf="@+id/cxclbl_fechavence"
+				                    android:textColor="@color/Black"
+				                    android:textSize="12dp"
+				                    android:lines="1"
+					        	    android:ellipsize="marquee"
+							        android:marqueeRepeatLimit="marquee_forever" 
+							        android:scrollHorizontally="true" />
+								
+								
+				               <TextView
+					           android:id="@+id/cxclbl_fechadescpp"
+					           android:layout_width="85dp"
+					           android:layout_height="wrap_content" 
+					           android:layout_below="@+id/cxclbl_fechavence"
+					           android:text="Fecha DescPP :"
+					           android:textColor="@color/Teal"
+					           android:textSize="12dp" />
+					
+					
+					       <TextView
+					           android:id="@+id/cxctextv_detallefechadescpp"
+					           android:layout_width="wrap_content"
+					           android:layout_height="wrap_content" 
+					           android:layout_below="@+id/cxclbl_fechavence"
+					           android:layout_toRightOf="@+id/cxclbl_fechadescpp" 
+					           android:textColor="@color/Black"
+					           android:textSize="12dp" />
+				                
+				                
+								
+								
+								
+								
+								<TextView
+					                android:id="@+id/cxclbl_dias"
+					                android:layout_width="85dp"
+					                android:layout_height="wrap_content" 
+					                android:layout_below="@+id/cxclbl_fechadescpp" 
+					                android:text="Dias :"
+					                android:textColor="@color/Teal"
+					                android:textSize="12dp" />
+					            
+
+					            <TextView
+					                android:id="@+id/cxctext_detalle_dias"
+					                android:layout_width="wrap_content"
+					                android:layout_height="wrap_content"
+					                android:layout_below="@+id/cxclbl_fechadescpp"
+					                android:layout_toRightOf="@+id/cxclbl_dias"
+					                android:textColor="@color/Black"
+					                android:textSize="12dp" 
+					                android:lines="1"
+					        	    android:ellipsize="marquee"
+							        android:marqueeRepeatLimit="marquee_forever" 
+							        android:scrollHorizontally="true" />
+					            
+					           
+	
+					            
+							
+					    </RelativeLayout> 
+		                    <RelativeLayout 
+					        android:id="@+id/rl3"
+					        android:layout_below="@+id/rl1" 
+					        android:layout_width="wrap_content"
+					        android:layout_height="wrap_content" 
+					        android:layout_marginRight="10dp"
+					        android:layout_marginBottom="10dp">
+								
+					        
+					        
+					        <TextView
+					           android:id="@+id/cxclbl_totalfact"
+					           android:layout_width="85dp"
+					           android:layout_height="wrap_content" 
+					           android:text="Total Factura :"
+					           android:textColor="@color/Teal"
+					           android:textSize="12dp" />
+					 
+
+					       <TextView
+					           android:id="@+id/cxctext_detalle_totalfact"
+					           android:layout_width="wrap_content"
+					           android:layout_height="wrap_content" 
+					           android:layout_toRightOf="@+id/cxclbl_totalfact"
+					           android:textColor="@color/Black"
+					           android:textSize="12dp" />
+					       
+					      				           
+					       <TextView
+					                android:id="@+id/cxclbl_otro"
+					                android:layout_width="85dp"
+					                android:layout_height="wrap_content"
+					                android:layout_below="@+id/cxclbl_totalfact"  
+					                android:text="Otro :"
+					                android:textColor="@color/Teal"
+					                android:textSize="12dp" />
+				 
+
+								<TextView
+								    android:id="@+id/cxctext_detalle_otro"
+								    android:layout_width="wrap_content"
+								    android:layout_height="wrap_content"
+								    android:layout_below="@+id/cxclbl_totalfact"
+								    android:layout_toRightOf="@+id/cxclbl_otro"
+								    android:textColor="@color/Black"
+								    android:textSize="12dp" 
+								    android:lines="1"
+					        	    android:ellipsize="marquee"
+							        android:marqueeRepeatLimit="marquee_forever" 
+							        android:scrollHorizontally="true"/>
+					       
+					       
+				                <TextView
+				                android:id="@+id/cxclbl_saldo"
+				                android:layout_width="85dp"
+				                android:layout_height="wrap_content"
+				                android:layout_below="@+id/cxclbl_otro" 
+				                android:text="Saldo :"
+				                android:textColor="@color/Teal"
+				                android:textSize="12dp" />				            
+							
+
+				                <TextView
+				                    android:id="@+id/cxctext_detalle_saldo"
+				                    android:layout_width="wrap_content"
+				                    android:layout_height="wrap_content"
+				                    android:layout_below="@+id/cxclbl_otro"
+				                    android:layout_toRightOf="@+id/cxclbl_saldo"
+				                    android:textColor="@color/Black"
+				                    android:textSize="12dp" 
+				                    android:lines="1"
+					        	    android:ellipsize="marquee"
+							        android:marqueeRepeatLimit="marquee_forever" 
+							        android:scrollHorizontally="true"/>
+							
+					    </RelativeLayout> 
+					    
+					    
+				
+					    <RelativeLayout   
+					        android:layout_below="@+id/rl1" 
+					        android:layout_toRightOf="@+id/rl3"
+					        android:layout_width="wrap_content"
+					        android:layout_height="wrap_content" 
+					        android:layout_marginRight="10dp"
+					        android:layout_marginBottom="10dp"
+					         >
+								
+					        	
+					        <TextView
+					           android:id="@+id/cxclbl_retenido"
+					            android:layout_width="75dp"
+					           android:layout_height="wrap_content" 
+					           android:text="Retenido :"
+					           android:textColor="@color/Teal"
+					           android:textSize="12dp" />
+					
+
+					       <TextView
+					           android:id="@+id/cxctext_detalle_retenido"
+					           android:layout_width="wrap_content"
+					           android:layout_height="wrap_content" 
+					           android:layout_toRightOf="@+id/cxclbl_retenido"
+					           android:textColor="@color/Black"
+					           android:textSize="12dp" />
+					        
+					       
+					       
+					        <TextView
+					                android:id="@+id/cxclbl_abonado"
+					                android:layout_width="75dp"
+					                android:layout_height="wrap_content"
+					                android:layout_below="@+id/cxclbl_retenido" 
+					                android:text="Abonado :"
+					                android:textColor="@color/Teal"
+					                android:textSize="12dp" />
+				
+
+								<TextView
+								    android:id="@+id/cxctext_detalle_abonado"
+								    android:layout_width="wrap_content"
+								    android:layout_height="wrap_content"
+								    android:layout_below="@+id/cxclbl_retenido"
+								    android:layout_toRightOf="@+id/cxclbl_abonado"
+								    android:textColor="@color/Black"
+								    android:textSize="12dp"
+								    android:lines="1"
+					        	    android:ellipsize="marquee"
+							        android:marqueeRepeatLimit="marquee_forever" 
+							        android:scrollHorizontally="true" />	
+						     
+					       <TextView
+				                android:id="@+id/cxclbl_descontado"
+				                android:layout_width="75dp"
+				                android:layout_height="wrap_content" 
+				                android:layout_below="@+id/cxclbl_abonado" 
+				                android:text="Descontado :"
+				                android:textColor="@color/Teal"
+				                android:textSize="12dp" />
+							 
+
+				                <TextView
+				                    android:id="@+id/cxctext_detalle_descontado"
+				                    android:layout_width="wrap_content"
+				                    android:layout_height="wrap_content"
+				                    android:layout_below="@+id/cxclbl_abonado"
+				                    android:layout_toRightOf="@+id/cxclbl_descontado"
+				                    android:textColor="@color/Black"
+				                    android:textSize="12dp" 
+				                    android:lines="1"
+					        	    android:ellipsize="marquee"
+							        android:marqueeRepeatLimit="marquee_forever" 
+							        android:scrollHorizontally="true"/>
+					        
+					        
+					    </RelativeLayout> 
+					    
+    	            </RelativeLayout> 
+</LinearLayout>

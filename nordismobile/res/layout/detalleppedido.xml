@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/bgdialog2" 
+    android:orientation="vertical" >   
+        
+    <RelativeLayout
+        android:id="@+id/rl_dppedido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/White" 
+        android:layout_margin="2dp">
+         
+			<TextView
+            android:id="@+id/dpp_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="10dp"
+            android:text="Producto Detalle"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black" /> 
+			<View
+			    android:id="@+id/dpp_headerseparator"
+			    android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/dpp_header"  
+                android:background="@drawable/btn_default"
+			    />
+			<TextView
+            android:id="@+id/dpp_lblproducto"
+            android:layout_width="82dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/dpp_headerseparator" 
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:text="Producto :"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black"   />
+
+       		<EditText
+            android:id="@+id/dpp_producto"
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:layout_below="@+id/dpp_headerseparator" 
+            android:layout_toRightOf="@+id/dpp_lblproducto" 
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="2dp"  
+            android:background="@drawable/style_textbox" 
+            />
+			
+			
+			
+			
+			<TextView
+            android:id="@+id/dpp_lblcantidad"
+            android:layout_width="82dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/dpp_lblproducto" 
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="22dp"
+            android:text="Cantidad : "
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black"  />
+
+       		<EditText
+            android:id="@+id/dpp_cantidad"
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:layout_below="@+id/dpp_lblproducto" 
+            android:layout_toRightOf="@+id/dpp_lblcantidad"             
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp" 
+            android:layout_marginTop="5dp"
+            android:inputType="number"  
+            android:background="@drawable/style_textbox"
+		    android:nextFocusDown="@+id/dpp_lblbonificacion" />
+       		
+       		<TextView
+            android:id="@+id/dpp_lblbonificacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dpp_cantidad"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="22dp"
+            android:text="Bonificación : "
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black"  />
+
+            <EditText
+            android:id="@+id/dpp_bonificacion"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/dpp_cantidad" 
+            android:layout_toRightOf="@+id/dpp_lblbonificacion" 
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="10dp" 
+            android:inputType="number"    
+            android:background="@drawable/style_textbox" /> 
+		    
+            <TextView
+            android:id="@+id/dpp_lblprecio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dpp_bonificacion"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="22dp"
+            android:text="Precio : "
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black"  /> 
+            
+            <EditText
+        	    android:id="@+id/dpp_precio"
+        	    android:layout_width="fill_parent"
+        	    android:layout_height="40dp"
+        	    android:layout_below="@+id/dpp_bonificacion" 
+                android:layout_toRightOf="@+id/dpp_lblprecio" 
+        	    android:inputType="number"
+        	    android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"  
+                android:background="@drawable/style_textbox"
+			/>
+
+        	<TableRow
+        	    android:id="@+id/layoutbutton"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_below="@+id/dpp_precio" 
+        	    android:layout_marginTop="10dp"
+        	    android:layout_centerHorizontal="true" >
+	    		
+					    <Button
+				            android:id="@+id/btnaceptar"
+				            android:layout_width="wrap_content"
+				            android:layout_height="wrap_content" 
+				            android:layout_marginLeft="10dp"
+				            android:layout_marginTop="10dp"
+				            android:layout_marginBottom="10dp"
+				            android:background="@drawable/btn"
+				            android:text="Aceptar"
+				            android:textAppearance="?android:attr/textAppearanceMedium"
+				            android:textColor="@color/White" 
+						    android:nextFocusRight="@+id/btncancel"
+						    android:nextFocusDown="@+id/btncancel">
+				        </Button>
+		
+				        <Button
+				            android:id="@+id/btncancel"
+				            android:layout_width="wrap_content"
+				            android:layout_height="wrap_content" 
+				            android:layout_marginLeft="10dp"
+				            android:layout_marginTop="10dp" 
+				            android:layout_marginBottom="10dp"
+				            android:background="@drawable/btn"
+				            android:text="Cancelar"
+				            android:textAppearance="?android:attr/textAppearanceMedium"
+				            android:textColor="@color/White"  >
+				        </Button>
+			    
+			</TableRow>
+
+        	
+ 
+    </RelativeLayout>
+    
+    
+    
+   
+ 
+</RelativeLayout>

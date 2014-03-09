@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"    
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/White"> 
+     
+    <!-- Included header.xml here -->
+	<ViewStub android:id="@+id/vsHeader" 
+	    android:inflatedId="@+id/header" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 
+		android:layout="@layout/header" />
+	
+   	<LinearLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_marginTop="10dp"
+		    android:orientation="horizontal">
+		    
+		    <EditText android:id="@+id/EditText_Client"
+				android:layout_height="25dp"
+				android:layout_width="fill_parent"
+				android:inputType="textPersonName"
+				android:singleLine="true" 
+				android:textSize="13dp" 
+				android:paddingLeft="6dp"
+				android:paddingTop="7dp"
+				android:paddingBottom="5dp"
+				android:gravity="left"
+				android:hint="filtrar cliente" >
+			</EditText>
+	 	    
+     </LinearLayout>	
+	    
+     <TextView 
+         	android:id="@+id/ctextv_gridheader"
+			style="StyleFontTextViewActionBar"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/txtclient_tittle"
+			android:gravity="center"
+			android:textColor="@color/White"
+			android:background="@color/Gray"	             
+      />
+     
+	    
+      <LinearLayout  
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+			
+			<ListView 
+			    android:id="@+id/lvcliente"  
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"	
+			    android:divider="@color/DarkGray"
+			    android:dividerHeight="0.3sp"
+			    android:scrollingCache="false" 
+			    android:choiceMode="singleChoice"
+			    android:listSelector="@drawable/statelist"> 
+			    
+			</ListView>
+				 
+			<TextView
+			 android:id="@+id/txtview_enty"
+			 android:textSize="12dp"
+			 android:textColor="@color/Black"
+			 android:layout_width="fill_parent"
+			 android:layout_height="wrap_content"
+			 android:gravity="center"
+			 android:text="@string/txtclient_entymessage"
+			 android:visibility="gone"
+			 />
+        
+	   </LinearLayout>
+			
+	    <Button
+	        android:id="@+id/btn_menu" 
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="bottom"
+	        android:visibility="gone"
+	        />
+    
+</LinearLayout>

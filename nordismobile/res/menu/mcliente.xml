@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item android:id="@+id/consultar_fc"
+		  android:title="Consultar ficha del Cliente" />
+	<item android:id="@+id/consultar_cxc"
+		  android:title="Consultar Cuentas x Cobrar" /> 
+	<item android:id="@+id/consultar_venc"
+		  android:title="Consultar Vencidos" />
+	<item android:id="@+id/sincronizar_all"
+		  android:title="Sincronizar todos los Clientes" />
+	<item android:id="@+id/sincronizar_selected"
+		  android:title="Sincronizar item Seleccionado" />
+	<item android:id="@+id/salir"
+		  android:title="Salir" />
+
+</menu>
