@@ -7,7 +7,6 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +34,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
+import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
-import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
 
@@ -138,7 +138,7 @@ public class ProductoView extends ActionBarActivity implements
 
 		nmapp = (NMApp) this.getApplicationContext();
 		try {
-			nmapp.getController().setEntities(this, new BClienteM());
+			nmapp.getController().setEntities(this, new BProductoM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()
 					.getInboxHandler()
@@ -328,7 +328,7 @@ public class ProductoView extends ActionBarActivity implements
 								firstFragment.setItems(data);
 								customArrayAdapter.setSelectedPosition(0);
 								positioncache = 0;
-								product_selected = (vmProducto) customArrayAdapter
+								product_selected = customArrayAdapter
 										.getItem(0);
 								/*
 								 * lvcliente.setAdapter(adapter);

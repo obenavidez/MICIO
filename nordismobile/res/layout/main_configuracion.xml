@@ -3,7 +3,8 @@
     android:layout_width="wrap_content"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:background="@color/White">  
+    android:background="@color/White"
+    android:id="@+id/layout_mc">  
 
 	     <!-- Included header.xml here -->
 		<ViewStub android:id="@+id/vsHeader" 

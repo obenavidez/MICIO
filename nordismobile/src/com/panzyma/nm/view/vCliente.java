@@ -374,53 +374,8 @@ public class vCliente extends ActionBarActivity implements
 								firstFragment.setItems(data);
 								customArrayAdapter.setSelectedPosition(0);
 								positioncache = 0;
-								cliente_selected = (vmCliente) customArrayAdapter
-										.getItem(0);
-								/*
-								 * lvcliente.setAdapter(adapter);
-								 * lvcliente.setOnItemClickListener(new
-								 * OnItemClickListener() {
-								 * 
-								 * @Override public void
-								 * onItemClick(AdapterView<?> parent, View view,
-								 * int position, long id) {
-								 * if((parent.getChildAt(positioncache))!=null)
-								 * (parent.getChildAt(positioncache)).
-								 * setBackgroundResource
-								 * (android.R.color.transparent);
-								 * positioncache=position;
-								 * cliente_selected=(vmCliente)
-								 * customArrayAdapter.getItem(position);
-								 * customArrayAdapter
-								 * .setSelectedPosition(position);
-								 * view.setBackgroundDrawable
-								 * (getResources().getDrawable
-								 * (R.drawable.action_item_selected));
-								 * 
-								 * } });
-								 * lvcliente.setOnItemLongClickListener(new
-								 * OnItemLongClickListener() {
-								 * 
-								 * @Override public boolean
-								 * onItemLongClick(AdapterView<?> parent, View
-								 * view,int position, long id) {
-								 * if((parent.getChildAt(positioncache))!=null)
-								 * (parent.getChildAt(positioncache)).
-								 * setBackgroundResource
-								 * (android.R.color.transparent);
-								 * positioncache=position;
-								 * cliente_selected=(vmCliente)
-								 * customArrayAdapter.getItem(position);
-								 * customArrayAdapter
-								 * .setSelectedPosition(position);
-								 * view.setBackgroundDrawable
-								 * (getResources().getDrawable
-								 * (R.drawable.action_item_selected));
-								 * //quickAction.show(view,display,false);
-								 * return true; }
-								 * 
-								 * });
-								 */
+								cliente_selected = (vmCliente) customArrayAdapter.getItem(0);
+								
 								// buildToastMessage("sincronización exitosa",Toast.LENGTH_SHORT).show();
 							}
 						} catch (Exception e) {

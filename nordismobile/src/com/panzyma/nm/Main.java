@@ -5,16 +5,17 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
+import com.panzyma.nm.view.ProductoView; 
 import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.ViewProducto; 
 import com.panzyma.nm.view.vCliente;
 import com.panzyma.nordismobile.R;
+
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-
 import android.annotation.SuppressLint; 
 import android.content.Context;
 import android.content.Intent; 
@@ -130,7 +131,7 @@ public class Main extends DashBoardActivity implements Handler.Callback{
 									startActivity(intent);
 									break;
 			case R.id.hbtnproducto:
-									intent = new Intent(this, ViewProducto.class);
+									intent = new Intent(this, ProductoView.class);
 									startActivity(intent);
 									break;
 				

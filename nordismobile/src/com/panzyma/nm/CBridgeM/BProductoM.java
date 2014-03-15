@@ -10,12 +10,12 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
 import android.content.ContentResolver;
 import android.os.Message;
 import android.util.Log;
-
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER; 
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
@@ -24,6 +24,7 @@ import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;   
 import com.panzyma.nm.model.ModelProducto; 
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewProducto;
 import com.panzyma.nm.viewdialog.DialogProducto;
 
@@ -33,6 +34,7 @@ public class BProductoM {
 	Controller controller; 
     ThreadPool pool;
     ViewProducto view;
+    ProductoView view2;
 	String TAG=BClienteM.class.getSimpleName();
 	boolean OK=false; 
 	ArrayList<Producto> obj=new ArrayList<Producto>();
@@ -47,6 +49,13 @@ public class BProductoM {
     	this.view=view; 
     	this.pool=((NMApp)view.getApplicationContext()).getThreadPool();
     }  
+	
+	public BProductoM(ProductoView view2)
+	{
+    	this.controller=((NMApp)view.getApplicationContext()).getController();  
+    	this.view2=view2; 
+    	this.pool=((NMApp)view.getApplicationContext()).getThreadPool();
+    } 
 	
 	public BProductoM(DialogProducto view)
 	{

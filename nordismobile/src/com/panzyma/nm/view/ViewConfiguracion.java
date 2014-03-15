@@ -1,6 +1,7 @@
 package com.panzyma.nm.view;
  
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context; 
@@ -16,7 +17,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText; 
 import android.widget.Toast;
-
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.C_SAVING;
@@ -57,7 +57,7 @@ import com.panzyma.nordismobile.R;
 
 @SuppressLint("ShowToast")
 @SuppressWarnings({"unchecked","rawtypes","unused"}) 
-public class ViewConfiguracion extends DashBoardActivity implements Handler.Callback 
+public class ViewConfiguracion extends Activity implements Handler.Callback 
 {
 	
 	String TAG=ViewConfiguracion.class.getSimpleName();
@@ -87,7 +87,7 @@ public class ViewConfiguracion extends DashBoardActivity implements Handler.Call
 	{ 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_configuracion);
-		setHeader(getString(R.string.ConfiguracionActivityTitle),true, false); 
+		//setHeader(getString(R.string.ConfiguracionActivityTitle),true, false); 
 		isEditActive=getIntent().getExtras().getBoolean("isEditActive");
 		 try 
 		    { 		
@@ -107,6 +107,11 @@ public class ViewConfiguracion extends DashBoardActivity implements Handler.Call
 				dlg=(CustomDialog) dialog("Error Message",e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG);dlg.show();
 			}	
 	} 	 
+	
+	public NMApp getAplication()
+	{
+		return nmapp;		
+	}
 	
 	public void setUserName(String user){
 		this.user_name=user;

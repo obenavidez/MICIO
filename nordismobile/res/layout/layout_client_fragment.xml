@@ -37,5 +37,7 @@
 	     android:id="@+id/left_drawer" 
 	     android:background="#111" 
 	     android:choiceMode="singleChoice" 
-	     android:layout_gravity="start"/> 
+	     android:layout_gravity="start"
+	     android:scrollingCache="false" 
+	     /> 
 </android.support.v4.widget.DrawerLayout>
