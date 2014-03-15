@@ -1,0 +1,20 @@
+<android.support.v4.widget.DrawerLayout android:layout_height="match_parent" 
+	android:layout_width="match_parent" android:id="@+id/drawer_layout_conf" 
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	  <FrameLayout 
+	     android:layout_height="match_parent" 
+	     android:layout_width="match_parent"  
+	     android:paddingTop="25dp"
+	     android:id="@+id/fragment_container_conf"/>
+	 <!-- Menú Lateral -->
+	 <ListView android:layout_height="match_parent" 
+		android:layout_width="240dp" 
+		android:id="@+id/left_drawer_conf" 
+		android:background="#111" 
+		android:choiceMode="singleChoice" 
+  		android:layout_gravity="start"
+		android:divider="@color/DarkGray"
+		android:dividerHeight="0.3sp"
+		android:scrollingCache="false"      
+	/> 
+</android.support.v4.widget.DrawerLayout>

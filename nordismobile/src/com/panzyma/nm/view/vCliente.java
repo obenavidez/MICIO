@@ -13,36 +13,27 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
-import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nordismobile.R;
-import com.panzyma.nm.serviceproxy.CCCliente;
-import com.panzyma.nm.view.adapter.GenericAdapter;
-import com.panzyma.nm.view.viewholder.ClienteViewHolder;
-import com.panzyma.nm.viewdialog.DialogCuentasPorCobrar;
-import com.panzyma.nm.viewdialog.DialogFichaCliente;
 import com.panzyma.nm.viewmodel.*;
 
 public class vCliente extends ActionBarActivity implements
@@ -148,7 +139,7 @@ public class vCliente extends ActionBarActivity implements
 			nmapp.getController().setEntities(this, new BClienteM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(LOAD_DATA_FROM_SERVER);
+					.sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
 
 			pDialog = new ProgressDialog(vCliente.this);
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
