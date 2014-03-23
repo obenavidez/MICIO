@@ -20,8 +20,7 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 	OnItemSelectedListener mCallback;
 	private List<E> items;
 	private CustomArrayAdapter<E> mAdapter;
-	private int pos=0;
-
+	private int pos = 0;
 
 	public ListaFragment() {
 	}
@@ -37,9 +36,11 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 
 	// The container Activity must implement this interface so the frag can
 	// deliver messages
-	public interface OnItemSelectedListener {
+	public interface OnItemSelectedListener<E> {
 		/** Called by ListaCliente when a list item is selected */
 		public void onItemSelected(int position);
+
+		public void onItemSelected(E obj, int position);
 	}
 
 	@Override
@@ -89,17 +90,22 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// Notify the parent activity of selected item
-		mCallback.onItemSelected(position);
-		//super.onListItemClick(l, v, position, id);
+
+		// mCallback.onItemSelected(position);
+		mCallback.onItemSelected(items.get(position), position);
+		// super.onListItemClick(l, v, position, id);
 		// Set the item as checked to be highlighted when in two-pane layout
 		getListView().setItemChecked(position, true);
-		if(this.pos==position){
+		if (this.pos == position) {
 			this.pos = position;
-			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));
-		}
-		else {
-			((ListView)(v.getParent())).getChildAt(this.pos).setBackgroundDrawable(getResources().getDrawable(R.color.transparent));
-			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));
+			v.setBackgroundDrawable(getResources().getDrawable(
+					R.drawable.action_item_selected));
+		} else {
+			((ListView) (v.getParent())).getChildAt(this.pos)
+					.setBackgroundDrawable(
+							getResources().getDrawable(R.color.transparent));
+			v.setBackgroundDrawable(getResources().getDrawable(
+					R.drawable.action_item_selected));
 			this.pos = position;
 		}
 	}
