@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -30,17 +31,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
-import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BProductoM;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
-import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
@@ -148,31 +148,28 @@ public class ProductoView extends ActionBarActivity implements
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		// However, if we're being restored from a previous state,
+		// then we don't need to do anything and should return or else
+		// we could end up with overlapping fragments.
+		if (savedInstanceState != null) {
+			return;
+		}
 
-		// Check whether the activity is using the layout version with
-		// the fragment_container FrameLayout. If so, we must add the first
-		// fragment
+		// Create an instance of ExampleFragment
+		firstFragment = new ListaFragment<vmProducto>();
+
+		// In case this activity was started with special instructions from
+		// an Intent,
+		// pass the Intent's extras to the fragment as arguments
+		firstFragment.setArguments(getIntent().getExtras());
+
+		// Add the fragment to the 'fragment_container' FrameLayout
 		if (findViewById(R.id.fragment_container) != null) {
-
-			// However, if we're being restored from a previous state,
-			// then we don't need to do anything and should return or else
-			// we could end up with overlapping fragments.
-			if (savedInstanceState != null) {
-				return;
-			}
-
-			// Create an instance of ExampleFragment
-			firstFragment = new ListaFragment<vmProducto>();
-
-			// In case this activity was started with special instructions from
-			// an Intent,
-			// pass the Intent's extras to the fragment as arguments
-			firstFragment.setArguments(getIntent().getExtras());
-
-			// Add the fragment to the 'fragment_container' FrameLayout
-
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, firstFragment).commit();
+		} else {
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.item_client_fragment, firstFragment).commit();
 		}
 	}
 
@@ -187,8 +184,14 @@ public class ProductoView extends ActionBarActivity implements
 
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
-		customArrayAdapter = (CustomArrayAdapter<vmProducto>) ((Filterable) getSupportFragmentManager()
-				.findFragmentById(R.id.fragment_container)).getAdapter();
+		if (findViewById(R.id.fragment_container) != null) {
+			customArrayAdapter = (CustomArrayAdapter<vmProducto>) ((Filterable) getSupportFragmentManager()
+					.findFragmentById(R.id.fragment_container)).getAdapter();
+
+		} else {
+			customArrayAdapter = (CustomArrayAdapter<vmProducto>) ((Filterable) getSupportFragmentManager()
+					.findFragmentById(R.id.item_client_fragment)).getAdapter();
+		}
 
 		searchView.setOnQueryTextListener(new OnQueryTextListener() {
 			@Override
@@ -405,7 +408,7 @@ public class ProductoView extends ActionBarActivity implements
 		// Capture the article fragment from the activity layout
 		// R.id.article_fragment
 		FichaProductoFragment productFrag = (FichaProductoFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.ficha_client_fragment);
+				.findFragmentById(R.id.dynamic_fragment);
 
 		if (productFrag != null) {
 			// If article frag is available, we're in two-pane layout...
@@ -445,39 +448,27 @@ public class ProductoView extends ActionBarActivity implements
 
 		// Capture the article fragment from the activity layout
 		// R.id.article_fragment
-		FichaProductoFragment productFrag = (FichaProductoFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.ficha_client_fragment);
+	
+		FichaProductoFragment productFrag = new FichaProductoFragment();
+		Bundle args = new Bundle();
+		args.putInt(FichaProductoFragment.ARG_POSITION, position);
+		args.putParcelable(FichaProductoFragment.OBJECT, (vmProducto) obj);
+		productFrag.setArguments(args);
+		FragmentTransaction transaction = getSupportFragmentManager()
+				.beginTransaction();
 
-		if (productFrag != null) {
+		if (findViewById(R.id.dynamic_fragment) != null) {
 			// If article frag is available, we're in two-pane layout...
-
-			// Call a method in the ArticleFragment to update its content
-			productFrag.updateArticleView((vmProducto) obj, position);
-
-		} else {
-			// If the frag is not available, we're in the one-pane layout and
-			// must swap frags...
-
-			// Create fragment and give it an argument for the selected article
-
-			FichaProductoFragment newFragment = new FichaProductoFragment();
-			Bundle args = new Bundle();
-			args.putInt(FichaProductoFragment.ARG_POSITION, position);
-			args.putParcelable(FichaProductoFragment.OBJECT, (vmProducto) obj);
-			newFragment.setArguments(args);
-			FragmentTransaction transaction = getSupportFragmentManager()
-					.beginTransaction();
-
-			// Replace whatever is in the fragment_container view with this
-			// fragment, // and add the transaction to the back stack so the
-			// user can navigate back
-
-			transaction.replace(R.id.fragment_container, newFragment);
+			transaction.replace(R.id.dynamic_fragment, productFrag);
 			transaction.addToBackStack(null);
-
-			// Commit the transaction transaction.commit();
-			transaction.commit();
+			// Call a method in the ArticleFragment to update its content
+			//productFrag.updateArticleView((vmProducto) obj, position);
+		} else {
+			transaction.replace(R.id.fragment_container, productFrag);
+			transaction.addToBackStack(null);
 		}
+		// Commit the transaction transaction.commit();
+		transaction.commit();
 
 	}
 

@@ -1,18 +1,54 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <fragment android:name="com.panzyma.nm.fragments.ListaFragment"
-              android:id="@+id/item_client_fragment"
-              android:layout_weight="1"
-              android:layout_width="0dp"
-              android:layout_height="match_parent" />
+    <LinearLayout        
+        android:baselineAligned="false"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
 
-    <fragment android:name="com.panzyma.nm.fragments.FichaClienteFragment"
-              android:id="@+id/ficha_client_fragment"
-              android:layout_weight="2"
-              android:layout_width="0dp"
-              android:layout_height="match_parent" />
+        <fragment
+            android:id="@+id/item_client_fragment"
+            android:name="com.panzyma.nm.fragments.ListaFragment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        
+        <FrameLayout 
+	     android:layout_height="match_parent" 
+	     android:layout_width="0dp"  
+	     android:paddingTop="25dp"
+	     android:layout_weight="2"
+	     android:id="@+id/dynamic_fragment"/>
 
-</LinearLayout>
+<!--         <fragment -->
+<!--             android:id="@+id/ficha_client_fragment" -->
+<!--             android:name="com.panzyma.nm.fragments.FichaClienteFragment" -->
+<!--             android:layout_width="0dp" -->
+<!--             android:layout_height="match_parent" -->
+<!--             android:layout_weight="2" /> -->
+    </LinearLayout>
+    <!-- Menú Lateral -->
+
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#111"
+        android:choiceMode="singleChoice"
+        android:scrollingCache="false" />
+
+    <ListView
+        android:id="@+id/right_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="#111"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp" />
+
+</android.support.v4.widget.DrawerLayout>

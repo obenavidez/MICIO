@@ -65,6 +65,7 @@ public class vmProducto implements Item, Parcelable {
 		checked = !checked;
 	}
 
+	@Override
 	public Object isMatch(CharSequence constraint) {
 		if (getNombre().toLowerCase().startsWith(constraint.toString()))
 			return true;
