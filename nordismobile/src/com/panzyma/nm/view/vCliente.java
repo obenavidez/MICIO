@@ -212,7 +212,7 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 		// Capture the article fragment from the activity layout
 		// R.id.article_fragment
 		FichaClienteFragment articleFrag = (FichaClienteFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.ficha_client_fragment);
+				.findFragmentById(R.id.dynamic_fragment);
 
 		if (articleFrag != null) {
 			// If article frag is available, we're in two-pane layout...

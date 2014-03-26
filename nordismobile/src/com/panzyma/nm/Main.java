@@ -8,7 +8,6 @@ import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.view.ProductoView; 
 import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.view.ViewProducto; 
 import com.panzyma.nm.view.vCliente;
 import com.panzyma.nordismobile.R;
 

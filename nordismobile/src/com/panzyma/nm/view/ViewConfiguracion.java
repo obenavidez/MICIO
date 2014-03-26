@@ -39,7 +39,6 @@ import static com.panzyma.nm.controller.ControllerProtocol.ID_CERRAR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.C_FINISH;
 
-import com.panzyma.nm.DashBoardActivity; 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
 import com.panzyma.nm.auxiliar.CustomDialog;
