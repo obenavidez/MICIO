@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,11 +51,11 @@ import com.panzyma.nm.viewmodel.*;
 public class vCliente extends ActionBarActivity implements ListaFragment.OnItemSelectedListener, Handler.Callback {
 
 	CustomArrayAdapter customArrayAdapter;
+	private NMApp nmapp;
+	ProgressDialog pDialog;
+	
 	private SearchView searchView;
-	int listFragmentId;
-	int positioncache = -1;
 	private Context context;
-
 	private String[] opcionesMenu;
 	private DrawerLayout drawerLayout;
 	private ListView drawerList;
@@ -62,15 +63,17 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 
 	private CharSequence tituloSeccion;
 	private CharSequence tituloApp;
-	private NMApp nmapp;
-	ProgressDialog pDialog;
+
 	TextView gridheader;
 	TextView footerView;
-
-	private List<vmCliente> clientes = new ArrayList<vmCliente>();
-	vmCliente cliente_selected;
+	
 	ListaFragment<vmCliente> firstFragment;
+	List<vmCliente> clientes = new ArrayList<vmCliente>();
+	vmCliente cliente_selected;
+
 	//Menu Variables
+	int listFragmentId;
+	int positioncache = -1;
 	private long idsucursal;
 	private static final String TAG = vCliente.class.getSimpleName();
 
@@ -141,6 +144,10 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 			public void onDrawerOpened(View drawerView) {
 				getSupportActionBar().setTitle(tituloApp);
 				ActivityCompat.invalidateOptionsMenu(vCliente.this);
+				if(drawerView.getId()==R.id.right_drawer)
+				{
+					
+				}
 			}
 		};
 
@@ -149,13 +156,14 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
+		
+		
 
 		nmapp = (NMApp) this.getApplicationContext();
 		try {
 			nmapp.getController().setEntities(this, new BClienteM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
+			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
 
 			pDialog = new ProgressDialog(vCliente.this);
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -267,41 +275,9 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 				}
 			});
 		}
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-
-		if (drawerToggle.onOptionsItemSelected(item)) {
-			return true;
+		if(clientes.size()==0){
+			menu.setGroupVisible(R.id.group_register, false);
 		}
-
-		switch (item.getItemId()) {
-		case R.id.action_settings:
-			Toast.makeText(this, "prueba", Toast.LENGTH_SHORT).show();
-			;
-			break;
-		case R.id.action_search:
-			Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
-			break;
-		case R.id.sincronizar_all: 
-			LOAD_FROMSERVER();
-			break;
-		case R.id.consultar_fc:
-		case R.id.consultar_cxc:
-			LOAD_FICHACLIENTE_FROMSERVER();
-			break;
-		case R.id.sincronizar_selected:
-			UPDATE_SELECTEDITEM_FROMSERVER();
-			break;
-		case R.id.salir:
-			FINISH_ACTIVITY();
-			break;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-
 		return true;
 	}
 
@@ -319,6 +295,43 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 	}
 
 	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		if (drawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
+
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			Toast.makeText(this, "prueba", Toast.LENGTH_SHORT).show();
+			;
+			break;
+		case R.id.action_search:
+			Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.sincronizar_all:
+			LOAD_FROMSERVER();
+			break;
+		case R.id.consultar_fc:
+		case R.id.consultar_cxc:
+			this.drawerLayout.openDrawer(findViewById(R.id.right_drawer));
+			/*LOAD_FICHACLIENTE_FROMSERVER();*/
+			break;
+		case R.id.sincronizar_selected:
+			this.drawerLayout.openDrawer(findViewById(R.id.right_drawer));
+			/*UPDATE_SELECTEDITEM_FROMSERVER();*/
+			break;
+		case R.id.salir:
+			FINISH_ACTIVITY();
+			break;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+
+		return true;
+	}
+
+	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		drawerToggle.syncState();
@@ -333,30 +346,34 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
-
+		boolean result = false;
 		switch (msg.what) {
 		case C_DATA:
 			establecer(msg);
 			pDialog.hide();
-			return true;
-
+			result=true;
+			break;
 		case C_FICHACLIENTE:
 
-			return true;
+			result=true;
+			break;
 
 		case C_UPDATE_STARTED:
 
-			return true;
+			result=true;
+			break;
 		case C_UPDATE_ITEM_FINISHED:
 
 			return true;
 		case C_UPDATE_FINISHED:
 			pDialog.hide();
-			return true;
+			result=true;
+			break;
 		case C_SETTING_DATA:
 			setData((ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>()
 					: msg.obj), C_SETTING_DATA);
-			return true;
+			result=true;
+			break;
 		case ERROR:
 
 			return true;
@@ -368,14 +385,15 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 
 	@SuppressWarnings({ "unused", "unchecked" })
 	private void establecer(Message msg) {
-		clientes = (List<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>()
-				: msg.obj);
+		
+		clientes = (List<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>(): msg.obj);
 
-		gridheader.setText(String.format("Listado de Clientes (%s)",
-				clientes.size()));
+		gridheader.setText(String.format("Listado de Clientes (%s)",clientes.size()));
+		
 		if (clientes.size() == 0) {
 			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
 			txtenty.setVisibility(View.VISIBLE);
+			
 		}
 		firstFragment.setItems(clientes);
 	}
@@ -432,12 +450,9 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 
 	private void initComponent() {
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
-		footerView = (TextView) findViewById(R.id.ctextv_gridheader);
-		
-		
+		footerView = (TextView) findViewById(R.id.ctextv_gridheader);		
 	}
 	
-	/* Opciones del Menú */
 	private void LOAD_FROMSERVER()
 	{
 		/*controller.getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);*/
@@ -445,7 +460,7 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 			nmapp.getController().setEntities(this, new BClienteM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
+					.sendEmptyMessage(LOAD_DATA_FROM_SERVER);
 
 			pDialog = new ProgressDialog(vCliente.this);
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -534,5 +549,11 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 	    );		
 	    
 	    return dialog;
+	}
+
+	@Override
+	public void onItemSelected(Object obj, int position) {
+		// TODO Auto-generated method stub
+		
 	}
 }

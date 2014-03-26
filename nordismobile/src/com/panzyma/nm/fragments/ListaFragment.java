@@ -98,14 +98,10 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 		getListView().setItemChecked(position, true);
 		if (this.pos == position) {
 			this.pos = position;
-			v.setBackgroundDrawable(getResources().getDrawable(
-					R.drawable.action_item_selected));
+			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));
 		} else {
-			((ListView) (v.getParent())).getChildAt(this.pos)
-					.setBackgroundDrawable(
-							getResources().getDrawable(R.color.transparent));
-			v.setBackgroundDrawable(getResources().getDrawable(
-					R.drawable.action_item_selected));
+			((ListView) (v.getParent())).getChildAt(this.pos).setBackgroundDrawable(getResources().getDrawable(R.color.transparent));
+			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));
 			this.pos = position;
 		}
 	}
@@ -114,5 +110,10 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 	public CustomArrayAdapter<E> getAdapter() {
 		return mAdapter;
 	}
-
+	public void SetDefaultSeleted()
+	{
+		
+	}
+	
+	
 }
