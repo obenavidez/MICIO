@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -377,7 +378,7 @@ public class ProductoView extends ActionBarActivity implements
 								 * 
 								 * });
 								 */
-								// buildToastMessage("sincronización exitosa",Toast.LENGTH_SHORT).show();
+								// buildToastMessage("sincronizaciÃ³n exitosa",Toast.LENGTH_SHORT).show();
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -400,71 +401,42 @@ public class ProductoView extends ActionBarActivity implements
 	}
 
 	@Override
-	public void onItemSelected(int position) {
-		// The user selected the headline of an article from the
-		// HeadlinesFragment
-
-		// Capture the article fragment from the activity layout
-		// R.id.article_fragment
-		FichaProductoFragment productFrag = (FichaProductoFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.dynamic_fragment);
-
-		if (productFrag != null) {
-			// If article frag is available, we're in two-pane layout...
-
-			// Call a method in the ArticleFragment to update its content
-			productFrag.updateArticleView(position);
-
-		} else {
-			// If the frag is not available, we're in the one-pane layout and
-			// must swap frags...
-
-			// Create fragment and give it an argument for the selected article
-			/*
-			 * FichaClienteFragment newFragment = new FichaClienteFragment();
-			 * Bundle args = new Bundle();
-			 * args.putInt(FichaClienteFragment.ARG_POSITION, position);
-			 * newFragment.setArguments(args); FragmentTransaction transaction =
-			 * getSupportFragmentManager() .beginTransaction();
-			 * 
-			 * // Replace whatever is in the fragment_container view with this
-			 * // fragment, // and add the transaction to the back stack so the
-			 * user can // navigate back
-			 * 
-			 * transaction.replace(R.id.fragment_container, newFragment);
-			 * transaction.addToBackStack(null);
-			 * 
-			 * // Commit the transaction transaction.commit();
-			 */
-
-		}
-	}
-
-	@Override
 	public void onItemSelected(Object obj, int position) {
-		// The user selected the headline of an article from the
-		// HeadlinesFragment
 
-		// Capture the article fragment from the activity layout
-		// R.id.article_fragment
-	
-		FichaProductoFragment productFrag = new FichaProductoFragment();
+		FichaProductoFragment productFrag;
 		Bundle args = new Bundle();
 		args.putInt(FichaProductoFragment.ARG_POSITION, position);
 		args.putParcelable(FichaProductoFragment.OBJECT, (vmProducto) obj);
-		productFrag.setArguments(args);
+
 		FragmentTransaction transaction = getSupportFragmentManager()
 				.beginTransaction();
 
 		if (findViewById(R.id.dynamic_fragment) != null) {
-			// If article frag is available, we're in two-pane layout...
-			transaction.replace(R.id.dynamic_fragment, productFrag);
-			transaction.addToBackStack(null);
-			// Call a method in the ArticleFragment to update its content
-			//productFrag.updateArticleView((vmProducto) obj, position);
+
+			productFrag = (FichaProductoFragment) getSupportFragmentManager()
+					.findFragmentById(R.id.dynamic_fragment);
+			if (productFrag != null) {
+				productFrag.setArguments(args);
+				productFrag.updateArticleView((vmProducto) obj, position);
+			} else {
+				productFrag = new FichaProductoFragment();
+				productFrag.setArguments(args);
+				transaction.add(R.id.dynamic_fragment, productFrag);
+				transaction.addToBackStack(null);
+			}
+
 		} else {
-			transaction.replace(R.id.fragment_container, productFrag);
-			transaction.addToBackStack(null);
+
+			@SuppressWarnings("unused")
+			Fragment fragment = getSupportFragmentManager().findFragmentById(
+					R.id.fragment_container);
+
+			if (fragment instanceof ListaFragment) {
+				productFrag = new FichaProductoFragment();
+				productFrag.setArguments(args);
+				transaction.replace(R.id.fragment_container, productFrag);
+				transaction.addToBackStack(null);			
+			}
 		}
 		// Commit the transaction transaction.commit();
 		transaction.commit();
