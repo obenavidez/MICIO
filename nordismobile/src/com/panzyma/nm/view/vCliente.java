@@ -204,7 +204,7 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 		}
 	}
 
-	@Override
+	
 	public void onItemSelected(int position) {
 		// The user selected the headline of an article from the
 		// HeadlinesFragment
