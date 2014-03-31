@@ -415,8 +415,7 @@ public class ProductoView extends ActionBarActivity implements
 
 			productFrag = (FichaProductoFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.dynamic_fragment);
-			if (productFrag != null) {
-				productFrag.setArguments(args);
+			if (productFrag != null) {				
 				productFrag.updateArticleView((vmProducto) obj, position);
 			} else {
 				productFrag = new FichaProductoFragment();

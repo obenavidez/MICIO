@@ -38,8 +38,6 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 	// deliver messages
 	public interface OnItemSelectedListener<E> {
 		/** Called by ListaCliente when a list item is selected */
-		public void onItemSelected(int position);
-
 		public void onItemSelected(E obj, int position);
 	}
 
