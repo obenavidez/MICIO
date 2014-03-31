@@ -26,7 +26,7 @@ public class FichaClienteFragment extends Fragment {
 		}
 
 		// Inflate the layout for this fragment		
-		return inflater.inflate(R.layout.gridcliente, container, false);
+		return inflater.inflate(R.layout.ficha_cliente, container, false);
 	}
 
 	@Override
@@ -52,6 +52,7 @@ public class FichaClienteFragment extends Fragment {
 
 	public void updateArticleView(int position) {
 		//R.id.article
+		/*
 		TextView codigoCliente = (TextView) getActivity().findViewById(R.id.gc_clientecod);
 		TextView nombreCliente = (TextView) getActivity().findViewById(R.id.gc_clientenom);
 		TextView sucursalCliente = (TextView) getActivity().findViewById(R.id.gc_clienteubi);
@@ -59,7 +60,7 @@ public class FichaClienteFragment extends Fragment {
 		codigoCliente.setText( Contenido.lista.get(position).getCodigo());
 		nombreCliente.setText(Contenido.lista.get(position).getNombreCliente());
 		sucursalCliente.setText(Contenido.lista.get(position).getUbicacion());
-		
+		*/
 		mCurrentPosition = position;
 	}
 

@@ -15,6 +15,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -29,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +44,7 @@ import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
+import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.ActionItem;
@@ -144,10 +148,7 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 			public void onDrawerOpened(View drawerView) {
 				getSupportActionBar().setTitle(tituloApp);
 				ActivityCompat.invalidateOptionsMenu(vCliente.this);
-				if(drawerView.getId()==R.id.right_drawer)
-				{
-					
-				}
+
 			}
 		};
 
@@ -163,7 +164,7 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 		try {
 			nmapp.getController().setEntities(this, new BClienteM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
+			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);
 
 			pDialog = new ProgressDialog(vCliente.this);
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -175,7 +176,7 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		SetHeader(true);
 		// Check whether the activity is using the layout version with
 		// the fragment_container FrameLayout. If so, we must add the first
 		// fragment
@@ -201,6 +202,7 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, firstFragment).commit();
+			
 		}
 	}
 
@@ -275,9 +277,11 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 				}
 			});
 		}
+		/*
 		if(clientes.size()==0){
 			menu.setGroupVisible(R.id.group_register, false);
 		}
+		*/
 		return true;
 	}
 
@@ -314,11 +318,13 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 			break;
 		case R.id.consultar_fc:
 		case R.id.consultar_cxc:
-			this.drawerLayout.openDrawer(findViewById(R.id.right_drawer));
+			ShowFichaCliente();
+			
+			
 			/*LOAD_FICHACLIENTE_FROMSERVER();*/
 			break;
 		case R.id.sincronizar_selected:
-			this.drawerLayout.openDrawer(findViewById(R.id.right_drawer));
+
 			/*UPDATE_SELECTEDITEM_FROMSERVER();*/
 			break;
 		case R.id.salir:
@@ -556,4 +562,43 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 		// TODO Auto-generated method stub
 		
 	}
+	
+	private void ShowFichaCliente ()
+	{
+		// Hide a Customer Count
+		
+		SetHeader(false);
+		//Set text
+		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
+		
+		FichaClienteFragment ficha;
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		if (findViewById(R.id.dynamic_fragment) != null) {}
+		else {
+
+			@SuppressWarnings("unused")
+			Fragment fragment = getSupportFragmentManager().findFragmentById(
+					R.id.fragment_container);
+			if (fragment instanceof ListaFragment) {
+				ficha = new FichaClienteFragment();
+				//ficha.setArguments(args);
+				transaction.replace(R.id.fragment_container, ficha);
+				transaction.addToBackStack(null);			
+			}
+		}
+		// Commit the transaction transaction.commit();
+		transaction.commit();
+		
+	}
+	
+	private void SetHeader(boolean visible)
+	{
+		LinearLayout header=(LinearLayout)findViewById(R.id.llheader);
+		if(visible)
+			header.setVisibility(View.VISIBLE);
+		else 
+			header.setVisibility(View.GONE);
+	}
+	
 }
+
