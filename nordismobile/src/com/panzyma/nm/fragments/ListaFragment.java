@@ -85,6 +85,7 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// Notify the parent activity of selected item

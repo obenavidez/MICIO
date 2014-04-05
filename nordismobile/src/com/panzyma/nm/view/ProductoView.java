@@ -89,6 +89,8 @@ public class ProductoView extends ActionBarActivity implements
 		setContentView(R.layout.layout_client_fragment);
 
 		initComponent();
+		
+		gridheader.setVisibility(View.VISIBLE);
 
 		opcionesMenu = new String[] { "Ficha Detalle", "Bonificaciones",
 				"Lista de Precios", "Sincronizar Productos", "Cerrar" };
@@ -143,7 +145,7 @@ public class ProductoView extends ActionBarActivity implements
 			nmapp.getController().setEntities(this, new BProductoM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_SERVER);
+					.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -296,6 +298,7 @@ public class ProductoView extends ActionBarActivity implements
 		productos = (List<vmProducto>) ((msg.obj == null) ? new ArrayList<vmProducto>()
 				: msg.obj);
 
+		gridheader.setVisibility(View.VISIBLE);
 		gridheader.setText(String.format("Listado de Productos (%s)",
 				productos.size()));
 		if (productos.size() == 0) {
@@ -409,7 +412,7 @@ public class ProductoView extends ActionBarActivity implements
 		args.putParcelable(FichaProductoFragment.OBJECT, (vmProducto) obj);
 
 		FragmentTransaction transaction = getSupportFragmentManager()
-				.beginTransaction();
+				.beginTransaction();		
 
 		if (findViewById(R.id.dynamic_fragment) != null) {
 
@@ -429,6 +432,8 @@ public class ProductoView extends ActionBarActivity implements
 			@SuppressWarnings("unused")
 			Fragment fragment = getSupportFragmentManager().findFragmentById(
 					R.id.fragment_container);
+			
+			gridheader.setVisibility(View.INVISIBLE);
 
 			if (fragment instanceof ListaFragment) {
 				productFrag = new FichaProductoFragment();
