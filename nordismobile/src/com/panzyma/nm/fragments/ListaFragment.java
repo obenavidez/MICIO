@@ -90,7 +90,7 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 		// Notify the parent activity of selected item
 
 		// mCallback.onItemSelected(position);
-		mCallback.onItemSelected(items.get(position), position);
+		mCallback.onItemSelected(getAdapter().getItems().get(position), position);
 		// super.onListItemClick(l, v, position, id);
 		// Set the item as checked to be highlighted when in two-pane layout
 		getListView().setItemChecked(position, true);

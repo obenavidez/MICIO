@@ -326,7 +326,7 @@ public class ProductoView extends ActionBarActivity implements
 							} else {
 								if (what == C_SETTING_DATA)
 									footerView.setVisibility(View.VISIBLE);
-								gridheader.setText("Listado de Clientes("
+								gridheader.setText("Listado de Productos ("
 										+ data.size() + ")");
 								firstFragment.setItems(data);
 								customArrayAdapter.setSelectedPosition(0);
