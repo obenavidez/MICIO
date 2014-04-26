@@ -33,8 +33,8 @@ public class BProductoM {
  
 	Controller controller; 
     ThreadPool pool;
-    ViewProducto view;
-    ProductoView view2;
+    ViewProducto view2;
+    ProductoView view;
 	String TAG=BClienteM.class.getSimpleName();
 	boolean OK=false; 
 	ArrayList<Producto> obj=new ArrayList<Producto>();
@@ -46,16 +46,14 @@ public class BProductoM {
 	public BProductoM(ViewProducto view)
 	{
     	this.controller=((NMApp)view.getApplicationContext()).getController();  
-    	this.view=view; 
+    	this.view2=view; 
     	this.pool=((NMApp)view.getApplicationContext()).getThreadPool();
-    }  
-	
-	
-	public BProductoM(ProductoView view2)
+    }   
+	public BProductoM(ProductoView view)
 	{
-    	this.controller=((NMApp)view2.getApplicationContext()).getController();  
-    	this.view2=view2; 
-    	this.pool=((NMApp)view2.getApplicationContext()).getThreadPool();
+    	this.controller=((NMApp)view.getApplicationContext()).getController();  
+    	this.view = view; 
+    	this.pool=((NMApp)view.getApplicationContext()).getThreadPool();
     } 
 	
 	public BProductoM(DialogProducto view)

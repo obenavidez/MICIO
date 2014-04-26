@@ -300,7 +300,6 @@ public class ProductoView extends ActionBarActivity implements
 	private void establecer(Message msg) {
 		productos = (List<vmProducto>) ((msg.obj == null) ? new ArrayList<vmProducto>()
 				: msg.obj);
-
 		gridheader.setVisibility(View.VISIBLE);
 		gridheader.setText(String.format("Listado de Productos (%s)",
 				productos.size()));
@@ -308,10 +307,10 @@ public class ProductoView extends ActionBarActivity implements
 			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
 			txtenty.setVisibility(View.VISIBLE);
 		}
-		firstFragment.setItems(productos);
+		firstFragment.setItems(productos); 
 		firstFragment.getAdapter().setSelectedPosition(0);
 		positioncache = 0;
-		product_selected = firstFragment.getAdapter().getItem(0);
+		product_selected = firstFragment.getAdapter().getItem(0); 
 	}
 
 	private void setData(final ArrayList<vmProducto> data, final int what) {
@@ -409,7 +408,7 @@ public class ProductoView extends ActionBarActivity implements
 
 	}
 
-	@Override
+	@Override 
     public boolean onKeyUp(int keyCode, KeyEvent event) 
     {
         if (keyCode == KeyEvent.KEYCODE_BACK) 
@@ -428,7 +427,7 @@ public class ProductoView extends ActionBarActivity implements
 		finish();		
 	}
 	
-	@Override
+	@Override 
 	public void onItemSelected(Object obj, int position) {
 
 		FichaProductoFragment productFrag;

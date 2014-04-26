@@ -4,22 +4,6 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="@color/White">  
- 
-     <TextView 
-   	        android:layout_width="fill_parent"
-   	        android:layout_height="wrap_content"
-   	        android:text="Nordis Mobile | Ficha del Cliente"
-   	        android:textColor="@color/White"
-   	        android:textSize="16sp"
-   	        android:textStyle="bold" 
-   	        android:shadowColor="@color/Black"
-   	        android:shadowDx="1"
-   	        android:shadowDy="1"
-   	        android:shadowRadius="1"
-   	        android:gravity="center"
-   	        android:background="@drawable/bg_actionbar29"
-   	        android:layout_marginTop="0.5dp" />
-    
      	<LinearLayout 
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"			

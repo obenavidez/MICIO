@@ -107,8 +107,7 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 
 	@Override
 	public CustomArrayAdapter<E> getAdapter() {
-		return mAdapter;
-	} 
-	
+		return mAdapter; 
+	}  
 	
 }

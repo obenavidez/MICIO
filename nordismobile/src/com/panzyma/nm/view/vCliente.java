@@ -22,16 +22,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.util.Log;
-import android.view.KeyEvent;
+import android.util.Log; 
+import android.view.KeyEvent; 
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ArrayAdapter; 
+import android.widget.Button; 
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -138,7 +138,8 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 
 		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
 				R.drawable.ic_navigation_drawer, R.string.drawer_open,
-				R.string.drawer_close) {
+				R.string.drawer_close) 
+		{
 
 			@Override
 			public void onDrawerClosed(View view) {
@@ -165,8 +166,8 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 		nmapp = (NMApp) this.getApplicationContext();
 		try {
 			nmapp.getController().setEntities(this, new BClienteM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
+			nmapp.getController().addOutboxHandler(new Handler(this)); 
+			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
 
 			pDialog = new ProgressDialog(vCliente.this);
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -200,10 +201,8 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 			// pass the Intent's extras to the fragment as arguments
 			firstFragment.setArguments(getIntent().getExtras());
 
-			// Add the fragment to the 'fragment_container' FrameLayout
-
-			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
-			
+			// Add the fragment to the 'fragment_container' FrameLayout 
+			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit(); 
 		}
 	}
 
@@ -472,7 +471,7 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 
 	private void initComponent() {
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
-		footerView = (TextView) findViewById(R.id.ctextv_gridheader);		
+		footerView = (TextView) findViewById(R.id.ctextv_gridheader);	 
 	}
 	
 	private void LOAD_FROMSERVER()
@@ -531,7 +530,65 @@ public class vCliente extends ActionBarActivity implements ListaFragment.OnItemS
 		Log.d(TAG, "Activity quitting");
 		finish();		
 	}
+	  
 	
+//	private void LOAD_FROMSERVER()
+//	{
+//		/*controller.getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);*/
+//		try {
+//			nmapp.getController().setEntities(this, new BClienteM());
+//			nmapp.getController().addOutboxHandler(new Handler(this));
+//			nmapp.getController().getInboxHandler()
+//					.sendEmptyMessage(LOAD_DATA_FROM_SERVER);
+//
+//			pDialog = new ProgressDialog(vCliente.this);
+//			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//			pDialog.setMessage("Procesando...");
+//			pDialog.setCancelable(true);
+//			pDialog.show();
+//
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	private void LOAD_FICHACLIENTE_FROMSERVER()
+//	{
+//		get_SucursalID();
+//		
+//		idsucursal=get_SucursalID();
+//		if(idsucursal != 0 && idsucursal != 1)
+//		{			
+//			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_FICHACLIENTE_FROM_SERVER);
+//		    Toast.makeText(this, "Trayendo Ficha Cliente...",Toast.LENGTH_LONG); 			
+//    	}
+//		else 
+//		{ 
+//		    if(idsucursal==1) 					
+//		    	buildCustomDialog("No hay cliente que consultar",
+//		    			          "Debe sincronizar con el servidor primero...\nDesea Sincronizar ahora?",
+//		    			           CONFIRMATION_DIALOG).show(); 	 
+//			else 
+//				buildCustomDialog("No hay cliente que consultar","Seleccione cliente primero",ALERT_DIALOG).show();  
+//		}
+//		
+//	}
+    
+//	private void UPDATE_SELECTEDITEM_FROMSERVER()
+//	{
+//		nmapp.getController().getInboxHandler().sendEmptyMessage(UPDATE_ITEM_FROM_SERVER);
+//	    Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);  
+//	}
+//
+//	private void FINISH_ACTIVITY()
+//	{ 	 		
+//		nmapp.getController().removeOutboxHandler(TAG);
+//		nmapp.getController().disposeEntities();
+//		Log.d(TAG, "Activity quitting");
+//		finish();		
+//	}
+	 
 	public long get_SucursalID()
 	{ 
 		return (customArrayAdapter!=null)?((customArrayAdapter.getCount()!=0)?(   (  (cliente_selected!=null)?cliente_selected.getIdSucursal():0  )  ):1):1;
