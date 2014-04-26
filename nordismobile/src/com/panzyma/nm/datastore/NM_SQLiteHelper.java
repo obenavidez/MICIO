@@ -95,6 +95,22 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
                               "       FOREIGN KEY(objPedidoID) REFERENCES Pedido(Id), " + 
                               "       FOREIGN KEY(objProductoID) REFERENCES Producto(Id) " + 
                               ")" ;
+    String sqlUsuario =     "CREATE TABLE IF NOT EXISTS Usuario(" +
+							"       Id BLOB PRIMARY KEY,       " +
+							"       Login TEXT,       " +
+							"       Nombre TEXT, " + 
+							"       Sexo TEXT, " + 
+							"       AccedeModuloPedidos INTEGER, " + 
+							"       PuedeEditarPrecioAbajo INTEGER, " + 
+							"       PuedeEditarPrecioArriba INTEGER " + 
+							"       PuedeEditarBonifAbajo INTEGER,  " +
+							"       PuedeEditarBonifArriba INTEGER,  " +
+							"       IsAdmin INTEGER, " +
+							"       PuedeCrearPedido INTEGER, " + 
+							"       PuedeConsultarPedido INTEGER, " + 
+							"       Codigo TEXT, " + 
+							"       PuedeEditarDescPP INTEGER " +   
+							")" ;
     
     String sqlDrop_Cliente=			  "DROP TABLE IF EXISTS Cliente";
     String sqlDrop_Factura=			  "DROP TABLE IF EXISTS Factura";
@@ -109,6 +125,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 	String sqlDrop_ValorCatalogo=	  "DROP TABLE IF EXISTS ValorCatalogo";
 	String sqlDrop_TasaCambio=	      "DROP TABLE IF EXISTS TasaCambio";
 	String sqlDrop_Promocion=	      "DROP TABLE IF EXISTS Promocion";
+	String sqlDrop_Usuario=	          "DROP TABLE IF EXISTS Usuario";
 	
     String sqlDeleteDesProv=  		"DELETE FROM DescuentoProveedor";
     String sqlDeleteND=       		"DELETE FROM CCNotaDebito";
@@ -123,6 +140,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDeleteValorCatalogo=  "DELETE FROM ValorCatalogo";
     String sqlDeleteTasaCambio=     "DELETE FROM TasaCambio";
     String sqlDeletePromocion=      "DELETE FROM Promocion";
+    String sqlDelete_Usuario=	    "DROP TABLE IF EXISTS Usuario";
+    
     public NM_SQLiteHelper(Context contexto, String nombre, CursorFactory factory, int version) 
     { 
         super(contexto, nombre, factory, version);
@@ -173,6 +192,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlValorCatalogo);
 			db.execSQL(sqlTasaCambio);
 			db.execSQL(sqlPromocion);
+			db.execSQL(sqlUsuario);
+			
         } 
     	catch (SQLException e) 
         {
@@ -202,6 +223,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlDrop_ValorCatalogo);
 			db.execSQL(sqlDrop_TasaCambio);
 			db.execSQL(sqlDrop_Promocion);
+			db.execSQL(sqlDrop_Usuario);
         } 
     	catch (SQLException e) 
         {

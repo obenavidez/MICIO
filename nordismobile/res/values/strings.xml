@@ -45,4 +45,7 @@
     <string name="fragment3">Fragment 3</string>
     <string name="drawer_open">Menú Abierto</string>
     <string name="drawer_close">Menú Cerrado</string>
+    <string name="view_product_codigo">Código</string>
+    <string name="view_product_nombre">Descripción</string>
+    <string name="view_product_disponibilidad">Existencias</string>
 </resources>

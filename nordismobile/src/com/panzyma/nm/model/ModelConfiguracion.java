@@ -77,6 +77,27 @@ public class ModelConfiguracion {
 		edit.commit();		
 	}
 	
+	public static void saveUser(Context view,Usuario user)throws Exception
+	{
+		pref=view.getSharedPreferences("LoginUser",Context.MODE_PRIVATE);
+		edit=pref.edit();		
+		edit.putString("codigo",user.getCodigo());
+		edit.putString("login",user.getLogin());
+		edit.putString("nombre",user.getNombre());
+		edit.putString("sexo",user.getSexo());
+		edit.putLong("id",user.getId());
+		edit.putBoolean("isAccedeModuloPedidos",user.isAccedeModuloPedidos());
+		edit.putBoolean("isIsAdmin",user.isIsAdmin());
+		edit.putBoolean("isPuedeConsultarPedido",user.isPuedeConsultarPedido());
+		edit.putBoolean("isPuedeCrearPedido",user.isPuedeCrearPedido());
+		edit.putBoolean("isPuedeEditarBonifAbajo",user.isPuedeEditarBonifAbajo());
+		edit.putBoolean("isPuedeEditarBonifArriba",user.isPuedeEditarBonifArriba());
+		edit.putBoolean("isPuedeEditarDescPP",user.isPuedeEditarDescPP());
+		edit.putBoolean("isPuedeEditarPrecioAbajo",user.isPuedeEditarPrecioAbajo());
+		edit.putBoolean("isPuedeEditarPrecioArriba",user.isPuedeEditarPrecioArriba());
+		
+		edit.commit();		
+	}
   
 	public static JSONArray getSystemPerams(String Credentials) throws Exception{		
 		return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetParams+"/"+Credentials);

@@ -11,14 +11,18 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.PProducto;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.ProductoViewHolder;
+import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
 import com.panzyma.nm.viewmodel.vmPProducto;
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -28,9 +32,11 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
@@ -45,7 +51,6 @@ import android.widget.AdapterView.OnItemLongClickListener;
 
 public class DialogProducto extends Dialog  implements Handler.Callback{
 
-	
 	private Context mcontext;
 	private ViewPedidoEdit parent;
 	private NMApp nmapp;
@@ -58,25 +63,50 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	ListView lvproducto;	
 	TextView gridheader;
 	private int positioncache=-1; 
+	
 	private OnButtonClickListener mButtonClickListener; 
+	
 	public Producto producto;
 	protected vmProducto product_selected;  
+	
+	
 	public interface OnButtonClickListener {
-		public abstract void onButtonClick(vmPProducto vmpproducto);
+		public abstract void onButtonClick(DetallePedido det_p);
 	}
 	
     public void setOnDialogProductButtonClickListener(OnButtonClickListener listener) {
 		mButtonClickListener = listener;
 	} 
 	
-
-	public DialogProducto(ViewPedidoEdit vpe, int theme) {
-		super(vpe, theme);
-
-		try 
+    
+    private String codTipoPrecio;
+    
+    private String filtro = "";  
+    //private Producto _productoSeleccionado = null;
+    private int[] dataIndex; 
+    private long _idCategCliente;
+    private long _idTipoPrecio;
+    private long _idPedido;
+    private long _idTipoCliente;
+    private String[][] data = null;
+    private boolean _exento;
+	private ArrayList<Producto> _idsProdsExcluir;
+     
+    public DialogProducto(ViewPedidoEdit vpe,String codTP, ArrayList<Producto> ProdsExclir, long idPedido, long idCategCliente, long idTipoPrecio, long idTipoCliente, boolean exento) 
+    {    
+    	super(vpe,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        codTipoPrecio = codTP;
+        _idsProdsExcluir = ProdsExclir;
+        _idCategCliente = idCategCliente;
+        _idTipoPrecio = idTipoPrecio;
+        _idPedido = idPedido;       
+        _idTipoCliente = idTipoCliente; 
+        _exento = exento; 
+        
+        try 
         {   
 			setContentView(R.layout.mainproducto);  
-        	mcontext=this.getContext();  
+        	mcontext=this.getContext();
         	parent=vpe;       	
         	nmapp=(NMApp) vpe.getApplication(); 
 	        nmapp.getController().setEntities(this,new BProductoM()); 
@@ -91,8 +121,31 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			e.printStackTrace();
 			//buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
 		}	 
-		
-	}
+    }
+    
+//	public DialogProducto(ViewPedidoEdit vpe, int theme) {
+//		super(vpe, theme);
+//
+//		try 
+//        {   
+//			setContentView(R.layout.mainproducto);  
+//        	mcontext=this.getContext();
+//        	parent=vpe;       	
+//        	nmapp=(NMApp) vpe.getApplication(); 
+//	        nmapp.getController().setEntities(this,new BProductoM()); 
+//	        nmapp.getController().addOutboxHandler(new Handler(this));
+//			WindowManager wm = (WindowManager) vpe.getSystemService(Context.WINDOW_SERVICE);
+//            display = wm.getDefaultDisplay();
+//			pd = ProgressDialog.show(vpe, "Espere por favor", "Trayendo Info...", true, false); 
+//			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
+//	        initComponents();
+//	        
+//        }catch (Exception e) { 
+//			e.printStackTrace();
+//			//buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
+//		}	 
+//		
+//	}
 	
 	
 	public void initComponents()
@@ -159,6 +212,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 		return null;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void LoadData(ArrayList<vmProducto> Lproducto, int cData) {
 		
 		
@@ -167,35 +221,74 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			if(Lproducto.size()!=0)
 			{
 					gridheader.setText("Listado de Productos("+Lproducto.size()+")");
-					adapter=new GenericAdapter(mcontext,ProductoViewHolder.class,Lproducto,R.layout.gridproducto);				 
+					adapter=new GenericAdapter(parent,ProductoViewHolder.class,Lproducto,R.layout.gridproducto);				 
 					lvproducto.setAdapter(adapter);
 					lvproducto.setOnItemClickListener(new OnItemClickListener() 
 			        {
-			            @Override
+			            @SuppressLint("NewApi")
+						@Override
 			            public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
 			            { 		  
 			            	if((parent.getChildAt(positioncache))!=null)						            							            		
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
 			            	product_selected=(vmProducto) adapter.getItem(position);	
-			            	try {
-			            		Object d=nmapp.getController().getBridge().getClass().getMethods();
+			            	try { 
 			            		producto=(Producto) nmapp.getController().getBridge().getClass().getMethod("getProductoByID",ContentResolver.class,long.class).invoke(null,DialogProducto.this.getContext().getContentResolver(),product_selected.getId());
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 			            	adapter.setSelectedPosition(position); 
-			            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));					            	 
+			            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));					            	 
 			            	//mButtonClickListener.onButtonClick(producto);
 			            	FINISH_ACTIVITY();
 			            }
 			        }); 								
 					lvproducto.setOnItemLongClickListener(new OnItemLongClickListener()
 				    {
+						@SuppressWarnings("deprecation")
+						@SuppressLint("NewApi")
 						@Override
 						public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) 
 						{  											 
+							if((parent.getChildAt(positioncache))!=null)						            							            		
+			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+			            	positioncache=position;				            	
+			            	product_selected=(vmProducto) adapter.getItem(position);	
+			            	try { 
+			            		producto=(Producto) nmapp.getController().getBridge().getClass().getMethod("getProductoByID",ContentResolver.class,long.class).invoke(null,DialogProducto.this.getContext().getContentResolver(),product_selected.getId());
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+			            	adapter.setSelectedPosition(position); 
+			            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));				
+							
+			            	//EditDetPedido editForm = new EditDetPedido(prod, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
+							DetalleProducto dp=new DetalleProducto(DialogProducto.this,producto, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
+							
+							dp.setOnDialogDetalleProductButtonClickListener(new OnButtonClickHandler(){
+
+								@Override
+								public void onButtonClick(DetallePedido det_p,boolean btn) {
+									if(btn)
+									{ 
+										mButtonClickListener.onButtonClick(det_p);
+									}
+																		
+									
+								}
+ 
+ 
+								
+								
+							}); 
+      						dp.getWindow().setGravity(Gravity.CENTER); 
+							dp.getWindow().setGravity(Gravity.CENTER); 
+							dp.getWindow().setLayout(display.getWidth()-40,display.getHeight()-110);  
+							dp.show();
+							/*
 							if((parent.getChildAt(positioncache))!=null)						            							            		
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
@@ -207,9 +300,10 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 								e.printStackTrace();
 							}
 			            	adapter.setSelectedPosition(position); 
-			            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));
-			            	mButtonClickListener.onButtonClick(new vmPProducto(product_selected.getId(),product_selected.getNombre(), 23));
+			            	view.setBackground(mcontext.getResources().getDrawable(R.drawable.action_item_selected));
+			            	//mButtonClickListener.onButtonClick(new vmPProducto(product_selected.getId(),product_selected.getNombre(), 23));
 			            	FINISH_ACTIVITY();
+			            	*/
 			            	//quickAction.show(view,display,false);
 							return true;
 						}
@@ -229,6 +323,11 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 		
 	}
 
+	public Producto getProductoSelected()
+	{
+		return producto;
+	}
+	
 	protected void FINISH_ACTIVITY() {
 		// TODO Auto-generated method stub
 		

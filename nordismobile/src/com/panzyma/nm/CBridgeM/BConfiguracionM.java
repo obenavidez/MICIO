@@ -53,6 +53,7 @@ public class BConfiguracionM {
 	JSONArray productos;
 	JSONArray promociones;
 	Object lock=new Object();
+	Usuario user;
 	public int ON_ID_Handler;
 	public BConfiguracionM(){}
 	
@@ -186,6 +187,8 @@ public class BConfiguracionM {
 						{							
 							if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller))
 						    {						
+								user=GET_DATAUSER(SessionManager.getCredentials(),view.getUserName());
+								ModelConfiguracion.saveUser(view, user);
 								onSave_From_LocalHost(ModelConfiguracion.getSystemPerams(credentials),ID_SINCRONIZE_PARAMETROS,0);
 						    }
 						}

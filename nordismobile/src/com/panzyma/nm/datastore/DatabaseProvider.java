@@ -37,10 +37,10 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_DESCUENTOPROVEEDOR = Uri.parse(CONTENT_URI+"/descuentoproveedor");
 	public static final Uri CONTENT_URI_CATALOGO = Uri.parse(CONTENT_URI+"/catalogo");
 	public static final Uri CONTENT_URI_VALORCATALOGO = Uri.parse(CONTENT_URI+"/valorcatalogo");
-	public static final Uri CONTENT_URI_PRODUCTO = Uri.parse(CONTENT_URI+"/producto");
-	
+	public static final Uri CONTENT_URI_PRODUCTO = Uri.parse(CONTENT_URI+"/producto");	
 	public static final Uri CONTENT_URI_LOTE = Uri.parse(CONTENT_URI+"/lote");
 	public static final Uri CONTENT_URI_PROMOCION = Uri.parse(CONTENT_URI+"/promocion");
+	public static final Uri CONTENT_URI_USUARIO = Uri.parse(CONTENT_URI+"/usuario");	
 	
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
@@ -69,7 +69,8 @@ public class DatabaseProvider extends ContentProvider
 	private static final int VALORCATALOGO_ID=23;
 	private static final int PROMOCION=24;
 	private static final int PROMOCION_ID=25;
-	
+	private static final int USUARIO=26;
+	private static final int USUARIO_ID=27;
 	private static final UriMatcher uriMatcher;
 	
 	//Base de datos
@@ -92,6 +93,7 @@ public class DatabaseProvider extends ContentProvider
 	private static final String TABLA_PRODUCTO = "Producto";
 	private static final String TABLA_LOTE = "Lote";
 	private static final String TABLA_PROMOCION = "Promocion";
+	private static final String TABLA_USUARIO = "Usuario";
 	
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -127,6 +129,12 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "promocion", PROMOCION);
 		uriMatcher.addURI(AUTHORITY, "promocion/#", PROMOCION_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "lote", LOTE);
+		uriMatcher.addURI(AUTHORITY, "lote/#", LOTE_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "usuario", USUARIO);
+		uriMatcher.addURI(AUTHORITY, "usuario/#", USUARIO_ID);
 	}
 	
 	@Override
@@ -319,7 +327,7 @@ public class DatabaseProvider extends ContentProvider
 					values.put(NMConfig.Producto.Lote.Id,lote.getLong(NMConfig.Producto.Lote.Id));
 					values.put(NMConfig.Producto.Lote.NumeroLote,lote.getString(NMConfig.Producto.Lote.NumeroLote));
 					values.put(NMConfig.Producto.Lote.FechaVencimiento,lote.getInt(NMConfig.Producto.Lote.FechaVencimiento));					 
-				    values.put(NMConfig.Producto.ObjProductoID,lote.getString(NMConfig.Producto.Id));
+				    values.put(NMConfig.Producto.ObjProductoID,prod.getLong(NMConfig.Producto.Id));
 				    bdd.insert(TABLA_LOTE, null, values);
 				}
 			}  
@@ -709,8 +717,8 @@ public class DatabaseProvider extends ContentProvider
 			case PRODUCTO_ID:           dictionary.put(PRODUCTO, TABLA_PRODUCTO);
 										dictionary.put(PRODUCTO+1,"Id=" + uri.getLastPathSegment());
 										break;
-			case LOTE:				    dictionary.put(PRODUCTO, TABLA_LOTE);
-										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_PRODUCTO.toString());
+			case LOTE:				    dictionary.put(LOTE, TABLA_LOTE);
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_LOTE.toString());
 										break;
 			case LOTE_ID: 			    dictionary.put(LOTE, TABLA_LOTE);
 										dictionary.put(LOTE+1,"ObjProductoID=" + uri.getLastPathSegment());
@@ -722,13 +730,21 @@ public class DatabaseProvider extends ContentProvider
 			case CATALOGO_ID: 			dictionary.put(CATALOGO, TABLA_CATALOGO);
 										dictionary.put(CATALOGO+1,"Id=" + uri.getLastPathSegment());
 										break;
-			case PROMOCION:				dictionary.put(CATALOGO, TABLA_PROMOCION);
+			case PROMOCION:				dictionary.put(PROMOCION, TABLA_PROMOCION);
 										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_PROMOCION.toString());
 										break;
 
 			case PROMOCION_ID: 			dictionary.put(PROMOCION, TABLA_PROMOCION);
 										dictionary.put(PROMOCION+1,"Id=" + uri.getLastPathSegment());
-										break;										
+										break;	
+										
+			case USUARIO:				dictionary.put(USUARIO, TABLA_USUARIO);
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_USUARIO.toString());
+										break;
+
+			case USUARIO_ID: 			dictionary.put(USUARIO, TABLA_USUARIO);
+										dictionary.put(USUARIO+1,"Id=" + uri.getLastPathSegment());
+										break;	
 										
 			
 		} 
@@ -762,9 +778,9 @@ public class DatabaseProvider extends ContentProvider
 	 
 		switch(uriMatcher.match(uri))
 		{		 
-			case CLIENTE:case FACTURA:case PROMOCIONCOBRO:case MONTOPROVEEDOR:case CCNOTACREDITO:case CCNOTADEBITO:case DESCUENTOPROVEEDOR:case PRODUCTO:case LOTE:case CATALOGO:case PROMOCION:
+			case CLIENTE:case FACTURA:case PROMOCIONCOBRO:case MONTOPROVEEDOR:case CCNOTACREDITO:case CCNOTADEBITO:case DESCUENTOPROVEEDOR:case PRODUCTO:case LOTE:case CATALOGO:case PROMOCION:case USUARIO:
 				 return "vnd.android.cursor.dir/vnd"+AUTHORITY;
-			case CLIENTE_ID:case FACTURA_ID:case PROMOCIONCOBRO_ID:case MONTOPROVEEDOR_ID:case CCNOTACREDITO_ID:case CCNOTADEBITO_ID:case DESCUENTOPROVEEDOR_ID:case PRODUCTO_ID:case LOTE_ID:case CATALOGO_ID:case PROMOCION_ID:
+			case CLIENTE_ID:case FACTURA_ID:case PROMOCIONCOBRO_ID:case MONTOPROVEEDOR_ID:case CCNOTACREDITO_ID:case CCNOTADEBITO_ID:case DESCUENTOPROVEEDOR_ID:case PRODUCTO_ID:case LOTE_ID:case CATALOGO_ID:case PROMOCION_ID:case USUARIO_ID:
 				 return "vnd.android.cursor.item/vnd"+AUTHORITY; 									
 		    default:throw new IllegalArgumentException("Invalid Uri: "+ uri);
 		}  

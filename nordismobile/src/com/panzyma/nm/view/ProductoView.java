@@ -20,27 +20,30 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
-import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BProductoM;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
-import com.panzyma.nm.fragments.FichaClienteFragment;
+import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.viewmodel.vmProducto;
@@ -49,6 +52,8 @@ import com.panzyma.nordismobile.R;
 public class ProductoView extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {
 
+
+	private static final String TAG = ProductoView.class.getSimpleName();
 	CustomArrayAdapter<vmProducto> customArrayAdapter;
 	private SearchView searchView;
 	int listFragmentId;
@@ -67,14 +72,14 @@ public class ProductoView extends ActionBarActivity implements
 	TextView gridheader;
 	TextView footerView;
 
-	private List<vmProducto> clientes = new ArrayList<vmProducto>();
+	private List<vmProducto> productos = new ArrayList<vmProducto>();
 	vmProducto product_selected;
 	ListaFragment<vmProducto> firstFragment;
 
 	@SuppressLint("CutPasteId")
 	private void initComponent() {
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
-		footerView = (TextView) findViewById(R.id.ctextv_gridheader);
+		footerView = (TextView) findViewById(R.id.ctxtview_enty);
 	}
 
 	/** Called when the activity is first created. */
@@ -88,8 +93,11 @@ public class ProductoView extends ActionBarActivity implements
 		setContentView(R.layout.layout_client_fragment);
 
 		initComponent();
+		
+		gridheader.setVisibility(View.VISIBLE);
 
-		opcionesMenu = new String[] { "Opción 1", "Opción 2", "Opción 3" };
+		opcionesMenu = new String[] { "Ficha Detalle", "Bonificaciones",
+				"Lista de Precios", "Sincronizar Productos", "Cerrar" };
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// drawerLayout.openDrawer(Gravity.END);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -104,7 +112,6 @@ public class ProductoView extends ActionBarActivity implements
 					int position, long id) {
 
 				drawerList.setItemChecked(position, true);
-
 				tituloSeccion = opcionesMenu[position];
 				getSupportActionBar().setTitle(tituloSeccion);
 
@@ -140,39 +147,34 @@ public class ProductoView extends ActionBarActivity implements
 		try {
 			nmapp.getController().setEntities(this, new BProductoM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController()
-					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+			nmapp.getController().getInboxHandler()
+					.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 
-		} catch (Exception e) {			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		// However, if we're being restored from a previous state,
+		// then we don't need to do anything and should return or else
+		// we could end up with overlapping fragments.
+		if (savedInstanceState != null) {
+			return;
+		}
 
-		// Check whether the activity is using the layout version with
-		// the fragment_container FrameLayout. If so, we must add the first
-		// fragment
+		// Create an instance of ExampleFragment
+		firstFragment = new ListaFragment<vmProducto>();
+
+		// In case this activity was started with special instructions from
+		// an Intent,
+		// pass the Intent's extras to the fragment as arguments
+		firstFragment.setArguments(getIntent().getExtras());
+
+		// Add the fragment to the 'fragment_container' FrameLayout
 		if (findViewById(R.id.fragment_container) != null) {
-
-			// However, if we're being restored from a previous state,
-			// then we don't need to do anything and should return or else
-			// we could end up with overlapping fragments.
-			if (savedInstanceState != null) {
-				return;
-			}
-
-			// Create an instance of ExampleFragment
-			firstFragment = new ListaFragment<vmProducto>();
-
-			// In case this activity was started with special instructions from
-			// an Intent,
-			// pass the Intent's extras to the fragment as arguments
-			firstFragment.setArguments(getIntent().getExtras());
-
-			// Add the fragment to the 'fragment_container' FrameLayout
-
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, firstFragment).commit();
+		} else {
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.item_client_fragment, firstFragment).commit();
 		}
 	}
 
@@ -187,8 +189,14 @@ public class ProductoView extends ActionBarActivity implements
 
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
-		customArrayAdapter = (CustomArrayAdapter<vmProducto>) ((Filterable) getSupportFragmentManager()
-				.findFragmentById(R.id.fragment_container)).getAdapter();
+		if (findViewById(R.id.fragment_container) != null) {
+			customArrayAdapter = (CustomArrayAdapter<vmProducto>) ((Filterable) getSupportFragmentManager()
+					.findFragmentById(R.id.fragment_container)).getAdapter();
+
+		} else {
+			customArrayAdapter = (CustomArrayAdapter<vmProducto>) ((Filterable) getSupportFragmentManager()
+					.findFragmentById(R.id.item_client_fragment)).getAdapter();
+		}
 
 		searchView.setOnQueryTextListener(new OnQueryTextListener() {
 			@Override
@@ -259,7 +267,7 @@ public class ProductoView extends ActionBarActivity implements
 		switch (msg.what) {
 		case C_DATA:
 			establecer(msg);
-			pDialog.hide();
+			// pDialog.hide();
 			return true;
 
 		case C_FICHACLIENTE:
@@ -273,7 +281,7 @@ public class ProductoView extends ActionBarActivity implements
 
 			return true;
 		case C_UPDATE_FINISHED:
-			pDialog.hide();
+			// pDialog.hide();
 			return true;
 		case C_SETTING_DATA:
 			setData((ArrayList<vmProducto>) ((msg.obj == null) ? new ArrayList<vmProducto>()
@@ -287,21 +295,25 @@ public class ProductoView extends ActionBarActivity implements
 		return false;
 
 	}
-	
+
 	@SuppressWarnings({ "unused", "unchecked" })
 	private void establecer(Message msg) {
-		clientes = (List<vmProducto>) ((msg.obj == null) ? new ArrayList<vmProducto>()
+		productos = (List<vmProducto>) ((msg.obj == null) ? new ArrayList<vmProducto>()
 				: msg.obj);
 
-		gridheader.setText(String.format("Listado de Clientes (%s)",
-				clientes.size()));
-		if (clientes.size() == 0) {
+		gridheader.setVisibility(View.VISIBLE);
+		gridheader.setText(String.format("Listado de Productos (%s)",
+				productos.size()));
+		if (productos.size() == 0) {
 			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
 			txtenty.setVisibility(View.VISIBLE);
 		}
-		firstFragment.setItems(clientes);
+		firstFragment.setItems(productos);
+		firstFragment.getAdapter().setSelectedPosition(0);
+		positioncache = 0;
+		product_selected = firstFragment.getAdapter().getItem(0);
 	}
-	
+
 	private void setData(final ArrayList<vmProducto> data, final int what) {
 		try {
 			if (data.size() != 0) {
@@ -317,13 +329,13 @@ public class ProductoView extends ActionBarActivity implements
 									&& customArrayAdapter != null
 									&& customArrayAdapter.getCount() >= 0) {
 								firstFragment.setItems(data);
-								gridheader.setText("Listado de Productos("
+								gridheader.setText("Listado de Productos ("
 										+ customArrayAdapter.getCount() + ")");
 								footerView.setVisibility(View.VISIBLE);
 							} else {
 								if (what == C_SETTING_DATA)
 									footerView.setVisibility(View.VISIBLE);
-								gridheader.setText("Listado de Clientes("
+								gridheader.setText("Listado de Productos ("
 										+ data.size() + ")");
 								firstFragment.setItems(data);
 								customArrayAdapter.setSelectedPosition(0);
@@ -375,7 +387,7 @@ public class ProductoView extends ActionBarActivity implements
 								 * 
 								 * });
 								 */
-								// buildToastMessage("sincronización exitosa",Toast.LENGTH_SHORT).show();
+								// buildToastMessage("sincronizaciÃ³n exitosa",Toast.LENGTH_SHORT).show();
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -397,46 +409,67 @@ public class ProductoView extends ActionBarActivity implements
 
 	}
 
-
 	@Override
-	public void onItemSelected(int position) {
-		// The user selected the headline of an article from the
-		// HeadlinesFragment
+    public boolean onKeyUp(int keyCode, KeyEvent event) 
+    {
+        if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+    	  	FINISH_ACTIVITY();
+            return true;
+	    }
+        return super.onKeyUp(keyCode, event); 
+    } 
+	
+	private void FINISH_ACTIVITY()
+	{ 	 		
+		nmapp.getController().removeOutboxHandler(TAG);
+		nmapp.getController().disposeEntities();
+		Log.d(TAG, "Activity quitting");
+		finish();		
+	}
+	
+	@Override
+	public void onItemSelected(Object obj, int position) {
 
-		// Capture the article fragment from the activity layout
-		// R.id.article_fragment
-		FichaClienteFragment articleFrag = (FichaClienteFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.ficha_client_fragment);
+		FichaProductoFragment productFrag;
+		Bundle args = new Bundle();
+		args.putInt(FichaProductoFragment.ARG_POSITION, position);
+		args.putParcelable(FichaProductoFragment.OBJECT, (vmProducto) obj);
 
-		if (articleFrag != null) {
-			// If article frag is available, we're in two-pane layout...
+		FragmentTransaction transaction = getSupportFragmentManager()
+				.beginTransaction();		
 
-			// Call a method in the ArticleFragment to update its content
-			articleFrag.updateArticleView(position);
+		if (findViewById(R.id.dynamic_fragment) != null) {
+
+			productFrag = (FichaProductoFragment) getSupportFragmentManager()
+					.findFragmentById(R.id.dynamic_fragment);
+			if (productFrag != null) {				
+				productFrag.updateArticleView((vmProducto) obj, position);
+			} else {
+				productFrag = new FichaProductoFragment();
+				productFrag.setArguments(args);
+				transaction.add(R.id.dynamic_fragment, productFrag);
+				transaction.addToBackStack(null);
+			}
 
 		} else {
-			// If the frag is not available, we're in the one-pane layout and
-			// must swap frags...
 
-			// Create fragment and give it an argument for the selected article
-			/*
-			 * FichaClienteFragment newFragment = new FichaClienteFragment();
-			 * Bundle args = new Bundle();
-			 * args.putInt(FichaClienteFragment.ARG_POSITION, position);
-			 * newFragment.setArguments(args); FragmentTransaction transaction =
-			 * getSupportFragmentManager() .beginTransaction();
-			 * 
-			 * // Replace whatever is in the fragment_container view with this
-			 * // fragment, // and add the transaction to the back stack so the
-			 * user can // navigate back
-			 * 
-			 * transaction.replace(R.id.fragment_container, newFragment);
-			 * transaction.addToBackStack(null);
-			 * 
-			 * // Commit the transaction transaction.commit();
-			 */
+			@SuppressWarnings("unused")
+			Fragment fragment = getSupportFragmentManager().findFragmentById(
+					R.id.fragment_container);
+			
+			gridheader.setVisibility(View.INVISIBLE);
 
+			if (fragment instanceof ListaFragment) {
+				productFrag = new FichaProductoFragment();
+				productFrag.setArguments(args);
+				transaction.replace(R.id.fragment_container, productFrag);
+				transaction.addToBackStack(null);			
+			}
 		}
+		// Commit the transaction transaction.commit();
+		transaction.commit();
+
 	}
 
 }

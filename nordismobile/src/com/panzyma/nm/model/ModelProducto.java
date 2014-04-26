@@ -3,6 +3,7 @@ package com.panzyma.nm.model;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,6 +13,7 @@ import android.util.Log;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig; 
 import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.viewmodel.vmProducto;
@@ -77,6 +79,7 @@ public class ModelProducto
 		        null,       //Condición de la query
 		        null,       //Argumentos variables de la query
 		        null); 
+		
 		if (cur.moveToFirst()) 
 		 {  
 			 
@@ -91,7 +94,7 @@ public class ModelProducto
 	        	   producto.setListaBonificaciones(cur.getString(cur.getColumnIndex(NMConfig.Producto.ListaBonificaciones)));
 	        	   producto.setCatPrecios(cur.getString(cur.getColumnIndex(NMConfig.Producto.CatPrecios)));
 	        	   producto.setDisponible(cur.getInt(cur.getColumnIndex(NMConfig.Producto.Disponible)));
-	        	   producto.setListaLotes(getLotesByProducto(content,producto.getId()));	        	  
+	        	   	        	  
 	        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Producto.PermiteDevolucion));            		
 	        	   producto.setPermiteDevolucion(value==1?true:false);
 	        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Producto.LoteRequerido));            		
@@ -103,34 +106,39 @@ public class ModelProducto
 	        	   
 	           }while (cur.moveToNext());
 	           
+	           producto.setListaLotes(getLotesByProducto(content,producto.getId()));
+	           
+	           
           }
 	   
-	return null;
+	return producto;
 	   
    }
    
    public synchronized static Lote[] getLotesByProducto(ContentResolver content,long ObjProductoID)throws Exception{
-	
-	   
-	    Lote lote=new Lote(); 
-		Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_LOTE+"/"+String.valueOf(ObjProductoID)); 
+	   int cont=0;
+	    Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_LOTE+"/"+String.valueOf(ObjProductoID)); 
 		Cursor cur = content.query(uri,
 		        null, //Columnas a devolver
 		        null,       //Condición de la query
 		        null,       //Argumentos variables de la query
    	        null); 
+		Lote[] a_lote=new Lote[cur.getCount()];
+		
 		if (cur.moveToFirst()) 
 		 {  
 			 
-	           do{
-	        	   int value;
-	        	   lote.setId(cur.getLong(cur.getColumnIndex(NMConfig.Producto.Lote.Id)));
-	        	   lote.setNumeroLote(cur.getString(cur.getColumnIndex(NMConfig.Producto.Lote.NumeroLote)));
-	        	   lote.setFechaVencimiento(cur.getInt(cur.getColumnIndex(NMConfig.Producto.Lote.FechaVencimiento)));
+	           do{ 
 	        	   
+	        	 a_lote[cont]=new Lote(
+				        		   cur.getLong(cur.getColumnIndex(NMConfig.Producto.Lote.Id)),
+				        		   cur.getString(cur.getColumnIndex(NMConfig.Producto.Lote.NumeroLote)),
+				        		   cur.getInt(cur.getColumnIndex(NMConfig.Producto.Lote.FechaVencimiento))
+				        		   ); 
+	        	 cont++;
 	           }while (cur.moveToNext());
 	     }   
-	   return null;
+	   return a_lote.length==0?null:a_lote;
 	   
 	   
    }

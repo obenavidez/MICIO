@@ -6,12 +6,13 @@
         <LinearLayout 
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="vertical">
             		
 	           <RelativeLayout 
 	           android:layout_width="fill_parent"
 	           android:layout_height="wrap_content">           
 	            
+	               
 			         <TextView
 			         android:id="@+id/gpa_nombreprod"
 			         style="@style/StyleFontTexViewMediumLarge"
@@ -21,46 +22,177 @@
 			         android:layout_marginLeft="5dp" 
 			         android:layout_marginTop="5dp"
 			         /> 
-			         
+			          
 			        <TextView
-		             android:id="@+id/gpa_productoprecio"
+		             android:id="@+id/gpa_lblcantidad"
 		             style="@style/StyleFontTexViewNormal"
 		             android:layout_width="wrap_content"
-		             android:layout_height="wrap_content"
+		             android:layout_height="wrap_content"		             
 		             android:layout_alignParentLeft="true"
-		             android:layout_below="@+id/gpa_nombreprod"
-		             android:layout_marginLeft="5dp"
-		             android:layout_marginTop="5dp">
+		             android:text="Cant.:" 
+		             android:layout_below="@+id/gpa_nombreprod"  
+		             android:layout_marginLeft="5dp"  
+		             android:textColor="@color/Blue"
+			         android:textStyle="bold"
+		             >
 			
-			        </TextView> 
-			
+			        </TextView> 			         
+			        
 			        <TextView 
 					 android:id="@+id/gpa_cantidad"  		
 					 android:layout_width="wrap_content"
 					 android:layout_height="wrap_content"   	
 					 android:layout_below="@+id/gpa_nombreprod"
-					 android:layout_toRightOf="@+id/gpa_productoprecio"
-					 android:layout_marginLeft="5dp"	
-					 android:textSize="18dp"   
+					 android:layout_toRightOf="@+id/gpa_lblcantidad"
+					 android:layout_marginLeft="5dp" 
 					 android:textColor="@color/Blue"
 			        android:textStyle="bold"
 			        /> 
-            
-                </RelativeLayout>
-                <TextView
-			         android:id="@+id/gpa_costototalprod"
-			         style="@style/StyleFontTexViewMediumLarge"
+			        
+			        <TextView
+		             android:id="@+id/gpa_lblbonificacion"
+		             style="@style/StyleFontTexViewNormal"
+		             android:layout_width="wrap_content"
+		             android:layout_height="wrap_content"
+		             android:text="Bonf.:" 
+		             android:layout_below="@+id/gpa_nombreprod" 
+		             android:layout_toRightOf="@+id/gpa_cantidad"
+		             android:layout_marginLeft="5dp"  
+		             android:textColor="@color/Blue"
 			         android:textStyle="bold"
-			         android:layout_width="wrap_content"
-			         android:layout_height="wrap_content" 
-			         android:layout_marginLeft="5dp" 
-			         android:layout_marginTop="5dp"
-			     /> 
-        </LinearLayout>
-        
-        
-        
-        
+		             >
+			
+			        </TextView> 			         
+			        
+			        <TextView 
+					 android:id="@+id/gpa_bonificacion"  		
+					 android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"   	
+					 android:layout_below="@+id/gpa_nombreprod"
+					 android:layout_toRightOf="@+id/gpa_lblbonificacion"
+					 android:layout_marginLeft="5dp" 
+					 android:textColor="@color/Blue"
+			        android:textStyle="bold"
+			        /> 
+			        
+			         <TextView
+		             android:id="@+id/gpa_lblpromocion"
+		             style="@style/StyleFontTexViewNormal"
+		             android:layout_width="wrap_content"
+		             android:layout_height="wrap_content"
+		             android:text="Promc.:" 
+		             android:layout_below="@+id/gpa_nombreprod" 
+		             android:layout_toRightOf="@+id/gpa_bonificacion"
+		             android:layout_marginLeft="5dp"  
+		             android:textColor="@color/Blue"
+			         android:textStyle="bold"
+		             >
+			
+			        </TextView> 			         
+			        
+			        <TextView 
+					 android:id="@+id/gpa_promocion"  		
+					 android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"   	
+					 android:layout_below="@+id/gpa_nombreprod"
+					 android:layout_toRightOf="@+id/gpa_lblpromocion"
+					 android:layout_marginLeft="5dp" 
+					 android:textColor="@color/Blue"
+			        android:textStyle="bold"
+			        />  
+			         <TextView
+		             android:id="@+id/gpa_lblprecio"
+		             style="@style/StyleFontTexViewNormal"
+		             android:layout_width="wrap_content"
+		             android:layout_height="wrap_content"
+		             android:text="Precio:"
+		             android:layout_below="@+id/gpa_nombreprod" 
+		             android:layout_toRightOf="@+id/gpa_promocion"
+		             android:layout_marginLeft="5dp"  
+		             android:textColor="@color/Blue"
+			         android:textStyle="bold"
+		             >
+			
+			        </TextView> 
+			        
+			        <TextView
+		             android:id="@+id/gpa_productoprecio"
+		             style="@style/StyleFontTexViewNormal"
+		             android:layout_width="wrap_content"
+		             android:layout_height="wrap_content" 
+		             android:layout_below="@+id/gpa_nombreprod"
+		             android:layout_alignRight="@+id/gpa_lblprecio"
+		             android:layout_marginLeft="5dp"
+		             android:layout_marginTop="5dp">			
+			        </TextView> 
+			        
+			        
+			         <TextView
+		             android:id="@+id/gpa_lbliva"
+		             style="@style/StyleFontTexViewNormal"
+		             android:layout_width="wrap_content"
+		             android:layout_height="wrap_content"
+		             android:text="IVA :"
+		             android:layout_below="@+id/gpa_nombreprod" 
+		             android:layout_toRightOf="@+id/gpa_productoprecio"
+		             android:layout_marginLeft="5dp"  
+		             android:textColor="@color/Blue"
+			         android:textStyle="bold"
+		             >
+			
+			        </TextView> 
+			        
+			        <TextView
+		             android:id="@+id/gpa_iva"
+		             style="@style/StyleFontTexViewNormal"
+		             android:layout_width="wrap_content"
+		             android:layout_height="wrap_content" 
+		             android:layout_below="@+id/gpa_nombreprod"
+		             android:layout_alignRight="@+id/gpa_lbliva"
+		             android:layout_marginLeft="5dp"
+		             android:layout_marginTop="5dp">			
+			        </TextView> 
+			         
+			        <View  	android:id="@+id/gpa_separator"
+			            	android:layout_width="fill_parent" 
+			            	android:layout_height="0.5dp"
+			            	android:layout_below="@+id/gpa_lblcantidad"
+			            	android:background="@color/Gray"
+			         />
+			      
+		       
+			        <TextView
+			           android:id="@+id/gpa_lbltotal"
+			           style="@style/StyleFontTexViewNormal"
+			           android:layout_width="wrap_content"
+			           android:layout_height="wrap_content"
+			           android:layout_alignParentLeft="true"
+			           android:text="Total:"
+			           android:layout_below="@+id/gpa_separator"  
+			           android:layout_marginLeft="5dp"  
+			           android:textColor="@color/Blue"
+			           android:textStyle="bold"
+			           >
+			
+			       </TextView>  
+			        
+			       <TextView
+			           android:id="@+id/gpa_total"
+			           style="@style/StyleFontTexViewNormal"
+			           android:layout_width="wrap_content"
+			           android:layout_height="wrap_content"
+			           android:layout_alignParentLeft="true"
+			           android:layout_below="@+id/gpa_separator"
+			           android:layout_alignRight="@+id/gpa_lbltotal"
+			           android:layout_marginLeft="5dp"
+			           android:layout_marginTop="5dp">			
+			       </TextView> 
+            
+                </RelativeLayout> 
+                
+		        
+			  
+        </LinearLayout> 
         
          
 </RelativeLayout> 

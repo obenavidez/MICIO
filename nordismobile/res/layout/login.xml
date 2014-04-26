@@ -109,8 +109,9 @@
             android:shadowColor="@color/Black"
             android:layout_below="@+id/etpassword"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            />
+            android:layout_marginRight="10dp">
+            </CheckBox>
+
         	<TableRow
         	    android:id="@+id/layoutbutton"
         	    android:layout_width="wrap_content"

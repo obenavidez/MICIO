@@ -11,13 +11,16 @@
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content" 
 		android:layout="@layout/header" 
-		android:layout_marginBottom="5dp"/> 
+		android:layout_marginBottom="5dp"/> 
+
   <LinearLayout
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:gravity="center_vertical"
       android:orientation="vertical" >
-
+
+
+
 	      <LinearLayout
 	          android:layout_width="fill_parent"
 	          android:layout_height="wrap_content"
@@ -55,7 +58,9 @@
 	              android:layout_margin="10dp"
 	              android:gravity="center_horizontal"
 	              android:orientation="vertical" >
-	
+	
+
+
 	              <Button
 	                  android:id="@+id/hbtnrecibocollector"
 	                  android:layout_width="wrap_content"
@@ -79,7 +84,9 @@
 	              android:layout_marginTop="10dp"
 	              android:gravity="center_horizontal"
 	              android:orientation="vertical" >
-	
+	
+
+
 	              <Button
 	                  android:id="@+id/hbtndevolucion"
 	                  android:layout_width="wrap_content"
@@ -97,7 +104,13 @@
 	                  android:textStyle="bold"/>
 	          </LinearLayout>
 	      </LinearLayout>
-	
+	
+
+
+
+
+
+
 	      <LinearLayout
 	          android:layout_width="fill_parent"
 	          android:layout_height="wrap_content"
@@ -114,7 +127,9 @@
 	              android:layout_marginRight="28dp"
 	              android:gravity="center_horizontal"
 	              android:orientation="vertical" >
-	
+	
+
+
 	              <Button
 	                  android:id="@+id/hbtncliente"
 	                  android:layout_width="wrap_content"
@@ -140,7 +155,9 @@
 	              android:layout_marginRight="20dp"
 	              android:gravity="center_horizontal"
 	              android:orientation="vertical" >
-	
+	
+
+
 	              <Button
 	                  android:id="@+id/hbtnproducto"
 	                  android:layout_width="wrap_content"
@@ -163,7 +180,9 @@
 	          	  android:layout_margin="10dp"
 	              android:gravity="center_horizontal"
 	              android:orientation="vertical" >
-	
+	
+
+
 	              <Button
 	                  android:id="@+id/hbtnpreferencia"
 	                  android:layout_width="wrap_content"
@@ -181,7 +200,16 @@
 	                  android:textStyle="bold"/>
 	          </LinearLayout>
 	      </LinearLayout>
-	
+	
+
+
+
+
+
+
+
+
+
 	      <LinearLayout
 	          android:layout_width="fill_parent"
 	          android:layout_height="wrap_content"
@@ -194,7 +222,9 @@
 	              android:layout_height="wrap_content"
 	              android:layout_margin="10dp"              
 	              android:orientation="vertical" >
-	
+	
+
+
 	              <Button
 	                  android:id="@+id/hbtnconfiguracion"
 	                  android:layout_width="wrap_content"

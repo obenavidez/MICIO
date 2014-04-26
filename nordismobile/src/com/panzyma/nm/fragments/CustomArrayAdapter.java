@@ -26,7 +26,12 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> {
     Context context;
 	List<E> mOriginalValues;
 	List<E> items;
-    int selectedPos=0; 
+    int selectedPos=0;
+    
+	public List<E> getItems() {
+		return items;
+	}
+
 	public CustomArrayAdapter(Context context, int textViewResourceId, List<E> objects) {
 		super(context, textViewResourceId, objects = (objects==null)? new ArrayList<E>():objects);		
 		this.context = context;
@@ -81,17 +86,21 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> {
 	{ 
 		items.clear();
 	}
+	
 	public void setSelectedPosition(int pos)
 	{
 		selectedPos = pos;  
 	}	
-    public int getSelectedPosition(){
+   
+	public int getSelectedPosition(){
 		return selectedPos;
 	}    
+	
 	@Override
 	public E getItem(int position) {
 		return items.get(position);
 	}
+	
 	@Override
 	public long getItemId(int position) {
 		return position;

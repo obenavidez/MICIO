@@ -3,10 +3,10 @@ package com.panzyma.nm.view;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA; 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import com.panzyma.nm.DashBoardActivity;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM;
@@ -18,6 +18,7 @@ import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction; 
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.view.adapter.GenericAdapter; 
 import com.panzyma.nm.view.viewholder.PProductoViewHolder;
@@ -26,7 +27,8 @@ import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewmodel.vmPProducto;
 import com.panzyma.nordismobile.R;
-
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -48,21 +50,25 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+@SuppressLint("NewApi")
 @SuppressWarnings({"unchecked","rawtypes","unused"})
-public class ViewPedidoEdit extends DashBoardActivity implements Handler.Callback
+public class ViewPedidoEdit extends Activity implements Handler.Callback
 { 
 	public EditText tbxFecha;
 	public EditText tbxNumReferencia;
+	public EditText tbxNumRecibo;
 	public EditText tbxNombreDelCliente;
 	public TextView tbxPrecio;
 	public Spinner tbxTipoVenta;
 	public TextView tbxTotalFact;
+	
 	public View gridDetallePedido;	
 	TextView gridheader;
 	private Controller controller;
@@ -76,7 +82,7 @@ public class ViewPedidoEdit extends DashBoardActivity implements Handler.Callbac
 	private ViewPedidoEdit me;
 	private Pedido pedido;
     private Cliente cliente;
-    ArrayList<vmPProducto> Lvmpproducto;
+    ArrayList<DetallePedido> Lvmpproducto;
     
     //Totales del pedido
     private float subTotal = 0;
@@ -107,12 +113,11 @@ public class ViewPedidoEdit extends DashBoardActivity implements Handler.Callbac
 	{	 
 		super.onCreate(savedInstanceState); 
 		setContentView(R.layout.pedido_edit); 
-		setHeader(getString(R.string.PedidoActivityTitle),true, false); 
+		//setHeader(getString(R.string.PedidoActivityTitle),true, false); 
 		
 		try 
 	    {
-	    	me=this;
-	    	
+	    	me=this; 
 	    	nmapp=(NMApp) this.getApplication(); 
 	        nmapp.getController().setEntities(this,new BPedidoM());
 	        nmapp.getController().addOutboxHandler(new Handler(this));   
@@ -131,12 +136,13 @@ public class ViewPedidoEdit extends DashBoardActivity implements Handler.Callbac
 	public void initComponent()
 	{ 	
 		gridDetallePedido=findViewById(R.id.pddgrilla);
-		Lvmpproducto=new ArrayList<vmPProducto>();
+		Lvmpproducto=new ArrayList<DetallePedido>();
 		//LinearLayout  grilla=(LinearLayout) findViewById(R.id.pddgrilla);
 	    gridheader=(TextView)gridDetallePedido.findViewById(R.id.header);
 	    gridheader.setText("Productos a Facturar(0)");
-	    tbxFecha=(EditText) findViewById(R.id.pddetextv_detalle_fecha);
+	    tbxFecha=(EditText) findViewById(R.id.pddetextv_detalle_fecha); 
 	    tbxNumReferencia=(EditText) findViewById(R.id.pdddetextv_detalle_numref);
+	    tbxNumRecibo=(EditText) findViewById(R.id.pdddetextv_detalle_num);
 		tbxNombreDelCliente=(EditText) findViewById(R.id.pddtextv_detallecliente);
 		tbxPrecio=(TextView) findViewById(R.id.pddtextv_detalleprecio); 
 		tbxTotalFact=(TextView) findViewById(R.id.pddtextv_detalletotales); 
@@ -176,12 +182,29 @@ public class ViewPedidoEdit extends DashBoardActivity implements Handler.Callbac
             pedido.setTipo("CR"); //Crédito
             pedido.setExento(false);
             pedido.setAutorizacionDGI("");
-		}
+		} 
 		
 		//Fecha del Pedido
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
         if (pedido.getFecha() == 0)   
             pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));   
+        
+        if (pedido.getNumeroMovil() > 0)
+        	tbxNumReferencia.setText(getNumeroPedido(pedido.getNumeroMovil()));
+        
+        if (pedido.getNumeroCentral() > 0)
+        	tbxNumRecibo.setText(getNumeroPedido(pedido.getNumeroCentral()));
+        
+        if (pedido.getNombreCliente() != null)
+        	tbxNombreDelCliente.setText(pedido.getNombreSucursal() + "\\" + pedido.getNombreCliente());
+        
+        if (pedido.getCodTipoPrecio() != null)
+        	tbxPrecio.setText(pedido.getDescTipoPrecio());
+        
+        if (pedido.getTipo().compareTo("CO") == 0)
+        	tbxTipoVenta.setSelection(0);
+        else 
+        	tbxTipoVenta.setSelection(1);
         
         String descTotales = "ST: " + StringUtil.formatReal(subTotal) + " | Desc: " + StringUtil.formatReal(descuento) + " | IVA: " + StringUtil.formatReal(impuesto) +
         "  |  Total: " + StringUtil.formatReal(total);
@@ -283,17 +306,24 @@ public class ViewPedidoEdit extends DashBoardActivity implements Handler.Callbac
 				}	
 				else if (actionId == ID_AGREGAR_PRODUCTOS)
 				{					
-					DialogProducto dp=new DialogProducto(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+					DialogProducto dp = new DialogProducto(me,pedido.getCodTipoPrecio(), null, pedido.getId(), cliente.getObjCategoriaClienteID(), pedido.getObjTipoPrecioVentaID(), cliente.getObjTipoClienteID(), pedido.isExento());
+					
+					//DialogProducto dp=new DialogProducto(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 					dp.setOnDialogProductButtonClickListener
 					(  
 					    new DialogProducto.OnButtonClickListener() 
-					    {						
+					    {
+
 							@Override
-							public void onButtonClick(vmPProducto vmpproducto) 
-							{
-								Lvmpproducto.add(vmpproducto);
+							public void onButtonClick(DetallePedido det_p) {
+								// TODO Auto-generated method stub
+								det_p.setId(pedido.getId());
+								Lvmpproducto.add(det_p);
 								addProductToOrder();
-							}
+								CalculaTotales();
+								initComponent();
+							}						
+							 
 					    }
 					);
 					Window window = dp.getWindow(); 
@@ -393,4 +423,49 @@ public class ViewPedidoEdit extends DashBoardActivity implements Handler.Callbac
 		finish();		
 	}  
 
+	 @SuppressLint("NewApi")
+	private void CalculaTotales() 
+	 {
+	        subTotal = 0;
+	        descuento = 0;
+	        impuesto = 0;
+	        total = 0;
+	        DetallePedido[] detsPedido = new DetallePedido[Lvmpproducto.size()];
+	        for(int i=0; i < Lvmpproducto.size(); i++) {
+	            DetallePedido dp = (DetallePedido)Lvmpproducto.get(i);
+	            detsPedido[i] = dp;
+	            subTotal += StringUtil.round(dp.getSubtotal(), 2);
+	            descuento += StringUtil.round(dp.getDescuento(), 2);
+	            impuesto += StringUtil.round(dp.getImpuesto(), 2);            
+	        }
+	        
+	        pedido.setDetalles((detsPedido));
+	        pedido.setSubtotal(StringUtil.round(subTotal, 2));
+	        pedido.setDescuento(StringUtil.round(descuento, 2));
+	        pedido.setImpuesto(StringUtil.round(impuesto, 2));
+	        total = StringUtil.round(subTotal - descuento + impuesto, 2);
+	        pedido.setTotal(total);
+	        
+	        //Salvando el tipo de pedido (crédito contado)
+	        if (tbxTipoVenta != null) {
+	            pedido.setTipo("CR");
+	            if (((tbxTipoVenta.getSelectedItemPosition()==0)?"CO":"CR") == "CO")
+	                pedido.setTipo("CO");
+	        }
+	        
+	        if (tbxFecha != null) {   
+	            pedido.setFecha(DateUtil.d2i(new Date()));  
+	        } 
+	        
+	    }
+	 public  String getNumeroPedido(int numero) {  
+	        int cr = Integer.parseInt(me.getApplicationContext().getSharedPreferences("SystemParams", android.content.Context.MODE_PRIVATE).getString("CerosRellenoNumRefPedido","0"));
+	        
+	        char[] num = new char[cr];
+	        for(int i=0; i < cr; i++) num[i] = '0';
+	        
+	        String strNum = new String(num);
+	        strNum = strNum + numero;
+	        return strNum.substring(strNum.length() - cr, strNum.length());
+	    }
 }

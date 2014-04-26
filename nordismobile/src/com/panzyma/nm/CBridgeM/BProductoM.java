@@ -50,11 +50,12 @@ public class BProductoM {
     	this.pool=((NMApp)view.getApplicationContext()).getThreadPool();
     }  
 	
+	
 	public BProductoM(ProductoView view2)
 	{
-    	this.controller=((NMApp)view.getApplicationContext()).getController();  
+    	this.controller=((NMApp)view2.getApplicationContext()).getController();  
     	this.view2=view2; 
-    	this.pool=((NMApp)view.getApplicationContext()).getThreadPool();
+    	this.pool=((NMApp)view2.getApplicationContext()).getThreadPool();
     } 
 	
 	public BProductoM(DialogProducto view)
@@ -99,7 +100,7 @@ public class BProductoM {
 						try
 						{
 							 
-							Processor.send_ViewProductoToView(ModelProducto.getArrayCustomerFromLocalHost((view!=null && view1==null)?view.getContentResolver():view1.getContext().getContentResolver()),controller);						
+							Processor.send_ViewProductoToView(ModelProducto.getArrayCustomerFromLocalHost((view2!=null)?view2.getContentResolver():view1.getContext().getContentResolver()),controller);						
 						}
 						catch (Exception e) 
 						{

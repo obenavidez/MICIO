@@ -316,7 +316,7 @@ public final class Pedido extends SoapObject {
         this.Exento = exento;
     }
 
-    public boolean getExento() {
+    public boolean isExento() {
         return this.Exento;
     }
 

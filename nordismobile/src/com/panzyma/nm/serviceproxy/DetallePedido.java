@@ -117,7 +117,7 @@ public final class DetallePedido implements KvmSerializable{
         this.Precio = precio;
     }
 
-    public float getPrecio(float precio) {
+    public float getPrecio() {
         return this.Precio;
     }
 

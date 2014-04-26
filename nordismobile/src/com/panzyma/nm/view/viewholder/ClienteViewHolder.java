@@ -8,11 +8,11 @@ import com.panzyma.nordismobile.R;
 
 public class ClienteViewHolder{
 
-	//@InvokeView(viewId = R.id.gc_clientecod)
+	@InvokeView(viewId = R.id.gc_clientecod)
 	public TextView codigo; 
 	@InvokeView(viewId = R.id.gc_clientenom)
 	public TextView nombreCliente;
-	//@InvokeView(viewId = R.id.gc_clienteubi)
+	@InvokeView(viewId = R.id.gc_clienteubi)
 	public TextView ubicacion;
 	 
 	public void mappingData(Object entity)

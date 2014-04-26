@@ -20,6 +20,7 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 	OnItemSelectedListener mCallback;
 	private List<E> items;
 	private CustomArrayAdapter<E> mAdapter;
+	private int pos = 0;
 
 	public ListaFragment() {
 	}
@@ -32,12 +33,12 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 		}
 		this.items = mAdapter.AddAllToListViewDataSource(items);
 	}
-
+	 
 	// The container Activity must implement this interface so the frag can
 	// deliver messages
-	public interface OnItemSelectedListener {
+	public interface OnItemSelectedListener<E> {
 		/** Called by ListaCliente when a list item is selected */
-		public void onItemSelected(int position);
+		public void onItemSelected(E obj, int position);
 	}
 
 	@Override
@@ -65,7 +66,7 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 		// (We do this during onStart because at the point the listview is
 		// available.)
 
-		if (getFragmentManager().findFragmentById(R.id.ficha_client_fragment) != null) {
+		if (getFragmentManager().findFragmentById(R.id.dynamic_fragment) != null) {
 			getListView().setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
 		}
 	}
@@ -84,18 +85,30 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// Notify the parent activity of selected item
-		mCallback.onItemSelected(position);
 
+		// mCallback.onItemSelected(position);
+		mCallback.onItemSelected(getAdapter().getItems().get(position), position);
+		// super.onListItemClick(l, v, position, id);
 		// Set the item as checked to be highlighted when in two-pane layout
 		getListView().setItemChecked(position, true);
+		if (this.pos == position) {
+			this.pos = position;
+			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));
+		} else {
+			((ListView) (v.getParent())).getChildAt(this.pos).setBackgroundDrawable(getResources().getDrawable(R.color.transparent));
+			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));
+			this.pos = position;
+		}
 	}
 
 	@Override
 	public CustomArrayAdapter<E> getAdapter() {
 		return mAdapter;
-	}
-
+	} 
+	
+	
 }
