@@ -13,7 +13,6 @@ import android.util.Log;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig; 
 import com.panzyma.nm.datastore.DatabaseProvider;
-import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.viewmodel.vmProducto;

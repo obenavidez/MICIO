@@ -1,5 +1,5 @@
 package com.panzyma.nm.viewdialog;
-
+import com.panzyma.nordismobile.R;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
@@ -20,8 +20,6 @@ import com.panzyma.nm.view.viewholder.ProductoViewHolder;
 import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
 import com.panzyma.nm.viewmodel.vmPProducto;
 import com.panzyma.nm.viewmodel.vmProducto;
-import com.panzyma.nordismobile.R;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;

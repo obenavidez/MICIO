@@ -20,6 +20,7 @@ import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.MontoProveedor;
 import com.panzyma.nm.serviceproxy.PromocionCobro;
 import com.panzyma.nm.viewmodel.vmCliente;
+import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.Parameters;
@@ -347,6 +348,7 @@ public class ModelCliente
 	{
 		DatabaseProvider.RegistrarClientes(objL, cnt, page);
 	}
+	
 	public synchronized static void UpdateCustomer_From_LocalHost(final ArrayList<Cliente> objL,Context ctn) throws Exception
 	{  
 	//	DatabaseProvider.UpdateCustomer(objL,ctn); 
@@ -360,6 +362,17 @@ public class ModelCliente
 										 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
 		return  NMTranslate.ToObject(NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCCCliente),new CCCliente());		 
 	} 
+	
+	 	
+	public synchronized static vmFicha GetFichaCustomerFromServer(String Credentials,long idSucursal) throws Exception
+	{
+		Parameters params=new Parameters((new String[]{"Credentials","idSucursal"}),
+										 (new Object[]{Credentials,idSucursal}),
+										 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
+		
+		return  NMTranslate.ToObject(NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCCCliente),new vmFicha());		 
+	} 
+
 	
 	public synchronized static ArrayList<Factura> getFacturasClienteFromServer(Parameters params) throws Exception
 	{		

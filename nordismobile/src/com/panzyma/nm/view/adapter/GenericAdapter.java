@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.panzyma.nordismobile.R;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("unused")
 public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {

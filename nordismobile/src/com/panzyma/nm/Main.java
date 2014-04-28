@@ -1,6 +1,7 @@
 package com.panzyma.nm;
  
 import com.panzyma.nm.auxiliar.CustomDialog; 
+import com.panzyma.nordismobile.R;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
@@ -9,8 +10,6 @@ import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.vCliente;
-import com.panzyma.nordismobile.R;
-
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;

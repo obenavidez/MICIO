@@ -23,9 +23,7 @@ import android.view.WindowManager;
 
 import java.util.List;
 import java.util.ArrayList;
-
 import com.panzyma.nordismobile.R;
-
 
 @SuppressWarnings({"unused"})
 public class QuickAction extends PopupWindows implements OnDismissListener 

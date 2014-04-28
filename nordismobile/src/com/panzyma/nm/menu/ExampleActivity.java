@@ -1,12 +1,10 @@
 package com.panzyma.nm.menu;
 
-import com.panzyma.nordismobile.R;
-
 import android.app.Activity;
 import android.os.Bundle;
 
 import android.widget.Toast;
-
+import com.panzyma.nordismobile.R;
 /**
  * Gallery3D like QuickAction. 
  * 

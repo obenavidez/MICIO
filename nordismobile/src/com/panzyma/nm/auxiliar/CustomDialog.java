@@ -1,8 +1,7 @@
 package com.panzyma.nm.auxiliar;
   
-import com.panzyma.nordismobile.R;
-
 import android.annotation.SuppressLint;
+import com.panzyma.nordismobile.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;

@@ -5,8 +5,8 @@ package com.panzyma.nm;
  * http://www.technotalkative.com
  */
 
-import com.panzyma.nordismobile.R;
 import android.os.Bundle;
+import com.panzyma.nordismobile.R;
 
 public class FeedbackActivity  extends DashBoardActivity {
     /** Called when the activity is first created. */

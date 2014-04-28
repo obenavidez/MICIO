@@ -39,13 +39,14 @@ import com.panzyma.nm.view.viewholder.ClienteViewHolder;
 import com.panzyma.nm.viewdialog.DialogFichaCliente;
 import com.panzyma.nm.viewdialog.DialogCuentasPorCobrar;
 import com.panzyma.nm.viewmodel.vmCliente;  
-import com.panzyma.nordismobile.R;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.NMApp;
 import static com.panzyma.nm.controller.ControllerProtocol.*;
+import com.panzyma.nordismobile.R;
+import com.panzyma.nordismobile.R;
 
 @SuppressLint("ParserError")
 @SuppressWarnings({ "unchecked", "rawtypes" })

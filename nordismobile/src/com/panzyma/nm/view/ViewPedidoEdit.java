@@ -26,7 +26,6 @@ import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener; 
 import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewmodel.vmPProducto;
-import com.panzyma.nordismobile.R;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -56,6 +55,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.panzyma.nordismobile.R;
 
 @SuppressLint("NewApi")
 @SuppressWarnings({"unchecked","rawtypes","unused"})
@@ -432,7 +432,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback
 	        total = 0;
 	        DetallePedido[] detsPedido = new DetallePedido[Lvmpproducto.size()];
 	        for(int i=0; i < Lvmpproducto.size(); i++) {
-	            DetallePedido dp = (DetallePedido)Lvmpproducto.get(i);
+	            DetallePedido dp = Lvmpproducto.get(i);
 	            detsPedido[i] = dp;
 	            subTotal += StringUtil.round(dp.getSubtotal(), 2);
 	            descuento += StringUtil.round(dp.getDescuento(), 2);
