@@ -162,9 +162,6 @@ public class vCliente extends ActionBarActivity implements
 		   case C_UPDATE_FINISHED:
 			  // buildToastMessage(msg.obj.toString(), Toast.LENGTH_SHORT).show();
 			    pDialog.hide();
-			    TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
-			    txtenty.setVisibility(View.INVISIBLE);
-			    
 				result=true;
 				
 				break;
@@ -348,17 +345,27 @@ public class vCliente extends ActionBarActivity implements
 
 		gridheader.setText(String.format("Listado de Clientes (%s)",clientes.size()));
 		
-		TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
-		
 		if (clientes.size() == 0) {
 			
-			txtenty.setVisibility(View.VISIBLE);
+			ShowEmptyMessage(true);
 		}
 		else {
-			txtenty.setVisibility(View.INVISIBLE);
+			ShowEmptyMessage(false);
 		}
 		
 		firstFragment.setItems(clientes);
+	}
+	private void ShowEmptyMessage(boolean show)
+	{
+		TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
+		
+		if(show)
+		{
+			txtenty.setVisibility(View.VISIBLE);
+		}
+		else{
+			txtenty.setVisibility(View.INVISIBLE);
+		}
 	}
 	
 	private void SetData(final ArrayList<vmCliente> data, final int what) {
@@ -374,6 +381,7 @@ public class vCliente extends ActionBarActivity implements
 								firstFragment.setItems(data);
 								gridheader.setText("Listado de Clientes("+ customArrayAdapter.getCount() + ")");
 								footerView.setVisibility(View.VISIBLE);
+								ShowEmptyMessage(false);
 							} 
 							
 						}
@@ -389,11 +397,12 @@ public class vCliente extends ActionBarActivity implements
 		}
 	}
 	
-	private void ShowCustomerDetails ( vmFicha detailselected)
+	private void ShowCustomerDetails (vmFicha detailselected)
 	{
 		Bundle args = new Bundle();
 		args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
 		args.putParcelable(FichaClienteFragment.OBJECT, detailselected);
+
 		
 		//establecemos el titulo
 		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
@@ -413,7 +422,7 @@ public class vCliente extends ActionBarActivity implements
 				ficha.setArguments(args);
 				transaction.replace(R.id.fragment_container, ficha);
 				transaction.addToBackStack(null);	
-				gridheader.setVisibility(View.INVISIBLE);
+				/*gridheader.setVisibility(View.INVISIBLE);*/
 			}
 		}
 		// Commit the transaction transaction.commit();
