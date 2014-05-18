@@ -6,6 +6,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 
 import java.util.ArrayList;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -63,7 +64,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	private OnButtonClickListener mButtonClickListener;
 	private NMApp nmapp;
 	public Cliente cliente;
-	private static  Activity parent;
+	private static  ViewPedidoEdit parent;
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(Cliente cliente);
 	}
@@ -243,6 +244,12 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		nmapp.getController().removeOutboxHandler(TAG);
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
+		try {
+			nmapp.getController().setEntities(parent,parent.getBridge());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Log.d(TAG, "Activity quitting"); 
 		this.dismiss();
 	}  

@@ -28,6 +28,8 @@ public interface ControllerProtocol {
 	int C_FINISH=210;
 	int C_SAVING=211;
 	
+	int UPDATE_INVENTORY_FROM_SERVER=212;
+	
 	int LOAD_SETTING=299;
 	int LOAD_DATA=300;  
     int LOAD_DATA_FROM_LOCALHOST = 301;
@@ -45,6 +47,8 @@ public interface ControllerProtocol {
     int ERROR_INSERT=602;
     int ERROR_UPDATE=603;    
     int ERROR_DELETE=604;
+    
+    int C_INVETORY_UPDATED=200;
     
     int NOTIFICATION_DIALOG=0;
     int NOTIFICATION_DIALOG2=10;

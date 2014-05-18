@@ -13,17 +13,16 @@
         android:layout_height="wrap_content"
         android:inflatedId="@+id/header"
         android:layout="@layout/header" />
-
-    <ScrollView
+    <!--  <ScrollView
         android:id="@+id/ScrollView01"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="3dip" >
+        android:layout_marginBottom="3dip" > -->
 
             <RelativeLayout
                 android:id="@+id/rl1"
                 android:layout_width="match_parent"
-                android:layout_height="514dp"
+                android:layout_height="match_parent"
                 android:layout_marginTop="10dp" >
 
                 <TextView
@@ -173,6 +172,7 @@
 			    android:paddingTop="10dp"
 			    android:background="@drawable/style_textbox" 
 			    android:lines="2"
+			    android:enabled="false"
 				 />    
 
 				<include
@@ -181,12 +181,10 @@
 				    android:layout_height="280dp"
 				    android:layout_below="@+id/pddtextv_detalletotales"
 				    android:layout_marginTop="5dp"
-				    layout="@layout/grilla" />
-
-				
+				    layout="@layout/grilla" /> 
 
             </RelativeLayout> 
             
-    </ScrollView>
+    <!--  </ScrollView> -->
 
 </LinearLayout>

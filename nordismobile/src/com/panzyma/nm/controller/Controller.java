@@ -23,6 +23,7 @@ public class Controller<T, U>
 	private static final String TAG = Controller.class.getSimpleName(); 
 	private final HandlerThread inboxHandlerThread;
 	private final Handler inboxHandler; 
+	
 	Map<String,Handler> outboxHandlers=new HashMap<String,Handler>();
 	private final List<T> bridges= new ArrayList<T>();
 	private final List<U> views= new ArrayList<U>();
@@ -31,7 +32,7 @@ public class Controller<T, U>
 	{			 
 		inboxHandlerThread = new HandlerThread("Controller Inbox="+view.getClass().getSimpleName()); 
 		inboxHandlerThread.setPriority(Thread.MAX_PRIORITY);
-		inboxHandlerThread.start();		 
+		inboxHandlerThread.start();	 
 		this.view=view;		
 		this.bridge=(T) VbridgeM.getClass().getConstructor(this.getClass(),view.getClass()).newInstance(this,view);	
 		inboxHandler = new Handler(inboxHandlerThread.getLooper()) {
@@ -78,7 +79,7 @@ public class Controller<T, U>
 	}
 	public  boolean hasEntities()
 	{
-		if(this.bridge!=null && this.view!=null)
+		if(bridge!=null && this.view!=null)
 			return true;
 		return false;
 	}	
@@ -86,14 +87,14 @@ public class Controller<T, U>
 	
 	public  void setEntities(U _view,T _bridge) throws Exception
 	{
-		this.view=this.createObjectU(_view);		
-		this.bridge=this.createObjectT(_bridge);
+		view=this.createObjectU(_view);		
+		bridge=this.createObjectT(_bridge);
 	}
 	
 	public  void setEntities(U _view,String _bridge) throws Exception
 	{
-		this.view=this.createObjectU(_view);		
-		this.bridge=this.createObjectT(_bridge);
+		view=this.createObjectU(_view);		
+		bridge=this.createObjectT(_bridge);
 	}
 	
 	public U getView()
@@ -108,8 +109,8 @@ public class Controller<T, U>
 	
 	public  void disposeEntities()
 	{
-		this.view=null;		
-		this.bridge=null;
+		view=null;		
+		bridge=null;
 	}
 	
     public void removebridge(T _bridge)

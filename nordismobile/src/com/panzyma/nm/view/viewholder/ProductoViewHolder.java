@@ -2,6 +2,7 @@ package com.panzyma.nm.view.viewholder;
  
 import android.widget.TextView;
 
+import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.adapter.InvokeView; 
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
@@ -16,13 +17,13 @@ public class ProductoViewHolder {
 	
 	public void mappingData(Object entity)
 	{	
-		vmProducto prod=(vmProducto) entity;
+		Producto prod=(Producto) entity;
 		codigo.setText(""+prod.getCodigo()); 
 		nomprod.setText(""+prod.getNombre());
-		disponibilidad.setText(""+prod.getDisponibilidad()); 
-		if(prod.getDisponibilidad()==0)
+		disponibilidad.setText(""+prod.getDisponible()); 
+		if(prod.getDisponible()==0)
 			disponibilidad.setTextColor(android.graphics.Color.RED); 
-		else if(prod.getDisponibilidad()>0 && prod.getDisponibilidad()<20)
+		else if(prod.getDisponible()>0 && prod.getDisponible()<20)
 			disponibilidad.setTextColor(android.graphics.Color.rgb(255, 140, 60)); 
 		else
 			disponibilidad.setTextColor(android.graphics.Color.BLUE);

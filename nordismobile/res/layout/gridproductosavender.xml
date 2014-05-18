@@ -44,9 +44,10 @@
 					 android:layout_height="wrap_content"   	
 					 android:layout_below="@+id/gpa_nombreprod"
 					 android:layout_toRightOf="@+id/gpa_lblcantidad"
-					 android:layout_marginLeft="5dp" 
-					 android:textColor="@color/Blue"
-			        android:textStyle="bold"
+					 android:layout_marginLeft="5dp"
+					 style="@style/StyleFontTexViewNormal"
+					 android:textColor="@color/Black"
+			         android:textStyle="bold"
 			        /> 
 			        
 			        <TextView
@@ -70,9 +71,10 @@
 					 android:layout_height="wrap_content"   	
 					 android:layout_below="@+id/gpa_nombreprod"
 					 android:layout_toRightOf="@+id/gpa_lblbonificacion"
-					 android:layout_marginLeft="5dp" 
-					 android:textColor="@color/Blue"
-			        android:textStyle="bold"
+					 android:layout_marginLeft="5dp"
+					 style="@style/StyleFontTexViewNormal"
+					 android:textColor="@color/Black"
+			         android:textStyle="bold"
 			        /> 
 			        
 			         <TextView
@@ -95,10 +97,11 @@
 					 android:layout_width="wrap_content"
 					 android:layout_height="wrap_content"   	
 					 android:layout_below="@+id/gpa_nombreprod"
-					 android:layout_toRightOf="@+id/gpa_lblpromocion"
-					 android:layout_marginLeft="5dp" 
-					 android:textColor="@color/Blue"
-			        android:textStyle="bold"
+					 android:layout_toRightOf="@+id/gpa_lblpromocion" 
+					 android:layout_marginLeft="5dp"
+					 style="@style/StyleFontTexViewNormal"
+					 android:textColor="@color/Black"
+			         android:textStyle="bold"
 			        />  
 			         <TextView
 		             android:id="@+id/gpa_lblprecio"
@@ -116,14 +119,16 @@
 			        </TextView> 
 			        
 			        <TextView
-		             android:id="@+id/gpa_productoprecio"
-		             style="@style/StyleFontTexViewNormal"
+		             android:id="@+id/gpa_productoprecio" 
 		             android:layout_width="wrap_content"
 		             android:layout_height="wrap_content" 
 		             android:layout_below="@+id/gpa_nombreprod"
-		             android:layout_alignRight="@+id/gpa_lblprecio"
+		             android:layout_toRightOf="@+id/gpa_lblprecio" 
 		             android:layout_marginLeft="5dp"
-		             android:layout_marginTop="5dp">			
+					 style="@style/StyleFontTexViewNormal"
+					 android:textColor="@color/Black"
+			         android:textStyle="bold"
+		             >			
 			        </TextView> 
 			        
 			        
@@ -143,14 +148,16 @@
 			        </TextView> 
 			        
 			        <TextView
-		             android:id="@+id/gpa_iva"
-		             style="@style/StyleFontTexViewNormal"
+		             android:id="@+id/gpa_iva" 
 		             android:layout_width="wrap_content"
 		             android:layout_height="wrap_content" 
 		             android:layout_below="@+id/gpa_nombreprod"
-		             android:layout_alignRight="@+id/gpa_lbliva"
+		             android:layout_toRightOf="@+id/gpa_lbliva"  
 		             android:layout_marginLeft="5dp"
-		             android:layout_marginTop="5dp">			
+					 style="@style/StyleFontTexViewNormal"
+					 android:textColor="@color/Black"
+			         android:textStyle="bold"
+		             >			
 			        </TextView> 
 			         
 			        <View  	android:id="@+id/gpa_separator"
@@ -177,15 +184,16 @@
 			       </TextView>  
 			        
 			       <TextView
-			           android:id="@+id/gpa_total"
-			           style="@style/StyleFontTexViewNormal"
-			           android:layout_width="wrap_content"
-			           android:layout_height="wrap_content"
-			           android:layout_alignParentLeft="true"
-			           android:layout_below="@+id/gpa_separator"
-			           android:layout_alignRight="@+id/gpa_lbltotal"
-			           android:layout_marginLeft="5dp"
-			           android:layout_marginTop="5dp">			
+						android:id="@+id/gpa_total" 
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content" 
+						android:layout_below="@+id/gpa_separator" 
+						android:layout_toRightOf="@+id/gpa_lbltotal"  
+						android:layout_marginLeft="5dp"
+						style="@style/StyleFontTexViewNormal"
+						android:textColor="@color/Black"
+						android:textStyle="bold"
+			           >			
 			       </TextView> 
             
                 </RelativeLayout> 

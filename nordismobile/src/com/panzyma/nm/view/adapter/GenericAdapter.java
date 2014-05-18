@@ -30,12 +30,18 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 		this.inflater = (LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
 		this.items = items; 
 		this.viewclass=viewclass;
-		this.layoutid=layoutid[0];
+		this.layoutid=layoutid[0]; 
 		notifyDataSetChanged();
 	}	
 	public List<E> AddAllToListViewDataSource(List<E> obj)
-	{
-		items.addAll(obj); 
+	{ 
+		//items.add(obj.get(obj.size()-1)); 
+		this.notifyDataSetChanged();
+		return items;
+	} 
+	public List<E> Add(E obj)
+	{ 
+		items.add(obj); 
 		this.notifyDataSetChanged();
 		return items;
 	} 
@@ -50,10 +56,11 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 	public void clearItems()
 	{ 
 		items.clear();
+		notifyDataSetChanged();
 	}
 	public void setSelectedPosition(int pos)
 	{
-		selectedPos = pos;  
+		selectedPos = pos;
 	}	
     public int getSelectedPosition(){
 		return selectedPos;

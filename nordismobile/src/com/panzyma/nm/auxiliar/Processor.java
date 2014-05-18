@@ -52,6 +52,14 @@ public class Processor {
 			// Thread.sleep(500); 
 	     }  
 	}
+	public static void send_ViewProductosToView(ArrayList<Producto> objL,Controller controller)throws Exception
+	{ 
+		 synchronized(lock)
+	     { 
+			 controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size()!=0)?objL:new ArrayList<vmProducto>() );
+			// Thread.sleep(500); 
+	     }  
+	}
 	public static void send_ViewFichaCustomerToView(CCCliente objL,Controller controller)throws Exception
 	{
 		synchronized(lock)

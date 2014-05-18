@@ -634,15 +634,14 @@ public class DatabaseProvider extends ContentProvider
 	{
 		
 		int cont;
-		//Si es una consulta a un ID concreto construimos el WHERE
-		 
+		//Si es una consulta a un ID concreto construimos el WHERE		 
 		SQLiteDatabase db = dbhelper.getWritableDatabase();
+		db.beginTransaction();
 		List<Map.Entry> coll=FromWhere(uri);
 		String TablaName=coll.get(0).getValue().toString();
-		String where =coll.get(1).getValue().toString();
-		
+		String where =coll.get(1).getValue().toString(); 
 		cont = db.update(TablaName, values, where, selectionArgs);
-		
+		db.endTransaction();
 		return cont;
 	}
 	

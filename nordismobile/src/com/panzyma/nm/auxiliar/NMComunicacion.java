@@ -1,5 +1,6 @@
 package com.panzyma.nm.auxiliar; 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -19,6 +20,7 @@ import org.ksoap2.transport.HttpTransportSE;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.util.Log; 
 
 public class NMComunicacion {
@@ -133,4 +135,8 @@ public class NMComunicacion {
     }
     
 	
+	/*
+	  Comunicación Mediante Bluetooth
+	 * */
+
 }

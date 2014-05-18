@@ -31,8 +31,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -59,19 +61,18 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	private GenericAdapter adapter; 
 	private Button Menu; 
 	private QuickAction quickAction;  
-	private static final String TAG = DialogCliente.class.getSimpleName(); 
+	private static final String TAG = DialogProducto.class.getSimpleName(); 
 	ListView lvproducto;	
 	TextView gridheader;
-	private int positioncache=-1; 
-	
+	private int positioncache=-1;  
 	private OnButtonClickListener mButtonClickListener; 
 	
 	public Producto producto;
-	protected vmProducto product_selected;  
+	protected Producto product_selected;  
 	
 	
 	public interface OnButtonClickListener {
-		public abstract void onButtonClick(DetallePedido det_p);
+		public abstract void onButtonClick(DetallePedido det_p,Producto prod);
 	}
 	
     public void setOnDialogProductButtonClickListener(OnButtonClickListener listener) {
@@ -90,18 +91,13 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
     private long _idTipoCliente;
     private String[][] data = null;
     private boolean _exento;
-	private ArrayList<Producto> _idsProdsExcluir;
+	private ArrayList<Producto> _idsProdsExcluir; 
+	private ArrayList<Producto> Lproducto;
      
-    public DialogProducto(ViewPedidoEdit vpe,String codTP, ArrayList<Producto> ProdsExclir, long idPedido, long idCategCliente, long idTipoPrecio, long idTipoCliente, boolean exento) 
+    @SuppressWarnings("unchecked")
+	public DialogProducto(ViewPedidoEdit vpe,String codTP, ArrayList<Producto> ProdsExclir, long idPedido, long idCategCliente, long idTipoPrecio, long idTipoCliente, boolean exento) 
     {    
-    	super(vpe,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        codTipoPrecio = codTP;
-        _idsProdsExcluir = ProdsExclir;
-        _idCategCliente = idCategCliente;
-        _idTipoPrecio = idTipoPrecio;
-        _idPedido = idPedido;       
-        _idTipoCliente = idTipoCliente; 
-        _exento = exento; 
+    	super(vpe,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);     
         
         try 
         {   
@@ -111,42 +107,38 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
         	nmapp=(NMApp) vpe.getApplication(); 
 	        nmapp.getController().setEntities(this,new BProductoM()); 
 	        nmapp.getController().addOutboxHandler(new Handler(this));
+	        pd = ProgressDialog.show(vpe, "Espere por favor", "Trayendo Info...", true, false); 
 			WindowManager wm = (WindowManager) vpe.getSystemService(Context.WINDOW_SERVICE);
-            display = wm.getDefaultDisplay();
-			pd = ProgressDialog.show(vpe, "Espere por favor", "Trayendo Info...", true, false); 
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
-	        initComponents();
+            display = wm.getDefaultDisplay(); 
+			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
+			initComponents();
+			codTipoPrecio = codTP;
+	        _idsProdsExcluir = (ProdsExclir==null)?new ArrayList<Producto>():ProdsExclir;
+	        _idCategCliente = idCategCliente;
+	        _idTipoPrecio = idTipoPrecio;
+	        _idPedido = idPedido;       
+	        _idTipoCliente = idTipoCliente; 
+	        _exento = exento; 
+	        Lproducto=new ArrayList<Producto>();
+	        
 	        
         }catch (Exception e) { 
 			e.printStackTrace();
 			//buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
 		}	 
-    }
+    } 
     
-//	public DialogProducto(ViewPedidoEdit vpe, int theme) {
-//		super(vpe, theme);
-//
-//		try 
-//        {   
-//			setContentView(R.layout.mainproducto);  
-//        	mcontext=this.getContext();
-//        	parent=vpe;       	
-//        	nmapp=(NMApp) vpe.getApplication(); 
-//	        nmapp.getController().setEntities(this,new BProductoM()); 
-//	        nmapp.getController().addOutboxHandler(new Handler(this));
-//			WindowManager wm = (WindowManager) vpe.getSystemService(Context.WINDOW_SERVICE);
-//            display = wm.getDefaultDisplay();
-//			pd = ProgressDialog.show(vpe, "Espere por favor", "Trayendo Info...", true, false); 
-//			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
-//	        initComponents();
-//	        
-//        }catch (Exception e) { 
-//			e.printStackTrace();
-//			//buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
-//		}	 
-//		
-//	}
-	
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) 
+    { 
+    	pd.dismiss();
+        if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+    	  	FINISH_ACTIVITY();
+            return true;
+	    }
+        return super.onKeyUp(keyCode, event); 
+    } 
 	
 	public void initComponents()
 	{
@@ -190,36 +182,51 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	@Override
 	public boolean handleMessage(Message msg) {
 
+	 
 		switch (msg.what) 
 		{		 
 			case C_DATA:   
 				
-				LoadData((ArrayList<vmProducto>)((msg.obj==null)?new ArrayList<vmProducto>():msg.obj),C_DATA);
+				filterData((ArrayList<Producto>)((msg.obj==null)?new ArrayList<Producto>():msg.obj));
+				LoadData();
 				return true;
-			case ERROR:
-				pd.dismiss();
+			case ERROR: 
 				ErrorMessage error=((ErrorMessage)msg.obj);
-				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();				 
+//				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();				 
 				return true;		
 		}
 		return false;
 		
 	}
-
-	private Dialog buildCustomDialog(String tittle, String string,
-			int alertDialog) {
-		// TODO Auto-generated method stub
-		return null;
+ 
+	public void filterData(ArrayList<Producto> lproductos)
+	{
+		  
+		if(_idsProdsExcluir!=null && _idsProdsExcluir.size()!=0)
+		{  		
+			if(lproductos.size()!=0)
+			{								
+				for(Producto item:_idsProdsExcluir) 	
+				{		
+					if(lproductos.contains(item))
+						lproductos.remove(item);
+				}
+				
+			}
+			
+		} 
+		if(lproductos!=null && lproductos.size()!=0)
+			Lproducto=lproductos;
+		
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void LoadData(ArrayList<vmProducto> Lproducto, int cData) {
-		
+	private void LoadData() {		
 		
 		try 
-		{			 
-			if(Lproducto.size()!=0)
-			{
+		{			  
+			if(Lproducto.size()!=0 )
+			{ 
 					gridheader.setText("Listado de Productos("+Lproducto.size()+")");
 					adapter=new GenericAdapter(parent,ProductoViewHolder.class,Lproducto,R.layout.gridproducto);				 
 					lvproducto.setAdapter(adapter);
@@ -232,17 +239,16 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			            	if((parent.getChildAt(positioncache))!=null)						            							            		
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
-			            	product_selected=(vmProducto) adapter.getItem(position);	
-			            	try { 
-			            		producto=(Producto) nmapp.getController().getBridge().getClass().getMethod("getProductoByID",ContentResolver.class,long.class).invoke(null,DialogProducto.this.getContext().getContentResolver(),product_selected.getId());
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+			            	product_selected=(Producto) adapter.getItem(position);	
+//			            	try { 
+//			            		producto=(Producto) nmapp.getController().getBridge().getClass().getMethod("getProductoByID",ContentResolver.class,long.class).invoke(null,DialogProducto.this.getContext().getContentResolver(),product_selected.getId());
+//							} catch (Exception e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
 			            	adapter.setSelectedPosition(position); 
 			            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));					            	 
-			            	//mButtonClickListener.onButtonClick(producto);
-			            	FINISH_ACTIVITY();
+			            	//mButtonClickListener.onButtonClick(producto); 
 			            }
 			        }); 								
 					lvproducto.setOnItemLongClickListener(new OnItemLongClickListener()
@@ -255,18 +261,18 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 							if((parent.getChildAt(positioncache))!=null)						            							            		
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
-			            	product_selected=(vmProducto) adapter.getItem(position);	
-			            	try { 
-			            		producto=(Producto) nmapp.getController().getBridge().getClass().getMethod("getProductoByID",ContentResolver.class,long.class).invoke(null,DialogProducto.this.getContext().getContentResolver(),product_selected.getId());
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+			            	product_selected=(Producto) adapter.getItem(position);	
+//			            	try { 
+//			            		producto=(Producto) nmapp.getController().getBridge().getClass().getMethod("getProductoByID",ContentResolver.class,long.class).invoke(null,DialogProducto.this.getContext().getContentResolver(),product_selected.getId());
+//							} catch (Exception e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
 			            	adapter.setSelectedPosition(position); 
 			            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));				
 							
 			            	//EditDetPedido editForm = new EditDetPedido(prod, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
-							DetalleProducto dp=new DetalleProducto(DialogProducto.this,producto, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
+							DetalleProducto dp=new DetalleProducto(DialogProducto.this.getContext(),product_selected, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
 							
 							dp.setOnDialogDetalleProductButtonClickListener(new OnButtonClickHandler(){
 
@@ -274,69 +280,50 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 								public void onButtonClick(DetallePedido det_p,boolean btn) {
 									if(btn)
 									{ 
-										mButtonClickListener.onButtonClick(det_p);
+										mButtonClickListener.onButtonClick(det_p,product_selected);
+										Lproducto.remove(positioncache);
+										adapter.notifyDataSetChanged(); 
 									}
 																		
 									
-								}
- 
- 
-								
+								} 
 								
 							}); 
       						dp.getWindow().setGravity(Gravity.CENTER); 
 							dp.getWindow().setGravity(Gravity.CENTER); 
 							dp.getWindow().setLayout(display.getWidth()-40,display.getHeight()-110);  
-							dp.show();
-							/*
-							if((parent.getChildAt(positioncache))!=null)						            							            		
-			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
-			            	positioncache=position;				            	
-			            	product_selected=(vmProducto) adapter.getItem(position); 
-			            	Toast.makeText(mcontext, "prueba long click", Toast.LENGTH_LONG).show();
-			            	try {
-								nmapp.getController().getBridge().getClass().getMethod("getProductoByID",long.class).invoke(producto,producto.getId());
-							} catch (Exception e) { 
-								e.printStackTrace();
-							}
-			            	adapter.setSelectedPosition(position); 
-			            	view.setBackground(mcontext.getResources().getDrawable(R.drawable.action_item_selected));
-			            	//mButtonClickListener.onButtonClick(new vmPProducto(product_selected.getId(),product_selected.getNombre(), 23));
-			            	FINISH_ACTIVITY();
-			            	*/
-			            	//quickAction.show(view,display,false);
+							dp.show(); 
 							return true;
 						}
  
 				        	
-				    });
-		           // buildToastMessage("sincronización exitosa",Toast.LENGTH_SHORT).show();
-				
-		 	} 
+				    }); 
+				}  
 		} catch (Exception e) {
-			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
+//			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
 			e.printStackTrace();
 		}
 		pd.dismiss();	
 
 		
 		
-	}
-
-	public Producto getProductoSelected()
-	{
-		return producto;
-	}
+	} 
 	
-	protected void FINISH_ACTIVITY() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	private Dialog buildToastMessage(String string, int lengthShort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	private void FINISH_ACTIVITY()
+	{
+		nmapp.getController().removeOutboxHandler(TAG);
+		nmapp.getController().removebridge(nmapp.getController().getBridge());
+		nmapp.getController().disposeEntities();
+		try {
+			nmapp.getController().setEntities(parent,parent.getBridge());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.d(TAG, "Activity quitting"); 
+		adapter.clearItems();
+		this.dismiss();
+	}  
+ 
 
 }
