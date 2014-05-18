@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura; 
+import com.panzyma.nm.serviceproxy.Recibo;
+
 import android.annotation.SuppressLint;
 import android.content.ContentProvider; 
 import android.content.ContentValues;
@@ -41,6 +43,7 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_LOTE = Uri.parse(CONTENT_URI+"/lote");
 	public static final Uri CONTENT_URI_PROMOCION = Uri.parse(CONTENT_URI+"/promocion");
 	public static final Uri CONTENT_URI_USUARIO = Uri.parse(CONTENT_URI+"/usuario");	
+	public static final Uri CONTENT_URI_RECIBO = Uri.parse(CONTENT_URI+ "/recibo");
 	
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
@@ -72,6 +75,8 @@ public class DatabaseProvider extends ContentProvider
 	private static final int USUARIO=26;
 	private static final int USUARIO_ID=27;
 	private static final UriMatcher uriMatcher;
+	private static final int RECIBO = 28;
+	private static final int RECIBO_ID = 29;
 	
 	//Base de datos
 	private NM_SQLiteHelper dbhelper;
@@ -94,6 +99,7 @@ public class DatabaseProvider extends ContentProvider
 	private static final String TABLA_LOTE = "Lote";
 	private static final String TABLA_PROMOCION = "Promocion";
 	private static final String TABLA_USUARIO = "Usuario";
+	private static final String TABLA_RECIBO = "Recibo";
 	
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -135,6 +141,9 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "usuario", USUARIO);
 		uriMatcher.addURI(AUTHORITY, "usuario/#", USUARIO_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "recibo", RECIBO);
+		uriMatcher.addURI(AUTHORITY, "recibo/#", RECIBO_ID);
 	}
 	
 	@Override
@@ -789,4 +798,60 @@ public class DatabaseProvider extends ContentProvider
 	public Uri insert(Uri uri, ContentValues values) { 
 		return null;
 	}
+	
+	public static void RegistrarRecibo(Recibo recibo, Context cnt) throws Exception {
+		
+		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
+		
+		ContentValues values;
+		
+		SQLiteDatabase bdd = d.getWritableDatabase();
+		
+		bdd.beginTransaction();
+		
+		values = new ContentValues();
+		
+		values.put(NMConfig.Recibo.ID, recibo.getId());
+		values.put(NMConfig.Recibo.NUMERO, recibo.getNumero());
+		values.put(NMConfig.Recibo.FECHA, recibo.getFecha());
+		values.put(NMConfig.Recibo.NOTAS, recibo.getNotas());
+		values.put(NMConfig.Recibo.TOTAL_RECIBO, recibo.getTotalRecibo());		
+		values.put(NMConfig.Recibo.TOTAL_FACTURAS, recibo.getTotalFacturas());
+		values.put(NMConfig.Recibo.TOTAL_NOTAS_DEBITO, recibo.getTotalND());
+		values.put(NMConfig.Recibo.TOTAL_NOTAS_CREDITO, recibo.getTotalNC());
+		values.put(NMConfig.Recibo.TOTAL_INTERES, recibo.getTotalInteres());
+		values.put(NMConfig.Recibo.SUBTOTAL, recibo.getSubTotal());
+		values.put(NMConfig.Recibo.TOTAL_DESCUENTO, recibo.getTotalDesc());
+		values.put(NMConfig.Recibo.TOTAL_RETENIDO, recibo.getTotalRetenido());
+		values.put(NMConfig.Recibo.TOTAL_OTRAS_DEDUCCIONES, recibo.getTotalOtrasDed());
+		values.put(NMConfig.Recibo.TOTAL_OTRAS_DEDUCCIONES, recibo.getTotalOtrasDed());
+		values.put(NMConfig.Recibo.REFERENCIA, recibo.getReferencia());
+		values.put(NMConfig.Recibo.CLIENTE_ID, recibo.getObjClienteID());
+		values.put(NMConfig.Recibo.SUCURSAL_ID, recibo.getObjSucursalID());
+		values.put(NMConfig.Recibo.NOMBRE_CLIENTE, recibo.getNombreCliente());
+		values.put(NMConfig.Recibo.COLECTOR_ID, recibo.getObjColectorID());
+		values.put(NMConfig.Recibo.APLICA_DESCUENTO_OCASIONAL, recibo.isAplicaDescOca());
+		values.put(NMConfig.Recibo.CLAVE_AUTORIZA_DeSCUENTO_OCASIONAL, recibo.getClaveAutorizaDescOca());
+		values.put(NMConfig.Recibo.PORCENTAJE_DESCUENTO_OCASIONAL_COLECTOR, recibo.getPorcDescOcaColector());
+		values.put(NMConfig.Recibo.ESTADO_ID, recibo.getObjEstadoID());
+		values.put(NMConfig.Recibo.CODIGO_ESTADO, recibo.getCodEstado());
+		values.put(NMConfig.Recibo.DESCRICION_ESTADO, recibo.getDescEstado());
+		values.put(NMConfig.Recibo.TOTAL_DESCUENTO_OCASIONAL, recibo.getTotalDescOca());
+		values.put(NMConfig.Recibo.TOTAL_DESCUENTO_PROMOCION, recibo.getTotalDescPromo());
+		values.put(NMConfig.Recibo.TOTAL_DESCUENTO_PRONTO_PAGO, recibo.getTotalDescPP());
+		values.put(NMConfig.Recibo.TOTAL_IMPUESTO_PROPORCIONAL, recibo.getTotalImpuestoProporcional());
+		values.put(NMConfig.Recibo.TOTAL_IMPUESTO_EXONERADO, recibo.getTotalImpuestoExonerado());
+		values.put(NMConfig.Recibo.EXENTO, recibo.isExento());
+		values.put(NMConfig.Recibo.AUTORIZA_DGI, recibo.getAutorizacionDGI());
+		
+		bdd.insert(TABLA_RECIBO, null, values);
+		
+		bdd.setTransactionSuccessful();
+
+		if (bdd != null || (bdd.isOpen())) {
+			bdd.endTransaction();
+			bdd.close();
+		}
+	}
+	
 }

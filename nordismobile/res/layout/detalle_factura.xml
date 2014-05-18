@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true" >
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_sucursal"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Sucursal :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_sucursal"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/White"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_nofactura"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="No Factura :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_nofactura"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_tipo"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Tipo :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_tipo"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_fecha"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Fecha :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_fecha"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_nopedido"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="No.Pedido :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_nopedido"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_estado"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_weight="1"
+            android:text="Estado :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_estado"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_dias"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Dias :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_dias"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_descontado"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Descontado :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_descontado"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_fechavence"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Fecha Vence :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_fechavence"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_fechadescpp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Fecha DescPP :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detallefechadescpp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_totalfact"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Total Factura :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_totalfact"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_abonado"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Abonado :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_abonado"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_retenido"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Retenido :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_retenido"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_otro"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Otro :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_otro"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_saldo"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Saldo :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_saldo"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_empty1"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_empty2"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+    </TableRow>
+
+</TableLayout>
