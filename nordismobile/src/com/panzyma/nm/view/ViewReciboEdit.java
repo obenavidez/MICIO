@@ -19,6 +19,7 @@ import com.panzyma.nm.auxiliar.VentasUtil;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelProducto;
@@ -60,7 +61,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ViewReciboEdit extends FragmentActivity implements Handler.Callback {
+public class ViewReciboEdit extends FragmentActivity implements Handler.Callback, Editable {
 
 	private EditText tbxFecha;
 	private EditText tbxNumReferencia;
@@ -117,6 +118,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private Cliente cliente;
 	private Recibo recibo;
 	private Context contexto;
+	private BReciboM brm;
 
 	private NMApp nmapp;
 	private List<Factura> facturasRecibo = new ArrayList<Factura> ();
@@ -129,7 +131,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		try {
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
-			nmapp.getController().setEntities(this, new BReciboM());
+			
+			nmapp.getController().setEntities(this, brm =  new BReciboM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 
 			contexto = this.getApplicationContext();
@@ -465,6 +468,18 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			adapter.notifyDataSetChanged();
 			gridheader.setText("Facturas a Pagar ("+adapter.getCount()+")");
 		}
+	}
+
+	@Override
+	public BReciboM getBridge() {
+		// TODO Auto-generated method stub
+		return brm;
+	}
+
+	@Override
+	public Context getContext() {
+		// TODO Auto-generated method stub
+		return this.me;
 	}
 
 }

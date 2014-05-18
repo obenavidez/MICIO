@@ -14,7 +14,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
+import com.panzyma.nm.interfaces.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
@@ -65,7 +65,8 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	private OnButtonClickListener mButtonClickListener;
 	private NMApp nmapp;
 	public Cliente cliente;
-	private static  ViewPedidoEdit parent;
+	private static Context parent;
+	private Editable _view;
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(Cliente cliente);
 	}
@@ -74,21 +75,21 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		mButtonClickListener = listener;
 	} 
 	
-	public DialogCliente(ViewPedidoEdit vpe,int theme) 
-	{
-		super(vpe,theme);
-
+	public DialogCliente(Editable vpe,int theme) 
+	{		
+		super(vpe.getContext(),theme);
 		try 
         {   
+			_view = vpe;
 			setContentView(R.layout.maincliente);  
         	mcontext=this.getContext();  
-        	parent=vpe;       	
-        	nmapp=(NMApp) vpe.getApplication(); 
+        	parent = vpe.getContext();;       	
+        	nmapp=(NMApp) parent.getApplicationContext(); 
 	        nmapp.getController().setEntities(this,new BClienteM()); 
 	        nmapp.getController().addOutboxHandler(new Handler(this));
-			WindowManager wm = (WindowManager) vpe.getSystemService(Context.WINDOW_SERVICE);
+			WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay();
-			pd = ProgressDialog.show(vpe, "Espere por favor", "Trayendo Info...", true, false); 
+			pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false); 
 			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
 	        initComponents();
 	        
@@ -97,29 +98,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
 		}	 
       
-	}
-	
-	public DialogCliente(ViewReciboEdit vpe, int theme) {
-		super(vpe,theme);
-		try 
-        {   
-			setContentView(R.layout.maincliente);  
-        	mcontext=this.getContext();  
-        	//parent=vpe;       	
-        	nmapp=(NMApp) vpe.getApplication(); 
-	        nmapp.getController().setEntities(this,new BClienteM()); 
-	        nmapp.getController().addOutboxHandler(new Handler(this));
-			WindowManager wm = (WindowManager) vpe.getSystemService(Context.WINDOW_SERVICE);
-            display = wm.getDefaultDisplay();
-			pd = ProgressDialog.show(vpe, "Espere por favor", "Trayendo Info...", true, false); 
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
-	        initComponents();
-	        
-        }catch (Exception e) { 
-			e.printStackTrace();
-			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
-		}	 
-	}
+	}	
 
 	public void initComponents()
 	{
@@ -154,13 +133,11 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	        @Override
 	        public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
 	        @Override
-	        public void afterTextChanged(Editable s) {}
+	        public void afterTextChanged(android.text.Editable s) {}
 	    });  
 	    
 	}
-	
-	
-	
+		
 	@Override
 	public boolean handleMessage(Message msg) 
 	{ 
@@ -178,9 +155,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		}
 		return false;
 	}
-	
-	
-	 
+		 
 	public void LoadData(final ArrayList<vmCliente> Lcliente, int what)
 	{     	 
 		try 
@@ -267,7 +242,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
 		try {
-			nmapp.getController().setEntities(parent,parent.getBridge());
+			nmapp.getController().setEntities(parent,_view.getBridge());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

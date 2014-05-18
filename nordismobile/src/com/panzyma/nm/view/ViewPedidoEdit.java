@@ -2,54 +2,15 @@ package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.C_INVETORY_UPDATED;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_INVENTORY_FROM_SERVER;
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.panzyma.nm.DashBoardActivity;
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BConfiguracionM;
-import com.panzyma.nm.CBridgeM.BPedidoM;
-import com.panzyma.nm.CBridgeM.BProductoM;
-import com.panzyma.nm.auxiliar.BluetoothComunication;
-import com.panzyma.nm.auxiliar.CustomDialog;
-import com.panzyma.nm.auxiliar.DateUtil;
-import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.controller.Controller;
-import com.panzyma.nm.controller.ControllerProtocol; 
-import com.panzyma.nm.menu.ActionItem;
-import com.panzyma.nm.menu.QuickAction;
-import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.serviceproxy.DetallePedido;
-import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.PedidoPromocion;
-import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.serviceproxy.Promocion;
-import com.panzyma.nm.serviceproxy.Promociones;
-import com.panzyma.nm.serviceproxy.Ventas;
-import com.panzyma.nm.view.adapter.GenericAdapter;
-import com.panzyma.nm.view.viewholder.PProductoViewHolder;
-import com.panzyma.nm.viewdialog.DialogCliente;
-import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
-import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
-import com.panzyma.nm.viewdialog.DetalleProducto;
-import com.panzyma.nm.viewdialog.DialogCondicionesNotas;
-import com.panzyma.nm.viewdialog.DialogProducto;
-import com.panzyma.nm.viewdialog.DialogPromociones;
-import com.panzyma.nm.viewmodel.vmPProducto; 
-import com.panzyma.nm.viewmodel.vmProducto;
-import com.panzyma.nordismobile.R;
- 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -60,7 +21,6 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -80,17 +40,45 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BPedidoM;
+import com.panzyma.nm.auxiliar.BluetoothComunication;
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.interfaces.Editable;
+import com.panzyma.nm.menu.ActionItem;
+import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.PedidoPromocion;
+import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.serviceproxy.Promocion;
+import com.panzyma.nm.serviceproxy.Promociones;
+import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.viewholder.PProductoViewHolder;
+import com.panzyma.nm.viewdialog.DetalleProducto;
+import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
+import com.panzyma.nm.viewdialog.DialogCliente;
+import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
+import com.panzyma.nm.viewdialog.DialogCondicionesNotas;
+import com.panzyma.nm.viewdialog.DialogProducto;
+import com.panzyma.nm.viewdialog.DialogPromociones;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("NewApi")
 @SuppressWarnings({ "unchecked", "rawtypes", "unused" })
-public class ViewPedidoEdit extends Activity implements Handler.Callback {
+public class ViewPedidoEdit extends Activity implements Handler.Callback, Editable {
 	public EditText tbxFecha;
 	public EditText tbxNumReferencia;
 	public EditText tbxNumRecibo;
@@ -740,7 +728,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
 		total = 0;
 		DetallePedido[] detsPedido = new DetallePedido[Lvmpproducto.size()];
 		for (int i = 0; i < Lvmpproducto.size(); i++) {
-			DetallePedido dp = (DetallePedido) Lvmpproducto.get(i);
+			DetallePedido dp = Lvmpproducto.get(i);
 			detsPedido[i] = dp;
 			subTotal += StringUtil.round(dp.getSubtotal(), 2);
 			descuento += StringUtil.round(dp.getDescuento(), 2);
@@ -825,7 +813,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
 	        int idx = grid_dp.getCheckedItemPosition();;
 	        if (idx == -1) return;
 	        
-	        DetallePedido det = (DetallePedido)Lvmpproducto.get(idx);    
+	        DetallePedido det = Lvmpproducto.get(idx);    
 	        if (det.getCantidadOrdenada() == 0) return; //No editar: es producto dado en promoción
 	        
 			producto = (Producto) nmapp.getController().getBridge().getClass().getMethod("getProductoByID",ContentResolver.class,long.class).invoke(null,me.getApplicationContext().getContentResolver(),dpselected.getObjProductoID());
@@ -916,6 +904,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
         adapter.notifyDataSetChanged();
 	}
 	
+	@Override
 	public BPedidoM getBridge() {
 		return bpm;
 	}
@@ -963,7 +952,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
         
         int y = 206;        
         for (int curRecord = 0;  curRecord < Lvmpproducto.size();  curRecord++) {
-            DetallePedido det = (DetallePedido)Lvmpproducto.get(curRecord);
+            DetallePedido det = Lvmpproducto.get(curRecord);
             
             String nombreProd = det.getNombreProducto();
             if (nombreProd.length() > 40)
@@ -1041,6 +1030,12 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
           //  Status.show("Error: " + ioex.getMessage());
         }
     }
+
+	@Override
+	public Context getContext() {
+		// TODO Auto-generated method stub
+		return this.me;
+	}
 	
 	
 	
