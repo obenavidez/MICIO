@@ -7,12 +7,9 @@ import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERV
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_INVENTORY_FROM_SERVER;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import org.ksoap2.serialization.SoapObject;
 
 import android.content.ContentResolver;
-import android.database.Cursor;
 import android.os.Message;
 import android.util.Log;
 

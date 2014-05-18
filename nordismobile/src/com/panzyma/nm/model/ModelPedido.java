@@ -2,14 +2,11 @@ package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
 
-import org.json.JSONArray;
 import org.ksoap2.serialization.PropertyInfo;
 
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
-import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.auxiliar.Parameters;
-import com.panzyma.nm.serviceproxy.Cliente;
 
 public class ModelPedido {
 

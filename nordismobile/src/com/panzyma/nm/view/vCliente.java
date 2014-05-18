@@ -1,6 +1,16 @@
 package com.panzyma.nm.view;
 
-import static com.panzyma.nm.controller.ControllerProtocol.*;
+import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.CONFIRMATION_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.C_FICHACLIENTE;
+import static com.panzyma.nm.controller.ControllerProtocol.C_SETTING_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
+import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHED;
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_FICHACLIENTE_FROM_SERVER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +52,9 @@ import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.viewmodel.vmCliente;
+import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nordismobile.R;
-import com.panzyma.nm.serviceproxy.CCCliente;
-import com.panzyma.nm.viewmodel.*;
 
 public class vCliente extends ActionBarActivity implements 
 	   ListaFragment.OnItemSelectedListener, Handler.Callback {

@@ -230,26 +230,40 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		quickAction
 				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
 					@Override
-					public void onItemClick(QuickAction source, int pos,
+					public void onItemClick(QuickAction source, final int pos,
 							int actionId) {
-						ActionItem actionItem = quickAction.getActionItem(pos);
-						switch (actionItem.getActionId()) {
-						case ID_SELECCIONAR_CLIENTE:
-							seleccionarCliente();
-							break;
-						case ID_AGREGAR_DOCUMENTOS:
-							agregarDocumentosPendientesCliente();
-							break;
-						case ID_SALVAR_RECIBO:
-							guardarRecibo();
-							break;
-						case ID_CERRAR:
-							finalizarActividad();
-							break;
-						}
+
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								ActionItem actionItem = quickAction
+										.getActionItem(pos);
+								switch (actionItem.getActionId()) {
+								case ID_SELECCIONAR_CLIENTE:
+									seleccionarCliente();
+									break;
+								case ID_AGREGAR_DOCUMENTOS:
+									agregarDocumentosPendientesCliente();
+									break;
+								case ID_SALVAR_RECIBO:
+									guardarRecibo();
+									break;
+								case ID_CERRAR:
+									finalizarActividad();
+									break;
+								}
+							}
+						});
+
 					}
 
 				});
+		quickAction.setOnDismissListener(new QuickAction.OnDismissListener() {
+			@Override
+			public void onDismiss() {
+				quickAction.dismiss();
+			}
+		});
 
 	}
 

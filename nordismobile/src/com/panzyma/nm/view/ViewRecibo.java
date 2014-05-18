@@ -28,6 +28,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,7 +53,7 @@ import com.panzyma.nordismobile.R;
 public class ViewRecibo extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {
 
-	private static final String logger = ViewRecibo.class.getSimpleName();
+	private static final String TAG = ViewRecibo.class.getSimpleName();
 	private static final int NUEVO_RECIBO = 0;
 
 	CustomArrayAdapter<vmRecibo> customArrayAdapter;
@@ -306,6 +307,11 @@ public class ViewRecibo extends ActionBarActivity implements
 		}
 		return false;
 	}
+	
+	@Override
+	protected void onDestroy() {
+		FINISH_ACTIVITY();
+	};	
 
 	private void setData(final ArrayList<vmRecibo> data, final int what) {
 		try {
@@ -461,5 +467,11 @@ public class ViewRecibo extends ActionBarActivity implements
 		transaction.commit();
 
 	}
+	
+	private void FINISH_ACTIVITY()	{
+		nmapp.getController().removeOutboxHandler(TAG);
+		nmapp.getController().removebridge(nmapp.getController().getBridge());			
+		Log.d(TAG, "Activity quitting"); 		
+	} 
 
 }

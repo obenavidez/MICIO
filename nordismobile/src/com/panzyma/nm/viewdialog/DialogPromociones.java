@@ -1,19 +1,9 @@
 package com.panzyma.nm.viewdialog;
 
 import java.util.ArrayList;
-import java.util.List; 
+import java.util.List;
 
-import com.panzyma.nm.menu.ActionItem;
-import com.panzyma.nm.menu.QuickAction;
-import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.Promocion;
-import com.panzyma.nm.serviceproxy.Promociones;
-import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.view.adapter.GenericAdapter; 
-import com.panzyma.nm.view.viewholder.PromocionesViewHolder;
-import com.panzyma.nordismobile.R;
-
-import android.app.Dialog;  
+import android.app.Dialog;
 import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +11,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.panzyma.nm.menu.ActionItem;
+import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.Promocion;
+import com.panzyma.nm.serviceproxy.Promociones;
+import com.panzyma.nm.view.ViewPedidoEdit;
+import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.viewholder.PromocionesViewHolder;
+import com.panzyma.nordismobile.R;
 
 public class DialogPromociones extends Dialog
 {

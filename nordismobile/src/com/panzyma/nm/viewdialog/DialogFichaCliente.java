@@ -1,24 +1,26 @@
 package com.panzyma.nm.viewdialog; 
 
  
-import java.util.Arrays;  
+import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 
-import static com.panzyma.nm.controller.ControllerProtocol.*;  
-import com.panzyma.nm.auxiliar.CustomDialog;
-import com.panzyma.nm.controller.Controller; 
-import com.panzyma.nm.serviceproxy.CCCliente;  
-import com.panzyma.nm.view.adapter.GenericAdapter; 
-import com.panzyma.nm.view.viewholder.CNotaViewHolder;
-import android.app.Dialog;   
-import android.content.Context;    
+import java.util.Arrays;
+
+import android.app.Dialog;
+import android.content.Context;
 import android.os.Handler;
-import android.os.Message; 
+import android.os.Message;
 import android.util.Log;
-import android.view.View;  
+import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView; 
-import android.widget.TextView; 
-import android.widget.AdapterView.OnItemClickListener;   
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.serviceproxy.CCCliente;
+import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.viewholder.CNotaViewHolder;
 import com.panzyma.nordismobile.R;
 @SuppressWarnings({"static-access","unused", "rawtypes" })
 public class DialogFichaCliente extends Dialog  implements Handler.Callback

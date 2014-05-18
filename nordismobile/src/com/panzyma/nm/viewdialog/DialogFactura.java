@@ -90,7 +90,7 @@ public class DialogFactura  extends Dialog  implements Handler.Callback  {
             display = wm.getDefaultDisplay();
         	setObjSucursalId(objSucursalID);
         	nmapp=(NMApp) recibo.getApplication();
-        	//nmapp.getController().removebridgeByName(new BReciboM());
+        	nmapp.getController().removebridgeByName(new BReciboM());
 	        nmapp.getController().setEntities(this,new BReciboM()); 
 	        nmapp.getController().addOutboxHandler(new Handler(this));
 	        nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 			

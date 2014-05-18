@@ -1,7 +1,6 @@
 package com.panzyma.nm.fragments;
 
 import java.util.ArrayList;
-import com.panzyma.nordismobile.R;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -12,7 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
+
 import com.panzyma.nm.interfaces.Item;
+import com.panzyma.nordismobile.R;
 
 @SuppressLint("DefaultLocale") 
 public class CustomArrayAdapter<E> extends ArrayAdapter<E> {

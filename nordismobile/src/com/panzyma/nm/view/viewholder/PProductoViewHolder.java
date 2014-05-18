@@ -4,7 +4,6 @@ import android.widget.TextView;
 
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.view.adapter.InvokeView;
-import com.panzyma.nm.viewmodel.vmPProducto;
 import com.panzyma.nordismobile.R;
 
 public class PProductoViewHolder 

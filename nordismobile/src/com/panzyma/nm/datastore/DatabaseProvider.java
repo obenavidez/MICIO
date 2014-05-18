@@ -44,6 +44,9 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_PROMOCION = Uri.parse(CONTENT_URI+"/promocion");
 	public static final Uri CONTENT_URI_USUARIO = Uri.parse(CONTENT_URI+"/usuario");	
 	public static final Uri CONTENT_URI_RECIBO = Uri.parse(CONTENT_URI+ "/recibo");
+	public static final Uri CONTENT_URI_RECIBODETALLEFACTURA = Uri.parse(CONTENT_URI+ "/recibodetallefactura");
+	public static final Uri CONTENT_URI_RECIBODETALLENOTACREDITO = Uri.parse(CONTENT_URI+ "/recibodetallenotacredito");
+	public static final Uri CONTENT_URI_RECIBODETALLENOTADEBITO = Uri.parse(CONTENT_URI+ "/recibodetallenotadebito");
 	
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
@@ -77,6 +80,12 @@ public class DatabaseProvider extends ContentProvider
 	private static final UriMatcher uriMatcher;
 	private static final int RECIBO = 28;
 	private static final int RECIBO_ID = 29;
+	private static final int RECIBODETALLEFACTURA = 30;
+	private static final int RECIBODETALLEFACTURA_ID = 31;
+	private static final int RECIBODETALLENOTADEBITO = 32;
+	private static final int RECIBODETALLENOTADEBITO_ID = 33;
+	private static final int RECIBODETALLENOTACREDITO = 34;
+	private static final int RECIBODETALLENOTACREDITO_ID = 35;	
 	
 	//Base de datos
 	private NM_SQLiteHelper dbhelper;
@@ -100,6 +109,9 @@ public class DatabaseProvider extends ContentProvider
 	private static final String TABLA_PROMOCION = "Promocion";
 	private static final String TABLA_USUARIO = "Usuario";
 	private static final String TABLA_RECIBO = "Recibo";
+	private static final String TABLA_RECIBO_DETALLE_FACTURA = "ReciboDetalleFactura";
+	private static final String TABLA_RECIBO_DETALLE_NOTA_DEBITO = "ReciboDetalleNotaDebito";
+	private static final String TABLA_RECIBO_DETALLE_NOTA_CREDITO = "ReciboDetalleNotaCredito";	
 	
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -144,6 +156,15 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "recibo", RECIBO);
 		uriMatcher.addURI(AUTHORITY, "recibo/#", RECIBO_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "recibodetallefactura", RECIBODETALLEFACTURA);
+		uriMatcher.addURI(AUTHORITY, "recibodetallefactura/#", RECIBODETALLEFACTURA_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "recibodetallenotadebito", RECIBODETALLENOTADEBITO);
+		uriMatcher.addURI(AUTHORITY, "recibodetallenotadebito/#", RECIBODETALLENOTADEBITO_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "recibodetallenotacredito", RECIBODETALLENOTACREDITO);
+		uriMatcher.addURI(AUTHORITY, "recibodetallenotacredito/#", RECIBODETALLENOTACREDITO_ID);
 	}
 	
 	@Override

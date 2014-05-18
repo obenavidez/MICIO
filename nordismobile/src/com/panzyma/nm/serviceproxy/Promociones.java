@@ -6,15 +6,12 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 
 import com.panzyma.nm.CBridgeM.BPedidoM;
-import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
-import com.panzyma.nm.viewmodel.vmCliente;
 
 public class Promociones {
 
@@ -33,7 +30,7 @@ public class Promociones {
 		// Buscar promociones que apliquen según datos del cliente
 		for (int i = 0; i < promos.size(); i++) 
 		{
-			Promocion prom = (Promocion) promos.get(i);
+			Promocion prom = promos.get(i);
 
 			// Si hay que excluir la promoción, saltarla
 			if (idsExcluir.contains(prom.getId() + ""))
@@ -331,7 +328,7 @@ public class Promociones {
         //Y restaurar las bonificaciones a su valor original
         Vector vecDets = new Vector();
         for (int i = 0; i < dets.length; i++) {            
-            DetallePedido d = (DetallePedido)dets[i];
+            DetallePedido d = dets[i];
             if (d.getCantidadOrdenada() > 0) vecDets.addElement(d);
         }
         
@@ -358,7 +355,7 @@ public class Promociones {
 	        //Dejando en el pedido solo aquellos productos que fueron agregados por el usuario (CantidadOrdenada > 0)
 	        Vector vecDets = new Vector();
 	        for (int i = 0; i < detalles.length; i++) {            
-	            DetallePedido d = (DetallePedido)detalles[i];
+	            DetallePedido d = detalles[i];
 	            if (d.getCantidadOrdenada() > 0) vecDets.addElement(d);
 	        }
 	        
@@ -475,7 +472,7 @@ public class Promociones {
 	        
 	        //Recalculando impuesto y total
 	        for (int i = 0; i < detalles.length; i++) {            
-	            DetallePedido d = (DetallePedido)detalles[i];
+	            DetallePedido d = detalles[i];
 	            d.setImpuesto((d.getSubtotal() - d.getDescuento()) * d.getPorcImpuesto() / 100);
 	            d.setTotal(d.getSubtotal() -  d.getDescuento() + d.getImpuesto());                       
 	        }
@@ -736,7 +733,7 @@ public class Promociones {
 	            //Para cada producto en el detalle de la promoción
 	            DetallePedido[] detsPedido = pedido.getDetalles();
 	            for(int j=0; j<detsPedido.length;j++) {
-	                DetallePedido dp = (DetallePedido)detsPedido[j];
+	                DetallePedido dp = detsPedido[j];
 	                
 	                //Buscar el producto en los productos base
 	                for(int k=0; k<prodsBase.size(); k++) {

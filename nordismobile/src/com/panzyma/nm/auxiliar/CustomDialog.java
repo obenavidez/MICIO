@@ -1,13 +1,12 @@
 package com.panzyma.nm.auxiliar;
   
 import android.annotation.SuppressLint;
-import com.panzyma.nordismobile.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener; 
-import android.os.Bundle;  
-import android.view.View;  
+import android.content.DialogInterface.OnDismissListener;
+import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,6 +14,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.panzyma.nordismobile.R;
 
 @SuppressLint("ParserError")
 public class CustomDialog extends Dialog implements OnDismissListener

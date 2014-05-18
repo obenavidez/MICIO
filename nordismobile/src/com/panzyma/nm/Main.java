@@ -1,32 +1,34 @@
 package com.panzyma.nm;
  
-import com.panzyma.nm.auxiliar.CustomDialog; 
-import com.panzyma.nordismobile.R;
-import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NotificationMessage;
-import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.auxiliar.ThreadPool;
-import com.panzyma.nm.view.ProductoView; 
-import com.panzyma.nm.view.ViewConfiguracion;
-import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.view.vCliente;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import android.annotation.SuppressLint; 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent; 
-import android.os.Bundle; 
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.View; 
-import android.view.WindowManager;  
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NotificationMessage;
+import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.ThreadPool;
+import com.panzyma.nm.view.ProductoView;
+import com.panzyma.nm.view.ViewConfiguracion;
+import com.panzyma.nm.view.ViewPedidoEdit;
+import com.panzyma.nm.view.ViewRecibo;
+import com.panzyma.nm.view.vCliente;
+import com.panzyma.nordismobile.R;
 
 @SuppressLint("ShowToast")
 @SuppressWarnings({"rawtypes","unused"})
@@ -119,7 +121,9 @@ public class Main extends DashBoardActivity implements Handler.Callback{
 						    		intent = new Intent(this,ViewPedidoEdit.class); 
 									startActivity(intent);
 									break;
-	    	case R.id.hbtnrecibocollector:  		 
+	    	case R.id.hbtnrecibocollector: 
+	    		                    intent = new Intent(this, ViewRecibo.class);
+	    		                    startActivity(intent);
 									break;
 	    	case R.id.hbtndevolucion: 
 									break;
