@@ -17,6 +17,7 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura; 
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.viewmodel.vmCliente;
+import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.viewmodel.vmProducto;
 
  @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -51,7 +52,7 @@ public class Processor {
 			 controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size()!=0)?objL:new ArrayList<vmProducto>() );
 			// Thread.sleep(500); 
 	     }  
-	}
+	} 
 	public static void send_ViewProductosToView(ArrayList<Producto> objL,Controller controller)throws Exception
 	{ 
 		 synchronized(lock)
@@ -59,8 +60,17 @@ public class Processor {
 			 controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size()!=0)?objL:new ArrayList<vmProducto>() );
 			// Thread.sleep(500); 
 	     }  
-	}
+	} 
 	public static void send_ViewFichaCustomerToView(CCCliente objL,Controller controller)throws Exception
+	{
+		synchronized(lock)
+	     { 
+			 controller._notifyOutboxHandlers(C_FICHACLIENTE, 0, 0,objL);
+			 Thread.sleep(500); 
+	     }  
+	}
+	
+	public static void send_ViewFichaCustomerToView(vmFicha objL,Controller controller)throws Exception
 	{
 		synchronized(lock)
 	     { 

@@ -9,8 +9,6 @@ import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.serviceproxy.CCCliente;  
 import com.panzyma.nm.view.adapter.GenericAdapter; 
 import com.panzyma.nm.view.viewholder.CNotaViewHolder;
-import com.panzyma.nordismobile.R; 
-
 import android.app.Dialog;   
 import android.content.Context;    
 import android.os.Handler;
@@ -21,7 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ListView; 
 import android.widget.TextView; 
 import android.widget.AdapterView.OnItemClickListener;   
-
+import com.panzyma.nordismobile.R;
 @SuppressWarnings({"static-access","unused", "rawtypes" })
 public class DialogFichaCliente extends Dialog  implements Handler.Callback
 {  

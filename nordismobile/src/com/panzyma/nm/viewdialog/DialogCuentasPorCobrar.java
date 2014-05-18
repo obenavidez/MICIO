@@ -15,8 +15,6 @@ import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
-import com.panzyma.nordismobile.R;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context; 
@@ -30,7 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-
+import com.panzyma.nordismobile.R;
  @SuppressLint({ "ResourceAsColor", "ResourceAsColor" })
 @SuppressWarnings({"rawtypes","unused","unchecked"})
 public class DialogCuentasPorCobrar extends Dialog implements Handler.Callback

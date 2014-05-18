@@ -6,7 +6,7 @@ import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.adapter.InvokeView; 
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
- 
+
 public class ProductoViewHolder {
 	@InvokeView(viewId = R.id.gp_productonom)
 	public TextView nomprod; 

@@ -46,10 +46,10 @@ import com.panzyma.nm.viewdialog.DetalleProducto;
 import com.panzyma.nm.viewdialog.DialogCondicionesNotas;
 import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewdialog.DialogPromociones;
-import com.panzyma.nm.viewmodel.vmPProducto;
+import com.panzyma.nm.viewmodel.vmPProducto; 
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
-
+ 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -86,6 +86,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.panzyma.nordismobile.R;
 
 @SuppressLint("NewApi")
 @SuppressWarnings({ "unchecked", "rawtypes", "unused" })
@@ -866,7 +867,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
 		} 
 		
 	}
-	
+	  
 	public void eliminarProducto()
 	{
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0))) return;
@@ -918,7 +919,6 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
 	public BPedidoM getBridge() {
 		return bpm;
 	}
-
 	
     private void ImprimirComprobante() {
        // if (!isDataValid()) return; 

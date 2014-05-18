@@ -12,7 +12,6 @@ import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.TextView;
 import android.support.v7.app.ActionBarActivity;
-
 import com.panzyma.nordismobile.R;
 
 public abstract class DashBoardActivity extends ActionBarActivity {

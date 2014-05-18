@@ -1,9 +1,7 @@
 package com.panzyma.nm.viewdialog;
-  
+import com.panzyma.nordismobile.R;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.view.ViewConfiguracion;
-import com.panzyma.nordismobile.R;
-
 import android.app.Dialog;
 import android.content.Context;   
 import android.os.Handler;

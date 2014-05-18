@@ -21,8 +21,6 @@ import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.view.adapter.GenericAdapter;  
 import com.panzyma.nm.view.viewholder.ProductoViewHolder; 
 import com.panzyma.nm.viewmodel.vmProducto;
-import com.panzyma.nordismobile.R;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -48,6 +46,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({"unchecked","rawtypes","unused"})
 public class ViewProducto extends DashBoardActivity implements Handler.Callback

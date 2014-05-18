@@ -17,8 +17,6 @@ import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.ClienteViewHolder;
 import com.panzyma.nm.viewmodel.vmCliente;
-import com.panzyma.nordismobile.R;
-
 import android.widget.LinearLayout;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -46,6 +44,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import com.panzyma.nordismobile.R;
+
 @SuppressWarnings({"rawtypes","unused","unchecked"})
 public class DialogCliente extends Dialog  implements Handler.Callback
 {

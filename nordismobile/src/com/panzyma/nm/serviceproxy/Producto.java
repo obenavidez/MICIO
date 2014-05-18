@@ -9,8 +9,9 @@ import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
 import com.google.gson.Gson;
+import com.panzyma.nm.interfaces.Item;
 
-public class Producto implements KvmSerializable {
+public class Producto implements KvmSerializable,Item {
 	public long Id;
 	public java.lang.String Codigo;
 	public java.lang.String Nombre;
@@ -346,5 +347,31 @@ public class Producto implements KvmSerializable {
 			productos.add(new Gson().fromJson(json.toString(), Producto.class));
 		}
 		return productos;
+	}
+
+	@Override
+	public Object isMatch(CharSequence constraint) {
+		if (this.getNombre().toLowerCase()
+				.startsWith(constraint.toString()))
+			return true;
+		return false;
+	}
+
+	@Override
+	public String getItemName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getItemDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getItemCode() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

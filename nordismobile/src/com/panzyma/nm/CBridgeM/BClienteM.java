@@ -33,8 +33,8 @@ public final class BClienteM
 { 
     ArrayList<vmCliente> a_vaC; 
 	Controller controller;
-	ViewCliente view;
-	vCliente view2;
+	ViewCliente view2;
+	vCliente view;
 	DialogCuentasPorCobrar viewcc;
     ArrayList<Cliente> obj=new ArrayList<Cliente>();
     CCCliente objccc=new CCCliente(); 
@@ -47,19 +47,19 @@ public final class BClienteM
 	
 	public BClienteM(vCliente view)
 	{
-		this.view2 = view;
-    	this.controller=((NMApp)view2.getApplication()).getController();      	
-    	this.pool =((NMApp)view2.getApplication()).getThreadPool();
+		this.view = view;
+    	this.controller=((NMApp)view.getApplication()).getController();      	
+    	this.pool =((NMApp)view.getApplication()).getThreadPool();
     	view_activated=1;
     }
 	
-	public BClienteM(ViewCliente view)
-	{
-    	this.controller=((NMApp)view.getApplication()).getController();  
-    	this.view=view;
-    	this.pool =((NMApp)view.getApplication()).getThreadPool();
-    	view_activated=1;
-    }  
+//	public BClienteM(ViewCliente view)
+//	{
+//    	this.controller=((NMApp)view.getApplication()).getController();  
+//    	this.view=view;
+//    	this.pool =((NMApp)view.getApplication()).getThreadPool();
+//    	view_activated=1;
+//    }  
 	public BClienteM(DialogCuentasPorCobrar view)
 	{
     	this.controller=((NMApp)view.getContext().getApplicationContext()).getController();;  
@@ -150,7 +150,7 @@ public final class BClienteM
 						try
 						{ 
 							if(view_activated==1)	{								
-								Processor.send_ViewCustomerToView((ModelCliente.getArrayCustomerFromLocalHost(view2.getContentResolver())), controller);
+								Processor.send_ViewCustomerToView((ModelCliente.getArrayCustomerFromLocalHost(view.getContentResolver())), controller);
 							}
 							else if(view_activated==3)
 								Processor.send_ViewCustomerToView((ModelCliente.getArrayCustomerFromLocalHost(dlogCliente.getContext().getContentResolver())), controller);
