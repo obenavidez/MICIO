@@ -18,4 +18,6 @@ public class ModelPedido {
 				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.STRING_CLASS,PropertyInfo.BOOLEAN_CLASS}));
 		return NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.TraerDisponibilidadProductos);
 	}   
+	
+	
 }
