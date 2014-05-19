@@ -43,4 +43,5 @@
     <string name="view_product_codigo">Código</string>
     <string name="view_product_nombre">Descripción</string>
     <string name="view_product_disponibilidad">Existencias</string>
+    <string name="txtdocumentos_title">Lista de Documentos</string>
 </resources>

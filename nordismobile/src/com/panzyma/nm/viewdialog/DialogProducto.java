@@ -1,29 +1,13 @@
 package com.panzyma.nm.viewdialog;
-import com.panzyma.nordismobile.R;
-import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 
 import java.util.ArrayList;
 
-import com.panzyma.nm.NMApp; 
-import com.panzyma.nm.CBridgeM.BProductoM;
-import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.menu.QuickAction;
-import com.panzyma.nm.serviceproxy.DetallePedido;
-import com.panzyma.nm.serviceproxy.PProducto;
-import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.view.adapter.GenericAdapter;
-import com.panzyma.nm.view.viewholder.ProductoViewHolder;
-import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
-import com.panzyma.nm.viewmodel.vmPProducto;
-import com.panzyma.nm.viewmodel.vmProducto;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -35,19 +19,29 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewStub;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
+
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BProductoM;
+import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.view.ViewPedidoEdit;
+import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.viewholder.ProductoViewHolder;
+import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
+import com.panzyma.nordismobile.R;
 
 public class DialogProducto extends Dialog  implements Handler.Callback{
 

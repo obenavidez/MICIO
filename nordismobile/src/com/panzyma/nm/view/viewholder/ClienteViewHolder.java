@@ -1,7 +1,7 @@
 package com.panzyma.nm.view.viewholder;
 
 import android.widget.TextView;
-  
+
 import com.panzyma.nm.view.adapter.InvokeView;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;

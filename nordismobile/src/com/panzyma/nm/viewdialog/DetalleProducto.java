@@ -1,32 +1,23 @@
 package com.panzyma.nm.viewdialog;
 
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
-
 import java.util.ArrayList;
 
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BProductoM;
-import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.serviceproxy.Bonificacion;
-import com.panzyma.nm.serviceproxy.DetallePedido;
-import com.panzyma.nm.serviceproxy.PProducto;
-import com.panzyma.nm.serviceproxy.PrecioProducto;
-import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.viewdialog.DialogProducto.OnButtonClickListener;
-import com.panzyma.nm.viewmodel.vmPProducto;
-import com.panzyma.nordismobile.R;
-
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.serviceproxy.Bonificacion;
+import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.PrecioProducto;
+import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nordismobile.R;
 
 public class DetalleProducto extends Dialog implements Handler.Callback {
 
@@ -416,7 +407,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 
 		Bonificacion bb = null;
 		for (int i = bonificaciones.size() - 1; i >= 0; i--) {
-			Bonificacion b = (Bonificacion) bonificaciones.get(i);
+			Bonificacion b = bonificaciones.get(i);
 			if (cantidad >= b.getCantidad()) {
 				bb = b; // Encontrada
 				break; // Salir del ciclo
@@ -481,10 +472,10 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 			int cantidad) {
 		ArrayList<PrecioProducto> precios = parseListaPrecios(prod,
 				idTipoPrecio);
-		PrecioProducto p = (PrecioProducto) precios.get(0);
+		PrecioProducto p = precios.get(0);
 		if (precios.size() > 1) {
 			for (int i = 0; i < precios.size(); i++) {
-				p = (PrecioProducto) precios.get(i);
+				p = precios.get(i);
 				if ((cantidad >= p.getMinimo()) && (cantidad <= p.getMaximo()))
 					break; // Salir del ciclo
 			}

@@ -10,12 +10,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView; 
+import android.os.Handler; 
 
 public class BluetoothComunication { 
 		
@@ -121,6 +116,7 @@ public class BluetoothComunication {
 				readBuffer = new byte[1024];
 				
 				workerThread = new Thread(new Runnable() {
+					@Override
 					public void run() {
 						while (!Thread.currentThread().isInterrupted()
 								&& !stopWorker) {
@@ -143,6 +139,7 @@ public class BluetoothComunication {
 											readBufferPosition = 0;
 
 											handler.post(new Runnable() {
+												@Override
 												public void run() {
 													//myLabel.setText(data);
 												}

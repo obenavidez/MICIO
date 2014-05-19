@@ -1,15 +1,15 @@
 package com.panzyma.nm.viewdialog;
  
-import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.view.ViewPedidoEdit; 
-import com.panzyma.nordismobile.R;
-
-import android.app.Dialog;  
+import android.app.Dialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.view.ViewPedidoEdit;
+import com.panzyma.nordismobile.R;
 
 public class DialogCondicionesNotas extends Dialog 
 {

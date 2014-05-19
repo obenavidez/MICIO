@@ -1,5 +1,8 @@
 package com.panzyma.nm.fragments;
 
+import com.panzyma.nm.viewmodel.vmRecibo;
+import com.panzyma.nordismobile.R;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,16 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.panzyma.nm.viewmodel.vmProducto;
-import com.panzyma.nordismobile.R;
-
-public class FichaProductoFragment extends Fragment {
-
+public class FichaReciboFragment extends Fragment {
+	
 	public final static String ARG_POSITION = "position";
-	public final static String OBJECT = "product";
-	private vmProducto producto;
+	public final static String OBJECT = "recibo";
+	private vmRecibo recibo;
 	int mCurrentPosition = -1;
-
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -26,7 +26,7 @@ public class FichaProductoFragment extends Fragment {
 		// This is primarily necessary when in the two-pane layout.
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
-			producto = (vmProducto) savedInstanceState.getParcelable(OBJECT);
+			recibo = (vmRecibo) savedInstanceState.getParcelable(OBJECT);
 		}
 
 		// Inflate the layout for this fragment
@@ -48,14 +48,14 @@ public class FichaProductoFragment extends Fragment {
 		if (args != null) {
 			// Set article based on argument passed in
 			// updateArticleView(args.getInt(ARG_POSITION));
-			producto = (vmProducto) args.getParcelable(OBJECT);
+			recibo = (vmRecibo) args.getParcelable(OBJECT);
 			mCurrentPosition = args.getInt(ARG_POSITION);
-			updateArticleView(producto, mCurrentPosition);
+			updateArticleView(recibo, mCurrentPosition);
 		} else if (mCurrentPosition != -1) {
 			// Set article based on saved instance state defined during
 			// onCreateView
 			// updateArticleView(mCurrentPosition);
-			updateArticleView(producto, mCurrentPosition);
+			updateArticleView(recibo, mCurrentPosition);
 		}
 	}
 
@@ -75,15 +75,15 @@ public class FichaProductoFragment extends Fragment {
 		mCurrentPosition = position;
 	}
 
-	public void updateArticleView(vmProducto obj, int position) {
+	public void updateArticleView(vmRecibo obj, int position) {
 		// R.id.article
-		TextView codigo = (TextView) getActivity().findViewById(R.id.txt_view_product_codigo);
+		/*TextView codigo = (TextView) getActivity().findViewById(R.id.txt_view_product_codigo);
 		TextView descripcion = (TextView) getActivity().findViewById(R.id.txt_view_product_nombre);
 		TextView existencia = (TextView) getActivity().findViewById(R.id.txt_view_product_disponibilidad);
 
 		codigo.setText(obj.getCodigo());
 		descripcion.setText(obj.getNombre());
-		existencia.setText(obj.getDisponibilidad().toString());
+		existencia.setText(obj.getDisponibilidad().toString());*/
 
 		mCurrentPosition = position;
 	}
@@ -94,7 +94,8 @@ public class FichaProductoFragment extends Fragment {
 		// Save the current article selection in case we need to recreate the
 		// fragment
 		outState.putInt(ARG_POSITION, mCurrentPosition);
-		outState.putParcelable(OBJECT, producto);
+		outState.putParcelable(OBJECT, recibo);
 	}
+
 
 }

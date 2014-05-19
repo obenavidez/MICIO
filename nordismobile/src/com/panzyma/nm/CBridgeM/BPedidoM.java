@@ -8,12 +8,9 @@ import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_INVENTORY_FROM
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import org.ksoap2.serialization.SoapObject;
 
 import android.content.ContentResolver;
-import android.database.Cursor;
 import android.os.Message;
 import android.util.Log;
 

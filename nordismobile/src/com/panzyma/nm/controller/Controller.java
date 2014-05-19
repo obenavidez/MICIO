@@ -113,6 +113,21 @@ public class Controller<T, U>
 		bridge=null;
 	}
 	
+	public void removebridgeByName(T _bridge)
+    {
+    	int index = -1;
+    	String bridgeName = _bridge.getClass().getName();
+    	for(int i = 0; i < bridges.size() ; i++ ){
+    		if (bridges.get(i).getClass().getName().equals(bridgeName));
+    		{
+    			index = i;
+    			break;
+    		}
+    	}
+    	if (index != -1 )
+    		bridges.remove(index);
+    }
+	
     public void removebridge(T _bridge)
     {
     	bridges.remove(_bridge);

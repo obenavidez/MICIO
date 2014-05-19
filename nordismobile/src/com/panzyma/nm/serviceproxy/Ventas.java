@@ -2,7 +2,6 @@ package com.panzyma.nm.serviceproxy;
 
 import java.util.*;
 
-import android.content.ContentResolver;
 import android.content.Context;
 
 import com.panzyma.nm.auxiliar.StringUtil;

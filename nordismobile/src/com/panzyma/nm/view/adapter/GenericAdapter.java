@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("unused")

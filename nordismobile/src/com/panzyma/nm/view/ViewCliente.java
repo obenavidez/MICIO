@@ -1,51 +1,63 @@
 package com.panzyma.nm.view;
  
-import java.util.ArrayList; 
+import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.CONFIRMATION_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.C_FICHACLIENTE;
+import static com.panzyma.nm.controller.ControllerProtocol.C_SETTING_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
+import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHED;
+import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_FICHACLIENTE_FROM_SERVER;
+import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
+
+import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;   
-import android.content.Context; 
-import android.os.Bundle; 
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
-import android.text.TextWatcher; 
-import android.util.Log; 
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.KeyEvent;   
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.View; 
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener; 
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
-import android.widget.EditText; 
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Handler;
-import android.os.Message; 
- 
+
 import com.panzyma.nm.DashBoardActivity;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
-import com.panzyma.nm.controller.Controller;  
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
+import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
+import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.menu.ActionItem;
-import com.panzyma.nm.menu.QuickAction; 
+import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.ClienteViewHolder;
-import com.panzyma.nm.viewdialog.DialogFichaCliente;
 import com.panzyma.nm.viewdialog.DialogCuentasPorCobrar;
-import com.panzyma.nm.viewmodel.vmCliente;  
-import com.panzyma.nm.auxiliar.CustomDialog;
-import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
-import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
-import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.NMApp;
-import static com.panzyma.nm.controller.ControllerProtocol.*;
-import com.panzyma.nordismobile.R;
+import com.panzyma.nm.viewdialog.DialogFichaCliente;
+import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("ParserError")
