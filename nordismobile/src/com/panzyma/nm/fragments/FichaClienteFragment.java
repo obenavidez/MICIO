@@ -1,7 +1,6 @@
 package com.panzyma.nm.fragments;
 
 import java.util.Arrays;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +11,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-
+import android.widget.AdapterView.OnItemClickListener;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.CNotaViewHolder;
 import com.panzyma.nm.viewmodel.vmFicha;
