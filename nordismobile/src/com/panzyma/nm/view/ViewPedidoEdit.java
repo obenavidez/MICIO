@@ -50,6 +50,7 @@ import com.panzyma.nm.viewmodel.vmPProducto;
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
  
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -86,6 +87,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("NewApi")
@@ -140,9 +142,9 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
 	private static final int ID_IMPRIMIR_COMPROBANTE = 14;
 	private static final int ID_CERRAR = 15;
 	BPedidoM bpm;
-	
-	
+		
 	private final Handler handler=new Handler();
+	private boolean salvado;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -264,6 +266,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
 			pedido.setAutorizacionDGI("");
 		}
 
+		tbxFecha.setText(Calendar.getInstance().getTime().toString());
 		// Fecha del Pedido
 		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
 		if (pedido.getFecha() == 0)
@@ -299,7 +302,6 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
 		initMenu();
 
 	}
-
 
 	public void showMenu(final View view) 
 	{
@@ -1031,6 +1033,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
         {
         	BluetoothComunication b=new BluetoothComunication();
         	b.sendData(recibo);
+        	//b.closeBT();
 //            ZebraPrint zp = new ZebraPrint();
 //            zp.Print(recibo);
 //            zp = null;
@@ -1042,6 +1045,53 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback {
         }
     }
 	
-	
+    @SuppressWarnings("deprecation")
+    public void save() { 
+        try 
+        {
+        	//Salvando el tipo de pedido (crédito contado)
+            pedido.setTipo("CR"); 
+        	if (((tbxTipoVenta.getSelectedItemPosition() == 0) ? "CO" : "CR") == "CO")
+				pedido.setTipo("CO");
+           
+			Date d = new Date(tbxFecha.getText().toString());
+            pedido.setFecha(DateUtil.d2i(d));
+            
+            //Generar Id del pedido
+            if (pedido.getNumeroMovil() == 0) 
+            {            
+                Integer intId = Ventas.getLastOrderId(me.getApplicationContext());
+                if (intId == null) 
+                    intId = new Integer(1);
+                else
+                    intId = new Integer(intId.intValue() + 1);
+               // DataStore.setLastOrderId(intId);
+                Integer prefix = Ventas.getPrefijoIds(me.getApplicationContext());
+                String strIdMovil = prefix.intValue() + "" + intId.intValue();
+                int idMovil = Integer.parseInt(strIdMovil);
+                pedido.setNumeroMovil(idMovil);
+                pedido.setObjEstadoID(0);
+                pedido.setObjCausaEstadoID(0);
+                pedido.setCodEstado("REGISTRADO");
+                pedido.setDescEstado("Elaboración");
+                pedido.setCodCausaEstado("REGISTRADO");
+                pedido.setDescCausaEstado("Registrado");
+            }
+                       
+//            if (indexPedido == -1) {
+//                pedidos.addElement(pedido);
+//                indexPedido = pedidos.size() - 1;
+//            }
+//            else {
+//                pedidos.setElementAt(pedido, indexPedido);
+//            }
+        //    DataStore.setCachedOrders(pedidos); 
+            tbxNumReferencia.setText(Ventas.getNumeroPedido(pedido.getNumeroMovil(),me.getApplicationContext()));
+            salvado = true;         
+        }
+        catch(Exception ex) {
+           // throw new IOException(ex.toString());
+        }        
+    }
 	
 }

@@ -5,6 +5,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_INVENTORY_FROM_SERVER;
+import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,8 @@ public class BPedidoM {
 			case UPDATE_INVENTORY_FROM_SERVER:
 					onUpdateInventory_From_Server();
 					return true;
-					
+			case ID_SALVAR:ID_SALVAR();
+				return true;
 		}
 		return false;
 	}
@@ -132,5 +134,10 @@ public class BPedidoM {
 		 return ModelProducto.getProductoByID(content,idproducto);
 	}
 
-
+	public void ID_SALVAR(){
+		
+		
+		
+	}
+	
 }

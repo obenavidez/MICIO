@@ -194,7 +194,7 @@ public class BluetoothComunication {
 		/*
 		 * Close the connection to bluetooth printer.
 		 */
-	void closeBT() throws IOException {
+	public void closeBT() throws IOException {
 			try {
 				stopWorker = true;
 				mmOutputStream.close();
