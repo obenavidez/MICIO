@@ -26,6 +26,7 @@ import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.PProductoViewHolder;
@@ -353,6 +354,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			// estado
 			recibo.setObjEstadoID(100);
 			recibo.setCodEstado("REGISTRADO");
+			
+			recibo.setId(Ventas.getMaxReciboId(this.contexto) + 1);
 
 			try {
 				DatabaseProvider.RegistrarRecibo(recibo, contexto);
