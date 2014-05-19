@@ -114,7 +114,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 							")" ;
     
     String sqlRecibo = "CREATE TABLE IF NOT EXISTS Recibo ("
-					+ "       id INTEGER PRIMARY KEY AUTOINCREMENT,  "
+					+ "       id INTEGER PRIMARY KEY,  "
 					+ "       numero INTEGER,       " 
 					+ "       fecha TEXT, "
 					+ "       notas TEXT, " 
