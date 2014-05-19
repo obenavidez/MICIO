@@ -1,9 +1,5 @@
 package com.panzyma.nm.viewmodel;
 
-import java.util.Hashtable;
-
-import org.ksoap2.serialization.PropertyInfo;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 

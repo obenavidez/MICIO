@@ -98,7 +98,7 @@ public class BProductoM {
 						try
 						{
 							 
-							Processor.send_ViewProductoToView(ModelProducto.getArrayCustomerFromLocalHost((view2!=null)?view2.getContentResolver():view1.getContext().getContentResolver()),controller);						
+							Processor.send_ViewProductosToView(ModelProducto.getArrayProductoFromLocalHost((view2!=null)?view2.getContentResolver():view1.getContext().getContentResolver()),controller);						
 						}
 						catch (Exception e) 
 						{

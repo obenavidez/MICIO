@@ -6,43 +6,45 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 
 import java.util.ArrayList;
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BClienteM;
-import com.panzyma.nm.auxiliar.CustomDialog;
-import com.panzyma.nm.auxiliar.ErrorMessage; 
-import com.panzyma.nm.menu.QuickAction; 
-import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.view.adapter.GenericAdapter;
-import com.panzyma.nm.view.viewholder.ClienteViewHolder;
-import com.panzyma.nm.viewmodel.vmCliente;
-import android.widget.LinearLayout;
+
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
+import com.panzyma.nm.interfaces.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity; 
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
+
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BClienteM;
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.view.ViewPedidoEdit;
+import com.panzyma.nm.view.ViewReciboEdit;
+import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.viewholder.ClienteViewHolder;
+import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({"rawtypes","unused","unchecked"})
@@ -63,7 +65,8 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	private OnButtonClickListener mButtonClickListener;
 	private NMApp nmapp;
 	public Cliente cliente;
-	private static  Activity parent;
+	private static Context parent;
+	private Editable _view;
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(Cliente cliente);
 	}
@@ -72,21 +75,21 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		mButtonClickListener = listener;
 	} 
 	
-	public DialogCliente(ViewPedidoEdit vpe,int theme) 
-	{
-		super(vpe,theme);
-
+	public DialogCliente(Editable vpe,int theme) 
+	{		
+		super(vpe.getContext(),theme);
 		try 
         {   
+			_view = vpe;
 			setContentView(R.layout.maincliente);  
         	mcontext=this.getContext();  
-        	parent=vpe;       	
-        	nmapp=(NMApp) vpe.getApplication(); 
+        	parent = vpe.getContext();;       	
+        	nmapp=(NMApp) parent.getApplicationContext(); 
 	        nmapp.getController().setEntities(this,new BClienteM()); 
 	        nmapp.getController().addOutboxHandler(new Handler(this));
-			WindowManager wm = (WindowManager) vpe.getSystemService(Context.WINDOW_SERVICE);
+			WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay();
-			pd = ProgressDialog.show(vpe, "Espere por favor", "Trayendo Info...", true, false); 
+			pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false); 
 			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
 	        initComponents();
 	        
@@ -95,9 +98,8 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
 		}	 
       
-	}
+	}	
 
-	
 	public void initComponents()
 	{
 		LinearLayout.LayoutParams layoutParams;
@@ -131,13 +133,11 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	        @Override
 	        public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
 	        @Override
-	        public void afterTextChanged(Editable s) {}
+	        public void afterTextChanged(android.text.Editable s) {}
 	    });  
 	    
 	}
-	
-	
-	
+		
 	@Override
 	public boolean handleMessage(Message msg) 
 	{ 
@@ -155,9 +155,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		}
 		return false;
 	}
-	
-	
-	 
+		 
 	public void LoadData(final ArrayList<vmCliente> Lcliente, int what)
 	{     	 
 		try 
@@ -243,6 +241,12 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		nmapp.getController().removeOutboxHandler(TAG);
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
+		try {
+			nmapp.getController().setEntities(parent,_view.getBridge());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Log.d(TAG, "Activity quitting"); 
 		this.dismiss();
 	}  

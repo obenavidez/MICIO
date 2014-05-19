@@ -1,7 +1,7 @@
 package com.panzyma.nm.view.viewholder;
 
 import android.widget.TextView;
- 
+
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.serviceproxy.Factura;

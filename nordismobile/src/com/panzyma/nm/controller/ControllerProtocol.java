@@ -11,7 +11,8 @@ public interface ControllerProtocol {
     int ID_SINCRONIZE_PROMOCIONES = 6;
     int ID_SINCRONIZE_TODOS = 7;
     int ID_CERRAR = 8; 
-	
+	int ID_SALVAR=01;
+    
 	int V_REQUEST_QUIT = 101; // empty
 	int V_REQUEST_UPDATE = 102; // empty
 	int V_REQUEST_DATA = 103; // empty
@@ -28,6 +29,8 @@ public interface ControllerProtocol {
 	int C_FINISH=210;
 	int C_SAVING=211;
 	
+	int UPDATE_INVENTORY_FROM_SERVER=212;
+	
 	int LOAD_SETTING=299;
 	int LOAD_DATA=300;  
     int LOAD_DATA_FROM_LOCALHOST = 301;
@@ -35,6 +38,8 @@ public interface ControllerProtocol {
     int UPDATE_ITEM_FROM_SERVER =303;
     int LOAD_FICHACLIENTE_FROM_SERVER=304; 
     int LOAD_FACTURASCLIENTE_FROM_SERVER=305;    
+    
+    
     
     int SAVE_DATA_FROM_LOCALHOST=400;
     int UPDATE_DATA_FROM_LOCALHOST=401;
@@ -45,6 +50,8 @@ public interface ControllerProtocol {
     int ERROR_INSERT=602;
     int ERROR_UPDATE=603;    
     int ERROR_DELETE=604;
+    
+    int C_INVETORY_UPDATED=200;
     
     int NOTIFICATION_DIALOG=0;
     int NOTIFICATION_DIALOG2=10;

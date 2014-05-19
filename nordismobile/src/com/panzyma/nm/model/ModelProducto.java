@@ -3,8 +3,10 @@ package com.panzyma.nm.model;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
+import org.ksoap2.serialization.SoapObject;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,7 +14,9 @@ import android.util.Log;
 
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig; 
-import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.datastore.DatabaseProvider; 
+import com.panzyma.nm.serviceproxy.DisponibilidadProducto;
+import com.panzyma.nm.serviceproxy.Factura; 
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.viewmodel.vmProducto;
@@ -51,8 +55,7 @@ public class ModelProducto
 	            								 Integer.parseInt(cur.getString(cur.getColumnIndex(projection[3]))))
 	            	                           );
 	            }while (cur.moveToNext());
-		 }   
-		 
+		 }		 
 		 return a_vmprod;
 	}
    
@@ -141,4 +144,60 @@ public class ModelProducto
 	   
 	   
    }
+     
+   public  static ArrayList<Producto> getArrayProductoFromLocalHost(ContentResolver content)throws Exception
+	{  	 
+		 int count=0;
+		 ArrayList<Producto> a_prod=new ArrayList<Producto>(); 
+		 Cursor cur = content.query(DatabaseProvider.CONTENT_URI_PRODUCTO,
+							        null, //Columnas a devolver
+							        null,       //Condición de la query
+							        null,       //Argumentos variables de la query
+							        null);  
+		 if (cur.moveToFirst()) 
+		 {  
+			
+			   do{
+				   int value;
+				   Producto producto=new Producto();
+				   producto.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Producto.Id))));
+				   producto.setCodigo(cur.getString(cur.getColumnIndex(NMConfig.Producto.Codigo)));
+				   producto.setNombre(cur.getString(cur.getColumnIndex(NMConfig.Producto.Nombre)));
+				   value=cur.getInt(cur.getColumnIndex(NMConfig.Producto.EsGravable));            		
+				   producto.setEsGravable(value==1?true:false);
+				   producto.setListaPrecios(cur.getString(cur.getColumnIndex(NMConfig.Producto.ListaPrecios)));
+				   producto.setListaBonificaciones(cur.getString(cur.getColumnIndex(NMConfig.Producto.ListaBonificaciones)));
+				   producto.setCatPrecios(cur.getString(cur.getColumnIndex(NMConfig.Producto.CatPrecios)));
+				   producto.setDisponible(cur.getInt(cur.getColumnIndex(NMConfig.Producto.Disponible)));
+				   	        	  
+				   value=cur.getInt(cur.getColumnIndex(NMConfig.Producto.PermiteDevolucion));            		
+				   producto.setPermiteDevolucion(value==1?true:false);
+				   value=cur.getInt(cur.getColumnIndex(NMConfig.Producto.LoteRequerido));            		
+				   producto.setLoteRequerido(value==1?true:false);
+				   producto.setObjProveedorID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Producto.ObjProveedorID))));
+				   producto.setDiasAntesVen(cur.getInt(cur.getColumnIndex(NMConfig.Producto.DiasAntesVen)));
+				   producto.setDiasDespuesVen(cur.getInt(cur.getColumnIndex(NMConfig.Producto.DiasDespuesVen)));			   
+				   
+		           producto.setListaLotes(getLotesByProducto(content,producto.getId()));
+		           a_prod.add(producto);
+			   }while (cur.moveToNext());
+	           
+		 }
+		 return a_prod;
+	}
+   
+   public  static int UpdateProducto(ContentResolver content,SoapObject obj)throws Exception
+   {  
+	    ContentValues values = new ContentValues();
+	    Uri uri=null;  
+		for(int a=0;a<obj.getPropertyCount();a++)
+		{
+			SoapObject obj2=(SoapObject) obj.getProperty(a);   
+			uri=Uri.parse(DatabaseProvider.CONTENT_URI_PRODUCTO+"/"+obj2.getPropertySafelyAsString("IdProducto")); 
+			values.put("Disponible",Integer.valueOf(obj2.getPropertySafelyAsString("Disponible").toString()));
+			content.update(uri, values, null, null);
+		}		
+		return 1; 
+	   
+   }    
 }

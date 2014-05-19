@@ -1,10 +1,27 @@
 package com.panzyma.nm.viewdialog;
 
-import static com.panzyma.nm.controller.ControllerProtocol.*;
+import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+
 import org.ksoap2.serialization.PropertyInfo;
+
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -15,19 +32,6 @@ import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context; 
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 import com.panzyma.nordismobile.R;
  @SuppressLint({ "ResourceAsColor", "ResourceAsColor" })
 @SuppressWarnings({"rawtypes","unused","unchecked"})

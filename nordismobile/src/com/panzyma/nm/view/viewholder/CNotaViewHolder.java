@@ -1,7 +1,8 @@
 package com.panzyma.nm.view.viewholder; 
+import android.widget.TextView;
+
 import com.panzyma.nm.serviceproxy.CNota;
 import com.panzyma.nm.view.adapter.InvokeView;
-import android.widget.TextView; 
 import com.panzyma.nordismobile.R;
 
 public class CNotaViewHolder

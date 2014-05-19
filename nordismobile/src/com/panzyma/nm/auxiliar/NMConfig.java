@@ -4,7 +4,7 @@ package com.panzyma.nm.auxiliar;
 public class NMConfig
 {   
 	public static final String NAME_SPACE = "http://www.panzyma.com/"; 
-    public static final String URL = "http://www.panzyma.com/nordisservertest/mobileservice.asmx";
+    public static final String URL = "http://www.panzyma.com/nordisserverprod/mobileservice.asmx";
     public static final String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/";
     public static class MethodName
     { 	
@@ -23,6 +23,7 @@ public class NMConfig
 	    public static final String GetValoresCatalogo="GetValoresCatalogo";
 	    public static final String GetTasasDeCambio="GetTasasDeCambio";
 	    public static final String GetPromocionesPaged="GetPromocionesPaged";
+	    public static final String TraerDisponibilidadProductos="TraerDisponibilidadProductos";
 	}
 	public static final class Cliente
 	{  		
@@ -231,5 +232,40 @@ public class NMConfig
 	    public static final java.lang.String  MontoPremio="MontoPremio";
 		
 	}
+	
+	public static final class Recibo {
+		public static final java.lang.String ID = "id";
+		public static final java.lang.String NUMERO = "numero";
+		public static final java.lang.String FECHA = "fecha";
+		public static final java.lang.String NOTAS = "notas";
+		public static final java.lang.String TOTAL_RECIBO = "totalRecibo";
+		public static final java.lang.String TOTAL_FACTURAS = "totalFacturas";
+		public static final java.lang.String TOTAL_NOTAS_DEBITO = "totalND";
+		public static final java.lang.String TOTAL_INTERES = "totalInteres";
+		public static final java.lang.String SUBTOTAL = "subTotal";
+		public static final java.lang.String TOTAL_DESCUENTO = "totalDesc";
+		public static final java.lang.String TOTAL_RETENIDO = "totalRetenido";
+		public static final java.lang.String TOTAL_OTRAS_DEDUCCIONES = "totalOtrasDed";
+		public static final java.lang.String TOTAL_NOTAS_CREDITO = "totalNC";
+		public static final java.lang.String REFERENCIA = "referencia";
+		public static final java.lang.String CLIENTE_ID = "objClienteID";
+		public static final java.lang.String SUCURSAL_ID = "objSucursalID";
+		public static final java.lang.String NOMBRE_CLIENTE = "nombreCliente";
+		public static final java.lang.String COLECTOR_ID = "objColectorID";
+		public static final java.lang.String APLICA_DESCUENTO_OCASIONAL = "aplicaDescOca";
+		public static final java.lang.String CLAVE_AUTORIZA_DeSCUENTO_OCASIONAL = "claveAutorizaDescOca";
+		public static final java.lang.String PORCENTAJE_DESCUENTO_OCASIONAL_COLECTOR = "porcDescOcaColector";
+		public static final java.lang.String ESTADO_ID = "objEstadoID";
+		public static final java.lang.String CODIGO_ESTADO = "codEstado";
+		public static final java.lang.String DESCRICION_ESTADO = "descEstado";
+		public static final java.lang.String TOTAL_DESCUENTO_OCASIONAL = "totalDescOca";
+		public static final java.lang.String TOTAL_DESCUENTO_PROMOCION = "totalDescPromo";
+		public static final java.lang.String TOTAL_DESCUENTO_PRONTO_PAGO = "totalDescPP";
+		public static final java.lang.String TOTAL_IMPUESTO_PROPORCIONAL = "totalImpuestoProporcional";
+		public static final java.lang.String TOTAL_IMPUESTO_EXONERADO = "totalImpuestoExonerado";
+		public static final java.lang.String EXENTO = "exento";
+		public static final java.lang.String AUTORIZA_DGI = "autorizacionDGI";
+	}
+
 
 }

@@ -2,25 +2,14 @@ package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.C_SETTING_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;  
-import static com.panzyma.nm.controller.ControllerProtocol.C_SETTING_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;  
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
 
 import java.util.ArrayList;
 
-import com.panzyma.nm.DashBoardActivity;
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BProductoM;
-import com.panzyma.nm.auxiliar.CustomDialog;
-import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
-import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
-import com.panzyma.nm.menu.ActionItem;
-import com.panzyma.nm.menu.QuickAction;
-import com.panzyma.nm.view.adapter.GenericAdapter;  
-import com.panzyma.nm.view.viewholder.ProductoViewHolder; 
-import com.panzyma.nm.viewmodel.vmProducto;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -36,16 +25,28 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.View; 
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Button; 
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
+
+import com.panzyma.nm.DashBoardActivity;
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BProductoM;
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
+import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
+import com.panzyma.nm.menu.ActionItem;
+import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.viewholder.ProductoViewHolder;
+import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({"unchecked","rawtypes","unused"})

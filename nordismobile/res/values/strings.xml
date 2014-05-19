@@ -21,15 +21,10 @@
 
     <!-- cliente.xml titles -->
     <string name="txtclient_tittle">Lista de Clientes</string>
-    <string name="txtclient_entymessage">No hay Registros&#8230;</string>
+    <string name="txtclient_entymessage">No hay Registros</string>
+     
     
-    <string name="image_desc">Image Description</string>
-    <string name="menu_name">Menu Name</string>
-    <string name="description">Description</string>
-    <string name="price">Price</string>
-    
-    <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string> 
     <string name="edit_message">Enter a Message</string>
     <string name="button_send">Send</string>
     <string name="title_activity_name">Main Activity</string>
@@ -48,4 +43,5 @@
     <string name="view_product_codigo">Código</string>
     <string name="view_product_nombre">Descripción</string>
     <string name="view_product_disponibilidad">Existencias</string>
+    <string name="txtdocumentos_title">Lista de Documentos</string>
 </resources>

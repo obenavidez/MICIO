@@ -1,10 +1,19 @@
 package com.panzyma.nm.view;
 
+import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.CONFIRMATION_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.C_FICHACLIENTE;
+import static com.panzyma.nm.controller.ControllerProtocol.C_SETTING_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
+import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHED;
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_FICHACLIENTE_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.*;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -32,7 +41,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -43,6 +51,8 @@ import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.viewmodel.vmCliente;
+import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nordismobile.R;
 import com.panzyma.nm.viewmodel.*;
 

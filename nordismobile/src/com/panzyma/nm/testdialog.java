@@ -1,13 +1,14 @@
 package com.panzyma.nm;
 
 import android.app.AlertDialog;
-//import android.app.Dialog;
-import android.content.Context; 
-import android.os.Bundle; 
+import android.content.Context;
+import android.os.Bundle;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
 import com.panzyma.nordismobile.R;
+//import android.app.Dialog;
 
 public class testdialog extends AlertDialog{
 

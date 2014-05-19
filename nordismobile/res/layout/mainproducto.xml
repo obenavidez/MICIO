@@ -22,7 +22,7 @@
 		    android:id="@+id/p_llheader">
 		    
 		    <EditText android:id="@+id/p_editextfilter_prod"
-				android:layout_height="25dp"
+				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"
 				android:inputType="textPersonName"
 				android:singleLine="true" 

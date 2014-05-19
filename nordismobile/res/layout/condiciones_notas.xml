@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/bgdialog2"
+    android:orientation="vertical" >
+    
+    <RelativeLayout
+        android:id="@+id/rl_detlle_prod_select"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/White" 
+        android:layout_margin="2dp">
+         
+			<TextView
+            android:id="@+id/tv_detlle_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="10dp"
+            android:text="Condiciones y Notas"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black" /> 
+			
+			<TextView
+            android:id="@+id/tv_notas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/tv_detlle_header" 
+            android:layout_marginLeft="10dp"
+            android:text="Notas :"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#005D7A" 
+            android:shadowColor="@color/Black"   />
+
+       		<EditText
+            android:id="@+id/et_notas"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_below="@+id/tv_notas"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" 
+		    android:nextFocusRight="@+id/etusername"
+		    android:nextFocusDown="@+id/etusername"
+            />
+			 
+			<TextView
+            android:id="@+id/tv_bespecial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/et_notas" 
+            android:layout_marginLeft="10dp"
+            android:text="Bonificación Especial :"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#005D7A" 
+            android:shadowColor="@color/Black"  
+              />
+
+       		<EditText
+            android:id="@+id/et_bespecial"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/tv_bespecial"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" 
+           	android:singleLine="true" 
+		    android:nextFocusRight="@+id/tvcantidad"
+		    android:nextFocusDown="@+id/tvcantidad" 
+            />
+       		
+			<TextView
+            android:id="@+id/tv_pcondicionado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/et_bespecial" 
+            android:layout_marginLeft="10dp"
+            android:text="Pedido Condicionado :"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black"  
+            />
+
+       		<EditText
+            android:id="@+id/et_pcondicionado"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/tv_pcondicionado"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" 
+            android:singleLine="true"   
+            > 
+       		    
+       		</EditText> 
+       		
+       		<TextView
+            android:id="@+id/tv_pespecial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/et_pcondicionado" 
+            android:layout_marginLeft="10dp"
+            android:text="Bonificación :"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#005D7A" 
+            android:shadowColor="@color/Black"  
+              />
+
+       		<EditText
+            android:id="@+id/et_pespecial"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/tv_pespecial"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"  
+           	android:singleLine="true" 
+		    android:nextFocusRight="@+id/tvcantidad"
+		    android:nextFocusDown="@+id/tvcantidad" 
+            />
+ 
+        	<TableRow
+        	    android:id="@+id/layoutbutton"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_below="@+id/et_pespecial"
+        	    android:layout_centerHorizontal="true" >
+	    		
+			    <Button
+		            android:id="@+id/btn_ok"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 
+		            android:layout_marginLeft="10dp"
+		            android:layout_marginTop="10dp"
+		            android:layout_marginBottom="10dp"
+		            android:background="@drawable/btn"
+		            android:text="Aceptar"
+		            android:textAppearance="?android:attr/textAppearanceMedium"
+		            android:textColor="@color/White" 
+				    android:nextFocusRight="@+id/btncancel"
+				    android:nextFocusDown="@+id/btncancel">
+		        </Button>
+
+		        <Button
+		            android:id="@+id/btn_cancel"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 
+		            android:layout_marginLeft="10dp"
+		            android:layout_marginTop="10dp" 
+		            android:layout_marginBottom="10dp"
+		            android:background="@drawable/btn"
+		            android:text="Cancelar"
+		            android:textAppearance="?android:attr/textAppearanceMedium"
+		            android:textColor="@color/White"  >
+		        </Button>
+			    
+			</TableRow> 
+ 
+    </RelativeLayout>
+
+</LinearLayout>

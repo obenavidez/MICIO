@@ -19,6 +19,7 @@ import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.viewmodel.vmProducto;
+import com.panzyma.nm.viewmodel.vmRecibo;
 
  @SuppressWarnings({ "unchecked", "rawtypes" })
 public class Processor {
@@ -52,8 +53,15 @@ public class Processor {
 			 controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size()!=0)?objL:new ArrayList<vmProducto>() );
 			// Thread.sleep(500); 
 	     }  
-	}
-	
+	} 
+	public static void send_ViewProductosToView(ArrayList<Producto> objL,Controller controller)throws Exception
+	{ 
+		 synchronized(lock)
+	     { 
+			 controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size()!=0)?objL:new ArrayList<vmProducto>() );
+			// Thread.sleep(500); 
+	     }  
+	} 
 	public static void send_ViewFichaCustomerToView(CCCliente objL,Controller controller)throws Exception
 	{
 		synchronized(lock)
@@ -130,4 +138,23 @@ public class Processor {
  
 		} 
     }
+	
+	public static void send_ViewReciboToView(
+			ArrayList<vmRecibo> objL,
+			Controller controller) {
+		synchronized (lock) {
+			controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size() != 0) ? objL : new ArrayList<vmProducto>());
+			// Thread.sleep(500);
+		}
+	}
+	
+	public static void send_ViewReciboEditToView(
+			ArrayList<Factura> objL,
+			Controller controller) {
+		synchronized (lock) {
+			controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size() != 0) ? objL : new ArrayList<Factura>());
+			// Thread.sleep(500);
+		}
+
+	}
 }

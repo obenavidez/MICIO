@@ -4,7 +4,6 @@ import android.widget.TextView;
 
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.view.adapter.InvokeView;
-import com.panzyma.nm.viewmodel.vmPProducto;
 import com.panzyma.nordismobile.R;
 
 public class PProductoViewHolder 
@@ -29,12 +28,11 @@ public class PProductoViewHolder
 		DetallePedido prod=(DetallePedido) entity; 
 		nomprod.setText(""+prod.getNombreProducto());		
 		cantidad.setText(""+prod.getCantidadOrdenada());  
-		bonificacion.setText(prod.getCantidadBonificadaEditada());
-		promocion.setText(prod.getCantidadPromocion());
+		bonificacion.setText(""+prod.getCantidadBonificadaEditada());
+		promocion.setText(""+prod.getCantidadPromocion());
 		precio.setText(""+prod.getMontoPrecioEditado());
 		iva.setText(String.valueOf(prod.getImpuesto()));
-		total.setText(String.valueOf(prod.getTotal()));
-		cantidad.setTextColor(android.graphics.Color.BLUE); 
+		total.setText(String.valueOf(prod.getTotal())); 
 	}
 }
  

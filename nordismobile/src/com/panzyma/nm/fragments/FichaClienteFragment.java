@@ -1,9 +1,6 @@
 package com.panzyma.nm.fragments;
 
 import java.util.Arrays;
-
-import com.panzyma.nordismobile.R;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,12 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.CNotaViewHolder;
 import com.panzyma.nm.viewmodel.vmFicha;
+import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({"static-access","unused", "rawtypes" })
 public class FichaClienteFragment extends Fragment {

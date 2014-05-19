@@ -1,11 +1,8 @@
 package com.panzyma.nm.viewdialog;
-import com.panzyma.nordismobile.R;
-import com.panzyma.nm.controller.Controller;
-import com.panzyma.nm.view.ViewConfiguracion;
 import android.app.Dialog;
-import android.content.Context;   
+import android.content.Context;
 import android.os.Handler;
-import android.os.Message; 
+import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -18,6 +15,10 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.view.ViewConfiguracion;
+import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({"rawtypes","unused"})
 public class DialogLogin extends Dialog  implements Handler.Callback
