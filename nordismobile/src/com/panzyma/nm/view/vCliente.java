@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
@@ -43,7 +44,6 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nordismobile.R;
-import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.viewmodel.*;
 
 public class vCliente extends ActionBarActivity implements 
@@ -153,22 +153,21 @@ public class vCliente extends ActionBarActivity implements
 				result=true;
 				break;
 		   case C_UPDATE_ITEM_FINISHED:
-				
-
-			   
-				result=true;
+			   buildToastMessage(msg.obj.toString(), Toast.LENGTH_SHORT).show();
+			   result=true;
 				break;
 				
 		   case C_UPDATE_FINISHED:
-			  // buildToastMessage(msg.obj.toString(), Toast.LENGTH_SHORT).show();
+
 			    pDialog.hide();
 				result=true;
-				
 				break;
-
+				
 			case ERROR:
-
+				ErrorMessage error=((ErrorMessage)msg.obj);
+				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();				 
 				result=true;
+				break;
 		}
 		return result;
 	}
@@ -242,7 +241,9 @@ public class vCliente extends ActionBarActivity implements
 			case R.id.consultar_cxc:
 				LOAD_FICHACLIENTE_FROMSERVER();
 			break;
-				
+			case R.id.sincronizar_selected:
+				UPDATE_SELECTEDITEM_FROMSERVER();
+				break;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -309,7 +310,7 @@ public class vCliente extends ActionBarActivity implements
 
 			}
 		};
-		//establecemos el listener para el dragable
+		//establecemos el listener para el dragable ....
 		drawerLayout.setDrawerListener(drawerToggle);
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -378,11 +379,22 @@ public class vCliente extends ActionBarActivity implements
 					public void run() {
 						try {
 							if (what == C_SETTING_DATA && customArrayAdapter != null && customArrayAdapter.getCount() >= 0) {
+								customArrayAdapter.AddAllToListViewDataSource(data);
 								firstFragment.setItems(data);
 								gridheader.setText("Listado de Clientes("+ customArrayAdapter.getCount() + ")");
 								footerView.setVisibility(View.VISIBLE);
 								ShowEmptyMessage(false);
-							} 
+							}
+							else {
+								if (what == C_SETTING_DATA)
+									footerView.setVisibility(View.VISIBLE);
+								
+								gridheader.setText("Listado de Clientes("+ data.size() + ")");
+								firstFragment.setItems(data);
+								customArrayAdapter.setSelectedPosition(0);
+								positioncache = 0;
+								/*product_selected = customArrayAdapter.getItem(0);*/
+							}
 							
 						}
 						catch (Exception e) {
@@ -499,4 +511,11 @@ public class vCliente extends ActionBarActivity implements
 		toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0); 
 		return toast;
 	}	
+
+	private void UPDATE_SELECTEDITEM_FROMSERVER()
+	{
+		nmapp.getController().getInboxHandler().sendEmptyMessage(UPDATE_ITEM_FROM_SERVER);
+	    Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);  
+	} 	
+
 }
