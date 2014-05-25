@@ -3,43 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentTop="true" >
-
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/cxclbl_sucursal"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Sucursal :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctextv_detalle_sucursal"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/White"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxclbl_nofactura"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="No Factura :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctextv_detalle_nofactura"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-    </TableRow>
+  
 
     <TableRow
         android:id="@+id/tableRow2"
@@ -47,61 +11,16 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/cxclbl_tipo"
+            android:id="@+id/cxclbl_nond"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
             android:layout_weight="1"
-            android:text="Tipo :"
+            android:text="Número:"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctextv_detalle_tipo"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxclbl_fecha"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Fecha :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctextv_detalle_fecha"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/cxclbl_nopedido"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="No.Pedido :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctextv_detalle_nopedido"
+            android:id="@+id/cxctextv_nond"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -127,24 +46,24 @@
             android:layout_weight="1"
             android:textColor="@color/Black"
             android:textSize="10dp" />
-    </TableRow>
+    </TableRow>    
 
     <TableRow
         android:id="@+id/tableRow3"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/cxclbl_dias"
+        
+         <TextView
+            android:id="@+id/cxclbl_fecha"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Fecha :"
             android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Dias :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctext_detalle_dias"
+            android:id="@+id/cxctextv_detalle_fecha"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -153,36 +72,10 @@
             android:scrollHorizontally="true"
             android:textColor="@color/Black"
             android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxclbl_descontado"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Descontado :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctext_detalle_descontado"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow3"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
 
         <TextView
             android:id="@+id/cxclbl_fechavence"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
+            android:layout_height="wrap_content"           
             android:layout_weight="1"
             android:text="Fecha Vence :"
             android:textColor="@color/Teal"
@@ -198,21 +91,7 @@
             android:scrollHorizontally="true"
             android:textColor="@color/Black"
             android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxclbl_fechadescpp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Fecha DescPP :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctextv_detallefechadescpp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
+      
     </TableRow>
 
     <TableRow
@@ -221,18 +100,65 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/cxclbl_totalfact"
+            android:id="@+id/cxclbl_dias"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
             android:layout_weight="1"
-            android:text="Total Factura :"
+            android:text="Dias :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctext_detalle_totalfact"
+            android:id="@+id/cxctext_dias"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+        
+        <TextView
+            android:id="@+id/cxclbl_concepto"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Concepto :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_concepto"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+        
+        <TextView
+            android:id="@+id/cxclbl_monto"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="3dp"
+            android:text="Monto :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_monto"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
             android:textColor="@color/Black"
             android:textSize="10dp" />
 
@@ -240,6 +166,7 @@
             android:id="@+id/cxclbl_abonado"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginLeft="3dp"
             android:text="Abonado :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
@@ -254,47 +181,8 @@
             android:scrollHorizontally="true"
             android:textColor="@color/Black"
             android:textSize="10dp" />
-    </TableRow>
 
-    <TableRow
-        android:id="@+id/tableRow5"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/cxclbl_retenido"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Retenido :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctext_detalle_retenido"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxclbl_otro"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Otro :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctext_detalle_otro"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
+        
     </TableRow>
 
     <TableRow
