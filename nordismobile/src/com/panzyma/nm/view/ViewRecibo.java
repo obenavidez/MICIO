@@ -29,6 +29,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -464,10 +465,20 @@ public class ViewRecibo extends ActionBarActivity implements
 
 	}
 	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent e){
+		super.onKeyUp(keyCode, e);
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			FINISH_ACTIVITY();
+		}
+		return true;		
+	}
+	
 	private void FINISH_ACTIVITY()	{
 		nmapp.getController().removeOutboxHandler(TAG);
 		nmapp.getController().removebridge(nmapp.getController().getBridge());			
-		Log.d(TAG, "Activity quitting"); 		
+		Log.d(TAG, "Activity quitting"); 
+		finish();
 	} 
 
 }
