@@ -153,7 +153,7 @@ public class Processor {
 			Integer result,
 			Controller controller) {
 		synchronized (lock) {
-			controller.notifyOutboxHandlers(DELETE_ITEM_FINISHED, 0, 0, result);
+			controller._notifyOutboxHandlers(DELETE_ITEM_FINISHED, 0, 0, result);
 			// Thread.sleep(500);
 		}
 	}

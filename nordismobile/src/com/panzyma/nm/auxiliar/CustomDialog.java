@@ -36,6 +36,7 @@ public class CustomDialog extends Dialog implements OnDismissListener
 	
 	int layout;
 	View viewdialog;
+	private Context cnt;
 	
 	/**
 	 * CustomDialog  Interfaces  Variables
@@ -72,6 +73,7 @@ public class CustomDialog extends Dialog implements OnDismissListener
 	public CustomDialog(Context context,String titulo,String mensaje,int... mensajetype) 
 	{
 		super(context, android.R.style.Theme_Translucent);		
+		cnt = context;
 		this.setTitulo(titulo);
 		this.setMensaje(mensaje);
 		if(mensajetype!=null)
@@ -80,9 +82,9 @@ public class CustomDialog extends Dialog implements OnDismissListener
 	    this.setCanceledOnTouchOutside(true);
 	}
 	public CustomDialog(Context context,String mensaje,boolean interfac,int... mensajetype) 
-	{
-		super(context, android.R.style.Theme_Translucent);
-		 
+	{		
+		super(context, android.R.style.Theme_Translucent);	
+		cnt = context;
 		this.setMensaje(mensaje);
 		if(mensajetype!=null)
 		this.setMessageType(mensajetype[0]);	
@@ -93,7 +95,7 @@ public class CustomDialog extends Dialog implements OnDismissListener
 	public CustomDialog(Context context,String titulo,String mensaje,int _layout,int mensajetype) 
 	{
 		super(context, android.R.style.Theme_Translucent);
-		
+		cnt = context;
 		this.setTitulo(titulo);
 		this.layout=_layout;
 		this.setMensaje(mensaje); 
@@ -104,7 +106,7 @@ public class CustomDialog extends Dialog implements OnDismissListener
 	public CustomDialog(Context context,String titulo,String mensaje,boolean interfac,int... mensajetype) 
 	{
 		super(context, android.R.style.Theme_Translucent);
-		
+		cnt = context;
 		this.setTitulo(titulo);
 		this.setMensaje(mensaje);
 		if(mensajetype!=null)
@@ -115,14 +117,16 @@ public class CustomDialog extends Dialog implements OnDismissListener
 	} 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
-		
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-	    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-	    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);  
+		//setWindow();		
 	    initDialog();
 	} 
+	
+	private void setWindow(){
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+	}
 	
 	public void setTitulo(String titulo)
 	{

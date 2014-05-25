@@ -7,11 +7,14 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
+import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -42,7 +45,9 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BReciboM;
+import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.FichaReciboFragment;
@@ -56,6 +61,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 	private static final String TAG = ViewRecibo.class.getSimpleName();
 	private static final int NUEVO_RECIBO = 0;
+	private static final int BORRAR_RECIBO = 2;
 
 	CustomArrayAdapter<vmRecibo> customArrayAdapter;
 	private SearchView searchView;
@@ -111,9 +117,25 @@ public class ViewRecibo extends ActionBarActivity implements
 				switch (position) {
 				case NUEVO_RECIBO:
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
-					startActivity(intento);
-
+					startActivity(intento);       
 					break;
+				case BORRAR_RECIBO:
+					//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+					int pos = customArrayAdapter.getSelectedPosition();
+					//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+					recibo_selected = customArrayAdapter.getItem(pos);
+					
+					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
+					if ( "REGISTRADO".equals(recibo_selected.getDescEstado())) {
+						nmapp.getController()
+								.getInboxHandler()
+								.sendEmptyMessage(
+										ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+					} else {
+
+						return;
+					}
+					break;				
 				}
 
 				drawerList.setItemChecked(position, true);
@@ -283,7 +305,10 @@ public class ViewRecibo extends ActionBarActivity implements
 		case C_DATA:
 			establecer(msg);
 			return true;
-
+		case DELETE_ITEM_FINISHED:			
+			buildCustomDialog("Nordis Movile",msg.obj.equals(1)?"Eliminado Satisfactoriamente":"Error al eliminar",ALERT_DIALOG).show();
+			customArrayAdapter.remove(recibo_selected);			
+			return true;
 		case C_FICHACLIENTE:
 
 			return true;
@@ -479,6 +504,15 @@ public class ViewRecibo extends ActionBarActivity implements
 		nmapp.getController().removebridge(nmapp.getController().getBridge());			
 		Log.d(TAG, "Activity quitting"); 
 		finish();
-	} 
+	}
+
+	public vmRecibo getReciboSelected() {
+		return recibo_selected;
+	}	
+	
+	public Dialog buildCustomDialog(String tittle, String msg, int type) {
+		return new CustomDialog(this.getApplicationContext(), tittle, msg,
+				false, type);
+	}
 
 }
