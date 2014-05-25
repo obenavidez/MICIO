@@ -94,13 +94,13 @@ public class vmRecibo implements Item, Parcelable {
 
 	@Override
 	public String getItemName() {
-		return getNombreCliente();
+		return getNumero() +" - "+ getNombreCliente();
 	}
 
 	@Override
 	public String getItemDescription() {
 		return "Fecha: " + getFecha() + ", Total: " + getTotalRecibo()
-				+ ", EstadO: " + getDescEstado();
+				+ ", Estado: " + getDescEstado();
 	}
 
 	@Override

@@ -43,7 +43,8 @@ public interface ControllerProtocol {
     
     int SAVE_DATA_FROM_LOCALHOST=400;
     int UPDATE_DATA_FROM_LOCALHOST=401;
-    int DELETE_DATA_FROM_LOCALHOST=402;    
+    int DELETE_DATA_FROM_LOCALHOST=402;  
+    int DELETE_ITEM_FINISHED = 605;
     
     int ERROR=600;
     int NOTIFICATION=601;

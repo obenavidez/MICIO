@@ -9,6 +9,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_SETTING_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA; 
 import static com.panzyma.nm.controller.ControllerProtocol.C_FICHACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
+import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 
 import com.google.gson.Gson;
 import com.panzyma.nm.controller.Controller;
@@ -144,6 +145,15 @@ public class Processor {
 			Controller controller) {
 		synchronized (lock) {
 			controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size() != 0) ? objL : new ArrayList<vmProducto>());
+			// Thread.sleep(500);
+		}
+	}
+	
+	public static void send_ViewDeleteReciboToView(
+			Integer result,
+			Controller controller) {
+		synchronized (lock) {
+			controller.notifyOutboxHandlers(DELETE_ITEM_FINISHED, 0, 0, result);
 			// Thread.sleep(500);
 		}
 	}

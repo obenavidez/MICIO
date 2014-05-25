@@ -333,20 +333,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					+ (this.totalImpuestoProporcional + this.totalImpuestoExonerado)
 					- (this.totalDescuento - this.totalOtrasDeducciones);
 
-			// totales
-//			recibo.setTotalFacturas(totalFacturas);
-//			recibo.setTotalNC(totalNotasCredito);
-//			recibo.setTotalND(totalNotasDebito);
-//			recibo.setTotalInteres(totalInteres);
-//			recibo.setSubTotal(subTotal);
-//			recibo.setTotalDescOca(totalDescuentoOcasional);
-//			recibo.setTotalDescPromo(totalDescuentoPromocion);
-//			recibo.setTotalDescPP(totalDescuentoProntoPago);
-//			recibo.setTotalDesc(totalDescuento);
-//			recibo.setTotalImpuestoProporcional(totalImpuestoProporcional);
-//			recibo.setTotalImpuestoExonerado(totalImpuestoExonerado);
-//			recibo.setTotalOtrasDed(totalOtrasDeducciones);
-//			recibo.setTotalRecibo(totalRecibo);
 			// colector
 			recibo.setObjColectorID(10);
 			recibo.setAplicaDescOca(false);
@@ -354,7 +340,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setPorcDescOcaColector(this.porcentajeDescuentoOcasional);
 			// estado
 			recibo.setObjEstadoID(100);
-			recibo.setCodEstado("REGISTRADO");
+			recibo.setCodEstado("REG");
+			recibo.setDescEstado("REGISTRADO");
 			
 			recibo.setId(Ventas.getMaxReciboId(this.contexto) + 1);
 			

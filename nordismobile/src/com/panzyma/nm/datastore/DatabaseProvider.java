@@ -775,10 +775,12 @@ public class DatabaseProvider extends ContentProvider
 			case USUARIO_ID: 			dictionary.put(USUARIO, TABLA_USUARIO);
 										dictionary.put(USUARIO+1,"Id=" + uri.getLastPathSegment());
 										break;	
-			case RECIBO: 			dictionary.put(RECIBO, TABLA_RECIBO);
-									dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_RECIBO.toString());
-									break;								
-			
+			case RECIBO: 				dictionary.put(RECIBO, TABLA_RECIBO);
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_RECIBO.toString());
+										break;								
+			case RECIBO_ID: 			dictionary.put(RECIBO, TABLA_RECIBO);
+										dictionary.put(RECIBO+1,"id=" + uri.getLastPathSegment());
+			break;
 		} 
 		Iterator it = dictionary.entrySet().iterator();
 		while (it.hasNext()) 
