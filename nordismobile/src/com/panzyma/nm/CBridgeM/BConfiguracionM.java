@@ -136,7 +136,7 @@ public class BConfiguracionM {
 																				String.valueOf(res.get_devicePrefix()),
 																				view.getEnterprise(),
 																				res.get_userInfo().getLogin(),
-																				view.getPasswd(),
+																				//view.getPasswd(),
 																				res.get_maxIdPedido(),
 																				res.get_maxIdRecibo());
 									ModelConfiguracion.saveConfiguration(view, setting);

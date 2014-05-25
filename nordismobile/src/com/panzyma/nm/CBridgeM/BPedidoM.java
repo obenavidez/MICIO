@@ -8,9 +8,12 @@ import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_INVENTORY_FROM
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR;
 
 import java.util.ArrayList;
+
 import org.ksoap2.serialization.SoapObject;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
@@ -19,6 +22,7 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;   
+import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Pedido;
@@ -50,6 +54,7 @@ public class BPedidoM {
 	
 	public boolean handleMessage(Message msg) 
 	{
+		Bundle b = msg.getData();
 		switch (msg.what) 
 		{  
 			case LOAD_DATA_FROM_LOCALHOST: 
@@ -64,7 +69,14 @@ public class BPedidoM {
 			case UPDATE_INVENTORY_FROM_SERVER:
 					onUpdateInventory_From_Server();
 					return true;
-			case ID_SALVAR:ID_SALVAR();
+			case ID_SALVAR:
+				try {
+//					RegistrarPedido(msg.getData()); 
+					
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+				}
 				return true;
 		}
 		return false;
@@ -131,10 +143,25 @@ public class BPedidoM {
 		 return ModelProducto.getProductoByID(content,idproducto);
 	}
 
-	public void ID_SALVAR(){
-		
-		
-		
+	public long  RegistrarPedido(Pedido pedido,Context cnt) throws Exception
+	{ 
+		return ModelPedido.RegistrarPedido(pedido,cnt);		  
+	}	
+//	public int  RegistrarPedido(Bundle b)
+//	{		 		  
+//		try {
+//				ModelPedido.RegistrarPedido((Pedido)b.getSerializable("pedido"),view.getContext()); 
+//				ActualizarSecuenciaPedido(b.getInt("idpedido"));
+//				return 1;
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return 0;
+//		}  
+//		  
+//	}
+	public int ActualizarSecuenciaPedido(int idpedido,Context cnt)throws Exception{
+		return ModelConfiguracion.ActualizarSecuenciaPedido(cnt, idpedido);
 	}
 	
 }

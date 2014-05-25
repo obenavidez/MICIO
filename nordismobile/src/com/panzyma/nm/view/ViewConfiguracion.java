@@ -213,7 +213,7 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 		this.setUrlServer(setting.getAppServerURL()); 
 		this.setDeviceId(setting.getEnterprise());
 		this.setUserName(setting.getNameUser());
-		this.setPasswd(setting.getPassword());
+		//this.setPasswd(setting.getPassword());
 	}
 		 
 	@Override
@@ -473,6 +473,12 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 							Controller c=nmapp.getController();  
 							if(SessionManager.SignIn(true))
 							{			
+
+						         setEnterprise(txtEmpresa.getText().toString());
+						         setUserName(txtUsuario.getText().toString());
+						         setUrlServer(txtURL.getText().toString()); 
+						         setDeviceId(txtDispositivoID.getText().toString());
+						         
 								 Message msg = new Message();
 							     Bundle b = new Bundle();
 							     b.putString("Credentials",SessionManager.getCredenciales());
@@ -519,7 +525,6 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
                 txtUsuario.requestFocus();
                 return false;
         }  
-        
 		return true;
 	}
   

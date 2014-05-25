@@ -1,10 +1,8 @@
 package com.panzyma.nm.viewdialog;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
-
-import java.util.ArrayList;
-
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST; 
+import java.util.ArrayList; 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -29,8 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
-
+import android.widget.TextView; 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.auxiliar.ErrorMessage;
@@ -45,8 +42,7 @@ import com.panzyma.nordismobile.R;
 
 public class DialogProducto extends Dialog  implements Handler.Callback{
 
-	private Context mcontext;
-	private ViewPedidoEdit parent;
+	private static Context parent;
 	private NMApp nmapp;
 	private Display display;
 	private ProgressDialog pd;
@@ -85,22 +81,22 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
     private boolean _exento;
 	private ArrayList<Producto> _idsProdsExcluir; 
 	private ArrayList<Producto> Lproducto;
-     
+	private com.panzyma.nm.interfaces.Editable _view;
     @SuppressWarnings("unchecked")
-	public DialogProducto(ViewPedidoEdit vpe,String codTP, ArrayList<Producto> ProdsExclir, long idPedido, long idCategCliente, long idTipoPrecio, long idTipoCliente, boolean exento) 
+	public DialogProducto(com.panzyma.nm.interfaces.Editable vpe,String codTP, ArrayList<Producto> ProdsExclir, long idPedido, long idCategCliente, long idTipoPrecio, long idTipoCliente, boolean exento) 
     {    
-    	super(vpe,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);     
+    	super(vpe.getContext(),android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);     
         
         try 
         {   
-			setContentView(R.layout.mainproducto);  
-        	mcontext=this.getContext();
-        	parent=vpe;       	
-        	nmapp=(NMApp) vpe.getApplication(); 
+			setContentView(R.layout.mainproducto);   
+			_view=vpe;
+        	parent=vpe.getContext();       	
+        	nmapp=(NMApp) parent.getApplicationContext(); 
 	        nmapp.getController().setEntities(this,new BProductoM()); 
 	        nmapp.getController().addOutboxHandler(new Handler(this));
-	        pd = ProgressDialog.show(vpe, "Espere por favor", "Trayendo Info...", true, false); 
-			WindowManager wm = (WindowManager) vpe.getSystemService(Context.WINDOW_SERVICE);
+	        pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false); 
+			WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay(); 
 			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
 			initComponents();
@@ -307,7 +303,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
 		try {
-			nmapp.getController().setEntities(parent,parent.getBridge());
+			nmapp.getController().setEntities(parent,_view.getBridge());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

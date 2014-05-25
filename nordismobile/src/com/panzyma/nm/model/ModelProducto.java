@@ -119,11 +119,11 @@ public class ModelProducto
    
    public synchronized static Lote[] getLotesByProducto(ContentResolver content,long ObjProductoID)throws Exception{
 	   int cont=0;
-	    Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_LOTE+"/"+String.valueOf(ObjProductoID)); 
+	    Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_LOTE+""/*+"/"+String.valueOf(ObjProductoID)*/); 
 		Cursor cur = content.query(uri,
 		        null, //Columnas a devolver
-		        null,       //Condición de la query
-		        null,       //Argumentos variables de la query
+		        "ObjProductoID=?",       //Condición de la query
+		        new String[]{String.valueOf(ObjProductoID)} ,       //Argumentos variables de la query
    	        null); 
 		Lote[] a_lote=new Lote[cur.getCount()];
 		

@@ -1,10 +1,16 @@
 package com.panzyma.nm.serviceproxy;
 
+import static com.panzyma.nm.controller.ControllerProtocol.ID_REQUEST_SALVARPEDIDO;
+
 import java.util.*;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Message;
 
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.view.ViewPedidoEdit;
 
 public class Ventas {
 	Ventas() {
@@ -31,7 +37,6 @@ public class Ventas {
 
 		return vec;
 	}
-
 	/*
 	 * Devuelve el precio de un producto dada la cantidad que se está ordenando
 	 */
@@ -159,20 +164,59 @@ public class Ventas {
 	}
 
 	public static int getLastOrderId(Context cnt) {
-		return Integer.parseInt(cnt.getSharedPreferences("SystemParams",
-				android.content.Context.MODE_PRIVATE).getString(
-				"max_idpedido", "0"));
+		return cnt.getSharedPreferences("VConfiguracion",
+				android.content.Context.MODE_PRIVATE).getInt(
+				"max_idpedido", 0);
 		
 	}
+	
 	public static int getPrefijoIds(Context cnt){
-		return Integer.parseInt(cnt.getSharedPreferences("SystemParams",
+		return Integer.parseInt(cnt.getSharedPreferences("VConfiguracion",
 				android.content.Context.MODE_PRIVATE).getString(
 				"device_id", "0")); 
 	}
 	
 	public static int getMaxReciboId(Context cnt){
-		return Integer.parseInt(cnt.getSharedPreferences("SystemParams",
-				android.content.Context.MODE_PRIVATE).getString(
-				"max_idrecibo", "0")); 
+		return cnt.getSharedPreferences("VConfiguracion",
+				android.content.Context.MODE_PRIVATE).getInt(
+				"max_idrecibo",0); 
 	}
+
+	@SuppressWarnings("deprecation")
+    public static Pedido guardarPedido(Pedido pedido,ViewPedidoEdit vpe) throws Exception
+    { 
+        //Salvando el tipo de pedido (crédito contado)
+        pedido.setTipo("CR"); 
+    	if (vpe.getTipoVenta() == "CO")
+			pedido.setTipo("CO");
+       
+		Date d = new Date(vpe.getFechaPedido());
+        pedido.setFecha(DateUtil.d2i(d));
+        Integer intId = 0;
+        //Generar Id del pedido
+        if (pedido.getNumeroMovil() == 0) 
+        {            
+            intId = Ventas.getLastOrderId(vpe.getApplicationContext());
+            if (intId == null) 
+                intId = new Integer(1);
+            else
+                intId = new Integer(intId.intValue() + 1);
+           // DataStore.setLastOrderId(intId);
+            Integer prefix = Ventas.getPrefijoIds(vpe.getApplicationContext());
+            String strIdMovil = prefix.intValue() + "" + intId.intValue();
+            int idMovil = Integer.parseInt(strIdMovil);
+            pedido.setNumeroMovil(idMovil);
+            pedido.setObjEstadoID(0);
+            pedido.setObjCausaEstadoID(0);
+            pedido.setCodEstado("REGISTRADO");
+            pedido.setDescEstado("Elaboración");
+            pedido.setCodCausaEstado("REGISTRADO");
+            pedido.setDescCausaEstado("Registrado");
+        }  
+        pedido.setId(vpe.getBridge().RegistrarPedido(pedido,vpe.getContext()));
+        vpe.getBridge().ActualizarSecuenciaPedido(intId,vpe.getContext());
+        vpe.actualizarOnUINumRef(pedido);
+             
+        return pedido;
+    } 
 }

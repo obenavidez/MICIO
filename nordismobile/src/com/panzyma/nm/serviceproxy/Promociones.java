@@ -343,7 +343,8 @@ public class Promociones {
         pedido.setPromocionesAplicadas(null);
     }
 
-	 public static void ActualizaPedidoDePromociones(Pedido pedido) {
+	 public static void ActualizaPedidoDePromociones(Pedido pedido) 
+	 {
 	        DistribuirDescuentosPromos(pedido);
 	        
 	        PedidoPromocion[] pps = pedido.getPromocionesAplicadas();
@@ -537,7 +538,7 @@ public class Promociones {
 	    }
 
 	 public static void aplicarPromocion(Pedido pedido, Promocion promo,ContentResolver content)
-	    {       
+	 {       
 	        //Calculando factor de aplicación múltiple
 	        int K = getFactorAplicacionMultiple(pedido, promo);        
 	        String cantidadesDistribuidas = "";
@@ -776,7 +777,8 @@ public class Promociones {
 	        pedido.setPromocionesAplicadas(arrPP);
 	    } //aplicarPromocion
 
-	 private static int getFactorAplicacionMultiple(Pedido pedido, Promocion promo) {
+	 private static int getFactorAplicacionMultiple(Pedido pedido, Promocion promo) 
+	 {
 	        int K = 1; //Cantidad de veces que aplica la promoción: por defecto aplica una vez
 	        int contUnidades = 0; //Contador de unidades ordenadas
 	            

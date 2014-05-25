@@ -5,16 +5,14 @@ public class vmConfiguracion {
     private  java.lang.String URL_SERVER;
     private  java.lang.String DEVICE_ID; 
     private  java.lang.String ENTERPRISE;
-    private  java.lang.String NAME_USER;
-    private  java.lang.String PASSWORD;
+    private  java.lang.String NAME_USER; 
     private int MAX_IDPEDIDO;
     private int MAX_IDRECIBO;
      
 	public static vmConfiguracion setConfiguration(java.lang.String url_server,
 						   java.lang.String device_prefix,
 						   java.lang.String enterprise,
-						   java.lang.String name_user,
-						   java.lang.String passwd, 
+						   java.lang.String name_user, 
 						   int max_idpedido,
 						   int max_idrecibo)
 	{
@@ -22,8 +20,7 @@ public class vmConfiguracion {
 		vmonfig.URL_SERVER=url_server;
 		vmonfig.DEVICE_ID=device_prefix;
 		vmonfig.ENTERPRISE=enterprise;
-		vmonfig.NAME_USER=name_user;
-		vmonfig.PASSWORD=passwd; 
+		vmonfig.NAME_USER=name_user; 
 		vmonfig.MAX_IDPEDIDO=max_idpedido;
 		vmonfig.MAX_IDRECIBO=max_idrecibo;
 		return vmonfig;
@@ -40,10 +37,7 @@ public class vmConfiguracion {
 	}
 	public  String getNameUser(){
 		return NAME_USER;
-	}
-	public  String getPassword(){
-		return PASSWORD;
-	}
+	} 
 	public  int getMax_IdPedido(){
 		return MAX_IDPEDIDO;
 	}

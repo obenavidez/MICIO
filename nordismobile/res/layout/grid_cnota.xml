@@ -11,7 +11,8 @@
           android:text="Fecha : "
           android:textColor="@color/Teal"
           android:textSize="12px" />
-
+
+
       <TextView
           android:id="@+id/cntextv_detallefecha"
           android:layout_width="wrap_content"
@@ -20,7 +21,8 @@
           android:text="Datalle..."
           android:textColor="@color/Black"
           android:textSize="12px" />
-
+
+
       <TextView
           android:id="@+id/cntextv_autor"
           android:layout_width="wrap_content"
@@ -48,7 +50,9 @@
           android:text="Concepto : "
           android:textColor="@color/Teal"
           android:textSize="12px" />
-
+
+
+
       <TextView
           android:id="@+id/cntextv_detalleconcepto"
           android:layout_width="wrap_content"
@@ -68,7 +72,9 @@
           android:text="Nota : "
           android:textColor="@color/Teal"
           android:textSize="12px" />
-
+
+
+
       <TextView
           android:id="@+id/cntextv_detallenota"
           android:layout_width="wrap_content"

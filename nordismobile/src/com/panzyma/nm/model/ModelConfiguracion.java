@@ -40,14 +40,13 @@ public class ModelConfiguracion {
 	
 	public static vmConfiguracion getVMConfiguration(Context view)
 	{ 
-		pref=view.getSharedPreferences("ViewConfiguracion",Context.MODE_PRIVATE);  
+		pref=view.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  
 		
 		return vmConfiguracion.setConfiguration(
 										 pref.getString("url_server","http://www.panzyma.com/nordisserverprod"), 
 										 pref.getString("device_id",""),
 										 pref.getString("enterprise","dp"), 
-										 pref.getString("name_user",""),
-										 pref.getString("password",""),
+										 pref.getString("name_user",""), 
 										 pref.getInt("max_idpedido",0),
 										 pref.getInt("max_idrecibo",0));
 	}
@@ -65,16 +64,23 @@ public class ModelConfiguracion {
 	
 	public static void saveConfiguration(Context view,vmConfiguracion setting)throws Exception
 	{
-		pref=view.getSharedPreferences("ViewConfiguracion",Context.MODE_PRIVATE);
+		pref=view.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE); 
 		edit=pref.edit();		
 		edit.putString("url_server",setting.getAppServerURL());
 		edit.putString("device_id",setting.getDeviceId());
 		edit.putString("enterprise",setting.getEnterprise());
-		edit.putString("name_user",setting.getNameUser());
-		edit.putString("password",setting.getPassword());
+		edit.putString("name_user",setting.getNameUser()); 
 		edit.putInt("max_idpedido",setting.getMax_IdPedido());
 		edit.putInt("max_idrecibo",setting.getMax_Idrecibo());
 		edit.commit();		
+	}
+	
+	public static int ActualizarSecuenciaPedido(Context cnt, int idpedido){
+		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE); 
+		edit=pref.edit();		 
+		edit.putInt("max_idpedido",idpedido); 
+		edit.commit();
+		return 1;
 	}
 	
 	public static void saveUser(Context view,Usuario user)throws Exception

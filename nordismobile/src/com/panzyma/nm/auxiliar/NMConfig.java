@@ -133,7 +133,81 @@ public class NMConfig
 	}
 	public static final class Pedido
 	{
-		
+		public static final java.lang.String Id="Id";
+		public static final java.lang.String NumeroMovil="NumeroMovil";
+		public static final java.lang.String NumeroCentral="NumeroCentral";
+		public static final java.lang.String Tipo="Tipo";
+		public static final java.lang.String Fecha="Fecha";
+		public static final java.lang.String objClienteID="objClienteID";
+		public static final java.lang.String NombreCliente="NombreCliente";
+		public static final java.lang.String objSucursalID="objSucursalID";
+		public static final java.lang.String NombreSucursal="NombreSucursal";
+		public static final java.lang.String objTipoPrecioVentaID="objTipoPrecioVentaID";
+		public static final java.lang.String CodTipoPrecio="CodTipoPrecio";
+		public static final java.lang.String DescTipoPrecio="DescTipoPrecio";
+		public static final java.lang.String objVendedorID="objVendedorID";
+		public static final java.lang.String BonificacionEspecial="BonificacionEspecial";
+		public static final java.lang.String BonificacionSolicitada="BonificacionSolicitada";
+		public static final java.lang.String PrecioEspecial="PrecioEspecial";
+		public static final java.lang.String PrecioSolicitado="PrecioSolicitado";
+		public static final java.lang.String PedidoCondicionado="PedidoCondicionado";
+		public static final java.lang.String Condicion="Condicion";
+		public static final java.lang.String Subtotal="Subtotal";
+		public static final java.lang.String Descuento="Descuento";
+		public static final java.lang.String Impuesto="Impuesto";
+		public static final java.lang.String Total="Total";
+		public static final java.lang.String objEstadoID="objEstadoID";
+		public static final java.lang.String CodEstado="CodEstado";
+		public static final java.lang.String DescEstado="DescEstado";
+		public static final java.lang.String objCausaEstadoID="objCausaEstadoID";
+		public static final java.lang.String CodCausaEstado="CodCausaEstado";
+		public static final java.lang.String DescCausaEstado="DescCausaEstado";
+		public static final java.lang.String NombreVendedor="NombreVendedor";		
+		public static final class DetallePedido
+		{
+			public static final java.lang.String Id="Id";
+		    public static final java.lang.String objPedidoID="objPedidoID";
+		    public static final java.lang.String objProductoID="objProductoID";
+		    public static final java.lang.String codProducto="CodProducto";
+		    public static final java.lang.String nombreProducto="NombreProducto";
+		    public static final java.lang.String cantidadOrdenada="CantidadOrdenada";
+		    public static final java.lang.String cantidadBonificada="CantidadBonificada";
+		    public static final java.lang.String objBonificacionID="objBonificacionID";
+		    public static final java.lang.String bonifEditada="BonifEditada";
+		    public static final java.lang.String cantidadBonificadaEditada="CantidadBonificadaEditada";
+		    public static final java.lang.String precio="Precio";
+		    public static final java.lang.String montoPrecioEditado="MontoPrecioEditado";
+		    public static final java.lang.String precioEditado="PrecioEditado";
+		    public static final java.lang.String subtotal="Subtotal";
+		    public static final java.lang.String descuento="Descuento";
+		    public static final java.lang.String porcImpuesto="PorcImpuesto";
+		    public static final java.lang.String impuesto="Impuesto";
+		    public static final java.lang.String total="Total";
+		    public static final java.lang.String cantidadDespachada="CantidadDespachada";
+		    public static final java.lang.String cantidadADespachar="CantidadADespachar";
+		    public static final java.lang.String cantidadPromocion="CantidadPromocion";
+		}
+		public static final class PedidoPromocion
+		{
+			public static final java.lang.String objPromocionID="objPromocionID";
+			public static final java.lang.String objPedidoID="objPedidoID";
+			public static final java.lang.String descuento="Descuento";
+			public static final class PedidoPromocionDetalle
+			{
+				public static final java.lang.String objProductoID="objProductoID";
+				public static final java.lang.String objPromocionID="objPromocionID";
+				public static final java.lang.String objPedidoID="objPedidoID";		
+				public static final java.lang.String descuento="Descuento";		
+				public static final java.lang.String nombreProducto="NombreProducto";
+				public static final java.lang.String cantidadEntregada="CantidadEntregada";
+				
+			}
+			public static final java.lang.String codigoPromocion="CodigoPromocion";
+			public static final java.lang.String nombrePromocion="NombrePromocion";
+		} 
+		public static final java.lang.String Nota="Nota";
+		public static final java.lang.String Exento="Exento";
+		public static final java.lang.String AutorizacionDGI="AutorizacionDGI";
 	}
 	public static final class Producto
 	{
@@ -158,6 +232,7 @@ public class NMConfig
 			public static final java.lang.String FechaVencimiento="FechaVencimiento";
 		 }
 	}
+	
 	public static final class Usuario
 	{
 		 public static final java.lang.String Id="Id";

@@ -4,51 +4,13 @@ import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_INVETORY_UPDATED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
+import static com.panzyma.nm.controller.ControllerProtocol.ID_REQUEST_SALVARPEDIDO;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
-import com.panzyma.nm.DashBoardActivity;
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BConfiguracionM;
-import com.panzyma.nm.CBridgeM.BPedidoM;
-import com.panzyma.nm.CBridgeM.BProductoM;
-import com.panzyma.nm.auxiliar.BluetoothComunication;
-import com.panzyma.nm.auxiliar.CustomDialog;
-import com.panzyma.nm.auxiliar.DateUtil;
-import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMNetWork;
-import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.controller.Controller;
-import com.panzyma.nm.controller.ControllerProtocol; 
-import com.panzyma.nm.menu.ActionItem;
-import com.panzyma.nm.menu.QuickAction;
-import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.serviceproxy.DetallePedido;
-import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.PedidoPromocion;
-import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.serviceproxy.Promocion;
-import com.panzyma.nm.serviceproxy.Promociones;
-import com.panzyma.nm.serviceproxy.Ventas;
-import com.panzyma.nm.view.adapter.GenericAdapter;
-import com.panzyma.nm.view.viewholder.PProductoViewHolder;
-import com.panzyma.nm.viewdialog.DialogCliente;
-import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
-import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
-import com.panzyma.nm.viewdialog.DetalleProducto;
-import com.panzyma.nm.viewdialog.DialogCondicionesNotas;
-import com.panzyma.nm.viewdialog.DialogProducto;
-import com.panzyma.nm.viewdialog.DialogPromociones;
-import com.panzyma.nm.viewmodel.vmPProducto; 
-import com.panzyma.nm.viewmodel.vmProducto;
-import com.panzyma.nordismobile.R;
-import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -112,7 +74,7 @@ import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogCondicionesNotas;
 import com.panzyma.nm.viewdialog.DialogProducto;
-import com.panzyma.nm.viewdialog.DialogPromociones; 
+import com.panzyma.nm.viewdialog.DialogPromociones;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("NewApi") 
@@ -166,6 +128,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
 	private static final int ID_IMPRIMIR_COMPROBANTE = 14;
 	private static final int ID_CERRAR = 15;
 	BPedidoM bpm;
+	private static Object lock=new Object();
 		
 	private final Handler handler=new Handler();
 	private boolean salvado;
@@ -207,6 +170,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
 
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void initComponent() {
 		gridDetallePedido = findViewById(R.id.pddgrilla);
 		grid_dp=(ListView)(findViewById(R.id.pddgrilla)).findViewById(R.id.data_items);
@@ -297,10 +261,10 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
 
 		if (pedido.getNumeroMovil() > 0)
-			tbxNumReferencia.setText(getNumeroPedido(pedido.getNumeroMovil()));
+			tbxNumReferencia.setText(Ventas.getNumeroPedido(pedido.getNumeroMovil(),me.getContext()));
 
 		if (pedido.getNumeroCentral() > 0)
-			tbxNumRecibo.setText(getNumeroPedido(pedido.getNumeroCentral()));
+			tbxNumRecibo.setText(Ventas.getNumeroPedido(pedido.getNumeroCentral(),me.getContext()));
 
 		if (pedido.getNombreCliente() != null)
 			tbxNombreDelCliente.setText(pedido.getNombreSucursal() + "\\"
@@ -541,83 +505,8 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
 									editarProducto();
 								else if(actionId==ID_ELIMINAR_PRODUCTO)
 									eliminarProducto();	
-								else if (actionId == ID_APLICAR_PROMOCIONES) {
-									DialogPromociones dprom = new DialogPromociones(
-											ViewPedidoEdit.this,
-											pedido,
-											android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-									
-									dprom.setOnDialogPromocionesButtonClickListener(new com.panzyma.nm.viewdialog.DialogPromociones.OnButtonClickHandler() {
-										
-										@Override
-										public void onButtonClick(Promocion promocion) 
-										{
-											// TODO Auto-generated method stub
-											if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0))) 
-												return;
-									            
-								            if (cliente == null) {
-								                //Dialog.alert("Seleccione primero el cliente del pedido.");
-								                return;
-								            }
-								            if ((Lvmpproducto == null) || (Lvmpproducto.size() == 0)) {
-								               // Dialog.alert("El pedido no tiene detalle de productos.");
-								                return;
-								            }
-								            
-								            
-								            if (promocion != null) 
-								            {
-								                //Validar que no se haya alcanzado el máximo de promociones a aplicar
-								                PedidoPromocion[] pproms = pedido.getPromocionesAplicadas();
-								                if (pproms != null) {
-								                    int maxPromos = Integer.parseInt(me
-								            				.getApplicationContext()
-								            				.getSharedPreferences("SystemParams",
-								            						android.content.Context.MODE_PRIVATE)
-								            				.getString("CantMaximaPromocionesAplicar", "0")); 
-								                    if (pproms.length >= maxPromos) {
-								                       // Dialog.alert("La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.");
-								                        return;
-								                    }
-								                }
-								                
-								                
-								                Promociones.aplicarPromocion(pedido, promocion,me.getContentResolver());                
-								                Promociones.ActualizaPedidoDePromociones(pedido);
-								                                
-								                //Salvar la promoción aplicada
-								                try {
-								                	
-								                	//save();
-								                
-								                }
-								                catch (Exception ioEx) { 
-								                    //Dialog.alert("Error: " + ioEx.toString()); 
-								                    return;
-								                }
-								                
-								                DetallePedido[] detPed = pedido.getDetalles();
-								                Lvmpproducto=new ArrayList<DetallePedido>(); 
-								                for(int i = 0; i < detPed.length; i++) {
-								                	Lvmpproducto.add(detPed[i]);
-								                }
-								                
-								                CalculaTotales(); 
-								                setTotales(true);
-								                adapter.notifyDataSetChanged();
-								              Toast.makeText(me,"La promoción ha sido aplicada.",Toast.LENGTH_LONG).show();
-								            }
-								            
-								            
-										}
-									});
-									
-									Window window = dprom.getWindow();
-									window.setGravity(Gravity.CENTER);
-									window.setLayout(display.getWidth() -5,display.getHeight() - 10);
-									dprom.show();
-								} 
+								else if (actionId == ID_APLICAR_PROMOCIONES)  
+									seleccionarPromociones(); 
 								else if (actionId == ID_IMPRIMIR_COMPROBANTE)
 									ImprimirComprobante();
 								else if (actionId == ID_CERRAR)
@@ -643,6 +532,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
 
 	}
     
+       
     public void setTotales(boolean needaThread){
     	
     	String descTotales = "ST: " + StringUtil.formatReal(subTotal)
@@ -731,9 +621,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
 			return true;
 		case C_INVETORY_UPDATED:
 			seleccionarProducto();
-			return true;
-
-		case ID_SALVAR: return true;
+			return true; 
 		
 		case ERROR:
 			pd.dismiss();
@@ -825,23 +713,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
 		dp.show();
 
 	}
-
-	public String getNumeroPedido(int numero) {
-		int cr = Integer.parseInt(me
-				.getApplicationContext()
-				.getSharedPreferences("SystemParams",
-						android.content.Context.MODE_PRIVATE)
-				.getString("CerosRellenoNumRefPedido", "0"));
-
-		char[] num = new char[cr];
-		for (int i = 0; i < cr; i++)
-			num[i] = '0';
-
-		String strNum = new String(num);
-		strNum = strNum + numero;
-		return strNum.substring(strNum.length() - cr, strNum.length());
-	}
-
+ 
 	public void editarProducto()
 	{
 		Producto producto;
@@ -944,6 +816,95 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
         adapter.notifyDataSetChanged();
 	}
 	
+ public void seleccionarPromociones()
+    {
+    	
+    	// TODO Auto-generated method stub
+		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0))) 
+			return;
+            
+        if (cliente == null) {
+            //Dialog.alert("Seleccione primero el cliente del pedido.");
+            return;
+        }
+        if ((Lvmpproducto == null) || (Lvmpproducto.size() == 0)) {
+           // Dialog.alert("El pedido no tiene detalle de productos.");
+            return;
+        }
+        //Salvar la promoción aplicada
+        try {
+        	
+        	Ventas.guardarPedido(pedido, me); 
+        }
+        catch (Exception ioEx) { 
+            //Dialog.alert("Error: " + ioEx.toString()); 
+            return;
+        }
+        
+    	DialogPromociones dprom = new DialogPromociones(
+				ViewPedidoEdit.this,
+				pedido,
+				android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+		
+		dprom.setOnDialogPromocionesButtonClickListener(new com.panzyma.nm.viewdialog.DialogPromociones.OnButtonClickHandler() {
+			
+			@Override
+			public void onButtonClick(Promocion promocion) 
+			{	            
+	            if (promocion != null) 
+	            {
+		                //Validar que no se haya alcanzado el máximo de promociones a aplicar
+		                PedidoPromocion[] pproms = pedido.getPromocionesAplicadas();
+		                if (pproms != null) 
+		                {
+		                    int maxPromos = Integer.parseInt(me
+		            				.getApplicationContext()
+		            				.getSharedPreferences("SystemParams",
+		            						android.content.Context.MODE_PRIVATE)
+		            				.getString("CantMaximaPromocionesAplicar", "0")); 
+		                    if (pproms.length >= maxPromos) 
+		                    {
+		                       // Dialog.alert("La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.");
+		                        return;
+		                    }
+		                }
+		                
+		                
+		                Promociones.aplicarPromocion(pedido, promocion,me.getContentResolver());                
+		                Promociones.ActualizaPedidoDePromociones(pedido);
+		                                
+		                //Salvar la promoción aplicada 
+		                try {
+							Ventas.guardarPedido(pedido,me);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}  
+		                
+		                DetallePedido[] detPed = pedido.getDetalles();
+		                Lvmpproducto=new ArrayList<DetallePedido>(); 
+		                for(int i = 0; i < detPed.length; i++) {
+		                	Lvmpproducto.add(detPed[i]);
+		                }
+		                
+		                CalculaTotales(); 
+		                setTotales(true);
+		                adapter.notifyDataSetChanged();
+		                Toast.makeText(me,"La promoción ha sido aplicada.",Toast.LENGTH_LONG).show();
+	            }
+	            
+	            
+			}
+		});
+		
+		Window window = dprom.getWindow();
+		window.setGravity(Gravity.CENTER);
+		window.setLayout(display.getWidth() -5,display.getHeight() - 10);
+		dprom.show();
+    	
+    }
+
+	
 	@Override
 	public BPedidoM getBridge() {
 		return bpm;
@@ -953,11 +914,14 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
        // if (!isDataValid()) return; 
                 
         //Salvar pedido si aún no tiene un número de referencia asignado
-        if (pedido.getNumeroMovil() == 0) {            
-            try { 
-            	//save(); 
-            	}
-            catch(Exception ioEx) { 
+        if (pedido.getNumeroMovil() == 0) 
+        {            
+            try 
+            { 
+            		Ventas.guardarPedido(pedido, me); 
+           	}
+            catch(Exception ioEx) 
+            { 
                // Dialog.alert("Error: " + ioEx.toString()); 
                 return;
             }
@@ -1078,59 +1042,26 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
 		return this.me;
 	}
 	
-    @SuppressWarnings("deprecation")
-    public void save() { 
-        try 
-        {
-        	//Salvando el tipo de pedido (crédito contado)
-            pedido.setTipo("CR"); 
-        	if (((tbxTipoVenta.getSelectedItemPosition() == 0) ? "CO" : "CR") == "CO")
-				pedido.setTipo("CO");
-           
-			Date d = new Date(tbxFecha.getText().toString());
-            pedido.setFecha(DateUtil.d2i(d));
-            Integer intId = 0;
-            //Generar Id del pedido
-            if (pedido.getNumeroMovil() == 0) 
-            {            
-                intId = Ventas.getLastOrderId(me.getApplicationContext());
-                if (intId == null) 
-                    intId = new Integer(1);
-                else
-                    intId = new Integer(intId.intValue() + 1);
-               // DataStore.setLastOrderId(intId);
-                Integer prefix = Ventas.getPrefijoIds(me.getApplicationContext());
-                String strIdMovil = prefix.intValue() + "" + intId.intValue();
-                int idMovil = Integer.parseInt(strIdMovil);
-                pedido.setNumeroMovil(idMovil);
-                pedido.setObjEstadoID(0);
-                pedido.setObjCausaEstadoID(0);
-                pedido.setCodEstado("REGISTRADO");
-                pedido.setDescEstado("Elaboración");
-                pedido.setCodCausaEstado("REGISTRADO");
-                pedido.setDescCausaEstado("Registrado");
-            }  
-             Message msg = new Message();
-			 Bundle b = new Bundle();
-			 b.putSerializable("pedido", pedido);
-			 b.putInt("idpedido", intId); 
-			 msg.setData(b);
-			 msg.what=ID_SALVAR;
-			 nmapp.getController().getInboxHandler().sendMessage(msg);  
-//            if (indexPedido == -1) {
-//                pedidos.addElement(pedido);
-//                indexPedido = pedidos.size() - 1;
-//            }
-//            else {
-//                pedidos.setElementAt(pedido, indexPedido);
-//            }
-        //    DataStore.setCachedOrders(pedidos); 
-            tbxNumReferencia.setText(Ventas.getNumeroPedido(pedido.getNumeroMovil(),me.getApplicationContext()));
-            salvado = true;         
-        }
-        catch(Exception ex) {
-           // throw new IOException(ex.toString());
-        }        
+    public void actualizarOnUINumRef(final Pedido p)
+    {    	
+    	runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				tbxNumReferencia.setText(Ventas.getNumeroPedido(p.getNumeroMovil(),me.getApplicationContext()));
+	            salvado = true;  
+			}
+		});
     }
-	
+
+    public String getTipoVenta()
+    {
+    	return (tbxTipoVenta.getSelectedItemPosition() == 0) ? "CO" : "CR"; 
+    }
+
+    public String getFechaPedido()
+    {
+    	return tbxFecha.getText().toString();
+    }
 }

@@ -223,6 +223,7 @@ public class SessionManager
 				e.printStackTrace();
 			}
         }
+        
 	}
 	
 	public static void bloque2()

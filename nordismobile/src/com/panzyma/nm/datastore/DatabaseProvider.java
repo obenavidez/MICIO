@@ -11,7 +11,11 @@ import org.json.JSONObject;
 
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Factura; 
+import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.PedidoPromocion;
+import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
 import com.panzyma.nm.serviceproxy.Recibo;
 
 import android.annotation.SuppressLint;
@@ -47,7 +51,10 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_RECIBODETALLEFACTURA = Uri.parse(CONTENT_URI+ "/recibodetallefactura");
 	public static final Uri CONTENT_URI_RECIBODETALLENOTACREDITO = Uri.parse(CONTENT_URI+ "/recibodetallenotacredito");
 	public static final Uri CONTENT_URI_RECIBODETALLENOTADEBITO = Uri.parse(CONTENT_URI+ "/recibodetallenotadebito");
-	
+	public static final Uri CONTENT_URI_PEDIDO = Uri.parse(CONTENT_URI+ "/pedido");
+	public static final Uri CONTENT_URI_DETALLEPEDIDO = Uri.parse(CONTENT_URI+ "/detallepedido");
+	public static final Uri CONTENT_URI_PEDIDOPROMOCION = Uri.parse(CONTENT_URI+ "/pedidopromocion");
+	public static final Uri CONTENT_URI_PEDIDOPROMOCIONDETALLE = Uri.parse(CONTENT_URI+ "/pedidopromociondetalle");
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
 	private static final int CLIENTE_ID = 2;
@@ -86,13 +93,23 @@ public class DatabaseProvider extends ContentProvider
 	private static final int RECIBODETALLENOTADEBITO_ID = 33;
 	private static final int RECIBODETALLENOTACREDITO = 34;
 	private static final int RECIBODETALLENOTACREDITO_ID = 35;	
+	private static final int PEDIDO = 36;
+	private static final int PEDIDO_ID = 37;
 	
+	private static final int PEDIDODETALLE = 38;
+	private static final int PEDIDODETALLE_ID = 39;
+	
+	private static final int PEDIDOPROMOCION = 40;
+	private static final int PEDIDOPROMOCION_ID = 41;
+	
+	private static final int PEDIDOPROMOCIONDETALLE = 41;
+	private static final int PEDIDOPROMOCIONDETALLE_ID = 43;
 	//Base de datos
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db;
 	
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 3;
+	private static final int BD_VERSION = 4;
 	
 	private static final String TABLA_CLIENTE = "Cliente";
 	private static final String TABLA_FACTURA = "Factura";
@@ -109,9 +126,16 @@ public class DatabaseProvider extends ContentProvider
 	private static final String TABLA_PROMOCION = "Promocion";
 	private static final String TABLA_USUARIO = "Usuario";
 	private static final String TABLA_RECIBO = "Recibo";
+	private static final String TABLA_PEDIDO = "Pedido";
 	private static final String TABLA_RECIBO_DETALLE_FACTURA = "ReciboDetalleFactura";
 	private static final String TABLA_RECIBO_DETALLE_NOTA_DEBITO = "ReciboDetalleNotaDebito";
 	private static final String TABLA_RECIBO_DETALLE_NOTA_CREDITO = "ReciboDetalleNotaCredito";	
+	
+	private static final String TABLA_PEDIDODETALLE = "PedidoDetalle";
+	private static final String TABLA_PEDIDOPROMOCION = "PedidoPromocion";
+	private static final String TABLA_PEDIDOPROMOCIONDETALLE = "PedidoPromocionDetalle";	
+
+
 	
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -157,6 +181,18 @@ public class DatabaseProvider extends ContentProvider
 		uriMatcher.addURI(AUTHORITY, "recibo", RECIBO);
 		uriMatcher.addURI(AUTHORITY, "recibo/#", RECIBO_ID);
 		
+		uriMatcher.addURI(AUTHORITY, "pedido", PEDIDO);
+		uriMatcher.addURI(AUTHORITY, "pedido/#",PEDIDO_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "pedidodetalle", PEDIDODETALLE);
+		uriMatcher.addURI(AUTHORITY, "pedidodetalle/#", PEDIDODETALLE_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "pedidopromocion", PEDIDOPROMOCION);
+		uriMatcher.addURI(AUTHORITY, "pedidopromocion/#", PEDIDOPROMOCION_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "pedidopromociondetalle", PEDIDOPROMOCIONDETALLE);
+		uriMatcher.addURI(AUTHORITY, "pedidopromociondetalle/#", PEDIDOPROMOCIONDETALLE_ID);
+		
 		uriMatcher.addURI(AUTHORITY, "recibodetallefactura", RECIBODETALLEFACTURA);
 		uriMatcher.addURI(AUTHORITY, "recibodetallefactura/#", RECIBODETALLEFACTURA_ID);
 		
@@ -165,6 +201,9 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "recibodetallenotacredito", RECIBODETALLENOTACREDITO);
 		uriMatcher.addURI(AUTHORITY, "recibodetallenotacredito/#", RECIBODETALLENOTACREDITO_ID);
+		
+		
+		
 	}
 	
 	@Override
@@ -443,8 +482,7 @@ public class DatabaseProvider extends ContentProvider
 			bdd.close();
 		} 
 	}
-	
-	
+ 
 	public static void RegistrarClientes(JSONArray objL,Context cnt,int page) throws Exception
 	{		 
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
@@ -775,6 +813,14 @@ public class DatabaseProvider extends ContentProvider
 										dictionary.put(USUARIO+1,"Id=" + uri.getLastPathSegment());
 										break;	
 										
+			case PEDIDO:				dictionary.put(PEDIDO, TABLA_PEDIDO);
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_PEDIDO.toString());
+										break;
+
+			case PEDIDO_ID: 			dictionary.put(PEDIDO, TABLA_PEDIDO);
+										dictionary.put(PEDIDO+1,"Id=" + uri.getLastPathSegment());
+										break;
+										
 			
 		} 
 		Iterator it = dictionary.entrySet().iterator();
@@ -807,9 +853,9 @@ public class DatabaseProvider extends ContentProvider
 	 
 		switch(uriMatcher.match(uri))
 		{		 
-			case CLIENTE:case FACTURA:case PROMOCIONCOBRO:case MONTOPROVEEDOR:case CCNOTACREDITO:case CCNOTADEBITO:case DESCUENTOPROVEEDOR:case PRODUCTO:case LOTE:case CATALOGO:case PROMOCION:case USUARIO:
+			case CLIENTE:case FACTURA:case PROMOCIONCOBRO:case MONTOPROVEEDOR:case CCNOTACREDITO:case CCNOTADEBITO:case DESCUENTOPROVEEDOR:case PRODUCTO:case LOTE:case CATALOGO:case PROMOCION:case USUARIO:case PEDIDO:
 				 return "vnd.android.cursor.dir/vnd"+AUTHORITY;
-			case CLIENTE_ID:case FACTURA_ID:case PROMOCIONCOBRO_ID:case MONTOPROVEEDOR_ID:case CCNOTACREDITO_ID:case CCNOTADEBITO_ID:case DESCUENTOPROVEEDOR_ID:case PRODUCTO_ID:case LOTE_ID:case CATALOGO_ID:case PROMOCION_ID:case USUARIO_ID:
+			case CLIENTE_ID:case FACTURA_ID:case PROMOCIONCOBRO_ID:case MONTOPROVEEDOR_ID:case CCNOTACREDITO_ID:case CCNOTADEBITO_ID:case DESCUENTOPROVEEDOR_ID:case PRODUCTO_ID:case LOTE_ID:case CATALOGO_ID:case PROMOCION_ID:case USUARIO_ID:case PEDIDO_ID:
 				 return "vnd.android.cursor.item/vnd"+AUTHORITY; 									
 		    default:throw new IllegalArgumentException("Invalid Uri: "+ uri);
 		}  
@@ -875,4 +921,112 @@ public class DatabaseProvider extends ContentProvider
 		}
 	}
 	
+	public static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception{
+		
+		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	
+		long idpedido=-1;
+		ContentValues values;		
+		SQLiteDatabase bdd = d.getWritableDatabase();		
+		bdd.beginTransaction();
+		values = new ContentValues();		
+		bdd.delete(TABLA_PEDIDO, "Id=?",new String[]{String.valueOf(pedido.getId())}); 
+		bdd.delete(TABLA_PEDIDODETALLE, "objPedidoID=?",new String[]{String.valueOf(pedido.getId())});
+		bdd.delete(TABLA_PEDIDOPROMOCION, "objPedidoID=?",new String[]{String.valueOf(pedido.getId())});
+		bdd.delete(TABLA_PEDIDOPROMOCIONDETALLE, "objPedidoID=?",new String[]{String.valueOf(pedido.getId())});
+		values.put(NMConfig.Pedido.Id, pedido.getId());		
+		values.put(NMConfig.Pedido.NumeroMovil, pedido.getNumeroMovil());		
+		values.put(NMConfig.Pedido.NumeroCentral, pedido.getNumeroCentral());		
+		values.put(NMConfig.Pedido.Tipo, pedido.getTipo());		
+		values.put(NMConfig.Pedido.Fecha, pedido.getFecha());		
+		values.put(NMConfig.Pedido.objClienteID, pedido.getObjClienteID());
+		values.put(NMConfig.Pedido.NombreCliente, pedido.getNombreCliente());		
+		values.put(NMConfig.Pedido.objSucursalID, pedido.getObjSucursalID());		
+		values.put(NMConfig.Pedido.NombreSucursal, pedido.getNombreSucursal());
+		values.put(NMConfig.Pedido.objTipoPrecioVentaID, pedido.getObjTipoPrecioVentaID());
+		values.put(NMConfig.Pedido.CodTipoPrecio, pedido.getCodTipoPrecio());
+		values.put(NMConfig.Pedido.DescTipoPrecio, pedido.getDescTipoPrecio());
+		values.put(NMConfig.Pedido.objVendedorID, pedido.getObjVendedorID());
+		values.put(NMConfig.Pedido.BonificacionEspecial, pedido.getBonificacionEspecial());
+		values.put(NMConfig.Pedido.BonificacionSolicitada, pedido.getBonificacionSolicitada());
+		values.put(NMConfig.Pedido.PrecioEspecial, pedido.getPrecioEspecial());
+		values.put(NMConfig.Pedido.PrecioSolicitado, pedido.getPrecioSolicitado());
+		values.put(NMConfig.Pedido.PedidoCondicionado, pedido.getPedidoCondicionado());
+		values.put(NMConfig.Pedido.Condicion, pedido.getCondicion());
+		values.put(NMConfig.Pedido.Subtotal, pedido.getSubtotal());
+		values.put(NMConfig.Pedido.Descuento, pedido.getDescuento());
+		values.put(NMConfig.Pedido.Impuesto, pedido.getImpuesto());
+		values.put(NMConfig.Pedido.Total, pedido.getTotal());
+		values.put(NMConfig.Pedido.objEstadoID, pedido.getObjEstadoID());
+		values.put(NMConfig.Pedido.CodEstado, pedido.getCodEstado());
+		values.put(NMConfig.Pedido.DescEstado, pedido.getDescEstado());
+		values.put(NMConfig.Pedido.objCausaEstadoID, pedido.getObjCausaEstadoID());
+		values.put(NMConfig.Pedido.CodCausaEstado, pedido.getCodCausaEstado());		
+		values.put(NMConfig.Pedido.DescCausaEstado, pedido.getDescCausaEstado());
+		values.put(NMConfig.Pedido.NombreVendedor, pedido.getNombreVendedor());  
+		values.put(NMConfig.Pedido.Nota, pedido.getNota());		
+		values.put(NMConfig.Pedido.Exento, pedido.isExento());
+		values.put(NMConfig.Pedido.AutorizacionDGI, pedido.getAutorizacionDGI()); 
+		
+		idpedido=bdd.insert(TABLA_PEDIDO, null, values);		
+		DetallePedido[] detp=pedido.getDetalles();
+		if(detp!=null && detp.length!=0)
+		for(DetallePedido dp:detp)
+		{
+			values = new ContentValues();		
+			//values.put(NMConfig.Pedido.DetallePedido.Id, dp.getId());
+			values.put(NMConfig.Pedido.DetallePedido.objPedidoID, dp.getObjPedidoID());
+			values.put(NMConfig.Pedido.DetallePedido.objProductoID, dp.getObjProductoID());
+			values.put(NMConfig.Pedido.DetallePedido.codProducto, dp.getCodProducto());
+			values.put(NMConfig.Pedido.DetallePedido.nombreProducto, dp.getNombreProducto());
+			values.put(NMConfig.Pedido.DetallePedido.cantidadOrdenada, dp.getCantidadOrdenada());
+			values.put(NMConfig.Pedido.DetallePedido.cantidadBonificada, dp.getCantidadBonificada());
+			values.put(NMConfig.Pedido.DetallePedido.objBonificacionID, dp.getObjBonificacionID());
+			values.put(NMConfig.Pedido.DetallePedido.bonifEditada, dp.getBonifEditada());
+			values.put(NMConfig.Pedido.DetallePedido.cantidadBonificadaEditada, dp.getCantidadBonificadaEditada());
+			values.put(NMConfig.Pedido.DetallePedido.precio, dp.getPrecio());
+			values.put(NMConfig.Pedido.DetallePedido.montoPrecioEditado, dp.getMontoPrecioEditado());
+			values.put(NMConfig.Pedido.DetallePedido.precioEditado, dp.getPrecioEditado());
+			values.put(NMConfig.Pedido.DetallePedido.subtotal, dp.getSubtotal());
+			values.put(NMConfig.Pedido.DetallePedido.descuento, dp.getDescuento());
+			values.put(NMConfig.Pedido.DetallePedido.porcImpuesto, dp.getPorcImpuesto());
+			values.put(NMConfig.Pedido.DetallePedido.impuesto, dp.getImpuesto());
+			values.put(NMConfig.Pedido.DetallePedido.total, dp.getTotal());
+			values.put(NMConfig.Pedido.DetallePedido.cantidadDespachada, dp.getCantidadDespachada());
+			values.put(NMConfig.Pedido.DetallePedido.cantidadADespachar, dp.getCantidadADespachar());
+			values.put(NMConfig.Pedido.DetallePedido.cantidadPromocion, dp.getCantidadPromocion());
+			
+			bdd.insert(TABLA_PEDIDODETALLE, null, values);	
+		}
+		PedidoPromocion[] pedp=pedido.getPromocionesAplicadas();
+		if(pedp!=null && pedp.length!=0)
+		for(PedidoPromocion pp:pedp)
+		{
+			values = new ContentValues();		
+			values.put(NMConfig.Pedido.PedidoPromocion.objPromocionID, pp.getObjPromocionID());
+			values.put(NMConfig.Pedido.PedidoPromocion.objPedidoID,pedido.getId());
+			values.put(NMConfig.Pedido.PedidoPromocion.descuento, pp.getDescuento());
+			values.put(NMConfig.Pedido.PedidoPromocion.codigoPromocion,pp.getCodigoPromocion());
+			values.put(NMConfig.Pedido.PedidoPromocion.nombrePromocion,pp.getNombrePromocion());			
+			bdd.insert(TABLA_PEDIDOPROMOCION, null, values);
+			PedidoPromocionDetalle[] ppromd=pp.getDetalles();
+			if(ppromd!=null && ppromd.length!=0)
+			for(PedidoPromocionDetalle ppd:ppromd)
+			{
+				values = new ContentValues();		
+				values.put(NMConfig.Pedido.PedidoPromocion.objPromocionID, pp.getObjPromocionID());
+				values.put(NMConfig.Pedido.PedidoPromocion.objPedidoID,pedido.getId());
+				values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.objProductoID, ppd.getObjProductoID());
+				values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.nombreProducto,ppd.getNombreProducto());
+				values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.cantidadEntregada,ppd.getCantidadEntregada());
+				values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.descuento,ppd.getDescuento());
+				bdd.insert(TABLA_PEDIDOPROMOCIONDETALLE, null, values);
+			}
+		}
+		bdd.setTransactionSuccessful();
+		if (bdd != null || (bdd.isOpen())) {
+			bdd.endTransaction();
+			bdd.close();
+		}		
+		return idpedido;
+	}
 }

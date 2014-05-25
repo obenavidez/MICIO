@@ -64,22 +64,53 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     							 "MontoEntregadoPor TEXT,DescripcionPromocion TEXT,CatClientes TEXT,TiposCliente TEXT,Sucursales TEXT,Ubicaciones TEXT,ProdsBase TEXT,ProdsPremio TEXT,"+
     							 "MontoBaseUnico INTEGER,MontoBaseMinimo INTEGER,MontoBaseMaximo INTEGER,MontoPremioUnico INTEGER,MontoPremio FLOAT); ";
 
-    String sqlPedido=         "CREATE TABLE IF NOT EXISTS Pedido(Id BLOB PRIMARY KEY,NumeroMovil INTEGER,NumeroCentral INTEGER,Tipo TEXT,Fecha INTEGER,"+
-			 "objClienteID BLOB,NombreCliente TEXT,objSucursalID BLOB,NombreSucursal TEXT,objTipoPrecioVentaID BLOB,CodTipoPrecio TEXT,DescTipoPrecio TEXT,"+
-			 "objVendedorID BLOB,BonificacionEspecial INTEGER,BonificacionSolicitada TEXT, PrecioEspecial INTEGER,PrecioSolicitado TEXT,"+
-			 "PedidoCondicionado INTEGER,Condicion TEXT,Subtotal FLOAT,Descuento FLOAT,Impuesto FLOAT,objEstadoID BLOB,CodEstado TEXT,DescEstado TEXT,"+
-			 "objCausaEstadoID BLOB,CodCausaEstado TEXT,DescCausaEstado TEXT,NombreVendedor TEXT,Exento TEXT,AutorizacionDGI TEXT, " +
-			 "       FOREIGN KEY(objClienteID) REFERENCES Cliente(IdCliente), " + 
-             "       FOREIGN KEY(objSucursalID) REFERENCES Cliente(IdSucursal) ); " ;
+    String sqlPedido=         "CREATE TABLE IF NOT EXISTS Pedido("
+    		+ "Id BLOB PRIMARY KEY AUTOINCREMENT,"
+    		+ "NumeroMovil INTEGER,"
+    		+ "NumeroCentral INTEGER,"
+    		+ "Tipo TEXT,"
+    		+ "Fecha INTEGER,"
+    		+ "objClienteID BLOB,"
+			+ "NombreCliente TEXT,"
+			+ "objSucursalID BLOB,"
+			+ "NombreSucursal TEXT,"
+			+ "objTipoPrecioVentaID BLOB,"
+			+ "CodTipoPrecio TEXT,"
+			+ "DescTipoPrecio TEXT,"
+			+ "objVendedorID BLOB,"
+			+ "BonificacionEspecial INTEGER,"
+			+ "BonificacionSolicitada TEXT, "
+			+ "PrecioEspecial INTEGER,"
+			+ "PrecioSolicitado TEXT,"
+			+ "PedidoCondicionado INTEGER,"
+			+ "Condicion TEXT,"
+			+ "Subtotal FLOAT,"
+			+ "Descuento FLOAT,"
+			+ "Impuesto FLOAT,"
+			+ "Total FLOAT,"
+			+ "objEstadoID BLOB,"
+			+ "CodEstado TEXT,"
+			+ "DescEstado TEXT,"
+			+ "objCausaEstadoID BLOB,"
+			+ "CodCausaEstado TEXT,"
+			+ "DescCausaEstado TEXT,"
+			+ "NombreVendedor TEXT,"
+			+ "Nota TEXT,"
+			+ "Exento TEXT,"
+			+ "AutorizacionDGI TEXT, " 
+			+ "FOREIGN KEY(objClienteID) REFERENCES Cliente(IdCliente), " 
+			+ "FOREIGN KEY(objSucursalID) REFERENCES Cliente(IdSucursal) "
+			+ "); " ;
 
-    String sqlDetallePedido = "CREATE TABLE IF NOT EXISTS DetallePedido (" +
-                              "       Id BLOB PRIMARY KEY,       " +
+    String sqlDetallePedido = "CREATE TABLE IF NOT EXISTS PedidoDetalle (" +
+                              "       Id BLOB PRIMARY KEY AUTOINCREMENT,       " +
                               "       objPedidoID BLOB,       " +
                               "       objProductoID BLOB, " + 
                               "       CodProducto TEXT, " + 
+                              "       NombreProducto TEXT, " +
                               "       CantidadOrdenada INTEGER, " + 
                               "       CantidadBonificada INTEGER, " + 
-                              "       objProductoID BLOB " + 
+                              "       objBonificacionID BLOB, " + 
                               "       BonifEditada INTEGER,  " +
                               "       CantidadBonificadaEditada INTEGER,  " +
                               "       Precio FLOAT, " +
@@ -87,6 +118,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
                               "       PrecioEditado INTEGER, " + 
                               "       Subtotal FLOAT, " + 
                               "       Descuento FLOAT, " + 
+                              "       PorcImpuesto FLOAT, " + 
                               "       Impuesto FLOAT, " + 
                               "       Total FLOAT, " + 
                               "       CantidadDespachada INTEGER, " + 
@@ -94,7 +126,28 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
                               "       CantidadPromocion INTEGER, " + 
                               "       FOREIGN KEY(objPedidoID) REFERENCES Pedido(Id), " + 
                               "       FOREIGN KEY(objProductoID) REFERENCES Producto(Id) " + 
-                              ")" ;
+                              ");" ;
+    String sqlPedidoPromocion = "CREATE TABLE IF NOT EXISTS PedidoPromocion (" + 
+            "       Id INTEGER PRIMARY KEY AUTOINCREMENT"+
+            "       objPromocionID BLOB,       " +
+            "       objPedidoID BLOB,       " +
+            "       Descuento FLOAT, " +  
+            "       CodigoPromocion TEXT, " +
+            "       NombrePromocion TEXT, " +  
+            "       FOREIGN KEY(objPromocionID) REFERENCES Promocion(Id), " +
+            "       FOREIGN KEY(objPedidoID) REFERENCES Pedido(Id) " + 
+            ");" ;
+    String sqlPedidoPromocionDetalle = "CREATE TABLE IF NOT EXISTS PedidoPromocionDetalle (" + 
+    		"       Id INTEGER PRIMARY KEY AUTOINCREMENT"+
+    		"       objProductoID BLOB,       " +
+            "       objPromocionID BLOB,       " +
+            "       objPedidoID BLOB,       " +
+            "       Descuento FLOAT, " +  
+            "       NombreProducto TEXT, " +
+            "       CantidadEntregada INTEGER, " +  
+            "       FOREIGN KEY(objPromocionID) REFERENCES Promocion(Id), " + 
+            "       FOREIGN KEY(objPedidoID) REFERENCES Pedido(Id) " + 
+            ");" ;
     
     String sqlUsuario =     "CREATE TABLE IF NOT EXISTS Usuario(" +
 							"       Id BLOB PRIMARY KEY,       " +
@@ -103,7 +156,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 							"       Sexo TEXT, " + 
 							"       AccedeModuloPedidos INTEGER, " + 
 							"       PuedeEditarPrecioAbajo INTEGER, " + 
-							"       PuedeEditarPrecioArriba INTEGER " + 
+							"       PuedeEditarPrecioArriba INTEGER, " + 
 							"       PuedeEditarBonifAbajo INTEGER,  " +
 							"       PuedeEditarBonifArriba INTEGER,  " +
 							"       IsAdmin INTEGER, " +
@@ -111,7 +164,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 							"       PuedeConsultarPedido INTEGER, " + 
 							"       Codigo TEXT, " + 
 							"       PuedeEditarDescPP INTEGER " +   
-							")" ;
+							");" ;
     
     String sqlRecibo = "CREATE TABLE IF NOT EXISTS Recibo ("
 					+ "       id,  "
@@ -144,7 +197,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 					+ "       totalImpuestoProporcional FLOAT, " 
 					+ "       totalImpuestoExonerado FLOAT, " 
 					+ "       exento FLOAT, "
-					+ "       autorizacionDGI FLOAT "
+					+ "       autorizacionDGI FLOAT, "
 					+ "       FOREIGN KEY(objClienteID) REFERENCES Cliente(IdCliente) "  
 					+ ")";
     
@@ -177,7 +230,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			+ "       montoImpuestoExento FLOAT, " 
 			+ "       montoDescEspecificoCalc FLOAT, " 			
             + "       FOREIGN KEY(objReciboID) REFERENCES Recibo(id) " 
-			+ ")";
+			+ ");";
     
     String sqlReciboDetalleNotaDebito = "CREATE TABLE IF NOT EXISTS ReciboDetalleNotaDebito ("
 			+ "       id INTEGER PRIMARY KEY AUTOINCREMENT,  "
@@ -195,7 +248,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			+ "       saldoTotal FLOAT, "
 			+ "       montoNeto FLOAT, "			 			
             + "       FOREIGN KEY(objReciboID) REFERENCES Recibo(id) " 
-			+ ")";
+			+ ");";
     
     String sqlReciboDetalleNotaCredito = "CREATE TABLE IF NOT EXISTS ReciboDetalleNotaCredito ("
 			+ "       id INTEGER PRIMARY KEY AUTOINCREMENT,  "
@@ -206,7 +259,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			+ "       fecha BLOB, "
 			+ "       fechaVence BLOB, "						 			
             + "       FOREIGN KEY(objReciboID) REFERENCES Recibo(id) " 
-			+ ")";
+			+ ");";
     
     String sqlDrop_Cliente=			  "DROP TABLE IF EXISTS Cliente";
     String sqlDrop_Factura=			  "DROP TABLE IF EXISTS Factura";
@@ -226,6 +279,11 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDrop_ReciboDetalleFactura = "DROP TABLE IF EXISTS ReciboDetalleFactura"; 
     String sqlDrop_ReciboDetalleND = "DROP TABLE IF EXISTS ReciboDetalleNotaDebito";
     String sqlDrop_ReciboDetalleNC = "DROP TABLE IF EXISTS ReciboDetalleNotaCredito";
+    
+    String sqlDrop_Pedido = "DROP TABLE IF EXISTS Pedido";
+    String sqlDrop_PedidoDetalle = "DROP TABLE IF EXISTS PedidoDetalle";
+    String sqlDrop_PedidoPromocion = "DROP TABLE IF EXISTS PedidoPromocion";
+    String sqlDrop_PedidoPromocionDetalle = "DROP TABLE IF EXISTS PedidoPromocionDetalle";
 	
     String sqlDeleteDesProv=  		"DELETE FROM DescuentoProveedor";
     String sqlDeleteND=       		"DELETE FROM CCNotaDebito";
@@ -245,6 +303,13 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDelete_ReciboDetalleFactura = "DELETE FROM  ReciboDetalleFactura"; 
     String sqlDelete_ReciboDetalleND = "DELETE FROM ReciboDetalleNotaDebito";
     String sqlDelete_ReciboDetalleNC = "DELETE FROM ReciboDetalleNotaCredito";
+    
+    
+    String sqlDelete_Pedido =       "DELETE FROM  Pedido";
+    String sqlDelete_PedidoDetalle = "DELETE FROM  PedidoDetalle"; 
+    String sqlDelete_PedidoPromocion = "DELETE FROM PedidoPromocion";
+    String sqlDelete_PedidoPromocionDetalle = "DELETE FROM PedidoPromocionDetalle";
+
     
     public NM_SQLiteHelper(Context contexto, String nombre, CursorFactory factory, int version) 
     { 
@@ -297,6 +362,10 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlTasaCambio);
 			db.execSQL(sqlPromocion);
 			db.execSQL(sqlUsuario);
+			db.execSQL(sqlPedido);
+			db.execSQL(sqlDetallePedido);
+			db.execSQL(sqlPedidoPromocion);
+			db.execSQL(sqlPedidoPromocionDetalle);
 			db.execSQL(sqlRecibo);
 			db.execSQL(sqlReciboDetalleFatura);
 			db.execSQL(sqlReciboDetalleNotaDebito);
@@ -334,7 +403,11 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlDrop_Recibo);
 			db.execSQL(sqlDrop_ReciboDetalleFactura);
 			db.execSQL(sqlDrop_ReciboDetalleND);
-			db.execSQL(sqlDrop_ReciboDetalleNC);
+			db.execSQL(sqlDrop_ReciboDetalleNC);			
+			db.execSQL(sqlDrop_Pedido);
+			db.execSQL(sqlDrop_PedidoDetalle);
+			db.execSQL(sqlDrop_PedidoPromocion);
+			db.execSQL(sqlDrop_PedidoPromocionDetalle);
         } 
     	catch (SQLException e) 
         {
