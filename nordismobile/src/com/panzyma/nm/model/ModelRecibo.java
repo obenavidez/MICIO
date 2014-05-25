@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
+import android.net.Uri;
 
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.datastore.DatabaseProvider;
@@ -15,6 +16,19 @@ public class ModelRecibo {
 
 	public ModelRecibo() {
 		super();
+	}
+	
+	public synchronized static int borraReciboByID (ContentResolver content,int reciboID){
+		String[] projection = new String[] {};
+		int result = 0;
+		try {
+			String url = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(reciboID);
+			content.delete(Uri.parse(url), "", projection);
+			result = 1;
+		} catch (Exception e) {
+			
+		}
+		return result;		
 	}
 
 	public synchronized static ArrayList<vmRecibo> getArrayCustomerFromLocalHost(

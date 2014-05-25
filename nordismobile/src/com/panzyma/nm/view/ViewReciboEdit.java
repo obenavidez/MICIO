@@ -35,7 +35,7 @@ import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogDocumentos;
-import com.panzyma.nm.viewdialog.DialogDocumentos.OnFacturaButtonClickListener;
+import com.panzyma.nm.viewdialog.DialogDocumentos.OnDocumentoButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
 import com.panzyma.nordismobile.R;
 
@@ -333,20 +333,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					+ (this.totalImpuestoProporcional + this.totalImpuestoExonerado)
 					- (this.totalDescuento - this.totalOtrasDeducciones);
 
-			// totales
-//			recibo.setTotalFacturas(totalFacturas);
-//			recibo.setTotalNC(totalNotasCredito);
-//			recibo.setTotalND(totalNotasDebito);
-//			recibo.setTotalInteres(totalInteres);
-//			recibo.setSubTotal(subTotal);
-//			recibo.setTotalDescOca(totalDescuentoOcasional);
-//			recibo.setTotalDescPromo(totalDescuentoPromocion);
-//			recibo.setTotalDescPP(totalDescuentoProntoPago);
-//			recibo.setTotalDesc(totalDescuento);
-//			recibo.setTotalImpuestoProporcional(totalImpuestoProporcional);
-//			recibo.setTotalImpuestoExonerado(totalImpuestoExonerado);
-//			recibo.setTotalOtrasDed(totalOtrasDeducciones);
-//			recibo.setTotalRecibo(totalRecibo);
 			// colector
 			recibo.setObjColectorID(10);
 			recibo.setAplicaDescOca(false);
@@ -354,7 +340,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setPorcDescOcaColector(this.porcentajeDescuentoOcasional);
 			// estado
 			recibo.setObjEstadoID(100);
-			recibo.setCodEstado("REGISTRADO");
+			recibo.setCodEstado("REG");
+			recibo.setDescEstado("REGISTRADO");
 			
 			recibo.setId(Ventas.getMaxReciboId(this.contexto) + 1);
 			
@@ -407,35 +394,36 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}			
 				
 		DialogDocumentos dialog= new DialogDocumentos(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, recibo.getObjSucursalID());
-		dialog.setOnDialogFacturaButtonClickListener(new OnFacturaButtonClickListener() {
+		dialog.setOnDialogDocumentoButtonClickListener(new OnDocumentoButtonClickListener() {			
 			@Override
-			public void onButtonClick(final Factura factura) {
-				
-				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(factura);
-				dialogConfirmacion.setActionPago(new Pagable() {					
-					@Override
-					public void onPagarFactura(Float montoAbonado) {
-						factura.setAbonado(factura.getAbonado() + montoAbonado);
-						if(factura.Saldo < montoAbonado )							
-							factura.setEstado("ABONADA");
-						else if (factura.Saldo == montoAbonado)
-							factura.setEstado("CANCELADA");
-						else { 
-							//ERROR
+			public void onButtonClick(Object documento) {
+				//SI EL DOCUMENTO ES UNA FACTURA
+				if (documento instanceof Factura){
+					final Factura factura = (Factura)documento;
+					final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(factura);
+					dialogConfirmacion.setActionPago(new Pagable() {					
+						@Override
+						public void onPagarFactura(Float montoAbonado) {
+							factura.setAbonado(factura.getAbonado() + montoAbonado);
+							if(factura.Saldo < montoAbonado )							
+								factura.setEstado("ABONADA");
+							else if (factura.Saldo == montoAbonado)
+								factura.setEstado("CANCELADA");
+							else { 
+								//ERROR
+							}
+							factura.setSaldo(factura.getSaldo() - factura.getAbonado());
+							recibo.setTotalFacturas(montoAbonado);
+							facturasRecibo.add(factura);
+							agregarDocumentosAlDetalleDeRecibo();
+							actualizaTotales();
 						}
-						factura.setSaldo(factura.getSaldo() - factura.getAbonado());
-						recibo.setTotalFacturas(montoAbonado);
-						facturasRecibo.add(factura);
-						agregarDocumentosAlDetalleDeRecibo();
-						actualizaTotales();
-					}
-				});
-				FragmentManager fragmentManager = getSupportFragmentManager();
-				
-				dialogConfirmacion.show(fragmentManager, "");				
-				
-				@SuppressWarnings("unused")
-				Object obj = factura;			
+					});
+					FragmentManager fragmentManager = getSupportFragmentManager();
+					
+					dialogConfirmacion.show(fragmentManager, "");
+					
+				}				
 			}
 		});			
 		Window window = dialog.getWindow(); 

@@ -86,7 +86,6 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> {
 	
 	public List<E> AddAllToListViewDataSource(List<E> obj)
 	{
-		
 		items.addAll(obj);		
 		this.notifyDataSetChanged();
 		return items;
@@ -108,7 +107,10 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> {
 	
 	@Override
 	public E getItem(int position) {
-		return items.get(position);
+		if ( items.size() > 0 )
+			return items.get(position);
+		else 
+			return null;
 	}
 	
 	@Override

@@ -5,6 +5,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
+import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
 
 import java.util.ArrayList;
 
@@ -73,8 +74,12 @@ public final class BReciboM {
 		case LOAD_DATA_FROM_LOCALHOST:
 			onLoadALLData_From_LocalHost();
 			return true;
+		case DELETE_DATA_FROM_LOCALHOST:
+			onDeleteData_From_LocalHost();
+			break;
 		case C_FACTURACLIENTE:
 			onLoadFacturasCliente_From_Localhost();
+			break; 
 		case LOAD_DATA_FROM_SERVER:
 			// onLoadALLData_From_LocalHost();
 			return true;
@@ -84,6 +89,47 @@ public final class BReciboM {
 
 		}
 		return false;
+	}
+
+	private void onDeleteData_From_LocalHost() {
+		try {
+			pool.execute(new Runnable() {
+
+				@Override
+				public void run() {
+
+					try {
+
+						Processor.send_ViewDeleteReciboToView(
+								ModelRecibo
+										.borraReciboByID((view != null) ? view
+												.getContentResolver() : view1
+												.getContext()
+												.getContentResolver(), view.getReciboSelected().getId() ),
+								controller);
+					} catch (Exception e) {
+						Log.e(logger, "Error in the update thread", e);
+						try {
+							Processor
+									.notifyToView(
+											controller,
+											ERROR,
+											0,
+											0,
+											new ErrorMessage(
+													"Error interno en la sincronización con la BDD",
+													e.toString(), "\n Causa: "
+															+ e.getCause()));
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			});
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 	}
 
 	private void onUpdateItem_From_Server() {

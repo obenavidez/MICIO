@@ -31,11 +31,9 @@
 				        android:paddingLeft="6dp"
 				        android:paddingTop="7dp"
 				        android:singleLine="true"
-				        android:textSize="15dp" >
-
-					</EditText>
-
-			 	    <TextView
+				        android:textSize="15dp" />
+				        
+				    <TextView
 			 	        android:id="@+id/ctextv_gridheader"
 			 	        style="StyleFontTextViewActionBar"
 			 	        android:layout_width="fill_parent"
@@ -44,6 +42,8 @@
 			 	        android:gravity="center"
 			 	        android:text="@string/txtdocumentos_title"
 			 	        android:textColor="@color/White" />
+
+					
 
 		     </LinearLayout>
 			    
@@ -64,8 +64,19 @@
 					    android:choiceMode="singleChoice"
 					    android:listSelector="@drawable/statelist"> 
 					    
-					</ListView>
+					</ListView>					
 					
+					<ListView 
+					    android:id="@+id/lvnotasd"  
+					    android:layout_width="fill_parent"
+					    android:layout_height="fill_parent"	
+					    android:divider="@color/DarkGray"
+					    android:dividerHeight="0.3sp"
+					    android:scrollingCache="false" 
+					    android:choiceMode="singleChoice"
+					    android:listSelector="@drawable/statelist">
+				    </ListView>
+					    
 					<ListView 
 					    android:id="@+id/lvnotasc"  
 					    android:layout_width="fill_parent"
@@ -77,19 +88,7 @@
 					    android:listSelector="@drawable/statelist"> 
 					    
 					</ListView>
-					
-					<ListView 
-					    android:id="@+id/lvnotasd"  
-					    android:layout_width="fill_parent"
-					    android:layout_height="fill_parent"	
-					    android:divider="@color/DarkGray"
-					    android:dividerHeight="0.3sp"
-					    android:scrollingCache="false" 
-					    android:choiceMode="singleChoice"
-					    android:listSelector="@drawable/statelist"> 
-					    
-					</ListView>
-						 
+											 
 					<TextView
 					 android:id="@+id/ctxtview_enty"
 					 android:textSize="12dp"

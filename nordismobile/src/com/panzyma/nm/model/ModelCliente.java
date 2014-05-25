@@ -161,7 +161,7 @@ public class ModelCliente
         		
         	 }while (cur.moveToNext());
             
-            cliente.setFacturasPendientes(getFacturasPendientes(content,cliente.getIdSucursal())); 
+            cliente.setFacturasPendientes(getDocumentosPendientes(content,cliente.getIdSucursal())); 
     		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(content,cliente.getIdSucursal()));
     		cliente.setNotasDebitoPendientes(getCCNotasDeDebito(content,cliente.getIdSucursal()));
     		cliente.setDescuentosProveedor(getDescuentosProveedor(content,cliente.getIdSucursal()));
@@ -170,7 +170,7 @@ public class ModelCliente
 	}
 	
 	
-	private static Factura[] getFacturasPendientes(ContentResolver content,long objSucursalID)
+	private static Factura[] getDocumentosPendientes(ContentResolver content,long objSucursalID)
 	{
 		int cont=0;
 		Cursor cur_fact=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_FACTURA+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
