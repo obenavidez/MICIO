@@ -73,6 +73,14 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> {
 		holder.txtDescription.setText(rowItem.getItemDescription());
 		holder.txtExtraInfo.setText(" | "+rowItem.getItemCode() + " CD"); 
 
+		 if (position == selectedPos) {
+ 	         convertView.setBackgroundColor(convertView.getResources().getColor(R.color.Gold));
+			 //convertView.setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.action_item_selected));
+		    }
+		    else {
+		        convertView.setBackgroundColor(convertView.getResources().getColor(R.color.White));
+		    } 
+		 
 		return convertView;
 	}
 	
