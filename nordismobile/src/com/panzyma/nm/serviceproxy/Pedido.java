@@ -2,12 +2,15 @@ package com.panzyma.nm.serviceproxy;
  
 
 import android.annotation.SuppressLint;
+
+import java.io.Serializable;
 import java.util.Hashtable;
+
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
 @SuppressWarnings({"rawtypes"})
-public final class Pedido extends SoapObject {
+public final class Pedido extends SoapObject implements Serializable {
     private long Id;
     private int NumeroMovil;
     private int NumeroCentral;

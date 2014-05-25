@@ -92,8 +92,8 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db;
 	
-	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 3;
+	private static final String DATABASE_NAME = "SIMFAC01";
+	private static final int BD_VERSION = 1;
 	
 	private static final String TABLA_CLIENTE = "Cliente";
 	private static final String TABLA_FACTURA = "Factura";
@@ -206,7 +206,7 @@ public class DatabaseProvider extends ContentProvider
 		 
 		return c;
 	}
-	 
+
 	public static void RegistrarTasaCambios(JSONArray objL,Context view) throws Exception
 	{		 
 		NM_SQLiteHelper d = new NM_SQLiteHelper(view, DATABASE_NAME, null, BD_VERSION);
@@ -775,7 +775,9 @@ public class DatabaseProvider extends ContentProvider
 			case USUARIO_ID: 			dictionary.put(USUARIO, TABLA_USUARIO);
 										dictionary.put(USUARIO+1,"Id=" + uri.getLastPathSegment());
 										break;	
-										
+			case RECIBO: 			dictionary.put(RECIBO, TABLA_RECIBO);
+									dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_RECIBO.toString());
+									break;								
 			
 		} 
 		Iterator it = dictionary.entrySet().iterator();

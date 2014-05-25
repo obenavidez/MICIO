@@ -4,12 +4,14 @@ import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_INVETORY_UPDATED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
 import com.panzyma.nm.DashBoardActivity;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
@@ -19,6 +21,8 @@ import com.panzyma.nm.auxiliar.BluetoothComunication;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol; 
@@ -44,7 +48,8 @@ import com.panzyma.nm.viewdialog.DialogPromociones;
 import com.panzyma.nm.viewmodel.vmPProducto; 
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
- 
+import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -728,6 +733,8 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
 			seleccionarProducto();
 			return true;
 
+		case ID_SALVAR: return true;
+		
 		case ERROR:
 			pd.dismiss();
 			ErrorMessage error = ((ErrorMessage) msg.obj);
@@ -1082,11 +1089,11 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
            
 			Date d = new Date(tbxFecha.getText().toString());
             pedido.setFecha(DateUtil.d2i(d));
-            
+            Integer intId = 0;
             //Generar Id del pedido
             if (pedido.getNumeroMovil() == 0) 
             {            
-                Integer intId = Ventas.getLastOrderId(me.getApplicationContext());
+                intId = Ventas.getLastOrderId(me.getApplicationContext());
                 if (intId == null) 
                     intId = new Integer(1);
                 else
@@ -1102,8 +1109,14 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback, Editab
                 pedido.setDescEstado("Elaboración");
                 pedido.setCodCausaEstado("REGISTRADO");
                 pedido.setDescCausaEstado("Registrado");
-            }
-                       
+            }  
+             Message msg = new Message();
+			 Bundle b = new Bundle();
+			 b.putSerializable("pedido", pedido);
+			 b.putInt("idpedido", intId); 
+			 msg.setData(b);
+			 msg.what=ID_SALVAR;
+			 nmapp.getController().getInboxHandler().sendMessage(msg);  
 //            if (indexPedido == -1) {
 //                pedidos.addElement(pedido);
 //                indexPedido = pedidos.size() - 1;

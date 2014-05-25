@@ -26,7 +26,7 @@ import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.ViewReciboEdit;
-import com.panzyma.nm.viewdialog.DialogFactura;
+import com.panzyma.nm.viewdialog.DialogDocumentos;
 
 @SuppressWarnings("rawtypes")
 public final class BReciboM {
@@ -36,7 +36,7 @@ public final class BReciboM {
 	Controller controller;
 	ThreadPool pool;
 	private ViewRecibo view;
-	private DialogFactura view1;
+	private DialogDocumentos view1;
 	private ViewReciboEdit reciboEdit;
 
 	boolean OK = false;
@@ -60,7 +60,7 @@ public final class BReciboM {
 		this.pool = ((NMApp) view.getApplicationContext()).getThreadPool();
 	}
 	
-	public BReciboM(DialogFactura view1) {
+	public BReciboM(DialogDocumentos view1) {
 		this.controller = ((NMApp) view1.getContext().getApplicationContext())
 				.getController();
 		this.view1 = view1;

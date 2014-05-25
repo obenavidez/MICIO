@@ -26,6 +26,7 @@ import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
@@ -33,8 +34,8 @@ import com.panzyma.nm.view.viewholder.PProductoViewHolder;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
-import com.panzyma.nm.viewdialog.DialogFactura;
-import com.panzyma.nm.viewdialog.DialogFactura.OnFacturaButtonClickListener;
+import com.panzyma.nm.viewdialog.DialogDocumentos;
+import com.panzyma.nm.viewdialog.DialogDocumentos.OnFacturaButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
 import com.panzyma.nordismobile.R;
 
@@ -333,19 +334,19 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					- (this.totalDescuento - this.totalOtrasDeducciones);
 
 			// totales
-			recibo.setTotalFacturas(totalFacturas);
-			recibo.setTotalNC(totalNotasCredito);
-			recibo.setTotalND(totalNotasDebito);
-			recibo.setTotalInteres(totalInteres);
-			recibo.setSubTotal(subTotal);
-			recibo.setTotalDescOca(totalDescuentoOcasional);
-			recibo.setTotalDescPromo(totalDescuentoPromocion);
-			recibo.setTotalDescPP(totalDescuentoProntoPago);
-			recibo.setTotalDesc(totalDescuento);
-			recibo.setTotalImpuestoProporcional(totalImpuestoProporcional);
-			recibo.setTotalImpuestoExonerado(totalImpuestoExonerado);
-			recibo.setTotalOtrasDed(totalOtrasDeducciones);
-			recibo.setTotalRecibo(totalRecibo);
+//			recibo.setTotalFacturas(totalFacturas);
+//			recibo.setTotalNC(totalNotasCredito);
+//			recibo.setTotalND(totalNotasDebito);
+//			recibo.setTotalInteres(totalInteres);
+//			recibo.setSubTotal(subTotal);
+//			recibo.setTotalDescOca(totalDescuentoOcasional);
+//			recibo.setTotalDescPromo(totalDescuentoPromocion);
+//			recibo.setTotalDescPP(totalDescuentoProntoPago);
+//			recibo.setTotalDesc(totalDescuento);
+//			recibo.setTotalImpuestoProporcional(totalImpuestoProporcional);
+//			recibo.setTotalImpuestoExonerado(totalImpuestoExonerado);
+//			recibo.setTotalOtrasDed(totalOtrasDeducciones);
+//			recibo.setTotalRecibo(totalRecibo);
 			// colector
 			recibo.setObjColectorID(10);
 			recibo.setAplicaDescOca(false);
@@ -356,6 +357,16 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setCodEstado("REGISTRADO");
 			
 			recibo.setId(Ventas.getMaxReciboId(this.contexto) + 1);
+			
+			for(Factura factura : facturasRecibo) {
+				ReciboDetFactura detalleFactura = new ReciboDetFactura();
+				detalleFactura.setEsAbono(factura.getEstado().equals("ABONADA"));
+				detalleFactura.setFecha(factura.getFecha());
+				detalleFactura.setMonto(factura.getAbonado());
+				detalleFactura.setId(factura.getId());
+				//Agregar la factura al detalle del recibo
+				recibo.getFacturasRecibo().add(detalleFactura);
+			}
 
 			try {
 				DatabaseProvider.RegistrarRecibo(recibo, contexto);
@@ -395,7 +406,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			return;
 		}			
 				
-		DialogFactura dialog= new DialogFactura(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, recibo.getObjSucursalID());
+		DialogDocumentos dialog= new DialogDocumentos(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, recibo.getObjSucursalID());
 		dialog.setOnDialogFacturaButtonClickListener(new OnFacturaButtonClickListener() {
 			@Override
 			public void onButtonClick(final Factura factura) {

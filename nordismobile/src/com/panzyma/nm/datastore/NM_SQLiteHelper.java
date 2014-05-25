@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  
 public class NM_SQLiteHelper extends SQLiteOpenHelper 
 {
-	private static  String DATABASE_NAME = "SIMFAC";
+	private static  String DATABASE_NAME = "SIMFAC01";
 	Context mycontext;
     String sqlCliente=       "CREATE TABLE IF NOT EXISTS Cliente (IdCliente BLOB PRIMARY KEY  NOT NULL  UNIQUE , NombreCliente TEXT, IdSucursal BLOB NOT NULL,"+ 
 						 	 "Codigo TEXT, CodTipoPrecio TEXT, DesTipoPrecio TEXT, objPrecioVentaID BLOB,  objCategoriaClienteID BLOB,"+
@@ -144,7 +144,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 					+ "       totalImpuestoProporcional FLOAT, " 
 					+ "       totalImpuestoExonerado FLOAT, " 
 					+ "       exento FLOAT, "
-					+ "       autorizacionDGI FLOAT "
+					+ "       autorizacionDGI FLOAT, "
 					+ "       FOREIGN KEY(objClienteID) REFERENCES Cliente(IdCliente) "  
 					+ ")";
     

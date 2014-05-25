@@ -154,7 +154,7 @@ public class ViewRecibo extends ActionBarActivity implements
 			nmapp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
-							ControllerProtocol.LOAD_DATA_FROM_SERVER);
+							ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -307,11 +307,6 @@ public class ViewRecibo extends ActionBarActivity implements
 		}
 		return false;
 	}
-	
-	@Override
-	protected void onDestroy() {
-		FINISH_ACTIVITY();
-	};	
 
 	private void setData(final ArrayList<vmRecibo> data, final int what) {
 		try {
