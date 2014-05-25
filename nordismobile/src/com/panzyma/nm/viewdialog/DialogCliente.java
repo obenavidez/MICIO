@@ -14,11 +14,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+
 import com.panzyma.nm.interfaces.Editable;
+
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -50,6 +53,8 @@ import com.panzyma.nordismobile.R;
 @SuppressWarnings({"rawtypes","unused","unchecked"})
 public class DialogCliente extends Dialog  implements Handler.Callback
 {
+	
+
 	private Context mcontext;  
 	private GenericAdapter adapter; 
 	 
@@ -90,6 +95,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay();
 			pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false); 
+			Toast.makeText(this.getContext(), "TestersterexdsafADFASDF", Toast.LENGTH_LONG);
 			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
 	        initComponents();
 	        
@@ -99,7 +105,16 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		}	 
       
 	}	
-
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+		  	FINISH_ACTIVITY();
+	        return true;
+	    }
+	    return super.onKeyUp(keyCode, event); 
+	}
 	public void initComponents()
 	{
 		LinearLayout.LayoutParams layoutParams;
@@ -247,6 +262,8 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		if(pd!=null)
+			pd.dismiss();	
 		Log.d(TAG, "Activity quitting"); 
 		this.dismiss();
 	}  

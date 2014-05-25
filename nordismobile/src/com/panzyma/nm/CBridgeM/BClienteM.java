@@ -149,7 +149,8 @@ public final class BClienteM
 						
 						try
 						{ 
-							if(view_activated==1)	{								
+							if(view_activated==1)	
+							{								
 								Processor.send_ViewCustomerToView((ModelCliente.getArrayCustomerFromLocalHost(view.getContentResolver())), controller);
 							}
 							else if(view_activated==3)
@@ -360,7 +361,7 @@ public final class BClienteM
 						try 
 						{    
 							if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller)) 
-									Processor.send_ViewFichaCustomerToView(ModelCliente.getFichaCustomerFromServer("sa||nordis09||dp",view.get_SucursalID()),controller);
+									Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer("sa||nordis09||dp",view.get_SucursalID()),controller);
 							 
 						}  
 						catch (Exception e) 

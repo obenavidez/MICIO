@@ -2,7 +2,9 @@ package com.panzyma.nm.viewdialog;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST; 
+
 import java.util.ArrayList; 
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -28,6 +30,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView; 
+import android.widget.Toast;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.auxiliar.ErrorMessage;
@@ -57,8 +61,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	
 	public Producto producto;
 	protected Producto product_selected;  
-	
-	
+
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(DetallePedido det_p,Producto prod);
 	}
@@ -108,7 +111,6 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	        _idTipoCliente = idTipoCliente; 
 	        _exento = exento; 
 	        Lproducto=new ArrayList<Producto>();
-	        
 	        
         }catch (Exception e) { 
 			e.printStackTrace();
@@ -228,12 +230,6 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
 			            	product_selected=(Producto) adapter.getItem(position);	
-//			            	try { 
-//			            		producto=(Producto) nmapp.getController().getBridge().getClass().getMethod("getProductoByID",ContentResolver.class,long.class).invoke(null,DialogProducto.this.getContext().getContentResolver(),product_selected.getId());
-//							} catch (Exception e) {
-//								// TODO Auto-generated catch block
-//								e.printStackTrace();
-//							}
 			            	adapter.setSelectedPosition(position); 
 			            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));					            	 
 			            	//mButtonClickListener.onButtonClick(producto); 
@@ -250,12 +246,6 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
 			            	product_selected=(Producto) adapter.getItem(position);	
-//			            	try { 
-//			            		producto=(Producto) nmapp.getController().getBridge().getClass().getMethod("getProductoByID",ContentResolver.class,long.class).invoke(null,DialogProducto.this.getContext().getContentResolver(),product_selected.getId());
-//							} catch (Exception e) {
-//								// TODO Auto-generated catch block
-//								e.printStackTrace();
-//							}
 			            	adapter.setSelectedPosition(position); 
 			            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));				
 							
@@ -293,8 +283,6 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 		}
 		pd.dismiss();	
 
-		
-		
 	} 
 	
 	private void FINISH_ACTIVITY()
@@ -305,11 +293,11 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 		try {
 			nmapp.getController().setEntities(parent,_view.getBridge());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Log.d(TAG, "Activity quitting"); 
-		adapter.clearItems();
+		if(pd!=null)
+			pd.dismiss();
+		Log.d(TAG, "Exit from DialogProducto"); 
 		this.dismiss();
 	}  
  

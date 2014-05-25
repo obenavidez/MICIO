@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  
 public class NM_SQLiteHelper extends SQLiteOpenHelper 
 {
-	private static  String DATABASE_NAME = "SIMFAC";
+	private static  String DATABASE_NAME = "SIMFAC01";
 	Context mycontext;
     String sqlCliente=       "CREATE TABLE IF NOT EXISTS Cliente (IdCliente BLOB PRIMARY KEY  NOT NULL  UNIQUE , NombreCliente TEXT, IdSucursal BLOB NOT NULL,"+ 
 						 	 "Codigo TEXT, CodTipoPrecio TEXT, DesTipoPrecio TEXT, objPrecioVentaID BLOB,  objCategoriaClienteID BLOB,"+
@@ -65,7 +65,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     							 "MontoBaseUnico INTEGER,MontoBaseMinimo INTEGER,MontoBaseMaximo INTEGER,MontoPremioUnico INTEGER,MontoPremio FLOAT); ";
 
     String sqlPedido=         "CREATE TABLE IF NOT EXISTS Pedido("
-    		+ "Id BLOB PRIMARY KEY AUTOINCREMENT,"
+    		+ "Id INTEGER PRIMARY KEY AUTOINCREMENT,"
     		+ "NumeroMovil INTEGER,"
     		+ "NumeroCentral INTEGER,"
     		+ "Tipo TEXT,"
@@ -103,7 +103,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			+ "); " ;
 
     String sqlDetallePedido = "CREATE TABLE IF NOT EXISTS PedidoDetalle (" +
-                              "       Id BLOB PRIMARY KEY AUTOINCREMENT,       " +
+                              "       Id INTEGER PRIMARY KEY AUTOINCREMENT,       " +
                               "       objPedidoID BLOB,       " +
                               "       objProductoID BLOB, " + 
                               "       CodProducto TEXT, " + 
@@ -167,7 +167,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 							");" ;
     
     String sqlRecibo = "CREATE TABLE IF NOT EXISTS Recibo ("
-					+ "       id,  "
+					+ "       id INTEGER PRIMARY KEY,  "
 					+ "       numero INTEGER,       " 
 					+ "       fecha TEXT, "
 					+ "       notas TEXT, " 

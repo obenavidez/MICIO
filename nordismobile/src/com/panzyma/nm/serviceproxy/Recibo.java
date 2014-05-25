@@ -1,5 +1,8 @@
 package com.panzyma.nm.serviceproxy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Recibo {
 
 	protected long id;
@@ -33,6 +36,10 @@ public class Recibo {
 	protected float totalImpuestoExonerado;
 	protected boolean exento;
 	protected java.lang.String autorizacionDGI;
+	
+	protected List<ReciboDetFactura> facturasRecibo = new ArrayList<ReciboDetFactura>(); 
+	protected List<ReciboDetNC> notasCreditoRecibo = new ArrayList<ReciboDetNC>();
+	protected List<ReciboDetND> notasDebitoRecibo = new ArrayList<ReciboDetND>();
 	
 	public Recibo() {
 		super();		
@@ -330,5 +337,29 @@ public class Recibo {
 	public void setAutorizacionDGI(java.lang.String autorizacionDGI) {
 		this.autorizacionDGI = autorizacionDGI;
 	}
+
+	public List<ReciboDetFactura> getFacturasRecibo() {
+		return facturasRecibo;
+	}
+
+	public void setFacturasRecibo(List<ReciboDetFactura> facturasRecibo) {
+		this.facturasRecibo = facturasRecibo;
+	}
+
+	public List<ReciboDetNC> getNotasCreditoRecibo() {
+		return notasCreditoRecibo;
+	}
+
+	public void setNotasCreditoRecibo(List<ReciboDetNC> notasCreditoRecibo) {
+		this.notasCreditoRecibo = notasCreditoRecibo;
+	}
+
+	public List<ReciboDetND> getNotasDebitoRecibo() {
+		return notasDebitoRecibo;
+	}
+
+	public void setNotasDebitoRecibo(List<ReciboDetND> notasDebitoRecibo) {
+		this.notasDebitoRecibo = notasDebitoRecibo;
+	}	
 
 }

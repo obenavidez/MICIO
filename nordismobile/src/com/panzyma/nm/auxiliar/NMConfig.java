@@ -340,7 +340,36 @@ public class NMConfig
 		public static final java.lang.String TOTAL_IMPUESTO_EXONERADO = "totalImpuestoExonerado";
 		public static final java.lang.String EXENTO = "exento";
 		public static final java.lang.String AUTORIZA_DGI = "autorizacionDGI";
+		
+		public static final class DetalleRecibo {
+			public static final java.lang.String ID = "id";
+			public static final java.lang.String FACTURA_ID = "objFacturaID";
+			public static final java.lang.String RECIBO_ID = "objReciboID";			
+			public static final java.lang.String MONTO = "monto";
+			public static final java.lang.String ESABONO = "esAbono";
+			public static final java.lang.String MONTO_DESCUENTO_ESPECIFICO = "montoDescEspecifico";
+			public static final java.lang.String MONTO_DESCUENTO_OCASIONAL = "montoDescOcasional";
+			public static final java.lang.String MONTO_RETENCION = "montoRetencion";
+			public static final java.lang.String MONTO_IMPUESTO = "montoImpuesto";
+			public static final java.lang.String MONTO_INTERES = "montoInteres";
+			public static final java.lang.String MONTO_NETO = "montoNeto";
+			public static final java.lang.String MONTO_OTRAS_DEDUCCIONES = "montoOtrasDeducciones";
+			public static final java.lang.String MONTO_DESCUENTO_PROMOCION = "montoDescPromocion";
+			public static final java.lang.String PORCENTAJE_DESCUENTO_OCASIONAL = "porcDescOcasional";
+			public static final java.lang.String PORCENTAJE_DESCUENTO_PROMOCION = "porcDescPromo";
+			public static final java.lang.String NUMERO = "numero";
+			public static final java.lang.String FECHA = "fecha";
+			public static final java.lang.String FECHA_VENCE = "fechaVence";
+			public static final java.lang.String FECHA_APLICA_DESCUENTO_PRONTO_PAGO = "fechaAplicaDescPP";
+			public static final java.lang.String SUB_TOTAL = "subTotal";
+			public static final java.lang.String IMPUESTO = "impuesto";
+			public static final java.lang.String TOTAL_FACTURA = "totalfactura";
+			public static final java.lang.String SALDO_FACTURA = "saldofactura";
+			public static final java.lang.String INTERES_MORATORIO = "interesMoratorio";
+			public static final java.lang.String SALDO_TOTAL = "saldoTotal";
+			public static final java.lang.String MONTO_IMPUESTO_EXONERADO = "montoImpuestoExento";
+			public static final java.lang.String MONTO_DESCUENTO_ESPECIFICO_CALCULADO = "montoDescEspecificoCalc";
+		}
 	}
-
 
 }

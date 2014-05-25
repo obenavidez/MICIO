@@ -65,6 +65,30 @@
 					    android:listSelector="@drawable/statelist"> 
 					    
 					</ListView>
+					
+					<ListView 
+					    android:id="@+id/lvnotasc"  
+					    android:layout_width="fill_parent"
+					    android:layout_height="fill_parent"	
+					    android:divider="@color/DarkGray"
+					    android:dividerHeight="0.3sp"
+					    android:scrollingCache="false" 
+					    android:choiceMode="singleChoice"
+					    android:listSelector="@drawable/statelist"> 
+					    
+					</ListView>
+					
+					<ListView 
+					    android:id="@+id/lvnotasd"  
+					    android:layout_width="fill_parent"
+					    android:layout_height="fill_parent"	
+					    android:divider="@color/DarkGray"
+					    android:dividerHeight="0.3sp"
+					    android:scrollingCache="false" 
+					    android:choiceMode="singleChoice"
+					    android:listSelector="@drawable/statelist"> 
+					    
+					</ListView>
 						 
 					<TextView
 					 android:id="@+id/ctxtview_enty"

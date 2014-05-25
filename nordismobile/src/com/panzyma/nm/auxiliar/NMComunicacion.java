@@ -62,12 +62,13 @@ public class NMComunicacion {
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.dotNet = true;
         envelope.setOutputSoapObject(Soap); 
+        
         return envelope;
     } 
     
 	public static synchronized Object MakeCall(String URL, SoapSerializationEnvelope Envelope, String NAMESPACE, String METHOD_NAME)throws Exception
     {   
-	        HttpTransportSE ht = new HttpTransportSE(URL);
+	        HttpTransportSE ht = new HttpTransportSE(URL); 
 	        ht.debug = true;
 	        ht.call(NAMESPACE+METHOD_NAME, Envelope);
         return  Envelope.getResponse(); 

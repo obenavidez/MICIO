@@ -1,19 +1,10 @@
 package com.panzyma.nm.view;
 
-import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
-import static com.panzyma.nm.controller.ControllerProtocol.CONFIRMATION_DIALOG;
-import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.C_FICHACLIENTE;
-import static com.panzyma.nm.controller.ControllerProtocol.C_SETTING_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHED;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_FICHACLIENTE_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.*;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -31,16 +22,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -57,7 +52,8 @@ import com.panzyma.nordismobile.R;
 import com.panzyma.nm.viewmodel.*;
 
 public class vCliente extends ActionBarActivity implements 
-	   ListaFragment.OnItemSelectedListener, Handler.Callback {
+	   ListaFragment.OnItemSelectedListener, Handler.Callback 
+{
 
 	// VARIABLES
 	CustomArrayAdapter customArrayAdapter;
@@ -188,7 +184,13 @@ public class vCliente extends ActionBarActivity implements
 		cliente_selected = (vmCliente) obj;
 		positioncache = position;
 	}
-
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub 
+		if(pDialog!=null)
+    		pDialog.dismiss();
+		super.onPause();
+	} 
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -328,6 +330,7 @@ public class vCliente extends ActionBarActivity implements
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void Load_Data(int what)
 	{
 		/*controller.getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);*/
@@ -348,6 +351,30 @@ public class vCliente extends ActionBarActivity implements
 			e.printStackTrace();
 		}
 	}
+	
+	
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) 
+    { 
+        if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+    	  	FINISH_ACTIVITY();
+            return true;
+	    }
+        return super.onKeyUp(keyCode, event); 
+    } 
+	
+    
+    
+    private void FINISH_ACTIVITY()
+	{ 	 		
+    	if(pDialog!=null)
+    		pDialog.dismiss();
+		nmapp.getController().removeOutboxHandler(TAG);
+		nmapp.getController().disposeEntities();
+		Log.d(TAG, "Activity quitting");
+		finish();		
+	}  
 	
 	@SuppressWarnings({ "unused", "unchecked" })
 	private void SetList(Message msg) {
@@ -386,8 +413,10 @@ public class vCliente extends ActionBarActivity implements
 				this.runOnUiThread(new Runnable() {
 
 					@Override
-					public void run() {
-						try {
+					public void run() 
+					{
+						try 
+						{
 							if (what == C_SETTING_DATA && customArrayAdapter != null && customArrayAdapter.getCount() >= 0) {
 								customArrayAdapter.AddAllToListViewDataSource(data);
 								firstFragment.setItems(data);

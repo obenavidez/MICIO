@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.panzyma.nm.interfaces.Filterable;
@@ -54,7 +53,7 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 		mAdapter = new CustomArrayAdapter<E>(getActivity(), android.R.id.list,
 				items);
 		setListAdapter(mAdapter);
-
+		
 	}
 
 	@Override
@@ -65,9 +64,10 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 		// list item
 		// (We do this during onStart because at the point the listview is
 		// available.)
-
+		 
 		if (getFragmentManager().findFragmentById(R.id.dynamic_fragment) != null) {
-			getListView().setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+			//getListView().setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+			getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		}
 	}
 
@@ -88,21 +88,13 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
 		// Notify the parent activity of selected item
-
-		// mCallback.onItemSelected(position);
 		mCallback.onItemSelected(getAdapter().getItems().get(position), position);
-		// super.onListItemClick(l, v, position, id);
 		// Set the item as checked to be highlighted when in two-pane layout
 		getListView().setItemChecked(position, true);
-		if (this.pos == position) {
-			this.pos = position;
-			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));
-		} else {
-			((ListView) (v.getParent())).getChildAt(this.pos).setBackgroundDrawable(getResources().getDrawable(R.color.transparent));
-			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));
-			this.pos = position;
-		}
+		mAdapter.setSelectedPosition(position);
+		mAdapter.notifyDataSetChanged();
 	}
 
 	@Override

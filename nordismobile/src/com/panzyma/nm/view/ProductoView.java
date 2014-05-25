@@ -46,6 +46,7 @@ import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
 
@@ -54,7 +55,7 @@ public class ProductoView extends ActionBarActivity implements
 
 
 	private static final String TAG = ProductoView.class.getSimpleName();
-	CustomArrayAdapter<vmProducto> customArrayAdapter;
+	CustomArrayAdapter<Producto> customArrayAdapter;
 	private SearchView searchView;
 	int listFragmentId;
 	int positioncache = -1;
@@ -72,9 +73,9 @@ public class ProductoView extends ActionBarActivity implements
 	TextView gridheader;
 	TextView footerView;
 
-	private List<vmProducto> productos = new ArrayList<vmProducto>();
-	vmProducto product_selected;
-	ListaFragment<vmProducto> firstFragment;
+	private List<Producto> productos = new ArrayList<Producto>();
+	Producto product_selected;
+	ListaFragment<Producto> firstFragment;
 
 	@SuppressLint("CutPasteId")
 	private void initComponent() {
@@ -149,6 +150,12 @@ public class ProductoView extends ActionBarActivity implements
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
 					.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+			
+			pDialog = new ProgressDialog(this);
+			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDialog.setMessage("Procesando...");
+			pDialog.setCancelable(true);
+			pDialog.show();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -161,7 +168,7 @@ public class ProductoView extends ActionBarActivity implements
 		}
 
 		// Create an instance of ExampleFragment
-		firstFragment = new ListaFragment<vmProducto>();
+		firstFragment = new ListaFragment<Producto>();
 
 		// In case this activity was started with special instructions from
 		// an Intent,
@@ -190,11 +197,11 @@ public class ProductoView extends ActionBarActivity implements
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
 		if (findViewById(R.id.fragment_container) != null) {
-			customArrayAdapter = (CustomArrayAdapter<vmProducto>) ((Filterable) getSupportFragmentManager()
+			customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
 					.findFragmentById(R.id.fragment_container)).getAdapter();
 
 		} else {
-			customArrayAdapter = (CustomArrayAdapter<vmProducto>) ((Filterable) getSupportFragmentManager()
+			customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
 					.findFragmentById(R.id.item_client_fragment)).getAdapter();
 		}
 
@@ -267,7 +274,7 @@ public class ProductoView extends ActionBarActivity implements
 		switch (msg.what) {
 		case C_DATA:
 			establecer(msg);
-			// pDialog.hide();
+			pDialog.dismiss();
 			return true;
 
 		case C_FICHACLIENTE:
@@ -284,7 +291,7 @@ public class ProductoView extends ActionBarActivity implements
 			// pDialog.hide();
 			return true;
 		case C_SETTING_DATA:
-			setData((ArrayList<vmProducto>) ((msg.obj == null) ? new ArrayList<vmProducto>()
+			setData((ArrayList<Producto>) ((msg.obj == null) ? new ArrayList<vmProducto>()
 					: msg.obj), C_SETTING_DATA);
 			return true;
 		case ERROR:
@@ -298,7 +305,7 @@ public class ProductoView extends ActionBarActivity implements
 
 	@SuppressWarnings({ "unused", "unchecked" })
 	private void establecer(Message msg) {
-		productos = (List<vmProducto>) ((msg.obj == null) ? new ArrayList<vmProducto>()
+		productos = (List<Producto>) ((msg.obj == null) ? new ArrayList<Producto>()
 				: msg.obj);
 		gridheader.setVisibility(View.VISIBLE);
 		gridheader.setText(String.format("Listado de Productos (%s)",
@@ -313,7 +320,7 @@ public class ProductoView extends ActionBarActivity implements
 		product_selected = firstFragment.getAdapter().getItem(0); 
 	}
 
-	private void setData(final ArrayList<vmProducto> data, final int what) {
+	private void setData(final ArrayList<Producto> data, final int what) {
 		try {
 			if (data.size() != 0) {
 				this.runOnUiThread(new Runnable() {
@@ -428,46 +435,50 @@ public class ProductoView extends ActionBarActivity implements
 	}
 	
 	@Override 
-	public void onItemSelected(Object obj, int position) {
+	public void onItemSelected(Object obj, int position) 
+	{
 
-		FichaProductoFragment productFrag;
-		Bundle args = new Bundle();
-		args.putInt(FichaProductoFragment.ARG_POSITION, position);
-		args.putParcelable(FichaProductoFragment.OBJECT, (vmProducto) obj);
-
-		FragmentTransaction transaction = getSupportFragmentManager()
-				.beginTransaction();		
-
-		if (findViewById(R.id.dynamic_fragment) != null) {
-
-			productFrag = (FichaProductoFragment) getSupportFragmentManager()
-					.findFragmentById(R.id.dynamic_fragment);
-			if (productFrag != null) {				
-				productFrag.updateArticleView((vmProducto) obj, position);
-			} else {
-				productFrag = new FichaProductoFragment();
-				productFrag.setArguments(args);
-				transaction.add(R.id.dynamic_fragment, productFrag);
-				transaction.addToBackStack(null);
-			}
-
-		} else {
-
-			@SuppressWarnings("unused")
-			Fragment fragment = getSupportFragmentManager().findFragmentById(
-					R.id.fragment_container);
-			
-			gridheader.setVisibility(View.INVISIBLE);
-
-			if (fragment instanceof ListaFragment) {
-				productFrag = new FichaProductoFragment();
-				productFrag.setArguments(args);
-				transaction.replace(R.id.fragment_container, productFrag);
-				transaction.addToBackStack(null);			
-			}
-		}
-		// Commit the transaction transaction.commit();
-		transaction.commit();
+		product_selected=(Producto) obj;
+		positioncache=position;
+		
+//		FichaProductoFragment productFrag;
+//		Bundle args = new Bundle();
+//		args.putInt(FichaProductoFragment.ARG_POSITION, position);
+//		args.putParcelable(FichaProductoFragment.OBJECT, (Producto) obj);
+//
+//		FragmentTransaction transaction = getSupportFragmentManager()
+//				.beginTransaction();		
+//
+//		if (findViewById(R.id.dynamic_fragment) != null) {
+//
+//			productFrag = (FichaProductoFragment) getSupportFragmentManager()
+//					.findFragmentById(R.id.dynamic_fragment);
+//			if (productFrag != null) {				
+//				productFrag.updateArticleView((Producto) obj, position);
+//			} else {
+//				productFrag = new FichaProductoFragment();
+//				productFrag.setArguments(args);
+//				transaction.add(R.id.dynamic_fragment, productFrag);
+//				transaction.addToBackStack(null);
+//			}
+//
+//		} else {
+//
+//
+//			Fragment fragment = getSupportFragmentManager().findFragmentById(
+//					R.id.fragment_container);
+//			
+//			gridheader.setVisibility(View.INVISIBLE);
+//
+//			if (fragment instanceof ListaFragment) {
+//				productFrag = new FichaProductoFragment();
+//				productFrag.setArguments(args);
+//				transaction.replace(R.id.fragment_container, productFrag);
+//				transaction.addToBackStack(null);			
+//			}
+//		}
+//		// Commit the transaction transaction.commit();
+//		transaction.commit();
 
 	}
 

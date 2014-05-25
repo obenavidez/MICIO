@@ -41,14 +41,7 @@ public class BProductoM {
 	JSONArray jsonA=new JSONArray();
 	private DialogProducto view1; 
 	public BProductoM(){}
-	
-	
-	public BProductoM(ViewProducto view)
-	{
-    	this.controller=((NMApp)view.getApplicationContext()).getController();  
-    	this.view2=view; 
-    	this.pool=((NMApp)view.getApplicationContext()).getThreadPool();
-    }   
+	 
 	public BProductoM(ProductoView view)
 	{
     	this.controller=((NMApp)view.getApplicationContext()).getController();  
@@ -98,7 +91,7 @@ public class BProductoM {
 						try
 						{
 							 
-							Processor.send_ViewProductosToView(ModelProducto.getArrayProductoFromLocalHost((view2!=null)?view2.getContentResolver():view1.getContext().getContentResolver()),controller);						
+							Processor.send_ViewProductosToView(ModelProducto.getArrayProductoFromLocalHost((view!=null)?view.getContentResolver():view1.getContext().getContentResolver()),controller);						
 						}
 						catch (Exception e) 
 						{

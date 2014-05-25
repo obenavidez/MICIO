@@ -8,10 +8,14 @@ import org.json.JSONObject;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.Gson;
 import com.panzyma.nm.interfaces.Item;
+import com.panzyma.nm.viewmodel.vmCliente;
 
-public class Producto implements KvmSerializable,Item {
+public class Producto implements Parcelable,KvmSerializable,Item {
 	public long Id;
 	public java.lang.String Codigo;
 	public java.lang.String Nombre;
@@ -360,18 +364,81 @@ public class Producto implements KvmSerializable,Item {
 	@Override
 	public String getItemName() {
 		// TODO Auto-generated method stub
-		return null;
+		return getNombre();
 	}
 
 	@Override
 	public String getItemDescription() {
 		// TODO Auto-generated method stub
-		return null;
+		return String.valueOf(getDisponible());
 	}
 
 	@Override
 	public String getItemCode() {
 		// TODO Auto-generated method stub
-		return null;
+		return getCodigo();
 	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public Producto(Parcel parcel) {
+		super();
+		readFromParcel(parcel);
+	}
+
+	public static final Parcelable.Creator<Producto> CREATOR = new Parcelable.Creator<Producto>() {
+		@Override
+		public Producto createFromParcel(Parcel in) {
+			return new Producto(in);
+		}
+
+		@Override
+		public Producto[] newArray(int size) {
+			return new Producto[size];
+		}
+	};	
+	
+
+	@Override
+	public void writeToParcel(Parcel parcel, int arg1) {	
+		parcel.writeLong(Id);
+		parcel.writeString(Codigo);
+		parcel.writeString(Nombre);
+		parcel.writeInt((EsGravable==true)?1:0);
+		parcel.writeString(ListaPrecios);
+		parcel.writeString(ListaBonificaciones);
+		parcel.writeString(CatPrecios);
+		parcel.writeInt(Disponible);
+		parcel.writeArray(ListaLotes);
+		parcel.writeInt((PermiteDevolucion==true)?1:0);
+		parcel.writeInt((LoteRequerido==true)?1:0); 
+		parcel.writeLong(ObjProveedorID);
+		parcel.writeInt(DiasAntesVen);
+		parcel.writeInt(DiasDespuesVen);  
+	}
+
+	private void readFromParcel(Parcel parcel) {
+		this.Id = parcel.readLong();
+		this.Codigo = parcel.readString();
+		this.Nombre =  parcel.readString();;
+		this.EsGravable = (parcel.readInt()==1)?true:false;;
+		this.ListaPrecios =  parcel.readString();;
+		this.ListaBonificaciones =  parcel.readString();;
+		this.CatPrecios =  parcel.readString();
+		this.Disponible =  parcel.readInt();
+		this.ListaLotes = (Lote[]) parcel.readArray(Lote[].class.getClassLoader());
+		this.PermiteDevolucion = ( parcel.readInt()==1)?true:false;
+		this.LoteRequerido = ( parcel.readInt()==1)?true:false;
+		this.ObjProveedorID = parcel.readLong();
+		this.DiasAntesVen = parcel.readInt();
+		this.DiasDespuesVen = parcel.readInt();
+	}
+
+
+
+
 }
