@@ -416,7 +416,8 @@ public class ViewRecibo extends ActionBarActivity implements
 		firstFragment.setItems(recibos);
 		firstFragment.getAdapter().setSelectedPosition(0);
 		positioncache = 0;
-		recibo_selected = firstFragment.getAdapter().getItem(0);
+		if(recibos.size() > 0)
+			recibo_selected = firstFragment.getAdapter().getItem(0);
 	}
 
 	@Override
