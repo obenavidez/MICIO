@@ -269,6 +269,27 @@ public class Controller<T, U>
 			}  
 		}
 	}
+	
+	public final <T> void notifyOutboxHandlers(int what, int arg1, int arg2, Object obj) {
+		if (outboxHandlers.isEmpty()) {
+			Log.w(TAG, String.format("No outbox handler to handle outgoing message (%d)", what));
+		} else {
+			
+			Object viewL=getView();
+			Handler handler;
+			if(viewL!=null) 
+				 handler=outboxHandlers.get(viewL.getClass().getSimpleName());
+			else
+				handler=outboxHandlers.get(Main.TAG);
+				
+			if(handler!=null)
+			{
+				Message msg = Message.obtain(handler, what, arg1, arg2, obj);
+				msg.sendToTarget();
+			}  
+		}
+	}
+	
 	public final void _notifyOutboxHandlers(int what, int arg1, int arg2, Object obj) {
 		if (outboxHandlers.isEmpty()) {
 			Log.w(TAG, String.format("No outbox handler to handle outgoing message (%d)", what));
