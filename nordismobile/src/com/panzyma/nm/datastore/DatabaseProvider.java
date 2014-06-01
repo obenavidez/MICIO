@@ -109,7 +109,7 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 4; 
+	private static final int BD_VERSION = 6; 
 	
 	private static final String TABLA_CLIENTE = "Cliente";
 	private static final String TABLA_FACTURA = "Factura";

@@ -168,10 +168,10 @@ public class Processor {
 	}
 	
 	public static void send_ViewReciboEditToView(
-			ArrayList<Factura> objL,
+			Cliente cliente,
 			Controller controller) {
 		synchronized (lock) {
-			controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size() != 0) ? objL : new ArrayList<Factura>());
+			controller._notifyOutboxHandlers(C_DATA, 0, 0, cliente );
 			// Thread.sleep(500);
 		}
 

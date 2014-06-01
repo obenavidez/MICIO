@@ -187,7 +187,7 @@ public final class BReciboM {
 					try {
 						// Parameters params = viewcc.get_FacturaParameters();
 						Processor.send_ViewReciboEditToView(
-								ModelCliente.getFacturasPendientesBySucursal(view1.getContext()
+								ModelCliente.getClienteBySucursalID(view1.getContext()
 										.getContentResolver(), view1
 										.getObjSucursalId()), controller);
 

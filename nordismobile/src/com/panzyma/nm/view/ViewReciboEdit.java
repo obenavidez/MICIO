@@ -32,10 +32,13 @@ import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.PProductoViewHolder;
 import com.panzyma.nm.viewdialog.DialogCliente;
+import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento;
+import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Seleccionable;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogDocumentos;
 import com.panzyma.nm.viewdialog.DialogDocumentos.OnDocumentoButtonClickListener;
+import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
 import com.panzyma.nordismobile.R;
 
@@ -124,6 +127,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	private NMApp nmapp;
 	private List<Factura> facturasRecibo = new ArrayList<Factura> ();
+	
+	public List<Factura> getFacturasRecibo() {
+		return facturasRecibo;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -391,45 +398,55 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		if(cliente == null)	{
 			Toast.makeText(getApplicationContext(), "Debe seleccionar un cliente", Toast.LENGTH_SHORT).show();
 			return;
-		}			
-				
-		DialogDocumentos dialog= new DialogDocumentos(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, recibo.getObjSucursalID());
-		dialog.setOnDialogDocumentoButtonClickListener(new OnDocumentoButtonClickListener() {			
+		}	
+		
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		
+		DialogSeleccionTipoDocumento dtp = new DialogSeleccionTipoDocumento();
+		dtp.setEventSeleccionable(new Seleccionable() {			
 			@Override
-			public void onButtonClick(Object documento) {
-				//SI EL DOCUMENTO ES UNA FACTURA
-				if (documento instanceof Factura){
-					final Factura factura = (Factura)documento;
-					final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(factura);
-					dialogConfirmacion.setActionPago(new Pagable() {					
-						@Override
-						public void onPagarFactura(Float montoAbonado) {
-							factura.setAbonado(factura.getAbonado() + montoAbonado);
-							if(factura.Saldo < montoAbonado )							
-								factura.setEstado("ABONADA");
-							else if (factura.Saldo == montoAbonado)
-								factura.setEstado("CANCELADA");
-							else { 
-								//ERROR
-							}
-							factura.setSaldo(factura.getSaldo() - factura.getAbonado());
-							recibo.setTotalFacturas(montoAbonado);
-							facturasRecibo.add(factura);
-							agregarDocumentosAlDetalleDeRecibo();
-							actualizaTotales();
-						}
-					});
-					FragmentManager fragmentManager = getSupportFragmentManager();
-					
-					dialogConfirmacion.show(fragmentManager, "");
-					
-				}				
+			public void onSeleccionarDocumento(Documento document) {
+				
+				DialogDocumentos dialog= new DialogDocumentos(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, cliente, document);
+				dialog.setOnDialogDocumentoButtonClickListener(new OnDocumentoButtonClickListener() {			
+					@Override
+					public void onButtonClick(Object documento) {
+						//SI EL DOCUMENTO ES UNA FACTURA
+						if (documento instanceof Factura){
+							final Factura factura = (Factura)documento;
+							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(factura);
+							dialogConfirmacion.setActionPago(new Pagable() {					
+								@Override
+								public void onPagarFactura(Float montoAbonado) {
+									factura.setAbonado(factura.getAbonado() + montoAbonado);
+									if(factura.Saldo < montoAbonado )							
+										factura.setEstado("ABONADA");
+									else if (factura.Saldo == montoAbonado)
+										factura.setEstado("CANCELADA");
+									else { 
+										//ERROR
+									}
+									factura.setSaldo(factura.getSaldo() - factura.getAbonado());
+									recibo.setTotalFacturas(recibo.getTotalFacturas() + montoAbonado);
+									facturasRecibo.add(factura);
+									agregarDocumentosAlDetalleDeRecibo();
+									actualizaTotales();
+								}
+							});
+							FragmentManager fragmentManager = getSupportFragmentManager();
+							
+							dialogConfirmacion.show(fragmentManager, "");
+							
+						}				
+					}
+				});			
+				Window window = dialog.getWindow(); 
+				window.setGravity(Gravity.CENTER);
+				window.setLayout(display.getWidth() - 40, display.getHeight() - 110);
+				dialog.show();
 			}
-		});			
-		Window window = dialog.getWindow(); 
-		window.setGravity(Gravity.CENTER);
-		window.setLayout(display.getWidth() - 40, display.getHeight() - 110);
-		dialog.show();
+		});
+		dtp.show(fragmentManager, "");
 
 	}
 
@@ -481,6 +498,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 		else
 		{ 
+			adapter=new GenericAdapter(this,FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);	
+			((ListView)gridDetalleRecibo.findViewById(R.id.data_items)).setAdapter(adapter);
 			adapter.notifyDataSetChanged();
 			gridheader.setText("Facturas a Pagar ("+adapter.getCount()+")");
 		}

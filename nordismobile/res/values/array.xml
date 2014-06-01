@@ -15,5 +15,10 @@
         <item >Recibo</item>
         <item >Devolución</item>
     </string-array>
+    <string-array name="tipodocumentos">
+        <item >Factura</item>
+        <item >Nota de Débito</item>
+        <item >Nota de Credito</item>       
+    </string-array>
     
 </resources>
