@@ -187,7 +187,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setAutorizacionDGI("");
 		}
 
-		// Fecha del Pedido
+		// Fecha del Recibo
 		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
 		formato.setCalendar(Calendar.getInstance());
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
