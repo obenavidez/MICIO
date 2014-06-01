@@ -61,7 +61,9 @@ public class ViewRecibo extends ActionBarActivity implements
 
 	private static final String TAG = ViewRecibo.class.getSimpleName();
 	private static final int NUEVO_RECIBO = 0;
+	private static final int VER_DETALLE_RECIBO = 1;
 	private static final int BORRAR_RECIBO = 2;
+	public static final String RECIBO_ID = "recibo_id";
 
 	CustomArrayAdapter<vmRecibo> customArrayAdapter;
 	private SearchView searchView;
@@ -113,18 +115,26 @@ public class ViewRecibo extends ActionBarActivity implements
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
+				
+				//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+				int pos = customArrayAdapter.getSelectedPosition();
+				//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+				recibo_selected = customArrayAdapter.getItem(pos);
+				
 				switch (position) {
 				case NUEVO_RECIBO:
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
+					//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
+					intento.putExtra(RECIBO_ID, 0);
 					startActivity(intento);       
 					break;
+				case VER_DETALLE_RECIBO:
+					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
+					//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
+					intento.putExtra(RECIBO_ID, recibo_selected.getId());
+					startActivity(intento);
+					break;
 				case BORRAR_RECIBO:
-					//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-					int pos = customArrayAdapter.getSelectedPosition();
-					//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-					recibo_selected = customArrayAdapter.getItem(pos);
-					
 					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
 					if ( "REGISTRADO".equals(recibo_selected.getDescEstado())) {
 						nmapp.getController()
@@ -132,7 +142,7 @@ public class ViewRecibo extends ActionBarActivity implements
 								.sendEmptyMessage(
 										ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
 					} else {
-
+						Toast.makeText(getApplicationContext(), String.format("Los recibos con estado '%s'.\n No se pueden eliminar.", recibo_selected.getDescEstado()), Toast.LENGTH_SHORT).show();
 						return;
 					}
 					break;				

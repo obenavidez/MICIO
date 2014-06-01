@@ -40,6 +40,7 @@ import com.panzyma.nm.viewdialog.DialogDocumentos;
 import com.panzyma.nm.viewdialog.DialogDocumentos.OnDocumentoButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
+import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 import android.support.v4.app.FragmentActivity;
@@ -124,6 +125,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private Recibo recibo;
 	private Context contexto;
 	private BReciboM brm;
+	private Integer reciboId;
 
 	private NMApp nmapp;
 	private List<Factura> facturasRecibo = new ArrayList<Factura> ();
@@ -138,6 +140,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		setContentView(R.layout.recibo_edit);
 
 		try {
+			
+			Bundle bundle = getIntent().getExtras();
+			//OBTENER EL ID DEL RECIBO 
+			reciboId = (Integer)bundle.get(ViewRecibo.RECIBO_ID);
+			
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
 			
