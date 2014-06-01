@@ -497,10 +497,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			gridheader.setText("Facturas a Pagar ("+adapter.getCount()+")");
 		}
 		else
-		{ 
-			adapter=new GenericAdapter(this,FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);	
-			((ListView)gridDetalleRecibo.findViewById(R.id.data_items)).setAdapter(adapter);
+		{ 			
 			adapter.notifyDataSetChanged();
+			adapter.setSelectedPosition(facturasRecibo.size() - 1);
 			gridheader.setText("Facturas a Pagar ("+adapter.getCount()+")");
 		}
 	}
