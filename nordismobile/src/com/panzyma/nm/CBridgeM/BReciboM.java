@@ -6,6 +6,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 
 import java.util.ArrayList;
 
@@ -74,6 +75,9 @@ public final class BReciboM {
 		case LOAD_DATA_FROM_LOCALHOST:
 			onLoadALLData_From_LocalHost();
 			return true;
+		case LOAD_ITEM_FROM_LOCALHOST:
+			onLoadItemFromLocalHost();
+			return true;
 		case DELETE_DATA_FROM_LOCALHOST:
 			onDeleteData_From_LocalHost();
 			break;
@@ -89,6 +93,23 @@ public final class BReciboM {
 
 		}
 		return false;
+	}
+
+	private void onLoadItemFromLocalHost() {
+		try {
+			pool.execute(new Runnable() {
+				@Override
+				public void run() {
+					Processor.send_ViewReciboEditToView(
+							ModelRecibo.getReciboByID(
+									reciboEdit.getContentResolver(),
+									reciboEdit.getReciboID()), controller);
+				}
+			});
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void onDeleteData_From_LocalHost() {

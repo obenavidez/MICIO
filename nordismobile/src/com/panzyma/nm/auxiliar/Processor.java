@@ -19,6 +19,7 @@ import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura; 
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.viewmodel.vmProducto;
@@ -156,12 +157,23 @@ public class Processor {
 		synchronized (lock) {
 			controller._notifyOutboxHandlers(ID_REQUEST_SALVARPEDIDO, 0, 0, rs); 
 		}
-		}
+	}
+	
 	public static void send_ViewDeleteReciboToView(
 			Integer result,
 			Controller controller) {
 		synchronized (lock) {
 			controller._notifyOutboxHandlers(DELETE_ITEM_FINISHED, 0, 0, result);
+			// Thread.sleep(500);
+
+		}
+	}
+	
+	public static void send_ViewReciboEditToView(
+			Recibo result,
+			Controller controller) {
+		synchronized (lock) {
+			controller._notifyOutboxHandlers(C_DATA, 0, 0, result);
 			// Thread.sleep(500);
 
 		}

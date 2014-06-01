@@ -37,9 +37,9 @@ public class Recibo {
 	protected boolean exento;
 	protected java.lang.String autorizacionDGI;
 	
-	protected List<ReciboDetFactura> facturasRecibo = new ArrayList<ReciboDetFactura>(); 
-	protected List<ReciboDetNC> notasCreditoRecibo = new ArrayList<ReciboDetNC>();
-	protected List<ReciboDetND> notasDebitoRecibo = new ArrayList<ReciboDetND>();
+	protected ArrayList<ReciboDetFactura> facturasRecibo = new ArrayList<ReciboDetFactura>(); 
+	protected ArrayList<ReciboDetNC> notasCreditoRecibo = new ArrayList<ReciboDetNC>();
+	protected ArrayList<ReciboDetND> notasDebitoRecibo = new ArrayList<ReciboDetND>();
 	
 	public Recibo() {
 		super();		
@@ -338,27 +338,27 @@ public class Recibo {
 		this.autorizacionDGI = autorizacionDGI;
 	}
 
-	public List<ReciboDetFactura> getFacturasRecibo() {
+	public ArrayList<ReciboDetFactura> getFacturasRecibo() {
 		return facturasRecibo;
 	}
 
-	public void setFacturasRecibo(List<ReciboDetFactura> facturasRecibo) {
+	public void setFacturasRecibo(ArrayList<ReciboDetFactura> facturasRecibo) {
 		this.facturasRecibo = facturasRecibo;
 	}
 
-	public List<ReciboDetNC> getNotasCreditoRecibo() {
+	public ArrayList<ReciboDetNC> getNotasCreditoRecibo() {
 		return notasCreditoRecibo;
 	}
 
-	public void setNotasCreditoRecibo(List<ReciboDetNC> notasCreditoRecibo) {
+	public void setNotasCreditoRecibo(ArrayList<ReciboDetNC> notasCreditoRecibo) {
 		this.notasCreditoRecibo = notasCreditoRecibo;
 	}
 
-	public List<ReciboDetND> getNotasDebitoRecibo() {
+	public ArrayList<ReciboDetND> getNotasDebitoRecibo() {
 		return notasDebitoRecibo;
 	}
 
-	public void setNotasDebitoRecibo(List<ReciboDetND> notasDebitoRecibo) {
+	public void setNotasDebitoRecibo(ArrayList<ReciboDetND> notasDebitoRecibo) {
 		this.notasDebitoRecibo = notasDebitoRecibo;
 	}	
 

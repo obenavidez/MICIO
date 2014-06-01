@@ -1,6 +1,7 @@
 package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -133,6 +134,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	public List<Factura> getFacturasRecibo() {
 		return facturasRecibo;
 	}
+	
+	public Integer getReciboID (){
+		return reciboId;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -141,15 +146,23 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 		try {
 			
-			Bundle bundle = getIntent().getExtras();
+			Bundle bundle =  getIntent().getExtras();
 			//OBTENER EL ID DEL RECIBO 
 			reciboId = (Integer)bundle.get(ViewRecibo.RECIBO_ID);
 			
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
-			
+			nmapp.getController().removebridgeByName( new BReciboM());
 			nmapp.getController().setEntities(this, brm =  new BReciboM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
+			
+			if(reciboId != 0){
+				//OBTENER EL RECIBO DESDE LOCALHOST
+				nmapp.getController()
+				.getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST);
+			} else {
+				recibo = null;
+			}
 
 			contexto = this.getApplicationContext();
 
@@ -168,7 +181,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void initComponent() {
 
 		gridDetalleRecibo = findViewById(R.id.pddgrilla);
-
 		gridheader = (TextView) gridDetalleRecibo.findViewById(R.id.header);
 		gridheader.setText("Documentos a Pagar (0)");
 		tbxFecha = (EditText) findViewById(R.id.pddetextv_detalle_fecha);
@@ -182,36 +194,50 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		txtTotalAbonadoNC = (TextView) findViewById(R.id.txtTotalNotaCredito);
 		txtSubTotal = (TextView) findViewById(R.id.txtSubTotal);
 		txtTotal = (TextView) findViewById(R.id.txtTotal);
+		loadData();
+		initMenu();
+	}
+	
+	private void loadData() {
 
+		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
 		if (recibo == null) {
+			// NUEVO RECIBO
 			recibo = new Recibo();
 			recibo.setId(0);
 			cliente = null;
 			recibo.setCodEstado("REGISTRADO");
 			recibo.setReferencia(0);
-			recibo.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
+			recibo.setFecha(date);
 			recibo.setExento(false);
 			recibo.setAutorizacionDGI("");
+			recibo.setNombreCliente("");
+			recibo.setNotas("");
+			recibo.setTotalFacturas(0.00f);
+			recibo.setTotalND(0.00f);
+			recibo.setTotalNC(0.00f);
+			recibo.setSubTotal(0.00f);
+			recibo.setTotalRecibo(0.00f);
+			tbxNumRecibo.setText("");
+		} else {
+			// EDICION DE RECIBO
+			if ("REGISTRADO".equals(recibo.getDescEstado())) {
+				recibo.setFecha(date);
+			}
 		}
-
-		// Fecha del Recibo
-		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-		formato.setCalendar(Calendar.getInstance());
-		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
-
-		if (recibo.getFecha() == 0)
-			recibo.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
-
-		if (recibo.getReferencia() == 0)
-			tbxNumReferencia.setText(VentasUtil.getNumeroPedido(me,
-					recibo.getReferencia()));
-
-		if (recibo.getNombreCliente() != null)
-			tbxNombreDelCliente.setText(recibo.getNombreCliente());
-
-		tbxFecha.setText("" + DateUtil.idateToStrYY(date));
-
-		initMenu();
+		// ESTABLECER LOS VALORES EN LA VISTA DE EDICION DE RECIBO
+		tbxNumRecibo.setText(""+recibo.getNumero());
+		tbxNotas.setText(""+recibo.getNotas());
+		tbxNumReferencia.setText(""+VentasUtil.getNumeroPedido(me,
+				recibo.getReferencia()));
+		tbxNombreDelCliente.setText(""+recibo.getNombreCliente());
+		tbxFecha.setText("" + DateUtil.idateToStrYY(recibo.getFecha()));
+		// ESTABLECER LOS TOTALES
+		txtTotalAbonadoFacturas.setText("" + recibo.getTotalFacturas());
+		txtTotalAbonadoND.setText("" + recibo.getTotalND());
+		txtTotalAbonadoNC.setText("" + recibo.getTotalNC());
+		txtSubTotal.setText("" + recibo.getSubTotal());
+		txtTotal.setText("" + recibo.getTotalRecibo());
 	}
 
 	private void initMenu() {
@@ -295,7 +321,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	@Override
 	public boolean handleMessage(Message msg) {
-		// TODO Auto-generated method stub
+		switch(msg.what){
+		case C_DATA:
+			recibo = (Recibo)msg.obj;
+			loadData();
+			break;
+		}
 		return false;
 	}
 
