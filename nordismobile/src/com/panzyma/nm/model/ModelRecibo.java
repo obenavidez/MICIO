@@ -112,14 +112,88 @@ public class ModelRecibo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		recibo.setFacturasRecibo(getFacturasDelRecibo(reciboID));
+		recibo.setFacturasRecibo(getFacturasDelRecibo(content, reciboID));
 		recibo.setNotasDebitoRecibo(getNotasDebitoDelRecibo(reciboID));
 		recibo.setNotasCreditoRecibo(getNotasCreitoDelRecibo(reciboID));
 		return recibo;
 	}
 	
-	public synchronized static ArrayList<ReciboDetFactura> getFacturasDelRecibo(int reiboID){
+	public synchronized static ArrayList<ReciboDetFactura> getFacturasDelRecibo(ContentResolver content,int reciboID){
 		ArrayList<ReciboDetFactura> facturas = new ArrayList<ReciboDetFactura>();
+		String[] projection = new String[] {
+				NMConfig.Recibo.DetalleFactura.ID,
+				NMConfig.Recibo.DetalleFactura.FACTURA_ID,
+				NMConfig.Recibo.DetalleFactura.RECIBO_ID,
+				NMConfig.Recibo.DetalleFactura.MONTO,
+				NMConfig.Recibo.DetalleFactura.ESABONO,
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO,
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_OCASIONAL,
+				NMConfig.Recibo.DetalleFactura.MONTO_RETENCION,
+				NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO,
+				NMConfig.Recibo.DetalleFactura.MONTO_INTERES,
+				NMConfig.Recibo.DetalleFactura.MONTO_NETO,
+				NMConfig.Recibo.DetalleFactura.MONTO_OTRAS_DEDUCCIONES,
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_PROMOCION,
+				NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_OCASIONAL,
+				NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_PROMOCION,
+				NMConfig.Recibo.DetalleFactura.NUMERO,
+				NMConfig.Recibo.DetalleFactura.FECHA,
+				NMConfig.Recibo.DetalleFactura.FECHA_VENCE,
+				NMConfig.Recibo.DetalleFactura.FECHA_APLICA_DESCUENTO_PRONTO_PAGO,
+				NMConfig.Recibo.DetalleFactura.SUB_TOTAL,
+				NMConfig.Recibo.DetalleFactura.IMPUESTO,
+				NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA,
+				NMConfig.Recibo.DetalleFactura.SALDO_FACTURA,
+				NMConfig.Recibo.DetalleFactura.INTERES_MORATORIO,
+				NMConfig.Recibo.DetalleFactura.SALDO_TOTAL,
+				NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO_EXONERADO,
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO };		
+		ReciboDetFactura detalleFactura = null;
+		try {	
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA +"/"+String.valueOf(reciboID);
+			Cursor cur = content.query(Uri.parse(uriString),
+					projection, // Columnas a devolver
+					null, // Condición de la query
+					null, // Argumentos variables de la query
+					null);
+			if (cur.moveToFirst()) {				
+				do {
+					detalleFactura = new ReciboDetFactura();
+					detalleFactura.setId(Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))));
+					detalleFactura.setObjFacturaID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[1]))));
+					detalleFactura.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))));
+					detalleFactura.setMonto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[3]))));
+					boolean esAbono = ( Integer.parseInt(cur.getString(cur.getColumnIndex(projection[4]))) == 0 );
+					detalleFactura.setEsAbono(esAbono);
+					detalleFactura.setMontoDescEspecifico(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[5]))));
+					detalleFactura.setMontoDescOcasional(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[6]))));
+					detalleFactura.setMontoRetencion(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[7]))));
+					detalleFactura.setMontoImpuesto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[8]))));
+					detalleFactura.setMontoInteres(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[9]))));
+					detalleFactura.setMontoNeto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[10]))));
+					detalleFactura.setMontoOtrasDeducciones(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[11]))));
+					detalleFactura.setMontoDescPromocion(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[12]))));
+					detalleFactura.setPorcDescOcasional(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[13]))));
+					detalleFactura.setPorcDescPromo(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[14]))));
+					detalleFactura.setNumero(cur.getString(cur.getColumnIndex(projection[15])));
+					detalleFactura.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(projection[16]))));
+					detalleFactura.setFechaVence(Long.parseLong(cur.getString(cur.getColumnIndex(projection[17]))));
+					detalleFactura.setFechaAplicaDescPP(Long.parseLong(cur.getString(cur.getColumnIndex(projection[18]))));
+					detalleFactura.setSubTotal(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[19]))));
+					detalleFactura.setImpuesto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[20]))));
+					detalleFactura.setTotalFactura(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[21]))));
+					detalleFactura.setSaldoFactura(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[22]))));
+					detalleFactura.setInteresMoratorio(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[23]))));
+					detalleFactura.setSaldoTotal(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[24]))));
+					detalleFactura.setMontoImpuestoExento(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[25]))));
+					//detalleFactura.setMontoImpuestoExento(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[26]))));					
+					facturas.add(detalleFactura);
+				} while (cur.moveToNext());
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		return facturas;
 	}
 	
