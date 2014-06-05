@@ -4,6 +4,7 @@ public class ReciboDetNC {
 
 	protected long id;
 	protected long objNotaCreditoID;
+	protected long objReciboID;
 	protected float monto;
 	protected java.lang.String numero;
 	protected long fecha;
@@ -30,6 +31,14 @@ public class ReciboDetNC {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public long getObjReciboID() {
+		return objReciboID;
+	}
+
+	public void setObjReciboID(long objReciboID) {
+		this.objReciboID = objReciboID;
 	}
 
 	public long getObjNotaCreditoID() {

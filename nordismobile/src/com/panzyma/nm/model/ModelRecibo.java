@@ -113,8 +113,8 @@ public class ModelRecibo {
 			e.printStackTrace();
 		}
 		recibo.setFacturasRecibo(getFacturasDelRecibo(content, reciboID));
-		recibo.setNotasDebitoRecibo(getNotasDebitoDelRecibo(reciboID));
-		recibo.setNotasCreditoRecibo(getNotasCreitoDelRecibo(reciboID));
+		recibo.setNotasDebitoRecibo(getNotasDebitoDelRecibo(content, reciboID));
+		recibo.setNotasCreditoRecibo(getNotasCreitoDelRecibo(content, reciboID));
 		return recibo;
 	}
 	
@@ -191,19 +191,103 @@ public class ModelRecibo {
 				} while (cur.moveToNext());
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 		return facturas;
 	}
 	
-	public synchronized static ArrayList<ReciboDetND> getNotasDebitoDelRecibo(int reiboID){
+	public synchronized static ArrayList<ReciboDetND> getNotasDebitoDelRecibo(
+			ContentResolver content, int reciboID) {
+		
 		ArrayList<ReciboDetND> notasdebito = new ArrayList<ReciboDetND>();
+		String[] projection = new String[] {
+				NMConfig.Recibo.DetalleNotaDebito.ID,
+				NMConfig.Recibo.DetalleNotaDebito.NOTADEBITO_ID,
+				NMConfig.Recibo.DetalleNotaDebito.RECIBO_ID,
+				NMConfig.Recibo.DetalleNotaDebito.MONTO_INTERES,
+				NMConfig.Recibo.DetalleNotaDebito.ESABONO,
+				NMConfig.Recibo.DetalleNotaDebito.MONTO_PAGAR,
+				NMConfig.Recibo.DetalleNotaDebito.NUMERO,
+				NMConfig.Recibo.DetalleNotaDebito.FECHA,
+				NMConfig.Recibo.DetalleNotaDebito.FECHA_VENCE,
+				NMConfig.Recibo.DetalleNotaDebito.MONTO_ND,
+				NMConfig.Recibo.DetalleNotaDebito.SALDO_ND,
+				NMConfig.Recibo.DetalleNotaDebito.INTERES_MORATORIO,
+				NMConfig.Recibo.DetalleNotaDebito.SALDO_TOTAL,
+				NMConfig.Recibo.DetalleNotaDebito.MONTO_NETO };
+		ReciboDetND notadebitoDetalle = null;
+		try {
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO	+ "/" + String.valueOf(reciboID);
+			Cursor cur = content.query(Uri.parse(uriString), 
+					projection, // Columnas a devolver
+					null, // Condición de la query
+					null, // Argumentos variables de la query
+					null);
+			
+			if (cur.moveToFirst()) {				
+				do {
+					notadebitoDetalle = new ReciboDetND();
+					notadebitoDetalle.setId(Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))));
+					notadebitoDetalle.setObjNotaDebitoID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[1]))));
+					notadebitoDetalle.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))));
+					boolean esAbono = ( Integer.parseInt(cur.getString(cur.getColumnIndex(projection[3]))) == 0);
+					notadebitoDetalle.setEsAbono(esAbono);
+					notadebitoDetalle.setMontoPagar(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[4]))));
+					notadebitoDetalle.setNumero(cur.getString(cur.getColumnIndex(projection[5])));
+					notadebitoDetalle.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(projection[6]))));
+					notadebitoDetalle.setFechaVence(Long.parseLong(cur.getString(cur.getColumnIndex(projection[7]))));
+					notadebitoDetalle.setMontoND(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[8]))));
+					notadebitoDetalle.setSaldoND(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[9]))));
+					notadebitoDetalle.setInteresMoratorio(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[10]))));
+					notadebitoDetalle.setSaldoTotal(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[11]))));
+					notadebitoDetalle.setMontoNeto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[12]))));
+					notasdebito.add(notadebitoDetalle);
+				} while(cur.moveToNext());
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		return notasdebito;
 	}
 	
-	public synchronized static ArrayList<ReciboDetNC> getNotasCreitoDelRecibo(int reiboID){
+	public synchronized static ArrayList<ReciboDetNC> getNotasCreitoDelRecibo(ContentResolver content, int reciboID){
 		ArrayList<ReciboDetNC> notascredito = new ArrayList<ReciboDetNC>();
+		String[] projection = new String[] {
+				NMConfig.Recibo.DetalleNotaCredito.ID,
+				NMConfig.Recibo.DetalleNotaCredito.NOTACREDITO_ID,
+				NMConfig.Recibo.DetalleNotaCredito.RECIBO_ID,
+				NMConfig.Recibo.DetalleNotaCredito.MONTO,
+				NMConfig.Recibo.DetalleNotaCredito.NUMERO,
+				NMConfig.Recibo.DetalleNotaCredito.FECHA,
+				NMConfig.Recibo.DetalleNotaCredito.FECHA_VENCE };
+		ReciboDetNC notacreditoDetalle = null;
+		try {
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTACREDITO + "/" + String.valueOf(reciboID);
+			Cursor cur = content.query(Uri.parse(uriString), 
+					projection, // Columnas a devolver
+					null, // Condición de la query
+					null, // Argumentos variables de la query
+					null);
+			
+			if (cur.moveToFirst()) {				
+				do {
+					notacreditoDetalle = new ReciboDetNC();
+					notacreditoDetalle.setId(Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))));
+					notacreditoDetalle.setObjNotaCreditoID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[1]))));
+					notacreditoDetalle.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))));					
+					notacreditoDetalle.setMonto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[3]))));
+					notacreditoDetalle.setNumero(cur.getString(cur.getColumnIndex(projection[4])));
+					notacreditoDetalle.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(projection[5]))));
+					notacreditoDetalle.setFechaVence(Long.parseLong(cur.getString(cur.getColumnIndex(projection[6]))));			
+					notascredito.add(notacreditoDetalle);
+				} while(cur.moveToNext());
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		return notascredito;
 	}
 

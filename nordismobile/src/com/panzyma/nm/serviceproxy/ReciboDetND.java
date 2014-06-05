@@ -4,6 +4,7 @@ public class ReciboDetND {
 
 	protected long id;
 	protected long objNotaDebitoID;
+	protected long objReciboID;
 	protected float montoInteres;
 	protected boolean esAbono;
 	protected float montoPagar;
@@ -54,6 +55,14 @@ public class ReciboDetND {
 
 	public void setObjNotaDebitoID(long objNotaDebitoID) {
 		this.objNotaDebitoID = objNotaDebitoID;
+	}	
+
+	public long getObjReciboID() {
+		return objReciboID;
+	}
+
+	public void setObjReciboID(long objReciboID) {
+		this.objReciboID = objReciboID;
 	}
 
 	public float getMontoInteres() {

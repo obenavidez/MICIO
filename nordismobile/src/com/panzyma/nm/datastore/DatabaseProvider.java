@@ -830,9 +830,21 @@ public class DatabaseProvider extends ContentProvider
 			case RECIBODETALLEFACTURA:  dictionary.put(RECIBODETALLEFACTURA, TABLA_RECIBO_DETALLE_FACTURA);
 										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_RECIBODETALLEFACTURA.toString());
 										break; 
-			case RECIBODETALLEFACTURA_ID:  dictionary.put(RECIBODETALLEFACTURA, TABLA_RECIBO_DETALLE_FACTURA);
+			case RECIBODETALLEFACTURA_ID:  dictionary.put(RECIBODETALLEFACTURA, TABLA_RECIBO_DETALLE_FACTURA);			                            
 										dictionary.put(RECIBODETALLEFACTURA+1,"objReciboID=" + uri.getLastPathSegment());				
 										break; 
+			case RECIBODETALLENOTADEBITO:  dictionary.put(RECIBODETALLENOTADEBITO, TABLA_RECIBO_DETALLE_NOTA_DEBITO);
+										dictionary.put(CONTENT_URI_LOCALID, CONTENT_URI_RECIBODETALLENOTADEBITO.toString());
+										break; 
+			case RECIBODETALLENOTADEBITO_ID:  dictionary.put(RECIBODETALLENOTADEBITO, TABLA_RECIBO_DETALLE_NOTA_DEBITO);			                            
+										dictionary.put(RECIBODETALLENOTADEBITO+1,"objReciboID=" + uri.getLastPathSegment());				
+										break;
+			case RECIBODETALLENOTACREDITO:  dictionary.put(RECIBODETALLENOTACREDITO, TABLA_RECIBO_DETALLE_NOTA_CREDITO);
+										dictionary.put(CONTENT_URI_LOCALID, CONTENT_URI_RECIBODETALLENOTADEBITO.toString());
+										break; 
+			case RECIBODETALLENOTACREDITO_ID:  dictionary.put(RECIBODETALLENOTACREDITO, TABLA_RECIBO_DETALLE_NOTA_CREDITO);			                            
+										dictionary.put(RECIBODETALLENOTACREDITO+1,"objReciboID=" + uri.getLastPathSegment());				
+										break;
 		} 
 		Iterator it = dictionary.entrySet().iterator();
 		while (it.hasNext()) 
