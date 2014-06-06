@@ -1,6 +1,6 @@
 package com.panzyma.nm.serviceproxy;
 
-public class ReciboDetNC {
+public class ReciboDetNC implements Documento {
 
 	protected long id;
 	protected long objNotaCreditoID;
@@ -79,6 +79,26 @@ public class ReciboDetNC {
 
 	public void setFechaVence(long fechaVence) {
 		this.fechaVence = fechaVence;
+	}
+
+	@Override
+	public long id() {		
+		return getId();
+	}
+
+	@Override
+	public long getFechaDocumento() {		
+		return getFecha();
+	}
+
+	@Override
+	public String getTipo() {		
+		return "Nota Crédito";
+	}
+
+	@Override
+	public Object getObject() {
+		return this;
 	}
 
 }

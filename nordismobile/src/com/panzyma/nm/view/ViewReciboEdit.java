@@ -25,11 +25,15 @@ import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.ReciboDetNC;
+import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.PProductoViewHolder;
 import com.panzyma.nm.viewdialog.DialogCliente;
@@ -62,11 +66,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 public class ViewReciboEdit extends FragmentActivity implements Handler.Callback, Editable {
 
@@ -101,12 +107,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private float porcentajeDescuentoOcasional = 0.00f;
 
 	private View gridDetalleRecibo;
+	private ListView item_document;
 	private TextView gridheader;
 	private Controller controller;
 	private GenericAdapter adapter;
 	private ProgressDialog pd;
 	private Button Menu;
 	private QuickAction quickAction;
+	private QuickAction quickAction2;
 	private int positioncache = -1;
 	private Display display;
 	private static final String TAG = ViewCliente.class.getSimpleName();
@@ -120,6 +128,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_SALVAR_RECIBO = 7;
 	private static final int ID_ENVIAR_RECIBO = 8;
 	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 9;
+	// 
+	private static final int ID_EDITAR_DOCUMENTO = 0;
+	private static final int ID_ELIMINAR_DOCUMENTO = 1;
+	private static final int VER_DETALLE_DOCUMENTO = 2;
 	private static final int ID_CERRAR = 10;
 	private ViewReciboEdit me;
 	private Cliente cliente;
@@ -127,9 +139,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private Context contexto;
 	private BReciboM brm;
 	private Integer reciboId;
+	private com.panzyma.nm.serviceproxy.Documento documento_selected;
+	
 
 	private NMApp nmapp;
 	private List<Factura> facturasRecibo = new ArrayList<Factura> ();
+	private List<com.panzyma.nm.serviceproxy.Documento> documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
 	
 	public List<Factura> getFacturasRecibo() {
 		return facturasRecibo;
@@ -181,6 +196,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void initComponent() {
 
 		gridDetalleRecibo = findViewById(R.id.pddgrilla);
+		item_document = (ListView)(gridDetalleRecibo).findViewById(R.id.data_items);
 		gridheader = (TextView) gridDetalleRecibo.findViewById(R.id.header);
 		gridheader.setText("Documentos a Pagar (0)");
 		tbxFecha = (EditText) findViewById(R.id.pddetextv_detalle_fecha);
@@ -194,6 +210,24 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		txtTotalAbonadoNC = (TextView) findViewById(R.id.txtTotalNotaCredito);
 		txtSubTotal = (TextView) findViewById(R.id.txtSubTotal);
 		txtTotal = (TextView) findViewById(R.id.txtTotal);
+		
+		item_document.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) {
+				// TODO Auto-generated method stub
+				if((parent.getChildAt(positioncache))!=null)						            							            		
+            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+            	positioncache=position;				            	
+            	documento_selected=(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(position);	 
+            	adapter.setSelectedPosition(position);  
+            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));	
+            	showMenu(view);
+            	
+				return true;
+			}
+		});
+		
 		loadData();
 		initMenu();
 	}
@@ -224,6 +258,20 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			if ("REGISTRADO".equals(recibo.getDescEstado())) {
 				recibo.setFecha(date);
 			}
+			// AGREGAGAR LAS FACTURAS DEL RECIBO A LA GRILLA
+			for (ReciboDetFactura factura : recibo.getFacturasRecibo()) {
+				documents.add(factura);
+			}
+			// AGREGAR LAS NOTAS DE DEBITO DEL RECIBO A LA GRILLA
+			for (ReciboDetND nd : recibo.getNotasDebitoRecibo()) {
+				documents.add(nd);
+			}
+			// AGREGAR LAS NOTAS DE CREDITO DEL RECIBO A LA GRILLA
+			for (ReciboDetNC nc : recibo.getNotasCreditoRecibo()) {
+				documents.add(nc);
+			}
+			adapter = null;
+			agregarDocumentosAlDetalleDeRecibo();			
 		}
 		// ESTABLECER LOS VALORES EN LA VISTA DE EDICION DE RECIBO
 		tbxNumRecibo.setText(""+recibo.getNumero());
@@ -467,6 +515,13 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									factura.setSaldo(factura.getSaldo() - factura.getAbonado());
 									recibo.setTotalFacturas(recibo.getTotalFacturas() + montoAbonado);
 									facturasRecibo.add(factura);
+									//
+									ReciboDetFactura facturaDetalle = new ReciboDetFactura();
+									facturaDetalle.setObjFacturaID(factura.getId());
+									facturaDetalle.setFecha(factura.getFecha());
+									facturaDetalle.setMonto(factura.getAbonado());
+									facturaDetalle.setNumero(factura.getNoFactura());
+									documents.add(facturaDetalle);
 									agregarDocumentosAlDetalleDeRecibo();
 									actualizaTotales();
 								}
@@ -530,16 +585,66 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		//gridheader.setText("Listado de Productos a Vender");
 		if(adapter==null)
 		{
-			adapter=new GenericAdapter(this,FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);				 
+			//adapter=new GenericAdapter(this, FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);
+			adapter=new GenericAdapter(this, DocumentoViewHolder.class, documents,R.layout.list_row);
 			((ListView)gridDetalleRecibo.findViewById(R.id.data_items)).setAdapter(adapter);
-			gridheader.setText("Facturas a Pagar ("+adapter.getCount()+")");
+			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
 		}
 		else
 		{ 			
 			adapter.notifyDataSetChanged();
-			adapter.setSelectedPosition(facturasRecibo.size() - 1);
-			gridheader.setText("Facturas a Pagar ("+adapter.getCount()+")");
+			adapter.setSelectedPosition(documents.size() - 1);
+			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
 		}
+	}
+	
+	public void showMenu(final View view) 
+	{
+
+		runOnUiThread
+		(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1); 
+					quickAction2.addActionItem(new ActionItem(ID_EDITAR_DOCUMENTO,"Editar Documento"));
+					quickAction2.addActionItem(new ActionItem(VER_DETALLE_DOCUMENTO,"Ver Detalle Documento"));
+					quickAction2.addActionItem(new ActionItem(ID_ELIMINAR_DOCUMENTO, "Eliminar Documento"));
+					quickAction2.setOnActionItemClickListener
+					(new QuickAction.OnActionItemClickListener() 
+						{
+				
+							@Override
+							public void onItemClick(QuickAction source, final int pos,final int actionId) 
+							{ 
+										ActionItem actionItem = quickAction2
+												.getActionItem(pos);
+										
+										if(actionId==ID_EDITAR_DOCUMENTO)
+											editarDocumento();
+										else if(actionId==ID_ELIMINAR_DOCUMENTO)
+											eliminarDocumento();							
+									 
+							}
+
+						 }
+					 ); 
+					quickAction2.show(view,display,false);
+				   }
+				}
+		    );
+	}
+	
+
+	private void eliminarDocumento() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void editarDocumento() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

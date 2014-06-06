@@ -1,7 +1,6 @@
-
 package com.panzyma.nm.serviceproxy;
 
-public class ReciboDetFactura {
+public class ReciboDetFactura implements Documento {
 
 	protected long id;
 	protected long objFacturaID;
@@ -288,6 +287,30 @@ public class ReciboDetFactura {
 
 	public void setMontoDescEspecificoCalc(float montoDescEspecificoCalc) {
 		this.montoDescEspecificoCalc = montoDescEspecificoCalc;
+	}
+
+	@Override
+	public long id() {
+		// TODO Auto-generated method stub
+		return getId();
+	}
+
+	@Override
+	public String getTipo() {
+		// TODO Auto-generated method stub
+		return "Factura";
+	}
+
+	@Override
+	public Object getObject() {
+		// TODO Auto-generated method stub
+		return this;
+	}
+
+	@Override
+	public long getFechaDocumento() {
+		// TODO Auto-generated method stub
+		return getFecha();
 	}
 
 }

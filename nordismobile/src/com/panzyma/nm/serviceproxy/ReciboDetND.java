@@ -1,6 +1,6 @@
 package com.panzyma.nm.serviceproxy;
 
-public class ReciboDetND {
+public class ReciboDetND implements Documento {
 
 	protected long id;
 	protected long objNotaDebitoID;
@@ -151,6 +151,31 @@ public class ReciboDetND {
 
 	public void setMontoNeto(float montoNeto) {
 		this.montoNeto = montoNeto;
+	}
+
+	@Override
+	public long id() {
+		return getId();
+	}
+
+	@Override
+	public float getMonto() {
+		return getMontoPagar();
+	}
+
+	@Override
+	public long getFechaDocumento() {
+		return getFecha();
+	}
+
+	@Override
+	public String getTipo() {
+		return "Nota Débito";
+	}
+
+	@Override
+	public Object getObject() {
+		return this;
 	}
 
 }
