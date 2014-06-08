@@ -18,6 +18,7 @@ import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.Ventas;
 
 import android.annotation.SuppressLint;
 import android.content.ContentProvider; 
@@ -889,7 +890,8 @@ public class DatabaseProvider extends ContentProvider
 		return null;
 	}
 	
-	public static void RegistrarRecibo(Recibo recibo, Context cnt) throws Exception {
+	
+	public static void registrarRecibo(Recibo recibo, Context cnt) throws Exception {
 		
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
 		
@@ -935,7 +937,21 @@ public class DatabaseProvider extends ContentProvider
 		values.put(NMConfig.Recibo.EXENTO, recibo.isExento());
 		values.put(NMConfig.Recibo.AUTORIZA_DGI, recibo.getAutorizacionDGI());
 				
-		bdd.insert(TABLA_RECIBO, null, values);
+		if (recibo.getId() == 0) {
+			// AGREGANDO UN RECIBO NUEVO
+			long id = Ventas.getMaxReciboId(cnt) + 1;
+			recibo.setId(id);
+			bdd.insert(TABLA_RECIBO, null, values);
+			Ventas.setMaxReciboId(cnt, id);
+		} else {
+			// ACTUALIZANDO RECIBO
+			bdd.update(TABLA_RECIBO, values, null, null);
+		}	
+		
+		String where = NMConfig.Recibo.DetalleFactura.RECIBO_ID+"="+String.valueOf(recibo.getId());
+		
+		//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
+		bdd.delete(TABLA_RECIBO_DETALLE_FACTURA, where ,null); 
 		
 		//INSERTAR EL DETALLE DE FACTURAS DEL RECIBO
 		for(ReciboDetFactura dt : recibo.getFacturasRecibo()){
@@ -978,7 +994,7 @@ public class DatabaseProvider extends ContentProvider
 			bdd.close();
 		}
 	}
-	
+		
 	public static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception{
 		
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	

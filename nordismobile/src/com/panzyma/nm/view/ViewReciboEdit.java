@@ -143,8 +143,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	
 
 	private NMApp nmapp;
-	private List<Factura> facturasRecibo = new ArrayList<Factura> ();
-	private List<com.panzyma.nm.serviceproxy.Documento> documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
+	private List<Factura> facturasRecibo;
+	private List<com.panzyma.nm.serviceproxy.Documento> documents;
 	
 	public List<Factura> getFacturasRecibo() {
 		return facturasRecibo;
@@ -171,6 +171,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			nmapp.getController().setEntities(this, brm =  new BReciboM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			
+			facturasRecibo = new ArrayList<Factura> ();
+			documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
+			 
 			if(reciboId != 0){
 				//OBTENER EL RECIBO DESDE LOCALHOST
 				nmapp.getController()
@@ -436,20 +439,32 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setCodEstado("REG");
 			recibo.setDescEstado("REGISTRADO");
 			
-			recibo.setId(Ventas.getMaxReciboId(this.contexto) + 1);
+			// LIMPIAR LOS DOCUMENTOS DEL RECIBO
+			recibo.getFacturasRecibo().clear();
+			recibo.getNotasDebitoRecibo().clear();
+			recibo.getNotasCreditoRecibo().clear();
 			
-			for(Factura factura : facturasRecibo) {
-				ReciboDetFactura detalleFactura = new ReciboDetFactura();
-				detalleFactura.setEsAbono(factura.getEstado().equals("ABONADA"));
-				detalleFactura.setFecha(factura.getFecha());
-				detalleFactura.setMonto(factura.getAbonado());
-				detalleFactura.setId(factura.getId());
-				//Agregar la factura al detalle del recibo
-				recibo.getFacturasRecibo().add(detalleFactura);
+			//AGREGAR LOS DOCUMENTOS DE LA GRILLA AL RECIBO
+			for (com.panzyma.nm.serviceproxy.Documento doc : documents) {
+				
+				if (doc.getTipo().equals("Factura")) {
+					ReciboDetFactura detalleFactura = (ReciboDetFactura) doc.getObject();
+					// Agregar la factura al detalle del recibo
+					recibo.getFacturasRecibo().add(detalleFactura);
+				} else if (doc.getTipo().equals("Nota Débito")) {
+					ReciboDetND notaDebito = (ReciboDetND) doc.getObject();
+					// Agregar la nota débito al detalle del recibo
+					recibo.getNotasDebitoRecibo().add(notaDebito);
+				} else {
+					ReciboDetNC notaCredito = (ReciboDetNC) doc.getObject();
+					// Agregar la nota débito al detalle del recibo
+					recibo.getNotasCreditoRecibo().add(notaCredito);
+				}
+
 			}
 
 			try {
-				DatabaseProvider.RegistrarRecibo(recibo, contexto);
+				DatabaseProvider.registrarRecibo(recibo, contexto);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -520,7 +535,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									facturaDetalle.setObjFacturaID(factura.getId());
 									facturaDetalle.setFecha(factura.getFecha());
 									facturaDetalle.setMonto(factura.getAbonado());
-									facturaDetalle.setNumero(factura.getNoFactura());
+									facturaDetalle.setNumero(factura.getNoFactura());									
 									documents.add(facturaDetalle);
 									agregarDocumentosAlDetalleDeRecibo();
 									actualizaTotales();
@@ -636,10 +651,65 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		    );
 	}
 	
+	private void removeDocument(com.panzyma.nm.serviceproxy.Documento documentRemoved){
+		int positionDocument = -1, count = 0;
+		if (documentRemoved instanceof ReciboDetFactura) {	
+			ReciboDetFactura facturaToRemoved = ((ReciboDetFactura)documentRemoved.getObject());
+			for(ReciboDetFactura fac : recibo.getFacturasRecibo()){
+				if(fac.getId() == facturaToRemoved.getId()){
+					positionDocument = count;
+				}
+				++count;
+			}
+			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());
+			recibo.getFacturasRecibo().remove(positionDocument);
+		} else if (documentRemoved instanceof ReciboDetND) {
+
+		} else if (documentRemoved instanceof ReciboDetNC) {
+
+		}
+		
+	}
 
 	private void eliminarDocumento() {
-		// TODO Auto-generated method stub
+		if (!recibo.getDescEstado().equals("REGISTRADO")) return;
+		int posicion = positioncache;
+		if (posicion == -1) return;		
+			
+		com.panzyma.nm.serviceproxy.Documento documentRemoved;
 		
+		//ELIMINAR DE LA LISTA DE DOCUMENTOS
+		documentRemoved = documents.remove(posicion);
+		
+		//ELIMINAR EL DOCUMENTO DEL RECIBO Y ACTUALIZAR EL TOTAL 
+		removeDocument(documentRemoved);
+		
+		//ACTAULIZA EL TOTAL EN LA PANTALLA Y ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
+		actualizaTotales();
+		
+		if (documents.size() > 0) {
+            if (posicion == 0)
+            { 
+                positioncache = 0;
+                documento_selected =(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(0);	
+                adapter.setSelectedPosition(0); 
+            }
+            else {
+                if (posicion == facturasRecibo.size())
+                {  
+                    positioncache= posicion - 1;
+                    documento_selected = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion - 1);	
+                    adapter.setSelectedPosition(posicion - 1);
+                }
+                else
+                {
+                     positioncache = posicion;
+                     documento_selected=(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);	
+                     adapter.setSelectedPosition(posicion);                     
+                }
+            }            
+        }
+        adapter.notifyDataSetChanged();
 	}
 
 	private void editarDocumento() {
