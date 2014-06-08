@@ -902,9 +902,8 @@ public class DatabaseProvider extends ContentProvider
 		
 		bdd.beginTransaction();
 		
-		values = new ContentValues();		
+		values = new ContentValues();
 		
-		values.put(NMConfig.Recibo.ID, recibo.getId());
 		values.put(NMConfig.Recibo.NUMERO, recibo.getNumero());
 		values.put(NMConfig.Recibo.FECHA, recibo.getFecha());
 		values.put(NMConfig.Recibo.NOTAS, recibo.getNotas());
@@ -941,6 +940,7 @@ public class DatabaseProvider extends ContentProvider
 			// AGREGANDO UN RECIBO NUEVO
 			long id = Ventas.getMaxReciboId(cnt) + 1;
 			recibo.setId(id);
+			values.put(NMConfig.Recibo.ID, recibo.getId());			
 			bdd.insert(TABLA_RECIBO, null, values);
 			Ventas.setMaxReciboId(cnt, id);
 		} else {

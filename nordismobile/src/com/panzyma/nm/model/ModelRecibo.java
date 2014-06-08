@@ -27,7 +27,13 @@ public class ModelRecibo {
 		String[] projection = new String[] {};
 		int result = 0;
 		try {
-			String url = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(reciboID);
+			String url = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA +"/"+String.valueOf(reciboID);			
+			content.delete(Uri.parse(url), "", projection);
+			url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO +"/"+String.valueOf(reciboID);
+			content.delete(Uri.parse(url), "", projection);
+			url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTACREDITO +"/"+String.valueOf(reciboID);
+			content.delete(Uri.parse(url), "", projection);
+			url = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(reciboID);
 			content.delete(Uri.parse(url), "", projection);
 			result = 1;
 		} catch (Exception e) {

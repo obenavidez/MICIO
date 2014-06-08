@@ -652,8 +652,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 	
 	private void removeDocument(com.panzyma.nm.serviceproxy.Documento documentRemoved){
-		int positionDocument = -1, count = 0;
-		if (documentRemoved instanceof ReciboDetFactura) {	
+		int positionDocument = -1,
+				count = 0;
+		if (documentRemoved instanceof ReciboDetFactura) {
+			//SI EL DOCUMENTO SE TRATA DE UNA FACTURA
 			ReciboDetFactura facturaToRemoved = ((ReciboDetFactura)documentRemoved.getObject());
 			for(ReciboDetFactura fac : recibo.getFacturasRecibo()){
 				if(fac.getId() == facturaToRemoved.getId()){
@@ -664,8 +666,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());
 			recibo.getFacturasRecibo().remove(positionDocument);
 		} else if (documentRemoved instanceof ReciboDetND) {
+			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE DEBITO
 
 		} else if (documentRemoved instanceof ReciboDetNC) {
+			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE CREDITO
 
 		}
 		
@@ -684,7 +688,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		//ELIMINAR EL DOCUMENTO DEL RECIBO Y ACTUALIZAR EL TOTAL 
 		removeDocument(documentRemoved);
 		
-		//ACTAULIZA EL TOTAL EN LA PANTALLA Y ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
+		//ACTUALIZA EL TOTAL EN LA PANTALLA Y ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
 		actualizaTotales();
 		
 		if (documents.size() > 0) {
@@ -695,7 +699,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
                 adapter.setSelectedPosition(0); 
             }
             else {
-                if (posicion == facturasRecibo.size())
+                if (posicion == documents.size())
                 {  
                     positioncache= posicion - 1;
                     documento_selected = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion - 1);	
@@ -708,8 +712,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
                      adapter.setSelectedPosition(posicion);                     
                 }
             }            
-        }
+        }		
         adapter.notifyDataSetChanged();
+        gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
 	}
 
 	private void editarDocumento() {
