@@ -25,6 +25,7 @@ import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -53,6 +54,7 @@ import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
@@ -84,7 +86,8 @@ public class ViewRecibo extends ActionBarActivity implements
 	private List<vmRecibo> recibos = new ArrayList<vmRecibo>();
 	vmRecibo recibo_selected;
 	ListaFragment<vmRecibo> firstFragment;
-
+	FragmentTransaction transaction;
+	
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -94,6 +97,10 @@ public class ViewRecibo extends ActionBarActivity implements
 		context = getApplicationContext();
 
 		setContentView(R.layout.layout_client_fragment);
+		
+		transaction = getSupportFragmentManager()
+				.beginTransaction();
+
 
 		initComponent();
 
@@ -126,7 +133,16 @@ public class ViewRecibo extends ActionBarActivity implements
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
 					//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
 					intento.putExtra(RECIBO_ID, 0);
-					startActivity(intento);       
+					startActivity(intento);  
+					/*Fragment reciboEdit = new ViewReciboEdit();
+					Bundle parametro = new Bundle();
+					parametro.putParcelable("recibo",new Recibo());
+					reciboEdit.setArguments(parametro);
+					if (findViewById(R.id.fragment_container) != null) {
+						getSupportFragmentManager().beginTransaction()
+								.replace(R.id.fragment_container, reciboEdit).commit();
+					}
+					transaction.addToBackStack(null);*/
 					break;
 				case VER_DETALLE_RECIBO:
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
@@ -229,8 +245,14 @@ public class ViewRecibo extends ActionBarActivity implements
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
 		if (findViewById(R.id.fragment_container) != null) {
-			customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
-					.findFragmentById(R.id.fragment_container)).getAdapter();
+			
+			Object obj = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+			
+			if ( !(obj instanceof ViewReciboEdit) ){
+				customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
+						.findFragmentById(R.id.fragment_container)).getAdapter();
+			}
+			
 
 		} else {
 			customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
@@ -464,8 +486,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		args.putInt(FichaProductoFragment.ARG_POSITION, position);
 		args.putParcelable(FichaReciboFragment.OBJECT, (vmRecibo) obj);
 
-		FragmentTransaction transaction = getSupportFragmentManager()
-				.beginTransaction();
+		
 
 		if (findViewById(R.id.dynamic_fragment) != null) {
 

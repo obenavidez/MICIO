@@ -42,7 +42,7 @@ public class ModelRecibo {
 		return result;		
 	}
 	
-	public synchronized static Recibo getReciboByID(ContentResolver content,int reciboID){
+	public synchronized static Recibo getReciboByID(ContentResolver content,Integer integer){
 		String[] projection = new String[] { NMConfig.Recibo.ID,
 				NMConfig.Recibo.NUMERO, NMConfig.Recibo.FECHA,
 				NMConfig.Recibo.NOTAS, NMConfig.Recibo.TOTAL_RECIBO,
@@ -69,7 +69,7 @@ public class ModelRecibo {
 				NMConfig.Recibo.EXENTO, NMConfig.Recibo.AUTORIZA_DGI };	
 		Recibo recibo = null;
 		try {
-			String uriString = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(reciboID);
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(integer);
 			Cursor cur = content.query(Uri.parse(uriString),
 					projection, // Columnas a devolver
 					null, // Condición de la query
@@ -118,13 +118,13 @@ public class ModelRecibo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		recibo.setFacturasRecibo(getFacturasDelRecibo(content, reciboID));
-		recibo.setNotasDebitoRecibo(getNotasDebitoDelRecibo(content, reciboID));
-		recibo.setNotasCreditoRecibo(getNotasCreitoDelRecibo(content, reciboID));
+		recibo.setFacturasRecibo(getFacturasDelRecibo(content, integer));
+		recibo.setNotasDebitoRecibo(getNotasDebitoDelRecibo(content, integer));
+		recibo.setNotasCreditoRecibo(getNotasCreitoDelRecibo(content, integer));
 		return recibo;
 	}
 	
-	public synchronized static ArrayList<ReciboDetFactura> getFacturasDelRecibo(ContentResolver content,int reciboID){
+	public synchronized static ArrayList<ReciboDetFactura> getFacturasDelRecibo(ContentResolver content,long reciboID){
 		ArrayList<ReciboDetFactura> facturas = new ArrayList<ReciboDetFactura>();
 		String[] projection = new String[] {
 				NMConfig.Recibo.DetalleFactura.ID,
@@ -204,7 +204,7 @@ public class ModelRecibo {
 	}
 	
 	public synchronized static ArrayList<ReciboDetND> getNotasDebitoDelRecibo(
-			ContentResolver content, int reciboID) {
+			ContentResolver content, long reciboID) {
 		
 		ArrayList<ReciboDetND> notasdebito = new ArrayList<ReciboDetND>();
 		String[] projection = new String[] {
@@ -258,7 +258,7 @@ public class ModelRecibo {
 		return notasdebito;
 	}
 	
-	public synchronized static ArrayList<ReciboDetNC> getNotasCreitoDelRecibo(ContentResolver content, int reciboID){
+	public synchronized static ArrayList<ReciboDetNC> getNotasCreitoDelRecibo(ContentResolver content, long reciboID){
 		ArrayList<ReciboDetNC> notascredito = new ArrayList<ReciboDetNC>();
 		String[] projection = new String[] {
 				NMConfig.Recibo.DetalleNotaCredito.ID,

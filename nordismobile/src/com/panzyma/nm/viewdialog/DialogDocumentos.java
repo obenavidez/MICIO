@@ -72,7 +72,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	private NMApp nmapp;
 	public Factura factura_selected;
 	public CCNotaDebito nota_debito_selected;
-	private static  Activity parent;
+	private static ViewReciboEdit parent;
 	private long objSucursalId;
 	private Cliente cliente;
 	private Documento documento;
@@ -93,50 +93,28 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		mButtonClickListener = listener;
 	}
 	
-	public DialogDocumentos(ViewReciboEdit recibo, int theme, Cliente cliente, Documento document) {
-		super(recibo, theme);
+	public DialogDocumentos(ViewReciboEdit me, int theme, Cliente cliente, Documento document) {
+		super(me.getContext(), theme);
 		try {
 			setContentView(R.layout.mainfactura);  
         	mcontext=this.getContext();  
         	this.documento = document;
-        	parent = recibo;  
-        	WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
+        	parent = me;  
+        	WindowManager wm = (WindowManager) me.getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay();
         	setObjSucursalId(cliente.getIdSucursal());
-        	nmapp=(NMApp) recibo.getApplication();
+        	nmapp=(NMApp) me.getApplication();
         	nmapp.getController().removebridgeByName(new BReciboM());
 	        nmapp.getController().setEntities(this,new BReciboM()); 
 	        nmapp.getController().addOutboxHandler(new Handler(this));
 	        nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 			
-            pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false);
+            pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
 	        initComponents();
 		} catch (Exception e) {
 			e.printStackTrace();
 			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
 		}
-	}
-
-	public DialogDocumentos(ViewReciboEdit recibo, int theme, long objSucursalID) {
-		super(recibo, theme);
-		try {
-			setContentView(R.layout.mainfactura);  
-        	mcontext=this.getContext();  
-        	parent = recibo;  
-        	WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
-            display = wm.getDefaultDisplay();
-        	setObjSucursalId(objSucursalID);
-        	nmapp=(NMApp) recibo.getApplication();
-        	nmapp.getController().removebridgeByName(new BReciboM());
-	        nmapp.getController().setEntities(this,new BReciboM()); 
-	        nmapp.getController().addOutboxHandler(new Handler(this));
-	        nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 			
-            pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false);
-	        initComponents();
-		} catch (Exception e) {
-			e.printStackTrace();
-			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
-		}
-	}
+	}	
 
 	private void initComponents() {
 		

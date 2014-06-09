@@ -56,6 +56,7 @@ public final class BReciboM {
 	}
 
 	public BReciboM(ViewReciboEdit view) {
+		//view.getApplicationContext()
 		this.controller = ((NMApp) view.getApplicationContext())
 				.getController();
 		this.reciboEdit = view;
