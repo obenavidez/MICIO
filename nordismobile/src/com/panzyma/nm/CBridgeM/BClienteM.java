@@ -18,6 +18,7 @@ import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;   
 import com.panzyma.nm.view.ViewCliente;
+import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.vCliente;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogCuentasPorCobrar;
@@ -34,6 +35,7 @@ public final class BClienteM
     ArrayList<vmCliente> a_vaC; 
 	Controller controller;
 	ViewCliente view2;
+	ViewReciboEdit view3;
 	vCliente view;
 	DialogCuentasPorCobrar viewcc;
     ArrayList<Cliente> obj=new ArrayList<Cliente>();
@@ -51,6 +53,14 @@ public final class BClienteM
     	this.controller=((NMApp)view.getApplication()).getController();      	
     	this.pool =((NMApp)view.getApplication()).getThreadPool();
     	view_activated=1;
+    }
+	
+	public BClienteM(ViewReciboEdit view)
+	{
+		this.view3 = view;
+    	this.controller=((NMApp)view3.getApplication()).getController();      	
+    	this.pool =((NMApp)view3.getApplication()).getThreadPool();
+    	view_activated = 4;
     }
 	
 //	public BClienteM(ViewCliente view)
@@ -155,6 +165,7 @@ public final class BClienteM
 							}
 							else if(view_activated==3)
 								Processor.send_ViewCustomerToView((ModelCliente.getArrayCustomerFromLocalHost(dlogCliente.getContext().getContentResolver())), controller);
+							
 						}
 						catch (Exception e) 
 						{
