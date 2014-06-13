@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,11 +32,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.content.Intent;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -49,7 +49,7 @@ import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nordismobile.R;
-import com.panzyma.nm.viewmodel.*;
+import com.panzyma.nm.view.ViewPedidoEdit;
 
 public class vCliente extends ActionBarActivity implements 
 	   ListaFragment.OnItemSelectedListener, Handler.Callback 
@@ -79,7 +79,7 @@ public class vCliente extends ActionBarActivity implements
 
 	//Menu Variables
 	int listFragmentId;
-	int positioncache = -1;
+	int positioncache = 0;
 	long idsucursal;
 	static final String TAG = vCliente.class.getSimpleName();
 	
@@ -234,6 +234,7 @@ public class vCliente extends ActionBarActivity implements
 		/*else
 			menu.findItem(R.id.action_search).setVisible(true);*/
 
+		
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -241,6 +242,7 @@ public class vCliente extends ActionBarActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		if (drawerToggle.onOptionsItemSelected(item)) {
+			item.getItemId();
 			return true;
 		}
 		switch (item.getItemId()) 
@@ -298,7 +300,14 @@ public class vCliente extends ActionBarActivity implements
 
 				tituloSeccion = opcionesMenu[position];
 				//Ponemos el titulo del Menú
-				getSupportActionBar().setTitle(tituloSeccion);
+				getSupportActionBar().setTitle(tituloSeccion);	
+				if(position==0)
+				{
+					final Intent intent;
+					 intent = new Intent(context,ViewPedidoEdit.class); 
+					 //intent.putExtra("", message);
+					startActivity(intent);
+				}
 			}
 		});
 		
@@ -504,7 +513,15 @@ public class vCliente extends ActionBarActivity implements
 	
 	public long get_SucursalID()
 	{ 
-		return (customArrayAdapter!=null)?((customArrayAdapter.getCount()!=0)?(   (  (cliente_selected!=null)?cliente_selected.getIdSucursal():0  )  ):1):1;
+		if(positioncache!=-1)
+		{
+			cliente_selected = (vmCliente)customArrayAdapter.getItem(positioncache);
+			return cliente_selected.getIdSucursal();
+		}
+		else {
+			return (customArrayAdapter!=null)?((customArrayAdapter.getCount()!=0)?(   (  (cliente_selected!=null)?cliente_selected.getIdSucursal():0  )  ):1):1;
+		}
+		//return (customArrayAdapter!=null)?((customArrayAdapter.getCount()!=0)?(   (  (cliente_selected!=null)?cliente_selected.getIdSucursal():0  )  ):1):1;
 	}
 	
 	public  Dialog buildCustomDialog(String tittle,String msg,int type)

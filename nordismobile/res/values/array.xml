@@ -10,10 +10,10 @@
         <item>1</item>
     </string-array>
     <string-array name="customeroptions">
-        <item >Pedido</item>
-        <item >Nota de Credito</item>
-        <item >Recibo</item>
-        <item >Devolución</item>
+        <item >Nuevo Pedido</item>
+        <item >Nueva nota de Credito</item>
+        <item >Nuevo recibo</item>
+        <item >Nueva devolución</item>
     </string-array>
     <string-array name="tipodocumentos">
         <item >Factura</item>
