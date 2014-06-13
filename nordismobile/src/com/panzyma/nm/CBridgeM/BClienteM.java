@@ -199,7 +199,7 @@ public final class BClienteM
 								Integer page=1;
 							    while(true)
 								{ 					    	
-							       JSONArray modelcliente=ModelCliente.getArrayCustomerFromServer2(credentials,"kpineda",page,50); 
+							       JSONArray modelcliente=ModelCliente.getArrayCustomerFromServer2(credentials,"ebuitrago",page,50); 
 								   if(modelcliente.length()!=0)
 								   {    
 									   ModelCliente.saveClientes(modelcliente,view,page);
