@@ -35,6 +35,7 @@ public interface ControllerProtocol {
 	int LOAD_SETTING=299;
 	int LOAD_DATA=300; 
 	int LOAD_ITEM_FROM_LOCALHOST = 606; 
+	int LOAD_ITEM_CLIENT = 607; 
     int LOAD_DATA_FROM_LOCALHOST = 301;
     int LOAD_DATA_FROM_SERVER = 302;
     int UPDATE_ITEM_FROM_SERVER =303;

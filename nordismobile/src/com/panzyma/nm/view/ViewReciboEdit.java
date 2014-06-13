@@ -2,6 +2,7 @@ package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
@@ -167,7 +169,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
-			nmapp.getController().removebridgeByName( new BReciboM());
+			nmapp.getController().removebridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this, brm =  new BReciboM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			
@@ -257,6 +259,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setTotalRecibo(0.00f);
 			tbxNumRecibo.setText("");
 		} else {
+			
+			cliente = recibo.getCliente();
+			
 			// EDICION DE RECIBO
 			if ("REGISTRADO".equals(recibo.getDescEstado())) {
 				recibo.setFecha(date);
@@ -264,6 +269,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			// AGREGAGAR LAS FACTURAS DEL RECIBO A LA GRILLA
 			for (ReciboDetFactura factura : recibo.getFacturasRecibo()) {
 				documents.add(factura);
+				for (Factura fac : cliente.getFacturasPendientes()) {
+					if (fac.getId() == factura.getObjFacturaID()) {
+						fac.setAbonado(factura.getMonto());
+						getFacturasRecibo().add(fac);
+					}
+				}
 			}
 			// AGREGAR LAS NOTAS DE DEBITO DEL RECIBO A LA GRILLA
 			for (ReciboDetND nd : recibo.getNotasDebitoRecibo()) {
@@ -274,7 +285,17 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				documents.add(nc);
 			}
 			adapter = null;
-			agregarDocumentosAlDetalleDeRecibo();			
+			agregarDocumentosAlDetalleDeRecibo();
+						
+			try {
+				nmapp.getController().setEntities(this,new BClienteM());
+				nmapp.getController().addOutboxHandler(new Handler(this));
+				nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 			        
+	        
 		}
 		// ESTABLECER LOS VALORES EN LA VISTA DE EDICION DE RECIBO
 		tbxNumRecibo.setText(""+recibo.getNumero());
@@ -342,7 +363,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									guardarRecibo();
 									break;
 								case ID_CERRAR:
-									finalizarActividad();
+									//finalizarvidad();
 									break;
 								}
 							}
@@ -657,14 +678,13 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		if (documentRemoved instanceof ReciboDetFactura) {
 			//SI EL DOCUMENTO SE TRATA DE UNA FACTURA
 			ReciboDetFactura facturaToRemoved = ((ReciboDetFactura)documentRemoved.getObject());
-			for(ReciboDetFactura fac : recibo.getFacturasRecibo()){
-				if(fac.getId() == facturaToRemoved.getId()){
+			for(Factura fac : getFacturasRecibo()){
+				if(fac.getId() == facturaToRemoved.getObjFacturaID() ){
 					positionDocument = count;
 				}
 				++count;
 			}
-			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());
-			recibo.getFacturasRecibo().remove(positionDocument);
+			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());			
 		} else if (documentRemoved instanceof ReciboDetND) {
 			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE DEBITO
 

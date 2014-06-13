@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
@@ -114,10 +115,16 @@ public class ModelRecibo {
 					
 					
 				} while (cur.moveToNext());
+				
+				//OBTENER EL CLIENTE DEL RECIBO
+				Cliente cliente = ModelCliente.getClienteBySucursalID(content, recibo.getObjSucursalID());
+				recibo.setCliente(cliente);
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		recibo.setFacturasRecibo(getFacturasDelRecibo(content, integer));
 		recibo.setNotasDebitoRecibo(getNotasDebitoDelRecibo(content, integer));
 		recibo.setNotasCreditoRecibo(getNotasCreitoDelRecibo(content, integer));

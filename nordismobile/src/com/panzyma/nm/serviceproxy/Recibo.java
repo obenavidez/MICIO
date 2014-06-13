@@ -39,6 +39,7 @@ public class Recibo implements Parcelable {
 	protected float totalImpuestoExonerado;
 	protected boolean exento;
 	protected java.lang.String autorizacionDGI;
+	protected Cliente cliente;
 	
 	protected ArrayList<ReciboDetFactura> facturasRecibo = new ArrayList<ReciboDetFactura>(); 
 	protected ArrayList<ReciboDetNC> notasCreditoRecibo = new ArrayList<ReciboDetNC>();
@@ -375,6 +376,14 @@ public class Recibo implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		// TODO Auto-generated method stub
 		
-	}	
+	}
+
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
 
 }
