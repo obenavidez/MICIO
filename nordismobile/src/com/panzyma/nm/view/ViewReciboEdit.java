@@ -3,6 +3,7 @@ package com.panzyma.nm.view;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -398,6 +399,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo = (Recibo)msg.obj;
 			loadData();
 			break;
+		case ControllerProtocol.NOTIFICATION:
+			Util.Message.buildToastMessage(contexto,
+					"Recibo Guardado!!", 1000).show();
+			break;
 		}
 		return false;
 	}
@@ -485,7 +490,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 
 			try {
-				DatabaseProvider.registrarRecibo(recibo, contexto);
+				nmapp.getController().getInboxHandler().sendEmptyMessage(SAVE_DATA_FROM_LOCALHOST);				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -754,4 +759,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return this.me;
 	}
 
+	public Recibo getRecibo(){
+		return recibo;
+	}
+	
 }

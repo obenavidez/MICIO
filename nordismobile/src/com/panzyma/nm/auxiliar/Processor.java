@@ -190,5 +190,9 @@ public class Processor {
 
 	}
 	
+	public static void sendViewReciboEditToView(){
+		
+	}
+	
 	
 }

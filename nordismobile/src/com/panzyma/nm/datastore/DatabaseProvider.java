@@ -891,7 +891,7 @@ public class DatabaseProvider extends ContentProvider
 	}
 	
 	
-	public static void registrarRecibo(Recibo recibo, Context cnt) throws Exception {
+	public static Recibo registrarRecibo(Recibo recibo, Context cnt) throws Exception {
 		
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
 		
@@ -993,6 +993,8 @@ public class DatabaseProvider extends ContentProvider
 			bdd.endTransaction();
 			bdd.close();
 		}
+		
+		return recibo;
 	}
 		
 	public static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception{

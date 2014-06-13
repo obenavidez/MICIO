@@ -7,6 +7,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERV
 import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
 import java.util.ArrayList;
 
@@ -23,6 +24,8 @@ import com.panzyma.nm.auxiliar.Parameters;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.Producto;
@@ -73,17 +76,20 @@ public final class BReciboM {
 
 	public boolean handleMessage(Message msg) throws Exception {
 		switch (msg.what) {
+		case SAVE_DATA_FROM_LOCALHOST:
+			onSaveDataToLocalHost();
+			break;
 		case LOAD_DATA_FROM_LOCALHOST:
-			onLoadALLData_From_LocalHost();
+			onLoadALLDataFromLocalHost();
 			return true;
 		case LOAD_ITEM_FROM_LOCALHOST:
 			onLoadItemFromLocalHost();
 			return true;
 		case DELETE_DATA_FROM_LOCALHOST:
-			onDeleteData_From_LocalHost();
+			onDeleteDataFromLocalHost();
 			break;
 		case C_FACTURACLIENTE:
-			onLoadFacturasCliente_From_Localhost();
+			onLoadDocumentosClienteFromLocalhost();
 			break; 
 		case LOAD_DATA_FROM_SERVER:
 			// onLoadALLData_From_LocalHost();
@@ -94,6 +100,47 @@ public final class BReciboM {
 
 		}
 		return false;
+	}
+
+	private void onSaveDataToLocalHost() {
+		try {
+			pool.execute(new Runnable() {
+				@Override
+				public void run() {
+					
+					try {
+						Processor
+						.notifyToView(
+								controller,
+								ControllerProtocol.NOTIFICATION,
+								0,
+								0,
+								DatabaseProvider.registrarRecibo(reciboEdit.getRecibo(), reciboEdit.getContext())
+								);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}				
+					
+				}
+			});
+		}catch(Exception e){
+			Log.e(logger, "Error in the update thread", e);
+			try {
+				Processor
+						.notifyToView(
+								controller,
+								ERROR,
+								0,
+								0,
+								new ErrorMessage(
+										"Error interno en el registro de recibo",
+										e.toString(), "\n Causa: "
+												+ e.getCause()));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}		
 	}
 
 	private void onLoadItemFromLocalHost() {
@@ -113,7 +160,7 @@ public final class BReciboM {
 		
 	}
 
-	private void onDeleteData_From_LocalHost() {
+	private void onDeleteDataFromLocalHost() {
 		try {
 			pool.execute(new Runnable() {
 
@@ -159,7 +206,7 @@ public final class BReciboM {
 
 	}
 
-	private void onLoadALLData_From_LocalHost() {
+	private void onLoadALLDataFromLocalHost() {
 		try {
 			pool.execute(new Runnable() {
 
@@ -201,7 +248,7 @@ public final class BReciboM {
 
 	}
 
-	private void onLoadFacturasCliente_From_Localhost() {
+	private void onLoadDocumentosClienteFromLocalhost() {
 		try {
 			this.pool.execute(new Runnable() {
 				@Override
