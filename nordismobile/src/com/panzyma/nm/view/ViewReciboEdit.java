@@ -392,14 +392,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			quickAction.show(Menu, display, true);
 			return true;
 		} 
-		/*else if (keyCode == KeyEvent.KEYCODE_BACK) {        	
-		  	//FINISH_ACTIVITY();
-			finish();
-	        return true;
-			//Intent intento = new Intent(this, ViewRecibo.class);				
-			//startActivity(intento);  
-			//
-		}*/
+		else if (keyCode == KeyEvent.KEYCODE_BACK) {        	
+		  	FINISH_ACTIVITY();
+			finish();	       
+		}
 		return super.onKeyUp(keyCode, event);
 	}
 	
