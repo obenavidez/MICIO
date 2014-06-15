@@ -20,7 +20,7 @@
         android:layout_height="wrap_content" >
 
         <TableRow
-            android:id="@+id/tableRow2"
+            android:id="@+id/tableRow1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
@@ -47,7 +47,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/tableRow3"
+            android:id="@+id/tableRow2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
@@ -95,7 +95,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/tableRow3"
+            android:id="@+id/tableRow4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
@@ -109,6 +109,29 @@
 
             <EditText
                 android:id="@+id/txtMonto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:ems="10"
+                android:enabled="true"
+                android:inputType="numberDecimal" />
+        </TableRow>
+        
+         <TableRow
+            android:id="@+id/tableRowLdpr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/lblRetencion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:text="Retención:"
+                android:textSize="11sp" />
+
+            <EditText
+                android:id="@+id/txtRetencion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"

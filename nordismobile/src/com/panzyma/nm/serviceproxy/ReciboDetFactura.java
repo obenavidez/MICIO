@@ -313,4 +313,16 @@ public class ReciboDetFactura implements Documento {
 		return getFecha();
 	}
 
+	@Override
+	public float getSaldo() {
+		// TODO Auto-generated method stub
+		return getSaldofactura();
+	}
+
+	@Override
+	public float getRetencion() {
+		// TODO Auto-generated method stub
+		return getMontoRetencion();
+	}
+
 }

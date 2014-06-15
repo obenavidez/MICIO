@@ -86,7 +86,7 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> {
 	
 	public List<E> AddAllToListViewDataSource(List<E> obj)
 	{
-		items.addAll(obj);		
+		items = obj.subList(0, obj.size() - 1);
 		this.notifyDataSetChanged();
 		return items;
 	} 

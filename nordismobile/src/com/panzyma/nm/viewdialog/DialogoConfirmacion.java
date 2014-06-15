@@ -1,6 +1,11 @@
 package com.panzyma.nm.viewdialog;
 
+import com.panzyma.nm.auxiliar.ActionType;
+import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.serviceproxy.Documento;
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
@@ -11,31 +16,38 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TableRow;
 
 @SuppressLint("ValidFragment")
 public class DialogoConfirmacion extends DialogFragment {	
 	
 	private View view;
-	private EditText numeroFactura;
+	private EditText numero;
 	private EditText saldo;
 	private EditText monto;
 	private EditText interes;
-	private Factura factura;
+	private EditText retencion;
+	private TableRow rowRetencion;
+	private Documento document;	
 	private Pagable eventPago;
-	
+	private ActionType actionType;
+		
 	public interface Pagable {
-		public void onPagarFactura(Float montoAbonado); 
+		public void onPagarEvent(Float montoAbonado); 
 	}
 
-	public DialogoConfirmacion(Factura factura) {
+	public DialogoConfirmacion(Documento documento, ActionType actionType) {
 		super();
-		this.factura = factura;
+		this.document = documento;
+		this.actionType = actionType;
 	}
 
 	@Override
@@ -47,7 +59,7 @@ public class DialogoConfirmacion extends DialogFragment {
 		builder.setPositiveButton("ACEPTAR", new OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				eventPago.onPagarFactura(getMontoAbonado());			
+				eventPago.onPagarEvent(getMontoAbonado());			
 			}
 		});
 		builder.setNegativeButton("CANCELAR", new OnClickListener() {			
@@ -63,15 +75,57 @@ public class DialogoConfirmacion extends DialogFragment {
 
 	private void initComponents() {
 		// obtención de las views		
-		numeroFactura = (EditText) view.findViewById(R.id.txtNoFactura);
+		numero = (EditText) view.findViewById(R.id.txtNoFactura);
 		saldo = (EditText) view.findViewById(R.id.txtSaldo);
 		monto = (EditText) view.findViewById(R.id.txtMonto);
 		interes = (EditText) view.findViewById(R.id.txtInteres);
+		rowRetencion = (TableRow) view.findViewById(R.id.tableRowLdpr);
+		retencion = (EditText) view.findViewById(R.id.txtRetencion);
+		
+		monto.addTextChangedListener(new TextWatcher(){
+
+			@Override
+			public void afterTextChanged(Editable arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence arg0, int arg1,
+					int arg2, int arg3) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+					int arg3) {
+				float nSaldo = 0.00f, 
+						nTotalDocumento = 0.00f;
+				if(document instanceof ReciboDetFactura)
+					nTotalDocumento = ((ReciboDetFactura)document).getTotalfactura();
+				else if (document instanceof ReciboDetND)
+					nTotalDocumento = ((ReciboDetND)document).getMontoND();
+				nSaldo = nTotalDocumento - Float.parseFloat(String.valueOf(arg0.toString())) ;
+				saldo.setText(StringUtil.formatReal(nSaldo));				
+			}
+			
+		});
+		
 		// establecer valores		
-		numeroFactura.setText(factura.getNoFactura());
-		saldo.setText(String.valueOf(factura.getSaldo()));
+		numero.setText(document.getNumero());
+		saldo.setText(String.valueOf(document.getSaldo()));
 		interes.setText("0.00");
-		monto.setText(String.valueOf(factura.getSaldo()));
+		monto.setText(String.valueOf(document.getMonto()));
+		retencion.setText(String.valueOf(document.getRetencion()));
+		//SI ESTAMOS ANTE UNA FACTURA Y ESTAMOS EDITANDO EL ITEM
+		if ( document instanceof ReciboDetFactura ){
+			if( this.actionType == ActionType.ADD )
+				rowRetencion.setVisibility(View.INVISIBLE);
+			else 
+				rowRetencion.setVisibility(View.VISIBLE);
+			
+		} 
 	}
 	
 	private float getMontoAbonado(){

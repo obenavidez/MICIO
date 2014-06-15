@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -134,21 +135,16 @@ public class ViewRecibo extends ActionBarActivity implements
 					//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
 					intento.putExtra(RECIBO_ID, 0);
 					startActivity(intento);  
-					/*Fragment reciboEdit = new ViewReciboEdit();
-					Bundle parametro = new Bundle();
-					parametro.putParcelable("recibo",new Recibo());
-					reciboEdit.setArguments(parametro);
-					if (findViewById(R.id.fragment_container) != null) {
-						getSupportFragmentManager().beginTransaction()
-								.replace(R.id.fragment_container, reciboEdit).commit();
-					}
-					transaction.addToBackStack(null);*/
+					/*firstFragment.setAdapter(null);
+					finish();*/
 					break;
 				case VER_DETALLE_RECIBO:
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
 					//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
 					intento.putExtra(RECIBO_ID, recibo_selected.getId());
 					startActivity(intento);
+					/*firstFragment.setAdapter(null);
+					finish();*/
 					break;
 				case BORRAR_RECIBO:
 					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
@@ -198,6 +194,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		nmapp = (NMApp) this.getApplicationContext();
 		try {
+			nmapp.getController().removebridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this, new BReciboM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()
@@ -224,7 +221,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		firstFragment.setArguments(getIntent().getExtras());
 
 		// Add the fragment to the 'fragment_container' FrameLayout
-		if (findViewById(R.id.fragment_container) != null) {
+		if (findViewById(R.id.fragment_container) != null) {			
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, firstFragment).commit();
 		} else {
@@ -251,6 +248,7 @@ public class ViewRecibo extends ActionBarActivity implements
 			if ( !(obj instanceof ViewReciboEdit) ){
 				customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
 						.findFragmentById(R.id.fragment_container)).getAdapter();
+				//customArrayAdapter = firstFragment.getAdapter();
 			}
 			
 
@@ -471,11 +469,11 @@ public class ViewRecibo extends ActionBarActivity implements
 			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
 			txtenty.setVisibility(View.VISIBLE);
 		}
-		firstFragment.setItems(recibos);
-		firstFragment.getAdapter().setSelectedPosition(0);
+		firstFragment.setItems(recibos);		
+		firstFragment.getAdapter().setSelectedPosition(0);		
 		positioncache = 0;
 		if(recibos.size() > 0)
-			recibo_selected = firstFragment.getAdapter().getItem(0);
+			recibo_selected = firstFragment.getAdapter().getItem(0); //customArrayAdapter.getItem(0);
 	}
 
 	@Override

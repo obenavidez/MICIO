@@ -101,4 +101,16 @@ public class ReciboDetNC implements Documento {
 		return this;
 	}
 
+	@Override
+	public float getSaldo() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public float getRetencion() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

@@ -1,5 +1,6 @@
 package com.panzyma.nm.fragments;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -18,19 +19,21 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 
 	OnItemSelectedListener mCallback;
 	private List<E> items;
-	private CustomArrayAdapter<E> mAdapter;
+	private CustomArrayAdapter<E> mAdapter = null;
 	private int pos = 0;
+	private Activity activity;
 
 	public ListaFragment() {
 	}
 
 	public void setItems(List<E> items) {
 		if (mAdapter == null) {
-			mAdapter = new CustomArrayAdapter<E>(getActivity(),
-					android.R.id.list, items);
+			mAdapter = new CustomArrayAdapter<E>( getActivity(), android.R.id.list, items);
 			setListAdapter(mAdapter);
+		} else {			
+			mAdapter.items = items;
 		}
-		this.items = mAdapter.AddAllToListViewDataSource(items);
+		mAdapter.notifyDataSetChanged();
 	}
 	 
 	// The container Activity must implement this interface so the frag can
@@ -42,14 +45,8 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		// Create an array adapter for the list view, using the Ipsum headlines
-		// array
-		// setListAdapter(new ArrayAdapter<String>(getActivity(), layout,
-		// Contenido.nombresClientes) );
-		// items = (ArrayList<E>) dataSource.getData();
-		// GlobalList.getMenuCategories().get(num).getMenu();
+		super.onCreate(savedInstanceState);	
+		
 		mAdapter = new CustomArrayAdapter<E>(getActivity(), android.R.id.list,
 				items);
 		setListAdapter(mAdapter);
@@ -101,5 +98,9 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 	public CustomArrayAdapter<E> getAdapter() {
 		return mAdapter; 
 	}  
+	
+	public void setAdapter(CustomArrayAdapter<E> adapter) {
+		this.mAdapter = adapter; 
+	}
 	
 }

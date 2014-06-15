@@ -12,6 +12,10 @@ public interface Documento {
 
 	public String getTipo();
 	
+	public float getSaldo();
+	
+	public float getRetencion();
+	
 	public Object getObject();
 
 }
