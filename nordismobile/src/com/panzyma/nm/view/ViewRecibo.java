@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -25,6 +26,7 @@ import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -53,6 +55,7 @@ import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
@@ -61,7 +64,9 @@ public class ViewRecibo extends ActionBarActivity implements
 
 	private static final String TAG = ViewRecibo.class.getSimpleName();
 	private static final int NUEVO_RECIBO = 0;
+	private static final int VER_DETALLE_RECIBO = 1;
 	private static final int BORRAR_RECIBO = 2;
+	public static final String RECIBO_ID = "recibo_id";
 
 	CustomArrayAdapter<vmRecibo> customArrayAdapter;
 	private SearchView searchView;
@@ -82,7 +87,8 @@ public class ViewRecibo extends ActionBarActivity implements
 	private List<vmRecibo> recibos = new ArrayList<vmRecibo>();
 	vmRecibo recibo_selected;
 	ListaFragment<vmRecibo> firstFragment;
-
+	FragmentTransaction transaction;
+	
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -92,6 +98,10 @@ public class ViewRecibo extends ActionBarActivity implements
 		context = getApplicationContext();
 
 		setContentView(R.layout.layout_client_fragment);
+		
+		transaction = getSupportFragmentManager()
+				.beginTransaction();
+
 
 		initComponent();
 
@@ -113,18 +123,30 @@ public class ViewRecibo extends ActionBarActivity implements
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
+				
+				//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+				int pos = customArrayAdapter.getSelectedPosition();
+				//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+				recibo_selected = customArrayAdapter.getItem(pos);
+				
 				switch (position) {
 				case NUEVO_RECIBO:
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
-					startActivity(intento);       
+					//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
+					intento.putExtra(RECIBO_ID, 0);
+					startActivity(intento);  
+					/*firstFragment.setAdapter(null);
+					finish();*/
+					break;
+				case VER_DETALLE_RECIBO:
+					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
+					//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
+					intento.putExtra(RECIBO_ID, recibo_selected.getId());
+					startActivity(intento);
+					/*firstFragment.setAdapter(null);
+					finish();*/
 					break;
 				case BORRAR_RECIBO:
-					//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-					int pos = customArrayAdapter.getSelectedPosition();
-					//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-					recibo_selected = customArrayAdapter.getItem(pos);
-					
 					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
 					if ( "REGISTRADO".equals(recibo_selected.getDescEstado())) {
 						nmapp.getController()
@@ -132,7 +154,7 @@ public class ViewRecibo extends ActionBarActivity implements
 								.sendEmptyMessage(
 										ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
 					} else {
-
+						Toast.makeText(getApplicationContext(), String.format("Los recibos con estado '%s'.\n No se pueden eliminar.", recibo_selected.getDescEstado()), Toast.LENGTH_SHORT).show();
 						return;
 					}
 					break;				
@@ -172,6 +194,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		nmapp = (NMApp) this.getApplicationContext();
 		try {
+			nmapp.getController().removebridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this, new BReciboM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()
@@ -198,7 +221,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		firstFragment.setArguments(getIntent().getExtras());
 
 		// Add the fragment to the 'fragment_container' FrameLayout
-		if (findViewById(R.id.fragment_container) != null) {
+		if (findViewById(R.id.fragment_container) != null) {			
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, firstFragment).commit();
 		} else {
@@ -219,8 +242,15 @@ public class ViewRecibo extends ActionBarActivity implements
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
 		if (findViewById(R.id.fragment_container) != null) {
-			customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
-					.findFragmentById(R.id.fragment_container)).getAdapter();
+			
+			Object obj = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+			
+			if ( !(obj instanceof ViewReciboEdit) ){
+				customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
+						.findFragmentById(R.id.fragment_container)).getAdapter();
+				//customArrayAdapter = firstFragment.getAdapter();
+			}
+			
 
 		} else {
 			customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
@@ -439,11 +469,11 @@ public class ViewRecibo extends ActionBarActivity implements
 			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
 			txtenty.setVisibility(View.VISIBLE);
 		}
-		firstFragment.setItems(recibos);
-		firstFragment.getAdapter().setSelectedPosition(0);
+		firstFragment.setItems(recibos);		
+		firstFragment.getAdapter().setSelectedPosition(0);		
 		positioncache = 0;
 		if(recibos.size() > 0)
-			recibo_selected = firstFragment.getAdapter().getItem(0);
+			recibo_selected = firstFragment.getAdapter().getItem(0); //customArrayAdapter.getItem(0);
 	}
 
 	@Override
@@ -454,8 +484,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		args.putInt(FichaProductoFragment.ARG_POSITION, position);
 		args.putParcelable(FichaReciboFragment.OBJECT, (vmRecibo) obj);
 
-		FragmentTransaction transaction = getSupportFragmentManager()
-				.beginTransaction();
+		
 
 		if (findViewById(R.id.dynamic_fragment) != null) {
 

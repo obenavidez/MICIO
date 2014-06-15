@@ -1,10 +1,10 @@
-
 package com.panzyma.nm.serviceproxy;
 
-public class ReciboDetFactura {
+public class ReciboDetFactura implements Documento {
 
 	protected long id;
 	protected long objFacturaID;
+	protected long objReciboID;
 	protected float monto;
 	protected boolean esAbono;
 	protected float montoDescEspecifico;
@@ -87,6 +87,14 @@ public class ReciboDetFactura {
 
 	public void setObjFacturaID(long objFacturaID) {
 		this.objFacturaID = objFacturaID;
+	}
+	
+	public long getObjReciboID() {
+		return objReciboID;
+	}
+
+	public void setObjReciboID(long objReciboID) {
+		this.objReciboID = objReciboID;
 	}
 
 	public float getMonto() {
@@ -237,7 +245,7 @@ public class ReciboDetFactura {
 		return totalfactura;
 	}
 
-	public void setTotalfactura(float totalfactura) {
+	public void setTotalFactura(float totalfactura) {
 		this.totalfactura = totalfactura;
 	}
 
@@ -245,7 +253,7 @@ public class ReciboDetFactura {
 		return saldofactura;
 	}
 
-	public void setSaldofactura(float saldofactura) {
+	public void setSaldoFactura(float saldofactura) {
 		this.saldofactura = saldofactura;
 	}
 
@@ -279,6 +287,42 @@ public class ReciboDetFactura {
 
 	public void setMontoDescEspecificoCalc(float montoDescEspecificoCalc) {
 		this.montoDescEspecificoCalc = montoDescEspecificoCalc;
+	}
+
+	@Override
+	public long id() {
+		// TODO Auto-generated method stub
+		return getId();
+	}
+
+	@Override
+	public String getTipo() {
+		// TODO Auto-generated method stub
+		return "Factura";
+	}
+
+	@Override
+	public Object getObject() {
+		// TODO Auto-generated method stub
+		return this;
+	}
+
+	@Override
+	public long getFechaDocumento() {
+		// TODO Auto-generated method stub
+		return getFecha();
+	}
+
+	@Override
+	public float getSaldo() {
+		// TODO Auto-generated method stub
+		return getSaldofactura();
+	}
+
+	@Override
+	public float getRetencion() {
+		// TODO Auto-generated method stub
+		return getMontoRetencion();
 	}
 
 }

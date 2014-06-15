@@ -18,6 +18,7 @@ import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.Ventas;
 
 import android.annotation.SuppressLint;
 import android.content.ContentProvider; 
@@ -1019,7 +1020,25 @@ public class DatabaseProvider extends ContentProvider
 										break;	  							
 			case RECIBO_ID: 			dictionary.put(RECIBO, TABLA_RECIBO);
 										dictionary.put(RECIBO+1,"id=" + uri.getLastPathSegment());
-			break; 
+										break; 
+			case RECIBODETALLEFACTURA:  dictionary.put(RECIBODETALLEFACTURA, TABLA_RECIBO_DETALLE_FACTURA);
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_RECIBODETALLEFACTURA.toString());
+										break; 
+			case RECIBODETALLEFACTURA_ID:  dictionary.put(RECIBODETALLEFACTURA, TABLA_RECIBO_DETALLE_FACTURA);			                            
+										dictionary.put(RECIBODETALLEFACTURA+1,"objReciboID=" + uri.getLastPathSegment());				
+										break; 
+			case RECIBODETALLENOTADEBITO:  dictionary.put(RECIBODETALLENOTADEBITO, TABLA_RECIBO_DETALLE_NOTA_DEBITO);
+										dictionary.put(CONTENT_URI_LOCALID, CONTENT_URI_RECIBODETALLENOTADEBITO.toString());
+										break; 
+			case RECIBODETALLENOTADEBITO_ID:  dictionary.put(RECIBODETALLENOTADEBITO, TABLA_RECIBO_DETALLE_NOTA_DEBITO);			                            
+										dictionary.put(RECIBODETALLENOTADEBITO+1,"objReciboID=" + uri.getLastPathSegment());				
+										break;
+			case RECIBODETALLENOTACREDITO:  dictionary.put(RECIBODETALLENOTACREDITO, TABLA_RECIBO_DETALLE_NOTA_CREDITO);
+										dictionary.put(CONTENT_URI_LOCALID, CONTENT_URI_RECIBODETALLENOTADEBITO.toString());
+										break; 
+			case RECIBODETALLENOTACREDITO_ID:  dictionary.put(RECIBODETALLENOTACREDITO, TABLA_RECIBO_DETALLE_NOTA_CREDITO);			                            
+										dictionary.put(RECIBODETALLENOTACREDITO+1,"objReciboID=" + uri.getLastPathSegment());				
+										break;
 		} 
 		Iterator it = dictionary.entrySet().iterator();
 		while (it.hasNext()) 
@@ -1064,7 +1083,8 @@ public class DatabaseProvider extends ContentProvider
 		return null;
 	}
 	
-	public static void RegistrarRecibo(Recibo recibo, Context cnt) throws Exception {
+	
+	public static Recibo registrarRecibo(Recibo recibo, Context cnt) throws Exception {
 		
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
 		
@@ -1075,9 +1095,8 @@ public class DatabaseProvider extends ContentProvider
 		
 		bdd.beginTransaction();
 		
-		values = new ContentValues();		
+		values = new ContentValues();
 		
-		values.put(NMConfig.Recibo.ID, recibo.getId());
 		values.put(NMConfig.Recibo.NUMERO, recibo.getNumero());
 		values.put(NMConfig.Recibo.FECHA, recibo.getFecha());
 		values.put(NMConfig.Recibo.NOTAS, recibo.getNotas());
@@ -1110,37 +1129,52 @@ public class DatabaseProvider extends ContentProvider
 		values.put(NMConfig.Recibo.EXENTO, recibo.isExento());
 		values.put(NMConfig.Recibo.AUTORIZA_DGI, recibo.getAutorizacionDGI());
 				
-		bdd.insert(TABLA_RECIBO, null, values);
+		if (recibo.getId() == 0) {
+			// AGREGANDO UN RECIBO NUEVO
+			long id = Ventas.getMaxReciboId(cnt) + 1;
+			recibo.setId(id);
+			values.put(NMConfig.Recibo.ID, recibo.getId());			
+			bdd.insert(TABLA_RECIBO, null, values);
+			Ventas.setMaxReciboId(cnt, id);
+		} else {
+			// ACTUALIZANDO RECIBO
+			bdd.update(TABLA_RECIBO, values, null, null);
+		}	
+		
+		String where = NMConfig.Recibo.DetalleFactura.RECIBO_ID+"="+String.valueOf(recibo.getId());
+		
+		//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
+		bdd.delete(TABLA_RECIBO_DETALLE_FACTURA, where ,null); 
 		
 		//INSERTAR EL DETALLE DE FACTURAS DEL RECIBO
 		for(ReciboDetFactura dt : recibo.getFacturasRecibo()){
 			
 			factura = new ContentValues();			
-			factura.put(NMConfig.Recibo.DetalleRecibo.RECIBO_ID, recibo.getId());
-			factura.put(NMConfig.Recibo.DetalleRecibo.FACTURA_ID, dt.getObjFacturaID());
-			factura.put(NMConfig.Recibo.DetalleRecibo.ESABONO, (dt.isEsAbono() ? 255 : 0 ));
-			factura.put(NMConfig.Recibo.DetalleRecibo.FECHA, dt.getFecha());
-			factura.put(NMConfig.Recibo.DetalleRecibo.FECHA_VENCE, dt.getFechaVence());
-			factura.put(NMConfig.Recibo.DetalleRecibo.FECHA_APLICA_DESCUENTO_PRONTO_PAGO, dt.getFechaAplicaDescPP());
-			factura.put(NMConfig.Recibo.DetalleRecibo.IMPUESTO, dt.getImpuesto());
-			factura.put(NMConfig.Recibo.DetalleRecibo.INTERES_MORATORIO, dt.getInteresMoratorio());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO, dt.getMonto());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO_DESCUENTO_ESPECIFICO, dt.getMontoDescEspecifico());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO_DESCUENTO_OCASIONAL, dt.getMontoDescOcasional());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO_DESCUENTO_PROMOCION, dt.getMontoDescPromocion());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO_IMPUESTO, dt.getMontoImpuesto());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO_IMPUESTO_EXONERADO, dt.getMontoImpuestoExento());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO_INTERES, dt.getMontoInteres());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO_NETO, dt.getMontoNeto());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO_OTRAS_DEDUCCIONES, dt.getMontoOtrasDeducciones());
-			factura.put(NMConfig.Recibo.DetalleRecibo.MONTO_RETENCION, dt.getMontoRetencion());
-			factura.put(NMConfig.Recibo.DetalleRecibo.NUMERO, dt.getNumero());
-			factura.put(NMConfig.Recibo.DetalleRecibo.PORCENTAJE_DESCUENTO_OCASIONAL, dt.getPorcDescOcasional());
-			factura.put(NMConfig.Recibo.DetalleRecibo.PORCENTAJE_DESCUENTO_PROMOCION, dt.getPorcDescPromo());
-			factura.put(NMConfig.Recibo.DetalleRecibo.SALDO_FACTURA, dt.getSaldofactura());
-			factura.put(NMConfig.Recibo.DetalleRecibo.SALDO_TOTAL, dt.getSaldoTotal());
-			factura.put(NMConfig.Recibo.DetalleRecibo.SUB_TOTAL, dt.getSubTotal());
-			factura.put(NMConfig.Recibo.DetalleRecibo.TOTAL_FACTURA, dt.getTotalfactura());
+			factura.put(NMConfig.Recibo.DetalleFactura.RECIBO_ID, recibo.getId());
+			factura.put(NMConfig.Recibo.DetalleFactura.FACTURA_ID, dt.getObjFacturaID());
+			factura.put(NMConfig.Recibo.DetalleFactura.ESABONO, (dt.isEsAbono() ? 255 : 0 ));
+			factura.put(NMConfig.Recibo.DetalleFactura.FECHA, dt.getFecha());
+			factura.put(NMConfig.Recibo.DetalleFactura.FECHA_VENCE, dt.getFechaVence());
+			factura.put(NMConfig.Recibo.DetalleFactura.FECHA_APLICA_DESCUENTO_PRONTO_PAGO, dt.getFechaAplicaDescPP());
+			factura.put(NMConfig.Recibo.DetalleFactura.IMPUESTO, dt.getImpuesto());
+			factura.put(NMConfig.Recibo.DetalleFactura.INTERES_MORATORIO, dt.getInteresMoratorio());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO, dt.getMonto());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO, dt.getMontoDescEspecifico());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_OCASIONAL, dt.getMontoDescOcasional());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_PROMOCION, dt.getMontoDescPromocion());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO, dt.getMontoImpuesto());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO_EXONERADO, dt.getMontoImpuestoExento());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_INTERES, dt.getMontoInteres());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_NETO, dt.getMontoNeto());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_OTRAS_DEDUCCIONES, dt.getMontoOtrasDeducciones());
+			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_RETENCION, dt.getMontoRetencion());
+			factura.put(NMConfig.Recibo.DetalleFactura.NUMERO, dt.getNumero());
+			factura.put(NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_OCASIONAL, dt.getPorcDescOcasional());
+			factura.put(NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_PROMOCION, dt.getPorcDescPromo());
+			factura.put(NMConfig.Recibo.DetalleFactura.SALDO_FACTURA, dt.getSaldofactura());
+			factura.put(NMConfig.Recibo.DetalleFactura.SALDO_TOTAL, dt.getSaldoTotal());
+			factura.put(NMConfig.Recibo.DetalleFactura.SUB_TOTAL, dt.getSubTotal());
+			factura.put(NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA, dt.getTotalfactura());
 			
 			
 			bdd.insert(TABLA_RECIBO_DETALLE_FACTURA, null, factura);
@@ -1152,8 +1186,10 @@ public class DatabaseProvider extends ContentProvider
 			bdd.endTransaction();
 			bdd.close();
 		}
+		
+		return recibo;
 	}
-	
+		
 	public static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception{
 		
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	

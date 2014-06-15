@@ -39,6 +39,15 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 		this.notifyDataSetChanged();
 		return items;
 	} 
+	
+	public List<E> setItems(List<E> list)
+	{ 
+		this.items = list;
+		notifyDataSetChanged();
+		return items;
+	} 
+	
+	
 	public List<E> Add(E obj)
 	{ 
 		items.add(obj); 

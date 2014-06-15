@@ -187,6 +187,11 @@ public class Ventas {
 				android.content.Context.MODE_PRIVATE).getInt(
 				"max_idrecibo",0); 
 	}
+	
+	public static void setMaxReciboId(Context cnt, long value) {
+		cnt.getSharedPreferences("VConfiguracion",
+				android.content.Context.MODE_PRIVATE).edit().putLong("max_idrecibo", value);
+	}
 
 	@SuppressWarnings("deprecation")
     public static Pedido guardarPedido(Pedido pedido,ViewPedidoEdit vpe) throws Exception

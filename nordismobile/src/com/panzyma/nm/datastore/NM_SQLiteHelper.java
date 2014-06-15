@@ -127,6 +127,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
                               "       FOREIGN KEY(objPedidoID) REFERENCES Pedido(Id), " + 
                               "       FOREIGN KEY(objProductoID) REFERENCES Producto(Id) " + 
                               ");" ;
+    
     String sqlPedidoPromocion = "CREATE TABLE IF NOT EXISTS PedidoPromocion (" + 
             "       Id INTEGER PRIMARY KEY AUTOINCREMENT,"+
             "       objPromocionID BLOB,       " +
@@ -200,7 +201,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 					+ "       exento FLOAT, "
 					+ "       autorizacionDGI FLOAT, "
 					+ "       FOREIGN KEY(objClienteID) REFERENCES Cliente(IdCliente) "  
-					+ ")";
+					+ ");";
     
     String sqlReciboDetalleFatura = "CREATE TABLE IF NOT EXISTS ReciboDetalleFactura ("
 			+ "       id INTEGER PRIMARY KEY AUTOINCREMENT,  "

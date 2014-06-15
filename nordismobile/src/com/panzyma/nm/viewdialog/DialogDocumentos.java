@@ -6,11 +6,13 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
@@ -21,6 +23,7 @@ import com.panzyma.nm.view.viewholder.ClienteViewHolder;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
+import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
@@ -35,6 +38,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -58,7 +62,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	private Button Menu; 
 	private QuickAction quickAction; 
 	private Display display;
-	private static final String TAG = DialogCliente.class.getSimpleName(); 
+	private static final String TAG = DialogDocumentos.class.getSimpleName(); 
 	ListView lvfacturas;	
 	ListView lvnotasc;
 	ListView lvnotasd;
@@ -68,8 +72,10 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	private NMApp nmapp;
 	public Factura factura_selected;
 	public CCNotaDebito nota_debito_selected;
-	private static  Activity parent;
-	private long objSucursalId;	
+	private static ViewReciboEdit parent;
+	private long objSucursalId;
+	private Cliente cliente;
+	private Documento documento;
 	
 	public long getObjSucursalId() {
 		return objSucursalId;
@@ -85,27 +91,29 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	
 	public void setOnDialogDocumentoButtonClickListener(OnDocumentoButtonClickListener listener) {
 		mButtonClickListener = listener;
-	} 
-
-	public DialogDocumentos(ViewReciboEdit recibo, int theme, long objSucursalID) {
-		super(recibo, theme);
+	}
+	
+	public DialogDocumentos(ViewReciboEdit me, int theme, Cliente cliente, Documento document) 
+	{
+		super(me.getContext(), theme);
 		try {
-			setContentView(R.layout.mainfactura);  
-        	mcontext=this.getContext();  
-        	parent = recibo;  
-        	WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
-            display = wm.getDefaultDisplay();
-        	setObjSucursalId(objSucursalID);
-        	nmapp=(NMApp) recibo.getApplication();
-        	//nmapp.getController().removebridgeByName(new BReciboM());
-	        nmapp.getController().setEntities(this,new BReciboM()); 
-	        nmapp.getController().addOutboxHandler(new Handler(this));
-	        nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 			
-            pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false);
-	        initComponents();
+		setContentView(R.layout.mainfactura); 
+		mcontext=this.getContext(); 
+		this.documento = document;
+		parent = me; 
+		WindowManager wm = (WindowManager) me.getSystemService(Context.WINDOW_SERVICE);
+		display = wm.getDefaultDisplay();
+		setObjSucursalId(cliente.getIdSucursal());
+		nmapp=(NMApp) me.getApplication();
+		nmapp.getController().removebridgeByName(BReciboM.class.toString());
+		nmapp.getController().setEntities(this,new BReciboM()); 
+		nmapp.getController().addOutboxHandler(new Handler(this));
+		nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 
+		pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
+		initComponents();
 		} catch (Exception e) {
-			e.printStackTrace();
-			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
+		e.printStackTrace();
+		buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
 		}
 	}
 
@@ -153,11 +161,55 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	@Override
 	public boolean handleMessage(Message msg) {
 		switch(msg.what){
-		case C_DATA:
-			loadFacturas((ArrayList<Factura>)((msg.obj==null)?new ArrayList<Factura>():msg.obj),C_DATA);
+		case C_DATA:			
+			switch(documento){
+			case FACTURA:
+				Factura [] facturas = ((Cliente)msg.obj).getFacturasPendientes();
+				if(facturas != null && facturas.length > 0){
+					loadFacturas((ArrayList<Factura>) ( (msg.obj == null) ? new ArrayList<Factura>() : toList(facturas) ), C_DATA);
+				}else{
+					pd.dismiss();
+					FINISH_ACTIVITY();
+					Util.Message.buildToastMessage(parent, "No existen facturas pendientes", 1000).show();
+				}					
+				break;
+			case NOTA_DEBITO:
+				CCNotaDebito [] notasdebito = ((Cliente)msg.obj).getNotasDebitoPendientes();
+				if(notasdebito != null && notasdebito.length > 0 ){
+					loadNotasDebito((ArrayList<CCNotaDebito>)((msg.obj==null)?new ArrayList<CCNotaDebito>(): toList(notasdebito)),C_DATA);
+				} else {
+					pd.dismiss();
+					FINISH_ACTIVITY();
+					Util.Message.buildToastMessage(parent, "No existen notas de débito pendientes", 1000).show();
+				}
+				break;
+			}
 			break;
 		}
 		return false;
+	}
+	
+	private ArrayList<Object> toList(Object[] array) {
+		ArrayList<Object> list = new ArrayList<Object>();
+		switch(documento){
+		case FACTURA:
+			for(Object obj: array){
+				list.add(obj);
+				for(Factura factura: ((ViewReciboEdit)parent).getFacturasRecibo()){
+					if( factura.getNoFactura().equals(((Factura)obj).getNoFactura()) )
+						list.remove(obj);						
+				}				
+			}
+			break;
+		case NOTA_DEBITO:
+			
+			break;
+		case NOTA_CREDITO:
+			break;
+		}
+		
+		
+		return list;
 	}
 	
 	private void loadFacturas(ArrayList<Factura> facturas, int cData) {
@@ -237,25 +289,34 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	public  Dialog buildCustomDialog(String tittle,String msg,int type)
 	{
 		return new CustomDialog(getContext(),tittle,msg,false,type);	    
+	} 
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+		  	FINISH_ACTIVITY();
+	        return true;
+	    }
+	    return super.onKeyUp(keyCode, event); 
 	}
 	
 	private void FINISH_ACTIVITY()
-	{		
+	{
 		nmapp.getController().removeOutboxHandler(TAG);
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
 		try {
-			nmapp.getController().setEntities(parent,((ViewReciboEdit)parent).getBridge());
+		nmapp.getController().setEntities(((ViewReciboEdit)parent),((ViewReciboEdit)parent).getBridge());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 		}
 		if(pd!=null)
-			pd.dismiss();	
+		pd.dismiss();	
 		Log.d(TAG, "Activity quitting"); 
+		pd = null;	
 		this.dismiss();
-		
-	}  
-	
-
+	}
 }

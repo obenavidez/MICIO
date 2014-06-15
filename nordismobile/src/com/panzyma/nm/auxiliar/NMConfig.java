@@ -310,6 +310,7 @@ public class NMConfig
 	}
 	
 	public static final class Recibo {
+		
 		public static final java.lang.String ID = "id";
 		public static final java.lang.String NUMERO = "numero";
 		public static final java.lang.String FECHA = "fecha";
@@ -342,7 +343,7 @@ public class NMConfig
 		public static final java.lang.String EXENTO = "exento";
 		public static final java.lang.String AUTORIZA_DGI = "autorizacionDGI";
 		
-		public static final class DetalleRecibo {
+		public static final class DetalleFactura {
 			public static final java.lang.String ID = "id";
 			public static final java.lang.String FACTURA_ID = "objFacturaID";
 			public static final java.lang.String RECIBO_ID = "objReciboID";			
@@ -370,6 +371,33 @@ public class NMConfig
 			public static final java.lang.String SALDO_TOTAL = "saldoTotal";
 			public static final java.lang.String MONTO_IMPUESTO_EXONERADO = "montoImpuestoExento";
 			public static final java.lang.String MONTO_DESCUENTO_ESPECIFICO_CALCULADO = "montoDescEspecificoCalc";
+		}
+		
+		public static final class DetalleNotaDebito {
+			public static final java.lang.String ID = "id";
+			public static final java.lang.String NOTADEBITO_ID = "objNotaDebitoID";
+			public static final java.lang.String RECIBO_ID = "objReciboID";
+			public static final java.lang.String MONTO_INTERES = "montoInteres";
+			public static final java.lang.String ESABONO = "esAbono";
+			public static final java.lang.String MONTO_PAGAR = "montoPagar";
+			public static final java.lang.String NUMERO = "numero";
+			public static final java.lang.String FECHA = "fecha";
+			public static final java.lang.String FECHA_VENCE = "fechaVence";
+			public static final java.lang.String MONTO_ND = "montoND";
+			public static final java.lang.String SALDO_ND = "saldoND";
+			public static final java.lang.String INTERES_MORATORIO = "interesMoratorio";
+			public static final java.lang.String SALDO_TOTAL = "saldoTotal";
+			public static final java.lang.String MONTO_NETO = "montoNeto";				
+		}
+		
+		public static final class DetalleNotaCredito {
+			public static final java.lang.String ID = "id";
+			public static final java.lang.String NOTACREDITO_ID = "objNotaDebitoID";
+			public static final java.lang.String RECIBO_ID = "objReciboID";
+			public static final java.lang.String MONTO = "monto";	
+			public static final java.lang.String NUMERO = "numero";
+			public static final java.lang.String FECHA = "fecha";
+			public static final java.lang.String FECHA_VENCE = "fechaVence";	
 		}
 	}
 

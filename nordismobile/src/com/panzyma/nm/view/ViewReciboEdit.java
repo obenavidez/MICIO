@@ -1,6 +1,9 @@
 package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,7 +11,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BReciboM;
+import com.panzyma.nm.auxiliar.ActionType;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMConfig;
@@ -24,19 +29,27 @@ import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.ReciboDetNC;
+import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.PProductoViewHolder;
 import com.panzyma.nm.viewdialog.DialogCliente;
+import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento;
+import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Seleccionable;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogDocumentos;
 import com.panzyma.nm.viewdialog.DialogDocumentos.OnDocumentoButtonClickListener;
+import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
+import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 import android.support.v4.app.FragmentActivity;
@@ -45,6 +58,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,11 +71,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 public class ViewReciboEdit extends FragmentActivity implements Handler.Callback, Editable {
 
@@ -96,15 +112,17 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private float porcentajeDescuentoOcasional = 0.00f;
 
 	private View gridDetalleRecibo;
+	private ListView item_document;
 	private TextView gridheader;
 	private Controller controller;
 	private GenericAdapter adapter;
 	private ProgressDialog pd;
 	private Button Menu;
 	private QuickAction quickAction;
+	private QuickAction quickAction2;
 	private int positioncache = -1;
 	private Display display;
-	private static final String TAG = ViewCliente.class.getSimpleName();
+	private static final String TAG = ViewReciboEdit.class.getSimpleName();
 	private static final int ID_SELECCIONAR_CLIENTE = 0;
 	private static final int ID_AGREGAR_DOCUMENTOS = 1;
 	private static final int ID_AGREGAR_PAGOS = 2;
@@ -115,15 +133,31 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_SALVAR_RECIBO = 7;
 	private static final int ID_ENVIAR_RECIBO = 8;
 	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 9;
+	// 
+	private static final int ID_EDITAR_DOCUMENTO = 0;
+	private static final int ID_ELIMINAR_DOCUMENTO = 1;
+	private static final int VER_DETALLE_DOCUMENTO = 2;
 	private static final int ID_CERRAR = 10;
 	private ViewReciboEdit me;
 	private Cliente cliente;
 	private Recibo recibo;
 	private Context contexto;
 	private BReciboM brm;
+	private Integer reciboId;
+	private com.panzyma.nm.serviceproxy.Documento documento_selected;
+	
 
 	private NMApp nmapp;
-	private List<Factura> facturasRecibo = new ArrayList<Factura> ();
+	private List<Factura> facturasRecibo;
+	private List<com.panzyma.nm.serviceproxy.Documento> documents;
+	
+	public List<Factura> getFacturasRecibo() {
+		return facturasRecibo;
+	}
+	
+	public Integer getReciboID (){
+		return reciboId;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -131,11 +165,27 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		setContentView(R.layout.recibo_edit);
 
 		try {
+			
+			Bundle bundle =  getIntent().getExtras();
+			//OBTENER EL ID DEL RECIBO 
+			reciboId = (Integer)bundle.get(ViewRecibo.RECIBO_ID);
+			
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
-			
+			nmapp.getController().removebridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this, brm =  new BReciboM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
+			
+			facturasRecibo = new ArrayList<Factura> ();
+			documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
+			 
+			if(reciboId != 0){
+				//OBTENER EL RECIBO DESDE LOCALHOST
+				nmapp.getController()
+				.getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST);
+			} else {
+				recibo = null;
+			}
 
 			contexto = this.getApplicationContext();
 
@@ -154,7 +204,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void initComponent() {
 
 		gridDetalleRecibo = findViewById(R.id.pddgrilla);
-
+		item_document = (ListView)(gridDetalleRecibo).findViewById(R.id.data_items);
 		gridheader = (TextView) gridDetalleRecibo.findViewById(R.id.header);
 		gridheader.setText("Documentos a Pagar (0)");
 		tbxFecha = (EditText) findViewById(R.id.pddetextv_detalle_fecha);
@@ -168,36 +218,102 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		txtTotalAbonadoNC = (TextView) findViewById(R.id.txtTotalNotaCredito);
 		txtSubTotal = (TextView) findViewById(R.id.txtSubTotal);
 		txtTotal = (TextView) findViewById(R.id.txtTotal);
+		
+		item_document.setOnItemLongClickListener(new OnItemLongClickListener() {
 
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) {
+				// TODO Auto-generated method stub
+				if((parent.getChildAt(positioncache))!=null)						            							            		
+            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+            	positioncache=position;				            	
+            	documento_selected=(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(position);	 
+            	adapter.setSelectedPosition(position);  
+            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));	
+            	showMenu(view);
+            	
+				return true;
+			}
+		});
+		
+		loadData();
+		initMenu();
+	}
+	
+	private void loadData() {
+
+		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
 		if (recibo == null) {
+			// NUEVO RECIBO
 			recibo = new Recibo();
 			recibo.setId(0);
 			cliente = null;
 			recibo.setCodEstado("REGISTRADO");
 			recibo.setReferencia(0);
-			recibo.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
+			recibo.setFecha(date);
 			recibo.setExento(false);
 			recibo.setAutorizacionDGI("");
+			recibo.setNombreCliente("");
+			recibo.setNotas("");
+			recibo.setTotalFacturas(0.00f);
+			recibo.setTotalND(0.00f);
+			recibo.setTotalNC(0.00f);
+			recibo.setSubTotal(0.00f);
+			recibo.setTotalRecibo(0.00f);
+			tbxNumRecibo.setText("");
+		} else {
+			
+			cliente = recibo.getCliente();
+			
+			// EDICION DE RECIBO
+			if ("REGISTRADO".equals(recibo.getDescEstado())) {
+				recibo.setFecha(date);
+			}
+			// AGREGAGAR LAS FACTURAS DEL RECIBO A LA GRILLA
+			for (ReciboDetFactura factura : recibo.getFacturasRecibo()) {				
+				for (Factura fac : cliente.getFacturasPendientes()) {
+					if (fac.getId() == factura.getObjFacturaID()) {
+						fac.setAbonado(factura.getMonto());
+						factura.setTotalFactura(fac.getTotalFacturado());
+						getFacturasRecibo().add(fac);
+					}
+				}
+				documents.add(factura);
+			}
+			// AGREGAR LAS NOTAS DE DEBITO DEL RECIBO A LA GRILLA
+			for (ReciboDetND nd : recibo.getNotasDebitoRecibo()) {
+				documents.add(nd);
+			}
+			// AGREGAR LAS NOTAS DE CREDITO DEL RECIBO A LA GRILLA
+			for (ReciboDetNC nc : recibo.getNotasCreditoRecibo()) {
+				documents.add(nc);
+			}
+			adapter = null;
+			agregarDocumentosAlDetalleDeRecibo();
+						
+			try {
+				nmapp.getController().setEntities(this,new BClienteM());
+				nmapp.getController().addOutboxHandler(new Handler(this));
+				nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 			        
+	        
 		}
-
-		// Fecha del Pedido
-		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-		formato.setCalendar(Calendar.getInstance());
-		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
-
-		if (recibo.getFecha() == 0)
-			recibo.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
-
-		if (recibo.getReferencia() == 0)
-			tbxNumReferencia.setText(VentasUtil.getNumeroPedido(me,
-					recibo.getReferencia()));
-
-		if (recibo.getNombreCliente() != null)
-			tbxNombreDelCliente.setText(recibo.getNombreCliente());
-
-		tbxFecha.setText("" + DateUtil.idateToStrYY(date));
-
-		initMenu();
+		// ESTABLECER LOS VALORES EN LA VISTA DE EDICION DE RECIBO
+		tbxNumRecibo.setText(""+recibo.getNumero());
+		tbxNotas.setText(""+recibo.getNotas());
+		tbxNumReferencia.setText(""+VentasUtil.getNumeroPedido(me,
+				recibo.getReferencia()));
+		tbxNombreDelCliente.setText(""+recibo.getNombreCliente());
+		tbxFecha.setText("" + DateUtil.idateToStrYY(recibo.getFecha()));
+		// ESTABLECER LOS TOTALES
+		txtTotalAbonadoFacturas.setText("" + recibo.getTotalFacturas());
+		txtTotalAbonadoND.setText("" + recibo.getTotalND());
+		txtTotalAbonadoNC.setText("" + recibo.getTotalNC());
+		txtSubTotal.setText("" + recibo.getSubTotal());
+		txtTotal.setText("" + recibo.getTotalRecibo());
 	}
 
 	private void initMenu() {
@@ -251,7 +367,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									guardarRecibo();
 									break;
 								case ID_CERRAR:
-									finalizarActividad();
+									//finalizarvidad();
 									break;
 								}
 							}
@@ -275,13 +391,28 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			Menu = (Button) gridDetalleRecibo.findViewById(R.id.btnmenu);
 			quickAction.show(Menu, display, true);
 			return true;
+		} 
+		else if (keyCode == KeyEvent.KEYCODE_BACK) {        	
+		  	FINISH_ACTIVITY();
+			finish();	       
 		}
 		return super.onKeyUp(keyCode, event);
 	}
+	
+	
 
 	@Override
 	public boolean handleMessage(Message msg) {
-		// TODO Auto-generated method stub
+		switch(msg.what){
+		case C_DATA:
+			recibo = (Recibo)msg.obj;
+			loadData();
+			break;
+		case ControllerProtocol.NOTIFICATION:
+			Util.Message.buildToastMessage(contexto,
+					"Recibo Guardado!!", 1000).show();
+			break;
+		}
 		return false;
 	}
 
@@ -308,6 +439,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		dc.show();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void guardarRecibo() {
 
 		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
@@ -343,20 +475,34 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setCodEstado("REG");
 			recibo.setDescEstado("REGISTRADO");
 			
-			recibo.setId(Ventas.getMaxReciboId(this.contexto) + 1);
+			// LIMPIAR LOS DOCUMENTOS DEL RECIBO
+			recibo.getFacturasRecibo().clear();
+			recibo.getNotasDebitoRecibo().clear();
+			recibo.getNotasCreditoRecibo().clear();
 			
-			for(Factura factura : facturasRecibo) {
-				ReciboDetFactura detalleFactura = new ReciboDetFactura();
-				detalleFactura.setEsAbono(factura.getEstado().equals("ABONADA"));
-				detalleFactura.setFecha(factura.getFecha());
-				detalleFactura.setMonto(factura.getAbonado());
-				detalleFactura.setId(factura.getId());
-				//Agregar la factura al detalle del recibo
-				recibo.getFacturasRecibo().add(detalleFactura);
+			//AGREGAR LOS DOCUMENTOS DE LA GRILLA AL RECIBO
+			for (com.panzyma.nm.serviceproxy.Documento doc : documents) {
+				
+				if (doc.getTipo().equals("Factura")) {
+					ReciboDetFactura detalleFactura = (ReciboDetFactura) doc.getObject();
+					// Agregar la factura al detalle del recibo
+					recibo.getFacturasRecibo().add(detalleFactura);
+				} else if (doc.getTipo().equals("Nota Débito")) {
+					ReciboDetND notaDebito = (ReciboDetND) doc.getObject();
+					// Agregar la nota débito al detalle del recibo
+					recibo.getNotasDebitoRecibo().add(notaDebito);
+				} else {
+					ReciboDetNC notaCredito = (ReciboDetNC) doc.getObject();
+					// Agregar la nota débito al detalle del recibo
+					recibo.getNotasCreditoRecibo().add(notaCredito);
+				}
+
 			}
 
 			try {
-				DatabaseProvider.RegistrarRecibo(recibo, contexto);
+				nmapp.getController().setEntities(this,new BReciboM());
+				nmapp.getController().addOutboxHandler(new Handler(this));				
+				nmapp.getController().getInboxHandler().sendEmptyMessage(SAVE_DATA_FROM_LOCALHOST);				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -391,45 +537,67 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		if(cliente == null)	{
 			Toast.makeText(getApplicationContext(), "Debe seleccionar un cliente", Toast.LENGTH_SHORT).show();
 			return;
-		}			
-				
-		DialogDocumentos dialog= new DialogDocumentos(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, recibo.getObjSucursalID());
-		dialog.setOnDialogDocumentoButtonClickListener(new OnDocumentoButtonClickListener() {			
+		}	
+		
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		
+		DialogSeleccionTipoDocumento dtp = new DialogSeleccionTipoDocumento();
+		dtp.setEventSeleccionable(new Seleccionable() {			
 			@Override
-			public void onButtonClick(Object documento) {
-				//SI EL DOCUMENTO ES UNA FACTURA
-				if (documento instanceof Factura){
-					final Factura factura = (Factura)documento;
-					final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(factura);
-					dialogConfirmacion.setActionPago(new Pagable() {					
-						@Override
-						public void onPagarFactura(Float montoAbonado) {
-							factura.setAbonado(factura.getAbonado() + montoAbonado);
-							if(factura.Saldo < montoAbonado )							
-								factura.setEstado("ABONADA");
-							else if (factura.Saldo == montoAbonado)
-								factura.setEstado("CANCELADA");
-							else { 
-								//ERROR
-							}
-							factura.setSaldo(factura.getSaldo() - factura.getAbonado());
-							recibo.setTotalFacturas(montoAbonado);
-							facturasRecibo.add(factura);
-							agregarDocumentosAlDetalleDeRecibo();
-							actualizaTotales();
-						}
-					});
-					FragmentManager fragmentManager = getSupportFragmentManager();
-					
-					dialogConfirmacion.show(fragmentManager, "");
-					
-				}				
+			public void onSeleccionarDocumento(Documento document) {
+				
+				DialogDocumentos dialog= new DialogDocumentos(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, cliente, document);
+				dialog.setOnDialogDocumentoButtonClickListener(new OnDocumentoButtonClickListener() {			
+					@Override
+					public void onButtonClick(Object documento) {
+						//SI EL DOCUMENTO ES UNA FACTURA
+						if (documento instanceof Factura){
+							final Factura factura = (Factura)documento;
+							//CREAR UN OBJETO DETALLE DE FACURA
+							final ReciboDetFactura facturaDetalle = new ReciboDetFactura();
+							facturaDetalle.setObjFacturaID(factura.getId());
+							facturaDetalle.setFecha(factura.getFecha());
+							facturaDetalle.setMonto(factura.getAbonado());
+							facturaDetalle.setNumero(factura.getNoFactura());
+							facturaDetalle.setSaldoFactura(factura.getSaldo());
+							facturaDetalle.setMontoRetencion(0.00f);
+							facturaDetalle.setTotalFactura(factura.getTotalFacturado());
+							
+							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.ADD);
+							dialogConfirmacion.setActionPago(new Pagable() {					
+								@Override
+								public void onPagarEvent(Float montoAbonado) {
+									factura.setAbonado(factura.getAbonado() + montoAbonado);
+									if(factura.Saldo < montoAbonado )							
+										factura.setEstado("ABONADA");
+									else if (factura.Saldo == montoAbonado)
+										factura.setEstado("CANCELADA");
+									else { 
+										//ERROR
+									}
+									factura.setSaldo(factura.getSaldo() - factura.getAbonado());
+									recibo.setTotalFacturas(recibo.getTotalFacturas() + montoAbonado);
+									facturasRecibo.add(factura);
+									//																	
+									documents.add(facturaDetalle);
+									agregarDocumentosAlDetalleDeRecibo();
+									actualizaTotales();
+								}
+							});
+							FragmentManager fragmentManager = getSupportFragmentManager();
+							
+							dialogConfirmacion.show(fragmentManager, "");
+							
+						}				
+					}
+				});			
+				Window window = dialog.getWindow(); 
+				window.setGravity(Gravity.CENTER);
+				window.setLayout(display.getWidth() - 40, display.getHeight() - 110);
+				dialog.show();
 			}
-		});			
-		Window window = dialog.getWindow(); 
-		window.setGravity(Gravity.CENTER);
-		window.setLayout(display.getWidth() - 40, display.getHeight() - 110);
-		dialog.show();
+		});
+		dtp.show(fragmentManager, "");
 
 	}
 
@@ -475,15 +643,156 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		//gridheader.setText("Listado de Productos a Vender");
 		if(adapter==null)
 		{
-			adapter=new GenericAdapter(this,FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);				 
+			//adapter=new GenericAdapter(this, FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);
+			adapter=new GenericAdapter(this, DocumentoViewHolder.class, documents,R.layout.list_row);
 			((ListView)gridDetalleRecibo.findViewById(R.id.data_items)).setAdapter(adapter);
-			gridheader.setText("Facturas a Pagar ("+adapter.getCount()+")");
+			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
 		}
 		else
-		{ 
+		{ 			
 			adapter.notifyDataSetChanged();
-			gridheader.setText("Facturas a Pagar ("+adapter.getCount()+")");
+			adapter.setSelectedPosition(documents.size() - 1);
+			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
 		}
+	}
+	
+	public void showMenu(final View view) 
+	{
+
+		runOnUiThread
+		(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1); 
+					quickAction2.addActionItem(new ActionItem(ID_EDITAR_DOCUMENTO,"Editar Documento"));
+					quickAction2.addActionItem(new ActionItem(VER_DETALLE_DOCUMENTO,"Ver Detalle Documento"));
+					quickAction2.addActionItem(new ActionItem(ID_ELIMINAR_DOCUMENTO, "Eliminar Documento"));
+					quickAction2.setOnActionItemClickListener
+					(new QuickAction.OnActionItemClickListener() 
+						{
+				
+							@Override
+							public void onItemClick(QuickAction source, final int pos,final int actionId) 
+							{ 
+										ActionItem actionItem = quickAction2
+												.getActionItem(pos);
+										
+										if(actionId==ID_EDITAR_DOCUMENTO)
+											editarDocumento();
+										else if(actionId==ID_ELIMINAR_DOCUMENTO)
+											eliminarDocumento();							
+									 
+							}
+
+						 }
+					 ); 
+					quickAction2.show(view,display,false);
+				   }
+				}
+		    );
+	}
+	
+	private void removeDocument(com.panzyma.nm.serviceproxy.Documento documentRemoved){
+		int positionDocument = -1,
+				count = 0;
+		if (documentRemoved instanceof ReciboDetFactura) {
+			//SI EL DOCUMENTO SE TRATA DE UNA FACTURA
+			ReciboDetFactura facturaToRemoved = ((ReciboDetFactura)documentRemoved.getObject());
+			for(Factura fac : getFacturasRecibo()){
+				if(fac.getId() == facturaToRemoved.getObjFacturaID() ){
+					positionDocument = count;
+				}
+				++count;
+			}
+			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());			
+		} else if (documentRemoved instanceof ReciboDetND) {
+			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE DEBITO
+
+		} else if (documentRemoved instanceof ReciboDetNC) {
+			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE CREDITO
+
+		}
+		
+	}
+
+	private void eliminarDocumento() {
+		if (!recibo.getDescEstado().equals("REGISTRADO")) return;
+		int posicion = positioncache;
+		if (posicion == -1) return;		
+			
+		com.panzyma.nm.serviceproxy.Documento documentRemoved;
+		
+		//ELIMINAR DE LA LISTA DE DOCUMENTOS
+		documentRemoved = documents.remove(posicion);
+		
+		//ELIMINAR EL DOCUMENTO DEL RECIBO Y ACTUALIZAR EL TOTAL 
+		removeDocument(documentRemoved);
+		
+		//ACTUALIZA EL TOTAL EN LA PANTALLA Y ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
+		actualizaTotales();
+		
+		if (documents.size() > 0) {
+            if (posicion == 0)
+            { 
+                positioncache = 0;
+                documento_selected =(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(0);	
+                adapter.setSelectedPosition(0); 
+            }
+            else {
+                if (posicion == documents.size())
+                {  
+                    positioncache= posicion - 1;
+                    documento_selected = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion - 1);	
+                    adapter.setSelectedPosition(posicion - 1);
+                }
+                else
+                {
+                     positioncache = posicion;
+                     documento_selected=(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);	
+                     adapter.setSelectedPosition(posicion);                     
+                }
+            }            
+        }		
+        adapter.notifyDataSetChanged();
+        gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
+	}
+
+	private void editarDocumento() {
+		if (!recibo.getDescEstado().equals("REGISTRADO")) return;
+		int posicion = positioncache;
+		if (posicion == -1) return;		
+			
+		final com.panzyma.nm.serviceproxy.Documento documentToEdit;
+		
+		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);
+		
+		final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(documentToEdit, ActionType.EDIT);
+		dialogConfirmacion.setActionPago(new Pagable() {					
+			@Override
+			public void onPagarEvent(Float montoAbonado) {
+				
+				if( documentToEdit instanceof ReciboDetFactura ){
+					ReciboDetFactura factura = (ReciboDetFactura)documentToEdit;
+					factura.setMonto(montoAbonado);
+					factura.setSaldoFactura(factura.getSaldofactura() - montoAbonado);
+				} else if ( documentToEdit instanceof ReciboDetND ){
+					
+				}				
+				recibo.setTotalFacturas(0.00f);
+				for(com.panzyma.nm.serviceproxy.Documento doc : (List<com.panzyma.nm.serviceproxy.Documento>)adapter.getData()){
+					recibo.setTotalFacturas(recibo.getTotalFacturas() +doc.getMonto());
+				}					
+				
+				agregarDocumentosAlDetalleDeRecibo();
+				actualizaTotales();
+			}
+		});
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		
+		dialogConfirmacion.show(fragmentManager, "");
+		
 	}
 
 	@Override
@@ -498,4 +807,32 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return this.me;
 	}
 
+	public Recibo getRecibo(){
+		return recibo;
+	}
+	
+	
+	
+	private void FINISH_ACTIVITY()
+	{
+		nmapp.getController().removeOutboxHandler(TAG);
+		nmapp.getController().removebridge(nmapp.getController().getBridge());
+		nmapp.getController().disposeEntities();
+		if(pd!=null)
+			pd.dismiss();	
+		Log.d(TAG, "Activity quitting"); 
+		pd = null;
+		try {
+			nmapp.getController().setEntities(this,getBridge());
+			//finalize();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}				
+		
+	}
+	
 }
