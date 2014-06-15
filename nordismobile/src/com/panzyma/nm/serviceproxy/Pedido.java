@@ -2,16 +2,22 @@ package com.panzyma.nm.serviceproxy;
  
 
 import android.annotation.SuppressLint;
+import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
+import com.panzyma.nm.interfaces.Item;
+
 @SuppressWarnings({"rawtypes"})
-public final class Pedido extends SoapObject implements Serializable {
-    private long Id;
+public class Pedido extends SoapObject implements Item,Parcelable { 
+	private long Id;
     private int NumeroMovil;
     private int NumeroCentral;
     private java.lang.String Tipo; 
@@ -525,4 +531,148 @@ public final class Pedido extends SoapObject implements Serializable {
         }
     }
 
+    @Override
+	public Object isMatch(CharSequence constraint) {
+		if (String.valueOf(getNumeroMovil()).toLowerCase().startsWith(constraint.toString()))
+			return true;
+		else if (String.valueOf(getNombreSucursal()).toLowerCase().startsWith(constraint.toString()))
+			return true;
+		return false;
+	}
+	
+    @Override
+	public String getItemName() {
+		// TODO Auto-generated method stub
+		return getNumeroMovil()+"-"+getNombreCliente()+"/"+getNombreSucursal();
+	}
+	
+    @Override
+	public String getItemDescription() {
+		// TODO Auto-generated method stub
+		return "Fecha: " + getFecha() + ", Total: " + getTotal()
+				+ ", Estado: " + getDescEstado();
+	}
+	
+    @Override
+	public String getItemCode() {
+		// TODO Auto-generated method stub
+		return ""+getNumeroMovil();
+	}
+
+    public Pedido(Parcel parcel){
+    	   this();
+    	   readFromParcel(parcel);
+    }
+    
+    public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+
+        public Pedido createFromParcel(Parcel parcel) {
+             return new Pedido(parcel);
+        }
+
+        public Pedido[] newArray(int size) {
+             return new Pedido[size];
+        }
+      	 
+      	 
+   };
+    
+   @Override
+	public void writeToParcel(Parcel parcel, int flags) {	
+		parcel.writeLong(Id);
+		parcel.writeInt(NumeroMovil);
+		parcel.writeInt(NumeroCentral);		
+		parcel.writeString(Tipo);
+		parcel.writeInt(Fecha);
+		parcel.writeLong(objClienteID);
+		parcel.writeString(NombreCliente);
+		parcel.writeLong(objSucursalID);
+		parcel.writeString(NombreSucursal);
+		parcel.writeLong(objTipoPrecioVentaID);
+		parcel.writeString(CodTipoPrecio);
+		parcel.writeString(DescTipoPrecio);
+		parcel.writeLong(objVendedorID);
+		parcel.writeInt((BonificacionEspecial==true)?1:0);
+		parcel.writeString(BonificacionSolicitada);
+		parcel.writeInt((PrecioEspecial==true)?1:0);
+		parcel.writeString(PrecioSolicitado);
+		parcel.writeInt((PedidoCondicionado==true)?1:0);
+		parcel.writeString(Condicion);
+		parcel.writeFloat(Subtotal);
+		parcel.writeFloat(Descuento);
+		parcel.writeFloat(Impuesto);
+		parcel.writeFloat(Total);
+		parcel.writeLong(objEstadoID);
+		parcel.writeString(CodEstado);
+		parcel.writeString(DescEstado);
+		parcel.writeLong(objCausaEstadoID);
+		parcel.writeString(CodCausaEstado);
+		parcel.writeString(DescCausaEstado);
+		parcel.writeString(NombreVendedor);
+		parcel.writeParcelableArray(Detalles, flags);
+		parcel.writeParcelableArray(PromocionesAplicadas,flags);
+		//parcel.writeArray(Detalles);
+		//parcel.writeArray(PromocionesAplicadas);
+		parcel.writeString(Nota);
+		parcel.writeString(AutorizacionDGI);
+		  
+	}
+	
+    private void readFromParcel(Parcel parcel) 
+    {
+    	this.Id = parcel.readLong();
+		this.NumeroMovil=parcel.readInt();
+		this.NumeroCentral=parcel.readInt();
+		this.Tipo=parcel.readString();
+		this.Fecha=parcel.readInt();
+		this.objClienteID = parcel.readLong();
+		this.NombreCliente=parcel.readString();
+		this.objSucursalID = parcel.readLong();
+		this.NombreSucursal=parcel.readString();
+		this.objTipoPrecioVentaID= parcel.readLong();
+		this.CodTipoPrecio=parcel.readString();
+		this.DescTipoPrecio=parcel.readString();
+		this.objVendedorID= parcel.readLong();
+		this.BonificacionEspecial = ( parcel.readInt()==1)?true:false;
+		this.BonificacionSolicitada=parcel.readString();
+		this.PrecioEspecial = (parcel.readInt()==1)?true:false;
+		this.PrecioSolicitado=parcel.readString();
+		this.PedidoCondicionado = (parcel.readInt()==1)?true:false;
+		this.Condicion=parcel.readString();
+		this.Subtotal=parcel.readFloat();
+		this.Descuento=parcel.readFloat();
+		this.Impuesto=parcel.readFloat();
+		this.Total=parcel.readFloat();
+		this.objEstadoID= parcel.readLong();
+		this.CodEstado=parcel.readString();
+		this.DescEstado=parcel.readString();
+		this.objCausaEstadoID= parcel.readLong();
+		this.CodCausaEstado=parcel.readString();
+		this.DescCausaEstado=parcel.readString();
+		this.NombreVendedor=parcel.readString();
+		
+		Parcelable[] parcelableArray = parcel.readParcelableArray(DetallePedido.class.getClassLoader()); 
+		if (parcelableArray != null) {
+			this.Detalles = Arrays.copyOf(parcelableArray, parcelableArray.length, DetallePedido[].class);
+		}
+		
+		parcelableArray = parcel.readParcelableArray(PedidoPromocion.class.getClassLoader()); 
+		if (parcelableArray != null) {
+			this.PromocionesAplicadas = Arrays.copyOf(parcelableArray, parcelableArray.length, PedidoPromocion[].class);
+		}
+		//this.Detalles=(DetallePedido[]) parcel.readParcelableArray(DetallePedido.class.getClassLoader());
+		//this.PromocionesAplicadas=(PedidoPromocion[] ) parcel.readParcelableArray(PedidoPromocion.class.getClassLoader());
+
+//		this.Detalles=(DetallePedido[]) parcel.readArray(DetallePedido[].class.getClassLoader());
+//		this.PromocionesAplicadas=(PedidoPromocion[] ) parcel.readArray(PedidoPromocion[].class.getClassLoader());
+		this.Nota=parcel.readString();
+		this.AutorizacionDGI=parcel.readString();
+	}
+
+   
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

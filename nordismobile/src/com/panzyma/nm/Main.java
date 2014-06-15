@@ -25,6 +25,7 @@ import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewConfiguracion;
+import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.vCliente;
@@ -79,19 +80,6 @@ public class Main extends DashBoardActivity implements Handler.Callback{
 	      }
         return super.onKeyUp(keyCode, event); 
     } 
-
-    
-    /*Esta es una funcion para Saludar*/
-    public String saludo(String minuevacadena , int parametro)
-    { 
-    	int f=2+2; 
-    	String r=minuevacadena;
-    	/*comentario */
-    	int rr= 3*3;  
-    	String e="hola git, rostran es una ship.."; 
-    	return "Hola git";
-    	
-    }
     
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) 
@@ -118,7 +106,7 @@ public class Main extends DashBoardActivity implements Handler.Callback{
     	{
     	
 	    	case R.id.hbtnpedido:
-						    		intent = new Intent(this,ViewPedidoEdit.class); 
+						    		intent = new Intent(this,ViewPedido.class); 
 									startActivity(intent);
 									break;
 	    	case R.id.hbtnrecibocollector: 

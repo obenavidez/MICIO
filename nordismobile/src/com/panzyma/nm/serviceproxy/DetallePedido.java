@@ -2,12 +2,15 @@ package com.panzyma.nm.serviceproxy;
  
 
 import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo; 
 
-public final class DetallePedido implements KvmSerializable{
+public final class DetallePedido implements KvmSerializable,Parcelable{
     private long Id;
     private long objPedidoID;
     private long objProductoID;
@@ -332,4 +335,84 @@ public final class DetallePedido implements KvmSerializable{
         }
     }
 
+    
+    
+    
+    public DetallePedido(Parcel parcel){
+ 	   this();
+ 	   readFromParcel(parcel);
+ }
+ 
+ public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+
+     public DetallePedido createFromParcel(Parcel parcel) {
+          return new DetallePedido(parcel);
+     }
+
+     public DetallePedido[] newArray(int size) {
+          return new DetallePedido[size];
+     }
+   	 
+   	 
+};
+ 
+	@Override
+	public void writeToParcel(Parcel parcel, int arg1) {	
+		parcel.writeLong(Id);
+		parcel.writeLong(objPedidoID); 
+		parcel.writeLong(objProductoID);
+		parcel.writeString(CodProducto);
+		parcel.writeString(NombreProducto);
+		parcel.writeInt(CantidadOrdenada); 
+		parcel.writeInt(CantidadBonificada);
+		parcel.writeLong(objBonificacionID);
+		parcel.writeInt((BonifEditada==true)?1:0);
+		parcel.writeInt(CantidadBonificadaEditada);
+		parcel.writeFloat(Precio);
+		parcel.writeFloat(MontoPrecioEditado);
+		parcel.writeInt((PrecioEditado==true)?1:0);
+		parcel.writeFloat(Subtotal);
+		parcel.writeFloat(Descuento);
+		parcel.writeFloat(PorcImpuesto);
+		parcel.writeFloat(Impuesto);
+		parcel.writeFloat(Total);
+		parcel.writeInt(CantidadDespachada);
+	    parcel.writeInt(CantidadADespachar);    
+		parcel.writeInt(CantidadPromocion);
+		  
+	}
+	
+ private void readFromParcel(Parcel parcel) 
+ {
+ 	this.Id = parcel.readLong(); 
+ 	this.objPedidoID=parcel.readLong();
+ 	this.objProductoID=parcel.readLong();
+ 	this.CodProducto=parcel.readString();
+ 	this.NombreProducto=parcel.readString();
+ 	this.CantidadOrdenada=parcel.readInt();
+ 	this.CantidadBonificada=parcel.readInt();
+ 	this.objBonificacionID=parcel.readLong();
+ 	this.BonifEditada = (parcel.readInt()==1)?true:false;
+ 	this.CantidadBonificadaEditada=parcel.readInt();
+ 	this.Precio=parcel.readFloat();
+ 	this.MontoPrecioEditado=parcel.readFloat();
+ 	this.PrecioEditado = (parcel.readInt()==1)?true:false; 
+ 	this.Subtotal=parcel.readFloat();
+ 	this.Descuento=parcel.readFloat();
+ 	this.PorcImpuesto=parcel.readFloat();
+ 	this.Impuesto=parcel.readFloat(); 
+ 	this.Total=parcel.readFloat(); 
+ 	this.CantidadDespachada=parcel.readInt();
+ 	this.CantidadADespachar=parcel.readInt();
+ 	this.CantidadPromocion=parcel.readInt();
+ 	
+ }
+
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+    
 }

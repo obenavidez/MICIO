@@ -53,7 +53,7 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_RECIBODETALLENOTACREDITO = Uri.parse(CONTENT_URI+ "/recibodetallenotacredito");
 	public static final Uri CONTENT_URI_RECIBODETALLENOTADEBITO = Uri.parse(CONTENT_URI+ "/recibodetallenotadebito");
 	public static final Uri CONTENT_URI_PEDIDO = Uri.parse(CONTENT_URI+ "/pedido");
-	public static final Uri CONTENT_URI_DETALLEPEDIDO = Uri.parse(CONTENT_URI+ "/detallepedido");
+	public static final Uri CONTENT_URI_PEDIDODETALLE = Uri.parse(CONTENT_URI+ "/pedidodetalle");
 	public static final Uri CONTENT_URI_PEDIDOPROMOCION = Uri.parse(CONTENT_URI+ "/pedidopromocion");
 	public static final Uri CONTENT_URI_PEDIDOPROMOCIONDETALLE = Uri.parse(CONTENT_URI+ "/pedidopromociondetalle");
 	//Necesario para UriMatcher
@@ -103,13 +103,13 @@ public class DatabaseProvider extends ContentProvider
 	private static final int PEDIDOPROMOCION = 40;
 	private static final int PEDIDOPROMOCION_ID = 41;
 	
-	private static final int PEDIDOPROMOCIONDETALLE = 41;
+	private static final int PEDIDOPROMOCIONDETALLE = 42;
 	private static final int PEDIDOPROMOCIONDETALLE_ID = 43;
 	//Base de datos
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 4; 
+	private static final int BD_VERSION = 6; 
 	
 	private static final String TABLA_CLIENTE = "Cliente";
 	private static final String TABLA_FACTURA = "Factura";
@@ -240,8 +240,7 @@ public class DatabaseProvider extends ContentProvider
 		if(Integer.parseInt(coll.get(1).getKey().toString())!=CONTENT_URI_LOCALID)
 			where=coll.get(1).getValue().toString();  
 		SQLiteDatabase db = getOrOpenDataBase();		
-		c = db.query(TABLE_NAME_L, columns, where,selectionArgs, null, null, sortOrder);
-		 
+		c = db.query(TABLE_NAME_L, columns, where,selectionArgs, null, null, sortOrder); 
 		return c;
 	}
 
@@ -466,14 +465,160 @@ public class DatabaseProvider extends ContentProvider
 		}  
 	}
 	 
-	public static void  ActualizarCliente(ArrayList<Cliente> objL,Context cnt) throws Exception
+	public static void  ActualizarCliente(JSONObject cliente,Context cnt) throws Exception
 	{	  
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
 		SQLiteDatabase bdd=d.getWritableDatabase();
 		bdd.beginTransaction(); 	
+		ContentValues values;
+		if(BorrarCliente(cliente,bdd)==1); 
+		{
+			
+			values = new ContentValues();
+			values.put(NMConfig.Cliente.IdCliente,cliente.getLong(NMConfig.Cliente.IdCliente));
+			values.put(NMConfig.Cliente.NombreCliente,cliente.getString(NMConfig.Cliente.NombreCliente));
+			values.put(NMConfig.Cliente.IdSucursal,cliente.getLong(NMConfig.Cliente.IdSucursal));
+			values.put(NMConfig.Cliente.Codigo,cliente.getString(NMConfig.Cliente.Codigo));
+			values.put(NMConfig.Cliente.CodTipoPrecio,cliente.getString(NMConfig.Cliente.CodTipoPrecio));
+			values.put(NMConfig.Cliente.DesTipoPrecio,cliente.getString(NMConfig.Cliente.DesTipoPrecio));
+			values.put(NMConfig.Cliente.objPrecioVentaID,cliente.getLong(NMConfig.Cliente.objPrecioVentaID));
+			values.put(NMConfig.Cliente.objCategoriaClienteID,cliente.getLong(NMConfig.Cliente.objCategoriaClienteID));
+			values.put(NMConfig.Cliente.objTipoClienteID,cliente.getLong(NMConfig.Cliente.objTipoClienteID));
+			values.put(NMConfig.Cliente.AplicaBonificacion,cliente.getBoolean(NMConfig.Cliente.AplicaBonificacion));
+			values.put(NMConfig.Cliente.PermiteBonifEspecial,cliente.getBoolean(NMConfig.Cliente.PermiteBonifEspecial));
+			values.put(NMConfig.Cliente.PermitePrecioEspecial,cliente.getBoolean(NMConfig.Cliente.PermitePrecioEspecial));
+			values.put(NMConfig.Cliente.UG,cliente.getString(NMConfig.Cliente.UG));
+			values.put(NMConfig.Cliente.Ubicacion,cliente.getString(NMConfig.Cliente.Ubicacion));
+			values.put(NMConfig.Cliente.NombreLegalCliente,cliente.getString(NMConfig.Cliente.NombreLegalCliente));
+			values.put(NMConfig.Cliente.AplicaOtrasDeducciones,cliente.getBoolean(NMConfig.Cliente.AplicaBonificacion));
+			values.put(NMConfig.Cliente.MontoMinimoAbono,cliente.getDouble(NMConfig.Cliente.MontoMinimoAbono));
+			values.put(NMConfig.Cliente.PlazoDescuento,cliente.getInt(NMConfig.Cliente.PlazoDescuento));
+			values.put(NMConfig.Cliente.PermiteDevolucion,cliente.getBoolean(NMConfig.Cliente.PermiteDevolucion));
+			bdd.insert(TABLA_CLIENTE, null, values);	
+			JSONArray af=new JSONArray();
+			af=cliente.getJSONArray("FacturasPendientes");
+			for(int i=0;i<af.length();i++)
+			{
+				values  = new ContentValues();
+				JSONObject fact=new JSONObject();
+				fact=af.getJSONObject(i);
+				values.put(NMConfig.Cliente.Factura.Id,fact.getLong(NMConfig.Cliente.Factura.Id));
+				values.put(NMConfig.Cliente.Factura.NombreSucursal,fact.getString(NMConfig.Cliente.Factura.NombreSucursal));
+				values.put(NMConfig.Cliente.Factura.NoFactura,fact.getString(NMConfig.Cliente.Factura.NoFactura));
+				values.put(NMConfig.Cliente.Factura.Tipo,fact.getString(NMConfig.Cliente.Factura.Tipo));
+				values.put(NMConfig.Cliente.Factura.NoPedido,fact.getString(NMConfig.Cliente.Factura.NoPedido));
+				values.put(NMConfig.Cliente.Factura.CodEstado,fact.getString(NMConfig.Cliente.Factura.CodEstado));
+				values.put(NMConfig.Cliente.Factura.Estado,fact.getString(NMConfig.Cliente.Factura.Estado));
+				values.put(NMConfig.Cliente.Factura.Fecha,fact.getLong(NMConfig.Cliente.Factura.Fecha));
+				values.put(NMConfig.Cliente.Factura.FechaVencimiento,fact.getLong(NMConfig.Cliente.Factura.FechaVencimiento));
+				values.put(NMConfig.Cliente.Factura.FechaAppDescPP,fact.getLong(NMConfig.Cliente.Factura.FechaAppDescPP));
+				values.put(NMConfig.Cliente.Factura.Dias,fact.getInt(NMConfig.Cliente.Factura.Dias));
+				values.put(NMConfig.Cliente.Factura.TotalFacturado,fact.getDouble(NMConfig.Cliente.Factura.TotalFacturado));
+				values.put(NMConfig.Cliente.Factura.Abonado,fact.getDouble(NMConfig.Cliente.Factura.Abonado));
+				values.put(NMConfig.Cliente.Factura.Descontado,fact.getDouble(NMConfig.Cliente.Factura.Descontado));
+				values.put(NMConfig.Cliente.Factura.Retenido,fact.getDouble(NMConfig.Cliente.Factura.Retenido));
+				values.put(NMConfig.Cliente.Factura.Otro,fact.getDouble(NMConfig.Cliente.Factura.Otro));
+				values.put(NMConfig.Cliente.Factura.Saldo,fact.getDouble(NMConfig.Cliente.Factura.Saldo));
+				values.put(NMConfig.Cliente.Factura.Exenta,fact.getBoolean(NMConfig.Cliente.Factura.Exenta));
+				values.put(NMConfig.Cliente.Factura.SubtotalFactura,fact.getDouble(NMConfig.Cliente.Factura.SubtotalFactura));
+				values.put(NMConfig.Cliente.Factura.DescuentoFactura,fact.getDouble(NMConfig.Cliente.Factura.DescuentoFactura));
+				values.put(NMConfig.Cliente.Factura.ImpuestoFactura,fact.getDouble(NMConfig.Cliente.Factura.ImpuestoFactura));
+				values.put(NMConfig.Cliente.Factura.PuedeAplicarDescPP,fact.getBoolean(NMConfig.Cliente.Factura.PuedeAplicarDescPP));
+				values.put(NMConfig.Cliente.objSucursalID,cliente.getLong(NMConfig.Cliente.IdSucursal));
+				bdd.insert(TABLA_FACTURA, null, values);
+
+				JSONArray adpc=new JSONArray();
+				adpc=fact.getJSONArray("DetallePromocionCobro");
+				for(int o=0;o<adpc.length();o++)
+				{
+					values  = new ContentValues();
+					JSONObject dpc=new JSONObject();
+					dpc=adpc.getJSONObject(o);
+					values.put(NMConfig.Cliente.Factura.PromocionCobro.FacturasAplicacion,dpc.getString(NMConfig.Cliente.Factura.PromocionCobro.FacturasAplicacion));
+					values.put(NMConfig.Cliente.Factura.PromocionCobro.TipoDescuento,dpc.getString(NMConfig.Cliente.Factura.PromocionCobro.TipoDescuento));
+					values.put(NMConfig.Cliente.Factura.PromocionCobro.Descuento,dpc.getDouble(NMConfig.Cliente.Factura.PromocionCobro.Descuento));
+					values.put(NMConfig.Cliente.Factura.objFacturaID,fact.getLong(NMConfig.Cliente.Factura.Id));
+					bdd.insert(TABLA_PROMOCIONCOBRO, null, values);
+				}
+				JSONArray admp=new JSONArray();
+				admp=fact.getJSONArray("DetalleMontoProveedor");
+				for(int u=0;u<admp.length();u++)
+				{
+					values  = new ContentValues();
+					JSONObject dmp=new JSONObject();
+					dmp=admp.getJSONObject(u);
+					values.put(NMConfig.Cliente.Factura.MontoProveedor.ObjProveedorID,dmp.getLong(NMConfig.Cliente.Factura.MontoProveedor.ObjProveedorID));
+					values.put(NMConfig.Cliente.Factura.MontoProveedor.CodProveedor,dmp.getString(NMConfig.Cliente.Factura.MontoProveedor.CodProveedor));
+					values.put(NMConfig.Cliente.Factura.MontoProveedor.Monto,dmp.getDouble(NMConfig.Cliente.Factura.MontoProveedor.Monto));
+					values.put(NMConfig.Cliente.Factura.objFacturaID,fact.getLong(NMConfig.Cliente.Factura.Id));
+					bdd.insert(TABLA_MONTOPROVEEDOR, null, values);
+				}
+				
+				
+			}
+			JSONArray anc=new JSONArray();
+			anc=cliente.getJSONArray("NotasCreditoPendientes");			
+			for(int b=0;b<anc.length();b++)
+			{ 
+				values  = new ContentValues();
+				JSONObject nc=new JSONObject();
+				nc=anc.getJSONObject(b);
+				values.put(NMConfig.Cliente.CCNotaCredito.Id,nc.getLong(NMConfig.Cliente.CCNotaCredito.Id));
+				values.put(NMConfig.Cliente.CCNotaCredito.NombreSucursal,nc.getString(NMConfig.Cliente.CCNotaCredito.NombreSucursal));
+				values.put(NMConfig.Cliente.CCNotaCredito.Estado,nc.getString(NMConfig.Cliente.CCNotaCredito.Estado));
+				values.put(NMConfig.Cliente.CCNotaCredito.Numero,nc.getString(NMConfig.Cliente.CCNotaCredito.Numero));
+				values.put(NMConfig.Cliente.CCNotaCredito.Fecha,nc.getLong(NMConfig.Cliente.CCNotaCredito.Fecha));
+				values.put(NMConfig.Cliente.CCNotaCredito.FechaVence,nc.getLong(NMConfig.Cliente.CCNotaCredito.FechaVence));
+				values.put(NMConfig.Cliente.CCNotaCredito.Concepto,nc.getString(NMConfig.Cliente.CCNotaCredito.Concepto));
+				values.put(NMConfig.Cliente.CCNotaCredito.Monto,nc.getDouble(NMConfig.Cliente.CCNotaCredito.Monto));
+				values.put(NMConfig.Cliente.CCNotaCredito.NumRColAplic,nc.getString(NMConfig.Cliente.CCNotaCredito.NumRColAplic));
+				values.put(NMConfig.Cliente.CCNotaCredito.CodEstado,nc.getString(NMConfig.Cliente.CCNotaCredito.CodEstado));
+				values.put(NMConfig.Cliente.CCNotaCredito.Descripcion,nc.getString(NMConfig.Cliente.CCNotaCredito.Descripcion));
+				values.put(NMConfig.Cliente.CCNotaCredito.Referencia,nc.getInt(NMConfig.Cliente.CCNotaCredito.Referencia));
+				values.put(NMConfig.Cliente.CCNotaCredito.CodConcepto,nc.getString(NMConfig.Cliente.CCNotaCredito.CodConcepto));
+				values.put(NMConfig.Cliente.objSucursalID,cliente.getLong(NMConfig.Cliente.IdSucursal));
+				bdd.insert(TABLA_CCNOTACREDITO, null, values);
+			}
+			
+			JSONArray and=new JSONArray();
+			and=cliente.getJSONArray("NotasDebitoPendientes");			
+			for(int a=0;a<and.length();a++)
+			{ 
+				values  = new ContentValues();
+				JSONObject nd=new JSONObject();
+				nd=and.getJSONObject(a);
+				values.put(NMConfig.Cliente.CCNotaCredito.Id,nd.getLong(NMConfig.Cliente.CCNotaDebito.Id));
+				values.put(NMConfig.Cliente.CCNotaDebito.NombreSucursal,nd.getString(NMConfig.Cliente.CCNotaDebito.NombreSucursal));
+				values.put(NMConfig.Cliente.CCNotaDebito.Estado,nd.getString(NMConfig.Cliente.CCNotaDebito.Estado));
+				values.put(NMConfig.Cliente.CCNotaDebito.Numero,nd.getString(NMConfig.Cliente.CCNotaDebito.Numero));
+				values.put(NMConfig.Cliente.CCNotaDebito.Fecha,nd.getLong(NMConfig.Cliente.CCNotaDebito.Fecha));
+				values.put(NMConfig.Cliente.CCNotaDebito.FechaVence,nd.getLong(NMConfig.Cliente.CCNotaDebito.FechaVence));
+				values.put(NMConfig.Cliente.CCNotaDebito.Dias,nd.getInt(NMConfig.Cliente.CCNotaDebito.Dias));
+				values.put(NMConfig.Cliente.CCNotaDebito.Concepto,nd.getString(NMConfig.Cliente.CCNotaDebito.Concepto));
+				values.put(NMConfig.Cliente.CCNotaDebito.Monto,nd.getDouble(NMConfig.Cliente.CCNotaDebito.Monto));
+				values.put(NMConfig.Cliente.CCNotaDebito.MontoAbonado,nd.getDouble(NMConfig.Cliente.CCNotaDebito.MontoAbonado));
+				values.put(NMConfig.Cliente.CCNotaDebito.Saldo,nd.getDouble(NMConfig.Cliente.CCNotaDebito.Saldo));
+				values.put(NMConfig.Cliente.CCNotaDebito.CodEstado,nd.getString(NMConfig.Cliente.CCNotaDebito.CodEstado));
+				values.put(NMConfig.Cliente.CCNotaDebito.Descripcion,nd.getString(NMConfig.Cliente.CCNotaDebito.Descripcion));
+				values.put(NMConfig.Cliente.objSucursalID,cliente.getLong(NMConfig.Cliente.IdSucursal));
+				bdd.insert(TABLA_CCNOTADEBITO, null, values);
+			}
+			
+			JSONArray adp=new JSONArray();
+			adp=cliente.getJSONArray("DescuentosProveedor");		
+			for(int c=0;c<adp.length();c++)
+			{
+				values  = new ContentValues();
+				JSONObject dp=new JSONObject();
+				dp=adp.getJSONObject(c);
+				values.put(NMConfig.Cliente.DescuentoProveedor.ObjProveedorID,dp.getLong(NMConfig.Cliente.DescuentoProveedor.ObjProveedorID));
+				values.put(NMConfig.Cliente.DescuentoProveedor.PrcDescuento,dp.getDouble(NMConfig.Cliente.DescuentoProveedor.PrcDescuento));
+				values.put(NMConfig.Cliente.objSucursalID,cliente.getLong(NMConfig.Cliente.IdSucursal));
+				bdd.insert(TABLA_DESCUENTOPROVEEDOR, null, values);
+			}
+			
+		}
 		
-		BorrarCliente(objL,bdd);
-		//RegistrarCliente(objL,bdd);	 
 		bdd.setTransactionSuccessful();  
 		
 		if(bdd!=null || (bdd.isOpen()))
@@ -482,7 +627,7 @@ public class DatabaseProvider extends ContentProvider
 			bdd.close();
 		} 
 	}
- 
+	
 	public static void RegistrarClientes(JSONArray objL,Context cnt,int page) throws Exception
 	{		 
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
@@ -658,26 +803,48 @@ public class DatabaseProvider extends ContentProvider
 		}
 		
 	}
-			
+	
+	public static int BorrarCliente(JSONObject cliente,SQLiteDatabase bdd) throws Exception
+    { 		
+		bdd.delete(TABLA_DESCUENTOPROVEEDOR, NMConfig.Cliente.objSucursalID+"="+String.valueOf(cliente.getLong(NMConfig.Cliente.IdSucursal)),null);
+		bdd.delete(TABLA_CCNOTADEBITO, NMConfig.Cliente.objSucursalID+"="+String.valueOf(cliente.getLong(NMConfig.Cliente.IdSucursal)),null);
+		bdd.delete(TABLA_CCNOTACREDITO, NMConfig.Cliente.objSucursalID+"="+String.valueOf(cliente.getLong(NMConfig.Cliente.IdSucursal)),null);
+		
+		JSONArray af=new JSONArray();
+		af=cliente.getJSONArray("FacturasPendientes");
+		for(int i=0;i<af.length();i++)
+		{
+			JSONObject fact = new JSONObject();
+			fact=af.getJSONObject(i);
+			bdd.delete(TABLA_MONTOPROVEEDOR, NMConfig.Cliente.Factura.objFacturaID+"="+String.valueOf(fact.getLong(NMConfig.Cliente.Factura.Id)),null);
+			bdd.delete(TABLA_PROMOCIONCOBRO, NMConfig.Cliente.Factura.objFacturaID+"="+String.valueOf(fact.getLong(NMConfig.Cliente.Factura.Id)),null);
+		}
+		
+		bdd.delete(TABLA_FACTURA, NMConfig.Cliente.objSucursalID+"="+String.valueOf(cliente.getLong(NMConfig.Cliente.IdSucursal)),null);
+		bdd.delete(TABLA_CLIENTE, NMConfig.Cliente.IdSucursal+"="+String.valueOf(cliente.getLong(NMConfig.Cliente.IdSucursal)),null);			
+		
+		return 1;
+    }
+	
 	public static void BorrarCliente(ArrayList<Cliente> objL,SQLiteDatabase bdd) throws Exception
     {  
-			for(Cliente client:objL)
-			{	
-				
-				bdd.delete(TABLA_DESCUENTOPROVEEDOR, NMConfig.Cliente.objSucursalID+"="+String.valueOf(client.getIdSucursal()),null);
-				bdd.delete(TABLA_CCNOTADEBITO, NMConfig.Cliente.objSucursalID+"="+String.valueOf(client.getIdSucursal()),null);
-				bdd.delete(TABLA_CCNOTACREDITO, NMConfig.Cliente.objSucursalID+"="+String.valueOf(client.getIdSucursal()),null);
-				if(client.getFacturasPendientes()!=null)
+		for(Cliente client:objL)
+		{	
+			
+			bdd.delete(TABLA_DESCUENTOPROVEEDOR, NMConfig.Cliente.objSucursalID+"="+String.valueOf(client.getIdSucursal()),null);
+			bdd.delete(TABLA_CCNOTADEBITO, NMConfig.Cliente.objSucursalID+"="+String.valueOf(client.getIdSucursal()),null);
+			bdd.delete(TABLA_CCNOTACREDITO, NMConfig.Cliente.objSucursalID+"="+String.valueOf(client.getIdSucursal()),null);
+			if(client.getFacturasPendientes()!=null)
+			{
+				for(Factura fact: client.getFacturasPendientes())
 				{
-					for(Factura fact: client.getFacturasPendientes())
-					{
-						bdd.delete(TABLA_MONTOPROVEEDOR, NMConfig.Cliente.Factura.objFacturaID+"="+String.valueOf(fact.getId()),null);
-						bdd.delete(TABLA_PROMOCIONCOBRO, NMConfig.Cliente.Factura.objFacturaID+"="+String.valueOf(fact.getId()),null);
-					}
+					bdd.delete(TABLA_MONTOPROVEEDOR, NMConfig.Cliente.Factura.objFacturaID+"="+String.valueOf(fact.getId()),null);
+					bdd.delete(TABLA_PROMOCIONCOBRO, NMConfig.Cliente.Factura.objFacturaID+"="+String.valueOf(fact.getId()),null);
 				}
-				bdd.delete(TABLA_FACTURA, NMConfig.Cliente.objSucursalID+"="+String.valueOf(client.getIdSucursal()),null);
-				bdd.delete(TABLA_CLIENTE, NMConfig.Cliente.IdSucursal+"="+String.valueOf(client.getIdSucursal()),null);			
-			}	 
+			}
+			bdd.delete(TABLA_FACTURA, NMConfig.Cliente.objSucursalID+"="+String.valueOf(client.getIdSucursal()),null);
+			bdd.delete(TABLA_CLIENTE, NMConfig.Cliente.IdSucursal+"="+String.valueOf(client.getIdSucursal()),null);			
+		}	 
 		 
     }
    
@@ -817,10 +984,36 @@ public class DatabaseProvider extends ContentProvider
 										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_PEDIDO.toString());
 										break;
 
+			
 			case PEDIDO_ID: 			dictionary.put(PEDIDO, TABLA_PEDIDO);
 										dictionary.put(PEDIDO+1,"Id=" + uri.getLastPathSegment());
+										break;
+										
+			case PEDIDODETALLE:			dictionary.put(PEDIDODETALLE, TABLA_PEDIDODETALLE);
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_PEDIDODETALLE.toString());
+										break;
+										
+			case PEDIDODETALLE_ID: 		dictionary.put(PEDIDODETALLE, TABLA_PEDIDODETALLE);
+										dictionary.put(PEDIDODETALLE+1,"objPedidoID=" + uri.getLastPathSegment());
 										break; 
 										
+										
+			case PEDIDOPROMOCION:		dictionary.put(PEDIDOPROMOCION, TABLA_PEDIDOPROMOCION);
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_PEDIDOPROMOCION.toString());
+										break;
+			
+			case PEDIDOPROMOCION_ID:    dictionary.put(PEDIDOPROMOCION, TABLA_PEDIDOPROMOCION);
+										dictionary.put(PEDIDOPROMOCION+1,"objPedidoID=" + uri.getLastPathSegment());
+										break; 
+										
+			case PEDIDOPROMOCIONDETALLE:dictionary.put(PEDIDOPROMOCIONDETALLE, TABLA_PEDIDOPROMOCIONDETALLE);
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_PEDIDOPROMOCIONDETALLE.toString());
+										break;
+
+			case PEDIDOPROMOCIONDETALLE_ID:dictionary.put(PEDIDOPROMOCIONDETALLE, TABLA_PEDIDOPROMOCIONDETALLE);
+										dictionary.put(PEDIDOPROMOCION+1,"objPedidoID=" + uri.getLastPathSegment());
+										break;
+													
 			case RECIBO: 				dictionary.put(RECIBO, TABLA_RECIBO);
 										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_RECIBO.toString());
 										break;	  							
@@ -851,16 +1044,16 @@ public class DatabaseProvider extends ContentProvider
 		
 		return cont;
 	}
-	 	
+	 	 
 	@Override
 	public String getType(Uri uri) 
 	{
 	 
 		switch(uriMatcher.match(uri))
 		{		 
-			case CLIENTE:case FACTURA:case PROMOCIONCOBRO:case MONTOPROVEEDOR:case CCNOTACREDITO:case CCNOTADEBITO:case DESCUENTOPROVEEDOR:case PRODUCTO:case LOTE:case CATALOGO:case PROMOCION:case USUARIO:case PEDIDO:
+			case CLIENTE:case FACTURA:case PROMOCIONCOBRO:case MONTOPROVEEDOR:case CCNOTACREDITO:case CCNOTADEBITO:case DESCUENTOPROVEEDOR:case PRODUCTO:case LOTE:case CATALOGO:case PROMOCION:case USUARIO:case PEDIDO:case PEDIDODETALLE: case PEDIDOPROMOCION:case PEDIDOPROMOCIONDETALLE:
 				 return "vnd.android.cursor.dir/vnd"+AUTHORITY;
-			case CLIENTE_ID:case FACTURA_ID:case PROMOCIONCOBRO_ID:case MONTOPROVEEDOR_ID:case CCNOTACREDITO_ID:case CCNOTADEBITO_ID:case DESCUENTOPROVEEDOR_ID:case PRODUCTO_ID:case LOTE_ID:case CATALOGO_ID:case PROMOCION_ID:case USUARIO_ID:case PEDIDO_ID:
+			case CLIENTE_ID:case FACTURA_ID:case PROMOCIONCOBRO_ID:case MONTOPROVEEDOR_ID:case CCNOTACREDITO_ID:case CCNOTADEBITO_ID:case DESCUENTOPROVEEDOR_ID:case PRODUCTO_ID:case LOTE_ID:case CATALOGO_ID:case PROMOCION_ID:case USUARIO_ID:case PEDIDO_ID:case PEDIDODETALLE_ID:case PEDIDOPROMOCION_ID:case PEDIDOPROMOCIONDETALLE_ID:
 				 return "vnd.android.cursor.item/vnd"+AUTHORITY; 									
 		    default:throw new IllegalArgumentException("Invalid Uri: "+ uri);
 		}  
@@ -968,11 +1161,14 @@ public class DatabaseProvider extends ContentProvider
 		ContentValues values;		
 		SQLiteDatabase bdd = d.getWritableDatabase();		
 		bdd.beginTransaction();
+		
 		values = new ContentValues();		
-		bdd.delete(TABLA_PEDIDO, "Id=?",new String[]{String.valueOf(pedido.getId())}); 
-		bdd.delete(TABLA_PEDIDODETALLE, "objPedidoID=?",new String[]{String.valueOf(pedido.getId())});
-		bdd.delete(TABLA_PEDIDOPROMOCION, "objPedidoID=?",new String[]{String.valueOf(pedido.getId())});
-		bdd.delete(TABLA_PEDIDOPROMOCIONDETALLE, "objPedidoID=?",new String[]{String.valueOf(pedido.getId())});
+		
+		bdd.delete(TABLA_PEDIDO, NMConfig.Pedido.Id+"="+String.valueOf(pedido.getId()),null); 
+		bdd.delete(TABLA_PEDIDODETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(pedido.getId()),null);
+		bdd.delete(TABLA_PEDIDOPROMOCION,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(pedido.getId()),null);
+		bdd.delete(TABLA_PEDIDOPROMOCIONDETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(pedido.getId()),null);
+		
 		values.put(NMConfig.Pedido.Id, pedido.getId());		
 		values.put(NMConfig.Pedido.NumeroMovil, pedido.getNumeroMovil());		
 		values.put(NMConfig.Pedido.NumeroCentral, pedido.getNumeroCentral());		
@@ -1062,6 +1258,8 @@ public class DatabaseProvider extends ContentProvider
 				bdd.insert(TABLA_PEDIDOPROMOCIONDETALLE, null, values);
 			}
 		}
+		
+		
 		bdd.setTransactionSuccessful();
 		if (bdd != null || (bdd.isOpen())) {
 			bdd.endTransaction();

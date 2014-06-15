@@ -75,7 +75,8 @@ public class DialogPromociones extends Dialog
 		btnaceptar.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View v) { 
-				mButtonClickListener.onButtonClick(promocionseleccionada);				
+				mButtonClickListener.onButtonClick(promocionseleccionada);		
+				dismiss();
 			}});
 		gridpromociones.setOnItemClickListener(new OnItemClickListener()
 		{

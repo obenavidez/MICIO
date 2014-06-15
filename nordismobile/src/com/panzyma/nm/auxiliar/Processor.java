@@ -151,12 +151,19 @@ public class Processor {
 		}
 	}
 
+	public static void send_ViewPedidoToView(int ID,Controller controller,Object obj) 
+	{
+		synchronized (lock) {
+			controller.notifyOutboxHandlers(ID, 0, 0, obj); 
+		}
+	}
 
-	public static void send_ViewPedidoToView(int rs,Controller controller) {
+	public static void send_ViewPedidoToView(int rs,Controller controller) 
+	{
 		synchronized (lock) {
 			controller._notifyOutboxHandlers(ID_REQUEST_SALVARPEDIDO, 0, 0, rs); 
 		}
-		}
+	}
 	public static void send_ViewDeleteReciboToView(
 			Integer result,
 			Controller controller) {

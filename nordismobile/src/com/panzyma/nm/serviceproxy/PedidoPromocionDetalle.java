@@ -1,12 +1,15 @@
 package com.panzyma.nm.serviceproxy;
  
 import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo; 
 
-public final class PedidoPromocionDetalle implements KvmSerializable {
+public final class PedidoPromocionDetalle implements KvmSerializable,Parcelable {
     
 	private long objProductoID;
     private java.lang.String NombreProducto;
@@ -93,5 +96,52 @@ public final class PedidoPromocionDetalle implements KvmSerializable {
             _info.type = Float.class; break;
         }
     }
+    
+    public PedidoPromocionDetalle(Parcel parcel)
+    {
+  	   this();
+  	   readFromParcel(parcel);
+    }
+  
+    public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() 
+     {
+
+	      public PedidoPromocionDetalle createFromParcel(Parcel parcel) {
+	           return new PedidoPromocionDetalle(parcel);
+	      }
+	
+	      public PedidoPromocionDetalle[] newArray(int size) {
+	           return new PedidoPromocionDetalle[size];
+	      }
+    	 
+    	 
+	 };
+  
+	@Override
+	public void writeToParcel(Parcel parcel, int arg1) 
+	{  
+		parcel.writeLong(objProductoID); 
+		parcel.writeString(NombreProducto); 	
+		parcel.writeInt(CantidadEntregada);
+		parcel.writeFloat(Descuento); 
+		  
+	}
+ 	
+    private void readFromParcel(Parcel parcel) 
+    {
+	  	this.objProductoID = parcel.readLong(); 
+	  	this.NombreProducto=parcel.readString();  
+	  	this.CantidadEntregada=parcel.readInt();
+	  	this.Descuento=parcel.readFloat();    	
+    }
+
+
+ 	@Override
+ 	public int describeContents() {
+ 		// TODO Auto-generated method stub
+ 		return 0;
+ 	}
+     
+    
 
 }

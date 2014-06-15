@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/bgdialog2"
+    android:orientation="vertical" >
+    
+    <RelativeLayout
+        android:id="@+id/rl_exoneracionimpuesto"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/White" 
+        android:layout_margin="2dp">
+         
+			<TextView
+            android:id="@+id/tv_detlle_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="10dp"
+            android:text="Exonerar de Impuestos"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black" /> 
+			
+			<TextView
+            android:id="@+id/tv_autorizaciondgi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/tv_detlle_header" 
+            android:layout_marginLeft="10dp"
+            android:text="Autorización DGI :"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#005D7A" 
+            android:shadowColor="@color/Black"   />
+
+       		<EditText
+            android:id="@+id/et_autorizaciondgi"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_autorizaciondgi"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" 
+		    android:nextFocusRight="@+id/etusername"
+		    android:nextFocusDown="@+id/etusername"
+            />
+			  
+        	<TableRow
+        	    android:id="@+id/layoutbutton"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_below="@+id/et_autorizaciondgi"
+        	    android:layout_centerHorizontal="true" >
+	    		
+			    <Button
+		            android:id="@+id/btn_ok"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 
+		            android:layout_marginLeft="10dp"
+		            android:layout_marginTop="10dp"
+		            android:layout_marginBottom="10dp"
+		            android:background="@drawable/btn"
+		            android:text="Aceptar"
+		            android:textAppearance="?android:attr/textAppearanceMedium"
+		            android:textColor="@color/White" 
+				    android:nextFocusRight="@+id/btncancel"
+				    android:nextFocusDown="@+id/btncancel">
+		        </Button>
+
+		        <Button
+		            android:id="@+id/btn_cancel"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 
+		            android:layout_marginLeft="10dp"
+		            android:layout_marginTop="10dp" 
+		            android:layout_marginBottom="10dp"
+		            android:background="@drawable/btn"
+		            android:text="Cancelar"
+		            android:textAppearance="?android:attr/textAppearanceMedium"
+		            android:textColor="@color/White"  >
+		        </Button>
+			    
+			</TableRow> 
+ 
+    </RelativeLayout>
+
+</LinearLayout>

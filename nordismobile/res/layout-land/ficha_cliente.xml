@@ -36,7 +36,8 @@
 			    android:layout_width="fill_parent"
 			    android:layout_height="1dp"
 			    android:background="@color/Gray"/>
-
+
+
 			<ScrollView
 			    android:id="@+id/ScrollView01"
 			    android:layout_width="fill_parent"
@@ -54,7 +55,8 @@
 				        android:layout_marginRight="3dp"
 				        android:layout_marginTop="3dp"
 				        android:orientation="vertical" >
-			             	
+			             
+	
 			            <TextView
 			                android:id="@+id/fclbl_cliente"
 			                android:layout_width="wrap_content"
@@ -64,7 +66,8 @@
 			                android:text="Cliente"
 			                android:textColor="@color/Black"
 			                android:width="112dp" />
-		
+	
+	
 			            <TextView
 			                android:id="@+id/fctextv_detallecliente"
 			                android:layout_width="wrap_content"
@@ -75,7 +78,8 @@
 			                android:textColor="@color/DarkGray" 
 			                android:isScrollContainer="true"
 			                />
-		
+	
+	
 			            <TextView
 			                android:id="@+id/fclbl_sucursal"
 			                android:layout_width="wrap_content"
@@ -86,7 +90,8 @@
 			                android:text="Sucursal"
 			                android:textColor="@color/Black"
 			                android:width="112dp" />
-		
+	
+	
 			            <TextView
 			                android:id="@+id/fctextv_detallesucursal"
 			                android:layout_width="wrap_content"
@@ -96,7 +101,8 @@
 			                android:lines="2"
 			                android:text="Detalle Sucursal"
 			                android:textColor="@color/DarkGray" />
-			             	
+			             
+	
 			            <TextView
 			                android:id="@+id/fclbl_direccion"
 			                android:layout_width="wrap_content"
@@ -116,7 +122,8 @@
 			                android:layout_toRightOf="@+id/fclbl_direccion"
 			                android:text="Detalle Dirección"
 			                android:textColor="@color/DarkGray" />
-		
+	
+	
 			            <TextView
 			                android:id="@+id/fclbl_telefono"
 			                android:layout_width="wrap_content"
@@ -136,7 +143,8 @@
 			                android:layout_toRightOf="@+id/fclbl_telefono"
 			                android:text="Detalle Teléfono"
 			                android:textColor="@color/DarkGray" />
-		
+	
+	
 			            <TextView
 			                android:id="@+id/fclbl_tipo"
 			                android:layout_width="wrap_content"
@@ -156,7 +164,8 @@
 			                android:layout_toRightOf="@+id/fclbl_tipo"
 			                android:text="Detalle Tipo"
 			                android:textColor="@color/DarkGray" />
-		
+	
+	
 			            <TextView
 			                android:id="@+id/fclbl_categoria"
 			                android:layout_width="wrap_content"
@@ -176,7 +185,8 @@
 			                android:layout_toRightOf="@+id/fclbl_categoria"
 			                android:text="Detalle Categoria"
 			                android:textColor="@color/DarkGray" />
-		
+	
+	
 			            <TextView
 			                android:id="@+id/fclbl_precioventa"
 			                android:layout_width="wrap_content"
@@ -196,7 +206,8 @@
 			                android:layout_toRightOf="@+id/fclbl_precioventa"
 			                android:text="Detalle Precio Venta"
 			                android:textColor="@color/DarkGray" />
-		
+	
+	
 			            <TextView
 			                android:id="@+id/fclbl_limitecredito"
 			                android:layout_width="wrap_content"
@@ -216,7 +227,8 @@
 			                android:layout_toRightOf="@+id/fclbl_limitecredito"
 			                android:text="Detalle Limite Credito"
 			                android:textColor="@color/DarkGray" />
-		
+	
+	
 			            <TextView
 			                android:id="@+id/fclbl_plazocredito"
 			                android:layout_width="wrap_content"
@@ -236,7 +248,13 @@
 			                android:layout_toRightOf="@+id/fclbl_plazocredito"
 			                android:text="Detalle Plazo Credito"
 			                android:textColor="@color/DarkGray" />
-							
+	
+	
+	
+	
+	
+	
+	
 			            <TextView
 			                android:id="@+id/fclbl_plazodescuento"
 			                android:layout_width="wrap_content"
@@ -256,7 +274,8 @@
 			                android:layout_toRightOf="@+id/fclbl_plazodescuento"
 			                android:text="Detalle Plazo Descuento"
 			                android:textColor="@color/DarkGray" />
-		
+	
+	
 			             <TextView
 			                 android:id="@+id/fclbl_minabono"
 			                 android:layout_width="wrap_content"
@@ -276,7 +295,8 @@
 			                android:layout_toRightOf="@+id/fclbl_minabono"
 			                android:text="Detalle Min Abono"
 			                android:textColor="@color/DarkGray" />
-		
+	
+	
 			             <TextView
 			                 android:id="@+id/fclbl_descuentos"
 			                 android:layout_width="wrap_content"
@@ -287,7 +307,9 @@
 			                 android:text="Descuentos :"
 			                 android:textColor="@color/Black"
 			                 android:width="112dp" />
-			
+	
+	
+	
 			            <TextView
 			                android:id="@+id/fctextv_detalledescuento"
 			                android:layout_width="wrap_content"
@@ -315,7 +337,8 @@
 				    android:layout_width="fill_parent"
 				    android:layout_height="1dp"
 				    android:background="@color/Gray"/>
-						
+			
+			
 			    <ListView
 				    android:id="@+id/fclvnotas"
 				    android:layout_width="fill_parent"

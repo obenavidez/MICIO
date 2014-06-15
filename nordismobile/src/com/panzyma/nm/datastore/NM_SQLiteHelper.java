@@ -65,7 +65,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     							 "MontoBaseUnico INTEGER,MontoBaseMinimo INTEGER,MontoBaseMaximo INTEGER,MontoPremioUnico INTEGER,MontoPremio FLOAT); ";
 
     String sqlPedido=         "CREATE TABLE IF NOT EXISTS Pedido("
-    		+ "Id INTEGER PRIMARY KEY AUTOINCREMENT,"
+    		+ "Id INTEGER PRIMARY KEY,"
     		+ "NumeroMovil INTEGER,"
     		+ "NumeroCentral INTEGER,"
     		+ "Tipo TEXT,"
@@ -96,7 +96,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			+ "DescCausaEstado TEXT,"
 			+ "NombreVendedor TEXT,"
 			+ "Nota TEXT,"
-			+ "Exento TEXT,"
+			+ "Exento INTEGER,"
 			+ "AutorizacionDGI TEXT, " 
 			+ "FOREIGN KEY(objClienteID) REFERENCES Cliente(IdCliente), " 
 			+ "FOREIGN KEY(objSucursalID) REFERENCES Cliente(IdSucursal) "
@@ -128,7 +128,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
                               "       FOREIGN KEY(objProductoID) REFERENCES Producto(Id) " + 
                               ");" ;
     String sqlPedidoPromocion = "CREATE TABLE IF NOT EXISTS PedidoPromocion (" + 
-            "       Id INTEGER PRIMARY KEY AUTOINCREMENT"+
+            "       Id INTEGER PRIMARY KEY AUTOINCREMENT,"+
             "       objPromocionID BLOB,       " +
             "       objPedidoID BLOB,       " +
             "       Descuento FLOAT, " +  
@@ -138,14 +138,15 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
             "       FOREIGN KEY(objPedidoID) REFERENCES Pedido(Id) " + 
             ");" ;
     String sqlPedidoPromocionDetalle = "CREATE TABLE IF NOT EXISTS PedidoPromocionDetalle (" + 
-    		"       Id INTEGER PRIMARY KEY AUTOINCREMENT"+
+    		"       Id INTEGER PRIMARY KEY AUTOINCREMENT,"+
     		"       objProductoID BLOB,       " +
-            "       objPromocionID BLOB,       " +
+            "       objPromocionID BLOB,       " + 
             "       objPedidoID BLOB,       " +
             "       Descuento FLOAT, " +  
             "       NombreProducto TEXT, " +
             "       CantidadEntregada INTEGER, " +  
             "       FOREIGN KEY(objPromocionID) REFERENCES Promocion(Id), " + 
+            "       FOREIGN KEY(objProductoID) REFERENCES Producto(Id) " +
             "       FOREIGN KEY(objPedidoID) REFERENCES Pedido(Id) " + 
             ");" ;
     

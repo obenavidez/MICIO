@@ -2,7 +2,9 @@ package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo;
 
 import android.content.ContentResolver;
@@ -61,7 +63,8 @@ public class ModelCliente
 		return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetClientesPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage);
 	}
 	
-	public synchronized static Cliente getCustomerFromServer(String Credentials,long idSucursal) throws Exception
+	
+	public synchronized static JSONObject actualizarCliente(String Credentials,long idSucursal) throws Exception
 	{
 	    ArrayList<Parameters> arrayparams=new ArrayList<Parameters>();
 		String[] paramname=new String[]{"Credentials","idSucursal"}; 
@@ -75,7 +78,7 @@ public class ModelCliente
 			params.setType(type[i]);  
 			arrayparams.add(params); 
 		}  			 
-		return   (NMTranslate.ToObject(( NMComunicacion.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCliente)),new Cliente()));		  
+		return  new JSONObject(NMComunicacion.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCliente).toString());		  
 	 }
 	
 	public synchronized static ArrayList<vmCliente> getArrayCustomerFromLocalHost(ContentResolver content)throws Exception
@@ -111,9 +114,9 @@ public class ModelCliente
 		 return arrayclient;
 	}
 	
-	public synchronized static void RegisterCustomer_From_LocalHost(final ArrayList<Cliente> objL,Context ctn)throws Exception
+	public synchronized static void actualizarClienteLocalmente(JSONObject objL,Context ctn)throws Exception
 	{   
-		//DatabaseProvider.InsertCustomerCollection(objL,ctn);
+		DatabaseProvider.ActualizarCliente(objL,ctn);
 	}
 	
 	 
@@ -351,7 +354,7 @@ public class ModelCliente
 	
 	public synchronized static void UpdateCustomer_From_LocalHost(final ArrayList<Cliente> objL,Context ctn) throws Exception
 	{  
-	//	DatabaseProvider.UpdateCustomer(objL,ctn); 
+		//DatabaseProvider.UpdateCustomer(objL,ctn); 
 	}  
 	
 	/*Method del modulo de Cliente pertenecientes a la pantalla Ficha del Cliente*/ 	
@@ -363,7 +366,6 @@ public class ModelCliente
 		return  NMTranslate.ToObject(NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCCCliente),new CCCliente());		 
 	} 
 	
-	 	
 	public synchronized static vmFicha GetFichaCustomerFromServer(String Credentials,long idSucursal) throws Exception
 	{
 		Parameters params=new Parameters((new String[]{"Credentials","idSucursal"}),
@@ -373,7 +375,6 @@ public class ModelCliente
 		return  NMTranslate.ToObject(NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCCCliente),new vmFicha());		 
 	} 
 
-	
 	public synchronized static ArrayList<Factura> getFacturasClienteFromServer(Parameters params) throws Exception
 	{		
 		return  NMTranslate.ToCollection(NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.TraerFacturasCliente),Factura.class);	 

@@ -97,7 +97,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
             display = wm.getDefaultDisplay();
         	setObjSucursalId(objSucursalID);
         	nmapp=(NMApp) recibo.getApplication();
-        	nmapp.getController().removebridgeByName(new BReciboM());
+        	//nmapp.getController().removebridgeByName(new BReciboM());
 	        nmapp.getController().setEntities(this,new BReciboM()); 
 	        nmapp.getController().addOutboxHandler(new Handler(this));
 	        nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 			
@@ -240,12 +240,21 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	}
 	
 	private void FINISH_ACTIVITY()
-	{
+	{		
 		nmapp.getController().removeOutboxHandler(TAG);
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
+		try {
+			nmapp.getController().setEntities(parent,((ViewReciboEdit)parent).getBridge());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(pd!=null)
+			pd.dismiss();	
 		Log.d(TAG, "Activity quitting"); 
 		this.dismiss();
+		
 	}  
 	
 

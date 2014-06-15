@@ -1,6 +1,7 @@
 package com.panzyma.nm.viewdialog;
  
 import android.app.Dialog;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,7 +27,7 @@ public class DialogCondicionesNotas extends Dialog
 	}
 
 	private OnButtonClickListener mButtonClickListener;
-	private Button btnok;
+	private Button btnok,btncancel;
 	
     public void setOnDialogCNButtonClickListener(OnButtonClickListener listener) {
 		mButtonClickListener = listener;
@@ -48,6 +49,7 @@ public class DialogCondicionesNotas extends Dialog
 		etpcondicionado=(EditText)findViewById(R.id.et_pcondicionado);
 		etpespecial=(EditText)findViewById(R.id.et_pespecial);
 		btnok=((Button)findViewById(R.id.btn_ok)); 
+		btncancel=((Button)findViewById(R.id.btn_cancel)); 
 		
         String nota = "";
         if(pedido.getNota() != null) 
@@ -100,8 +102,27 @@ public class DialogCondicionesNotas extends Dialog
 			} 
 		}
 	    );
+        
+        btnok.setOnClickListener(new View.OnClickListener() 
+		{ 
+    	    @Override
+			public void onClick(View v) 
+			{
+    	    	dismiss();
+			}
+		}
+        );
 	}	 
 	 
-
+	@Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) 
+    {  
+        if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+    	  	dismiss();
+            return true;
+	    }
+        return super.onKeyUp(keyCode, event); 
+    } 
 	 
 }

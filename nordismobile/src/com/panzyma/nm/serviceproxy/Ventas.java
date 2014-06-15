@@ -2,14 +2,19 @@ package com.panzyma.nm.serviceproxy;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ID_REQUEST_SALVARPEDIDO;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
 
+import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewPedidoEdit;
 
 public class Ventas {
@@ -106,6 +111,7 @@ public class Ventas {
 	 * Devuelve la bonificación de un producto dada la cantidad que se está
 	 * ordenando y la categoría de cliente
 	 */
+	
 	public static Bonificacion getBonificacion(Producto prod,
 			long idCatCliente, int cantidad) {
 		Vector bonificaciones = parseListaBonificaciones(prod, idCatCliente);
@@ -186,11 +192,16 @@ public class Ventas {
     public static Pedido guardarPedido(Pedido pedido,ViewPedidoEdit vpe) throws Exception
     { 
         //Salvando el tipo de pedido (crédito contado)
+		
+		
         pedido.setTipo("CR"); 
     	if (vpe.getTipoVenta() == "CO")
 			pedido.setTipo("CO");
-       
-		Date d = new Date(vpe.getFechaPedido());
+    	
+    	String f = vpe.getFechaPedido().toString();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date d = (Date) formatter.parse(f);
+        
         pedido.setFecha(DateUtil.d2i(d));
         Integer intId = 0;
         //Generar Id del pedido
@@ -205,6 +216,7 @@ public class Ventas {
             Integer prefix = Ventas.getPrefijoIds(vpe.getApplicationContext());
             String strIdMovil = prefix.intValue() + "" + intId.intValue();
             int idMovil = Integer.parseInt(strIdMovil);
+            pedido.setId(intId);
             pedido.setNumeroMovil(idMovil);
             pedido.setObjEstadoID(0);
             pedido.setObjCausaEstadoID(0);
@@ -213,10 +225,34 @@ public class Ventas {
             pedido.setCodCausaEstado("REGISTRADO");
             pedido.setDescCausaEstado("Registrado");
         }  
-        pedido.setId(vpe.getBridge().RegistrarPedido(pedido,vpe.getContext()));
-        vpe.getBridge().ActualizarSecuenciaPedido(intId,vpe.getContext());
+        vpe.getBridge().RegistrarPedido(pedido,vpe.getContext());
+        vpe.getBridge().ActualizarSecuenciaPedido((int)pedido.getId(),vpe.getContext());
         vpe.actualizarOnUINumRef(pedido);
              
         return pedido;
     } 
+
+	public static Producto getProductoByID(long objProductoID,ViewPedidoEdit vpe) throws Exception
+	{
+		return vpe.getBridge().getProductoByID(vpe.getContentResolver(), objProductoID);
+	}
+
+    public static Pedido enviarPedido(ViewPedidoEdit vpe,Pedido pedido)
+    {
+    	final String credenciales=SessionManager.getCredentials();			  
+		if(credenciales.trim()!="")
+		   return null;
+    	return null;//vpe.getBridge().enviarPedido(credenciales, pedido);
+    }
+    
+    public static int actualizarCliente(Context cnt,long objSucursalID) throws Exception{
+    	final String credentials=SessionManager.getCredenciales();		  
+		if(credentials.trim()!="")  BClienteM.actualizarCliente(cnt, credentials, objSucursalID); 
+		return 1;
+    }
+	
+    public static Pedido obtenerPedidoByID(long idpedido,ViewPedido vp) throws Exception
+    {
+    	return vp.getBridge().obtenerPedidoByID(idpedido, vp.getContentResolver());
+    }
 }

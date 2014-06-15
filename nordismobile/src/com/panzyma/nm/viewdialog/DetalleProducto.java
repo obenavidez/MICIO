@@ -120,10 +120,8 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 							_det.setObjBonificacionID(0);
 							_det.setBonifEditada(false);
 
-							if ((chkViaPrecio == null)
-									|| (!chkViaPrecio.isChecked())) {
-								Bonificacion b = getBonificacion(_producto,
-										_idCategCliente, nuevaCantidadOrdenada);
+							if ((chkViaPrecio == null) || (!chkViaPrecio.isChecked())) {
+								Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
 								if (b != null) {
 									_det.setCantidadBonificada(b
 											.getCantBonificacion());
@@ -279,10 +277,8 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 						_det.setObjBonificacionID(0);
 						_det.setBonifEditada(false);
 
-						if ((chkViaPrecio == null)
-								|| (!chkViaPrecio.isChecked())) {
-							Bonificacion b = getBonificacion(_producto,
-									_idCategCliente, nuevaCantidadOrdenada);
+						if ((chkViaPrecio == null)|| (!chkViaPrecio.isChecked())) {
+							Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
 							if (b != null) {
 								_det.setCantidadBonificada(b
 										.getCantBonificacion());
