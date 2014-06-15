@@ -1,6 +1,8 @@
 package com.panzyma.nm.serviceproxy;
 
 import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.Hashtable;
 
@@ -9,7 +11,7 @@ import org.ksoap2.serialization.PropertyInfo;
 
 import com.panzyma.nm.interfaces.Item;
 
-public final class Cliente implements KvmSerializable, Item {
+public final class Cliente implements KvmSerializable, Item, Parcelable {
 
 	private long IdCliente;
 
@@ -486,6 +488,18 @@ public final class Cliente implements KvmSerializable, Item {
 	@Override
 	public String getItemCode() {
 		return this.Codigo;
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		// TODO Auto-generated method stub
+		
 	}	
 
 }
