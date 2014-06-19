@@ -308,12 +308,10 @@ public class ModelRecibo {
 			ContentResolver content) throws Exception {
 
 		String[] projection = new String[] { NMConfig.Recibo.ID,
-				NMConfig.Recibo.NUMERO, 
-				NMConfig.Recibo.FECHA,
-				NMConfig.Recibo.TOTAL_RECIBO,
-				NMConfig.Recibo.NOMBRE_CLIENTE,				
-				NMConfig.Recibo.DESCRICION_ESTADO };	
-		
+				NMConfig.Recibo.NUMERO, NMConfig.Recibo.FECHA,
+				NMConfig.Recibo.TOTAL_RECIBO, NMConfig.Recibo.NOMBRE_CLIENTE,
+				NMConfig.Recibo.DESCRICION_ESTADO, NMConfig.Recibo.SUCURSAL_ID };
+
 		int count = 0;
 		ArrayList<vmRecibo> a_vmprod = new ArrayList<vmRecibo>();
 		Cursor cur = content.query(DatabaseProvider.CONTENT_URI_RECIBO,
@@ -332,7 +330,8 @@ public class ModelRecibo {
 						.parseFloat(cur.getString(cur
 								.getColumnIndex(projection[3]))), cur
 						.getString(cur.getColumnIndex(projection[4])), cur
-						.getString(cur.getColumnIndex(projection[5]))));
+						.getString(cur.getColumnIndex(projection[5])), cur
+						.getLong(cur.getColumnIndex(projection[6]))));
 			} while (cur.moveToNext());
 		}
 

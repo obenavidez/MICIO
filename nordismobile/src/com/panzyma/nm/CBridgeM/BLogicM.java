@@ -43,14 +43,72 @@ public class BLogicM {
 		case LOAD_DATA_FROM_SERVER:
 			onLoadALLDataFromServer();
 			return true;
-
+		case ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER:
+			onLoadFacturasClienteFromServer();
+			break;
 		}
 		return false;
 	}
 
+	private void onLoadFacturasClienteFromServer() {
+
+		// final String credentials = SessionManager.getCredentials();
+		final String credentials = "sa||nordis09||dp";
+
+		if (!credentials.trim().equals("")) {
+			try {
+				pool.execute(new Runnable() {
+
+					@Override
+					public void run() {
+
+						try {
+							Processor.notifyToView(controller,
+									ControllerProtocol.C_FACTURACLIENTE, 0, 0,
+									ModelLogic.getFacturasCliente(credentials,
+											cuentasPorCobrarFragment
+													.getSucursalId(),
+											cuentasPorCobrarFragment
+													.getFechaInicFac(),
+											cuentasPorCobrarFragment
+													.getFechaFinFac(),
+											cuentasPorCobrarFragment
+													.isSoloFacturasConSaldo(),
+											cuentasPorCobrarFragment
+													.getEstadoFac()));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+				});
+			} catch (InterruptedException e) {
+				Log.e(TAG, "Error in the update thread", e);
+				try {
+					Processor
+							.notifyToView(
+									controller,
+									ERROR,
+									0,
+									0,
+									new ErrorMessage(
+											"Error interno en la sincronización con la BDD",
+											e.toString(), "\n Causa: "
+													+ e.getCause()));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+
+	}
+
 	private void onLoadALLDataFromServer() {
 		try {
-			final String credentials = SessionManager.getCredenciales();
+			// final String credentials = SessionManager.getCredentials();
+
+			final String credentials = "sa||nordis09||dp";
 
 			if (!credentials.trim().equals("")) {
 				pool.execute(new Runnable() {

@@ -50,6 +50,7 @@ import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.FichaReciboFragment;
@@ -66,6 +67,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int NUEVO_RECIBO = 0;
 	private static final int VER_DETALLE_RECIBO = 1;
 	private static final int BORRAR_RECIBO = 2;
+	private static final int CUENTAS_POR_COBRAR = 6;
 	public static final String RECIBO_ID = "recibo_id";
 
 	CustomArrayAdapter<vmRecibo> customArrayAdapter;
@@ -134,17 +136,13 @@ public class ViewRecibo extends ActionBarActivity implements
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
 					//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
 					intento.putExtra(RECIBO_ID, 0);
-					startActivity(intento);  
-					/*firstFragment.setAdapter(null);
-					finish();*/
+					startActivity(intento);				
 					break;
 				case VER_DETALLE_RECIBO:
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
 					//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
 					intento.putExtra(RECIBO_ID, recibo_selected.getId());
-					startActivity(intento);
-					/*firstFragment.setAdapter(null);
-					finish();*/
+					startActivity(intento);					
 					break;
 				case BORRAR_RECIBO:
 					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
@@ -157,7 +155,20 @@ public class ViewRecibo extends ActionBarActivity implements
 						Toast.makeText(getApplicationContext(), String.format("Los recibos con estado '%s'.\n No se pueden eliminar.", recibo_selected.getDescEstado()), Toast.LENGTH_SHORT).show();
 						return;
 					}
-					break;				
+					break;	
+				case CUENTAS_POR_COBRAR:
+					if (findViewById(R.id.fragment_container) != null) {	
+						Fragment cuentasPorCobrar = new CuentasPorCobrarFragment();						
+						Bundle msg = new Bundle();
+						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
+						msg.putParcelable(CuentasPorCobrarFragment.OBJECT, recibo_selected);
+						cuentasPorCobrar.setArguments(msg);
+						getSupportFragmentManager()
+								.beginTransaction()
+								.replace(R.id.fragment_container,
+										cuentasPorCobrar).commit();
+					}
+					break;
 				}
 
 				drawerList.setItemChecked(position, true);
@@ -245,7 +256,7 @@ public class ViewRecibo extends ActionBarActivity implements
 			
 			Object obj = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 			
-			if ( !(obj instanceof ViewReciboEdit) ){
+			if ( !(obj instanceof CuentasPorCobrarFragment) ){
 				customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
 						.findFragmentById(R.id.fragment_container)).getAdapter();
 				//customArrayAdapter = firstFragment.getAdapter();
@@ -545,3 +556,4 @@ public class ViewRecibo extends ActionBarActivity implements
 	}
 
 }
+

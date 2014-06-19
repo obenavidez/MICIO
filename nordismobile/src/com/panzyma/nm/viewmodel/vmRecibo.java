@@ -13,9 +13,10 @@ public class vmRecibo implements Item, Parcelable {
 	protected float totalRecibo;
 	protected java.lang.String nombreCliente;
 	protected java.lang.String descEstado;
+	protected long objSucursalID;
 
 	public vmRecibo(int id, int numero, long fecha, float totalRecibo,
-			String nombreCliente, String descEstado) {
+			String nombreCliente, String descEstado, long objSucursalID) {
 		super();
 		this.id = id;
 		this.numero = numero;
@@ -23,9 +24,11 @@ public class vmRecibo implements Item, Parcelable {
 		this.totalRecibo = totalRecibo;
 		this.nombreCliente = nombreCliente;
 		this.descEstado = descEstado;
+		this.objSucursalID = objSucursalID;
 	}
 
-	public vmRecibo() {}
+	public vmRecibo() {
+	}
 
 	public int getId() {
 		return id;
@@ -77,9 +80,18 @@ public class vmRecibo implements Item, Parcelable {
 
 	@Override
 	public Object isMatch(CharSequence constraint) {
-		if (String.valueOf(getNumero()).toLowerCase().startsWith(constraint.toString()))
+		if (String.valueOf(getNumero()).toLowerCase()
+				.startsWith(constraint.toString()))
 			return true;
 		return false;
+	}
+
+	public long getObjSucursalID() {
+		return objSucursalID;
+	}
+
+	public void setObjSucursalID(long objSucursalID) {
+		this.objSucursalID = objSucursalID;
 	}
 
 	@Override
@@ -96,7 +108,7 @@ public class vmRecibo implements Item, Parcelable {
 
 	@Override
 	public String getItemName() {
-		return getNumero() +" - "+ getNombreCliente();
+		return getNumero() + " - " + getNombreCliente();
 	}
 
 	@Override

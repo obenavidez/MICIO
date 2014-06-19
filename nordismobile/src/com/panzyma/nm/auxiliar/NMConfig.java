@@ -24,7 +24,11 @@ public class NMConfig
 	    public static final String GetTasasDeCambio="GetTasasDeCambio";
 	    public static final String GetPromocionesPaged="GetPromocionesPaged";
 	    public static final String TraerDisponibilidadProductos="TraerDisponibilidadProductos";
-	    public static final String EnviarPedido="EnviarPedido";	    
+	    public static final String EnviarPedido="EnviarPedido";
+		public static final String TraerPedidosCliente = "TraerPedidosCliente";
+		public static final String TraerRColCliente = "TraerRColCliente";
+		public static final String TraerNotasDebitoCliente = "TraerNotasDebitoCliente";
+		public static final String TraerNotasCreditoCliente = "TraerNotasCreditoCliente";	    
 	}
 	public static final class Cliente
 	{  		
