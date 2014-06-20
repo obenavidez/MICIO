@@ -1,5 +1,7 @@
 package com.panzyma.nm.fragments;
 
+import java.util.ArrayList;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.auxiliar.DateUtil;
@@ -7,7 +9,9 @@ import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -23,18 +27,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class CuentasPorCobrarFragment extends Fragment implements
 		Handler.Callback {
-	
+
 	public enum TypeDetail {
-		FACTURA,
-		NOTAS_DEBITO,
-		NOTAS_CREDITO
+		FACTURA, NOTAS_DEBITO, NOTAS_CREDITO
 	}
 
-	private TypeDetail typeDetail = TypeDetail.FACTURA; 
+	private TypeDetail typeDetail = TypeDetail.FACTURA;
 	private int mCurrentPosition = -1;
 	private vmRecibo cliente = null;
 	private Context fcontext = null;
@@ -45,27 +49,30 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private TextView txtViewSaldo;
 	private TextView txtViewDisponible;
 	private TextView gridheader;
-	
+	private TextView headerGrid;
+	private ListView listaGenerica;
+	private ProgressBar progressBar;
+
 	private int fechaFinFac = 0;
-    private int fechaInicFac = 0;
-    private String estadoFac = "TODOS";
-    private boolean soloFacturasConSaldo = true;
-    
-    private int fechaFinPedidos = 0;
-    private int fechaInicPedidos = 0;
-    private String estadoPedidos = "TODOS";
-    
-    private int fechaFinRCol = 0;
-    private int fechaInicRCol = 0;
-    private String estadoRCol = "TODOS";
-    
-    private int fechaFinNC = 0;
-    private int fechaInicNC = 0;
-    private String estadoNC = "AUTORIZADA";
-    
-    private int fechaFinND = 0;
-    private int fechaInicND = 0;
-    private String estadoND = "AUTORIZADA";
+	private int fechaInicFac = 0;
+	private String estadoFac = "TODOS";
+	private boolean soloFacturasConSaldo = true;
+
+	private int fechaFinPedidos = 0;
+	private int fechaInicPedidos = 0;
+	private String estadoPedidos = "TODOS";
+
+	private int fechaFinRCol = 0;
+	private int fechaInicRCol = 0;
+	private String estadoRCol = "TODOS";
+
+	private int fechaFinNC = 0;
+	private int fechaInicNC = 0;
+	private String estadoNC = "AUTORIZADA";
+
+	private int fechaFinND = 0;
+	private int fechaInicND = 0;
+	private String estadoND = "AUTORIZADA";
 
 	public final static String ARG_POSITION = "position";
 	public final static String OBJECT = "cliente";
@@ -77,7 +84,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 			cliente = (vmRecibo) savedInstanceState.getParcelable(OBJECT);
-		}
+		}		
 		return inflater.inflate(R.layout.cuentas_x_cobrar, container, false);
 	}
 
@@ -90,7 +97,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			cliente = (vmRecibo) args.getParcelable(OBJECT);
 			mCurrentPosition = args.getInt(ARG_POSITION);
 			cargarEncabezadoCliente();
-		} else if (mCurrentPosition != -1) {			
+		} else if (mCurrentPosition != -1) {
 			cargarEncabezadoCliente();
 		}
 	}
@@ -99,6 +106,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		return cliente.getObjSucursalID();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
 		switch (msg.what) {
@@ -106,7 +114,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			establecerDatosGenerales((CCCliente) msg.obj);
 			break;
 		case ControllerProtocol.C_FACTURACLIENTE:
-			
+			mostrarFacturas(((ArrayList<Factura>) msg.obj));
 			break;
 		}
 		return false;
@@ -114,26 +122,30 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	private void cargarEncabezadoCliente() {
 		try {
+			
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
 					.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_SERVER);
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void cargarFacturasCliente() {
 		try {
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER);
+			nmapp.getController()
+					.getInboxHandler()
+					.sendEmptyMessage(
+							ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -142,29 +154,32 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	private void initComponents() {
 		Activity actividad = getActivity();
-		//INICIALIZAR VARIABLES
+		// INICIALIZAR VARIABLES
 		fechaInicPedidos = DateUtil.getToday();
 		String s = String.valueOf(fechaInicPedidos);
-        fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01");
-        fechaFinRCol = fechaFinPedidos;
-        fechaInicRCol = fechaInicPedidos;		
+		fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01");
+		fechaFinRCol = fechaFinPedidos;
+		fechaInicRCol = fechaInicPedidos;
 		// OBTENER LAS REFERENCIAS DE LAS VISTAS
-		txtViewCliente = (TextView) actividad.findViewById(
-				R.id.cctextv_detallecliente);
-		txtViewLimiteCredito = (TextView) actividad.findViewById(
-				R.id.cctextv_detallelimitecredito);
-		txtViewSaldo = (TextView) actividad.findViewById(
-				R.id.cctextv_detallesaldo);
-		txtViewDisponible = (TextView) actividad.findViewById(
-				R.id.cctextv_detalledisponible);
+		txtViewCliente = (TextView) actividad
+				.findViewById(R.id.cctextv_detallecliente);
+		txtViewLimiteCredito = (TextView) actividad
+				.findViewById(R.id.cctextv_detallelimitecredito);
+		txtViewSaldo = (TextView) actividad
+				.findViewById(R.id.cctextv_detallesaldo);
+		txtViewDisponible = (TextView) actividad
+				.findViewById(R.id.cctextv_detalledisponible);
 		gridheader = (TextView) actividad.findViewById(R.id.ctextv_gridheader);
 		gridheader.setVisibility(View.INVISIBLE);
 		gridheader.setHeight(0);
+
+		headerGrid = (TextView) actividad.findViewById(R.id.cxctextv_header2);
+		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);		
 	}
 
 	private void establecerDatosGenerales(CCCliente cliente) {
 		if (cliente != null) {
-			
+
 			txtViewCliente.setText(cliente.getNombreSucursal() + " - "
 					+ cliente.getNombreSucursal());
 			txtViewLimiteCredito.setText(StringUtil.formatReal(cliente
@@ -172,7 +187,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			txtViewSaldo
 					.setText(StringUtil.formatReal(cliente.getSaldoActual()));
 			txtViewDisponible.setText(StringUtil.formatReal(cliente
-					.getDisponible()));			
+					.getDisponible()));
 
 			switch (typeDetail) {
 			case FACTURA:
@@ -183,7 +198,18 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			case NOTAS_DEBITO:
 				break;
 			}
-			
+
+		}
+	}
+
+	private void mostrarFacturas(ArrayList<Factura> facturas) {
+		if (facturas!= null && facturas.size() > 0) {
+			adapter = new GenericAdapter<Factura, FacturaViewHolder>(this
+					.getActivity().getApplicationContext(),
+					FacturaViewHolder.class, facturas, R.layout.detalle_factura);
+			headerGrid.setText("Listado de Facturas (" + facturas.size() + ")");
+
+			listaGenerica.setAdapter(adapter);
 		}
 	}
 
@@ -218,6 +244,5 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public void setSoloFacturasConSaldo(boolean soloFacturasConSaldo) {
 		this.soloFacturasConSaldo = soloFacturasConSaldo;
 	}
-	
-	
+
 }

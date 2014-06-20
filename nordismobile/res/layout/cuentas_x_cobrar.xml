@@ -18,6 +18,7 @@
             android:text="Datos Generales"
             android:textColor="@color/DodgerBlue"
             android:textSize="14sp"
+            android:gravity="center_horizontal"
             android:textStyle="bold" />
 
         <View
@@ -105,16 +106,7 @@
                     android:hint="Detalle Disponible"
                     android:textColor="@color/DarkGray" />
             </TableRow>
-        </TableLayout>      
-
-        <TextView
-            android:id="@+id/cxctextv_header2"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textColor="@color/DodgerBlue"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+        </TableLayout>       
 
         <View
             android:layout_width="fill_parent"
@@ -124,25 +116,30 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <TextView
+            android:background="@color/White"
+            android:orientation="vertical" >
+            
+            <EditText
                 android:id="@+id/cxctextv_detalle_generico"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginRight="20dp"
-                android:textColor="@color/Gray"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:gravity="left"
+                android:hint="filtre sus documentos"
+                android:inputType="textPersonName"
+                android:singleLine="true" >
+            </EditText>
 
-            <Button
-                android:id="@+id/cxcbtnfilter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:background="@drawable/filter_state" />
-        </LinearLayout>
+	 	    <TextView
+	 	        android:id="@+id/cxctextv_header2"
+	 	        style="StyleFontTextViewActionBar"
+	 	        android:layout_width="fill_parent"
+	 	        android:layout_height="wrap_content"	 	        
+	 	        android:gravity="center"
+	 	        android:text="@string/txtclient_tittle"				
+				android:textColor="@color/White"
+				android:background="@color/Gray" />
+			 	       
+		</LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -169,12 +166,7 @@
                 android:textColor="@color/Black"
                 android:textSize="12dp"
                 android:visibility="gone" />
-
-            <ProgressBar
-                android:id="@+id/cxcprogressbar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+            
         </LinearLayout>
     </LinearLayout>
 
