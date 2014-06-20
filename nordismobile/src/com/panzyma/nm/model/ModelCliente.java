@@ -1,5 +1,6 @@
 package com.panzyma.nm.model;
 
+import com.comunicator.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -60,7 +61,8 @@ public class ModelCliente
 	
 	public synchronized static JSONArray getArrayCustomerFromServer2(String Credentials,String UsuarioVendedor,Integer page,Integer rowpage)throws Exception
 	{
-		return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetClientesPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage);
+		return AppNMComunication.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetClientesPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage);
+		//return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetClientesPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage);
 	}
 	
 	
