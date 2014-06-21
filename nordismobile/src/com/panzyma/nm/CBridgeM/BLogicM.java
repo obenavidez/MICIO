@@ -25,13 +25,38 @@ public class BLogicM {
 	private ThreadPool pool = null;
 	private String TAG = BLogicM.class.getSimpleName();
 	boolean OK = false;
-	private CuentasPorCobrarFragment cuentasPorCobrarFragment = null;
+	private CuentasPorCobrarFragment fragment = null;	
+	
+	public enum Result {
+		
+		CLIENTE(0),
+		FACTURAS_CLIENTE(1), 
+		NOTAS_DEBITO(2), 
+		NOTAS_CREDITO(3), 
+		PEDIDOS(4), 
+		RECIBOS_COLECTOR(5);
+		
+		int result;
+		
+		Result(int result){
+			this.result = result;
+		}
+		
+		public int getResult(){
+			return result;
+		}		
+
+	    public static Result toInt(int x) {
+	    	 return Result.values()[x];
+	    }
+		
+	}
 
 	public BLogicM() {
 	}
 
 	public BLogicM(CuentasPorCobrarFragment cuentasPorCobrarFragment) {
-		this.cuentasPorCobrarFragment = cuentasPorCobrarFragment;
+		this.fragment = cuentasPorCobrarFragment;
 		this.controller = ((NMApp) cuentasPorCobrarFragment.getActivity()
 				.getApplication()).getController();
 		this.pool = ((NMApp) cuentasPorCobrarFragment.getActivity()
@@ -41,17 +66,28 @@ public class BLogicM {
 	public boolean handleMessage(Message msg) throws Exception {
 		switch (msg.what) {
 		case LOAD_DATA_FROM_SERVER:
-			onLoadALLDataFromServer();
+			onLoadClienteDataFromServer();
 			return true;
 		case ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER:
 			onLoadFacturasClienteFromServer();
+			break;
+		case ControllerProtocol.LOAD_NOTAS_DEBITO_FROM_SERVER:
+			onLoadNotasDebitoClienteFromServer();
+			break;
+		case ControllerProtocol.LOAD_NOTAS_CREDITO_FROM_SERVER:
+			onLoadNotasCreditoClienteFromServer();
+			break;
+		case ControllerProtocol.LOAD_PEDIDOS_FROM_SERVER:
+			onLoadPedidosClienteFromServer();
+			break;
+		case ControllerProtocol.LOAD_RECIBOS_FROM_SERVER:
+			onLoadRecibosClienteFromServer();
 			break;
 		}
 		return false;
 	}
 
-	private void onLoadFacturasClienteFromServer() {
-
+	private void onLoadRecibosClienteFromServer() {
 		// final String credentials = SessionManager.getCredentials();
 		final String credentials = "sa||nordis09||dp";
 
@@ -64,18 +100,14 @@ public class BLogicM {
 
 						try {
 							Processor.notifyToView(controller,
-									ControllerProtocol.C_FACTURACLIENTE, 0, 0,
-									ModelLogic.getFacturasCliente(credentials,
-											cuentasPorCobrarFragment
-													.getSucursalId(),
-											cuentasPorCobrarFragment
-													.getFechaInicFac(),
-											cuentasPorCobrarFragment
-													.getFechaFinFac(),
-											cuentasPorCobrarFragment
-													.isSoloFacturasConSaldo(),
-											cuentasPorCobrarFragment
-													.getEstadoFac()));
+									Result.RECIBOS_COLECTOR.getResult(),
+									0, 
+									0,
+									ModelLogic.getRecibosColector(credentials,
+											fragment.getSucursalId(),
+											fragment.getFechaInicRCol(),
+											fragment.getFechaFinRCol(),
+											fragment.getEstadoRCol()));
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -104,7 +136,205 @@ public class BLogicM {
 
 	}
 
-	private void onLoadALLDataFromServer() {
+	private void onLoadPedidosClienteFromServer() {
+		// final String credentials = SessionManager.getCredentials();
+		final String credentials = "sa||nordis09||dp";
+
+		if (!credentials.trim().equals("")) {
+			try {
+				pool.execute(new Runnable() {
+
+					@Override
+					public void run() {
+
+						try {
+							Processor.notifyToView(controller,
+									Result.PEDIDOS.getResult(),
+									0,
+									0,
+									ModelLogic.getPedidosCliente(credentials,
+											fragment.getSucursalId(),
+											fragment.getFechaInicPedidos(),
+											fragment.getFechaFinPedidos(),
+											fragment.getEstadoPedidos()));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+				});
+			} catch (InterruptedException e) {
+				Log.e(TAG, "Error in the update thread", e);
+				try {
+					Processor
+							.notifyToView(
+									controller,
+									ERROR,
+									0,
+									0,
+									new ErrorMessage(
+											"Error interno en la sincronización con la BDD",
+											e.toString(), "\n Causa: "
+													+ e.getCause()));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private void onLoadNotasCreditoClienteFromServer() {
+		// final String credentials = SessionManager.getCredentials();
+		final String credentials = "sa||nordis09||dp";
+
+		if (!credentials.trim().equals("")) {
+			try {
+				pool.execute(new Runnable() {
+
+					@Override
+					public void run() {
+
+						try {
+							Processor.notifyToView(controller,
+									Result.NOTAS_CREDITO.getResult(),
+									0,
+									0,
+									ModelLogic.getNotasCreditoCliente(
+											credentials,
+											fragment.getSucursalId(),
+											fragment.getFechaInicNC(),
+											fragment.getFechaFinNC(),
+											fragment.getEstadoNC()));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+				});
+			} catch (InterruptedException e) {
+				Log.e(TAG, "Error in the update thread", e);
+				try {
+					Processor
+							.notifyToView(
+									controller,
+									ERROR,
+									0,
+									0,
+									new ErrorMessage(
+											"Error interno en la sincronización con la BDD",
+											e.toString(), "\n Causa: "
+													+ e.getCause()));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private void onLoadNotasDebitoClienteFromServer() {
+		// final String credentials = SessionManager.getCredentials();
+		final String credentials = "sa||nordis09||dp";
+
+		if (!credentials.trim().equals("")) {
+			try {
+				pool.execute(new Runnable() {
+
+					@Override
+					public void run() {
+
+						try {
+							Processor.notifyToView(controller,
+									Result.NOTAS_DEBITO.getResult(),
+									0,
+									0,
+									ModelLogic.getNotasDebitoCliente(
+											credentials,
+											fragment.getSucursalId(),
+											fragment.getFechaInicND(),
+											fragment.getFechaFinND(),
+											fragment.getEstadoND()));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+				});
+			} catch (InterruptedException e) {
+				Log.e(TAG, "Error in the update thread", e);
+				try {
+					Processor
+							.notifyToView(
+									controller,
+									ERROR,
+									0,
+									0,
+									new ErrorMessage(
+											"Error interno en la sincronización con la BDD",
+											e.toString(), "\n Causa: "
+													+ e.getCause()));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+
+	}
+
+	private void onLoadFacturasClienteFromServer() {
+
+		// final String credentials = SessionManager.getCredentials();
+		final String credentials = "sa||nordis09||dp";
+
+		if (!credentials.trim().equals("")) {
+			try {
+				pool.execute(new Runnable() {
+
+					@Override
+					public void run() {
+
+						try {
+							Processor.notifyToView(controller,
+									Result.FACTURAS_CLIENTE.getResult(),
+									0,
+									0,
+									ModelLogic.getFacturasCliente(credentials,
+											fragment.getSucursalId(),
+											fragment.getFechaInicFac(),
+											fragment.getFechaFinFac(),
+											fragment.isSoloFacturasConSaldo(),
+											fragment.getEstadoFac()));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+				});
+			} catch (InterruptedException e) {
+				Log.e(TAG, "Error in the update thread", e);
+				try {
+					Processor
+							.notifyToView(
+									controller,
+									ERROR,
+									0,
+									0,
+									new ErrorMessage(
+											"Error interno en la sincronización con la BDD",
+											e.toString(), "\n Causa: "
+													+ e.getCause()));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+
+	}
+
+	private void onLoadClienteDataFromServer() {
 		try {
 			// final String credentials = SessionManager.getCredentials();
 
@@ -118,11 +348,12 @@ public class BLogicM {
 
 						try {
 							Processor.notifyToView(controller,
-									ControllerProtocol.C_DATA, 0, 0, ModelLogic
-											.getCuentasPorCobrarDelCliente(
-													credentials,
-													cuentasPorCobrarFragment
-															.getSucursalId()));
+									Result.CLIENTE.getResult(),
+									0, 
+									0, 
+									ModelLogic.getCuentasPorCobrarDelCliente(
+											credentials,
+											fragment.getSucursalId()));
 
 						} catch (Exception e) {
 							Log.e(TAG, "Error in the update thread", e);

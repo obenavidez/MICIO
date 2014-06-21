@@ -94,17 +94,16 @@ public class ModelLogic {
 	 */
 	public synchronized static ArrayList<CCPedido> getPedidosCliente(
 			String credenciales, long sucursalID, int fechaInic, int fechaFin,
-			boolean soloConSaldo, String codEstado) {
+			String codEstado) {
 
 		Parameters params = new Parameters((new String[] { "Credentials",
 				"idSucursal", "fechaInic", "fechaFin",
-				"mostrarTodasSucursales", "soloConSaldo", "codEstado" }),
+				"mostrarTodasSucursales", "codEstado" }),
 				(new Object[] { credenciales, sucursalID, fechaInic, fechaFin,
-						false, soloConSaldo, codEstado }), (new Type[] {
+						false, codEstado }), (new Type[] {
 						PropertyInfo.STRING_CLASS, PropertyInfo.LONG_CLASS,
 						PropertyInfo.INTEGER_CLASS, PropertyInfo.INTEGER_CLASS,
-						PropertyInfo.BOOLEAN_CLASS, PropertyInfo.BOOLEAN_CLASS,
-						PropertyInfo.STRING_CLASS }));
+						PropertyInfo.BOOLEAN_CLASS, PropertyInfo.STRING_CLASS }));
 
 		try {
 			
@@ -133,17 +132,16 @@ public class ModelLogic {
 	 */
 	public synchronized static ArrayList<CCReciboColector> getRecibosColector(
 			String credenciales, long sucursalID, int fechaInic, int fechaFin,
-			boolean soloConSaldo, String codEstado) {
+			String codEstado) {
 
 		Parameters params = new Parameters((new String[] { "Credentials",
 				"idSucursal", "fechaInic", "fechaFin",
-				"mostrarTodasSucursales", "soloConSaldo", "codEstado" }),
+				"mostrarTodasSucursales", "codEstado" }),
 				(new Object[] { credenciales, sucursalID, fechaInic, fechaFin,
-						false, soloConSaldo, codEstado }), (new Type[] {
+						false, codEstado }), (new Type[] {
 						PropertyInfo.STRING_CLASS, PropertyInfo.LONG_CLASS,
 						PropertyInfo.INTEGER_CLASS, PropertyInfo.INTEGER_CLASS,
-						PropertyInfo.BOOLEAN_CLASS, PropertyInfo.BOOLEAN_CLASS,
-						PropertyInfo.STRING_CLASS }));
+						PropertyInfo.BOOLEAN_CLASS, PropertyInfo.STRING_CLASS }));
 
 		try {
 			
@@ -166,23 +164,21 @@ public class ModelLogic {
 	 * @param sucursalID
 	 * @param fechaInic
 	 * @param fechaFin
-	 * @param soloConSaldo
 	 * @param codEstado
 	 * @return ArrayList<CCNotaCredito>
 	 */
 	public synchronized static ArrayList<CCNotaCredito> getNotasCreditoCliente(
 			String credenciales, long sucursalID, int fechaInic, int fechaFin,
-			boolean soloConSaldo, String codEstado) {
+			String codEstado) {
 
 		Parameters params = new Parameters((new String[] { "Credentials",
 				"idSucursal", "fechaInic", "fechaFin",
-				"mostrarTodasSucursales", "soloConSaldo", "codEstado" }),
+				"mostrarTodasSucursales", "codEstado" }),
 				(new Object[] { credenciales, sucursalID, fechaInic, fechaFin,
-						false, soloConSaldo, codEstado }), (new Type[] {
+						false, codEstado }), (new Type[] {
 						PropertyInfo.STRING_CLASS, PropertyInfo.LONG_CLASS,
 						PropertyInfo.INTEGER_CLASS, PropertyInfo.INTEGER_CLASS,
-						PropertyInfo.BOOLEAN_CLASS, PropertyInfo.BOOLEAN_CLASS,
-						PropertyInfo.STRING_CLASS }));
+						PropertyInfo.BOOLEAN_CLASS, PropertyInfo.STRING_CLASS }));
 
 		try {
 			
@@ -205,22 +201,21 @@ public class ModelLogic {
 	 * @param sucursalID
 	 * @param fechaInic
 	 * @param fechaFin
-	 * @param soloConSaldo
 	 * @param codEstado
 	 * @return ArrayList<CCNotaDebito>
 	 */
 	public synchronized static ArrayList<CCNotaDebito> getNotasDebitoCliente (
 			String credenciales, long sucursalID, int fechaInic, int fechaFin,
-			boolean soloConSaldo, String codEstado) {
+			String codEstado) {
 
 		Parameters params = new Parameters((new String[] { "Credentials",
 				"idSucursal", "fechaInic", "fechaFin",
-				"mostrarTodasSucursales", "soloConSaldo", "codEstado" }),
+				"mostrarTodasSucursales",  "codEstado" }),
 				(new Object[] { credenciales, sucursalID, fechaInic, fechaFin,
-						false, soloConSaldo, codEstado }), (new Type[] {
+						false, codEstado }), (new Type[] {
 						PropertyInfo.STRING_CLASS, PropertyInfo.LONG_CLASS,
 						PropertyInfo.INTEGER_CLASS, PropertyInfo.INTEGER_CLASS,
-						PropertyInfo.BOOLEAN_CLASS, PropertyInfo.BOOLEAN_CLASS,
+						PropertyInfo.BOOLEAN_CLASS, 
 						PropertyInfo.STRING_CLASS }));
 
 		try {

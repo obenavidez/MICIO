@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
+import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
@@ -84,7 +85,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 			cliente = (vmRecibo) savedInstanceState.getParcelable(OBJECT);
-		}		
+		}
 		return inflater.inflate(R.layout.cuentas_x_cobrar, container, false);
 	}
 
@@ -109,12 +110,25 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
-		switch (msg.what) {
-		case ControllerProtocol.C_DATA:
+
+		Result resultado = Result.toInt(msg.what);
+
+		switch (resultado) {
+		case CLIENTE:
 			establecerDatosGenerales((CCCliente) msg.obj);
 			break;
-		case ControllerProtocol.C_FACTURACLIENTE:
+		case FACTURAS_CLIENTE:
 			mostrarFacturas(((ArrayList<Factura>) msg.obj));
+			break;
+		case NOTAS_CREDITO:
+			break;
+		case NOTAS_DEBITO:
+			break;
+		case PEDIDOS:
+			break;
+		case RECIBOS_COLECTOR:
+			break;
+		default:
 			break;
 		}
 		return false;
@@ -122,14 +136,13 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	private void cargarEncabezadoCliente() {
 		try {
-			
+
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
 					.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_SERVER);
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -174,7 +187,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		gridheader.setHeight(0);
 
 		headerGrid = (TextView) actividad.findViewById(R.id.cxctextv_header2);
-		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);		
+		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);
 	}
 
 	private void establecerDatosGenerales(CCCliente cliente) {
@@ -203,7 +216,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 
 	private void mostrarFacturas(ArrayList<Factura> facturas) {
-		if (facturas!= null && facturas.size() > 0) {
+		if (facturas != null && facturas.size() > 0) {
 			adapter = new GenericAdapter<Factura, FacturaViewHolder>(this
 					.getActivity().getApplicationContext(),
 					FacturaViewHolder.class, facturas, R.layout.detalle_factura);
@@ -243,6 +256,102 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	public void setSoloFacturasConSaldo(boolean soloFacturasConSaldo) {
 		this.soloFacturasConSaldo = soloFacturasConSaldo;
+	}
+
+	public int getFechaFinPedidos() {
+		return fechaFinPedidos;
+	}
+
+	public void setFechaFinPedidos(int fechaFinPedidos) {
+		this.fechaFinPedidos = fechaFinPedidos;
+	}
+
+	public int getFechaInicPedidos() {
+		return fechaInicPedidos;
+	}
+
+	public void setFechaInicPedidos(int fechaInicPedidos) {
+		this.fechaInicPedidos = fechaInicPedidos;
+	}
+
+	public String getEstadoPedidos() {
+		return estadoPedidos;
+	}
+
+	public void setEstadoPedidos(String estadoPedidos) {
+		this.estadoPedidos = estadoPedidos;
+	}
+
+	public int getFechaFinRCol() {
+		return fechaFinRCol;
+	}
+
+	public void setFechaFinRCol(int fechaFinRCol) {
+		this.fechaFinRCol = fechaFinRCol;
+	}
+
+	public int getFechaInicRCol() {
+		return fechaInicRCol;
+	}
+
+	public void setFechaInicRCol(int fechaInicRCol) {
+		this.fechaInicRCol = fechaInicRCol;
+	}
+
+	public String getEstadoRCol() {
+		return estadoRCol;
+	}
+
+	public void setEstadoRCol(String estadoRCol) {
+		this.estadoRCol = estadoRCol;
+	}
+
+	public int getFechaFinNC() {
+		return fechaFinNC;
+	}
+
+	public void setFechaFinNC(int fechaFinNC) {
+		this.fechaFinNC = fechaFinNC;
+	}
+
+	public int getFechaInicNC() {
+		return fechaInicNC;
+	}
+
+	public void setFechaInicNC(int fechaInicNC) {
+		this.fechaInicNC = fechaInicNC;
+	}
+
+	public String getEstadoNC() {
+		return estadoNC;
+	}
+
+	public void setEstadoNC(String estadoNC) {
+		this.estadoNC = estadoNC;
+	}
+
+	public int getFechaFinND() {
+		return fechaFinND;
+	}
+
+	public void setFechaFinND(int fechaFinND) {
+		this.fechaFinND = fechaFinND;
+	}
+
+	public int getFechaInicND() {
+		return fechaInicND;
+	}
+
+	public void setFechaInicND(int fechaInicND) {
+		this.fechaInicND = fechaInicND;
+	}
+
+	public String getEstadoND() {
+		return estadoND;
+	}
+
+	public void setEstadoND(String estadoND) {
+		this.estadoND = estadoND;
 	}
 
 }

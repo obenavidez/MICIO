@@ -62,4 +62,9 @@ public interface ControllerProtocol {
     int ALERT_DIALOG=1;
     int CONFIRMATION_DIALOG=2;
     
+	int LOAD_NOTAS_DEBITO_FROM_SERVER = 700;
+	int LOAD_NOTAS_CREDITO_FROM_SERVER = 701;
+	int LOAD_PEDIDOS_FROM_SERVER = 702;
+	int LOAD_RECIBOS_FROM_SERVER = 703;
+    
 }
