@@ -34,12 +34,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,12 +59,20 @@ import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.menu.ActionItem;
+import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 public class ViewRecibo extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {
+	
+	public enum FragmentActive {
+		LIST,
+		ITEM,
+		CUENTAS_POR_COBRAR
+	};
 
 	private static final String TAG = ViewRecibo.class.getSimpleName();
 	private static final int NUEVO_RECIBO = 0;
@@ -69,6 +80,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int BORRAR_RECIBO = 2;
 	private static final int CUENTAS_POR_COBRAR = 6;
 	public static final String RECIBO_ID = "recibo_id";
+	private FragmentActive fragmentActive = null;
 
 	CustomArrayAdapter<vmRecibo> customArrayAdapter;
 	private SearchView searchView;
@@ -82,6 +94,10 @@ public class ViewRecibo extends ActionBarActivity implements
 	private CharSequence tituloSeccion;
 	private CharSequence tituloApp;
 	private NMApp nmapp;
+	private QuickAction quickAction;
+	private Button btnMenu;
+	private Display display;
+	
 	ProgressDialog pDialog;
 	TextView gridheader;
 	TextView footerView;
@@ -90,6 +106,13 @@ public class ViewRecibo extends ActionBarActivity implements
 	vmRecibo recibo_selected;
 	ListaFragment<vmRecibo> firstFragment;
 	FragmentTransaction transaction;
+	CuentasPorCobrarFragment cuentasPorCobrar;
+	
+	private static final int MOSTRAR_FACTURAS = 0;
+	private static final int MOSTRAR_NOTAS_DEBITO = 1;
+	private static final int MOSTRAR_NOTAS_CREDITO = 2;
+	private static final int MOSTRAR_PEDIDOS = 3;
+	private static final int MOSTRAR_RECIBOS = 4;
 	
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
@@ -104,7 +127,10 @@ public class ViewRecibo extends ActionBarActivity implements
 		transaction = getSupportFragmentManager()
 				.beginTransaction();
 
-
+		WindowManager wm = (WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE);
+		display = wm.getDefaultDisplay();
+		
 		initComponent();
 
 		gridheader.setVisibility(View.VISIBLE);
@@ -157,8 +183,9 @@ public class ViewRecibo extends ActionBarActivity implements
 					}
 					break;	
 				case CUENTAS_POR_COBRAR:
+					fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
 					if (findViewById(R.id.fragment_container) != null) {	
-						Fragment cuentasPorCobrar = new CuentasPorCobrarFragment();						
+						cuentasPorCobrar = new CuentasPorCobrarFragment();						
 						Bundle msg = new Bundle();
 						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
 						msg.putParcelable(CuentasPorCobrarFragment.OBJECT, recibo_selected);
@@ -222,6 +249,8 @@ public class ViewRecibo extends ActionBarActivity implements
 		if (savedInstanceState != null) {
 			return;
 		}
+		
+		fragmentActive = FragmentActive.LIST;
 
 		// Create an instance of ExampleFragment
 		firstFragment = new ListaFragment<vmRecibo>();
@@ -251,36 +280,39 @@ public class ViewRecibo extends ActionBarActivity implements
 		MenuItem searchItem = menu.findItem(R.id.action_search);
 
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+		
+		if ( fragmentActive == FragmentActive.LIST) {
+			
+			if (findViewById(R.id.fragment_container) != null) {
+				
+				Object obj = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+				
+				if ( !(obj instanceof CuentasPorCobrarFragment) ){
+					customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
+							.findFragmentById(R.id.fragment_container)).getAdapter();					
+				}
+				
 
-		if (findViewById(R.id.fragment_container) != null) {
-			
-			Object obj = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-			
-			if ( !(obj instanceof CuentasPorCobrarFragment) ){
+			} else {
 				customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
-						.findFragmentById(R.id.fragment_container)).getAdapter();
-				//customArrayAdapter = firstFragment.getAdapter();
+						.findFragmentById(R.id.item_client_fragment)).getAdapter();
 			}
+
+			searchView.setOnQueryTextListener(new OnQueryTextListener() {
+				@Override
+				public boolean onQueryTextChange(String s) {
+					customArrayAdapter.getFilter().filter(s);
+					return false;
+				}
+
+				@Override
+				public boolean onQueryTextSubmit(String s) {
+					customArrayAdapter.getFilter().filter(s);
+					return false;
+				}
+			});
 			
-
-		} else {
-			customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
-					.findFragmentById(R.id.item_client_fragment)).getAdapter();
-		}
-
-		searchView.setOnQueryTextListener(new OnQueryTextListener() {
-			@Override
-			public boolean onQueryTextChange(String s) {
-				customArrayAdapter.getFilter().filter(s);
-				return false;
-			}
-
-			@Override
-			public boolean onQueryTextSubmit(String s) {
-				customArrayAdapter.getFilter().filter(s);
-				return false;
-			}
-		});
+		}	
 
 		return true;
 	}
@@ -338,6 +370,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		gridheader.setText("Listado de Recibos (0) ");
 		footerView = (TextView) findViewById(R.id.ctxtview_enty);
 		footerView.setVisibility(View.VISIBLE);
+		initMenu();
 	}
 
 	@Override
@@ -493,9 +526,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		FichaReciboFragment reciboFragment;
 		Bundle args = new Bundle();
 		args.putInt(FichaProductoFragment.ARG_POSITION, position);
-		args.putParcelable(FichaReciboFragment.OBJECT, (vmRecibo) obj);
-
-		
+		args.putParcelable(FichaReciboFragment.OBJECT, (vmRecibo) obj);		
 
 		if (findViewById(R.id.dynamic_fragment) != null) {
 
@@ -530,13 +561,81 @@ public class ViewRecibo extends ActionBarActivity implements
 
 	}
 	
-	@Override
+	/*@Override
 	public boolean onKeyUp(int keyCode, KeyEvent e){
 		super.onKeyUp(keyCode, e);
 		if(keyCode == KeyEvent.KEYCODE_BACK){
 			FINISH_ACTIVITY();
 		}
 		return true;		
+	}*/
+	
+	private void initMenu() {
+		quickAction = new QuickAction(this, QuickAction.VERTICAL, 1);
+		quickAction.addActionItem(new ActionItem(MOSTRAR_FACTURAS,
+				"Mostrar Facturas"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_DEBITO,
+				"Mostrar Notas Débito"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_CREDITO,
+				"Mostrar Notas Crédito"));
+		quickAction.addActionItem(null);
+		quickAction.addActionItem(new ActionItem(MOSTRAR_PEDIDOS,
+				"Mostrar Pedidos"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_RECIBOS,
+				"Mostrar Recibos"));		
+
+		quickAction
+				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+					@Override
+					public void onItemClick(QuickAction source, final int pos,
+							int actionId) {
+
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								ActionItem actionItem = quickAction.getActionItem(pos);
+								
+								switch (actionItem.getActionId()) {
+								case MOSTRAR_FACTURAS:
+									cuentasPorCobrar.cargarFacturasCliente();
+									break;
+								case MOSTRAR_NOTAS_DEBITO:
+									cuentasPorCobrar.cargarNotasDebito();
+									break;
+								case MOSTRAR_NOTAS_CREDITO:
+									
+									break;
+								case MOSTRAR_RECIBOS:
+									break;
+								case MOSTRAR_PEDIDOS:
+									break;								
+								}
+							}
+						});
+
+					}
+
+				});
+		quickAction.setOnDismissListener(new QuickAction.OnDismissListener() {
+			@Override
+			public void onDismiss() {
+				quickAction.dismiss();
+			}
+		});
+
+	}
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {
+			btnMenu = (Button) findViewById(R.id.btnMenu);
+			quickAction.show(btnMenu, display, true);
+			return true;
+		} 
+		else if (keyCode == KeyEvent.KEYCODE_BACK) {        	
+		  	FINISH_ACTIVITY();			    
+		}
+		return super.onKeyUp(keyCode, event);
 	}
 	
 	private void FINISH_ACTIVITY()	{

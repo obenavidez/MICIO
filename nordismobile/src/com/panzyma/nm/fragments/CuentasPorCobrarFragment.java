@@ -8,11 +8,15 @@ import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.menu.ActionItem;
+import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCCliente;
+import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
+import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -25,9 +29,11 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -53,6 +59,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private TextView headerGrid;
 	private ListView listaGenerica;
 	private ProgressBar progressBar;
+	
 
 	private int fechaFinFac = 0;
 	private int fechaInicFac = 0;
@@ -77,6 +84,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	public final static String ARG_POSITION = "position";
 	public final static String OBJECT = "cliente";
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,6 +110,10 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			cargarEncabezadoCliente();
 		}
 	}
+	
+	
+	
+	
 
 	public long getSucursalId() {
 		return cliente.getObjSucursalID();
@@ -123,6 +135,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		case NOTAS_CREDITO:
 			break;
 		case NOTAS_DEBITO:
+			mostrarNotasDebito(((ArrayList<CCNotaDebito>) msg.obj));
 			break;
 		case PEDIDOS:
 			break;
@@ -132,7 +145,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			break;
 		}
 		return false;
-	}
+	}	
 
 	private void cargarEncabezadoCliente() {
 		try {
@@ -148,8 +161,9 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			e.printStackTrace();
 		}
 	}
-
-	private void cargarFacturasCliente() {
+	
+	//LLAMA AL SERVICIO WEB PARA TRAER LAS FACTURAS DEL SERVIDOR PANZYMA
+	public void cargarFacturasCliente() {
 		try {
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
@@ -163,6 +177,24 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	//LLAMA AL SERVICIO WEB PARA TRAER LAS NOTAS DE DEBITO DEL SERVIDOR PANZYMA
+	public void cargarNotasDebito() {
+		try {
+			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().setEntities(this, new BLogicM());
+			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController()
+					.getInboxHandler()
+					.sendEmptyMessage(
+							ControllerProtocol.LOAD_NOTAS_DEBITO_FROM_SERVER);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void initComponents() {
@@ -187,20 +219,24 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		gridheader.setHeight(0);
 
 		headerGrid = (TextView) actividad.findViewById(R.id.cxctextv_header2);
-		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);
+		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);		
 	}
 
 	private void establecerDatosGenerales(CCCliente cliente) {
 		if (cliente != null) {
 
-			txtViewCliente.setText(cliente.getNombreSucursal() + " - "
-					+ cliente.getNombreSucursal());
-			txtViewLimiteCredito.setText(StringUtil.formatReal(cliente
-					.getLimiteCredito()));
-			txtViewSaldo
-					.setText(StringUtil.formatReal(cliente.getSaldoActual()));
-			txtViewDisponible.setText(StringUtil.formatReal(cliente
-					.getDisponible()));
+			txtViewCliente.setText(
+					cliente.getNombreSucursal() + " - "	+ cliente.getNombreSucursal()
+					);
+			txtViewLimiteCredito.setText(
+					StringUtil.formatReal(cliente.getLimiteCredito())
+					);
+			txtViewSaldo.setText(
+					StringUtil.formatReal(cliente.getSaldoActual())
+					);
+			txtViewDisponible.setText(
+					StringUtil.formatReal(cliente.getDisponible())
+					);
 
 			switch (typeDetail) {
 			case FACTURA:
@@ -209,21 +245,37 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			case NOTAS_CREDITO:
 				break;
 			case NOTAS_DEBITO:
+				cargarNotasDebito();
 				break;
 			}
 
 		}
-	}
+	}	
 
 	private void mostrarFacturas(ArrayList<Factura> facturas) {
 		if (facturas != null && facturas.size() > 0) {
-			adapter = new GenericAdapter<Factura, FacturaViewHolder>(this
-					.getActivity().getApplicationContext(),
-					FacturaViewHolder.class, facturas, R.layout.detalle_factura);
+			adapter = new GenericAdapter<Factura, FacturaViewHolder>(
+					this.getActivity().getApplicationContext(),
+					FacturaViewHolder.class,
+					facturas,
+					R.layout.detalle_factura);
+			
 			headerGrid.setText("Listado de Facturas (" + facturas.size() + ")");
-
 			listaGenerica.setAdapter(adapter);
 		}
+	}
+	
+	private void mostrarNotasDebito(ArrayList<CCNotaDebito> notasdebito) {
+		if (notasdebito != null && notasdebito.size() > 0) {
+			adapter = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(
+					this.getActivity().getApplicationContext(),
+					NotaDebitoViewHolder.class,
+					notasdebito,
+					R.layout.detalle_nota_debito);
+			headerGrid.setText("Listado de Notas Debito (" + notasdebito.size() + ")");
+			listaGenerica.setAdapter(adapter);
+		}
+		
 	}
 
 	public int getFechaFinFac() {
