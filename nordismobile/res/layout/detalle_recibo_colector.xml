@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true" >
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_sucursal"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Sucursal :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_sucursal"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/White"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_no_recibo"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="No Recibo :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_no_recibo"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_estado"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_weight="1"
+            android:text="Estado :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_estado"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_fecha"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Fecha :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_fecha"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_totalfact"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Total Facturas :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_totalfact"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+        
+        <TextView
+            android:id="@+id/cxclbl_totalnd"
+            android:layout_height="wrap_content"           
+            android:layout_weight="1"
+            android:text="Total Notas DB :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_totalnd"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_intereses"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Intereses :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_intereses"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_totalnc"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Total Notas CR :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_totalnc"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_totaldscpp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Total Desc PP :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_totaldscpp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_totaldscoca"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Total Desc OCA :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_totaldscoca"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>   
+
+    <TableRow
+        android:id="@+id/tableRow5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+        
+        <TextView
+            android:id="@+id/cxclbl_totalpromocion"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="3dp"
+            android:text="Total Promoción :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_totalpromocion"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_retenido"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Retenido :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_retenido"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+        
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_otros"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Otros :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_otros"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_neto"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Neto :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxclbl_neto"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+    </TableRow>
+
+</TableLayout>

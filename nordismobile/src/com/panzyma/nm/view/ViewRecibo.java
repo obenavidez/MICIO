@@ -190,11 +190,15 @@ public class ViewRecibo extends ActionBarActivity implements
 						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
 						msg.putParcelable(CuentasPorCobrarFragment.OBJECT, recibo_selected);
 						cuentasPorCobrar.setArguments(msg);
-						getSupportFragmentManager()
-								.beginTransaction()
-								.replace(R.id.fragment_container,
-										cuentasPorCobrar).commit();
+						transaction.replace(R.id.fragment_container,
+										cuentasPorCobrar);
+						transaction.addToBackStack(null);
+						transaction.commit();						
 					}
+					//CERRAR EL MENU DEL DRAWER
+					drawerLayout.closeDrawers();
+					//OCULTAR LA BARRA DE ACCION
+					getSupportActionBar().hide();
 					break;
 				}
 
@@ -434,53 +438,7 @@ public class ViewRecibo extends ActionBarActivity implements
 								firstFragment.setItems(data);
 								customArrayAdapter.setSelectedPosition(0);
 								positioncache = 0;
-								recibo_selected = customArrayAdapter.getItem(0);
-								/*
-								 * lvcliente.setAdapter(adapter);
-								 * lvcliente.setOnItemClickListener(new
-								 * OnItemClickListener() {
-								 * 
-								 * @Override public void
-								 * onItemClick(AdapterView<?> parent, View view,
-								 * int position, long id) {
-								 * if((parent.getChildAt(positioncache))!=null)
-								 * (parent.getChildAt(positioncache)).
-								 * setBackgroundResource
-								 * (android.R.color.transparent);
-								 * positioncache=position;
-								 * cliente_selected=(vmCliente)
-								 * customArrayAdapter.getItem(position);
-								 * customArrayAdapter
-								 * .setSelectedPosition(position);
-								 * view.setBackgroundDrawable
-								 * (getResources().getDrawable
-								 * (R.drawable.action_item_selected));
-								 * 
-								 * } });
-								 * lvcliente.setOnItemLongClickListener(new
-								 * OnItemLongClickListener() {
-								 * 
-								 * @Override public boolean
-								 * onItemLongClick(AdapterView<?> parent, View
-								 * view,int position, long id) {
-								 * if((parent.getChildAt(positioncache))!=null)
-								 * (parent.getChildAt(positioncache)).
-								 * setBackgroundResource
-								 * (android.R.color.transparent);
-								 * positioncache=position;
-								 * cliente_selected=(vmCliente)
-								 * customArrayAdapter.getItem(position);
-								 * customArrayAdapter
-								 * .setSelectedPosition(position);
-								 * view.setBackgroundDrawable
-								 * (getResources().getDrawable
-								 * (R.drawable.action_item_selected));
-								 * //quickAction.show(view,display,false);
-								 * return true; }
-								 * 
-								 * });
-								 */
-								// buildToastMessage("sincronización exitosa",Toast.LENGTH_SHORT).show();
+								recibo_selected = customArrayAdapter.getItem(0);								
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -560,16 +518,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		transaction.commit();
 
 	}
-	
-	/*@Override
-	public boolean onKeyUp(int keyCode, KeyEvent e){
-		super.onKeyUp(keyCode, e);
-		if(keyCode == KeyEvent.KEYCODE_BACK){
-			FINISH_ACTIVITY();
-		}
-		return true;		
-	}*/
-	
+		
 	private void initMenu() {
 		quickAction = new QuickAction(this, QuickAction.VERTICAL, 1);
 		quickAction.addActionItem(new ActionItem(MOSTRAR_FACTURAS,
@@ -603,11 +552,13 @@ public class ViewRecibo extends ActionBarActivity implements
 									cuentasPorCobrar.cargarNotasDebito();
 									break;
 								case MOSTRAR_NOTAS_CREDITO:
-									
+									cuentasPorCobrar.cargarNotasCredito();
 									break;
 								case MOSTRAR_RECIBOS:
+									cuentasPorCobrar.cargarRecibosColector();
 									break;
 								case MOSTRAR_PEDIDOS:
+									cuentasPorCobrar.cargarPedidos();
 									break;								
 								}
 							}
@@ -632,8 +583,12 @@ public class ViewRecibo extends ActionBarActivity implements
 			quickAction.show(btnMenu, display, true);
 			return true;
 		} 
-		else if (keyCode == KeyEvent.KEYCODE_BACK) {        	
-		  	FINISH_ACTIVITY();			    
+		else if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.LIST) {        	
+		  	FINISH_ACTIVITY();	
+		  	finish();
+		} else if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {
+			getSupportActionBar().show();
+			gridheader.setVisibility(View.VISIBLE);
 		}
 		return super.onKeyUp(keyCode, event);
 	}

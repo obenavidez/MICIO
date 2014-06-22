@@ -11,12 +11,18 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCCliente;
+import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
+import com.panzyma.nm.serviceproxy.CCPedido;
+import com.panzyma.nm.serviceproxy.CCReciboColector;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
+import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
+import com.panzyma.nm.view.viewholder.PedidoViewHolder;
+import com.panzyma.nm.view.viewholder.ReciboViewHolder;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -57,6 +63,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private TextView txtViewDisponible;
 	private TextView gridheader;
 	private TextView headerGrid;
+	private TextView txtenty;
 	private ListView listaGenerica;
 	private ProgressBar progressBar;
 	
@@ -109,11 +116,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		} else if (mCurrentPosition != -1) {
 			cargarEncabezadoCliente();
 		}
-	}
-	
-	
-	
-	
+	}	
 
 	public long getSucursalId() {
 		return cliente.getObjSucursalID();
@@ -133,19 +136,22 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			mostrarFacturas(((ArrayList<Factura>) msg.obj));
 			break;
 		case NOTAS_CREDITO:
+			mostrarNotasCredito(((ArrayList<CCNotaCredito>) msg.obj));
 			break;
 		case NOTAS_DEBITO:
 			mostrarNotasDebito(((ArrayList<CCNotaDebito>) msg.obj));
 			break;
 		case PEDIDOS:
+			mostrarPedidos(((ArrayList<CCPedido>) msg.obj));
 			break;
 		case RECIBOS_COLECTOR:
+			mostrarRecibosColector(((ArrayList<CCReciboColector>) msg.obj));
 			break;
 		default:
 			break;
 		}
 		return false;
-	}	
+	}
 
 	private void cargarEncabezadoCliente() {
 		try {
@@ -196,6 +202,60 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		}
 		
 	}
+	
+	//LLAMA AL SERVICIO WEB PARA TRAER LAS NOTAS DE CREDITO DEL SERVIDOR PANZYMA
+	public void cargarNotasCredito() {
+		try {
+			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().setEntities(this, new BLogicM());
+			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController()
+					.getInboxHandler()
+					.sendEmptyMessage(
+							ControllerProtocol.LOAD_NOTAS_CREDITO_FROM_SERVER);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	//LLAMA AL SERVICIO WEB PARA TRAER LOS PEDIDOS DEL SERVIDOR PANZYMA
+	public void cargarPedidos() {
+		try {
+			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().setEntities(this, new BLogicM());
+			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController()
+					.getInboxHandler()
+					.sendEmptyMessage(
+							ControllerProtocol.LOAD_PEDIDOS_FROM_SERVER);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	//LLAMA AL SERVICIO WEB PARA TRAER LOS RECIBOS DEL SERVIDOR PANZYMA
+	public void cargarRecibosColector() {
+		try {
+			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().setEntities(this, new BLogicM());
+			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController()
+					.getInboxHandler()
+					.sendEmptyMessage(
+							ControllerProtocol.LOAD_RECIBOS_FROM_SERVER);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 	private void initComponents() {
 		Activity actividad = getActivity();
@@ -205,6 +265,10 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01");
 		fechaFinRCol = fechaFinPedidos;
 		fechaInicRCol = fechaInicPedidos;
+		fechaInicND = fechaInicPedidos;
+		fechaFinND = fechaFinPedidos;
+		fechaInicNC = fechaInicND;
+		fechaFinNC = fechaFinND;
 		// OBTENER LAS REFERENCIAS DE LAS VISTAS
 		txtViewCliente = (TextView) actividad
 				.findViewById(R.id.cctextv_detallecliente);
@@ -217,7 +281,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		gridheader = (TextView) actividad.findViewById(R.id.ctextv_gridheader);
 		gridheader.setVisibility(View.INVISIBLE);
 		gridheader.setHeight(0);
-
+		txtenty = (TextView) getActivity().findViewById(R.id.ctxtview_enty);
 		headerGrid = (TextView) actividad.findViewById(R.id.cxctextv_header2);
 		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);		
 	}
@@ -252,32 +316,110 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		}
 	}	
 
-	private void mostrarFacturas(ArrayList<Factura> facturas) {
+	private void mostrarFacturas(ArrayList<Factura> facturas) {	
+		String title = "Listado de Facturas (%s)";
 		if (facturas != null && facturas.size() > 0) {
 			adapter = new GenericAdapter<Factura, FacturaViewHolder>(
 					this.getActivity().getApplicationContext(),
 					FacturaViewHolder.class,
 					facturas,
-					R.layout.detalle_factura);
-			
-			headerGrid.setText("Listado de Facturas (" + facturas.size() + ")");
+					R.layout.detalle_factura);			
+			txtenty.setVisibility(View.INVISIBLE);
+			headerGrid.setText(String.format(title, facturas.size()));
 			listaGenerica.setAdapter(adapter);
+		} else {
+			headerGrid.setText(String.format(title,0));
+			txtenty.setText("No existen registros");
+			txtenty.setVisibility(View.VISIBLE);
+			adapter.clearItems();
+			adapter.notifyDataSetChanged();
 		}
 	}
 	
-	private void mostrarNotasDebito(ArrayList<CCNotaDebito> notasdebito) {
-		if (notasdebito != null && notasdebito.size() > 0) {
+	private void mostrarNotasDebito(ArrayList<CCNotaDebito> notasDebito) {
+		String title = "Listado de Notas Débito (%s)";
+		if (notasDebito != null && notasDebito.size() > 0) {
 			adapter = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(
 					this.getActivity().getApplicationContext(),
 					NotaDebitoViewHolder.class,
-					notasdebito,
+					notasDebito,
 					R.layout.detalle_nota_debito);
-			headerGrid.setText("Listado de Notas Debito (" + notasdebito.size() + ")");
+			txtenty.setVisibility(View.INVISIBLE);
+			headerGrid.setText(String.format(title, notasDebito.size()));
 			listaGenerica.setAdapter(adapter);
+		} else {
+			headerGrid.setText(String.format(title,0));
+			txtenty.setText("No existen registros");
+			txtenty.setVisibility(View.VISIBLE);
+			adapter.clearItems();
+			adapter.notifyDataSetChanged();
 		}
 		
 	}
-
+	
+	private void mostrarNotasCredito(ArrayList<CCNotaCredito> notasCredito) {
+		String title = "Listado de Notas Crédito (%s)";
+		if (notasCredito != null && notasCredito.size() > 0) {
+			adapter = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(
+					this.getActivity().getApplicationContext(),
+					NotaCreditoViewHolder.class,
+					notasCredito,
+					R.layout.detalle_nota_credito);
+			txtenty.setVisibility(View.INVISIBLE);
+			headerGrid.setText(String.format(title, notasCredito.size()));
+			listaGenerica.setAdapter(adapter);
+		} else {
+			headerGrid.setText(String.format(title,0));
+			txtenty.setText("No existen registros");
+			txtenty.setVisibility(View.VISIBLE);
+			adapter.clearItems();
+			adapter.notifyDataSetChanged();
+		}
+		
+	}
+	
+	private void mostrarPedidos(ArrayList<CCPedido> pedidos) {
+		String title = "Listado de Pedidos (%s)";
+		if (pedidos != null && pedidos.size() > 0) {
+			adapter = new GenericAdapter<CCPedido, PedidoViewHolder>(
+					this.getActivity().getApplicationContext(),
+					PedidoViewHolder.class,
+					pedidos,
+					R.layout.detalle_pedido);
+			txtenty.setVisibility(View.INVISIBLE);
+			headerGrid.setText(String.format(title, pedidos.size()));
+			listaGenerica.setAdapter(adapter);
+		} else {
+			headerGrid.setText(String.format(title,0));
+			txtenty.setText("No existen registros");
+			txtenty.setVisibility(View.VISIBLE);
+			adapter.clearItems();
+			adapter.notifyDataSetChanged();
+		}
+		
+	}
+	
+	private void mostrarRecibosColector(ArrayList<CCReciboColector> recibos) {
+		String title = "Listado de Recibos (%s)";
+		if (recibos != null && recibos.size() > 0) {
+			adapter = new GenericAdapter<CCReciboColector, ReciboViewHolder>(
+					this.getActivity().getApplicationContext(),
+					ReciboViewHolder.class,
+					recibos,
+					R.layout.detalle_recibo_colector);
+			txtenty.setVisibility(View.INVISIBLE);
+			headerGrid.setText(String.format(title, recibos.size()));
+			listaGenerica.setAdapter(adapter);
+		} else {
+			headerGrid.setText(String.format(title,0));
+			txtenty.setText("No existen registros");
+			txtenty.setVisibility(View.VISIBLE);
+			adapter.clearItems();
+			adapter.notifyDataSetChanged();
+		}
+		
+	}
+	
 	public int getFechaFinFac() {
 		return fechaFinFac;
 	}
