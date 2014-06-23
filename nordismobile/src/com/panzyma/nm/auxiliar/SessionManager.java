@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;   
 import android.view.View;
 
+import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.controller.Controller;
@@ -15,6 +16,7 @@ import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewdialog.DialogLogin; 
 import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener; 
+
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 

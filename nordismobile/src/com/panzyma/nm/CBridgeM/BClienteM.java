@@ -8,10 +8,11 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
-import com.panzyma.nm.auxiliar.Parameters;
+/*import com.panzyma.nm.auxiliar.Parameters;* Comentado por Jrostrn*/
 import com.panzyma.nm.auxiliar.Processor; 
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;

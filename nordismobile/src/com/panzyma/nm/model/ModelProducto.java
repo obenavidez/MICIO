@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.comunicator.AppNMComunication;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig; 
 import com.panzyma.nm.datastore.DatabaseProvider; 
@@ -29,7 +30,8 @@ public class ModelProducto
     
    public synchronized static JSONArray getArrayProductoFromServer(String Credentials,String UsuarioVendedor,Integer page,Integer rowpage)throws Exception
    {
-	   return  NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetProductosPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage);
+	   //return  NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetProductosPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage);
+	   return AppNMComunication.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetProductosPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage);
 	  	  //return  NMTranslate.ToCollection(NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetProductosPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage),new Producto());	
    }   
    

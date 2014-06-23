@@ -1,5 +1,5 @@
 package com.panzyma.nm.auxiliar;
-
+import com.comunicator.*;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
 import java.util.ArrayList;
 
@@ -89,7 +89,7 @@ public class NMNetWork {
     {
     	error=null;    	
         try { 
-        		return Boolean.parseBoolean(((SoapPrimitive)NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());              
+        		return Boolean.parseBoolean(((SoapPrimitive)AppNMComunication.InvokeMethod(new ArrayList<Parameters>(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());              
         } 
         catch(Exception ex) 
         {         	 

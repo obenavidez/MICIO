@@ -4,10 +4,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import org.ksoap2.serialization.PropertyInfo;
+
+import com.comunicator.AppNMComunication;
+import com.comunicator.Parameters;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
-import com.panzyma.nm.auxiliar.Parameters;
+/*import com.panzyma.nm.auxiliar.Parameters; by jrostran*/
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
@@ -32,7 +35,7 @@ public class ModelLogic {
 						PropertyInfo.STRING_CLASS }));
 
 		try {
-			return (NMTranslate.ToObject((NMComunicacion.InvokeMethod(
+			return (NMTranslate.ToObject((AppNMComunication.InvokeMethod(
 					params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,
 					NMConfig.MethodName.GetCCCliente)), new CCCliente()));
 		} catch (Exception e) {
@@ -69,7 +72,7 @@ public class ModelLogic {
 
 		try {
 			
-			Object facturas =  NMComunicacion.InvokeMethod(
+			Object facturas =  AppNMComunication.InvokeMethod(
 					params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,
 					NMConfig.MethodName.TraerFacturasCliente);			
 					
@@ -107,7 +110,7 @@ public class ModelLogic {
 
 		try {
 			
-			Object pedidos =  NMComunicacion.InvokeMethod(
+			Object pedidos =  AppNMComunication.InvokeMethod(
 					params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,
 					NMConfig.MethodName.TraerPedidosCliente);			
 					
@@ -145,7 +148,7 @@ public class ModelLogic {
 
 		try {
 			
-			Object recibos =  NMComunicacion.InvokeMethod(
+			Object recibos =  AppNMComunication.InvokeMethod(
 					params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,
 					NMConfig.MethodName.TraerRColCliente);			
 					
@@ -182,7 +185,7 @@ public class ModelLogic {
 
 		try {
 			
-			Object notasCredito =  NMComunicacion.InvokeMethod(
+			Object notasCredito =  AppNMComunication.InvokeMethod(
 					params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,
 					NMConfig.MethodName.TraerNotasDebitoCliente);			
 					
@@ -220,7 +223,7 @@ public class ModelLogic {
 
 		try {
 			
-			Object notasDebito =  NMComunicacion.InvokeMethod(
+			Object notasDebito =  AppNMComunication.InvokeMethod(
 					params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,
 					NMConfig.MethodName.TraerNotasCreditoCliente);			
 					

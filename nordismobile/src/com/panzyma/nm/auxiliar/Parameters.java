@@ -1,3 +1,4 @@
+/*
 package com.panzyma.nm.auxiliar;
 
 import java.lang.reflect.Type;
@@ -55,3 +56,4 @@ public class Parameters extends PropertyInfo
 
 	
 }
+*/

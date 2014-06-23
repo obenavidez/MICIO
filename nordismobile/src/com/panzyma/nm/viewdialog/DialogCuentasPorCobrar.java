@@ -23,10 +23,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.comunicator.Parameters;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
-import com.panzyma.nm.auxiliar.Parameters;
+/*import com.panzyma.nm.auxiliar.Parameters; omentado por jrostan*/
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Factura;

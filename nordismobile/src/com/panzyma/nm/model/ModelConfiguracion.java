@@ -1,6 +1,7 @@
 package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo;
@@ -8,10 +9,12 @@ import org.ksoap2.serialization.PropertyInfo;
 import android.content.Context;
 import android.content.SharedPreferences; 
 
+import com.comunicator.AppNMComunication;
+import com.comunicator.Parameters;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
-import com.panzyma.nm.auxiliar.Parameters;  
+/*import com.panzyma.nm.auxiliar.Parameters;*/  
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
@@ -30,12 +33,12 @@ public class ModelConfiguracion {
 		Parameters params=new Parameters((new String[]{"Credentials","LoginUsuario"}),
 				 (new Object[]{Credentials,LoginUsuario}),
 				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.STRING_CLASS}));
-		return  (NMTranslate.ToObject(( NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetDatosUsuario)),new Usuario()));		
+		return  (NMTranslate.ToObject(( AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetDatosUsuario)),new Usuario()));		
     }
 	
 	public  static int get_DEVISE_PREFIX(String Credentials,String PIN) throws Exception
 	{
-		return (NMComunicacion.InvokeService(NMConfig.URL2+NMConfig.MethodName.GetDevicePrefix+"/"+Credentials+"/"+PIN)).getInt("getDevicePrefixResult");
+		return (AppNMComunication.InvokeService(NMConfig.URL2+NMConfig.MethodName.GetDevicePrefix+"/"+Credentials+"/"+PIN)).getInt("getDevicePrefixResult");
     }
 	
 	public static vmConfiguracion getVMConfiguration(Context view)
@@ -53,13 +56,13 @@ public class ModelConfiguracion {
 	
 	public static LoginUserResult verifyLogin(String Credentials,String Roll) throws Exception
 	{
-		return NMTranslate.ToObject(NMComunicacion.InvokeService(NMConfig.URL2+NMConfig.MethodName.LoginUser+"/"+Credentials+"/"+Roll),new LoginUserResult());		 
+		return NMTranslate.ToObject(AppNMComunication.InvokeService(NMConfig.URL2+NMConfig.MethodName.LoginUser+"/"+Credentials+"/"+Roll),new LoginUserResult());		 
 	}
 	
 	public static DataConfigurationResult getDataConfiguration(String Credentials,String LoginUsuario,String PIN) throws Exception
 	{
 		PIN="21C5D535";
-		return NMTranslate.ToObject(NMComunicacion.InvokeService(NMConfig.URL2+NMConfig.MethodName.getDataConfiguration+"/"+Credentials+"/"+LoginUsuario+"/"+PIN),new DataConfigurationResult());
+		return NMTranslate.ToObject(AppNMComunication.InvokeService(NMConfig.URL2+NMConfig.MethodName.getDataConfiguration+"/"+Credentials+"/"+LoginUsuario+"/"+PIN),new DataConfigurationResult());
 	}
 	
 	public static void saveConfiguration(Context view,vmConfiguracion setting)throws Exception
@@ -106,23 +109,23 @@ public class ModelConfiguracion {
 	}
   
 	public static JSONArray getSystemPerams(String Credentials) throws Exception{		
-		return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetParams+"/"+Credentials);
+		return AppNMComunication.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetParams+"/"+Credentials);
 	}
 	
  
 	public static JSONArray getValoresCatalogo(String Credentials,String NombresCatalogo) throws Exception{		
-		return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetValoresCatalogo+"/"+Credentials+"/"+NombresCatalogo);
+		return AppNMComunication.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetValoresCatalogo+"/"+Credentials+"/"+NombresCatalogo);
 	}
 	
 	public static JSONArray getTasasDeCambio(String Credentials)throws Exception{
-		return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetTasasDeCambio+"/"+Credentials);
+		return AppNMComunication.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetTasasDeCambio+"/"+Credentials);
 	}
 	
  
 	
 	public static JSONArray getPromocionesPaged(String Credentials,String LoginUsuario,int Pages,int RowPages)throws Exception
 	{ 
-		return  NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetPromocionesPaged+"/"+Credentials+"/"+LoginUsuario+"/"+Pages+"/"+RowPages);
+		return  AppNMComunication.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetPromocionesPaged+"/"+Credentials+"/"+LoginUsuario+"/"+Pages+"/"+RowPages);
     }
 	
 	public static void saveSystemParam(Context view,JSONArray params)throws Exception

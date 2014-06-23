@@ -48,6 +48,7 @@ public class NMComunicacion {
 		
 	}
 	
+	/*
 	public static synchronized Object InvokeMethod(ArrayList<Parameters> params,String URL,String NAME_SPACE,String METHOD_NAME)throws Exception
     { 
         SoapObject request =new SoapObject(NAME_SPACE,METHOD_NAME); 
@@ -132,7 +133,7 @@ public class NMComunicacion {
 	      JSONArray arrayjson = new JSONArray(new String(builder));
         return arrayjson;
     }
-    
+    */
 	
 	/*
 	  Comunicación Mediante Bluetooth

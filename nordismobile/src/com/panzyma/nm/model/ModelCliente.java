@@ -26,7 +26,7 @@ import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
-import com.panzyma.nm.auxiliar.Parameters;
+/*import com.panzyma.nm.auxiliar.Parameters;*/
 import com.panzyma.nm.datastore.DatabaseProvider;
 
 public class ModelCliente
@@ -52,7 +52,7 @@ public class ModelCliente
 			params.setType(type[i]);  
 			arrayparams.add(params); 
 		} 
-		ArrayList<Cliente> modelclienteL =  NMTranslate.ToCollection( ( NMComunicacion.InvokeMethod (arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetClientesPaged)),Cliente.class);
+		ArrayList<Cliente> modelclienteL =  NMTranslate.ToCollection( ( AppNMComunication.InvokeMethod (arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetClientesPaged)),Cliente.class);
 		if(modelclienteL.size()!=0)
 			modelcliente.addAll(modelclienteL);  
 		 return modelcliente;
@@ -80,7 +80,8 @@ public class ModelCliente
 			params.setType(type[i]);  
 			arrayparams.add(params); 
 		}  			 
-		return  new JSONObject(NMComunicacion.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCliente).toString());		  
+		//return  new JSONObject(NMComunicacion.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCliente).toString());
+		return  new JSONObject(AppNMComunication.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCliente).toString());
 	 }
 	
 	public synchronized static ArrayList<vmCliente> getArrayCustomerFromLocalHost(ContentResolver content)throws Exception
@@ -365,7 +366,7 @@ public class ModelCliente
 		Parameters params=new Parameters((new String[]{"Credentials","idSucursal"}),
 										 (new Object[]{Credentials,idSucursal}),
 										 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
-		return  NMTranslate.ToObject(NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCCCliente),new CCCliente());		 
+		return  NMTranslate.ToObject(AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCCCliente),new CCCliente());		 
 	} 
 	
 	public synchronized static vmFicha GetFichaCustomerFromServer(String Credentials,long idSucursal) throws Exception
@@ -374,12 +375,12 @@ public class ModelCliente
 										 (new Object[]{Credentials,idSucursal}),
 										 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
 		
-		return  NMTranslate.ToObject(NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCCCliente),new vmFicha());		 
+		return  NMTranslate.ToObject(AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCCCliente),new vmFicha());		 
 	} 
 
 	public synchronized static ArrayList<Factura> getFacturasClienteFromServer(Parameters params) throws Exception
 	{		
-		return  NMTranslate.ToCollection(NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.TraerFacturasCliente),Factura.class);	 
+		return  NMTranslate.ToCollection(AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.TraerFacturasCliente),Factura.class);	 
 	}	
 	
 	public static ArrayList<Factura> getFacturasPendientesBySucursal(ContentResolver content,long objSucursalID)
