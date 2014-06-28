@@ -7,7 +7,9 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo; 
 
-public  class Factura implements KvmSerializable {
+import com.panzyma.nm.interfaces.GenericDocument;
+
+public  class Factura implements KvmSerializable, GenericDocument {
      
 	public long Id;
 	public java.lang.String NombreSucursal;
@@ -374,5 +376,14 @@ public  class Factura implements KvmSerializable {
             _info.type = Boolean.class; break;
         }
     }
+	
+	@Override
+	public String getDocumentNumber() {		
+		return getNoFactura();
+	}
+	@Override
+	public Object getObject() {
+		return this;
+	}
 
 }
