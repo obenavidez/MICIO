@@ -1,6 +1,9 @@
 package com.panzyma.nm.serviceproxy;
 
-public class CCReciboColector {
+import com.panzyma.nm.interfaces.GenericDocument;
+
+public class CCReciboColector implements GenericDocument {
+	
     protected java.lang.String nombreSucursal;
     protected java.lang.String estado;
     protected java.lang.String numero;
@@ -157,4 +160,14 @@ public class CCReciboColector {
     public void setId(long id) {
         this.id = id;
     }
+
+	@Override
+	public String getDocumentNumber() {		
+		return getNumero();
+	}
+
+	@Override
+	public Object getObject() {
+		return this;
+	}
 }

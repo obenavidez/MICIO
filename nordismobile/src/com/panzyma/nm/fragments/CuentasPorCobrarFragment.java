@@ -1,6 +1,8 @@
 package com.panzyma.nm.fragments;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
@@ -8,6 +10,7 @@ import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCCliente;
@@ -35,11 +38,14 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -66,7 +72,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private TextView txtenty;
 	private ListView listaGenerica;
 	private ProgressBar progressBar;
-	
+	private EditText search;
+	private List<GenericDocument> filterDocs = new ArrayList<GenericDocument>();	
 
 	private int fechaFinFac = 0;
 	private int fechaInicFac = 0;
@@ -260,9 +267,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private void initComponents() {
 		Activity actividad = getActivity();
 		// INICIALIZAR VARIABLES
-		fechaInicPedidos = DateUtil.getToday();
-		String s = String.valueOf(fechaInicPedidos);
+		fechaFinPedidos = DateUtil.getToday();
+		String s = String.valueOf(fechaFinPedidos);
 		fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01");
+		
+		fechaInicPedidos = DateUtil.d2i(Date.valueOf("2014-01-01")) ;
+		
 		fechaFinRCol = fechaFinPedidos;
 		fechaInicRCol = fechaInicPedidos;
 		fechaInicND = fechaInicPedidos;
@@ -283,7 +293,42 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		gridheader.setHeight(0);
 		txtenty = (TextView) getActivity().findViewById(R.id.ctxtview_enty);
 		headerGrid = (TextView) actividad.findViewById(R.id.cxctextv_header2);
-		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);		
+		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);	
+		
+		
+		search = (EditText) actividad.findViewById(R.id.cxctextv_detalle_generico);
+		
+		search.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				List<GenericDocument> docs = (List<GenericDocument>) adapter.getData();				
+				if (docs.size() > 0){
+					String docNumerToFound = s.toString();
+					for(GenericDocument doc : docs) {
+						if( doc.getDocumentNumber().contains(docNumerToFound)){
+							filterDocs.add(doc);
+						}
+					}				
+					adapter.setItems(filterDocs);
+					adapter.notifyDataSetChanged();
+				}				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 	}
 
 	private void establecerDatosGenerales(CCCliente cliente) {
