@@ -102,11 +102,12 @@ public class DialogoConfirmacion extends DialogFragment {
 					int arg3) {
 				float nSaldo = 0.00f, 
 						nTotalDocumento = 0.00f;
+				String monto = arg0.toString().trim().equals("") ? "0.00" : arg0.toString();
 				if(document instanceof ReciboDetFactura)
 					nTotalDocumento = ((ReciboDetFactura)document).getTotalfactura();
 				else if (document instanceof ReciboDetND)
 					nTotalDocumento = ((ReciboDetND)document).getMontoND();
-				nSaldo = nTotalDocumento - Float.parseFloat(String.valueOf(arg0.toString())) ;
+				nSaldo = nTotalDocumento - Float.parseFloat(String.valueOf(monto)) ;
 				saldo.setText(StringUtil.formatReal(nSaldo));				
 			}
 			

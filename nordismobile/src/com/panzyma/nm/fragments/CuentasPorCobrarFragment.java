@@ -1,5 +1,6 @@
 package com.panzyma.nm.fragments;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -266,9 +267,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private void initComponents() {
 		Activity actividad = getActivity();
 		// INICIALIZAR VARIABLES
-		fechaInicPedidos = DateUtil.getToday();
-		String s = String.valueOf(fechaInicPedidos);
+		fechaFinPedidos = DateUtil.getToday();
+		String s = String.valueOf(fechaFinPedidos);
 		fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01");
+		
+		fechaInicPedidos = DateUtil.d2i(Date.valueOf("2014-01-01")) ;
+		
 		fechaFinRCol = fechaFinPedidos;
 		fechaInicRCol = fechaInicPedidos;
 		fechaInicND = fechaInicPedidos;
