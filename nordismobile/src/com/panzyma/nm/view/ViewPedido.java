@@ -16,6 +16,7 @@ import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -37,12 +38,18 @@ import android.widget.Toast;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
+import com.panzyma.nm.fragments.FichaProductoFragment;
+import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.viewmodel.vmEntity;
+import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("rawtypes")
@@ -52,8 +59,9 @@ public class ViewPedido extends ActionBarActivity implements
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestcode, resultcode, data);
-		request_code=requestcode;
-		if ((NUEVO_PEDIDO== request_code || EDITAR_PEDIDO== request_code) && data != null)  
+		request_code = requestcode;
+		if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code)
+				&& data != null)
 			establecer(data.getParcelableExtra("pedido"));
 	}
 
@@ -70,6 +78,9 @@ public class ViewPedido extends ActionBarActivity implements
 		super.startActivityFromFragment(fragment, intent, requestCode);
 	}
 
+	private FragmentActive fragmentActive = null;
+	CuentasPorCobrarFragment cuentasPorCobrar;
+	FragmentTransaction transaction;
 	private static final String TAG = ViewPedido.class.getSimpleName();
 	CustomArrayAdapter<vmEntity> customArrayAdapter;
 	private SearchView searchView;
@@ -79,6 +90,7 @@ public class ViewPedido extends ActionBarActivity implements
 	private static final int NUEVO_PEDIDO = 0;
 	private static final int EDITAR_PEDIDO = 1;
 	private static final int BORRAR_PEDIDO = 3;
+	private static final int CUENTAS_POR_COBRAR = 6;
 	private static int request_code;
 	private String[] opcionesMenu;
 	private DrawerLayout drawerLayout;
@@ -120,12 +132,12 @@ public class ViewPedido extends ActionBarActivity implements
 		initComponent();
 
 		vp = this;
-
+		transaction = getSupportFragmentManager().beginTransaction();
 		gridheader.setVisibility(View.VISIBLE);
-
 		opcionesMenu = new String[] { "Nuevo Pedido", "Editar Pedido",
 				"Enviar Pedido", "Borrar Pedido", "Borrar Pedidos Finalizados",
-				"Anular Pedido", "Consultas de Ventas", "Cerrar" };
+				"Anular Pedido", "Consultar Cuentas X Cobrar",
+				"Consultas de Ventas", "Cerrar" };
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// drawerLayout.openDrawer(Gravity.END);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -140,14 +152,14 @@ public class ViewPedido extends ActionBarActivity implements
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
-				switch (position) 
-				{
+				switch (position) {
 				case NUEVO_PEDIDO:
 					drawerLayout.closeDrawers();
-					intent = new Intent(ViewPedido.this, ViewPedidoEdit.class); 
-					intent.putExtra("requestcode",NUEVO_PEDIDO);
-					startActivityForResult(intent,NUEVO_PEDIDO );// Activity is started
-														// with requestCode 2
+					intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
+					intent.putExtra("requestcode", NUEVO_PEDIDO);
+					startActivityForResult(intent, NUEVO_PEDIDO);// Activity is
+																	// started
+					// with requestCode 2
 					break;
 				case EDITAR_PEDIDO:
 					drawerLayout.closeDrawers();
@@ -165,8 +177,9 @@ public class ViewPedido extends ActionBarActivity implements
 					b.putParcelable("pedido", p);
 					intent.putExtras(b);
 					intent.putExtra("requestcode", EDITAR_PEDIDO);
-					startActivityForResult(intent, EDITAR_PEDIDO);// Activity is started
-														// with requestCode 2 
+					startActivityForResult(intent, EDITAR_PEDIDO);// Activity is
+																	// started
+					// with requestCode 2
 					break;
 
 				case BORRAR_PEDIDO:
@@ -188,6 +201,35 @@ public class ViewPedido extends ActionBarActivity implements
 						return;
 					}
 					break;
+				case CUENTAS_POR_COBRAR:
+					fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
+					if (findViewById(R.id.fragment_container) != null) {
+						Pedido p1 = null;
+						try {
+							p1 = Ventas.obtenerPedidoByID(pedido_selected.getId(),
+									vp);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						cuentasPorCobrar = new CuentasPorCobrarFragment();
+						Bundle msg = new Bundle();
+						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION,
+								positioncache);
+						msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
+								p1.getObjSucursalID());
+						cuentasPorCobrar.setArguments(msg);
+						transaction.replace(R.id.fragment_container,
+								cuentasPorCobrar);
+						transaction.addToBackStack(null);
+						transaction.commit();
+					}
+					// CERRAR EL MENU DEL DRAWER
+					drawerLayout.closeDrawers();
+					// OCULTAR LA BARRA DE ACCION
+					getSupportActionBar().hide();
+					break;
+
 				}
 
 				drawerList.setItemChecked(position, true);
@@ -269,30 +311,32 @@ public class ViewPedido extends ActionBarActivity implements
 		MenuItem searchItem = menu.findItem(R.id.action_search);
 
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+		if (fragmentActive == FragmentActive.LIST) {
+			if (findViewById(R.id.fragment_container) != null) {
+				customArrayAdapter = (CustomArrayAdapter<vmEntity>) ((Filterable) getSupportFragmentManager()
+						.findFragmentById(R.id.fragment_container))
+						.getAdapter();
 
-		if (findViewById(R.id.fragment_container) != null) {
-			customArrayAdapter = (CustomArrayAdapter<vmEntity>) ((Filterable) getSupportFragmentManager()
-					.findFragmentById(R.id.fragment_container)).getAdapter();
+			} else {
+				customArrayAdapter = (CustomArrayAdapter<vmEntity>) ((Filterable) getSupportFragmentManager()
+						.findFragmentById(R.id.item_client_fragment))
+						.getAdapter();
+			}
 
-		} else {
-			customArrayAdapter = (CustomArrayAdapter<vmEntity>) ((Filterable) getSupportFragmentManager()
-					.findFragmentById(R.id.item_client_fragment)).getAdapter();
+			searchView.setOnQueryTextListener(new OnQueryTextListener() {
+				@Override
+				public boolean onQueryTextChange(String s) {
+					customArrayAdapter.getFilter().filter(s);
+					return false;
+				}
+
+				@Override
+				public boolean onQueryTextSubmit(String s) {
+					customArrayAdapter.getFilter().filter(s);
+					return false;
+				}
+			});
 		}
-
-		searchView.setOnQueryTextListener(new OnQueryTextListener() {
-			@Override
-			public boolean onQueryTextChange(String s) {
-				customArrayAdapter.getFilter().filter(s);
-				return false;
-			}
-
-			@Override
-			public boolean onQueryTextSubmit(String s) {
-				customArrayAdapter.getFilter().filter(s);
-				return false;
-			}
-		});
-
 		return true;
 	}
 
@@ -320,7 +364,7 @@ public class ViewPedido extends ActionBarActivity implements
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		
+
 		boolean menuAbierto = drawerLayout.isDrawerOpen(drawerList);
 
 		if (menuAbierto)
@@ -354,46 +398,44 @@ public class ViewPedido extends ActionBarActivity implements
 	}
 
 	@Override
-	public void onItemSelected(Object obj, int position) {
+	public void onItemSelected(Object obj, int position) 
+	{
 		// TODO Auto-generated method stub
 		pedido_selected = firstFragment.getAdapter().getItem(position);
-		positioncache = position;
+		positioncache = position;		
 	}
 
 	@SuppressWarnings("unchecked")
-	private void establecer(Object _obj)
-	{
-		if (_obj==null)
+	private void establecer(Object _obj) {
+		if (_obj == null)
 			return;
-		
-		if (_obj instanceof Message) 
-		{
+
+		if (_obj instanceof Message) {
 			Message msg = (Message) _obj;
 			pedidos = (ArrayList<vmEntity>) ((msg.obj == null) ? new ArrayList<vmEntity>()
 					: msg.obj);
-			
+
 			positioncache = 0;
 			if (pedidos.size() > 0)
 				pedido_selected = firstFragment.getAdapter().getItem(0);
 		}
-		if (_obj instanceof Pedido) 
-		{
+		if (_obj instanceof Pedido) {
 			Pedido p = (Pedido) _obj;
-			if(EDITAR_PEDIDO==request_code) 
-				pedidos.set(positioncache,new vmEntity(p.getId(), p.getNumeroMovil(), p
-					.getFecha(), p.getTotal(), p.getNombreCliente(), p
-					.getDescEstado())); 
-			else if(NUEVO_PEDIDO==request_code) 
-			{
+			if (EDITAR_PEDIDO == request_code)
+				pedidos.set(
+						positioncache,
+						new vmEntity(p.getId(), p.getNumeroMovil(), p
+								.getFecha(), p.getTotal(),
+								p.getNombreCliente(), p.getDescEstado()));
+			else if (NUEVO_PEDIDO == request_code) {
 				pedidos.add(new vmEntity(p.getId(), p.getNumeroMovil(), p
 						.getFecha(), p.getTotal(), p.getNombreCliente(), p
 						.getDescEstado()));
-				positioncache=pedidos.size()-1;
+				positioncache = pedidos.size() - 1;
 			}
 		}
-		
-		runOnUiThread(new Runnable() 
-		{
+
+		runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -405,11 +447,10 @@ public class ViewPedido extends ActionBarActivity implements
 					txtenty.setVisibility(View.VISIBLE);
 				}
 				firstFragment.setItems(pedidos);
-				firstFragment.getAdapter().setSelectedPosition(positioncache); 
+				firstFragment.getAdapter().setSelectedPosition(positioncache);
 			}
 		});
 
-		
 	}
 
 	public BPedidoM getBridge() {
@@ -418,19 +459,16 @@ public class ViewPedido extends ActionBarActivity implements
 	}
 
 	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event)
-	{
-		if (keyCode == KeyEvent.KEYCODE_BACK) 
-	    {        	
-    	  	FINISH_ACTIVITY();
-            return true;
-	    }
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			FINISH_ACTIVITY();
+			return true;
+		}
 		return super.onKeyUp(keyCode, event);
 	}
-	
-	private void FINISH_ACTIVITY() 
-	{
-		nmapp.getController().removeOutboxHandler(TAG); 		
+
+	private void FINISH_ACTIVITY() {
+		nmapp.getController().removeOutboxHandler(TAG);
 		Log.d(TAG, "Activity quitting");
 		finish();
 	}

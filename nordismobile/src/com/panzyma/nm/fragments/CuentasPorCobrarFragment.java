@@ -40,10 +40,12 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -59,7 +61,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	private TypeDetail typeDetail = TypeDetail.FACTURA;
 	private int mCurrentPosition = -1;
-	private vmRecibo cliente = null;
+	private long objSucursalID ;
 	private Context fcontext = null;
 	private GenericAdapter adapter = null;
 	private NMApp nmapp;
@@ -73,7 +75,10 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private ListView listaGenerica;
 	private ProgressBar progressBar;
 	private EditText search;
+	private QuickAction quickAction;
 	private List<GenericDocument> filterDocs = new ArrayList<GenericDocument>();	
+	private Display display;
+	private Button btnMenu;
 
 	private int fechaFinFac = 0;
 	private int fechaInicFac = 0;
@@ -95,9 +100,15 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private int fechaFinND = 0;
 	private int fechaInicND = 0;
 	private String estadoND = "AUTORIZADA";
+	
+	private static final int MOSTRAR_FACTURAS = 0;
+	private static final int MOSTRAR_NOTAS_DEBITO = 1;
+	private static final int MOSTRAR_NOTAS_CREDITO = 2;
+	private static final int MOSTRAR_PEDIDOS = 3;
+	private static final int MOSTRAR_RECIBOS = 4;
 
 	public final static String ARG_POSITION = "position";
-	public final static String OBJECT = "cliente";
+	public final static String SUCURSAL_ID = "sucursalID";
 	
 
 	@Override
@@ -106,7 +117,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
-			cliente = (vmRecibo) savedInstanceState.getParcelable(OBJECT);
+			objSucursalID = savedInstanceState.getLong(SUCURSAL_ID);
 		}
 		return inflater.inflate(R.layout.cuentas_x_cobrar, container, false);
 	}
@@ -117,7 +128,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		Bundle args = getArguments();
 		initComponents();
 		if (args != null) {
-			cliente = (vmRecibo) args.getParcelable(OBJECT);
+			objSucursalID = args.getLong(SUCURSAL_ID);
 			mCurrentPosition = args.getInt(ARG_POSITION);
 			cargarEncabezadoCliente();
 		} else if (mCurrentPosition != -1) {
@@ -126,7 +137,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}	
 
 	public long getSucursalId() {
-		return cliente.getObjSucursalID();
+		return objSucursalID;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -329,7 +340,18 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			}
 		});
 		
+		WindowManager wm = (WindowManager) getActivity()
+				.getSystemService(Context.WINDOW_SERVICE);
+		display = wm.getDefaultDisplay();
+		
+		btnMenu = (Button) getActivity().findViewById(R.id.btnMenu);
+		
+		initMenu();
 	}
+	
+	public void mostrarMenu() {		
+		quickAction.show(btnMenu, display, true);
+	} 
 
 	private void establecerDatosGenerales(CCCliente cliente) {
 		if (cliente != null) {
@@ -464,6 +486,63 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		}
 		
 	}
+	private void initMenu() {
+		quickAction = new QuickAction(this.getActivity(), QuickAction.VERTICAL, 1);
+		quickAction.addActionItem(new ActionItem(MOSTRAR_FACTURAS,
+				"Mostrar Facturas"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_DEBITO,
+				"Mostrar Notas Débito"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_CREDITO,
+				"Mostrar Notas Crédito"));
+		quickAction.addActionItem(null);
+		quickAction.addActionItem(new ActionItem(MOSTRAR_PEDIDOS,
+				"Mostrar Pedidos"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_RECIBOS,
+				"Mostrar Recibos"));		
+
+		quickAction
+				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+					@Override
+					public void onItemClick(QuickAction source, final int pos,
+							int actionId) {
+
+						getActivity().runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								ActionItem actionItem = quickAction.getActionItem(pos);
+								
+								switch (actionItem.getActionId()) {
+								case MOSTRAR_FACTURAS:
+									cargarFacturasCliente();
+									break;
+								case MOSTRAR_NOTAS_DEBITO:
+									cargarNotasDebito();
+									break;
+								case MOSTRAR_NOTAS_CREDITO:
+									cargarNotasCredito();
+									break;
+								case MOSTRAR_RECIBOS:
+									cargarRecibosColector();
+									break;
+								case MOSTRAR_PEDIDOS:
+									cargarPedidos();
+									break;								
+								}
+							}
+						});
+
+					}
+
+				});
+		quickAction.setOnDismissListener(new QuickAction.OnDismissListener() {
+			@Override
+			public void onDismiss() {
+				quickAction.dismiss();
+			}
+		});
+
+	}
+	
 	
 	public int getFechaFinFac() {
 		return fechaFinFac;

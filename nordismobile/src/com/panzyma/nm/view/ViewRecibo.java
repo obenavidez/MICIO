@@ -189,7 +189,7 @@ public class ViewRecibo extends ActionBarActivity implements
 						cuentasPorCobrar = new CuentasPorCobrarFragment();						
 						Bundle msg = new Bundle();
 						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
-						msg.putParcelable(CuentasPorCobrarFragment.OBJECT, recibo_selected);
+						msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
 						cuentasPorCobrar.setArguments(msg);
 						transaction.replace(R.id.fragment_container,cuentasPorCobrar);
 						transaction.addToBackStack(null);
@@ -285,7 +285,8 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 		
-		if ( fragmentActive == FragmentActive.LIST) {
+		if ( fragmentActive == FragmentActive.LIST) 
+		{
 			
 			if (findViewById(R.id.fragment_container) != null) {
 				
@@ -374,7 +375,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		gridheader.setText("Listado de Recibos (0) ");
 		footerView = (TextView) findViewById(R.id.ctxtview_enty);
 		footerView.setVisibility(View.VISIBLE);
-		initMenu();
+		//initMenu();
 	}
 
 	@Override
@@ -519,68 +520,67 @@ public class ViewRecibo extends ActionBarActivity implements
 
 	}
 		
-	private void initMenu() {
-		quickAction = new QuickAction(this, QuickAction.VERTICAL, 1);
-		quickAction.addActionItem(new ActionItem(MOSTRAR_FACTURAS,
-				"Mostrar Facturas"));
-		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_DEBITO,
-				"Mostrar Notas Débito"));
-		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_CREDITO,
-				"Mostrar Notas Crédito"));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(MOSTRAR_PEDIDOS,
-				"Mostrar Pedidos"));
-		quickAction.addActionItem(new ActionItem(MOSTRAR_RECIBOS,
-				"Mostrar Recibos"));		
-
-		quickAction
-				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
-					@Override
-					public void onItemClick(QuickAction source, final int pos,
-							int actionId) {
-
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								ActionItem actionItem = quickAction.getActionItem(pos);
-								
-								switch (actionItem.getActionId()) {
-								case MOSTRAR_FACTURAS:
-									cuentasPorCobrar.cargarFacturasCliente();
-									break;
-								case MOSTRAR_NOTAS_DEBITO:
-									cuentasPorCobrar.cargarNotasDebito();
-									break;
-								case MOSTRAR_NOTAS_CREDITO:
-									cuentasPorCobrar.cargarNotasCredito();
-									break;
-								case MOSTRAR_RECIBOS:
-									cuentasPorCobrar.cargarRecibosColector();
-									break;
-								case MOSTRAR_PEDIDOS:
-									cuentasPorCobrar.cargarPedidos();
-									break;								
-								}
-							}
-						});
-
-					}
-
-				});
-		quickAction.setOnDismissListener(new QuickAction.OnDismissListener() {
-			@Override
-			public void onDismiss() {
-				quickAction.dismiss();
-			}
-		});
-
-	}
+//	private void initMenu() {
+//		quickAction = new QuickAction(this, QuickAction.VERTICAL, 1);
+//		quickAction.addActionItem(new ActionItem(MOSTRAR_FACTURAS,
+//				"Mostrar Facturas"));
+//		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_DEBITO,
+//				"Mostrar Notas Débito"));
+//		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_CREDITO,
+//				"Mostrar Notas Crédito"));
+//		quickAction.addActionItem(null);
+//		quickAction.addActionItem(new ActionItem(MOSTRAR_PEDIDOS,
+//				"Mostrar Pedidos"));
+//		quickAction.addActionItem(new ActionItem(MOSTRAR_RECIBOS,
+//				"Mostrar Recibos"));		
+//
+//		quickAction
+//				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+//					@Override
+//					public void onItemClick(QuickAction source, final int pos,
+//							int actionId) {
+//
+//						runOnUiThread(new Runnable() {
+//							@Override
+//							public void run() {
+//								ActionItem actionItem = quickAction.getActionItem(pos);
+//								
+//								switch (actionItem.getActionId()) {
+//								case MOSTRAR_FACTURAS:
+//									cuentasPorCobrar.cargarFacturasCliente();
+//									break;
+//								case MOSTRAR_NOTAS_DEBITO:
+//									cuentasPorCobrar.cargarNotasDebito();
+//									break;
+//								case MOSTRAR_NOTAS_CREDITO:
+//									cuentasPorCobrar.cargarNotasCredito();
+//									break;
+//								case MOSTRAR_RECIBOS:
+//									cuentasPorCobrar.cargarRecibosColector();
+//									break;
+//								case MOSTRAR_PEDIDOS:
+//									cuentasPorCobrar.cargarPedidos();
+//									break;								
+//								}
+//							}
+//						});
+//
+//					}
+//
+//				});
+//		quickAction.setOnDismissListener(new QuickAction.OnDismissListener() {
+//			@Override
+//			public void onDismiss() {
+//				quickAction.dismiss();
+//			}
+//		});
+//
+//	}
 	
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {
-			btnMenu = (Button) findViewById(R.id.btnMenu);
-			quickAction.show(btnMenu, display, true);
+		if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {			
+			cuentasPorCobrar.mostrarMenu();
 			return true;
 		} 
 		else if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.LIST) {        	
