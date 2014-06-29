@@ -184,14 +184,14 @@ public class ViewRecibo extends ActionBarActivity implements
 					break;	
 				case CUENTAS_POR_COBRAR:
 					fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
-					if (findViewById(R.id.fragment_container) != null) {	
+					if (findViewById(R.id.fragment_container) != null) 
+					{	
 						cuentasPorCobrar = new CuentasPorCobrarFragment();						
 						Bundle msg = new Bundle();
 						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
 						msg.putParcelable(CuentasPorCobrarFragment.OBJECT, recibo_selected);
 						cuentasPorCobrar.setArguments(msg);
-						transaction.replace(R.id.fragment_container,
-										cuentasPorCobrar);
+						transaction.replace(R.id.fragment_container,cuentasPorCobrar);
 						transaction.addToBackStack(null);
 						transaction.commit();						
 					}

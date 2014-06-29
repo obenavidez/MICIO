@@ -1,6 +1,5 @@
 package com.panzyma.nm.model;
 
-import com.comunicator.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -10,10 +9,14 @@ import org.ksoap2.serialization.PropertyInfo;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;  
+import android.database.Cursor;
 import android.net.Uri;
 
+import com.comunicator.AppNMComunication;
+import com.comunicator.Parameters;
+import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
+import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
@@ -24,10 +27,6 @@ import com.panzyma.nm.serviceproxy.MontoProveedor;
 import com.panzyma.nm.serviceproxy.PromocionCobro;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
-import com.panzyma.nm.auxiliar.NMComunicacion;
-import com.panzyma.nm.auxiliar.NMConfig;
-/*import com.panzyma.nm.auxiliar.Parameters;*/
-import com.panzyma.nm.datastore.DatabaseProvider;
 
 public class ModelCliente
 {  

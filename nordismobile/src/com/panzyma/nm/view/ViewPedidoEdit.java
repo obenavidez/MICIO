@@ -3,26 +3,18 @@ package com.panzyma.nm.view;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_INVETORY_UPDATED;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import static com.panzyma.nm.controller.ControllerProtocol.ID_REQUEST_SALVARPEDIDO;
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
 
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.ExecutionException;
+import java.util.Date; 
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.annotation.SuppressLint; 
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.ContentResolver;
+import android.app.ProgressDialog; 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent; 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -139,6 +131,8 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 	private final Handler handler = new Handler();
 	private boolean salvado;
 	private Bundle extras;
+	private boolean onEdit=false;
+	private boolean onNew;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -161,12 +155,15 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			    DetallePedido[] detPed = pedido.getDetalles();				
 				for (int i = 0; i < detPed.length; i++)
 					Lvmpproducto.add(detPed[i]); 
+				onEdit=true;
 		    } 
+		    onNew=!onEdit;
 			WindowManager wm = (WindowManager) this.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
 			initComponent();
 
-		} catch (Exception e) {
+		} catch (Exception e) 
+		{
 			e.printStackTrace();
 			buildCustomDialog("Error Message",
 					e.getMessage() + "\n Cause:" + e.getCause(), ALERT_DIALOG)
@@ -176,10 +173,17 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void initComponent() {
+	public void initComponent() 
+	{
+		salvado=false;
 		gridDetallePedido = findViewById(R.id.pddgrilla);
 		grid_dp = (ListView) (findViewById(R.id.pddgrilla)).findViewById(R.id.data_items);
-
+		try {
+			cliente=Ventas.getClienteBySucursalID(pedido.getObjSucursalID(),me.getContentResolver());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// LinearLayout grilla=(LinearLayout) findViewById(R.id.pddgrilla);
 		gridheader = (TextView) gridDetallePedido.findViewById(R.id.header);
 		gridheader.setText("Productos a Facturar(0)");
@@ -297,7 +301,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			tbxTipoVenta.setSelection(1);
 
 		tbxFecha.setText("" + DateUtil.idateToStrYY(date));
-		
+		CalculaTotales();
 		setTotales(false);
 
 		gridheader.setText("Productos a Facturar(0)");
@@ -555,14 +559,22 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				false, type);
 	}
 
-	private void FINISH_ACTIVITY() {
-		nmapp.getController().removeOutboxHandler(TAG);
+	private void FINISH_ACTIVITY() 
+	{
+		int requescode=0;
+		nmapp.getController().removeOutboxHandler(TAG); 		
 		Log.d(TAG, "Activity quitting");
-		Intent intent = new Intent();
-		Bundle b = new Bundle();
-		b.putParcelable("pedido",pedido);
-		intent.putExtras(b);
-		setResult((pedido!=null)?1:2,intent); 
+		Intent intent =null;
+		if((pedido!=null && pedido.getDetalles().length!=0))
+		{
+			intent = new Intent();
+			Bundle b = new Bundle();
+			b.putParcelable("pedido",pedido);
+			intent.putExtras(b);
+		}
+		if(onEdit)
+			requescode=getIntent().getIntExtra("requestcode", 0);
+		setResult(requescode,intent); 
 		finish();
 	}
 
@@ -1200,11 +1212,12 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 	public boolean isDataValid() throws Exception {
 		String msg = "";
-
-		String f = getFechaPedido();
+		 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date d = (Date) formatter.parse(f); 
-		if (DateUtil.d2i(d) > DateUtil.d2i(Calendar.getInstance().getTime())) {
+        formatter.setCalendar(Calendar.getInstance());
+        Date d = (Date) formatter.parse(DateUtil.idateToStrYY(DateUtil.dt2i(Calendar.getInstance().getTime())));
+        Date d2 = (Date) formatter.parse(getFechaPedido()); 
+		if (DateUtil.d2i(d) > DateUtil.d2i(d2)) {
 			// Dialog.alert("La fecha del pedido no debe ser mayor a la fecha actual.");
 			return false;
 		}

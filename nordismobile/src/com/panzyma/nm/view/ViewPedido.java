@@ -21,12 +21,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,12 +46,15 @@ import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("rawtypes")
-public class ViewPedido extends ActionBarActivity implements ListaFragment.OnItemSelectedListener, Handler.Callback
-{
+public class ViewPedido extends ActionBarActivity implements
+		ListaFragment.OnItemSelectedListener, Handler.Callback {
 	@Override
-	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
+	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		// TODO Auto-generated method stub
-		super.onActivityResult(arg0, arg1, arg2);
+		super.onActivityResult(requestcode, resultcode, data);
+		request_code=requestcode;
+		if ((NUEVO_PEDIDO== request_code || EDITAR_PEDIDO== request_code) && data != null)  
+			establecer(data.getParcelableExtra("pedido"));
 	}
 
 	@Override
@@ -59,26 +65,27 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 
 	@Override
 	public void startActivityFromFragment(Fragment fragment, Intent intent,
-			int requestCode) 
-	{
+			int requestCode) {
 		// TODO Auto-generated method stub
 		super.startActivityFromFragment(fragment, intent, requestCode);
 	}
 
-	private static final String TAG = ProductoView.class.getSimpleName();
+	private static final String TAG = ViewPedido.class.getSimpleName();
 	CustomArrayAdapter<vmEntity> customArrayAdapter;
 	private SearchView searchView;
 	int listFragmentId;
-	int positioncache = -1;
+	public static int positioncache = -1;
 	private Context context;
 	private static final int NUEVO_PEDIDO = 0;
 	private static final int EDITAR_PEDIDO = 1;
-	private static final int BORRAR_PEDIDO=3;
+	private static final int BORRAR_PEDIDO = 3;
+	private static int request_code;
 	private String[] opcionesMenu;
 	private DrawerLayout drawerLayout;
 	private ListView drawerList;
 	private ActionBarDrawerToggle drawerToggle;
-	Intent intent;Bundle b;
+	Intent intent;
+	Bundle b;
 	private CharSequence tituloSeccion;
 	private CharSequence tituloApp;
 	private NMApp nmapp;
@@ -99,7 +106,7 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 		footerView = (TextView) findViewById(R.id.ctxtview_enty);
 		footerView.setVisibility(View.VISIBLE);
 	}
-	
+
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -111,13 +118,14 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 		setContentView(R.layout.layout_client_fragment);
 
 		initComponent();
-		
-		vp=this;
-		
+
+		vp = this;
+
 		gridheader.setVisibility(View.VISIBLE);
 
 		opcionesMenu = new String[] { "Nuevo Pedido", "Editar Pedido",
-				"Enviar Pedido", "Borrar Pedido","Borrar Pedidos Finalizados","Anular Pedido","Consultas de Ventas", "Cerrar" };
+				"Enviar Pedido", "Borrar Pedido", "Borrar Pedidos Finalizados",
+				"Anular Pedido", "Consultas de Ventas", "Cerrar" };
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// drawerLayout.openDrawer(Gravity.END);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -127,7 +135,6 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 				opcionesMenu));
 
 		drawerList.setOnItemClickListener(new OnItemClickListener() {
-		
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -135,53 +142,58 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 
 				switch (position) 
 				{
-					case NUEVO_PEDIDO:
-						intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
-					    startActivityForResult(intent,1);// Activity is started with requestCode 2   
-						break;
-					case EDITAR_PEDIDO: 
-						
-						intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
-						
-						Pedido p = null;
-						try {
-							 p=Ventas.obtenerPedidoByID(pedido_selected.getId(), vp);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						b=new Bundle();
-						b.putParcelable("pedido",p);
-						intent.putExtras(b);
-						
-					    startActivityForResult(intent,1);// Activity is started with requestCode 2
-						
-						break;
-					
-					case BORRAR_PEDIDO:
-						//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-						int pos = customArrayAdapter.getSelectedPosition();
-						//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-						pedido_selected = customArrayAdapter.getItem(pos);
-						
-						//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
-						if ( "REGISTRADO".equals(pedido_selected.getDescEstado())) 
-						{
-	//						nmapp.getController()
-	//								.getInboxHandler()
-	//								.sendEmptyMessage(
-	//										ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
-						} else {
-	
-							return;
-						}
-						break;				
+				case NUEVO_PEDIDO:
+					drawerLayout.closeDrawers();
+					intent = new Intent(ViewPedido.this, ViewPedidoEdit.class); 
+					intent.putExtra("requestcode",NUEVO_PEDIDO);
+					startActivityForResult(intent,NUEVO_PEDIDO );// Activity is started
+														// with requestCode 2
+					break;
+				case EDITAR_PEDIDO:
+					drawerLayout.closeDrawers();
+					intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
+					positioncache = customArrayAdapter.getSelectedPosition();
+					Pedido p = null;
+					try {
+						p = Ventas.obtenerPedidoByID(pedido_selected.getId(),
+								vp);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					b = new Bundle();
+					b.putParcelable("pedido", p);
+					intent.putExtras(b);
+					intent.putExtra("requestcode", EDITAR_PEDIDO);
+					startActivityForResult(intent, EDITAR_PEDIDO);// Activity is started
+														// with requestCode 2 
+					break;
+
+				case BORRAR_PEDIDO:
+					// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO
+					// ACTUALMENTE
+					positioncache = customArrayAdapter.getSelectedPosition();
+					// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+					pedido_selected = customArrayAdapter.getItem(positioncache);
+
+					// NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO
+					// A REGISTRADO
+					if ("REGISTRADO".equals(pedido_selected.getDescEstado())) {
+						// nmapp.getController()
+						// .getInboxHandler()
+						// .sendEmptyMessage(
+						// ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+					} else {
+
+						return;
+					}
+					break;
 				}
-	
+
 				drawerList.setItemChecked(position, true);
 				tituloSeccion = opcionesMenu[position];
 				getSupportActionBar().setTitle(tituloSeccion);
-	
+
 			}
 		});
 
@@ -212,10 +224,12 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 
 		nmapp = (NMApp) this.getApplicationContext();
 		try {
-			nmapp.getController().setEntities(this, bpm=new BPedidoM());
+			nmapp.getController().setEntities(this, bpm = new BPedidoM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+			nmapp.getController()
+					.getInboxHandler()
+					.sendEmptyMessage(
+							ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -281,12 +295,11 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
-		if (drawerToggle.onOptionsItemSelected(item)) 
-		{
+		if (drawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
 
@@ -307,7 +320,7 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-
+		
 		boolean menuAbierto = drawerLayout.isDrawerOpen(drawerList);
 
 		if (menuAbierto)
@@ -329,15 +342,13 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 		super.onConfigurationChanged(newConfig);
 		drawerToggle.onConfigurationChanged(newConfig);
 	}
-	
+
 	@Override
-	public boolean handleMessage(Message msg) 
-	{
-		switch (msg.what) 
-		{
-			case C_DATA:
-				establecer(msg);
-				return true;
+	public boolean handleMessage(Message msg) {
+		switch (msg.what) {
+		case C_DATA:
+			establecer(msg);
+			return true;
 		}
 		return false;
 	}
@@ -346,30 +357,81 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 	public void onItemSelected(Object obj, int position) {
 		// TODO Auto-generated method stub
 		pedido_selected = firstFragment.getAdapter().getItem(position);
-		positioncache=position;
+		positioncache = position;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private void establecer(Message msg) {
-		pedidos = (ArrayList<vmEntity>) ((msg.obj == null) ? new ArrayList<vmEntity>()
-				: msg.obj);
-		gridheader.setVisibility(View.VISIBLE);
-		gridheader.setText(String.format("Listado de Recibos (%s)",
-				pedidos.size()));
-		if (pedidos.size() == 0) 
+	private void establecer(Object _obj)
+	{
+		if (_obj==null)
+			return;
+		
+		if (_obj instanceof Message) 
 		{
-			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
-			txtenty.setVisibility(View.VISIBLE);
+			Message msg = (Message) _obj;
+			pedidos = (ArrayList<vmEntity>) ((msg.obj == null) ? new ArrayList<vmEntity>()
+					: msg.obj);
+			
+			positioncache = 0;
+			if (pedidos.size() > 0)
+				pedido_selected = firstFragment.getAdapter().getItem(0);
 		}
-		firstFragment.setItems(pedidos);
-		firstFragment.getAdapter().setSelectedPosition(0);
-		positioncache = 0;
-		if(pedidos.size() > 0)
-			pedido_selected = firstFragment.getAdapter().getItem(0);
+		if (_obj instanceof Pedido) 
+		{
+			Pedido p = (Pedido) _obj;
+			if(EDITAR_PEDIDO==request_code) 
+				pedidos.set(positioncache,new vmEntity(p.getId(), p.getNumeroMovil(), p
+					.getFecha(), p.getTotal(), p.getNombreCliente(), p
+					.getDescEstado())); 
+			else if(NUEVO_PEDIDO==request_code) 
+			{
+				pedidos.add(new vmEntity(p.getId(), p.getNumeroMovil(), p
+						.getFecha(), p.getTotal(), p.getNombreCliente(), p
+						.getDescEstado()));
+				positioncache=pedidos.size()-1;
+			}
+		}
+		
+		runOnUiThread(new Runnable() 
+		{
+
+			@Override
+			public void run() {
+				gridheader.setVisibility(View.VISIBLE);
+				gridheader.setText(String.format("Listado de Recibos (%s)",
+						pedidos.size()));
+				if (pedidos.size() == 0) {
+					TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
+					txtenty.setVisibility(View.VISIBLE);
+				}
+				firstFragment.setItems(pedidos);
+				firstFragment.getAdapter().setSelectedPosition(positioncache); 
+			}
+		});
+
+		
 	}
 
 	public BPedidoM getBridge() {
 		// TODO Auto-generated method stub
 		return bpm;
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event)
+	{
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+    	  	FINISH_ACTIVITY();
+            return true;
+	    }
+		return super.onKeyUp(keyCode, event);
+	}
+	
+	private void FINISH_ACTIVITY() 
+	{
+		nmapp.getController().removeOutboxHandler(TAG); 		
+		Log.d(TAG, "Activity quitting");
+		finish();
 	}
 }

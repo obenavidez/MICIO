@@ -196,9 +196,7 @@ public class Ventas {
 	@SuppressWarnings("deprecation")
     public static Pedido guardarPedido(Pedido pedido,ViewPedidoEdit vpe) throws Exception
     { 
-        //Salvando el tipo de pedido (crédito contado)
-		
-		
+        //Salvando el tipo de pedido (crédito contado)		
         pedido.setTipo("CR"); 
     	if (vpe.getTipoVenta() == "CO")
 			pedido.setTipo("CO");
@@ -259,5 +257,10 @@ public class Ventas {
     public static Pedido obtenerPedidoByID(long idpedido,ViewPedido vp) throws Exception
     {
     	return vp.getBridge().obtenerPedidoByID(idpedido, vp.getContentResolver());
+    }
+    
+    public static Cliente getClienteBySucursalID(long objSucursalID,ContentResolver cr) throws Exception
+    {
+    	return BClienteM.getClienteBySucursalID(cr, objSucursalID);
     }
 }

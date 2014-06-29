@@ -3,26 +3,19 @@ package com.panzyma.nm.model;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
- 
-
-
-
 
 import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor; 
+import android.database.Cursor;
 
-import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
-import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
-/*import com.panzyma.nm.auxiliar.Parameters; by Jrostran */
 import com.panzyma.nm.datastore.DatabaseProvider;
-import com.panzyma.nm.serviceproxy.DetallePedido; 
-import com.panzyma.nm.serviceproxy.Pedido; 
+import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
 import com.panzyma.nm.viewmodel.vmEntity;
@@ -35,7 +28,7 @@ public class ModelPedido {
 		Parameters params=new Parameters((new String[]{"Credentials","UsuarioVendedor","todos"}),
 				 (new Object[]{credentials,usuarioVendedor,todos}),
 				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.STRING_CLASS,PropertyInfo.BOOLEAN_CLASS}));
-		return AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.TraerDisponibilidadProductos);
+		return com.comunicator.AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.TraerDisponibilidadProductos);
 	}   
 	
 	public  static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception
@@ -48,7 +41,7 @@ public class ModelPedido {
 		Parameters params=new Parameters((new String[]{"Credentials","Pedido"}),
 				 (new Object[]{credenciales,pedido}),
 				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.OBJECT_CLASS}));
-		return new JSONObject(AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarPedido).toString());
+		return new JSONObject(com.comunicator.AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarPedido).toString());
 	
 	}
 	
@@ -201,8 +194,8 @@ public class ModelPedido {
 		int cont=0;int value;  
 		Cursor cur = content.query(DatabaseProvider.CONTENT_URI_PEDIDODETALLE,
 		        null, //Columnas a devolver
-		        "objPedidoID="+String.valueOf(ObjPedidoID) ,       //Condición de la query
-		        null ,       //Argumentos variables de la query
+		       NMConfig.Pedido.DetallePedido.objPedidoID+"="+String.valueOf(ObjPedidoID),       //Condición de la query
+		     null, // new String[]{ String.valueOf(ObjPedidoID) } ,       //Argumentos variables de la query
    	        null); 
 		DetallePedido[] adp=new DetallePedido[cur.getCount()];
 		
@@ -248,8 +241,8 @@ public class ModelPedido {
 		int cont=0;int value;  
 		Cursor cur = content.query(DatabaseProvider.CONTENT_URI_PEDIDOPROMOCION,
 		        null, //Columnas a devolver
-		        "objPedidoID="+String.valueOf(ObjPedidoID),       //Condición de la query
-		        null ,       //Argumentos variables de la query
+		        "objPedidoID=?",       //Condición de la query
+		        new String[]{ String.valueOf(ObjPedidoID) }  ,       //Argumentos variables de la query
    	        null); 
 		PedidoPromocion[] app=new PedidoPromocion[cur.getCount()];
 		
