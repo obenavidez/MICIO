@@ -357,7 +357,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		if (cliente != null) {
 
 			txtViewCliente.setText(
-					cliente.getNombreSucursal() + " - "	+ cliente.getNombreSucursal()
+					cliente.getNombreCliente()
 					);
 			txtViewLimiteCredito.setText(
 					StringUtil.formatReal(cliente.getLimiteCredito())
