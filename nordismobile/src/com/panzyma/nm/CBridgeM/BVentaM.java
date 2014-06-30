@@ -39,6 +39,7 @@ public class BVentaM {
 		}
 
 		public static Petition toInt(int x) {
+			
 			return Petition.values()[x];
 		}
 
@@ -74,9 +75,9 @@ public class BVentaM {
 	private void loadVentas(final boolean delDia, final boolean deSemana,
 			final boolean delMes, final int fechaInic, final int fechaFin, final Petition peticion) {
 		try {
-			final String credentials = SessionManager.getCredentials();
+			//final String credentials = SessionManager.getCredentials();
 
-			// final String credentials = "sa||nordis09||dp";
+			 final String credentials = "sa||nordis09||dp";
 
 			if (!credentials.trim().equals("")) {
 				pool.execute(new Runnable() {

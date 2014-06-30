@@ -6,6 +6,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BVentaM;
 import com.panzyma.nm.CBridgeM.BVentaM.Petition;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
@@ -55,6 +56,7 @@ public class ConsultaVentasFragment extends Fragment implements
 	private ListView listaGenerica;
 	private TextView txtenty;
 	private TextView headerGrid;
+	private TextView gridheader;
 	private QuickAction quickAction;
 	private Button btnMenu;
 	private Display display;
@@ -79,6 +81,8 @@ public class ConsultaVentasFragment extends Fragment implements
 	public void onStart() {
 		super.onStart();
 		Bundle args = getArguments();
+		SessionManager.setContext(getActivity());
+		menuSelected = ActionMenu.VENTAS_DIA;
 		initComponents();
 		if (args != null) {
 			objSucursalID = args.getLong(SUCURSAL_ID);
@@ -90,7 +94,7 @@ public class ConsultaVentasFragment extends Fragment implements
 	}
 
 	private void cargarVentas() {		
-		
+		cargarVentasDelDia();
 	}
 
 	private void initComponents() {
@@ -99,6 +103,11 @@ public class ConsultaVentasFragment extends Fragment implements
 		txtenty = (TextView) actividad.findViewById(R.id.ctxtview_enty);
 		headerGrid = (TextView) actividad.findViewById(R.id.cxctextv_header2);
 		btnMenu = (Button)actividad.findViewById(R.id.btnMenu);
+		
+		gridheader = (TextView) actividad.findViewById(R.id.ctextv_gridheader);
+		//gridheader.setVisibility(View.INVISIBLE);
+		
+		gridheader.setText("Ventas del dia (0)");
 		
 		WindowManager wm = (WindowManager) getActivity()
 				.getSystemService(Context.WINDOW_SERVICE);
@@ -176,14 +185,16 @@ public class ConsultaVentasFragment extends Fragment implements
 					ventas,
 					R.layout.detalle_venta);			
 			txtenty.setVisibility(View.INVISIBLE);
-			headerGrid.setText(String.format(title, ventas.size()));
+			gridheader.setText(String.format(title, ventas.size()));
 			listaGenerica.setAdapter(adapter);
 		} else {
-			headerGrid.setText(String.format(title,0));
+			gridheader.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
 			txtenty.setVisibility(View.VISIBLE);
-			adapter.clearItems();
-			adapter.notifyDataSetChanged();
+			if(adapter != null) {
+				adapter.clearItems();
+				adapter.notifyDataSetChanged();
+			}			
 		}
 	} 
 	
@@ -192,7 +203,7 @@ public class ConsultaVentasFragment extends Fragment implements
 		quickAction.addActionItem(new ActionItem(MOSTRAR_VENTAS_DEL_DIA,
 				"Mostrar Ventas del Día"));
 		quickAction.addActionItem(new ActionItem(MOSTRAR_VENTAS_SEMANA,
-				"Mostrar VEntas de la Semana"));
+				"Mostrar Ventas de la Semana"));
 		quickAction.addActionItem(new ActionItem(MOSTRAR_VENTAS_MES,
 				"Mostrar Ventas del Mes"));
 		quickAction.addActionItem(null);
@@ -251,7 +262,7 @@ public class ConsultaVentasFragment extends Fragment implements
 		case VENTAS_DEL_DIA:
 		case VENTAS_DEL_SEMANA:
 		case VENTAS_DEL_MES:
-			mostrarVentas(((ArrayList<CVenta>)msg.obj));
+			mostrarVentas(  ( msg.obj == null ? new ArrayList<CVenta>() :  ((ArrayList<CVenta>)msg.obj) ) );
 			break;		
 		}
 		return false;
