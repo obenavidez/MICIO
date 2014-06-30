@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaProductoFragment;
@@ -77,9 +78,17 @@ public class ViewPedido extends ActionBarActivity implements
 		// TODO Auto-generated method stub
 		super.startActivityFromFragment(fragment, intent, requestCode);
 	}
+	
+	public enum FragmentActive {
+		LIST,
+		ITEM,
+		CUENTAS_POR_COBRAR,
+		CONSULTA_VENTAS
+	};
 
 	private FragmentActive fragmentActive = null;
 	CuentasPorCobrarFragment cuentasPorCobrar;
+	ConsultaVentasFragment consultasVentas;
 	FragmentTransaction transaction;
 	private static final String TAG = ViewPedido.class.getSimpleName();
 	CustomArrayAdapter<vmEntity> customArrayAdapter;
@@ -91,6 +100,7 @@ public class ViewPedido extends ActionBarActivity implements
 	private static final int EDITAR_PEDIDO = 1;
 	private static final int BORRAR_PEDIDO = 3;
 	private static final int CUENTAS_POR_COBRAR = 6;
+	protected static final int CONSULTA_VENTAS = 7;
 	private static int request_code;
 	private String[] opcionesMenu;
 	private DrawerLayout drawerLayout;
@@ -130,6 +140,8 @@ public class ViewPedido extends ActionBarActivity implements
 		setContentView(R.layout.layout_client_fragment);
 
 		initComponent();
+		
+		fragmentActive = FragmentActive.LIST;
 
 		vp = this;
 		transaction = getSupportFragmentManager().beginTransaction();
@@ -229,7 +241,25 @@ public class ViewPedido extends ActionBarActivity implements
 					// OCULTAR LA BARRA DE ACCION
 					getSupportActionBar().hide();
 					break;
-
+				case CONSULTA_VENTAS:
+					fragmentActive = FragmentActive.CONSULTA_VENTAS;
+					if (findViewById(R.id.fragment_container) != null) {						
+						consultasVentas = new ConsultaVentasFragment();
+						Bundle msg = new Bundle();
+						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION,
+								positioncache);						
+						consultasVentas.setArguments(msg);
+						transaction.replace(R.id.fragment_container,
+								consultasVentas);
+						transaction.addToBackStack(null);
+						transaction.commit();
+					}
+					// CERRAR EL MENU DEL DRAWER
+					drawerLayout.closeDrawers();
+					// OCULTAR LA BARRA DE ACCION
+					getSupportActionBar().hide();
+					
+					break;
 				}
 
 				drawerList.setItemChecked(position, true);
@@ -463,6 +493,15 @@ public class ViewPedido extends ActionBarActivity implements
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			FINISH_ACTIVITY();
 			return true;
+		} else if( keyCode == KeyEvent.KEYCODE_MENU ){
+			switch(fragmentActive){
+			case CUENTAS_POR_COBRAR:
+				cuentasPorCobrar.mostrarMenu();
+				break;
+			case CONSULTA_VENTAS:
+				consultasVentas.mostrarMenu();
+				break;
+			}			
 		}
 		return super.onKeyUp(keyCode, event);
 	}
