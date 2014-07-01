@@ -1,5 +1,5 @@
 package com.panzyma.nm.CBridgeM;
-
+import android.util.Log;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
@@ -7,6 +7,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERV
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_INVENTORY_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
 
 import java.util.ArrayList;
 
@@ -16,8 +17,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
@@ -26,12 +25,11 @@ import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.model.ModelProducto;
-import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.viewdialog.DialogProducto;
+import com.panzyma.nm.viewmodel.vmEntity;
 
 @SuppressWarnings("rawtypes")
 public class BPedidoM {
@@ -40,9 +38,11 @@ public class BPedidoM {
 	ThreadPool pool;
 	ViewPedidoEdit view1;
 	ViewPedido view;
+	vmEntity pedido_selected;
 	String TAG = BClienteM.class.getSimpleName();
 	boolean OK = false;
 	ArrayList<Pedido> obj = new ArrayList<Pedido>();
+	private static final String logger = BPedidoM.class.getSimpleName();
 
 	public BPedidoM() {
 	}
@@ -61,25 +61,69 @@ public class BPedidoM {
 
 	public boolean handleMessage(Message msg) {
 		Bundle b = msg.getData();
+		Boolean val= false;
 		switch (msg.what) {
-		case LOAD_DATA_FROM_LOCALHOST:
-			onLoadALLData_From_LocalHost();
-			return true;
-		case LOAD_DATA_FROM_SERVER:
-			onLoadALLData_From_Server();
-			return true;
-		case UPDATE_ITEM_FROM_SERVER:
-			onUpdateItem_From_Server();
-			return true;
-		case UPDATE_INVENTORY_FROM_SERVER:
-			onUpdateInventory_From_Server();
-			return true;
-		case ID_SALVAR:
-			return true;
+			case LOAD_DATA_FROM_LOCALHOST:
+				onLoadALLData_From_LocalHost();
+				val= true;
+				break;
+			case LOAD_DATA_FROM_SERVER:
+				onLoadALLData_From_Server();
+				val= true;
+				break;
+			case UPDATE_ITEM_FROM_SERVER:
+				onUpdateItem_From_Server();
+				val= true;
+				break;
+			case UPDATE_INVENTORY_FROM_SERVER:
+				onUpdateInventory_From_Server();
+				val= true;
+				break;
+			case ID_SALVAR:
+				val= true;
+				break;
+			case DELETE_DATA_FROM_LOCALHOST :
+				onDeleteDataFromLocalHost();
+				val= true;
+				break;
 		}
-		return false;
+		return val;
 	}
 
+	private void onDeleteDataFromLocalHost() {
+		try {
+			pool.execute(new Runnable() {
+
+				@Override
+				public void run() {
+				  try {
+						ContentResolver resolver =(view != null) ? view.getContentResolver() : view1.getContext().getContentResolver();
+						Processor.send_ViewDeletePedidoToView(ModelPedido.borraPedidoByID(resolver, view.getPedidoSelected().getId()),controller);
+				  	} 
+				catch (Exception e) {
+				Log.e(logger, "Error in the update thread", e);
+						try {
+							Processor
+									.notifyToView(
+											controller,
+											ERROR,
+											0,
+											0,
+											new ErrorMessage(
+													"Error interno en la sincronización con la BDD",
+													e.toString(), "\n Causa: "
+															+ e.getCause()));
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			});
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
 	private void onLoadALLData_From_LocalHost() {
 		try {
 			pool.execute(new Runnable() {
@@ -187,5 +231,10 @@ public class BPedidoM {
 	public static Pedido obtenerPedidoByID(long idpedido,ContentResolver content)throws Exception
 	{
 		return ModelPedido.obtenerPedidoByID(idpedido, content);
+	}
+	
+	public static void anularPedido(long pedidoid)
+	{
+		
 	}
 }

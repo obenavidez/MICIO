@@ -1,11 +1,15 @@
 package com.panzyma.nm.view;
 
+import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +37,10 @@ import android.widget.Toast;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM;
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
+import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.ListaFragment;
@@ -74,6 +82,8 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 	private static final int NUEVO_PEDIDO = 0;
 	private static final int EDITAR_PEDIDO = 1;
 	private static final int BORRAR_PEDIDO=3;
+	private static final int BORRAR_PEDIDO_FINALIZADO = 4;
+	private static final int ANULAR_PEDIDO = 5;
 	private String[] opcionesMenu;
 	private DrawerLayout drawerLayout;
 	private ListView drawerList;
@@ -133,6 +143,8 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
+				int pos =0;
+				String state="";
 				switch (position) 
 				{
 					case NUEVO_PEDIDO:
@@ -160,27 +172,61 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 					
 					case BORRAR_PEDIDO:
 						//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-						int pos = customArrayAdapter.getSelectedPosition();
+						pos = customArrayAdapter.getSelectedPosition();
 						//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
 						pedido_selected = customArrayAdapter.getItem(pos);
-						
-						//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
-						if ( "REGISTRADO".equals(pedido_selected.getDescEstado())) 
-						{
-	//						nmapp.getController()
-	//								.getInboxHandler()
-	//								.sendEmptyMessage(
-	//										ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
-						} else {
-	
+						//OBTENER EL ESTADO DEL REGISTRO
+						state = pedido_selected.getDescEstado(); 
+						if("PORVALIDAR".equals(state) || "APROBADO".equals(state) ){
+							Toast.makeText(getApplicationContext(),"No puede borrar pedidos por validar o aprobados.", Toast.LENGTH_SHORT).show();
 							return;
 						}
-						break;				
+						nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+						//CERRAR EL MENU DEL DRAWER
+						drawerLayout.closeDrawers();
+						break;	
+					case BORRAR_PEDIDO_FINALIZADO : 
+						//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+						pos = customArrayAdapter.getSelectedPosition();
+						//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+						pedido_selected = customArrayAdapter.getItem(pos);
+						state = pedido_selected.getDescEstado();
+						
+						
+						break;
+					case ANULAR_PEDIDO : 
+						//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+						pos = customArrayAdapter.getSelectedPosition();
+						//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+						pedido_selected = customArrayAdapter.getItem(pos);
+						//OBTENER EL ESTADO DEL REGISTRO
+						state = pedido_selected.getDescEstado();
+						
+					    //VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
+						if ("APROBADO".compareTo(state) != 0) {
+							Toast.makeText(getApplicationContext(),"Solo se pueden anular pedidos en estado de APROBADO.", Toast.LENGTH_SHORT).show();
+							return;
+						}
+						//SI SE ESTÁ FUERA DE LA COBERTURA
+						if(!NMNetWork.isPhoneConnected(context,nmapp.getController()) && !NMNetWork.CheckConnection(nmapp.getController()))
+						{
+				            Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
+							return;
+						}
+						
+						 try {
+							 
+						 }
+						 catch(Exception ex) {
+							 	ex.printStackTrace();
+				            }
+						break;
 				}
-	
+	/*
 				drawerList.setItemChecked(position, true);
 				tituloSeccion = opcionesMenu[position];
 				getSupportActionBar().setTitle(tituloSeccion);
+				*/
 	
 			}
 		});
@@ -333,13 +379,26 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 	@Override
 	public boolean handleMessage(Message msg) 
 	{
+		Boolean val = false;
 		switch (msg.what) 
 		{
 			case C_DATA:
 				establecer(msg);
-				return true;
+				val= true;
+				break;
+			case DELETE_ITEM_FINISHED:
+				customArrayAdapter.remove(pedido_selected);	
+				customArrayAdapter.notifyDataSetChanged();
+				buildCustomDialog("Nordis Movile",msg.obj.equals(1)?"Eliminado Satisfactoriamente":"Error al eliminar",ALERT_DIALOG).show();
+				val=true;
+				break;
+			case ERROR:
+				ErrorMessage error=((ErrorMessage)msg.obj);
+				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();	
+				val=true;
+				break;
 		}
-		return false;
+		return val;
 	}
 
 	@Override
@@ -367,9 +426,36 @@ public class ViewPedido extends ActionBarActivity implements ListaFragment.OnIte
 		if(pedidos.size() > 0)
 			pedido_selected = firstFragment.getAdapter().getItem(0);
 	}
-
+	public vmEntity getPedidoSelected() {
+		return pedido_selected;
+	}	
 	public BPedidoM getBridge() {
 		// TODO Auto-generated method stub
 		return bpm;
 	}
+
+	public  Dialog buildCustomDialog(String tittle,String msg,int type)
+	{
+		final CustomDialog dialog=new CustomDialog(this);
+		dialog.setCancelable(true);
+	    dialog.setCanceledOnTouchOutside(true);
+	    dialog.setMessageType(type);
+	    dialog.setTitulo(tittle);
+	    dialog.setMensaje(msg);    
+	    dialog.setOnActionDialogButtonClickListener
+	    (
+    		 new OnActionButtonClickListener()
+    		 {
+				@SuppressWarnings("static-access")
+				@Override
+				public void onButtonClick(View _dialog,int actionId) {									 
+					if(actionId==CustomDialog.OK_BUTTOM ){
+						dialog.dismiss();	
+				}
+			 }
+			} 
+	    );
+	    return dialog;
+	}
+	
 }
