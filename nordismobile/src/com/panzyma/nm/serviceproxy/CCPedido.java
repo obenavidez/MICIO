@@ -1,6 +1,9 @@
 package com.panzyma.nm.serviceproxy;
 
-public class CCPedido {
+import com.panzyma.nm.interfaces.GenericDocument;
+
+public class CCPedido implements GenericDocument {
+	
     protected long id;
     protected java.lang.String numero;
     protected java.lang.String referencia;
@@ -107,4 +110,14 @@ public class CCPedido {
     public void setCodEstado(java.lang.String codEstado) {
         this.codEstado = codEstado;
     }
+
+	@Override
+	public String getDocumentNumber() {		
+		return getNumero();
+	}
+
+	@Override
+	public Object getObject() {
+		return this;
+	}
 }

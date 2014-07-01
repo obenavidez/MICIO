@@ -26,6 +26,10 @@ public class vmRecibo implements Item, Parcelable {
 		this.descEstado = descEstado;
 		this.objSucursalID = objSucursalID;
 	}
+	
+	public vmRecibo(int id){
+		this.id = id;
+	}
 
 	public vmRecibo() {
 	}

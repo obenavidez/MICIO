@@ -9,12 +9,30 @@ import com.panzyma.nm.interfaces.Item;
 
 public class vmEntity implements Item,Parcelable,Serializable
 {
+	
+	public vmEntity()
+	{
+	}
+	
+	public vmEntity(long id, int numero, long fecha, float total,
+			String nombre, String descEstado) {
+		super();
+		this.id = id;
+		this.numero = numero;
+		this.fecha = fecha;
+		this.total = total;
+		this.nombre = nombre;
+		this.descEstado = descEstado;
+	}
+
 	protected long id;
 	protected int numero;
 	protected long fecha;
 	protected float total;
 	protected java.lang.String nombre;
 	protected java.lang.String descEstado;
+	
+	
 	public long  getId() {
 		return id;
 	}

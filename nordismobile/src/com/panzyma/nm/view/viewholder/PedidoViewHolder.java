@@ -2,6 +2,8 @@ package com.panzyma.nm.view.viewholder;
 
 import android.widget.TextView;
 
+import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.CCPedido;
 import com.panzyma.nm.view.adapter.InvokeView;
@@ -32,11 +34,11 @@ public class PedidoViewHolder {
 			CCPedido cnota = (CCPedido) entity;
 			numero.setText("" + cnota.getNumero());
 			estado.setText("" + cnota.getCodEstado());
-			fecha.setText("" + cnota.getFecha());
+			fecha.setText("" + DateUtil.idateToStrYY(cnota.getFecha()) );
 			referencia.setText("" + cnota.getReferencia());
 			tipo.setText("" + cnota.getTipo());
 			concepto.setText("");
-			total.setText("" + cnota.getTotal());
+			total.setText("" + StringUtil.formatReal(cnota.getTotal()) );
 			tipoPrecio.setText("" + cnota.getTipoPrecio());			
 		}
 

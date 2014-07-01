@@ -6,7 +6,9 @@ import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo; 
-public final class CCNotaDebito implements KvmSerializable {
+
+import com.panzyma.nm.interfaces.GenericDocument;
+public final class CCNotaDebito implements KvmSerializable, GenericDocument {
  
 	private long Id;
     private java.lang.String NombreSucursal; 
@@ -219,5 +221,15 @@ public final class CCNotaDebito implements KvmSerializable {
             _info.type = java.lang.String.class; break;
         }
     }
+	
+	@Override
+	public String getDocumentNumber() {
+		return getNumero();
+	}
+	
+	@Override
+	public Object getObject() {
+		return this;
+	}
 
 }

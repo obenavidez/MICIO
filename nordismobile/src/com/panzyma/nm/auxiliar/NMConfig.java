@@ -28,7 +28,8 @@ public class NMConfig
 		public static final String TraerPedidosCliente = "TraerPedidosCliente";
 		public static final String TraerRColCliente = "TraerRColCliente";
 		public static final String TraerNotasDebitoCliente = "TraerNotasDebitoCliente";
-		public static final String TraerNotasCreditoCliente = "TraerNotasCreditoCliente";	    
+		public static final String TraerNotasCreditoCliente = "TraerNotasCreditoCliente";
+		public static final String GetVentaVendedor = "GetVentaVendedor";	    
 	}
 	public static final class Cliente
 	{  		

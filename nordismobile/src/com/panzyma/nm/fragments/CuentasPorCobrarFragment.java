@@ -1,6 +1,8 @@
 package com.panzyma.nm.fragments;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
@@ -8,6 +10,7 @@ import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCCliente;
@@ -35,11 +38,16 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -53,7 +61,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	private TypeDetail typeDetail = TypeDetail.FACTURA;
 	private int mCurrentPosition = -1;
-	private vmRecibo cliente = null;
+	private long objSucursalID ;
 	private Context fcontext = null;
 	private GenericAdapter adapter = null;
 	private NMApp nmapp;
@@ -66,7 +74,11 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private TextView txtenty;
 	private ListView listaGenerica;
 	private ProgressBar progressBar;
-	
+	private EditText search;
+	private QuickAction quickAction;
+	private List<GenericDocument> filterDocs = new ArrayList<GenericDocument>();	
+	private Display display;
+	private Button btnMenu;
 
 	private int fechaFinFac = 0;
 	private int fechaInicFac = 0;
@@ -88,9 +100,15 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private int fechaFinND = 0;
 	private int fechaInicND = 0;
 	private String estadoND = "AUTORIZADA";
+	
+	private static final int MOSTRAR_FACTURAS = 0;
+	private static final int MOSTRAR_NOTAS_DEBITO = 1;
+	private static final int MOSTRAR_NOTAS_CREDITO = 2;
+	private static final int MOSTRAR_PEDIDOS = 3;
+	private static final int MOSTRAR_RECIBOS = 4;
 
 	public final static String ARG_POSITION = "position";
-	public final static String OBJECT = "cliente";
+	public final static String SUCURSAL_ID = "sucursalID";
 	
 
 	@Override
@@ -99,7 +117,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
-			cliente = (vmRecibo) savedInstanceState.getParcelable(OBJECT);
+			objSucursalID = savedInstanceState.getLong(SUCURSAL_ID);
 		}
 		return inflater.inflate(R.layout.cuentas_x_cobrar, container, false);
 	}
@@ -110,7 +128,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		Bundle args = getArguments();
 		initComponents();
 		if (args != null) {
-			cliente = (vmRecibo) args.getParcelable(OBJECT);
+			objSucursalID = args.getLong(SUCURSAL_ID);
 			mCurrentPosition = args.getInt(ARG_POSITION);
 			cargarEncabezadoCliente();
 		} else if (mCurrentPosition != -1) {
@@ -119,7 +137,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}	
 
 	public long getSucursalId() {
-		return cliente.getObjSucursalID();
+		return objSucursalID;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -260,9 +278,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private void initComponents() {
 		Activity actividad = getActivity();
 		// INICIALIZAR VARIABLES
-		fechaInicPedidos = DateUtil.getToday();
-		String s = String.valueOf(fechaInicPedidos);
+		fechaFinPedidos = DateUtil.getToday();
+		String s = String.valueOf(fechaFinPedidos);
 		fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01");
+		
+		fechaInicPedidos = DateUtil.d2i(Date.valueOf("2014-01-01")) ;
+		
 		fechaFinRCol = fechaFinPedidos;
 		fechaInicRCol = fechaInicPedidos;
 		fechaInicND = fechaInicPedidos;
@@ -283,14 +304,60 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		gridheader.setHeight(0);
 		txtenty = (TextView) getActivity().findViewById(R.id.ctxtview_enty);
 		headerGrid = (TextView) actividad.findViewById(R.id.cxctextv_header2);
-		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);		
+		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);	
+		
+		
+		search = (EditText) actividad.findViewById(R.id.cxctextv_detalle_generico);
+		
+		search.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				List<GenericDocument> docs = (List<GenericDocument>) adapter.getData();				
+				if (docs.size() > 0){
+					String docNumerToFound = s.toString();
+					for(GenericDocument doc : docs) {
+						if( doc.getDocumentNumber().contains(docNumerToFound)){
+							filterDocs.add(doc);
+						}
+					}				
+					adapter.setItems(filterDocs);
+					adapter.notifyDataSetChanged();
+				}				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		WindowManager wm = (WindowManager) getActivity()
+				.getSystemService(Context.WINDOW_SERVICE);
+		display = wm.getDefaultDisplay();
+		
+		btnMenu = (Button) getActivity().findViewById(R.id.btnMenu);
+		
+		initMenu();
 	}
+	
+	public void mostrarMenu() {		
+		quickAction.show(btnMenu, display, true);
+	} 
 
 	private void establecerDatosGenerales(CCCliente cliente) {
 		if (cliente != null) {
 
 			txtViewCliente.setText(
-					cliente.getNombreSucursal() + " - "	+ cliente.getNombreSucursal()
+					cliente.getNombreCliente()
 					);
 			txtViewLimiteCredito.setText(
 					StringUtil.formatReal(cliente.getLimiteCredito())
@@ -419,6 +486,63 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		}
 		
 	}
+	private void initMenu() {
+		quickAction = new QuickAction(this.getActivity(), QuickAction.VERTICAL, 1);
+		quickAction.addActionItem(new ActionItem(MOSTRAR_FACTURAS,
+				"Mostrar Facturas"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_DEBITO,
+				"Mostrar Notas Débito"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_CREDITO,
+				"Mostrar Notas Crédito"));
+		quickAction.addActionItem(null);
+		quickAction.addActionItem(new ActionItem(MOSTRAR_PEDIDOS,
+				"Mostrar Pedidos"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_RECIBOS,
+				"Mostrar Recibos"));		
+
+		quickAction
+				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+					@Override
+					public void onItemClick(QuickAction source, final int pos,
+							int actionId) {
+
+						getActivity().runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								ActionItem actionItem = quickAction.getActionItem(pos);
+								
+								switch (actionItem.getActionId()) {
+								case MOSTRAR_FACTURAS:
+									cargarFacturasCliente();
+									break;
+								case MOSTRAR_NOTAS_DEBITO:
+									cargarNotasDebito();
+									break;
+								case MOSTRAR_NOTAS_CREDITO:
+									cargarNotasCredito();
+									break;
+								case MOSTRAR_RECIBOS:
+									cargarRecibosColector();
+									break;
+								case MOSTRAR_PEDIDOS:
+									cargarPedidos();
+									break;								
+								}
+							}
+						});
+
+					}
+
+				});
+		quickAction.setOnDismissListener(new QuickAction.OnDismissListener() {
+			@Override
+			public void onDismiss() {
+				quickAction.dismiss();
+			}
+		});
+
+	}
+	
 	
 	public int getFechaFinFac() {
 		return fechaFinFac;

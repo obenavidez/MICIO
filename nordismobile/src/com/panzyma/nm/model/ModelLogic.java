@@ -187,7 +187,7 @@ public class ModelLogic {
 			
 			Object notasCredito =  AppNMComunication.InvokeMethod(
 					params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,
-					NMConfig.MethodName.TraerNotasDebitoCliente);			
+					NMConfig.MethodName.TraerNotasCreditoCliente);			
 					
 			return NMTranslate.ToCollection(notasCredito, CCNotaCredito.class);
 		} catch (Exception e) {
@@ -215,7 +215,7 @@ public class ModelLogic {
 				"idSucursal", "fechaInic", "fechaFin",
 				"mostrarTodasSucursales",  "codEstado" }),
 				(new Object[] { credenciales, sucursalID, fechaInic, fechaFin,
-						false, codEstado }), (new Type[] {
+						true, codEstado }), (new Type[] {
 						PropertyInfo.STRING_CLASS, PropertyInfo.LONG_CLASS,
 						PropertyInfo.INTEGER_CLASS, PropertyInfo.INTEGER_CLASS,
 						PropertyInfo.BOOLEAN_CLASS, 
@@ -225,7 +225,7 @@ public class ModelLogic {
 			
 			Object notasDebito =  AppNMComunication.InvokeMethod(
 					params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,
-					NMConfig.MethodName.TraerNotasCreditoCliente);			
+					NMConfig.MethodName.TraerNotasDebitoCliente);			
 					
 			return NMTranslate.ToCollection(notasDebito, CCNotaDebito.class);
 		} catch (Exception e) {

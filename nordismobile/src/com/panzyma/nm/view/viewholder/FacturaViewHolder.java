@@ -45,7 +45,7 @@ public class FacturaViewHolder{
 	public void mappingData(Object entity)
 	{	
 		Factura fact=(Factura) entity;
-		sucursal.setText(""+fact.getNombreSucursal()); 
+		sucursal.setText(""+fact.getNombreSucursal().substring(0, 10) + ".." ); 
 		nofactura.setText(""+fact.getNoFactura());
 	    tipo.setText(""+fact.getTipo());
 		nopedido.setText(""+fact.getNoPedido()); 
