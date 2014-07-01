@@ -8,6 +8,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_INVENTORY_FROM
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.ANULAR_PEDIDO;
 
 import java.util.ArrayList;
 
@@ -17,9 +18,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.model.ModelConfiguracion;
@@ -233,8 +236,9 @@ public class BPedidoM {
 		return ModelPedido.obtenerPedidoByID(idpedido, content);
 	}
 	
-	public static void anularPedido(long pedidoid)
+	public static Pedido anularPedido(long pedidoid) throws Exception
 	{
-		
+		final String credentials = SessionManager.getCredentials();
+		return ModelPedido.anularPedido(credentials, pedidoid);
 	}
 }

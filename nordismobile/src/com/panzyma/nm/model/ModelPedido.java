@@ -3,20 +3,26 @@ package com.panzyma.nm.model;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor; 
 import android.net.Uri;
 import android.database.Cursor;
+
+import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
 import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
+import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmEntity;
 
 public class ModelPedido {
@@ -313,6 +319,14 @@ public class ModelPedido {
 		return result;		
 	}
 	
-	
+	public static Pedido anularPedido(String credenciales,long pedidoid) throws Exception
+	{
+		Parameters params=new Parameters((new String[]{"Credentials","idPedido"}),
+				 (new Object[]{credenciales,pedidoid}),
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
+		
+		return  (NMTranslate.ToObject(( AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.AnularPedido)),new Pedido()));
+		//return  JSONObject(com.comunicator.AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.AnularPedido).toString());
+	}
 	
 }

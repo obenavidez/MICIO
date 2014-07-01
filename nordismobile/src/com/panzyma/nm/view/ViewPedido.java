@@ -11,6 +11,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -271,42 +272,48 @@ public class ViewPedido extends ActionBarActivity implements
             getSupportActionBar().hide();
             break;
             case BORRAR_PEDIDO_FINALIZADO :
-            //SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-            pos = customArrayAdapter.getSelectedPosition();
-            //OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-            pedido_selected = customArrayAdapter.getItem(pos);
-            state = pedido_selected.getDescEstado();
+	            //SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+	            pos = customArrayAdapter.getSelectedPosition();
+	            //OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+	            pedido_selected = customArrayAdapter.getItem(pos);
+	            state = pedido_selected.getDescEstado();
             break;
             case ANULAR_PEDIDO :
-            //SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-            pos = customArrayAdapter.getSelectedPosition();
-            //OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-            pedido_selected = customArrayAdapter.getItem(pos);
-            //OBTENER EL ESTADO DEL REGISTRO
-            state = pedido_selected.getDescEstado();
-            
-            //VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
-            if ("APROBADO".compareTo(state) != 0)
-            {
-                Toast.makeText(getApplicationContext(),"Solo se pueden anular pedidos en estado de APROBADO.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            //SI SE ESTÁ FUERA DE LA COBERTURA
-            if(!NMNetWork.isPhoneConnected(context,nmapp.getController()) && !NMNetWork.CheckConnection(nmapp.getController()))
-            
-            {
-                Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            
-            try
-            {
-                
-            }
-            catch(Exception ex)
-            {
-                ex.printStackTrace();
-            }
+	            //SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+	            pos = customArrayAdapter.getSelectedPosition();
+	            //OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+	            pedido_selected = customArrayAdapter.getItem(pos);
+	            //OBTENER EL ESTADO DEL REGISTRO
+	            state = pedido_selected.getDescEstado();
+	            
+	            //VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
+	            if ("APROBADO".compareTo(state) != 0)
+	            {
+	                Toast.makeText(getApplicationContext(),"Solo se pueden anular pedidos en estado de APROBADO.", Toast.LENGTH_SHORT).show();
+	              //CERRAR EL MENU DEL DRAWER
+	                drawerLayout.closeDrawers();
+	                return;
+	            }
+	            //SI SE ESTÁ FUERA DE LA COBERTURA
+	            if(!NMNetWork.isPhoneConnected(context,nmapp.getController()) && !NMNetWork.CheckConnection(nmapp.getController()))
+	            
+	            {
+	                Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
+	                return;
+	            }
+	            try
+	            {
+	            	//SOLICITAMOS QUE SE ANULE EL PEDIDO
+	            	Pedido pedido=(Pedido)nmapp.getController().getBridge().getClass().getMethod("anularPedido", long.class ).invoke(null,pedido_selected.getId());
+	            	if(pedido==null) return;
+	            	
+	            	Toast.makeText(getApplicationContext(),"El pedido ha sido anulado.", Toast.LENGTH_SHORT).show();
+	            	
+	            }
+	            catch(Exception ex)
+	            {
+	                ex.printStackTrace();
+	            }
             break;
         }
         
