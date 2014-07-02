@@ -41,7 +41,7 @@ public class ReciboViewHolder{
 	public void mappingData(Object entity)
 	{	
 		CCReciboColector recibo = (CCReciboColector) entity;
-		sucursal.setText(""+recibo.getNombreSucursal()); 
+		sucursal.setText(""+recibo.getNombreSucursal().substring(0,10)+".."); 
 		noRecibo.setText(""+recibo.getNetoRecibo());	    
 		totalNotaDebito.setText(""+StringUtil.formatReal(recibo.getTotalND())); 
 		totalNotaCredito.setText(""+StringUtil.formatReal(recibo.getTotalNC()));

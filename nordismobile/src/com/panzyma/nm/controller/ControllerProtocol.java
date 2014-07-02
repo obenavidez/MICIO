@@ -66,5 +66,7 @@ public interface ControllerProtocol {
 	int LOAD_NOTAS_CREDITO_FROM_SERVER = 701;
 	int LOAD_PEDIDOS_FROM_SERVER = 702;
 	int LOAD_RECIBOS_FROM_SERVER = 703;
+	
+	int ANULAR_PEDIDO = 900;
     
 }

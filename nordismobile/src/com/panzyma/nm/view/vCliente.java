@@ -8,6 +8,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -35,7 +36,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.Intent;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -46,10 +46,10 @@ import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nordismobile.R;
-import com.panzyma.nm.view.ViewPedidoEdit;
 
 public class vCliente extends ActionBarActivity implements 
 	   ListaFragment.OnItemSelectedListener, Handler.Callback 
@@ -66,7 +66,7 @@ public class vCliente extends ActionBarActivity implements
 	DrawerLayout drawerLayout;
 	ListView drawerList;
 	ActionBarDrawerToggle drawerToggle;
-
+	Intent intent;
 	CharSequence tituloSeccion;
 	CharSequence tituloApp;
 
@@ -81,8 +81,15 @@ public class vCliente extends ActionBarActivity implements
 	int listFragmentId;
 	int positioncache = 0;
 	long idsucursal;
+	private Cliente cliente;
 	static final String TAG = vCliente.class.getSimpleName();
-	
+	private static final int NUEVO_PEDIDO = 0;
+	private static final int NUEVO_NOTA_CREDITO=1;
+	private static final int NUEVO_RECIBO = 2;
+	private static final int NUEVO_DEVOLUCION=3;
+	//RECIBO
+	public static final String RECIBO_ID = "recibo_id";
+	public static final String CLIENTE = "cliente";
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -301,12 +308,34 @@ public class vCliente extends ActionBarActivity implements
 				tituloSeccion = opcionesMenu[position];
 				//Ponemos el titulo del Menú
 				getSupportActionBar().setTitle(tituloSeccion);	
-				if(position==0)
-				{
-					final Intent intent;
-					 intent = new Intent(context,ViewPedidoEdit.class); 
-					 //intent.putExtra("", message);
-					startActivity(intent);
+				//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+				int pos = customArrayAdapter.getSelectedPosition();
+				//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+				cliente_selected =(vmCliente) customArrayAdapter.getItem(pos);
+				
+				switch (position) {
+					case NUEVO_RECIBO : 
+						intent = new Intent(vCliente.this,ViewReciboEdit.class);
+						//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
+						try {
+							cliente=(Cliente) nmapp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",ContentResolver.class,long.class).invoke(null,vCliente.this.getContentResolver(),cliente_selected.getIdSucursal());
+						} 
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+						
+						intent.putExtra(RECIBO_ID, 0);
+						intent.putExtra(CLIENTE,cliente.getIdCliente());
+						/*Bundle args = new Bundle();
+						args.putInt(RECIBO_ID, 0);
+						args.putParcelable(CLIENTE, cliente);
+						intent.putExtras(args);*/
+						
+						startActivity(intent);	
+						break;
+				
+				
+				
 				}
 			}
 		});

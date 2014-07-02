@@ -2,6 +2,8 @@ package com.panzyma.nm.view.viewholder;
 
 import android.widget.TextView;
 
+import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.view.adapter.InvokeView;
@@ -30,11 +32,11 @@ public class NotaCreditoViewHolder {
 			CCNotaCredito cnota = (CCNotaCredito) entity;
 			numero.setText("" + cnota.getNumero());
 			estado.setText("" + cnota.getCodEstado());
-			fecha.setText("" + cnota.getFecha());
-			fechaVence.setText("" + cnota.getFechaVence());
-			noRecibo.setText("" + cnota.getNumRColAplic());
+			fecha.setText("" + DateUtil.idateToStrYY(cnota.getFecha()) );
+			fechaVence.setText("" + DateUtil.idateToStrYY(cnota.getFechaVence()) );
+			noRecibo.setText("" +  cnota.getNumRColAplic() == null ? "" : cnota.getNumRColAplic()  );
 			concepto.setText("" + cnota.getConcepto());
-			monto.setText("" + cnota.getMonto());
+			monto.setText("" + StringUtil.formatReal(cnota.getMonto()) );
 			
 		}
 

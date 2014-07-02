@@ -176,7 +176,12 @@ public class Processor {
 
 		}
 	}
-	
+	public static void send_ViewDeletePedidoToView(Integer result,Controller controller) {
+		synchronized (lock) {
+			controller._notifyOutboxHandlers(DELETE_ITEM_FINISHED, 0, 0, result);
+			// Thread.sleep(500);
+		}
+	}
 	public static void send_ViewReciboEditToView(
 			Recibo result,
 			Controller controller) {

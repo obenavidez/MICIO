@@ -9,16 +9,21 @@ import org.ksoap2.serialization.PropertyInfo;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor; 
+import android.net.Uri;
 import android.database.Cursor;
 
+import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
+import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmEntity;
 
 public class ModelPedido {
@@ -294,6 +299,37 @@ public class ModelPedido {
 		
 	    }		
 		return  appd.length==0?null:appd;
+	}
+	
+	public synchronized static int borraPedidoByID (ContentResolver content,long PedidoID){
+		String[] projection = new String[] {};
+		int result = 0;
+		String url = "";
+		try {
+			/*
+			String url = DatabaseProvider.CONTENT_URI_PEDIDOPROMOCIONDETALLE +"/"+String.valueOf(PedidoID);
+			content.delete(Uri.parse(url), "", projection);
+			url = DatabaseProvider.CONTENT_URI_PEDIDODETALLE +"/"+String.valueOf(PedidoID);
+			content.delete(Uri.parse(url), "", projection);
+			url = DatabaseProvider.CONTENT_URI_PEDIDOPROMOCION +"/"+String.valueOf(PedidoID);
+			content.delete(Uri.parse(url), "", projection);*/
+			 url = DatabaseProvider.CONTENT_URI_PEDIDO +"/"+String.valueOf(PedidoID);			
+			content.delete(Uri.parse(url), "", projection);
+			result = 1;
+		} catch (Exception e) {
+			
+		}
+		return result;		
+	}
+	
+	public static Pedido anularPedido(String credenciales,long pedidoid) throws Exception
+	{
+		Parameters params=new Parameters((new String[]{"Credentials","idPedido"}),
+				 (new Object[]{credenciales,pedidoid}),
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
+		
+		return  (NMTranslate.ToObject(( AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.AnularPedido)),new Pedido()));
+		//return  JSONObject(com.comunicator.AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.AnularPedido).toString());
 	}
 	
 }

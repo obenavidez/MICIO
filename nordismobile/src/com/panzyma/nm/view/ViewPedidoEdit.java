@@ -3,19 +3,18 @@ package com.panzyma.nm.view;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_INVETORY_UPDATED;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
-
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Calendar; 
 import java.util.Date; 
 
 import android.annotation.SuppressLint; 
-import android.app.Activity;
+import android.app.Activity; 
 import android.app.Dialog;
-import android.app.ProgressDialog; 
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent; 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,7 +51,6 @@ import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
@@ -972,7 +970,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 								android.content.Context.MODE_PRIVATE)
 						.getString("PorcentajeImpuesto", "0.0"));
 				for (int i = 0; i < Lvmpproducto.size(); i++) {
-					DetallePedido dp = (DetallePedido) Lvmpproducto.get(i);
+					DetallePedido dp = Lvmpproducto.get(i);
 					Producto prod = Ventas.getProductoByID(
 							dp.getObjProductoID(), me);
 					dp.setPorcImpuesto(0);
@@ -1005,7 +1003,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 					if (Lvmpproducto == null || Lvmpproducto.size() == 0)
 						return;
 					for (int i = 0; i < Lvmpproducto.size(); i++) {
-						DetallePedido dp = (DetallePedido) Lvmpproducto.get(i);
+						DetallePedido dp = Lvmpproducto.get(i);
 						dp.setImpuesto(0);
 						dp.setPorcImpuesto(0);
 						dp.setTotal(dp.getSubtotal() + dp.getImpuesto()
