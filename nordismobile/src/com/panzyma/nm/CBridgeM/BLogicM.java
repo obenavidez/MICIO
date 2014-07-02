@@ -27,8 +27,8 @@ public class BLogicM {
 	boolean OK = false;
 	private CuentasPorCobrarFragment fragment = null;	
 	
-	public enum Result {
-		
+	public enum Result 
+	{		
 		CLIENTE(0),
 		FACTURAS_CLIENTE(1), 
 		NOTAS_DEBITO(2), 
@@ -88,8 +88,8 @@ public class BLogicM {
 	}
 
 	private void onLoadRecibosClienteFromServer() {
-		// final String credentials = SessionManager.getCredentials();
-		final String credentials = "sa||nordis09||dp";
+		 final String credentials = SessionManager.getCredentials();
+		//final String credentials = "sa||nordis09||dp";
 
 		if (!credentials.trim().equals("")) {
 			try {
@@ -336,9 +336,9 @@ public class BLogicM {
 
 	private void onLoadClienteDataFromServer() {
 		try {
-			// final String credentials = SessionManager.getCredentials();
+		   final String credentials = SessionManager.getCredentials();
 
-			final String credentials = "sa||nordis09||dp";
+			//final String credentials = "sa||nordis09||dp";
 
 			if (!credentials.trim().equals("")) {
 				pool.execute(new Runnable() {

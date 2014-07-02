@@ -64,7 +64,7 @@ public class BluetoothComunication {
 					for (BluetoothDevice device : pairedDevices) {
 						
 						// MP300 is the name of the bluetooth printer device
-						if (device.getName().equals("Zebra Gutierrez")) {
+						if (device.getName().equals("Zebra Ismael")) {
 							mmDevice = device;
 							break;
 						}

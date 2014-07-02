@@ -138,14 +138,7 @@ public class SessionManager
 	
 	public synchronized static boolean SignIn(final boolean admin)
     {
-		isOK=true;
-		boolean rq=(context.getClass().getSimpleName().equals("Main")); 
-		
-/*		while(  ((!SessionManager.isLogged() && isOK) && !(SessionManager.setting_session)) || 
-				(admin && !SessionManager.isAdmin() && isOK) || 
-				((rq && ((com.panzyma.nm.Main)context).buttonActive==R.id.hbtnconfiguracion) && SessionManager.isLogged() && !SessionManager.isAdmin()) 
-				|| ((rq && ((com.panzyma.nm.Main)context).buttonActive!=R.id.hbtnconfiguracion))
-			 )*/
+		isOK=true; 
 	while(  ( (!SessionManager.isLogged() && isOK) && !(SessionManager.setting_session)) || 
 			(admin && !SessionManager.isAdmin() && isOK)
 		 )
@@ -382,42 +375,7 @@ public class SessionManager
         }
 		
 	}
-    
-	/*public static void sendnotificationMessage(final int type,final int handlerOwnActionButton,final NotificationMessage notification)
-	{		
-		context.runOnUiThread(new Runnable()
-        {
-            public void run()
-            { 
-            	dlg= new CustomDialog(context,notification.getMessage(),false,type);	     
-        		if(handlerOwnActionButton==1)
-        		{
-        			dlg.setOnActionDialogButtonClickListener(new OnActionButtonClickListener()
-        			{
-        				@Override
-        				public void onButtonClick(View _dialog, int actionId) 
-        				{ 
-        					lock2.notify();
-        				}
-        			});
-        		}
-        		dlg.show();	 		
-            }
-        });
-		if(handlerOwnActionButton==1)
-		{
-			synchronized(lock2)
-	        {
-	            try {
-	            	lock2.wait();
-				} catch (InterruptedException e) { 
-					e.printStackTrace();
-				}
-	        }
-		}
-		
-	}*/
-	
+     
 	public static void clean(){
 		SessionManager.setEmpresa("");
 		SessionManager.setNameUser("");

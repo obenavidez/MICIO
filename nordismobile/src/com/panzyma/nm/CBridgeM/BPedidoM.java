@@ -180,8 +180,8 @@ public class BPedidoM {
 		return ModelConfiguracion.ActualizarSecuenciaPedido(cnt, idpedido);
 	}
 
-	public static Pedido enviarPedido(String credenciales, Pedido pedido) {
-		return null;// ModelPedido.enviarPedido(credenciales, pedido);
+	public static Object enviarPedido(String credenciales, Pedido pedido) throws Exception {
+		return  ModelPedido.enviarPedido(credenciales, pedido);
 	}
 
 	public static Pedido obtenerPedidoByID(long idpedido,ContentResolver content)throws Exception

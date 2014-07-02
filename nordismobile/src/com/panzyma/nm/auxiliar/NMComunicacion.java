@@ -16,11 +16,15 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
+import com.comunicator.Parameters;
+import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.Pedido;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log; 
-
+//
 public class NMComunicacion {
  
 	static String TAG=NMComunicacion.class.getClass().getSimpleName();
@@ -48,12 +52,35 @@ public class NMComunicacion {
 		
 	}
 	
-	/*
+	public static synchronized Object InvokeMethod(String Credenciales,Pedido pedido,String URL,String NAME_SPACE,String METHOD_NAME)throws Exception
+    { 
+        SoapObject request =new SoapObject(NAME_SPACE,METHOD_NAME); 
+        
+        PropertyInfo cr = new PropertyInfo();
+        cr.setName("Credentials");
+        cr.setValue(Credenciales);
+        cr.setType(String.class);
+        request.addProperty(cr); 
+        
+//        request.addSoapObject(pedido.getSoapObject(NAME_SPACE));
+        
+        PropertyInfo p = new PropertyInfo();
+        p.setName("pedido");
+        p.setValue(pedido);
+        p.setType(Pedido.class); 
+        request.addProperty(p);
+        
+        SoapSerializationEnvelope envelope = GetEnvelope(request);
+
+        return  MakeCall(URL,envelope,NAME_SPACE,METHOD_NAME);
+    } 
+	 
 	public static synchronized Object InvokeMethod(ArrayList<Parameters> params,String URL,String NAME_SPACE,String METHOD_NAME)throws Exception
     { 
         SoapObject request =new SoapObject(NAME_SPACE,METHOD_NAME); 
         for(PropertyInfo pinfo:params) 
         	request.addProperty(pinfo);   
+        
         SoapSerializationEnvelope envelope = GetEnvelope(request);
         return  MakeCall(URL,envelope,NAME_SPACE,METHOD_NAME);
     } 
@@ -62,8 +89,7 @@ public class NMComunicacion {
     {
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.dotNet = true;
-        envelope.setOutputSoapObject(Soap); 
-        
+        envelope.setOutputSoapObject(Soap);           
         return envelope;
     } 
     
@@ -133,7 +159,7 @@ public class NMComunicacion {
 	      JSONArray arrayjson = new JSONArray(new String(builder));
         return arrayjson;
     }
-    */
+
 	
 	/*
 	  Comunicación Mediante Bluetooth

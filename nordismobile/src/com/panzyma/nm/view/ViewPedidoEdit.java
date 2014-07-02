@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date; 
 
 import android.annotation.SuppressLint; 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog; 
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
@@ -48,6 +50,7 @@ import com.panzyma.nm.auxiliar.BluetoothComunication;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.Editable;
@@ -74,7 +77,7 @@ import com.panzyma.nm.viewdialog.ExonerarImpuesto;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("NewApi")
-public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback,
+public class ViewPedidoEdit extends Activity implements Handler.Callback,
 		Editable {
 	public EditText tbxFecha;
 	public EditText tbxNumReferencia;
@@ -143,6 +146,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 		try 
 		{ 
+			//SessionManager.setContext(this);
 			aprodselected = new ArrayList<Producto>();
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
@@ -1277,7 +1281,15 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				Toast.LENGTH_LONG).show();
 	}
 
-	private void enviarPedido() {        
+	
+	@Override
+	protected void onResume() { 
+		SessionManager.setContext(me); 
+		super.onResume();
+	}
+	
+	private void enviarPedido() 
+	{        
         if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0))) return;
         
         if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) {        
@@ -1299,32 +1311,52 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
         	if (!isDataValid()) return; 
         	
         	salvarPedido();  
-            //Enviando pedido
-            pedido = Ventas.enviarPedido(me,pedido);
-            
-            if (pedido == null) return;
-            
-            //Salvar los cambios en la memoria del dispositivo
-            salvarPedido();
-                        
-            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
-            Ventas.actualizarCliente(me.getContext(),pedido.getObjSucursalID()); 
-            
-            //Informar al usuario
-            if (pedido.getCodEstado().compareTo("FACTURADO") == 0)
-            	Toast.makeText(me,"El pedido ha sido enviado y facturado.",Toast.LENGTH_LONG).show();
-            else
-            	Toast.makeText(me,"El pedido ha sido enviado.\r\nEstado: " + pedido.getDescEstado() + "\r\nCausa: " + pedido.getDescCausaEstado(),Toast.LENGTH_LONG).show();;
-    
-            actualizarOnUINumRec(); 
-            salvado = true;
-            
-            //Imprimir comprobante
-//            if (Dialog.ask(Dialog.D_YES_NO, "¿Desea imprimir el comprobante del pedido?") == Dialog.YES) {
-//                ImprimirComprobante();
-//            }
-            
-           // close();
+            //Enviando pedido 
+        	nmapp.getThreadPool().execute(new Runnable()
+			{ 
+				@Override
+				public void run()
+			    {
+					 
+					try
+					{
+//						String credenciales=SessionManager.getCredentials();
+//						if(credenciales!="")  
+//						{  
+						Object d = Ventas.enviarPedido(me,pedido);
+						//	pedido = Ventas.enviarPedido(me,pedido);
+	            
+							if (pedido == null) return; 
+							//Salvar los cambios en la memoria del dispositivo
+				            salvarPedido();
+				                        
+				            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
+				            Ventas.actualizarCliente(me.getContext(),pedido.getObjSucursalID()); 
+				            
+				            //Informar al usuario
+				            if (pedido.getCodEstado().compareTo("FACTURADO") == 0)
+				            	Toast.makeText(me,"El pedido ha sido enviado y facturado.",Toast.LENGTH_LONG).show();
+				            else
+				            	Toast.makeText(me,"El pedido ha sido enviado.\r\nEstado: " + pedido.getDescEstado() + "\r\nCausa: " + pedido.getDescCausaEstado(),Toast.LENGTH_LONG).show();;
+				    
+				            actualizarOnUINumRec(); 
+				            salvado = true;
+				            
+				            //Imprimir comprobante
+				//            if (Dialog.ask(Dialog.D_YES_NO, "¿Desea imprimir el comprobante del pedido?") == Dialog.YES) {
+				//                ImprimirComprobante();
+				//            }
+				            
+				           // close();
+						//} 
+					}catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+			    }
+				
+			}); 
+           
         }
         catch(Exception ex) {           
             Toast.makeText(me,"Error al enviar el pedido.\r\n" + ex.toString(),Toast.LENGTH_LONG).show();

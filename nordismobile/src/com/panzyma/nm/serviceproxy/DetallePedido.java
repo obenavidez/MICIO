@@ -10,7 +10,7 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo; 
 
-public final class DetallePedido implements KvmSerializable,Parcelable{
+public  class DetallePedido implements KvmSerializable,Parcelable{
     private long Id;
     private long objPedidoID;
     private long objProductoID;

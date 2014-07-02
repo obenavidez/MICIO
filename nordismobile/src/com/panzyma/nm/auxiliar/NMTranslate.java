@@ -33,6 +33,44 @@ public class NMTranslate
 		//return (ArrayList<U>) unknowclass.getClass().getMethod("ParseArrayJSON_To_Entity",JSONArray.class).invoke(unknowclass,json);	
 	}
 	
+	public synchronized static SoapObject ToObject(Object obj,String NAME_SPACE,String METHOD_NAME) throws Exception 
+	{	 
+		Field[] fields; 
+    	Type type;   
+    	Object d;
+    	if(obj==null)
+    		return null;
+    	
+    	SoapObject _obj=(SoapObject) obj;
+    	fields=(obj.getClass().getDeclaredFields().length !=0)? obj.getClass().getDeclaredFields():obj.getClass().getFields();
+		SoapObject rs=new SoapObject(NAME_SPACE,METHOD_NAME);
+    	for(int i=0;i<fields.length;i++)
+		{   
+		        type=fields[i].getType();
+		        if(type==android.os.Parcelable.Creator.class)
+		        { 
+		        	System.out.println(type.toString());
+		        }  
+		        else if(type==String.class)
+		        { 
+		        	d=_obj.getProperty(fields[i].getName());
+		        	rs.addProperty(fields[i].getName(),_obj.getProperty(fields[i].getName()));
+		        } 		        
+		    	else if(type==Integer.class || type==Integer.TYPE)
+		    		System.out.println(type.toString());
+		    	else if(type==Float.class || type==Float.TYPE)
+		    		System.out.println(type.toString());
+		    	else if(type==Boolean.class || type==Boolean.TYPE)
+		    		System.out.println(type.toString());
+		    	else if(type==Long.class || type==Long.TYPE)System.out.println(type.toString());
+
+		        
+		        
+		} 
+    	
+    	return null;
+	}
+	
 	public synchronized static <U, T> U ToObject(Object obj,U unknowclass) throws Exception 
 	{	    	 
     	Field[] fields; 

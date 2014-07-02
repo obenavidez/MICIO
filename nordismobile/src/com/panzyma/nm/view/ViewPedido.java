@@ -5,6 +5,8 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ksoap2.serialization.SoapObject;
+
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -37,6 +39,8 @@ import android.widget.Toast;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM;
+import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
@@ -45,6 +49,7 @@ import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.ActionItem;
+import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ViewRecibo.FragmentActive;
@@ -54,7 +59,8 @@ import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("rawtypes")
 public class ViewPedido extends ActionBarActivity implements
-		ListaFragment.OnItemSelectedListener, Handler.Callback {
+		ListaFragment.OnItemSelectedListener, Handler.Callback 
+		{
 	@Override
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		// TODO Auto-generated method stub
@@ -163,23 +169,25 @@ public class ViewPedido extends ActionBarActivity implements
 					break;
 				case EDITAR_PEDIDO:
 					drawerLayout.closeDrawers();
-					intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
-					positioncache = customArrayAdapter.getSelectedPosition();
+					intent = new Intent(ViewPedido.this, ViewPedidoEdit.class); 
 					Pedido p = null;
 					try {
 						p = Ventas.obtenerPedidoByID(pedido_selected.getId(),
 								vp);
+//						ModelPedido.enviarPedido("sa||nordis09||dp", p);
+//						SoapObject d=NMTranslate.ToObject(p,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarPedido);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					
+					
 					b = new Bundle();
 					b.putParcelable("pedido", p);
 					intent.putExtras(b);
 					intent.putExtra("requestcode", EDITAR_PEDIDO);
 					startActivityForResult(intent, EDITAR_PEDIDO);// Activity is
-																	// started
-					// with requestCode 2
+																	// started with requestCode 2
 					break;
 
 				case BORRAR_PEDIDO:
@@ -410,14 +418,10 @@ public class ViewPedido extends ActionBarActivity implements
 		if (_obj == null)
 			return;
 
-		if (_obj instanceof Message) {
+		if (_obj instanceof Message) 
+		{
 			Message msg = (Message) _obj;
-			pedidos = (ArrayList<vmEntity>) ((msg.obj == null) ? new ArrayList<vmEntity>()
-					: msg.obj);
-
-			positioncache = 0;
-			if (pedidos.size() > 0)
-				pedido_selected = firstFragment.getAdapter().getItem(0);
+			pedidos = (ArrayList<vmEntity>) ((msg.obj == null) ? new ArrayList<vmEntity>(): msg.obj); 
 		}
 		if (_obj instanceof Pedido) {
 			Pedido p = (Pedido) _obj;
@@ -445,9 +449,14 @@ public class ViewPedido extends ActionBarActivity implements
 				if (pedidos.size() == 0) {
 					TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
 					txtenty.setVisibility(View.VISIBLE);
+				} 
+				else
+				{
+					positioncache = 0;
+					firstFragment.setItems(pedidos);
+					firstFragment.getAdapter().setSelectedPosition(positioncache);
+					pedido_selected = firstFragment.getAdapter().getItem(positioncache);
 				}
-				firstFragment.setItems(pedidos);
-				firstFragment.getAdapter().setSelectedPosition(positioncache);
 			}
 		});
 
@@ -472,4 +481,4 @@ public class ViewPedido extends ActionBarActivity implements
 		Log.d(TAG, "Activity quitting");
 		finish();
 	}
-}
+} 
