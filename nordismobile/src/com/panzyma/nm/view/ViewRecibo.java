@@ -59,8 +59,11 @@ import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.logic.TareaWSConsulta;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.model.ModelPedido;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
@@ -78,6 +81,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int NUEVO_RECIBO = 0;
 	private static final int VER_DETALLE_RECIBO = 1;
 	private static final int BORRAR_RECIBO = 2;
+	protected static final int ENVIAR_RECIBO = 3;
 	private static final int CUENTAS_POR_COBRAR = 6;
 	public static final String RECIBO_ID = "recibo_id";
 	private FragmentActive fragmentActive = null;
@@ -112,7 +116,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int MOSTRAR_NOTAS_DEBITO = 1;
 	private static final int MOSTRAR_NOTAS_CREDITO = 2;
 	private static final int MOSTRAR_PEDIDOS = 3;
-	private static final int MOSTRAR_RECIBOS = 4;
+	private static final int MOSTRAR_RECIBOS = 4;	
 	
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
@@ -182,6 +186,19 @@ public class ViewRecibo extends ActionBarActivity implements
 						return;
 					}
 					break;	
+				case ENVIAR_RECIBO:
+					final String credentials = "sa||nordis09||dp";
+					
+					Pedido pedido = null;
+					try {
+						pedido = ModelPedido.obtenerPedidoByID(3676 ,context.getContentResolver());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					TareaWSConsulta tarea = new TareaWSConsulta(credentials,pedido);
+					tarea.execute();
+					break;
 				case CUENTAS_POR_COBRAR:
 					fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
 					if (findViewById(R.id.fragment_container) != null) 
