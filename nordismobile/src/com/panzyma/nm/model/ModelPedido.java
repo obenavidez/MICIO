@@ -11,7 +11,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor; 
 import android.net.Uri;
-import android.database.Cursor;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
@@ -22,7 +21,6 @@ import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
-import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmEntity;
 
 public class ModelPedido {
@@ -321,11 +319,26 @@ public class ModelPedido {
 	
 	public static Pedido anularPedido(String credenciales,long pedidoid) throws Exception
 	{
+		/*
 		Parameters params=new Parameters((new String[]{"Credentials","idPedido"}),
 				 (new Object[]{credenciales,pedidoid}),
-				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));*/
 		
-		return  (NMTranslate.ToObject(( AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.AnularPedido)),new Pedido()));
+		 ArrayList<Parameters> arrayparams=new ArrayList<Parameters>();
+		String[] paramname=new String[]{"Credentials","idPedido"}; 
+		Object[] values=new Object[]{credenciales,pedidoid}; 
+		Type[] type=new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS};		 
+		for(int i=0;i<2;i++)
+		{
+				Parameters params=new Parameters();
+				params.setName(paramname[i]);
+				params.setValue(values[i]);
+				params.setType(type[i]);  
+				arrayparams.add(params); 
+		}  	
+		//String result = AppNMComunication.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.AnularPedido).toString();
+		
+		return  (NMTranslate.ToObject(AppNMComunication.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.AnularPedido) ,new Pedido()));
 		//return  JSONObject(com.comunicator.AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.AnularPedido).toString());
 	}
 	

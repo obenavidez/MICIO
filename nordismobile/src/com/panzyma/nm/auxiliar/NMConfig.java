@@ -4,7 +4,7 @@ package com.panzyma.nm.auxiliar;
 public class NMConfig
 {   
 	public static final String NAME_SPACE = "http://www.panzyma.com/"; 
-    public static final String URL = "http://www.panzyma.com/nordisserverprod/mobileservice.asmx";
+    public static final String URL = "http://www.panzyma.com/nordisservertest/mobileservice.asmx";
     public static final String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/";
     public static class MethodName
     { 	

@@ -3,8 +3,6 @@ package com.panzyma.nm.CBridgeM;
 import static com.panzyma.nm.controller.ControllerProtocol.*;  
 
 import java.util.ArrayList;   
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,8 +29,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Message;
-import android.util.Log;      
-import android.view.View;
+import android.util.Log;
  
 @SuppressLint("ParserError")@SuppressWarnings({"rawtypes","unused"})
 public final class BClienteM 
