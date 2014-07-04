@@ -1,5 +1,6 @@
 package com.panzyma.nm.serviceproxy; 
 
+import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
  
@@ -341,7 +342,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         return 35;
     }
 
-    @Override 
+    @SuppressLint("UseValueOf")
+	@Override 
 	public Object getProperty(int _index) {
         switch(_index)  {
         case 0: return new Long(Id);
@@ -363,10 +365,12 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 16: return PrecioSolicitado;
         case 17: return new Boolean(PedidoCondicionado);
         case 18: return Condicion;
-        case 19: return new Float(Subtotal);
+        //case 19: return new Float(Subtotal);
+        case 19: return Subtotal;
         case 20: return new Float(Descuento);
         case 21: return new Float(Impuesto);
-        case 22: return new Float(Total);
+        //case 22: return new Float(Total);
+        case 22: return Total;
         case 23: return new Long(objEstadoID);
         case 24: return CodEstado;
         case 25: return DescEstado;
@@ -404,11 +408,13 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 15: PrecioEspecial = "true".equals(_.toString()); break;
         case 16: PrecioSolicitado = (java.lang.String) _; break;
         case 17: PedidoCondicionado = "true".equals(_.toString()); break;
-        case 18: Condicion = (java.lang.String) _; break;
-        case 19: Subtotal = Float.parseFloat(_.toString()); break;
+        case 18: Condicion = (java.lang.String) _; break;       
+        //case 19: Subtotal = Float.parseFloat(_.toString()); break; 
+        case 19: Subtotal = Float.valueOf(_.toString()); break;
         case 20: Descuento = Float.parseFloat(_.toString()); break;
         case 21: Impuesto = Float.parseFloat(_.toString()); break;
-        case 22: Total = Float.parseFloat(_.toString()); break;
+        //case 22: Total = Float.parseFloat(_.toString()); break;
+        case 22: Total = Float.valueOf(_.toString()); break;
         case 23: objEstadoID = Long.parseLong(_.toString()); break;
         case 24: CodEstado = (java.lang.String) _; break;
         case 25: DescEstado = (java.lang.String) _; break;
@@ -484,7 +490,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
             _info.type = java.lang.String.class; break;
         case 19:
             _info.name = "Subtotal";
-            _info.type = Float.class; break;
+            //_info.type = Float.class; break;  
+            _info.type = float.class; break;
         case 20:
             _info.name = "Descuento";
             _info.type = Float.class; break;
@@ -493,7 +500,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
             _info.type = Float.class; break;
         case 22:
             _info.name = "Total";
-            _info.type = Float.class; break;
+            //_info.type = Float.class; break;
+            _info.type = float.class; break;
         case 23:
             _info.name = "objEstadoID";
             _info.type = Long.class; break;
