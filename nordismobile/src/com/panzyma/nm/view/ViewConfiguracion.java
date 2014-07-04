@@ -334,7 +334,7 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 						    {
 								try		
 								{
-									//if(SessionManager.getCredenciales().trim()!="") 
+									if(SessionManager.getCredenciales().trim()!="") 
 										controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_CLIENTES);
 								}
 								catch (Exception e)
@@ -413,6 +413,9 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 				} 
 				else if (actionId == ID_SINCRONIZE_TODOS) 
 				{
+					if(SessionManager.getLoginUser()==null)
+					   salvarConfiguracion();
+					
 					try {
 						nmapp.getThreadPool().execute(new Runnable()
 						{ 
@@ -473,7 +476,6 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 							Controller c=nmapp.getController();  
 							if(SessionManager.SignIn(true))
 							{			
-
 						         setEnterprise(txtEmpresa.getText().toString());
 						         setUserName(txtUsuario.getText().toString());
 						         setUrlServer(txtURL.getText().toString()); 

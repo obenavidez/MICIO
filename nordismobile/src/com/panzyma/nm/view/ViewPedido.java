@@ -44,6 +44,7 @@ import android.widget.Toast;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM; 
+import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate; 
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -197,23 +198,27 @@ public class ViewPedido extends ActionBarActivity implements
             break;
             case EDITAR_PEDIDO:
             drawerLayout.closeDrawers();
-            intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
+           
             positioncache = customArrayAdapter.getSelectedPosition();
             Pedido p = null;
             try
             {
                 p = Ventas.obtenerPedidoByID(pedido_selected.getId(),
                 vp);
+                ModelPedido.enviarPedido("sa||nordis09||dp", p);
             } catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-            b = new Bundle();
-            b.putParcelable("pedido", p);
-            intent.putExtras(b);
-            intent.putExtra("requestcode", EDITAR_PEDIDO);
-            startActivityForResult(intent, EDITAR_PEDIDO);// Activity is
+            } 
+//            intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
+//            b = new Bundle();
+//            b.putParcelable("pedido", p);
+//            intent.putExtras(b);
+//            intent.putExtra("requestcode", EDITAR_PEDIDO);
+//            startActivityForResult(intent, EDITAR_PEDIDO);// Activity is
+//            
+            
             // started
             // with requestCode 2
             break;
@@ -286,6 +291,7 @@ public class ViewPedido extends ActionBarActivity implements
 	            //OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
 	            pedido_selected = customArrayAdapter.getItem(pos);
 	            state = pedido_selected.getDescEstado();
+	            
             break;
             case ANULAR_PEDIDO :
 	            //SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE

@@ -3,6 +3,7 @@ package com.panzyma.nm.auxiliar;
 @SuppressWarnings("unused")
 public class NMConfig
 {   
+	public static final String URL_SERVER="http://www.panzyma.com/nordisserverprod";
 	public static final String NAME_SPACE = "http://www.panzyma.com/"; 
     public static final String URL = "http://www.panzyma.com/nordisservertest/mobileservice.asmx";
     public static final String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/";

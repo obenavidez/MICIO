@@ -158,6 +158,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 				for (int i = 0; i < detPed.length; i++)
 					Lvmpproducto.add(detPed[i]); 
 				onEdit=true;
+				cliente=Ventas.getClienteBySucursalID(pedido.getObjSucursalID(),me.getContentResolver());
 		    } 
 		    onNew=!onEdit;
 			WindowManager wm = (WindowManager) this.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
@@ -179,13 +180,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 	{
 		salvado=false;
 		gridDetallePedido = findViewById(R.id.pddgrilla);
-		grid_dp = (ListView) (findViewById(R.id.pddgrilla)).findViewById(R.id.data_items);
-		try {
-			cliente=Ventas.getClienteBySucursalID(pedido.getObjSucursalID(),me.getContentResolver());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		grid_dp = (ListView) (findViewById(R.id.pddgrilla)).findViewById(R.id.data_items); 
 		// LinearLayout grilla=(LinearLayout) findViewById(R.id.pddgrilla);
 		gridheader = (TextView) gridDetallePedido.findViewById(R.id.header);
 		gridheader.setText("Productos a Facturar(0)");
@@ -263,8 +258,8 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 			pedido.setId(0);
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
 			pedido.setNumeroCentral(0);
-			pedido.setNumeroMovil(0);
-			// pedido.setObjVendedorID(DataStore.getUsuario().getId());
+			pedido.setNumeroMovil(0); 
+			pedido.setObjVendedorID(SessionManager.getLoginUser().getId()); 
 			pedido.setTipo("CR"); // Crédito
 			pedido.setExento(false);
 			pedido.setAutorizacionDGI("");

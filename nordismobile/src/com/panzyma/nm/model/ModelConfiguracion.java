@@ -46,7 +46,7 @@ public class ModelConfiguracion {
 		pref=view.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  
 		
 		return vmConfiguracion.setConfiguration(
-										 pref.getString("url_server","http://www.panzyma.com/nordisserverprod"), 
+										 pref.getString("url_server",NMConfig.URL_SERVER), 
 										 pref.getString("device_id",""),
 										 pref.getString("enterprise","dp"), 
 										 pref.getString("name_user",""), 
@@ -85,6 +85,32 @@ public class ModelConfiguracion {
 		edit.commit();
 		return 1;
 	}
+	
+	
+	public static Usuario getUser(Context view)
+	{ 
+		pref=view.getSharedPreferences("LoginUser",Context.MODE_PRIVATE);  
+		if(pref.getLong("id",0)==0)
+			return null;
+		else
+			return new Usuario(
+			pref.getLong("id",0), 
+			pref.getString("login",""),
+			pref.getString("nombre",""),
+			pref.getString("sexo",""),
+			pref.getBoolean("isAccedeModuloPedidos",false),
+			pref.getBoolean("isIsAdmin",false),
+			pref.getBoolean("isPuedeConsultarPedido",false),
+			pref.getBoolean("isPuedeCrearPedido",false),
+			pref.getBoolean("isPuedeEditarBonifAbajo",false),
+			pref.getBoolean("isPuedeEditarBonifArriba",false),
+			pref.getBoolean("isPuedeEditarDescPP",false),
+			pref.getBoolean("isPuedeEditarPrecioAbajo",false),
+			pref.getString("codigo",""),
+			pref.getBoolean("isPuedeEditarPrecioArriba",false)
+		);
+	}
+	
 	
 	public static void saveUser(Context view,Usuario user)throws Exception
 	{

@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;  
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;   
+import android.os.Bundle;
+import android.os.Message;
 import android.view.View;
 
 import com.comunicator.Parameters;
@@ -17,6 +19,7 @@ import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewdialog.DialogLogin; 
 import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener; 
 
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
@@ -87,7 +90,10 @@ public class SessionManager
 		setting_session=checked;
 	}
 	
-	public static Usuario getLoguedUser(){
+	public static Usuario getLoginUser()
+	{
+		if(userinfo==null)
+			userinfo=ModelConfiguracion.getUser(context);
 		return userinfo;
 	}
 	
@@ -282,9 +288,8 @@ public class SessionManager
 												SessionManager.setEmpresa(empresa);
 												SessionManager.setNameUser(nombreusuario);
 												SessionManager.setPassword(password);
-												SessionManager.setLogged(true);
+												SessionManager.setLogged(true);  											    
 												unlock();
-												controller._notifyOutboxHandlers(0,0,0,0);
 											}
 											else
 											{

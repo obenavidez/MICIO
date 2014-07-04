@@ -130,7 +130,8 @@ public class BConfiguracionM {
 					{	
 						try {
 								DataConfigurationResult res=ModelConfiguracion.getDataConfiguration(Credentials, LoginUsuario, PIN);
-								if(res.get_error()==null){
+								if(res.get_error()==null)
+								{
 									Processor.notifyToView(controller,NOTIFICATION, 0, 0, new NotificationMessage("","Salvando configuración.",""));
 									vmConfiguracion setting=vmConfiguracion.setConfiguration(view.getUrlServer(),
 																				String.valueOf(res.get_devicePrefix()),
