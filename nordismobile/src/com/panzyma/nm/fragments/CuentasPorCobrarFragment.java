@@ -8,6 +8,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.GenericDocument;
@@ -20,6 +21,7 @@ import com.panzyma.nm.serviceproxy.CCPedido;
 import com.panzyma.nm.serviceproxy.CCReciboColector;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
@@ -115,6 +117,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
+		SessionManager.setContext(this.getActivity()); 
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 			objSucursalID = savedInstanceState.getLong(SUCURSAL_ID);
@@ -135,7 +138,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			cargarEncabezadoCliente();
 		}
 	}	
-
+ 
+	
 	public long getSucursalId() {
 		return objSucursalID;
 	}

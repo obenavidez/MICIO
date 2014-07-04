@@ -240,12 +240,13 @@ public class Ventas {
 		return vpe.getBridge().getProductoByID(vpe.getContentResolver(), objProductoID);
 	}
 
-    public static Pedido enviarPedido(ViewPedidoEdit vpe,Pedido pedido)
+    public static Object enviarPedido(ViewPedidoEdit vpe,Pedido pedido) throws Exception
     {
-    	final String credenciales=SessionManager.getCredentials();			  
-		if(credenciales.trim()!="")
-		   return null;
-    	return null;//vpe.getBridge().enviarPedido(credenciales, pedido);
+    	//final String credenciales=SessionManager.getCredentials();			  
+    	final String credenciales="sa||nordis09||dp";
+		if(credenciales.trim()!="") 
+    	return vpe.getBridge().enviarPedido(credenciales, pedido);
+		return null;
     }
     
     public static int actualizarCliente(Context cnt,long objSucursalID) throws Exception{

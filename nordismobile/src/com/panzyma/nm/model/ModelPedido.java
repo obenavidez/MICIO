@@ -14,6 +14,7 @@ import android.net.Uri;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
+import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
@@ -41,10 +42,12 @@ public class ModelPedido {
  
 	public  static JSONObject enviarPedido(String credenciales,Pedido pedido)throws Exception
 	{
-		Parameters params=new Parameters((new String[]{"Credentials","Pedido"}),
-				 (new Object[]{credenciales,pedido}),
-				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.OBJECT_CLASS}));
-		return new JSONObject(com.comunicator.AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarPedido).toString());
+//		Parameters params=new Parameters((new String[]{"Credentials","pedido"}),
+//				 (new Object[]{credenciales,pedido}),
+//				 (new Type[]{PropertyInfo.STRING_CLASS,pedido.getClass()}));
+		
+		Object d= NMComunicacion.InvokeMethod(credenciales,pedido,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarPedido);
+		return new JSONObject((String)d);
 	
 	}
 	

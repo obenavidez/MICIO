@@ -1,22 +1,25 @@
-package com.panzyma.nm.serviceproxy;
- 
+package com.panzyma.nm.serviceproxy; 
 
 import android.annotation.SuppressLint;
-import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.io.Serializable;
+ 
+ 
 import java.util.Arrays;
 import java.util.Hashtable;
 
+import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
-
+ 
 import com.panzyma.nm.interfaces.Item;
+  
+public class Pedido  implements KvmSerializable,Item,Parcelable{ 
+	public Pedido() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-@SuppressWarnings({"rawtypes"})
-public class Pedido extends SoapObject implements Item,Parcelable { 
 	private long Id;
     private int NumeroMovil;
     private int NumeroCentral;
@@ -53,10 +56,7 @@ public class Pedido extends SoapObject implements Item,Parcelable {
     private boolean Exento;
     private java.lang.String AutorizacionDGI;
     
-
-    public Pedido() {
-        super("", "");
-    }
+ 
     public void setId(long id) {
         this.Id = id;
     }
@@ -342,8 +342,8 @@ public class Pedido extends SoapObject implements Item,Parcelable {
         return 35;
     }
 
-    @Override
-	@SuppressLint("UseValueOf")
+    @SuppressLint("UseValueOf")
+	@Override 
 	public Object getProperty(int _index) {
         switch(_index)  {
         case 0: return new Long(Id);
@@ -365,10 +365,12 @@ public class Pedido extends SoapObject implements Item,Parcelable {
         case 16: return PrecioSolicitado;
         case 17: return new Boolean(PedidoCondicionado);
         case 18: return Condicion;
-        case 19: return new Float(Subtotal);
+        //case 19: return new Float(Subtotal);
+        case 19: return Subtotal;
         case 20: return new Float(Descuento);
         case 21: return new Float(Impuesto);
-        case 22: return new Float(Total);
+        //case 22: return new Float(Total);
+        case 22: return Total;
         case 23: return new Long(objEstadoID);
         case 24: return CodEstado;
         case 25: return DescEstado;
@@ -376,6 +378,8 @@ public class Pedido extends SoapObject implements Item,Parcelable {
         case 27: return CodCausaEstado;
         case 28: return DescCausaEstado;
         case 29: return NombreVendedor;
+        case 30: return Detalles;
+        case 31: return PromocionesAplicadas;
         case 32: return Nota;
         case 33: return new Boolean(Exento);
         case 34: return AutorizacionDGI;
@@ -404,11 +408,13 @@ public class Pedido extends SoapObject implements Item,Parcelable {
         case 15: PrecioEspecial = "true".equals(_.toString()); break;
         case 16: PrecioSolicitado = (java.lang.String) _; break;
         case 17: PedidoCondicionado = "true".equals(_.toString()); break;
-        case 18: Condicion = (java.lang.String) _; break;
-        case 19: Subtotal = Float.parseFloat(_.toString()); break;
+        case 18: Condicion = (java.lang.String) _; break;       
+        //case 19: Subtotal = Float.parseFloat(_.toString()); break; 
+        case 19: Subtotal = Float.valueOf(_.toString()); break;
         case 20: Descuento = Float.parseFloat(_.toString()); break;
         case 21: Impuesto = Float.parseFloat(_.toString()); break;
-        case 22: Total = Float.parseFloat(_.toString()); break;
+        //case 22: Total = Float.parseFloat(_.toString()); break;
+        case 22: Total = Float.valueOf(_.toString()); break;
         case 23: objEstadoID = Long.parseLong(_.toString()); break;
         case 24: CodEstado = (java.lang.String) _; break;
         case 25: DescEstado = (java.lang.String) _; break;
@@ -484,7 +490,8 @@ public class Pedido extends SoapObject implements Item,Parcelable {
             _info.type = java.lang.String.class; break;
         case 19:
             _info.name = "Subtotal";
-            _info.type = Float.class; break;
+            //_info.type = Float.class; break;  
+            _info.type = float.class; break;
         case 20:
             _info.name = "Descuento";
             _info.type = Float.class; break;
@@ -493,7 +500,8 @@ public class Pedido extends SoapObject implements Item,Parcelable {
             _info.type = Float.class; break;
         case 22:
             _info.name = "Total";
-            _info.type = Float.class; break;
+            //_info.type = Float.class; break;
+            _info.type = float.class; break;
         case 23:
             _info.name = "objEstadoID";
             _info.type = Long.class; break;
@@ -560,7 +568,7 @@ public class Pedido extends SoapObject implements Item,Parcelable {
 	}
 
     public Pedido(Parcel parcel){
-    	   this();
+    	   
     	   readFromParcel(parcel);
     }
     
@@ -675,4 +683,143 @@ public class Pedido extends SoapObject implements Item,Parcelable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+//	public SoapObject getSoapObject (String NAME_SPACE)throws Exception
+//    { 
+//		
+//        SoapObject p =new SoapObject(NAME_SPACE,"pedido"); 
+//        SoapObject dp =new SoapObject(NAME_SPACE,"Detalles");
+//
+//        p.addProperty(NMConfig.Pedido.Id,getId());
+//        p.addProperty(NMConfig.Pedido.NumeroMovil,getNumeroMovil());
+//        p.addProperty(NMConfig.Pedido.NumeroCentral,getNumeroCentral());
+//        p.addProperty(NMConfig.Pedido.Tipo,getTipo());
+//        p.addProperty(NMConfig.Pedido.Fecha,getFecha());
+//        p.addProperty(NMConfig.Pedido.objClienteID,getObjClienteID());
+//
+//        p.addProperty(NMConfig.Pedido.NombreCliente,getNombreCliente());
+//        p.addProperty(NMConfig.Pedido.objSucursalID,getObjSucursalID());
+//        p.addProperty(NMConfig.Pedido.NombreSucursal,getNombreSucursal());
+//        p.addProperty(NMConfig.Pedido.objTipoPrecioVentaID,getObjTipoPrecioVentaID());
+//        p.addProperty(NMConfig.Pedido.CodTipoPrecio,getCodTipoPrecio());
+//        p.addProperty(NMConfig.Pedido.DescTipoPrecio,getDescTipoPrecio());
+//
+//        p.addProperty(NMConfig.Pedido.objVendedorID,getObjVendedorID());
+//        p.addProperty(NMConfig.Pedido.BonificacionEspecial,getBonificacionEspecial());
+//        p.addProperty(NMConfig.Pedido.BonificacionSolicitada,getBonificacionSolicitada());
+//        p.addProperty(NMConfig.Pedido.PrecioEspecial,getPrecioEspecial());
+//        p.addProperty(NMConfig.Pedido.PrecioSolicitado,getPrecioSolicitado());
+//        p.addProperty(NMConfig.Pedido.PedidoCondicionado,getPedidoCondicionado());
+//        
+//        p.addProperty(NMConfig.Pedido.Condicion,getCondicion());
+//        p.addProperty(NMConfig.Pedido.Subtotal,getSubtotal());
+//        p.addProperty(NMConfig.Pedido.Descuento,getDescuento());
+//        p.addProperty(NMConfig.Pedido.Impuesto,getImpuesto());
+//        p.addProperty(NMConfig.Pedido.Total,getTotal());
+//        p.addProperty(NMConfig.Pedido.objEstadoID,getObjEstadoID());
+//        
+//        p.addProperty(NMConfig.Pedido.CodEstado,getCodEstado());
+//        p.addProperty(NMConfig.Pedido.DescEstado,getDescEstado());
+//        p.addProperty(NMConfig.Pedido.objCausaEstadoID,getObjCausaEstadoID());
+//        p.addProperty(NMConfig.Pedido.CodCausaEstado,getCodCausaEstado());
+//        p.addProperty(NMConfig.Pedido.DescCausaEstado,getDescCausaEstado());
+//        p.addProperty(NMConfig.Pedido.NombreVendedor,getNombreVendedor());
+//        /////////////////////////////////////////////////////////////////////////
+//        
+//        DetallePedido[] ad=getDetalles();
+//        for(int i=0;i>ad.length;i++)
+//        {
+//        	DetallePedido d=ad[i];
+//        	SoapObject _dp =new SoapObject(NAME_SPACE,"DetallePedido");
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.Id,d.getId());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.objPedidoID,d.getObjPedidoID());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.objProductoID,d.getObjProductoID()); 
+//        	
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.Id,d.getId());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.objPedidoID,d.getObjPedidoID());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.objProductoID,d.getObjProductoID()); 
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.codProducto,d.getCodProducto());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.nombreProducto,d.getNombreProducto());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadOrdenada,d.getCantidadOrdenada()); 
+//
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadBonificada,d.getCantidadBonificada());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.objBonificacionID,d.getObjBonificacionID());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.bonifEditada,d.getBonifEditada()); 
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadBonificadaEditada,d.getCantidadBonificadaEditada());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.precio,d.getPrecio());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.montoPrecioEditado,d.getMontoPrecioEditado()); 
+//
+//        	
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.precioEditado,d.getPrecioEditado());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.subtotal,d.getSubtotal());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.descuento,d.getDescuento()); 
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.porcImpuesto,d.getPorcImpuesto());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.impuesto,d.getImpuesto());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.total,d.getTotal()); 
+//
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadDespachada,d.getCantidadDespachada());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadADespachar,d.getCantidadADespachar());
+//        	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadPromocion,d.getCantidadPromocion()); 
+//
+//        	dp.addSoapObject(_dp);
+//        }
+//        
+//        PedidoPromocion[] app=getPromocionesAplicadas();
+//        for(int i=0;i>app.length;i++)
+//        {
+//        	PedidoPromocion pr=app[i]; 
+//            SoapObject pp =new SoapObject(NAME_SPACE,"PromocionesAplicadas");
+//        	pp.addProperty(NMConfig.Pedido.PedidoPromocion.objPromocionID,pr.getObjPromocionID());
+//        	pp.addProperty(NMConfig.Pedido.PedidoPromocion.descuento,pr.getDescuento());
+//        	pp.addProperty(NMConfig.Pedido.PedidoPromocion.codigoPromocion,pr.getCodigoPromocion());
+//        	pp.addProperty(NMConfig.Pedido.PedidoPromocion.nombrePromocion,pr.getNombrePromocion());
+//        	 
+//        	 PedidoPromocionDetalle[] appd=pr.getDetalles();
+//             for(int e=0;e>appd.length;e++)
+//             {
+//            	 PedidoPromocionDetalle ppd=appd[i];
+//            	 SoapObject _ppd=new SoapObject(NAME_SPACE,"Detalles");
+//            	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.objProductoID,ppd.getObjProductoID());
+//            	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.nombreProducto,ppd.getNombreProducto());
+//            	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.cantidadEntregada,ppd.getCantidadEntregada());
+//            	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.descuento,ppd.getDescuento());
+//            	 
+//            	 pp.addSoapObject(_ppd);
+//             	 
+//             } 
+//        	p.addSoapObject(pp);  
+//        	
+////        	SoapObject _pp =new SoapObject(NAME_SPACE,"PromocionesAplicadas");
+////        	_pp.addProperty(NMConfig.Pedido.PedidoPromocion.objPromocionID,pr.getObjPromocionID());
+////        	_pp.addProperty(NMConfig.Pedido.PedidoPromocion.descuento,pr.getDescuento());
+////        	_pp.addProperty(NMConfig.Pedido.PedidoPromocion.codigoPromocion,pr.getCodigoPromocion());
+////        	_pp.addProperty(NMConfig.Pedido.PedidoPromocion.nombrePromocion,pr.getNombrePromocion());
+////        	 
+////        	 PedidoPromocionDetalle[] appd=pr.getDetalles();
+////             for(int e=0;e>appd.length;e++)
+////             {
+////            	 PedidoPromocionDetalle ppd=appd[i];
+////            	 SoapObject _ppd=new SoapObject(NAME_SPACE,"Detalles");
+////            	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.objProductoID,ppd.getObjProductoID());
+////            	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.nombreProducto,ppd.getNombreProducto());
+////            	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.cantidadEntregada,ppd.getCantidadEntregada());
+////            	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.descuento,ppd.getDescuento());
+////            	 
+////            	 _pp.addSoapObject(_ppd);
+////             	 
+////             } 
+////        	pp.addSoapObject(_pp);
+//        	
+//        }
+//        
+//        p.addSoapObject(dp);
+//              
+//        p.addProperty(NMConfig.Pedido.Nota,getNota());
+//        p.addProperty(NMConfig.Pedido.Exento,isExento());
+//        p.addProperty(NMConfig.Pedido.AutorizacionDGI,getAutorizacionDGI());
+//        
+//        
+//		return p;
+//	}
+	
 }
