@@ -1,11 +1,17 @@
 package com.panzyma.nm.logic;
 
-import org.ksoap2.SoapEnvelope;
+import org.ksoap2.SoapEnvelope; 
+import org.ksoap2.serialization.Marshal;
+import org.ksoap2.serialization.MarshalBase64;
+import org.ksoap2.serialization.MarshalFloat; 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
+
+import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Pedido;
+
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -27,7 +33,7 @@ public class TareaWSConsulta extends AsyncTask<String, Integer, Boolean> {
 		final String NAMESPACE = "http://panzyma.com/";
 		final String URL = "http://panzyma.com/nordisserverdev/mobileservice.asmx";
 		final String METHOD_NAME = "EnviarPedido";
-		final String SOAP_ACTION = "http://panzyma.com/EnviarPedido";
+		final String SOAP_ACTION = "http://panzyma.com/EnviarPedido/";
 
 		SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
 
@@ -49,11 +55,17 @@ public class TareaWSConsulta extends AsyncTask<String, Integer, Boolean> {
 
 		envelope.setOutputSoapObject(request);
 		
-		envelope.addMapping(NAMESPACE, "Pedido", pedido.getClass());
-
+		envelope.addMapping(NAMESPACE, "Pedido", pedido.getClass()); 
+		
+		Marshal floatMarshal = new MarshalFloat();
+		floatMarshal.register(envelope);
+		new MarshalBase64().register(envelope); 
 		HttpTransportSE transporte = new HttpTransportSE(URL);
-
+		Log.i("bodyout", "" + envelope.bodyOut.toString());
 		try {
+			@SuppressWarnings("unused")
+			Object dD=envelope.getResponse();
+			
 			transporte.call(SOAP_ACTION, envelope);
 
 			SoapObject resSoap = (SoapObject) envelope.getResponse();

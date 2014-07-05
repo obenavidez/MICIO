@@ -63,7 +63,7 @@ public final class PedidoPromocionDetalle implements KvmSerializable,Parcelable 
         case 0: return new Long(objProductoID);
         case 1: return NombreProducto;
         case 2: return new Integer(CantidadEntregada);
-        case 3: return new Float(Descuento);
+        case 3: return Descuento;
         }
         return null;
     }

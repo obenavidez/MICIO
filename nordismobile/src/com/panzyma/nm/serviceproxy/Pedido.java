@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
  
  
+
 import java.util.Arrays;
 import java.util.Hashtable;
 
@@ -12,6 +13,8 @@ import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
  
+
+import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.interfaces.Item;
   
 public class Pedido  implements KvmSerializable,Item,Parcelable{ 
@@ -364,11 +367,10 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 15: return new Boolean(PrecioEspecial);
         case 16: return PrecioSolicitado;
         case 17: return new Boolean(PedidoCondicionado);
-        case 18: return Condicion;
-        //case 19: return new Float(Subtotal);
+        case 18: return Condicion; 
         case 19: return Subtotal;
-        case 20: return new Float(Descuento);
-        case 21: return new Float(Impuesto);
+        case 20: return (Descuento);
+        case 21: return (Impuesto);
         //case 22: return new Float(Total);
         case 22: return Total;
         case 23: return new Long(objEstadoID);
@@ -378,8 +380,45 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 27: return CodCausaEstado;
         case 28: return DescCausaEstado;
         case 29: return NombreVendedor;
-        case 30: return Detalles;
-        case 31: return PromocionesAplicadas;
+	    case 30: 
+	    		SoapObject _detalle=new SoapObject(NMConfig.NAME_SPACE, "Detalles");
+	    		if(Detalles!=null)
+		        {
+	    			for(DetallePedido dp:Detalles)
+		    		{
+		    			SoapObject item=new SoapObject(NMConfig.NAME_SPACE, "DetallePedido");
+		    			int cont=dp.getPropertyCount();
+		    			for(int i=0;i<cont;i++){
+		    				PropertyInfo info=new PropertyInfo();
+		    				dp.getPropertyInfo(i, null, info);
+		    				info.setNamespace(NMConfig.NAME_SPACE);
+		    				item.addProperty(info.name,dp.getProperty(i));
+		    			}		    	
+		    			_detalle.addSoapObject(item);
+		    		}	  
+		        }	    		  	
+	    		return _detalle;
+        case 31: 
+		        SoapObject _promocionesaplicadas=new SoapObject(NMConfig.NAME_SPACE, "PromocionesAplicadas");
+		        if(PromocionesAplicadas!=null)
+		        {
+		        	for( PedidoPromocion pa:PromocionesAplicadas)
+		         
+					{
+						int cont=pa.getPropertyCount();
+						for(int i=0;i<cont;i++)
+						{
+							PropertyInfo info=new PropertyInfo();
+							pa.getPropertyInfo(i, null, info);
+							info.setNamespace(NMConfig.NAME_SPACE);
+							if("Detalles"==info.name) 
+								_promocionesaplicadas.addSoapObject((SoapObject)pa.getProperty(i)); 
+							else
+								_promocionesaplicadas.addProperty(info.name,pa.getProperty(i));
+						}
+					} 
+				}	    	
+				return _promocionesaplicadas;
         case 32: return Nota;
         case 33: return new Boolean(Exento);
         case 34: return AutorizacionDGI;
@@ -409,12 +448,10 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 16: PrecioSolicitado = (java.lang.String) _; break;
         case 17: PedidoCondicionado = "true".equals(_.toString()); break;
         case 18: Condicion = (java.lang.String) _; break;       
-        //case 19: Subtotal = Float.parseFloat(_.toString()); break; 
-        case 19: Subtotal = Float.valueOf(_.toString()); break;
+        case 19: Subtotal = Float.parseFloat(_.toString()); break;  
         case 20: Descuento = Float.parseFloat(_.toString()); break;
         case 21: Impuesto = Float.parseFloat(_.toString()); break;
-        //case 22: Total = Float.parseFloat(_.toString()); break;
-        case 22: Total = Float.valueOf(_.toString()); break;
+        case 22: Total = Float.parseFloat(_.toString()); break; 
         case 23: objEstadoID = Long.parseLong(_.toString()); break;
         case 24: CodEstado = (java.lang.String) _; break;
         case 25: DescEstado = (java.lang.String) _; break;
@@ -422,6 +459,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 27: CodCausaEstado = (java.lang.String) _; break;
         case 28: DescCausaEstado = (java.lang.String) _; break;
         case 29: NombreVendedor = (java.lang.String) _; break;
+        case 30: Detalles = (DetallePedido[]) _; break;
+        case 31: PromocionesAplicadas = (PedidoPromocion[]) _; break; 
         case 32: Nota = (java.lang.String) _; break;
         case 33: Exento = "true".equals(_.toString()); break;
         case 34: AutorizacionDGI = (java.lang.String) _; break;
@@ -430,113 +469,124 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 
     @Override
 	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
-        switch(_index)  {
-        case 0:
-            _info.name = "Id";
-            _info.type = Long.class; break;
-        case 1:
-            _info.name = "NumeroMovil";
-            _info.type = Integer.class; break;
-        case 2:
-            _info.name = "NumeroCentral";
-            _info.type = Integer.class; break;
-        case 3:
-            _info.name = "Tipo";
-            _info.type = java.lang.String.class; break;
-        case 4:
-            _info.name = "Fecha";
-            _info.type = Integer.class; break;
-        case 5:
-            _info.name = "objClienteID";
-            _info.type = Long.class; break;
-        case 6:
-            _info.name = "NombreCliente";
-            _info.type = java.lang.String.class; break;
-        case 7:
-            _info.name = "objSucursalID";
-            _info.type = Long.class; break;
-        case 8:
-            _info.name = "NombreSucursal";
-            _info.type = java.lang.String.class; break;
-        case 9:
-            _info.name = "objTipoPrecioVentaID";
-            _info.type = Long.class; break;
-        case 10:
-            _info.name = "CodTipoPrecio";
-            _info.type = java.lang.String.class; break;
-        case 11:
-            _info.name = "DescTipoPrecio";
-            _info.type = java.lang.String.class; break;
-        case 12:
-            _info.name = "objVendedorID";
-            _info.type = Long.class; break;
-        case 13:
-            _info.name = "BonificacionEspecial";
-            _info.type = Boolean.class; break;
-        case 14:
-            _info.name = "BonificacionSolicitada";
-            _info.type = java.lang.String.class; break;
-        case 15:
-            _info.name = "PrecioEspecial";
-            _info.type = Boolean.class; break;
-        case 16:
-            _info.name = "PrecioSolicitado";
-            _info.type = java.lang.String.class; break;
-        case 17:
-            _info.name = "PedidoCondicionado";
-            _info.type = Boolean.class; break;
-        case 18:
-            _info.name = "Condicion";
-            _info.type = java.lang.String.class; break;
-        case 19:
-            _info.name = "Subtotal";
-            //_info.type = Float.class; break;  
-            _info.type = float.class; break;
-        case 20:
-            _info.name = "Descuento";
-            _info.type = Float.class; break;
-        case 21:
-            _info.name = "Impuesto";
-            _info.type = Float.class; break;
-        case 22:
-            _info.name = "Total";
-            //_info.type = Float.class; break;
-            _info.type = float.class; break;
-        case 23:
-            _info.name = "objEstadoID";
-            _info.type = Long.class; break;
-        case 24:
-            _info.name = "CodEstado";
-            _info.type = java.lang.String.class; break;
-        case 25:
-            _info.name = "DescEstado";
-            _info.type = java.lang.String.class; break;
-        case 26:
-            _info.name = "objCausaEstadoID";
-            _info.type = Long.class; break;
-        case 27:
-            _info.name = "CodCausaEstado";
-            _info.type = java.lang.String.class; break;
-        case 28:
-            _info.name = "DescCausaEstado";
-            _info.type = java.lang.String.class; break;
-        case 29:
-            _info.name = "NombreVendedor";
-            _info.type = java.lang.String.class; break;
-        case 30:
-            _info.name = "Detalles";
-        case 31:
-            _info.name = "PromocionesAplicadas";
-        case 32:
-            _info.name = "Nota";
-            _info.type = java.lang.String.class; break;
-        case 33:
-            _info.name = "Exento";
-            _info.type = Boolean.class; break;
-        case 34:
-            _info.name = "AutorizacionDGI";
-            _info.type = java.lang.String.class; break;
-        }
+       try {
+    	   
+    	   
+    	   
+    	   switch(_index)  {
+           case 0:
+               _info.name = "Id";
+               _info.type = Long.class; break;
+           case 1:
+               _info.name = "NumeroMovil";
+               _info.type = Integer.class; break;
+           case 2:
+               _info.name = "NumeroCentral";
+               _info.type = Integer.class; break;
+           case 3:
+               _info.name = "Tipo";
+               _info.type = java.lang.String.class; break;
+           case 4:
+               _info.name = "Fecha";
+               _info.type = Integer.class; break;
+           case 5:
+               _info.name = "objClienteID";
+               _info.type = Long.class; break;
+           case 6:
+               _info.name = "NombreCliente";
+               _info.type = java.lang.String.class; break;
+           case 7:
+               _info.name = "objSucursalID";
+               _info.type = Long.class; break;
+           case 8:
+               _info.name = "NombreSucursal";
+               _info.type = java.lang.String.class; break;
+           case 9:
+               _info.name = "objTipoPrecioVentaID";
+               _info.type = Long.class; break;
+           case 10:
+               _info.name = "CodTipoPrecio";
+               _info.type = java.lang.String.class; break;
+           case 11:
+               _info.name = "DescTipoPrecio";
+               _info.type = java.lang.String.class; break;
+           case 12:
+               _info.name = "objVendedorID";
+               _info.type = Long.class; break;
+           case 13:
+               _info.name = "BonificacionEspecial";
+               _info.type = Boolean.class; break;
+           case 14:
+               _info.name = "BonificacionSolicitada";
+               _info.type = java.lang.String.class; break;
+           case 15:
+               _info.name = "PrecioEspecial";
+               _info.type = Boolean.class; break;
+           case 16:
+               _info.name = "PrecioSolicitado";
+               _info.type = java.lang.String.class; break;
+           case 17:
+               _info.name = "PedidoCondicionado";
+               _info.type = Boolean.class; break;
+           case 18:
+               _info.name = "Condicion";
+               _info.type = java.lang.String.class; break;
+           case 19:
+               _info.name = "Subtotal";
+               _info.type = Float.class; break;    
+           case 20:
+               _info.name = "Descuento";
+               _info.type = Float.class; break;  
+           case 21:
+               _info.name = "Impuesto";
+               _info.type = Float.class; break;  
+           case 22:
+               _info.name = "Total";
+               _info.type = Float.class; break;  
+           case 23:
+               _info.name = "objEstadoID";
+               _info.type = Long.class; break;
+           case 24:
+               _info.name = "CodEstado";
+               _info.type = java.lang.String.class; break;
+           case 25:
+               _info.name = "DescEstado";
+               _info.type = java.lang.String.class; break;
+           case 26:
+               _info.name = "objCausaEstadoID";
+               _info.type = Long.class; break;
+           case 27:
+               _info.name = "CodCausaEstado";
+               _info.type = java.lang.String.class; break;
+           case 28:
+               _info.name = "DescCausaEstado";
+               _info.type = java.lang.String.class; break;
+           case 29:
+               _info.name = "NombreVendedor";
+               _info.type = java.lang.String.class; break;
+           case 30:
+               _info.name = "Detalles";
+               _info.type=  DetallePedido[].class;
+           case 31:
+               _info.name = "PromocionesAplicadas";
+               _info.type=  PedidoPromocion[].class; 
+           case 32:
+               _info.name = "Nota";
+               _info.type = java.lang.String.class; break;
+           case 33:
+               _info.name = "Exento";
+               _info.type = Boolean.class; break;
+           case 34:
+               _info.name = "AutorizacionDGI";
+               _info.type = java.lang.String.class; break;
+           }
+    	   
+		
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+    	
+    	
     }
 
     @Override

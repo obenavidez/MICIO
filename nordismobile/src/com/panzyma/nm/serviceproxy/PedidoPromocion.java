@@ -9,6 +9,9 @@ import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo; 
+import org.ksoap2.serialization.SoapObject;
+
+import com.panzyma.nm.auxiliar.NMConfig;
 
 public final class PedidoPromocion implements KvmSerializable,Parcelable {
   
@@ -70,8 +73,21 @@ public final class PedidoPromocion implements KvmSerializable,Parcelable {
 	public Object getProperty(int _index) {
         switch(_index)  {
         case 0: return new Long(objPromocionID);
-        case 1: return new Float(Descuento);
-        case 2: return Detalles;
+        case 1: return Descuento;
+        case 2: 
+	        	SoapObject _detalle=new SoapObject(NMConfig.NAME_SPACE, "Detalles");
+	    		for(PedidoPromocionDetalle ppd:Detalles)
+	    		{ 
+	    			for(int i=0;i>ppd.getPropertyCount();i++)
+	    			{
+	    				PropertyInfo info=new PropertyInfo();
+	    				ppd.getPropertyInfo(i, null, info);
+	    				info.setNamespace(NMConfig.NAME_SPACE);
+	    				_detalle.addProperty(info.name,ppd.getProperty(i));
+	    			}
+	    			
+	    		}	
+        	return  _detalle;
         case 3: return CodigoPromocion;
         case 4: return NombrePromocion;
         }
@@ -83,6 +99,7 @@ public final class PedidoPromocion implements KvmSerializable,Parcelable {
         switch(_index)  {
         case 0: objPromocionID = Long.parseLong(_obj.toString()); break;
         case 1: Descuento = Float.parseFloat(_obj.toString()); break;
+        case 2: Detalles=(PedidoPromocionDetalle[])_obj;break;
         case 3: CodigoPromocion = (java.lang.String) _obj; break;
         case 4: NombrePromocion = (java.lang.String) _obj; break;
         }
