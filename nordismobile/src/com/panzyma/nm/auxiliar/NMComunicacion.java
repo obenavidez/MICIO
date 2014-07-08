@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
@@ -74,6 +75,43 @@ public class NMComunicacion {
 
         return  MakeCall(URL,envelope,NAME_SPACE,METHOD_NAME);
     } 
+	
+	public static synchronized void invokeMetho() {
+		try {
+			
+			// Metodo que queremos ejecutar en el servicio web
+			final String Metodo = "EnviarPedido";
+			// Namespace definido en el servicio web
+			final String namespace = "http://panzyma.com/";
+			// namespace + metodo
+			final String accionSoap = "http://panzyma.com/EnviarPedido";
+			// Fichero de definicion del servcio web
+			final String url = "http://panzyma.com/nordisserverdev/mobileservice.asmx";
+			
+		    // Modelo el request
+		    SoapObject request = new SoapObject(namespace, Metodo);
+		    request.addProperty("Param", "valor"); // Paso parametros al WS
+		 
+		    // Modelo el Sobre
+		    SoapSerializationEnvelope sobre = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+		    sobre.dotNet = true;
+		    sobre.setOutputSoapObject(request);
+		 
+		    // Modelo el transporte
+		    HttpTransportSE transporte = new HttpTransportSE(url);
+		 
+		    // Llamada
+		    transporte.call(accionSoap, sobre);
+		 
+		    // Resultado
+		    SoapPrimitive resultado = (SoapPrimitive) sobre.getResponse();
+		 
+		    Log.i("Resultado", resultado.toString());
+		 
+		} catch (Exception e) {
+		    Log.e("ERROR", e.getMessage());
+		}
+	}
 	 
 	public static synchronized Object InvokeMethod(ArrayList<Parameters> params,String URL,String NAME_SPACE,String METHOD_NAME)throws Exception
     { 

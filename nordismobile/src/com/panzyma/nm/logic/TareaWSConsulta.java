@@ -30,10 +30,10 @@ public class TareaWSConsulta extends AsyncTask<String, Integer, Boolean> {
 
 		boolean resul = true;
 
-		final String NAMESPACE = "http://panzyma.com/";
-		final String URL = "http://panzyma.com/nordisserverdev/mobileservice.asmx";
+		final String NAMESPACE = "http://www.panzyma.com/";
+		final String URL = "http://www.panzyma.com/nordisserverdev/mobileservice.asmx";
 		final String METHOD_NAME = "EnviarPedido";
-		final String SOAP_ACTION = "http://panzyma.com/EnviarPedido/";
+		final String SOAP_ACTION = "http://www.panzyma.com/EnviarPedido";
 
 		SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
 
@@ -46,6 +46,7 @@ public class TareaWSConsulta extends AsyncTask<String, Integer, Boolean> {
 		PropertyInfo p = new PropertyInfo();
         p.setName("pedido");
         p.setValue(pedido);
+        p.setNamespace(NAMESPACE);
         p.setType(pedido.getClass()); 
         request.addProperty(p);
 
@@ -61,12 +62,14 @@ public class TareaWSConsulta extends AsyncTask<String, Integer, Boolean> {
 		floatMarshal.register(envelope);
 		new MarshalBase64().register(envelope); 
 		HttpTransportSE transporte = new HttpTransportSE(URL);
+		transporte.debug = true;
 		Log.i("bodyout", "" + envelope.bodyOut.toString());
 		try {
-			@SuppressWarnings("unused")
-			Object dD=envelope.getResponse();
+			//@SuppressWarnings("unused")
+			//Object dD=envelope.getResponse();
 			
 			transporte.call(SOAP_ACTION, envelope);
+			
 
 			SoapObject resSoap = (SoapObject) envelope.getResponse();
 

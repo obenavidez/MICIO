@@ -6,8 +6,10 @@ import android.os.Parcelable;
  
  
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
@@ -16,6 +18,7 @@ import org.ksoap2.serialization.SoapObject;
 
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.interfaces.Item;
+import com.panzyma.nm.logic.DataArray;
   
 public class Pedido  implements KvmSerializable,Item,Parcelable{ 
 	public Pedido() {
@@ -54,11 +57,16 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
     private java.lang.String DescCausaEstado;
     private java.lang.String NombreVendedor;
     private DetallePedido[] Detalles;
+    private DataArray dataarray = new DataArray();;
+    private Vector<SoapObject> datavector = new Vector<SoapObject>();
     private PedidoPromocion[] PromocionesAplicadas;
     private java.lang.String Nota;
     private boolean Exento;
     private java.lang.String AutorizacionDGI;
-    
+ 
+    public void setDataArray(DataArray list) {
+    	this.dataarray = list;
+    }
  
     public void setId(long id) {
         this.Id = id;
@@ -381,7 +389,7 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 28: return DescCausaEstado;
         case 29: return NombreVendedor;
 	    case 30: 
-	    		SoapObject _detalle=new SoapObject(NMConfig.NAME_SPACE, "Detalles");
+	    		/*SoapObject _detalle=new SoapObject(NMConfig.NAME_SPACE, "Detalles");
 	    		if(Detalles!=null)
 		        {
 	    			for(DetallePedido dp:Detalles)
@@ -396,10 +404,13 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 		    			}		    	
 		    			_detalle.addSoapObject(item);
 		    		}	  
-		        }	    		  	
-	    		return _detalle;
+		        }	  
+		          		  	
+	    		return _detalle;*/
+	    	return this.dataarray;
+	    	//return Detalles;
         case 31: 
-		        SoapObject _promocionesaplicadas=new SoapObject(NMConfig.NAME_SPACE, "PromocionesAplicadas");
+		       SoapObject _promocionesaplicadas=new SoapObject(NMConfig.NAME_SPACE, "PromocionesAplicadas");
 		        if(PromocionesAplicadas!=null)
 		        {
 		        	for( PedidoPromocion pa:PromocionesAplicadas)
@@ -417,7 +428,7 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 								_promocionesaplicadas.addProperty(info.name,pa.getProperty(i));
 						}
 					} 
-				}	    	
+				}    	
 				return _promocionesaplicadas;
         case 32: return Nota;
         case 33: return new Boolean(Exento);
@@ -459,7 +470,13 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 27: CodCausaEstado = (java.lang.String) _; break;
         case 28: DescCausaEstado = (java.lang.String) _; break;
         case 29: NombreVendedor = (java.lang.String) _; break;
-        case 30: Detalles = (DetallePedido[]) _; break;
+        case 30: 
+        	//Detalles = (DetallePedido[]) _;
+        	this.datavector =new Vector<SoapObject>();
+            for(int i = 0; i < Detalles.length; i++) { 
+                dataarray.setProperty(0,Detalles[i]);
+            }
+        	break;
         case 31: PromocionesAplicadas = (PedidoPromocion[]) _; break; 
         case 32: Nota = (java.lang.String) _; break;
         case 33: Exento = "true".equals(_.toString()); break;
@@ -566,7 +583,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
                _info.type = java.lang.String.class; break;
            case 30:
                _info.name = "Detalles";
-               _info.type=  DetallePedido[].class;
+               //_info.type=  DetallePedido[].class;
+               _info.type =  new Vector<DetallePedido>().getClass();
            case 31:
                _info.name = "PromocionesAplicadas";
                _info.type=  PedidoPromocion[].class; 

@@ -191,7 +191,7 @@ public class ViewRecibo extends ActionBarActivity implements
 					
 					Pedido pedido = null;
 					try {
-						pedido = ModelPedido.obtenerPedidoByID(3678 ,context.getContentResolver());
+						pedido = ModelPedido.obtenerPedidoByID(3676 ,context.getContentResolver());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
