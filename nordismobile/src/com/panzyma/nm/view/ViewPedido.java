@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM; 
 import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
@@ -49,27 +50,32 @@ import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.ListaFragment;
-import com.panzyma.nm.interfaces.Filterable;
-import com.panzyma.nm.model.ModelPedido;
+import com.panzyma.nm.interfaces.Filterable; 
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Ventas;
-import com.panzyma.nm.viewdialog.GenericCustomDialog;
-import com.panzyma.nm.viewdialog.GenericCustomDialog.DialogType;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes","unchecked"})
 public class ViewPedido extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback 
-		{
+{ 
 	@Override
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestcode, resultcode, data);
-		request_code = requestcode;
-		if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code)
-				&& data != null)
-			establecer(data.getParcelableExtra("pedido"));
+		try 
+		{
+			nmapp.getController().setEntities(this,this.getBridge());
+			request_code = requestcode;
+			if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code)
+					&& data != null)
+				establecer(data.getParcelableExtra("pedido"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
@@ -204,7 +210,7 @@ public class ViewPedido extends ActionBarActivity implements
             } catch (Exception e)
             { 
             	e.printStackTrace();
-            	AppDialog.responseDialog(e.getMessage(),GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
+            	AppDialog.responseDialog(e.getMessage(),DialogType.DIALOGO_ALERTA);
             }  
             // with requestCode 2
             break;
@@ -222,17 +228,17 @@ public class ViewPedido extends ActionBarActivity implements
 		        if("PORVALIDAR".equals(state) || "APROBADO".equals(state) )
 		        {
 		            //Toast.makeText(getApplicationContext(),"No puede borrar pedidos por validar o aprobados.", Toast.LENGTH_SHORT).show();
-		            showInfoMessage("No puede borrar pedidos por validar o aprobados.",GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
+		            showInfoMessage("No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
 		            return;
 		        }
-		        AllowRemove("¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_NOTIFICACION.getActionCode());
+		        AllowRemove("¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_CONFIRMACION);
 	        }
 	        else
 	        { 
 	        	if(pedidos.size()>0 && pedido_selected!=null)
-	        		showInfoMessage("Seleccione un registro.",GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
+	        		showInfoMessage("Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 	        	else	
-	        		showInfoMessage("No existen pedidos registrados.",GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
+	        		showInfoMessage("No existen pedidos registrados.",DialogType.DIALOGO_ALERTA);
             }
             //CERRAR EL MENU DEL DRAWER
             drawerLayout.closeDrawers();
@@ -503,7 +509,7 @@ public class ViewPedido extends ActionBarActivity implements
 				        			firstFragment.getAdapter().setSelectedPosition(0);
 				        			pedido_selected = pedidos.get(0);
 				        		}
-				        		showInfoMessage("Se ha Elimando Correctamente el pedido.",GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
+				        		showInfoMessage("Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
 				        	}
 			             }
 			        }
@@ -630,7 +636,7 @@ public class ViewPedido extends ActionBarActivity implements
 		finish();
 	}
 	
-	public void AllowRemove(final String msg,final int type)
+	public void AllowRemove(final String msg,final DialogType type)
 	{
 		try {
 			nmapp.getThreadPool().execute(new Runnable() {
@@ -651,7 +657,7 @@ public class ViewPedido extends ActionBarActivity implements
 			e.printStackTrace();
 		} 
 	}
-	public void showInfoMessage (final String msg,final int type)
+	public void showInfoMessage (final String msg,final DialogType type)
 	{
 		try {
 			nmapp.getThreadPool().execute(new Runnable() {
