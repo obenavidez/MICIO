@@ -25,7 +25,7 @@ public class GenericCustomDialog  extends DialogFragment implements OnDismissLis
 	private String Message=null;
 	private String Tittle=null; 
 	private int Dialogtype; 
-	public static enum DialogType {
+	private static enum DialogType {
 		DIALOGO_NOTIFICACION (0),
 		DIALOGO_ALERTA (1),
 		DIALOGO_CONFIRMACION (2),
@@ -60,15 +60,15 @@ public class GenericCustomDialog  extends DialogFragment implements OnDismissLis
 		this.Tittle = title;
 		this.Message = message;
 	}
-	public GenericCustomDialog(String title , String message, int dialogtype)
+	public GenericCustomDialog(String title , String message, DialogType dialogtype)
 	{
 		this.Tittle = title;
 		this.Message = message;
-		this.Dialogtype =dialogtype;
+		this.Dialogtype =dialogtype.getActionCode();
 	}
 	
 	
-	public static GenericCustomDialog newInstance(String title , String message, int dialogtype) {
+	public static GenericCustomDialog newInstance(String title , String message,int dialogtype) {
 		GenericCustomDialog fragment = new GenericCustomDialog();
 		Bundle args = new Bundle();
 		args.putString("title", title);
