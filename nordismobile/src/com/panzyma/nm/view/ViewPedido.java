@@ -1,6 +1,5 @@
 package com.panzyma.nm.view;
 
-import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
@@ -8,12 +7,9 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ksoap2.serialization.SoapObject;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -37,7 +33,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,9 +40,6 @@ import android.widget.Toast;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM; 
 import com.panzyma.nm.auxiliar.AppDialog;
-import com.panzyma.nm.auxiliar.NMComunicacion;
-import com.panzyma.nm.auxiliar.NMConfig;
-import com.panzyma.nm.auxiliar.NMTranslate; 
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
@@ -56,19 +48,14 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
-import com.panzyma.nm.fragments.FichaProductoFragment;
-import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
-import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Ventas;
-import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.viewdialog.GenericCustomDialog;
 import com.panzyma.nm.viewdialog.GenericCustomDialog.DialogType;
 import com.panzyma.nm.viewmodel.vmEntity;
-import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("rawtypes")
@@ -104,7 +91,6 @@ public class ViewPedido extends ActionBarActivity implements
 		CUENTAS_POR_COBRAR,
 		CONSULTA_VENTAS
 	};
-
 	private FragmentActive fragmentActive = null;
 	CuentasPorCobrarFragment cuentasPorCobrar;
 	ConsultaVentasFragment consultasVentas;
@@ -118,10 +104,9 @@ public class ViewPedido extends ActionBarActivity implements
 	private static final int NUEVO_PEDIDO = 0;
 	private static final int EDITAR_PEDIDO = 1;
 	private static final int BORRAR_PEDIDO=3;
-	private static final int BORRAR_PEDIDO_FINALIZADO = 4;
-	private static final int ANULAR_PEDIDO = 5;
-	private static final int CUENTAS_POR_COBRAR = 6;
-	protected static final int CONSULTA_VENTAS = 7;
+	private static final int ANULAR_PEDIDO = 4;
+	private static final int CUENTAS_POR_COBRAR = 5;
+	protected static final int CONSULTA_VENTAS = 6;
 	private static int request_code;
 	private String[] opcionesMenu;
 	private DrawerLayout drawerLayout;
@@ -137,7 +122,7 @@ public class ViewPedido extends ActionBarActivity implements
 	TextView footerView;
 
 	private List<vmEntity> pedidos = new ArrayList<vmEntity>();
-	vmEntity pedido_selected;
+	vmEntity pedido_selected =null;
 	ListaFragment<vmEntity> firstFragment;
 	private ViewPedido vp;
 	private BPedidoM bpm;
@@ -173,11 +158,11 @@ public class ViewPedido extends ActionBarActivity implements
 		transaction = getSupportFragmentManager().beginTransaction();
 		gridheader.setVisibility(View.VISIBLE);
 		opcionesMenu = new String[] { "Nuevo Pedido", "Editar Pedido",
-				"Enviar Pedido", "Borrar Pedido", "Borrar Pedidos Finalizados",
+				"Enviar Pedido", "Borrar Pedido",
 				"Anular Pedido", "Consultar Cuentas X Cobrar",
 				"Consultas de Ventas", "Cerrar" };
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		// drawerLayout.openDrawer(Gravity.END);
+
 		drawerList = (ListView) findViewById(R.id.left_drawer);
 
 		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
@@ -229,19 +214,30 @@ public class ViewPedido extends ActionBarActivity implements
             break;
             
             case BORRAR_PEDIDO:
-            //SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-            pos = customArrayAdapter.getSelectedPosition();
-            //OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-            pedido_selected = customArrayAdapter.getItem(pos);
-            //OBTENER EL ESTADO DEL REGISTRO
-            state = pedido_selected.getDescEstado();
-            if("PORVALIDAR".equals(state) || "APROBADO".equals(state) )
-            {
-                Toast.makeText(getApplicationContext(),"No puede borrar pedidos por validar o aprobados.", Toast.LENGTH_SHORT).show();
-                return;
+            //SELECCIONAR LA POSICION DEL PEDIDO SELECCIONADO ACTUALMENTE
+            positioncache = customArrayAdapter.getSelectedPosition();
+            
+	        //OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+	        pedido_selected = customArrayAdapter.getItem(positioncache);
+	        if(pedido_selected!=null)
+	        {
+		        //OBTENER EL ESTADO DEL REGISTRO
+		        state = pedido_selected.getDescEstado();
+		        if("PORVALIDAR".equals(state) || "APROBADO".equals(state) )
+		        {
+		            //Toast.makeText(getApplicationContext(),"No puede borrar pedidos por validar o aprobados.", Toast.LENGTH_SHORT).show();
+		            showInfoMessage("No puede borrar pedidos por validar o aprobados.",GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
+		            return;
+		        }
+		        AllowRemove("¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_NOTIFICACION.getActionCode());
+	        }
+	        else
+	        { 
+	        	if(pedidos.size()>0 && pedido_selected!=null)
+	        		showInfoMessage("Seleccione un registro.",GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
+	        	else	
+	        		showInfoMessage("No existen pedidos registrados.",GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
             }
-            AllowRemove("¿Está seguro que desea eliminar el Pedido seleccionado?",DialogType.DIALOGO_ALERTA.getActionCode());
-            //nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
             //CERRAR EL MENU DEL DRAWER
             drawerLayout.closeDrawers();
             break;
@@ -290,14 +286,6 @@ public class ViewPedido extends ActionBarActivity implements
             drawerLayout.closeDrawers();
             // OCULTAR LA BARRA DE ACCION
             getSupportActionBar().hide();
-            break;
-            case BORRAR_PEDIDO_FINALIZADO :
-	            //SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-	            pos = customArrayAdapter.getSelectedPosition();
-	            //OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-	            pedido_selected = customArrayAdapter.getItem(pos);
-	            state = pedido_selected.getDescEstado();
-	            
             break;
             case ANULAR_PEDIDO :
 	            //SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
@@ -497,6 +485,7 @@ public class ViewPedido extends ActionBarActivity implements
 	public boolean handleMessage(Message msg) 
 	{
 		Boolean val = false;
+		final Object item= msg.obj;
 		switch (msg.what) 
 		{
 			case C_DATA:
@@ -504,20 +493,32 @@ public class ViewPedido extends ActionBarActivity implements
 				val= true;
 				break;
 			case DELETE_ITEM_FINISHED:
-				ViewPedido.this.runOnUiThread(new Runnable() {
+				runOnUiThread(new Runnable() {
 			        @Override
 					public void run() {
-			        	Boolean removed=pedidos.remove(pedido_selected);
-			        	firstFragment.getAdapter().notifyDataSetChanged();
-			        	//showSuccessfulMessage("Se ha eliminado correctamente",DialogType.DIALOGO_ALERTA.getActionCode());
+			        	if(Integer.parseInt(item.toString())==1){
+				        	Boolean removed=pedidos.remove(pedido_selected);
+				        	if(removed){
+				        		firstFragment.getAdapter().notifyDataSetChanged();
+				        		gridheader.setText(String.format("Listado de Pedidos (%s)",pedidos.size()));
+				        		customArrayAdapter.remove(pedido_selected);
+				        		
+				        		if(pedidos.size()>0){
+				        			firstFragment.getAdapter().setSelectedPosition(0);
+				        			pedido_selected = pedidos.get(0);
+				        		}
+				        		showInfoMessage("Se ha Elimando Correctamente el pedido.",GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
+				        	}
+			             }
 			        }
 			    });
-				showSuccessfulMessage("Se ha eliminado correctamente",DialogType.DIALOGO_ALERTA.getActionCode());
 				val=true;
 				break;
 			case ERROR:
 				ErrorMessage error=((ErrorMessage)msg.obj);
-				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();	
+				//buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();
+				Toast.makeText(getApplicationContext(),error.getTittle(), Toast.LENGTH_SHORT).show();
+            	
 				val=true;
 				break;
 		}
@@ -559,12 +560,10 @@ public class ViewPedido extends ActionBarActivity implements
 		}
 
 		runOnUiThread(new Runnable() {
-
 			@Override
 			public void run() {
 				gridheader.setVisibility(View.VISIBLE);
-				gridheader.setText(String.format("Listado de Recibos (%s)",
-						pedidos.size()));
+				gridheader.setText(String.format("Listado de Pedidos (%s)",pedidos.size()));
 				if (pedidos.size() == 0) {
 					TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
 					txtenty.setVisibility(View.VISIBLE);
@@ -584,7 +583,6 @@ public class ViewPedido extends ActionBarActivity implements
 		return pedido_selected;
 	}	
 	public BPedidoM getBridge() {
-		// TODO Auto-generated method stub
 		return bpm;
 	}
 
@@ -642,34 +640,35 @@ public class ViewPedido extends ActionBarActivity implements
 			nmapp.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
 					if(AppDialog.responseDialog(msg,type))
 					{
-						nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+						//nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+						Message ms = new  Message();
+						ms.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST; 
+						ms.obj = pedido_selected.getId();
+						nmapp.getController().getInboxHandler().sendMessage(ms);
 					}
 				}
 			});
 		} catch (InterruptedException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	}
-	public void showSuccessfulMessage (final String msg,final int type)
+	public void showInfoMessage (final String msg,final int type)
 	{
 		try {
 			nmapp.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
-					if(AppDialog.responseDialog(msg,type))
-						return;
+					AppDialog.responseDialog(msg,type);
 				}
 			});
-		} catch (InterruptedException e) 
+		}
+		catch (InterruptedException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		
+
 	}
 } 

@@ -311,9 +311,9 @@ public class ModelPedido {
 			content.delete(Uri.parse(url), "", projection);
 			url = DatabaseProvider.CONTENT_URI_PEDIDOPROMOCION +"/"+String.valueOf(PedidoID);
 			content.delete(Uri.parse(url), "", projection);*/
-			 url = DatabaseProvider.CONTENT_URI_PEDIDO +"/"+String.valueOf(PedidoID);			
-			content.delete(Uri.parse(url), "", projection);
-			result = 1;
+			url = DatabaseProvider.CONTENT_URI_PEDIDO +"/"+String.valueOf(PedidoID);			
+			result=content.delete(Uri.parse(url), "", projection);
+			//result = 1;
 		} catch (Exception e) {
 			
 		}

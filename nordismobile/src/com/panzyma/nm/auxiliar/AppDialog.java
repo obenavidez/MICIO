@@ -22,7 +22,6 @@ public class AppDialog {
     	context.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				//showMyDialog(msg,type);
 				dialog = GenericCustomDialog.newInstance("Eliminar",msg,type);
 				dialog.setOnActionDialogButtonClickListener(new OnActionButtonClickListener()
 				{
@@ -52,17 +51,11 @@ public class AppDialog {
 			try {
 				lock.wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} 
     	return response;
    	}
-    
-    private static void showMyDialog(String msg, int type) {
-    	GenericCustomDialog dialog = GenericCustomDialog.newInstance("Eliminar",msg,type);
-    	dialog.show(manager, "dialog");
-    }
     
     public static void setContext(Activity _context)
 	{

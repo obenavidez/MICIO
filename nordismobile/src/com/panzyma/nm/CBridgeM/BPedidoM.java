@@ -84,14 +84,14 @@ public class BPedidoM {
 				val= true;
 				break;
 			case DELETE_DATA_FROM_LOCALHOST :
-				onDeleteDataFromLocalHost();
+				onDeleteDataFromLocalHost(Long.parseLong(msg.obj.toString()));
 				val= true;
 				break;
 		}
 		return val;
 	}
 
-	private void onDeleteDataFromLocalHost() {
+	private void onDeleteDataFromLocalHost(final long pedidoID) {
 		try {
 			pool.execute(new Runnable() {
 
@@ -99,7 +99,7 @@ public class BPedidoM {
 				public void run() {
 				  try {
 						ContentResolver resolver =(view != null) ? view.getContentResolver() : view1.getContext().getContentResolver();
-						Processor.send_ViewDeletePedidoToView(ModelPedido.borraPedidoByID(resolver, view.getPedidoSelected().getId()),controller);
+						Processor.send_ViewDeletePedidoToView(ModelPedido.borraPedidoByID(resolver, pedidoID),controller);
 				  	} 
 				catch (Exception e) {
 				Log.e(logger, "Error in the update thread", e);
