@@ -44,6 +44,7 @@ import android.widget.Toast;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM; 
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate; 
@@ -64,6 +65,8 @@ import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ViewRecibo.FragmentActive;
+import com.panzyma.nm.viewdialog.GenericCustomDialog;
+import com.panzyma.nm.viewdialog.GenericCustomDialog.DialogType;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
@@ -165,6 +168,8 @@ public class ViewPedido extends ActionBarActivity implements
 		fragmentActive = FragmentActive.LIST;
 
 		vp = this;
+		AppDialog.setContext(vp);
+		AppDialog.setContext(getSupportFragmentManager());
 		transaction = getSupportFragmentManager().beginTransaction();
 		gridheader.setVisibility(View.VISIBLE);
 		opcionesMenu = new String[] { "Nuevo Pedido", "Editar Pedido",
@@ -235,7 +240,8 @@ public class ViewPedido extends ActionBarActivity implements
                 Toast.makeText(getApplicationContext(),"No puede borrar pedidos por validar o aprobados.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+            AllowRemove("¿Está seguro que desea eliminar el Pedido seleccionado?",DialogType.DIALOGO_ALERTA.getActionCode());
+            //nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
             //CERRAR EL MENU DEL DRAWER
             drawerLayout.closeDrawers();
             break;
@@ -498,9 +504,15 @@ public class ViewPedido extends ActionBarActivity implements
 				val= true;
 				break;
 			case DELETE_ITEM_FINISHED:
-				customArrayAdapter.remove(pedido_selected);	
-				customArrayAdapter.notifyDataSetChanged();
-				buildCustomDialog("Nordis Movile",msg.obj.equals(1)?"Eliminado Satisfactoriamente":"Error al eliminar",ALERT_DIALOG).show();
+				ViewPedido.this.runOnUiThread(new Runnable() {
+			        @Override
+					public void run() {
+			        	Boolean removed=pedidos.remove(pedido_selected);
+			        	firstFragment.getAdapter().notifyDataSetChanged();
+			        	//showSuccessfulMessage("Se ha eliminado correctamente",DialogType.DIALOGO_ALERTA.getActionCode());
+			        }
+			    });
+				showSuccessfulMessage("Se ha eliminado correctamente",DialogType.DIALOGO_ALERTA.getActionCode());
 				val=true;
 				break;
 			case ERROR:
@@ -622,5 +634,42 @@ public class ViewPedido extends ActionBarActivity implements
 		nmapp.getController().removeOutboxHandler(TAG);
 		Log.d(TAG, "Activity quitting");
 		finish();
+	}
+	
+	public void AllowRemove(final String msg,final int type)
+	{
+		try {
+			nmapp.getThreadPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					if(AppDialog.responseDialog(msg,type))
+					{
+						nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+					}
+				}
+			});
+		} catch (InterruptedException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+	public void showSuccessfulMessage (final String msg,final int type)
+	{
+		try {
+			nmapp.getThreadPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					if(AppDialog.responseDialog(msg,type))
+						return;
+				}
+			});
+		} catch (InterruptedException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
 	}
 } 
