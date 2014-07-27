@@ -61,6 +61,7 @@ public class AppDialog {
 	{
 		context=_context;
 	}
+   
     public static void setContext(android.support.v4.app.FragmentManager _manager)
 	{
     	manager = _manager;

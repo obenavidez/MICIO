@@ -25,7 +25,8 @@ public class GenericCustomDialog  extends DialogFragment implements OnDismissLis
 	private String Message=null;
 	private String Tittle=null; 
 	private int Dialogtype; 
-	public static enum DialogType {
+	public static enum DialogType 
+	{
 		DIALOGO_NOTIFICACION (0),
 		DIALOGO_ALERTA (1),
 		DIALOGO_CONFIRMACION (2),

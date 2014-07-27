@@ -187,29 +187,25 @@ public class ViewPedido extends ActionBarActivity implements
             // with requestCode 2
             break;
             case EDITAR_PEDIDO:
-            drawerLayout.closeDrawers();
            
-            positioncache = customArrayAdapter.getSelectedPosition();
-            Pedido p = null;
             try
             {
-                p = Ventas.obtenerPedidoByID(pedido_selected.getId(),
-                vp);
-                ModelPedido.enviarPedido("sa||nordis09||dp", p);
+              drawerLayout.closeDrawers();           
+              positioncache = customArrayAdapter.getSelectedPosition();
+              Pedido p = null;
+              p = Ventas.obtenerPedidoByID(pedido_selected.getId(),vp);                
+              intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
+              b = new Bundle();
+              b.putParcelable("pedido", p);
+              intent.putExtras(b);
+              intent.putExtra("requestcode", EDITAR_PEDIDO);
+              startActivityForResult(intent, EDITAR_PEDIDO);// Activity is
+                
             } catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } 
-//            intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
-//            b = new Bundle();
-//            b.putParcelable("pedido", p);
-//            intent.putExtras(b);
-//            intent.putExtra("requestcode", EDITAR_PEDIDO);
-//            startActivityForResult(intent, EDITAR_PEDIDO);// Activity is
-//            
-            
-            // started
+            { 
+            	e.printStackTrace();
+            	AppDialog.responseDialog(e.getMessage(),GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
+            }  
             // with requestCode 2
             break;
             
