@@ -97,23 +97,23 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	{
 		super(me.getContext(), theme);
 		try {
-		setContentView(R.layout.mainfactura); 
-		mcontext=this.getContext(); 
-		this.documento = document;
-		parent = me; 
-		WindowManager wm = (WindowManager) me.getSystemService(Context.WINDOW_SERVICE);
-		display = wm.getDefaultDisplay();
-		setObjSucursalId(cliente.getIdSucursal());
-		nmapp=(NMApp) me.getApplication();
-		nmapp.getController().removebridgeByName(BReciboM.class.toString());
-		nmapp.getController().setEntities(this,new BReciboM()); 
-		nmapp.getController().addOutboxHandler(new Handler(this));
-		nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 
-		pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
-		initComponents();
+			setContentView(R.layout.mainfactura); 
+			mcontext=this.getContext(); 
+			this.documento = document;
+			parent = me; 
+			WindowManager wm = (WindowManager) me.getSystemService(Context.WINDOW_SERVICE);
+			display = wm.getDefaultDisplay();
+			setObjSucursalId(cliente.getIdSucursal());
+			nmapp=(NMApp) me.getApplication();
+			nmapp.getController().removebridgeByName(BReciboM.class.toString());
+			nmapp.getController().setEntities(this,new BReciboM()); 
+			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 
+			pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
+			initComponents();
 		} catch (Exception e) {
-		e.printStackTrace();
-		buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
+			e.printStackTrace();
+			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
 		}
 	}
 
@@ -253,7 +253,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		try {
 			
 			if(notasDebito.size() > 0){
-				gridheader.setText("Listado de Facturas Pendientes ("+notasDebito.size()+")");				
+				gridheader.setText("Listado Notas Debito Pendientes ("+notasDebito.size()+")");				
 				adapter2 = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(mcontext,NotaDebitoViewHolder.class,notasDebito,R.layout.detalle_nota_debito);				 
 				lvnotasd.setAdapter(adapter2);
 				lvnotasd.setOnItemClickListener(new OnItemClickListener() {

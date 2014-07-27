@@ -57,9 +57,10 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
     private java.lang.String DescCausaEstado;
     private java.lang.String NombreVendedor;
     private DetallePedido[] Detalles;
-    private DataArray dataarray = new DataArray();;
+    private DataArray dataarray = new DataArray();
     private Vector<SoapObject> datavector = new Vector<SoapObject>();
-    private PedidoPromocion[] PromocionesAplicadas;
+    private PedidoPromocion[] PromocionesAplicadas = new PedidoPromocion[]{};
+    Vector<PedidoPromocion> pedidosPromociones = new Vector<PedidoPromocion>();
     private java.lang.String Nota;
     private boolean Exento;
     private java.lang.String AutorizacionDGI;
@@ -352,6 +353,15 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 	public int getPropertyCount() {
         return 35;
     }
+    
+    public DataArray getDataArray(){
+    	//LIMPIAR EL VECTOR
+    	dataarray.clear();
+    	 for(int i = 0; i < Detalles.length; i++) { 
+             dataarray.setProperty(0,Detalles[i]);
+         }
+    	 return dataarray;
+    }
 
     @SuppressLint("UseValueOf")
 	@Override 
@@ -389,7 +399,9 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 28: return DescCausaEstado;
         case 29: return NombreVendedor;
 	    case 30: 
-	    		/*SoapObject _detalle=new SoapObject(NMConfig.NAME_SPACE, "Detalles");
+			if (Detalles != null && Detalles.length > 0) {	    		
+	    	
+	    		SoapObject _detalle=new SoapObject(NMConfig.NAME_SPACE, "Detalles");
 	    		if(Detalles!=null)
 		        {
 	    			for(DetallePedido dp:Detalles)
@@ -406,30 +418,33 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 		    		}	  
 		        }	  
 		          		  	
-	    		return _detalle;*/
-	    	return this.dataarray;
-	    	//return Detalles;
+	    		return _detalle;
+	    	}
+	    	
+	    	break;	    	
         case 31: 
-		       SoapObject _promocionesaplicadas=new SoapObject(NMConfig.NAME_SPACE, "PromocionesAplicadas");
-		        if(PromocionesAplicadas!=null)
-		        {
-		        	for( PedidoPromocion pa:PromocionesAplicadas)
-		         
+        	
+			if (PromocionesAplicadas != null && PromocionesAplicadas.length > 0) {
+				SoapObject _promocionesaplicadas = new SoapObject(NMConfig.NAME_SPACE, "PromocionesAplicadas");
+				if (PromocionesAplicadas != null) {
+					for (PedidoPromocion pa : PromocionesAplicadas)
 					{
-						int cont=pa.getPropertyCount();
-						for(int i=0;i<cont;i++)
-						{
-							PropertyInfo info=new PropertyInfo();
+						int cont = pa.getPropertyCount();
+						for (int i = 0; i < cont; i++) {
+							PropertyInfo info = new PropertyInfo();
 							pa.getPropertyInfo(i, null, info);
 							info.setNamespace(NMConfig.NAME_SPACE);
-							if("Detalles"==info.name) 
-								_promocionesaplicadas.addSoapObject((SoapObject)pa.getProperty(i)); 
+							if ("Detalles" == info.name)
+								_promocionesaplicadas.addSoapObject((SoapObject) pa.getProperty(i));
 							else
-								_promocionesaplicadas.addProperty(info.name,pa.getProperty(i));
+								_promocionesaplicadas.addProperty(info.name, pa.getProperty(i));
 						}
-					} 
-				}    	
-				return _promocionesaplicadas;
+					}
+				} 
+			    return _promocionesaplicadas;        		
+        	}
+        	 
+        	break;
         case 32: return Nota;
         case 33: return new Boolean(Exento);
         case 34: return AutorizacionDGI;
@@ -583,11 +598,21 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
                _info.type = java.lang.String.class; break;
            case 30:
                _info.name = "Detalles";
-               //_info.type=  DetallePedido[].class;
-               _info.type =  new Vector<DetallePedido>().getClass();
+               _info.type= DetallePedido[].class;
+               //_info.type= new DetallePedido(){}.getClass();
+              // _info.type = new  Vector<DetallePedido>().getClass();
+              //_info.type =  dataarray.getClass();
+               break;
            case 31:
-               _info.name = "PromocionesAplicadas";
-               _info.type=  PedidoPromocion[].class; 
+        	   if(PromocionesAplicadas!= null && PromocionesAplicadas.length > 0) {
+        		   _info.type = PropertyInfo.VECTOR_CLASS;
+                   _info.name = "PromocionesAplicadas";
+                   PropertyInfo arrayType = new PropertyInfo();
+                   arrayType.name = "PedidoPromocion";
+                   arrayType.type =  PedidoPromocion.class;               
+                   _info.elementType = arrayType;
+        	   }        	  
+               break;
            case 32:
                _info.name = "Nota";
                _info.type = java.lang.String.class; break;
