@@ -229,7 +229,7 @@ public class ViewPedido extends ActionBarActivity implements
 		            showInfoMessage("No puede borrar pedidos por validar o aprobados.",GenericCustomDialog.DialogType.DIALOGO_ALERTA.getActionCode());
 		            return;
 		        }
-		        AllowRemove("¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_NOTIFICACION.getActionCode());
+		        AllowRemove("¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_CONFIRMACION.getActionCode());
 	        }
 	        else
 	        { 
