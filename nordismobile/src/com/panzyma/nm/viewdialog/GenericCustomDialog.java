@@ -139,7 +139,7 @@ public class GenericCustomDialog  extends DialogFragment implements OnDismissLis
 				mBuilder.setCancelable(false);
 				break;	
 			case DIALOGO_DINAMICO:
-				vDialog =inflater.inflate(R.layout.information_dialog, null);
+				//vDialog =inflater.inflate(R.layout.information_dialog, null);
 				mBuilder.setView(vDialog);
 				mBuilder.setIcon(R.drawable.clientes);
 				mBuilder.setTitle("Texto Informativo");
