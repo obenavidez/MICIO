@@ -34,6 +34,7 @@ import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -75,7 +76,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private TextView headerGrid;
 	private TextView txtenty;
 	private ListView listaGenerica;
-	private ProgressBar progressBar;
+	private ProgressDialog waiting;
 	private EditText search;
 	private QuickAction quickAction;
 	private List<GenericDocument> filterDocs = new ArrayList<GenericDocument>();	
@@ -182,6 +183,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
+			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Info Cliente...", true, false);
 			nmapp.getController().getInboxHandler()
 					.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_SERVER);
 
@@ -193,6 +195,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	//LLAMA AL SERVICIO WEB PARA TRAER LAS FACTURAS DEL SERVIDOR PANZYMA
 	public void cargarFacturasCliente() {
 		try {
+			if( waiting != null ) waiting.dismiss();
+			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Facturas...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
@@ -210,6 +214,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	//LLAMA AL SERVICIO WEB PARA TRAER LAS NOTAS DE DEBITO DEL SERVIDOR PANZYMA
 	public void cargarNotasDebito() {
 		try {
+			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Débito...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
@@ -228,6 +233,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	//LLAMA AL SERVICIO WEB PARA TRAER LAS NOTAS DE CREDITO DEL SERVIDOR PANZYMA
 	public void cargarNotasCredito() {
 		try {
+			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Crédito...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
@@ -246,6 +252,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	//LLAMA AL SERVICIO WEB PARA TRAER LOS PEDIDOS DEL SERVIDOR PANZYMA
 	public void cargarPedidos() {
 		try {
+			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Pedidos...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
@@ -264,6 +271,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	//LLAMA AL SERVICIO WEB PARA TRAER LOS RECIBOS DEL SERVIDOR PANZYMA
 	public void cargarRecibosColector() {
 		try {
+			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Recibos...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
@@ -284,10 +292,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		// INICIALIZAR VARIABLES
 		fechaFinPedidos = DateUtil.getToday();
 		String s = String.valueOf(fechaFinPedidos);
-		fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01");
-		
-		fechaInicPedidos = DateUtil.d2i(Date.valueOf("2014-01-01")) ;
-		
+		fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01");		
+		//fechaInicPedidos = DateUtil.d2i(Date.valueOf("2014-01-01")) ;		
 		fechaFinRCol = fechaFinPedidos;
 		fechaInicRCol = fechaInicPedidos;
 		fechaInicND = fechaInicPedidos;
@@ -317,7 +323,9 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				List<GenericDocument> docs = (List<GenericDocument>) adapter.getData();				
+				List<GenericDocument> docs = (List<GenericDocument>) adapter.getData();	
+				//LIMPIAR LOS DOCUMENTOS FILTRADOS
+				filterDocs.clear();
 				if (docs.size() > 0){
 					String docNumerToFound = s.toString();
 					for(GenericDocument doc : docs) {
@@ -402,9 +410,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
 			txtenty.setVisibility(View.VISIBLE);
-			adapter.clearItems();
-			adapter.notifyDataSetChanged();
+			if( adapter != null ) {
+				adapter.clearItems();
+				adapter.notifyDataSetChanged();
+			}
 		}
+		waiting.dismiss();
 	}
 	
 	private void mostrarNotasDebito(ArrayList<CCNotaDebito> notasDebito) {
@@ -422,10 +433,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
 			txtenty.setVisibility(View.VISIBLE);
-			adapter.clearItems();
-			adapter.notifyDataSetChanged();
+			if( adapter != null ) {
+				adapter.clearItems();
+				adapter.notifyDataSetChanged();
+			}			
 		}
-		
+		waiting.dismiss();
 	}
 	
 	private void mostrarNotasCredito(ArrayList<CCNotaCredito> notasCredito) {
@@ -443,10 +456,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
 			txtenty.setVisibility(View.VISIBLE);
-			adapter.clearItems();
-			adapter.notifyDataSetChanged();
+			if( adapter != null ) {
+				adapter.clearItems();
+				adapter.notifyDataSetChanged();
+			}
 		}
-		
+		waiting.dismiss();
 	}
 	
 	private void mostrarPedidos(ArrayList<CCPedido> pedidos) {
@@ -464,10 +479,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
 			txtenty.setVisibility(View.VISIBLE);
-			adapter.clearItems();
-			adapter.notifyDataSetChanged();
+			if( adapter != null ) {
+				adapter.clearItems();
+				adapter.notifyDataSetChanged();
+			}
 		}
-		
+		waiting.dismiss();
 	}
 	
 	private void mostrarRecibosColector(ArrayList<CCReciboColector> recibos) {
@@ -485,10 +502,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
 			txtenty.setVisibility(View.VISIBLE);
-			adapter.clearItems();
-			adapter.notifyDataSetChanged();
+			if( adapter != null ) {
+				adapter.clearItems();
+				adapter.notifyDataSetChanged();
+			}
 		}
-		
+		waiting.dismiss();
 	}
 	private void initMenu() {
 		quickAction = new QuickAction(this.getActivity(), QuickAction.VERTICAL, 1);
