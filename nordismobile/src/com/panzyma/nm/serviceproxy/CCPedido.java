@@ -4,111 +4,111 @@ import com.panzyma.nm.interfaces.GenericDocument;
 
 public class CCPedido implements GenericDocument {
 	
-    protected long id;
-    protected java.lang.String numero;
-    protected java.lang.String referencia;
-    protected java.lang.String tipo;
-    protected int fecha;
-    protected java.lang.String tipoPrecio;
-    protected float total;
-    protected java.lang.String estado;
-    protected java.lang.String causaEstado;
-    protected java.lang.String codEstado;
+    protected long Id;
+    protected java.lang.String Numero;
+    protected java.lang.String Referencia;
+    protected java.lang.String Tipo;
+    protected int Fecha;
+    protected java.lang.String TipoPrecio;
+    protected float Total;
+    protected java.lang.String Estado;
+    protected java.lang.String CausaEstado;
+    protected java.lang.String CodEstado;
     
     public CCPedido() {
     }
     
     public CCPedido(long id, java.lang.String numero, java.lang.String referencia, java.lang.String tipo, int fecha, java.lang.String tipoPrecio, float total, java.lang.String estado, java.lang.String causaEstado, java.lang.String codEstado) {
-        this.id = id;
-        this.numero = numero;
-        this.referencia = referencia;
-        this.tipo = tipo;
-        this.fecha = fecha;
-        this.tipoPrecio = tipoPrecio;
-        this.total = total;
-        this.estado = estado;
-        this.causaEstado = causaEstado;
-        this.codEstado = codEstado;
+        this.Id = id;
+        this.Numero = numero;
+        this.Referencia = referencia;
+        this.Tipo = tipo;
+        this.Fecha = fecha;
+        this.TipoPrecio = tipoPrecio;
+        this.Total = total;
+        this.Estado = estado;
+        this.CausaEstado = causaEstado;
+        this.CodEstado = codEstado;
     }
     
     public long getId() {
-        return id;
+        return Id;
     }
     
     public void setId(long id) {
-        this.id = id;
+        this.Id = id;
     }
     
     public java.lang.String getNumero() {
-        return numero;
+        return Numero;
     }
     
     public void setNumero(java.lang.String numero) {
-        this.numero = numero;
+        this.Numero = numero;
     }
     
     public java.lang.String getReferencia() {
-        return referencia;
+        return Referencia;
     }
     
     public void setReferencia(java.lang.String referencia) {
-        this.referencia = referencia;
+        this.Referencia = referencia;
     }
     
     public java.lang.String getTipo() {
-        return tipo;
+        return Tipo;
     }
     
     public void setTipo(java.lang.String tipo) {
-        this.tipo = tipo;
+        this.Tipo = tipo;
     }
     
     public int getFecha() {
-        return fecha;
+        return Fecha;
     }
     
     public void setFecha(int fecha) {
-        this.fecha = fecha;
+        this.Fecha = fecha;
     }
     
     public java.lang.String getTipoPrecio() {
-        return tipoPrecio;
+        return TipoPrecio;
     }
     
     public void setTipoPrecio(java.lang.String tipoPrecio) {
-        this.tipoPrecio = tipoPrecio;
+        this.TipoPrecio = tipoPrecio;
     }
     
     public float getTotal() {
-        return total;
+        return Total;
     }
     
     public void setTotal(float total) {
-        this.total = total;
+        this.Total = total;
     }
     
     public java.lang.String getEstado() {
-        return estado;
+        return Estado;
     }
     
     public void setEstado(java.lang.String estado) {
-        this.estado = estado;
+        this.Estado = estado;
     }
     
     public java.lang.String getCausaEstado() {
-        return causaEstado;
+        return CausaEstado;
     }
     
     public void setCausaEstado(java.lang.String causaEstado) {
-        this.causaEstado = causaEstado;
+        this.CausaEstado = causaEstado;
     }
     
     public java.lang.String getCodEstado() {
-        return codEstado;
+        return CodEstado;
     }
     
     public void setCodEstado(java.lang.String codEstado) {
-        this.codEstado = codEstado;
+        this.CodEstado = codEstado;
     }
 
 	@Override
