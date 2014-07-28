@@ -210,7 +210,7 @@ public class ViewPedido extends ActionBarActivity implements
             } catch (Exception e)
             { 
             	e.printStackTrace();
-            	AppDialog.responseDialog(e.getMessage(),DialogType.DIALOGO_ALERTA);
+            	AppDialog.showMessage("",e.getMessage(),DialogType.DIALOGO_ALERTA);
             }  
             // with requestCode 2
             break;
@@ -228,7 +228,7 @@ public class ViewPedido extends ActionBarActivity implements
 		        if("PORVALIDAR".equals(state) || "APROBADO".equals(state) )
 		        {
 		            //Toast.makeText(getApplicationContext(),"No puede borrar pedidos por validar o aprobados.", Toast.LENGTH_SHORT).show();
-		            showInfoMessage("No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
+		            AppDialog.showMessage("","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
 		            return;
 		        }
 		        AllowRemove("¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_CONFIRMACION);
@@ -236,9 +236,9 @@ public class ViewPedido extends ActionBarActivity implements
 	        else
 	        { 
 	        	if(pedidos.size()>0 && pedido_selected!=null)
-	        		showInfoMessage("Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+	        		AppDialog.showMessage("","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 	        	else	
-	        		showInfoMessage("No existen pedidos registrados.",DialogType.DIALOGO_ALERTA);
+	        		AppDialog.showMessage("","No existen pedidos registrados.",DialogType.DIALOGO_ALERTA);
             }
             //CERRAR EL MENU DEL DRAWER
             drawerLayout.closeDrawers();
@@ -509,7 +509,7 @@ public class ViewPedido extends ActionBarActivity implements
 				        			firstFragment.getAdapter().setSelectedPosition(0);
 				        			pedido_selected = pedidos.get(0);
 				        		}
-				        		showInfoMessage("Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
+				        		AppDialog.showMessage("","Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
 				        	}
 			             }
 			        }
@@ -638,39 +638,16 @@ public class ViewPedido extends ActionBarActivity implements
 	
 	public void AllowRemove(final String msg,final DialogType type)
 	{
-		try {
-			nmapp.getThreadPool().execute(new Runnable() {
-				@Override
-				public void run() {
-					if(AppDialog.responseDialog(msg,type))
-					{
-						//nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
-						Message ms = new  Message();
-						ms.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST; 
-						ms.obj = pedido_selected.getId();
-						nmapp.getController().getInboxHandler().sendMessage(ms);
-					}
-				}
-			});
-		} catch (InterruptedException e) 
-		{
-			e.printStackTrace();
-		} 
-	}
-	public void showInfoMessage (final String msg,final DialogType type)
-	{
-		try {
-			nmapp.getThreadPool().execute(new Runnable() {
-				@Override
-				public void run() {
-					AppDialog.responseDialog(msg,type);
-				}
-			});
-		}
-		catch (InterruptedException e) 
-		{
-			e.printStackTrace();
-		} 
 
+		if(AppDialog.showMessage("",msg,type))
+		{
+		//nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+			Message ms = new  Message();
+			ms.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST; 
+			ms.obj = pedido_selected.getId();
+			nmapp.getController().getInboxHandler().sendMessage(ms);
+		}
+				
 	}
+
 } 

@@ -1,9 +1,10 @@
 package com.panzyma.nm.auxiliar;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.viewdialog.GenericCustomDialog;
 import com.panzyma.nm.viewdialog.GenericCustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.viewdialog.GenericCustomDialog.OnDismissDialogListener;
-import com.panzyma.nm.NMApp;
+
 import android.app.Activity;
 import android.view.View;
 
@@ -16,31 +17,30 @@ public class AppDialog {
 	private static android.support.v4.app.FragmentManager manager;
 	private static GenericCustomDialog dialog;
 	public static enum DialogType {
-		DIALOGO_NOTIFICACION (0),
-		DIALOGO_ALERTA (1),
-		DIALOGO_CONFIRMACION (2),
-		DIALOGO_SELECCION (3),
-		DIALOGO_DINAMICO(4),
-		DIALOGO_NOTIFICACION2 (10);
+		 DIALOGO_NOTIFICACION (0),
+		 DIALOGO_ALERTA (1),
+		 DIALOGO_CONFIRMACION (2),
+		 DIALOGO_SELECCION (3),
+		 DIALOGO_DINAMICO(4),
+		 DIALOGO_NOTIFICACION2 (10);
 		
-		int result;
-		DialogType(int result) {
-			this.result = result;
-		}
-		public int getActionCode() {
-			return result;
-		}
-		public static DialogType toInt(int x) {
-			return DialogType.values()[x];
-		}
-	}
+		 int result;
+		 DialogType(int result) {
+		 this.result = result;
+		 }
+		 public int getActionCode() {
+		 return result;
+		 }
+		 public static DialogType toInt(int x) {
+		 return DialogType.values()[x];
+		 }
+		 }
 	
-	
-	
-    public static Boolean responseDialog(final String msg,final DialogType type)
+    public static Boolean showMessage(final String title,final String msg,final DialogType  type)
    	{
     	response=false;	
     	NMApp nmapp =((NMApp) context.getApplicationContext());
+    	
     	try {
 			nmapp.getThreadPool().execute(new Runnable() {
 					@Override
@@ -48,7 +48,7 @@ public class AppDialog {
 						context.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								dialog = GenericCustomDialog.newInstance("Eliminar",msg,type.getActionCode());
+								dialog = GenericCustomDialog.newInstance(title,msg,type);
 								dialog.setOnActionDialogButtonClickListener(new OnActionButtonClickListener()
 								{
 									@Override
@@ -72,6 +72,7 @@ public class AppDialog {
 						    	dialog.show(manager, "dialog");
 							}
 				    	});
+						
 						synchronized (lock) {
 							try {
 								lock.wait();
@@ -79,13 +80,14 @@ public class AppDialog {
 								e.printStackTrace();
 							}
 						} 
+						
 					}
-			});
-    	}
-    	catch (InterruptedException e1) {
+				});
+		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} 
+    	
     	return response;
    	}
     
@@ -93,7 +95,6 @@ public class AppDialog {
 	{
 		context=_context;
 	}
-   
     public static void setContext(android.support.v4.app.FragmentManager _manager)
 	{
     	manager = _manager;
