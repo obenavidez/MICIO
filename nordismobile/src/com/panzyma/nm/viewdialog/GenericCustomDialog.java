@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("ValidFragment")
@@ -24,26 +24,8 @@ public class GenericCustomDialog  extends DialogFragment implements OnDismissLis
 	//VARIABLES
 	private String Message=null;
 	private String Tittle=null; 
-	private int Dialogtype; 
-	public static enum DialogType {
-		DIALOGO_NOTIFICACION (0),
-		DIALOGO_ALERTA (1),
-		DIALOGO_CONFIRMACION (2),
-		DIALOGO_SELECCION (3),
-		DIALOGO_DINAMICO(4),
-		DIALOGO_NOTIFICACION2 (10);
-		
-		int result;
-		DialogType(int result) {
-			this.result = result;
-		}
-		public int getActionCode() {
-			return result;
-		}
-		public static DialogType toInt(int x) {
-			return DialogType.values()[x];
-		}
-	}
+	private int Dialogtype;  
+	
 	// UX Design
 	View vDialog ;
 	Button btn_aceptar;
@@ -60,20 +42,20 @@ public class GenericCustomDialog  extends DialogFragment implements OnDismissLis
 		this.Tittle = title;
 		this.Message = message;
 	}
-	public GenericCustomDialog(String title , String message, int dialogtype)
+	public GenericCustomDialog(String title , String message, DialogType dialogtype)
 	{
 		this.Tittle = title;
 		this.Message = message;
-		this.Dialogtype =dialogtype;
+		this.Dialogtype =dialogtype.getActionCode();
 	}
 	
 	
-	public static GenericCustomDialog newInstance(String title , String message, int dialogtype) {
+	public static GenericCustomDialog newInstance(String title , String message,DialogType  dialogtype) {
 		GenericCustomDialog fragment = new GenericCustomDialog();
 		Bundle args = new Bundle();
 		args.putString("title", title);
 		args.putString("message", message);
-		args.putInt("dialogtype", dialogtype);
+		args.putInt("dialogtype", dialogtype.getActionCode());
 		fragment.setArguments(args);
 		//fragment.setStyle(DialogFragment.STYLE_NO_FRAME, 0);
         return fragment;

@@ -559,7 +559,8 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 	private void FINISH_ACTIVITY() 
 	{
 		int requescode=0;
-		nmapp.getController().removeOutboxHandler(TAG); 		
+		nmapp.getController().removeOutboxHandler(TAG); 
+		nmapp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		Intent intent =null;
 		if((pedido!=null && pedido.getDetalles().length!=0))

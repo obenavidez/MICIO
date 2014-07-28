@@ -402,6 +402,7 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 			if (Detalles != null && Detalles.length > 0) {	    		
 	    	
 	    		SoapObject _detalle=new SoapObject(NMConfig.NAME_SPACE, "Detalles");
+	    		
 	    		if(Detalles!=null)
 		        {
 	    			for(DetallePedido dp:Detalles)
