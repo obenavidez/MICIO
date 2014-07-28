@@ -3,7 +3,7 @@ package com.panzyma.nm.auxiliar;
 import com.panzyma.nm.viewdialog.GenericCustomDialog;
 import com.panzyma.nm.viewdialog.GenericCustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.viewdialog.GenericCustomDialog.OnDismissDialogListener;
-
+import com.panzyma.nm.NMApp;
 import android.app.Activity;
 import android.view.View;
 
@@ -40,40 +40,51 @@ public class AppDialog {
     public static Boolean responseDialog(final String msg,final DialogType type)
    	{
     	response=false;	
-    	context.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				dialog = GenericCustomDialog.newInstance("Eliminar",msg,type.getActionCode());
-				dialog.setOnActionDialogButtonClickListener(new OnActionButtonClickListener()
-				{
+    	NMApp nmapp =((NMApp) context.getApplicationContext());
+    	try {
+			nmapp.getThreadPool().execute(new Runnable() {
 					@Override
-					public void onButtonClick(View _dialog, int actionId) {
-						if(actionId == GenericCustomDialog.OK_BUTTOM) 
-							response= true;
-						else 
-							response= false;
-						
-						dialog.dismiss();
-					}
-				});
-				dialog.setOnDismissDialogListener(new OnDismissDialogListener() {
-					@Override
-					public void onDismiss() {
-						synchronized (lock) { 
-							lock.notify(); 
+					public void run() {
+						context.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								dialog = GenericCustomDialog.newInstance("Eliminar",msg,type.getActionCode());
+								dialog.setOnActionDialogButtonClickListener(new OnActionButtonClickListener()
+								{
+									@Override
+									public void onButtonClick(View _dialog, int actionId) {
+										if(actionId == GenericCustomDialog.OK_BUTTOM) 
+											response= true;
+										else 
+											response= false;
+										
+										dialog.dismiss();
+									}
+								});
+								dialog.setOnDismissDialogListener(new OnDismissDialogListener() {
+									@Override
+									public void onDismiss() {
+										synchronized (lock) { 
+											lock.notify(); 
+										} 
+									}
+								});
+						    	dialog.show(manager, "dialog");
+							}
+				    	});
+						synchronized (lock) {
+							try {
+								lock.wait();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						} 
 					}
-				});
-		    	dialog.show(manager, "dialog");
-			}
-    	});
-    	
-    	synchronized (lock) {
-			try {
-				lock.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			});
+    	}
+    	catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		} 
     	return response;
    	}
