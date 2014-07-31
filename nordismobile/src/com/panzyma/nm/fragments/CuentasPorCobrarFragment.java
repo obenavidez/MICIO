@@ -80,6 +80,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private EditText search;
 	private QuickAction quickAction;
 	private List<GenericDocument> filterDocs = new ArrayList<GenericDocument>();	
+	private List<GenericDocument> documentos = new ArrayList<GenericDocument>();
 	private Display display;
 	private Button btnMenu;
 
@@ -323,7 +324,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				List<GenericDocument> docs = (List<GenericDocument>) adapter.getData();	
+				List<GenericDocument> docs = documentos;	
 				//LIMPIAR LOS DOCUMENTOS FILTRADOS
 				filterDocs.clear();
 				if (docs.size() > 0){
@@ -394,10 +395,17 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 		}
 	}	
+	
+	private void addDocuments(Object[] objects){
+		documentos.clear();
+		for(Object doc: objects)
+			documentos.add((GenericDocument) doc);
+	}
 
 	private void mostrarFacturas(ArrayList<Factura> facturas) {	
 		String title = "Listado de Facturas (%s)";
 		if (facturas != null && facturas.size() > 0) {
+			addDocuments(facturas.toArray());
 			adapter = new GenericAdapter<Factura, FacturaViewHolder>(
 					this.getActivity().getApplicationContext(),
 					FacturaViewHolder.class,
@@ -421,6 +429,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private void mostrarNotasDebito(ArrayList<CCNotaDebito> notasDebito) {
 		String title = "Listado de Notas Débito (%s)";
 		if (notasDebito != null && notasDebito.size() > 0) {
+			addDocuments(notasDebito.toArray());
 			adapter = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(
 					this.getActivity().getApplicationContext(),
 					NotaDebitoViewHolder.class,
@@ -444,6 +453,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private void mostrarNotasCredito(ArrayList<CCNotaCredito> notasCredito) {
 		String title = "Listado de Notas Crédito (%s)";
 		if (notasCredito != null && notasCredito.size() > 0) {
+			addDocuments(notasCredito.toArray());
 			adapter = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(
 					this.getActivity().getApplicationContext(),
 					NotaCreditoViewHolder.class,
@@ -467,6 +477,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private void mostrarPedidos(ArrayList<CCPedido> pedidos) {
 		String title = "Listado de Pedidos (%s)";
 		if (pedidos != null && pedidos.size() > 0) {
+			addDocuments(pedidos.toArray());
 			adapter = new GenericAdapter<CCPedido, PedidoViewHolder>(
 					this.getActivity().getApplicationContext(),
 					PedidoViewHolder.class,
@@ -490,6 +501,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private void mostrarRecibosColector(ArrayList<CCReciboColector> recibos) {
 		String title = "Listado de Recibos (%s)";
 		if (recibos != null && recibos.size() > 0) {
+			addDocuments(recibos.toArray());
 			adapter = new GenericAdapter<CCReciboColector, ReciboViewHolder>(
 					this.getActivity().getApplicationContext(),
 					ReciboViewHolder.class,
