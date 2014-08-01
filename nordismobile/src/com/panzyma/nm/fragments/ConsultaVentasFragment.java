@@ -1,6 +1,7 @@
 package com.panzyma.nm.fragments;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
@@ -8,6 +9,7 @@ import com.panzyma.nm.CBridgeM.BVentaM;
 import com.panzyma.nm.CBridgeM.BVentaM.Petition;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CVenta;
@@ -18,17 +20,21 @@ import com.panzyma.nm.view.viewholder.VentaViewHolder;
 import com.panzyma.nordismobile.R;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -55,12 +61,15 @@ public class ConsultaVentasFragment extends Fragment implements
 	private long objSucursalID;	
 	private ListView listaGenerica;
 	private TextView txtenty;
+	private EditText txtFiltro;
 	private TextView headerGrid;
 	private TextView gridheader;
 	private QuickAction quickAction;
 	private Button btnMenu;
 	private Display display;
 	private ActionMenu menuSelected;
+	private ProgressDialog waiting;
+	private List<CVenta> ventas = new ArrayList<CVenta>();
 	
 	private Context fcontext = null;
 	private GenericAdapter adapter = null;
@@ -103,6 +112,42 @@ public class ConsultaVentasFragment extends Fragment implements
 		txtenty = (TextView) actividad.findViewById(R.id.ctxtview_enty);
 		headerGrid = (TextView) actividad.findViewById(R.id.cxctextv_header2);
 		btnMenu = (Button)actividad.findViewById(R.id.btnMenu);
+		txtFiltro = (EditText) actividad.findViewById(R.id.cxctextv_filtro);
+		
+		txtFiltro.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				List<CVenta> vntas = ventas;	
+				List<CVenta> filterVentas = new ArrayList<CVenta>();
+				//LIMPIAR LOS VENTAS FILTRADAS
+				filterVentas.clear();
+				if (vntas.size() > 0){
+					String docNumerToFound = s.toString();
+					for(CVenta venta : vntas) {
+						if( venta.getNombreCliente().contains(docNumerToFound) || venta.getFecha().contains(docNumerToFound)){
+							filterVentas.add(venta);
+						}
+					}					
+					gridheader.setText(String.format("Ventas del dia (%s)", filterVentas.size()));
+					adapter.setItems(filterVentas);
+					adapter.notifyDataSetChanged();
+				}				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
 		gridheader = (TextView) actividad.findViewById(R.id.ctextv_gridheader);
 		//gridheader.setVisibility(View.INVISIBLE);
@@ -123,6 +168,7 @@ public class ConsultaVentasFragment extends Fragment implements
 	//LLAMA AL SERVICIO WEB PARA TRAER LAS VENTAS DEL DIA DEL SERVIDOR PANZYMA
 	public void cargarVentasDelDia() {
 		try {
+			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BVentaM.class.toString());
 			nmapp.getController().setEntities(this, new BVentaM());
@@ -138,6 +184,7 @@ public class ConsultaVentasFragment extends Fragment implements
 	//LLAMA AL SERVICIO WEB PARA TRAER LAS VENTAS DE LA SEMANA DEL SERVIDOR PANZYMA
 	public void cargarVentasDeSemana() {
 		try {
+			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BVentaM.class.toString());
 			nmapp.getController().setEntities(this, new BVentaM());
@@ -155,6 +202,7 @@ public class ConsultaVentasFragment extends Fragment implements
 	//LLAMA AL SERVICIO WEB PARA TRAER LAS VENTAS DEL MES DEL SERVIDOR PANZYMA
 	public void cargarVentasDeMes() {
 		try {
+			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(BVentaM.class.toString());
 			nmapp.getController().setEntities(this, new BVentaM());
@@ -179,6 +227,8 @@ public class ConsultaVentasFragment extends Fragment implements
 		title += "(%s)"; 
 		
 		if (ventas != null && ventas.size() > 0) {
+			this.ventas.clear();
+			this.ventas = ventas;
 			adapter = new GenericAdapter<CVenta, VentaViewHolder>(
 					this.getActivity().getApplicationContext(),
 					VentaViewHolder.class,
@@ -196,6 +246,8 @@ public class ConsultaVentasFragment extends Fragment implements
 				adapter.notifyDataSetChanged();
 			}			
 		}
+		if (waiting != null)
+			waiting.dismiss();
 	} 
 	
 	private void initMenu() {
@@ -257,14 +309,16 @@ public class ConsultaVentasFragment extends Fragment implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
-		Petition response = Petition.toInt(msg.what);
-		switch (response) {
-		case VENTAS_DEL_DIA:
-		case VENTAS_DEL_SEMANA:
-		case VENTAS_DEL_MES:
-			mostrarVentas(  ( msg.obj == null ? new ArrayList<CVenta>() :  ((ArrayList<CVenta>)msg.obj) ) );
-			break;		
-		}
+		if( msg.what < 3) {
+			Petition response = Petition.toInt(msg.what);
+			switch (response) {
+			case VENTAS_DEL_DIA:
+			case VENTAS_DEL_SEMANA:
+			case VENTAS_DEL_MES:
+				mostrarVentas(  ( msg.obj == null ? new ArrayList<CVenta>() :  ((ArrayList<CVenta>)msg.obj) ) );
+				break;		
+			}
+		}		
 		return false;
 	}
 
