@@ -30,8 +30,7 @@ public class ModelVenta {
 						fechaInic, fechaFin }), (new Type[] {
 						PropertyInfo.STRING_CLASS, PropertyInfo.BOOLEAN_CLASS,
 						PropertyInfo.BOOLEAN_CLASS, PropertyInfo.BOOLEAN_CLASS,
-						PropertyInfo.BOOLEAN_CLASS, PropertyInfo.LONG_CLASS,
-						PropertyInfo.LONG_CLASS }));
+						PropertyInfo.LONG_CLASS, PropertyInfo.LONG_CLASS }));
 
 		try {
 

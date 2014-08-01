@@ -10,6 +10,7 @@ import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.menu.ActionItem;
@@ -83,6 +84,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private List<GenericDocument> documentos = new ArrayList<GenericDocument>();
 	private Display display;
 	private Button btnMenu;
+	private String title = "Listado de Facturas (%s)";
 
 	private int fechaFinFac = 0;
 	private int fechaInicFac = 0;
@@ -150,30 +152,35 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	@Override
 	public boolean handleMessage(Message msg) {
 
-		Result resultado = Result.toInt(msg.what);
+		if(msg.what < 6) {
+			
+			Result resultado = Result.toInt(msg.what);
 
-		switch (resultado) {
-		case CLIENTE:
-			establecerDatosGenerales((CCCliente) msg.obj);
-			break;
-		case FACTURAS_CLIENTE:
-			mostrarFacturas(((ArrayList<Factura>) msg.obj));
-			break;
-		case NOTAS_CREDITO:
-			mostrarNotasCredito(((ArrayList<CCNotaCredito>) msg.obj));
-			break;
-		case NOTAS_DEBITO:
-			mostrarNotasDebito(((ArrayList<CCNotaDebito>) msg.obj));
-			break;
-		case PEDIDOS:
-			mostrarPedidos(((ArrayList<CCPedido>) msg.obj));
-			break;
-		case RECIBOS_COLECTOR:
-			mostrarRecibosColector(((ArrayList<CCReciboColector>) msg.obj));
-			break;
-		default:
-			break;
+			switch (resultado) {
+			case CLIENTE:
+				establecerDatosGenerales((CCCliente) msg.obj);
+				break;
+			case FACTURAS_CLIENTE:
+				mostrarFacturas(((ArrayList<Factura>) msg.obj));
+				break;
+			case NOTAS_CREDITO:
+				mostrarNotasCredito(((ArrayList<CCNotaCredito>) msg.obj));
+				break;
+			case NOTAS_DEBITO:
+				mostrarNotasDebito(((ArrayList<CCNotaDebito>) msg.obj));
+				break;
+			case PEDIDOS:
+				mostrarPedidos(((ArrayList<CCPedido>) msg.obj));
+				break;
+			case RECIBOS_COLECTOR:
+				mostrarRecibosColector(((ArrayList<CCReciboColector>) msg.obj));
+				break;
+			default:
+				break;
+			}
+			
 		}
+		
 		return false;
 	}
 
@@ -294,7 +301,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		fechaFinPedidos = DateUtil.getToday();
 		String s = String.valueOf(fechaFinPedidos);
 		fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01");		
-		//fechaInicPedidos = DateUtil.d2i(Date.valueOf("2014-01-01")) ;		
+		fechaInicPedidos = DateUtil.d2i(Date.valueOf("2014-01-01")) ;		
+		
 		fechaFinRCol = fechaFinPedidos;
 		fechaInicRCol = fechaInicPedidos;
 		fechaInicND = fechaInicPedidos;
@@ -333,7 +341,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 						if( doc.getDocumentNumber().contains(docNumerToFound)){
 							filterDocs.add(doc);
 						}
-					}				
+					}
+					headerGrid.setText(String.format(title, filterDocs.size()));
 					adapter.setItems(filterDocs);
 					adapter.notifyDataSetChanged();
 				}				
@@ -401,9 +410,23 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		for(Object doc: objects)
 			documentos.add((GenericDocument) doc);
 	}
+	
+	private void mostrarDetalleConsulta(String tipoDocumento, boolean conSaldoPendiente, int fechaInic, int fechaFinal, String estado ) {
+		String s = String.format("Mostrando %s: ", tipoDocumento);
+        if (conSaldoPendiente) s = s + " con saldo pendiente.";
+        if (fechaInic > 0)
+            s = s + " desde " + DateUtil.idateToStr(fechaInic);
+        if (fechaFinal > 0)
+            s = s + " hasta " + DateUtil.idateToStr(fechaFinal);
+        if (fechaInic + fechaFinal > 0) s = s + ".";
+        if (estado.compareTo("TODOS") != 0)
+            s = s + " con estado " + estado + ".";
+        Util.Message.buildToastMessage(getActivity(), s, 3000).show();
+        
+	}
 
 	private void mostrarFacturas(ArrayList<Factura> facturas) {	
-		String title = "Listado de Facturas (%s)";
+		title = "Listado de Facturas (%s)";
 		if (facturas != null && facturas.size() > 0) {
 			addDocuments(facturas.toArray());
 			adapter = new GenericAdapter<Factura, FacturaViewHolder>(
@@ -414,6 +437,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			txtenty.setVisibility(View.INVISIBLE);
 			headerGrid.setText(String.format(title, facturas.size()));
 			listaGenerica.setAdapter(adapter);
+			mostrarDetalleConsulta("facturas", true, fechaInicFac, fechaFinFac,
+					estadoFac);
 		} else {
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
@@ -427,7 +452,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 	
 	private void mostrarNotasDebito(ArrayList<CCNotaDebito> notasDebito) {
-		String title = "Listado de Notas Débito (%s)";
+		title = "Listado de Notas Débito (%s)";
 		if (notasDebito != null && notasDebito.size() > 0) {
 			addDocuments(notasDebito.toArray());
 			adapter = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(
@@ -438,6 +463,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			txtenty.setVisibility(View.INVISIBLE);
 			headerGrid.setText(String.format(title, notasDebito.size()));
 			listaGenerica.setAdapter(adapter);
+			mostrarDetalleConsulta("notas débito", true, fechaInicND, fechaFinND,
+					estadoND);
 		} else {
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
@@ -451,7 +478,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 	
 	private void mostrarNotasCredito(ArrayList<CCNotaCredito> notasCredito) {
-		String title = "Listado de Notas Crédito (%s)";
+		title = "Listado de Notas Crédito (%s)";
 		if (notasCredito != null && notasCredito.size() > 0) {
 			addDocuments(notasCredito.toArray());
 			adapter = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(
@@ -462,6 +489,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			txtenty.setVisibility(View.INVISIBLE);
 			headerGrid.setText(String.format(title, notasCredito.size()));
 			listaGenerica.setAdapter(adapter);
+			mostrarDetalleConsulta("notas crédito", true, fechaInicNC, fechaFinNC,
+					estadoNC);
 		} else {
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
@@ -475,7 +504,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 	
 	private void mostrarPedidos(ArrayList<CCPedido> pedidos) {
-		String title = "Listado de Pedidos (%s)";
+		title = "Listado de Pedidos (%s)";
 		if (pedidos != null && pedidos.size() > 0) {
 			addDocuments(pedidos.toArray());
 			adapter = new GenericAdapter<CCPedido, PedidoViewHolder>(
@@ -486,6 +515,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			txtenty.setVisibility(View.INVISIBLE);
 			headerGrid.setText(String.format(title, pedidos.size()));
 			listaGenerica.setAdapter(adapter);
+			mostrarDetalleConsulta("pedidos", true, fechaInicPedidos, fechaFinPedidos,
+					estadoPedidos);
 		} else {
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
@@ -499,7 +530,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 	
 	private void mostrarRecibosColector(ArrayList<CCReciboColector> recibos) {
-		String title = "Listado de Recibos (%s)";
+		title = "Listado de Recibos (%s)";
 		if (recibos != null && recibos.size() > 0) {
 			addDocuments(recibos.toArray());
 			adapter = new GenericAdapter<CCReciboColector, ReciboViewHolder>(
@@ -510,6 +541,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			txtenty.setVisibility(View.INVISIBLE);
 			headerGrid.setText(String.format(title, recibos.size()));
 			listaGenerica.setAdapter(adapter);
+			mostrarDetalleConsulta("recibos", true, fechaInicRCol, fechaFinRCol,
+					estadoRCol);
 		} else {
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");

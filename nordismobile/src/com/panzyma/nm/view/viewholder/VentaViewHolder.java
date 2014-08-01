@@ -22,7 +22,7 @@ public class VentaViewHolder {
 		nopedido.setText("" + venta.getNumeroCentral());
 		fecha.setText("" + venta.getFecha());
 		total.setText("" + StringUtil.formatReal(venta.getTotal()));
-		cliente.setText("" + venta.getNombreCliente());
+		cliente.setText("" + ( venta.getNombreCliente().trim().length() < 25 ? venta.getNombreCliente() : venta.getNombreCliente().trim().substring(0, 25)+".." ) );
 
 	}
 

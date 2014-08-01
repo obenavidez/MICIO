@@ -5,60 +5,60 @@
 package com.panzyma.nm.serviceproxy;
 
 public class CVenta {
-    protected java.lang.String numeroCentral;
-    protected java.lang.String nombreCliente;
-    protected java.lang.String fecha;
-    protected float total;
-    protected java.lang.String numeroMovil;
+    protected java.lang.String NumeroCentral;
+    protected java.lang.String NombreCliente;
+    protected java.lang.String Fecha;
+    protected float Total;
+    protected java.lang.String NumeroMovil;
     
     public CVenta() {
     }
     
     public CVenta(java.lang.String numeroCentral, java.lang.String nombreCliente, java.lang.String fecha, float total, java.lang.String numeroMovil) {
-        this.numeroCentral = numeroCentral;
-        this.nombreCliente = nombreCliente;
-        this.fecha = fecha;
-        this.total = total;
-        this.numeroMovil = numeroMovil;
+        this.NumeroCentral = numeroCentral;
+        this.NombreCliente = nombreCliente;
+        this.Fecha = fecha;
+        this.Total = total;
+        this.NumeroMovil = numeroMovil;
     }
     
     public java.lang.String getNumeroCentral() {
-        return numeroCentral;
+        return NumeroCentral;
     }
     
     public void setNumeroCentral(java.lang.String numeroCentral) {
-        this.numeroCentral = numeroCentral;
+        this.NumeroCentral = numeroCentral;
     }
     
     public java.lang.String getNombreCliente() {
-        return nombreCliente;
+        return NombreCliente;
     }
     
     public void setNombreCliente(java.lang.String nombreCliente) {
-        this.nombreCliente = nombreCliente;
+        this.NombreCliente = nombreCliente;
     }
     
     public java.lang.String getFecha() {
-        return fecha;
+        return Fecha;
     }
     
     public void setFecha(java.lang.String fecha) {
-        this.fecha = fecha;
+        this.Fecha = fecha;
     }
     
     public float getTotal() {
-        return total;
+        return Total;
     }
     
     public void setTotal(float total) {
-        this.total = total;
+        this.Total = total;
     }
     
     public java.lang.String getNumeroMovil() {
-        return numeroMovil;
+        return NumeroMovil;
     }
     
     public void setNumeroMovil(java.lang.String numeroMovil) {
-        this.numeroMovil = numeroMovil;
+        this.NumeroMovil = numeroMovil;
     }
 }
