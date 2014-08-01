@@ -413,7 +413,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	
 	private void mostrarDetalleConsulta(String tipoDocumento, boolean conSaldoPendiente, int fechaInic, int fechaFinal, String estado ) {
 		String s = String.format("Mostrando %s: ", tipoDocumento);
-        if (conSaldoPendiente) s = s + " con saldo pendiente.";
+        if (conSaldoPendiente) s = s + "con saldo pendiente.";
         if (fechaInic > 0)
             s = s + " desde " + DateUtil.idateToStr(fechaInic);
         if (fechaFinal > 0)
