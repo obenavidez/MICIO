@@ -7,6 +7,7 @@ import android.util.Log;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
@@ -77,9 +78,9 @@ public class BVentaM {
 		try {
 			//final String credentials = SessionManager.getCredentials();
 
-			 final String credentials = "sa||nordis09||dp";
+			final String credentials = "kpineda||123||dp";
 
-			if (!credentials.trim().equals("")) {
+			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(controller) ) {
 				pool.execute(new Runnable() {
 
 					@Override

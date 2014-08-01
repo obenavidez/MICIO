@@ -9,6 +9,16 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
+        
+        <EditText
+                android:id="@+id/cxctextv_filtro"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:hint="filtro de ventas"
+                android:inputType="textPersonName"
+                android:singleLine="true" >
+            </EditText>
 
         <TextView
             android:id="@+id/cxctextv_header2"
