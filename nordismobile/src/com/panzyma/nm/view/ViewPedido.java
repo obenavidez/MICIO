@@ -211,11 +211,7 @@ public class ViewPedido extends ActionBarActivity implements
             { 
             	e.printStackTrace();
             	//AppDialog.showMessage(vp, "Primer Mensaje",e.getMessage(),DialogType.DIALOGO_ALERTA, null);
-            	AppDialog.showMessage(vp,"Información",e.getMessage(),DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
-					@Override
-					public void onButtonClick(AlertDialog alert,int actionId) {
-					}
-        		});
+            	AppDialog.showMessage(vp,"Información",e.getMessage(),DialogType.DIALOGO_ALERTA);
             }  
             // with requestCode 2
             break;
@@ -234,11 +230,7 @@ public class ViewPedido extends ActionBarActivity implements
 		        {
 		            //Toast.makeText(getApplicationContext(),"No puede borrar pedidos por validar o aprobados.", Toast.LENGTH_SHORT).show();
 		            //AppDialog.showMessage("","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
-		        	AppDialog.showMessage(vp,"Información","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
-						@Override
-						public void onButtonClick(AlertDialog alert,int actionId) {
-						}
-	        		});
+		        	AppDialog.showMessage(vp,"Información","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
 		            return;
 		        }
 		        AllowRemove("Confirmación","¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_CONFIRMACION);
@@ -539,11 +531,7 @@ public class ViewPedido extends ActionBarActivity implements
 				        			pedido_selected = pedidos.get(0);
 				        		}
 				        		//AppDialog.showMessage("","Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
-				        		AppDialog.showMessage(vp, "Exíto","Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
-									@Override
-									public void onButtonClick(AlertDialog alert, int actionId) {
-									}
-				        		});
+				        		AppDialog.showMessage(vp, "Exíto","Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
 				        	}
 			             }
 			        }
@@ -693,18 +681,10 @@ public class ViewPedido extends ActionBarActivity implements
 	private void ShowNoRecords()
 	{
 		if(pedidos.size()>0 && pedido_selected!=null){
-    		AppDialog.showMessage(vp,"","Seleccione un registro.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
-				@Override
-				public void onButtonClick(AlertDialog alert,int actionId) {
-				}
-    		});
+    		AppDialog.showMessage(vp,"","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
     	}
     	else{	
-    		AppDialog.showMessage(vp,"","No existen pedidos registrados.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
-				@Override
-				public void onButtonClick(AlertDialog alert,int actionId) {
-				}
-    		});
+    		AppDialog.showMessage(vp,"","No existen pedidos registrados.",DialogType.DIALOGO_ALERTA);
     	}
 	}
 	
