@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -107,7 +109,12 @@ public class vCliente extends ActionBarActivity implements
 		nmapp = (NMApp) this.getApplicationContext();
 		try 
 		{
-			Load_Data(LOAD_DATA_FROM_LOCALHOST);
+			clientes=(savedInstanceState!=null)?clientes=savedInstanceState.getParcelableArrayList("vmCliente"):null;
+			if(clientes==null)
+				Load_Data(LOAD_DATA_FROM_LOCALHOST);
+			else {
+				SetList(clientes);
+			}
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -123,7 +130,7 @@ public class vCliente extends ActionBarActivity implements
 		
 		// Create an instance of ExampleFragment
 		firstFragment = new ListaFragment<vmCliente>();
-		
+		firstFragment.setRetainInstance(true);
 		// In case this activity was started with special instructions from
 		//an Intent,
 		// pass the Intent's extras to the fragment as arguments
@@ -132,6 +139,7 @@ public class vCliente extends ActionBarActivity implements
 		//if device is a mobile 
 		if (findViewById(R.id.fragment_container) != null) {
 			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
+			
 		}
 		else {
 			
@@ -139,21 +147,24 @@ public class vCliente extends ActionBarActivity implements
 		
 	}
 	
+
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
 		boolean result = false;
-		
+		ArrayList<vmCliente> list = null;
 		switch (msg.what) {
 			case C_DATA:
-				
-				SetList(msg);
+				 list= (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
+				SetList(list);
 				pDialog.hide();
 				result=true;
 					
 				break;
 			case C_SETTING_DATA:
 				
-				ArrayList<vmCliente> list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
+				 list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
 				SetData(list, C_SETTING_DATA);
 				
 				result=true;
@@ -196,6 +207,7 @@ public class vCliente extends ActionBarActivity implements
 		// TODO Auto-generated method stub 
 		if(pDialog!=null)
     		pDialog.dismiss();
+		customArrayAdapter.notifyDataSetChanged();
 		super.onPause();
 	} 
 	@SuppressLint("NewApi")
@@ -415,10 +427,11 @@ public class vCliente extends ActionBarActivity implements
 	}  
 	
 	@SuppressWarnings({ "unused", "unchecked" })
-	private void SetList(Message msg) {
+	private void SetList(List<vmCliente> list) {
 		
-		clientes = (List<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>(): msg.obj);
+		//clientes = (List<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>(): msg.obj);
 
+		clientes = list;
 		gridheader.setText(String.format("Listado de Clientes (%s)",clientes.size()));
 		
 		if (clientes.size() == 0) {
@@ -603,4 +616,15 @@ public class vCliente extends ActionBarActivity implements
 	    Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);  
 	} 	
 
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) 
+	{ 
+		super.onSaveInstanceState(bundle);
+		if(customArrayAdapter!=null && customArrayAdapter.getItems().size()!=0) 
+		{  
+			clientes=new ArrayList<vmCliente>();
+			clientes=customArrayAdapter.getItems();
+			bundle.putParcelableArrayList("vmCliente",(ArrayList<? extends Parcelable>) clientes);  
+		}
+	} 
 }
