@@ -18,10 +18,9 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -43,7 +42,6 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
-import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Producto;
@@ -146,16 +144,23 @@ public class ProductoView extends ActionBarActivity implements
 
 		nmapp = (NMApp) this.getApplicationContext();
 		try {
-			nmapp.getController().setEntities(this, new BProductoM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 			
-			pDialog = new ProgressDialog(this);
-			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Procesando...");
-			pDialog.setCancelable(true);
-			pDialog.show();
+			productos=(savedInstanceState!=null)?productos=savedInstanceState.getParcelableArrayList("vmProducto"):null;
+			if(productos==null){
+				nmapp.getController().setEntities(this, new BProductoM());
+				nmapp.getController().addOutboxHandler(new Handler(this));
+				nmapp.getController().getInboxHandler()
+						.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+				
+				pDialog = new ProgressDialog(this);
+				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				pDialog.setMessage("Procesando...");
+				pDialog.setCancelable(true);
+				pDialog.show();
+			}
+			else{
+				establecer(productos);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -179,6 +184,7 @@ public class ProductoView extends ActionBarActivity implements
 		if (findViewById(R.id.fragment_container) != null) {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, firstFragment).commit();
+			firstFragment.setRetainInstance(true);
 		} else {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.item_client_fragment, firstFragment).commit();
@@ -273,7 +279,8 @@ public class ProductoView extends ActionBarActivity implements
 	public boolean handleMessage(Message msg) {
 		switch (msg.what) {
 		case C_DATA:
-			establecer(msg);
+			List<Producto> list=(List<Producto>) ((msg.obj == null) ? new ArrayList<Producto>() : msg.obj);
+			establecer(list);
 			pDialog.dismiss();
 			return true;
 
@@ -304,9 +311,10 @@ public class ProductoView extends ActionBarActivity implements
 	}
 
 	@SuppressWarnings({ "unused", "unchecked" })
-	private void establecer(Message msg) {
-		productos = (List<Producto>) ((msg.obj == null) ? new ArrayList<Producto>()
-				: msg.obj);
+	private void establecer(List<Producto> list) {
+		/*productos = (List<Producto>) ((msg.obj == null) ? new ArrayList<Producto>()
+				: msg.obj);*/
+		productos = list;
 		gridheader.setVisibility(View.VISIBLE);
 		gridheader.setText(String.format("Listado de Productos (%s)",
 				productos.size()));
@@ -481,5 +489,15 @@ public class ProductoView extends ActionBarActivity implements
 //		transaction.commit();
 
 	}
-
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) 
+	{ 
+		super.onSaveInstanceState(bundle);
+		if(customArrayAdapter!=null && customArrayAdapter.getItems().size()!=0) 
+		{  
+			productos=new ArrayList<Producto>();
+			productos=customArrayAdapter.getItems();
+			bundle.putParcelableArrayList("vmProducto",(ArrayList<? extends Parcelable>) productos);  
+		}
+	}
 }
