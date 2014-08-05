@@ -1,6 +1,8 @@
 package com.panzyma.nm.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.json.JSONArray;
 import org.ksoap2.serialization.SoapObject;
@@ -13,11 +15,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.comunicator.AppNMComunication;
-import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig; 
 import com.panzyma.nm.datastore.DatabaseProvider; 
-import com.panzyma.nm.serviceproxy.DisponibilidadProducto;
-import com.panzyma.nm.serviceproxy.Factura; 
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.viewmodel.vmProducto;
@@ -156,6 +155,7 @@ public class ModelProducto
 							        null,       //Condición de la query
 							        null,       //Argumentos variables de la query
 							        null);  
+
 		 if (cur.moveToFirst()) 
 		 {  
 			
@@ -185,6 +185,15 @@ public class ModelProducto
 			   }while (cur.moveToNext());
 	           
 		 }
+		   //Sorting
+		   Collections.sort(a_prod, new Comparator<Producto>() {
+		           @Override
+		           public int compare(Producto  producto1, Producto  producto2)
+		           {
+
+		               return  producto1.getNombre().compareTo(producto2.getNombre());
+		           }
+		       });
 		 return a_prod;
 	}
    
@@ -202,6 +211,6 @@ public class ModelProducto
 		return 1; 
 	   
    }    
-
+   
 
 }
