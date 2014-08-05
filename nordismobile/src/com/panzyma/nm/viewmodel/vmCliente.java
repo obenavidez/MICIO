@@ -68,7 +68,7 @@ public class vmCliente implements Parcelable, Item {
 
 	@Override
 	public Object isMatch(CharSequence constraint) {
-		if (getNombreCliente().toLowerCase().startsWith(constraint.toString()))
+		if (getNombreCliente().toLowerCase().contains(constraint.toString()))
 			return true;
 		return false;
 	}
