@@ -14,6 +14,7 @@ import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
@@ -21,6 +22,7 @@ import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.ClienteViewHolder;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
+import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
@@ -57,7 +59,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	private Context mcontext;  
 	private GenericAdapter<Factura, FacturaViewHolder> adapter; 
 	private GenericAdapter<CCNotaDebito, NotaDebitoViewHolder> adapter2;
-	private GenericAdapter<Factura, FacturaViewHolder> adapter3;
+	private GenericAdapter<CCNotaCredito, NotaCreditoViewHolder> adapter3;
 	public ProgressDialog pd;
 	private Button Menu; 
 	private QuickAction quickAction; 
@@ -72,6 +74,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	private NMApp nmapp;
 	public Factura factura_selected;
 	public CCNotaDebito nota_debito_selected;
+	public CCNotaCredito nota_credito_selected;
 	private static ViewReciboEdit parent;
 	private long objSucursalId;
 	private Cliente cliente;
@@ -183,12 +186,60 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 					Util.Message.buildToastMessage(parent, "No existen notas de débito pendientes", 1000).show();
 				}
 				break;
+			case NOTA_CREDITO:
+				CCNotaCredito [] notasCredito = ((Cliente)msg.obj).getNotasCreditoPendientes();
+				if(notasCredito != null && notasCredito.length > 0 ){
+					loadNotasCredito((ArrayList<CCNotaCredito>)((msg.obj==null)?new ArrayList<CCNotaCredito>(): toList(notasCredito)),C_DATA);
+				} else {
+					pd.dismiss();
+					FINISH_ACTIVITY();
+					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
+				}
+				break;
 			}
 			break;
 		}
 		return false;
 	}
 	
+	private void loadNotasCredito(ArrayList<CCNotaCredito> notasCredito, int cData) {
+try {
+			
+			if(notasCredito.size() > 0){
+				gridheader.setText("Listado Notas Crédito Pendientes ("+notasCredito.size()+")");				
+				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,notasCredito,R.layout.detalle_nota_credito);				 
+				lvnotasd.setAdapter(adapter3);
+				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+						if((parent.getChildAt(positioncache)) != null)						            							            		
+		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+		            	positioncache=position;				            	
+		            	nota_credito_selected = (CCNotaCredito) adapter3.getItem(position);	
+		            	try {
+		            		//Object d= nmapp.getController().getBridge().getClass().getMethods();
+		            		//factura_selected =(Cliente) nmapp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",ContentResolver.class,long.class).invoke(null,DialogCliente.this.getContext().getContentResolver(),cliente_selected.getIdSucursal());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		            	adapter3.setSelectedPosition(position); 
+		            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));					            	 
+		            	mButtonClickListener.onButtonClick(nota_credito_selected);
+		            	FINISH_ACTIVITY();						
+					}					
+				});
+			}
+			
+		} catch (Exception e) {
+			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
+			e.printStackTrace();
+		}
+		if(pd != null)
+			pd.dismiss();	
+		
+	}
+
 	private ArrayList<Object> toList(Object[] array) {
 		ArrayList<Object> list = new ArrayList<Object>();
 		switch(documento){
