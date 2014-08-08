@@ -27,7 +27,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +43,7 @@ import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
@@ -138,13 +138,14 @@ public class vCliente extends ActionBarActivity implements
 		
 		//if device is a mobile 
 		if (findViewById(R.id.fragment_container) != null) {
-			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
-			
+			getSupportFragmentManager().beginTransaction()
+			.add(R.id.fragment_container, firstFragment,"lista")
+			.addToBackStack("list")
+			.commit();
 		}
 		else {
 			
 		}
-		
 	}
 	
 
@@ -402,18 +403,26 @@ public class vCliente extends ActionBarActivity implements
 		}
 	}
 	
-	
+	/*
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) 
     { 
         if (keyCode == KeyEvent.KEYCODE_BACK) 
-	    {        	
-    	  	FINISH_ACTIVITY();
-            return true;
+	    {  
+        	if (getSupportFragmentManager().getBackStackEntryCount() == 0)
+       	    {
+        		FINISH_ACTIVITY();
+        		return false;
+       	    }
+        	else
+            {
+                getSupportFragmentManager().popBackStack();
+                return false;
+            }
 	    }
         return super.onKeyUp(keyCode, event); 
     } 
-	
+	*/
     
     
     private void FINISH_ACTIVITY()
@@ -444,6 +453,7 @@ public class vCliente extends ActionBarActivity implements
 		
 		firstFragment.setItems(clientes);
 	}
+	
 	private void ShowEmptyMessage(boolean show)
 	{
 		TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
@@ -522,8 +532,9 @@ public class vCliente extends ActionBarActivity implements
 			if (fragment instanceof ListaFragment) {
 				ficha = new FichaClienteFragment();
 				ficha.setArguments(args);
-				transaction.replace(R.id.fragment_container, ficha);
-				transaction.addToBackStack(null);	
+				transaction.addToBackStack("lista");
+				transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				transaction.replace(R.id.fragment_container, ficha,"detail");
 				/*gridheader.setVisibility(View.INVISIBLE);*/
 			}
 		}
@@ -533,12 +544,15 @@ public class vCliente extends ActionBarActivity implements
 	
 	private void LOAD_FICHACLIENTE_FROMSERVER()
 	{
-		get_SucursalID();
 		
 		idsucursal=get_SucursalID();
 		if(idsucursal != 0 && idsucursal != 1)
 		{			
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_FICHACLIENTE_FROM_SERVER);
+			Message ms = new  Message();
+			ms.what=LOAD_FICHACLIENTE_FROM_SERVER; 
+			ms.obj = idsucursal;
+			nmapp.getController().getInboxHandler().sendMessage(ms);
+			//nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_FICHACLIENTE_FROM_SERVER);
 		    Toast.makeText(this, "Trayendo Ficha Cliente...",Toast.LENGTH_LONG); 			
     	}
 		else 
@@ -558,12 +572,18 @@ public class vCliente extends ActionBarActivity implements
 		if(positioncache!=-1)
 		{
 			cliente_selected = (vmCliente)customArrayAdapter.getItem(positioncache);
-			return cliente_selected.getIdSucursal();
+			idsucursal= cliente_selected.getIdSucursal();
 		}
 		else {
-			return (customArrayAdapter!=null)?((customArrayAdapter.getCount()!=0)?(   (  (cliente_selected!=null)?cliente_selected.getIdSucursal():0  )  ):1):1;
+			if(customArrayAdapter!=null){
+				if(customArrayAdapter.getCount()!=0)
+				{
+					idsucursal= cliente_selected.getIdSucursal();
+				}
+			}
+			//idsucursal= ()?((customArrayAdapter.getCount()!=0)?(   (  (cliente_selected!=null)?cliente_selected.getIdSucursal():0  )  ):1):1;
 		}
-		//return (customArrayAdapter!=null)?((customArrayAdapter.getCount()!=0)?(   (  (cliente_selected!=null)?cliente_selected.getIdSucursal():0  )  ):1):1;
+		return idsucursal;
 	}
 	
 	public  Dialog buildCustomDialog(String tittle,String msg,int type)
@@ -627,4 +647,31 @@ public class vCliente extends ActionBarActivity implements
 			bundle.putParcelableArrayList("vmCliente",(ArrayList<? extends Parcelable>) clientes);  
 		}
 	} 
+
+	   @Override
+	   public void onBackPressed() {
+		   Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		   if (fragment instanceof FichaClienteFragment) {
+			   FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			   transaction.replace(R.id.fragment_container, firstFragment,"lista");
+			   transaction.commit();
+		   }
+		   else
+		   {
+			   FINISH_ACTIVITY();
+		   }
+		   /*
+	       if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+	    	   FINISH_ACTIVITY();
+	       } else {
+	    	  
+				if (fragment instanceof ListaFragment) {
+					getSupportFragmentManager().beginTransaction()
+					.add(R.id.fragment_container, firstFragment,"lista")
+					.addToBackStack("list")
+					.commit();
+				}
+	    	   //getSupportFragmentManager().popBackStack();
+	       }*/
+	   }
 }

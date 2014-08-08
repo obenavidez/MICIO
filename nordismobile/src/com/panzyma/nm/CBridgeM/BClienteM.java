@@ -3,6 +3,7 @@ package com.panzyma.nm.CBridgeM;
 import static com.panzyma.nm.controller.ControllerProtocol.*;  
 
 import java.util.ArrayList;   
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -98,7 +99,7 @@ public final class BClienteM
 					onUpdateItem_From_Server(); 
 					return true;
 			case LOAD_FICHACLIENTE_FROM_SERVER: 
-				    onLoadFichaCliente_From_Server(); 
+				    onLoadFichaCliente_From_Server(Long.parseLong(msg.obj.toString())); 
 				    return true; 
 			case LOAD_FACTURASCLIENTE_FROM_SERVER: 
 				    onLoadFacturasCliente_From_Server(); 
@@ -277,7 +278,7 @@ public final class BClienteM
 		
 	} 
     
-    private void onLoadFichaCliente_From_Server() 
+    private void onLoadFichaCliente_From_Server(final Long sucursalID) 
 	{  
 		try 
 		{		  
@@ -291,7 +292,7 @@ public final class BClienteM
 						try 
 						{    
 							if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller)) 
-									Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer("sa||nordis09||dp",view.get_SucursalID()),controller);
+									Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer("sa||nordis09||dp",sucursalID),controller);
 							 
 						}  
 						catch (Exception e) 
