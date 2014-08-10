@@ -145,7 +145,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private BReciboM brm;
 	private Integer reciboId;
 	private com.panzyma.nm.serviceproxy.Documento documento_selected;
-	
+	private boolean onEdit = false;
+	private boolean onNew;	
 
 	private NMApp nmapp;
 	private List<Factura> facturasRecibo;
@@ -180,6 +181,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
 			 
 			if(reciboId != 0){
+				onEdit = true;
 				//OBTENER EL RECIBO DESDE LOCALHOST
 				nmapp.getController()
 				.getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST);
@@ -815,6 +817,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	
 	private void FINISH_ACTIVITY()
 	{
+		int requescode=0;
 		nmapp.getController().removeOutboxHandler(TAG);
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
@@ -822,6 +825,20 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			pd.dismiss();	
 		Log.d(TAG, "Activity quitting"); 
 		pd = null;
+		Intent intent =null;
+		if( recibo !=null 
+				&& ( recibo.getFacturasRecibo().size() > 0 
+				     || recibo.getNotasCreditoRecibo().size() > 0
+				     || recibo.getNotasDebitoRecibo().size() > 0 ) )
+		{
+			intent = new Intent();
+			Bundle b = new Bundle();
+			b.putParcelable("recibo", recibo);
+			intent.putExtras(b);
+		}
+		if(onEdit)
+			requescode = getIntent().getIntExtra("requestcode", 0);
+		setResult(requescode,intent); 
 		try {
 			nmapp.getController().setEntities(this,getBridge());
 			//finalize();

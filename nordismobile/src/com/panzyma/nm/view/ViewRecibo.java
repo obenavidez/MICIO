@@ -13,6 +13,15 @@ import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.Marshal;
+import org.ksoap2.serialization.MarshalBase64;
+import org.ksoap2.serialization.MarshalFloat;
+import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapSerializationEnvelope;
+import org.ksoap2.transport.HttpTransportSE;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -23,6 +32,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -49,8 +59,11 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
@@ -65,12 +78,106 @@ import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.Usuario;
+import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 public class ViewRecibo extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {
 	
+	@Override
+	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestcode, resultcode, data);
+		try 
+		{
+			nmapp.getController().setEntities(this,this.getBridge());
+			request_code = requestcode;
+			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)
+					&& data != null)
+				establecer(data.getParcelableExtra("recibo"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(drawerLayout!=null)drawerLayout.closeDrawers();
+	}
+	
+	@Override
+	public void startActivityForResult(Intent intent, int requestCode) {
+		// TODO Auto-generated method stub
+		super.startActivityForResult(intent, requestCode);
+	}
+
+	@Override
+	public void startActivityFromFragment(Fragment fragment, Intent intent,
+			int requestCode) {
+		// TODO Auto-generated method stub
+		super.startActivityFromFragment(fragment, intent, requestCode);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void establecer(Object _obj) {
+		if (_obj == null)
+			return;
+
+		if (_obj instanceof Message) 
+		{
+			Message msg = (Message) _obj;
+			recibos = (ArrayList<vmRecibo>) ((msg.obj == null) ? new ArrayList<vmRecibo>(): msg.obj); 
+		}
+		if (_obj instanceof Recibo) {
+			Recibo p = (Recibo) _obj;
+			if (EDITAR_RECIBO == request_code) {
+				vmRecibo recibe = recibos.get(positioncache);
+				recibe.setRecibo(Integer.parseInt(String.valueOf(p.getId())),
+						p.getNumero(),
+						p.getFecha(),
+						p.getTotalRecibo(),
+						p.getNombreCliente(),
+						p.getDescEstado(),
+						p.getObjSucursalID());				
+				
+			}else if (NUEVO_RECIBO == request_code) {
+				recibos.add(
+						new vmRecibo(Integer.parseInt(String.valueOf(p.getId())),
+								p.getNumero(),
+								p.getFecha(),
+								p.getTotalRecibo(),
+								p.getNombreCliente(),
+								p.getDescEstado(),
+								p.getObjSucursalID())	
+				);
+				positioncache = recibos.size() - 1;
+			}
+		}
+
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				gridheader.setVisibility(View.VISIBLE);
+				gridheader.setText(String.format("Listado de Recibos (%s)",recibos.size()));
+				if (recibos.size() == 0) {
+					TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
+					txtenty.setVisibility(View.VISIBLE);
+				} 
+				else
+				{
+					positioncache = 0;
+					firstFragment.setItems(recibos);
+					firstFragment.getAdapter().setSelectedPosition(positioncache);
+					recibo_selected = firstFragment.getAdapter().getItem(positioncache);
+				}
+			}
+		});
+
+	}
+
+	private BReciboM getBridge() {
+		return bpm;
+	}
+
 	public enum FragmentActive {
 		LIST,
 		ITEM,
@@ -78,13 +185,15 @@ public class ViewRecibo extends ActionBarActivity implements
 	};
 
 	private static final String TAG = ViewRecibo.class.getSimpleName();
+	private static int request_code;
 	private static final int NUEVO_RECIBO = 0;
-	private static final int VER_DETALLE_RECIBO = 1;
+	private static final int EDITAR_RECIBO = 1;
 	private static final int BORRAR_RECIBO = 2;
 	protected static final int ENVIAR_RECIBO = 3;
 	private static final int CUENTAS_POR_COBRAR = 6;
 	public static final String RECIBO_ID = "recibo_id";
 	private FragmentActive fragmentActive = null;
+	private BReciboM bpm;
 
 	CustomArrayAdapter<vmRecibo> customArrayAdapter;
 	private SearchView searchView;
@@ -125,7 +234,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 
 		context = getApplicationContext();
-
+		SessionManager.setContext(this);
 		setContentView(R.layout.layout_client_fragment);
 		
 		transaction = getSupportFragmentManager()
@@ -139,7 +248,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		gridheader.setVisibility(View.VISIBLE);
 
-		opcionesMenu = new String[] { "Nuevo Recibo", "Ver Detalle",
+		opcionesMenu = new String[] { "Nuevo Recibo", "Editar Recibo",
 				"Borrar Recibo", "Enviar Recibo", "Imprimir Recibo",
 				"Ficha del Cliente", "Cuentas por Cobrar", "Cerrar" };
 
@@ -166,13 +275,15 @@ public class ViewRecibo extends ActionBarActivity implements
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
 					//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
 					intento.putExtra(RECIBO_ID, 0);
-					startActivity(intento);				
+					//startActivity(intento);
+					startActivityForResult(intento, NUEVO_RECIBO);
 					break;
-				case VER_DETALLE_RECIBO:
+				case EDITAR_RECIBO:
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
 					//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
 					intento.putExtra(RECIBO_ID, recibo_selected.getId());
-					startActivity(intento);					
+					//startActivity(intento);	
+					startActivityForResult(intento, EDITAR_RECIBO);
 					break;
 				case BORRAR_RECIBO:
 					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
@@ -186,18 +297,105 @@ public class ViewRecibo extends ActionBarActivity implements
 						return;
 					}
 					break;	
-				case ENVIAR_RECIBO:
-					final String credentials = "sa||nordis09||dp";
+				case ENVIAR_RECIBO: 
 					
-					Pedido pedido = null;
-					try {
-						pedido = ModelPedido.obtenerPedidoByID(3676 ,context.getContentResolver());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					TareaWSConsulta tarea = new TareaWSConsulta(credentials,pedido);
-					tarea.execute();
+					try 
+					{
+						 
+							
+							nmapp.getThreadPool().execute(new Runnable()
+							{ 
+								@Override
+								public void run()
+							    { 	
+									try 
+									{				
+										String credentials = "kpineda||123||dp";	
+										/*if(SessionManager.isLogged() && SessionManager.isAdmin())
+										{
+											if(SessionManager.SignIn(false)) 
+												credentials=SessionManager.getCredentials(); 
+										
+										}
+										else 	
+											credentials=SessionManager.getCredentials(); 
+								        */
+										Pedido pedido = null;
+										if(credentials!="")
+										{
+											pedido = ModelPedido.obtenerPedidoByID(2968 ,context.getContentResolver());
+											
+											
+											
+											boolean resul = true;
+
+											final String NAMESPACE = "http://www.panzyma.com/";		
+										//	final String URL = "http://www.panzyma.com/nordisserverdev/mobileservice.asmx";
+											final String URL = "http://192.168.1.100/NordisServer/MobileService.asmx";		
+											final String METHOD_NAME = "EnviarPedido";		
+											final String SOAP_ACTION = "http://www.panzyma.com/EnviarPedido";
+
+											SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
+
+											PropertyInfo cr = new PropertyInfo();
+											cr.setName("Credentials");
+											cr.setValue(credentials);
+											cr.setType(String.class);
+											request.addProperty(cr);
+											
+											PropertyInfo p = new PropertyInfo();
+									        p.setName("pedido");
+									        p.setValue(pedido);
+									        p.setNamespace(NAMESPACE);
+									        p.setType(new Pedido().getClass()); 
+									        request.addProperty(p);
+
+											SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(
+													SoapEnvelope.VER11);
+											envelope.dotNet = true;
+											envelope.implicitTypes = true;
+
+											envelope.setOutputSoapObject(request);
+											
+											envelope.addMapping(NAMESPACE, "Pedido", new Pedido().getClass()); 
+											
+											Marshal floatMarshal = new MarshalFloat();
+											floatMarshal.register(envelope);
+											new MarshalBase64().register(envelope); 
+											HttpTransportSE transporte = new HttpTransportSE(URL);
+											
+											transporte.debug = true;
+											Log.i("bodyout", "" + envelope.bodyOut.toString());
+											try {											
+												
+												transporte.call(SOAP_ACTION, envelope);
+												
+												SoapObject resSoap = (SoapObject) envelope.getResponse();
+
+												Log.i("Resultado", resSoap.toString());
+
+											} catch (Exception e) {
+												Log.e("ERROR", e.getMessage());
+												resul = false;
+											}
+											
+											//TareaWSConsulta tarea = new TareaWSConsulta(credentials,pedido);
+										//	tarea.execute();
+										}
+										
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+											
+							    }
+							}); 
+						
+						
+					} catch (Exception e) 
+					{
+						// TODO: handle exception
+					} 
 					break;
 				case CUENTAS_POR_COBRAR:
 					fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
@@ -254,7 +452,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		nmapp = (NMApp) this.getApplicationContext();
 		try {
 			nmapp.getController().removebridgeByName(BReciboM.class.toString());
-			nmapp.getController().setEntities(this, new BReciboM());
+			nmapp.getController().setEntities(this, bpm = new BReciboM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()
 					.getInboxHandler()
@@ -478,7 +676,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 	}
 
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	private void establecer(Message msg) {
 		recibos = (List<vmRecibo>) ((msg.obj == null) ? new ArrayList<vmRecibo>()
 				: msg.obj);
@@ -494,7 +692,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		positioncache = 0;
 		if(recibos.size() > 0)
 			recibo_selected = firstFragment.getAdapter().getItem(0); //customArrayAdapter.getItem(0);
-	}
+	}*/
 
 	@Override
 	public void onItemSelected(Object obj, int position) {

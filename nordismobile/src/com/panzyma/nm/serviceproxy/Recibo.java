@@ -1,6 +1,7 @@
 package com.panzyma.nm.serviceproxy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.os.Parcel;
@@ -8,37 +9,37 @@ import android.os.Parcelable;
 
 public class Recibo implements Parcelable {
 
-	protected long id;
-	protected int numero;
-	protected long fecha;
-	protected java.lang.String notas;
-	protected float totalRecibo;
-	protected float totalFacturas;
-	protected float totalND;
-	protected float totalInteres;
-	protected float subTotal;
-	protected float totalDesc;
-	protected float totalRetenido;
-	protected float totalOtrasDed;
-	protected float totalNC;
-	protected int referencia;
-	protected long objClienteID;
-	protected long objSucursalID;
-	protected java.lang.String nombreCliente;
-	protected long objColectorID;
-	protected boolean aplicaDescOca;
-	protected java.lang.String claveAutorizaDescOca;
-	protected float porcDescOcaColector;
-	protected long objEstadoID;
-	protected java.lang.String codEstado;
-	protected java.lang.String descEstado;
-	protected float totalDescOca;
-	protected float totalDescPromo;
-	protected float totalDescPP;
-	protected float totalImpuestoProporcional;
-	protected float totalImpuestoExonerado;
-	protected boolean exento;
-	protected java.lang.String autorizacionDGI;
+	protected long Id;
+	protected int Numero;
+	protected long Fecha;
+	protected java.lang.String Notas;
+	protected float TotalRecibo;
+	protected float TotalFacturas;
+	protected float TotalND;
+	protected float TotalInteres;
+	protected float SubTotal;
+	protected float TotalDesc;
+	protected float TotalRetenido;
+	protected float TotalOtrasDed;
+	protected float TotalNC;
+	protected int Referencia;
+	protected long ObjClienteID;
+	protected long ObjSucursalID;
+	protected java.lang.String NombreCliente;
+	protected long ObjColectorID;
+	protected boolean AplicaDescOca;
+	protected java.lang.String ClaveAutorizaDescOca;
+	protected float PorcDescOcaColector;
+	protected long ObjEstadoID;
+	protected java.lang.String CodEstado;
+	protected java.lang.String DescEstado;
+	protected float TotalDescOca;
+	protected float TotalDescPromo;
+	protected float TotalDescPP;
+	protected float TotalImpuestoProporcional;
+	protected float TotalImpuestoExonerado;
+	protected boolean Exento;
+	protected java.lang.String AutorizacionDGI;
 	protected Cliente cliente;
 	
 	protected ArrayList<ReciboDetFactura> facturasRecibo = new ArrayList<ReciboDetFactura>(); 
@@ -61,285 +62,285 @@ public class Recibo implements Parcelable {
 			float totalImpuestoProporcional, float totalImpuestoExonerado,
 			boolean exento, String autorizacionDGI) {
 		super();
-		this.id = id;
-		this.numero = numero;
-		this.fecha = fecha;
-		this.notas = notas;
-		this.totalRecibo = totalRecibo;
-		this.totalFacturas = totalFacturas;
-		this.totalND = totalND;
-		this.totalInteres = totalInteres;
-		this.subTotal = subTotal;
-		this.totalDesc = totalDesc;
-		this.totalRetenido = totalRetenido;
-		this.totalOtrasDed = totalOtrasDed;
-		this.totalNC = totalNC;
-		this.referencia = referencia;
-		this.objClienteID = objClienteID;
-		this.objSucursalID = objSucursalID;
-		this.nombreCliente = nombreCliente;
-		this.objColectorID = objColectorID;
-		this.aplicaDescOca = aplicaDescOca;
-		this.claveAutorizaDescOca = claveAutorizaDescOca;
-		this.porcDescOcaColector = porcDescOcaColector;
-		this.objEstadoID = objEstadoID;
-		this.codEstado = codEstado;
-		this.descEstado = descEstado;
-		this.totalDescOca = totalDescOca;
-		this.totalDescPromo = totalDescPromo;
-		this.totalDescPP = totalDescPP;
-		this.totalImpuestoProporcional = totalImpuestoProporcional;
-		this.totalImpuestoExonerado = totalImpuestoExonerado;
-		this.exento = exento;
-		this.autorizacionDGI = autorizacionDGI;
+		this.Id = id;
+		this.Numero = numero;
+		this.Fecha = fecha;
+		this.Notas = notas;
+		this.TotalRecibo = totalRecibo;
+		this.TotalFacturas = totalFacturas;
+		this.TotalND = totalND;
+		this.TotalInteres = totalInteres;
+		this.SubTotal = subTotal;
+		this.TotalDesc = totalDesc;
+		this.TotalRetenido = totalRetenido;
+		this.TotalOtrasDed = totalOtrasDed;
+		this.TotalNC = totalNC;
+		this.Referencia = referencia;
+		this.ObjClienteID = objClienteID;
+		this.ObjSucursalID = objSucursalID;
+		this.NombreCliente = nombreCliente;
+		this.ObjColectorID = objColectorID;
+		this.AplicaDescOca = aplicaDescOca;
+		this.ClaveAutorizaDescOca = claveAutorizaDescOca;
+		this.PorcDescOcaColector = porcDescOcaColector;
+		this.ObjEstadoID = objEstadoID;
+		this.CodEstado = codEstado;
+		this.DescEstado = descEstado;
+		this.TotalDescOca = totalDescOca;
+		this.TotalDescPromo = totalDescPromo;
+		this.TotalDescPP = totalDescPP;
+		this.TotalImpuestoProporcional = totalImpuestoProporcional;
+		this.TotalImpuestoExonerado = totalImpuestoExonerado;
+		this.Exento = exento;
+		this.AutorizacionDGI = autorizacionDGI;
 	}
 
 	public long getId() {
-		return id;
+		return Id;
 	}
 
 	public void setId(long id) {
-		this.id = id;
+		this.Id = id;
 	}
 
 	public int getNumero() {
-		return numero;
+		return Numero;
 	}
 
 	public void setNumero(int numero) {
-		this.numero = numero;
+		this.Numero = numero;
 	}
 
 	public long getFecha() {
-		return fecha;
+		return Fecha;
 	}
 
 	public void setFecha(long fecha) {
-		this.fecha = fecha;
+		this.Fecha = fecha;
 	}
 
 	public java.lang.String getNotas() {
-		return notas;
+		return Notas;
 	}
 
 	public void setNotas(java.lang.String notas) {
-		this.notas = notas;
+		this.Notas = notas;
 	}
 
 	public float getTotalRecibo() {
-		return totalRecibo;
+		return TotalRecibo;
 	}
 
 	public void setTotalRecibo(float totalRecibo) {
-		this.totalRecibo = totalRecibo;
+		this.TotalRecibo = totalRecibo;
 	}
 
 	public float getTotalFacturas() {
-		return totalFacturas;
+		return TotalFacturas;
 	}
 
 	public void setTotalFacturas(float totalFacturas) {
-		this.totalFacturas = totalFacturas;
+		this.TotalFacturas = totalFacturas;
 	}
 
 	public float getTotalND() {
-		return totalND;
+		return TotalND;
 	}
 
 	public void setTotalND(float totalND) {
-		this.totalND = totalND;
+		this.TotalND = totalND;
 	}
 
 	public float getTotalInteres() {
-		return totalInteres;
+		return TotalInteres;
 	}
 
 	public void setTotalInteres(float totalInteres) {
-		this.totalInteres = totalInteres;
+		this.TotalInteres = totalInteres;
 	}
 
 	public float getSubTotal() {
-		return subTotal;
+		return SubTotal;
 	}
 
 	public void setSubTotal(float subTotal) {
-		this.subTotal = subTotal;
+		this.SubTotal = subTotal;
 	}
 
 	public float getTotalDesc() {
-		return totalDesc;
+		return TotalDesc;
 	}
 
 	public void setTotalDesc(float totalDesc) {
-		this.totalDesc = totalDesc;
+		this.TotalDesc = totalDesc;
 	}
 
 	public float getTotalRetenido() {
-		return totalRetenido;
+		return TotalRetenido;
 	}
 
 	public void setTotalRetenido(float totalRetenido) {
-		this.totalRetenido = totalRetenido;
+		this.TotalRetenido = totalRetenido;
 	}
 
 	public float getTotalOtrasDed() {
-		return totalOtrasDed;
+		return TotalOtrasDed;
 	}
 
 	public void setTotalOtrasDed(float totalOtrasDed) {
-		this.totalOtrasDed = totalOtrasDed;
+		this.TotalOtrasDed = totalOtrasDed;
 	}
 
 	public float getTotalNC() {
-		return totalNC;
+		return TotalNC;
 	}
 
 	public void setTotalNC(float totalNC) {
-		this.totalNC = totalNC;
+		this.TotalNC = totalNC;
 	}
 
 	public int getReferencia() {
-		return referencia;
+		return Referencia;
 	}
 
 	public void setReferencia(int referencia) {
-		this.referencia = referencia;
+		this.Referencia = referencia;
 	}
 
 	public long getObjClienteID() {
-		return objClienteID;
+		return ObjClienteID;
 	}
 
 	public void setObjClienteID(long objClienteID) {
-		this.objClienteID = objClienteID;
+		this.ObjClienteID = objClienteID;
 	}
 
 	public long getObjSucursalID() {
-		return objSucursalID;
+		return ObjSucursalID;
 	}
 
 	public void setObjSucursalID(long objSucursalID) {
-		this.objSucursalID = objSucursalID;
+		this.ObjSucursalID = objSucursalID;
 	}
 
 	public java.lang.String getNombreCliente() {
-		return nombreCliente;
+		return NombreCliente;
 	}
 
 	public void setNombreCliente(java.lang.String nombreCliente) {
-		this.nombreCliente = nombreCliente;
+		this.NombreCliente = nombreCliente;
 	}
 
 	public long getObjColectorID() {
-		return objColectorID;
+		return ObjColectorID;
 	}
 
 	public void setObjColectorID(long objColectorID) {
-		this.objColectorID = objColectorID;
+		this.ObjColectorID = objColectorID;
 	}
 
 	public boolean isAplicaDescOca() {
-		return aplicaDescOca;
+		return AplicaDescOca;
 	}
 
 	public void setAplicaDescOca(boolean aplicaDescOca) {
-		this.aplicaDescOca = aplicaDescOca;
+		this.AplicaDescOca = aplicaDescOca;
 	}
 
 	public java.lang.String getClaveAutorizaDescOca() {
-		return claveAutorizaDescOca;
+		return ClaveAutorizaDescOca;
 	}
 
 	public void setClaveAutorizaDescOca(java.lang.String claveAutorizaDescOca) {
-		this.claveAutorizaDescOca = claveAutorizaDescOca;
+		this.ClaveAutorizaDescOca = claveAutorizaDescOca;
 	}
 
 	public float getPorcDescOcaColector() {
-		return porcDescOcaColector;
+		return PorcDescOcaColector;
 	}
 
 	public void setPorcDescOcaColector(float porcDescOcaColector) {
-		this.porcDescOcaColector = porcDescOcaColector;
+		this.PorcDescOcaColector = porcDescOcaColector;
 	}
 
 	public long getObjEstadoID() {
-		return objEstadoID;
+		return ObjEstadoID;
 	}
 
 	public void setObjEstadoID(long objEstadoID) {
-		this.objEstadoID = objEstadoID;
+		this.ObjEstadoID = objEstadoID;
 	}
 
 	public java.lang.String getCodEstado() {
-		return codEstado;
+		return CodEstado;
 	}
 
 	public void setCodEstado(java.lang.String codEstado) {
-		this.codEstado = codEstado;
+		this.CodEstado = codEstado;
 	}
 
 	public java.lang.String getDescEstado() {
-		return descEstado;
+		return DescEstado;
 	}
 
 	public void setDescEstado(java.lang.String descEstado) {
-		this.descEstado = descEstado;
+		this.DescEstado = descEstado;
 	}
 
 	public float getTotalDescOca() {
-		return totalDescOca;
+		return TotalDescOca;
 	}
 
 	public void setTotalDescOca(float totalDescOca) {
-		this.totalDescOca = totalDescOca;
+		this.TotalDescOca = totalDescOca;
 	}
 
 	public float getTotalDescPromo() {
-		return totalDescPromo;
+		return TotalDescPromo;
 	}
 
 	public void setTotalDescPromo(float totalDescPromo) {
-		this.totalDescPromo = totalDescPromo;
+		this.TotalDescPromo = totalDescPromo;
 	}
 
 	public float getTotalDescPP() {
-		return totalDescPP;
+		return TotalDescPP;
 	}
 
 	public void setTotalDescPP(float totalDescPP) {
-		this.totalDescPP = totalDescPP;
+		this.TotalDescPP = totalDescPP;
 	}
 
 	public float getTotalImpuestoProporcional() {
-		return totalImpuestoProporcional;
+		return TotalImpuestoProporcional;
 	}
 
 	public void setTotalImpuestoProporcional(float totalImpuestoProporcional) {
-		this.totalImpuestoProporcional = totalImpuestoProporcional;
+		this.TotalImpuestoProporcional = totalImpuestoProporcional;
 	}
 
 	public float getTotalImpuestoExonerado() {
-		return totalImpuestoExonerado;
+		return TotalImpuestoExonerado;
 	}
 
 	public void setTotalImpuestoExonerado(float totalImpuestoExonerado) {
-		this.totalImpuestoExonerado = totalImpuestoExonerado;
+		this.TotalImpuestoExonerado = totalImpuestoExonerado;
 	}
 
 	public boolean isExento() {
-		return exento;
+		return Exento;
 	}
 
 	public void setExento(boolean exento) {
-		this.exento = exento;
+		this.Exento = exento;
 	}
 
 	public java.lang.String getAutorizacionDGI() {
-		return autorizacionDGI;
+		return AutorizacionDGI;
 	}
 
 	public void setAutorizacionDGI(java.lang.String autorizacionDGI) {
-		this.autorizacionDGI = autorizacionDGI;
+		this.AutorizacionDGI = autorizacionDGI;
 	}
 
 	public ArrayList<ReciboDetFactura> getFacturasRecibo() {
@@ -365,17 +366,154 @@ public class Recibo implements Parcelable {
 	public void setNotasDebitoRecibo(ArrayList<ReciboDetND> notasDebitoRecibo) {
 		this.notasDebitoRecibo = notasDebitoRecibo;
 	}
+	
+	public Recibo(Parcel parcel){ 	   
+ 	   readFromParcel(parcel);
+	}
 
+	private void readFromParcel(Parcel parcel) {
+		this.Id = parcel.readLong(  );
+		this.Numero = parcel.readInt(  );
+		this.Fecha = parcel.readLong(  );
+		this.Notas = parcel.readString(  );
+		this.TotalRecibo = parcel.readFloat(  );
+		this.TotalFacturas = parcel.readFloat(  );
+		this.TotalND = parcel.readFloat(  );
+		this.TotalInteres = parcel.readFloat(  );
+		this.SubTotal = parcel.readFloat(  );
+		this.TotalDesc = parcel.readFloat(  );
+		this.TotalRetenido = parcel.readFloat(  );
+		this.TotalOtrasDed = parcel.readFloat(  );
+		this.TotalNC = parcel.readFloat(  );
+		this.Referencia = parcel.readInt(  );
+		this.ObjClienteID = parcel.readLong(  );
+		this.ObjSucursalID = parcel.readLong(  );
+		this.NombreCliente = parcel.readString(  );
+		this.ObjColectorID = parcel.readLong(  );
+		this.AplicaDescOca = parcel.readInt(  ) == 1;
+		this.ClaveAutorizaDescOca = parcel.readString(  );
+		this.PorcDescOcaColector = parcel.readFloat(  );
+		this.ObjEstadoID = parcel.readLong(  );
+		this.CodEstado = parcel.readString(  );
+		this.DescEstado = parcel.readString(  );
+		this.TotalDescOca = parcel.readFloat(  );
+		this.TotalDescPromo = parcel.readFloat(  );
+		this.TotalDescPP = parcel.readFloat(  );
+		this.TotalImpuestoProporcional = parcel.readFloat(  );
+		this.TotalImpuestoExonerado = parcel.readFloat(  );
+		this.Exento = parcel.readInt(  ) == 1;
+		this.AutorizacionDGI = parcel.readString(  );
+		
+		Parcelable[] parcelableArray = parcel.readParcelableArray(ReciboDetFactura.class.getClassLoader()); 
+		if (parcelableArray != null) {
+			facturasRecibo.clear();
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, ReciboDetFactura[].class);
+			for(Object obj: list){
+				facturasRecibo.add( (ReciboDetFactura) obj);
+			}
+		}
+		
+		parcelableArray = parcel.readParcelableArray(ReciboDetND.class.getClassLoader()); 
+		if (parcelableArray != null) {
+			notasDebitoRecibo.clear();
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, ReciboDetND[].class);
+			for(Object obj: list){
+				notasDebitoRecibo.add( (ReciboDetND) obj);
+			}
+		}
+		
+		parcelableArray = parcel.readParcelableArray(ReciboDetNC.class.getClassLoader()); 
+		if (parcelableArray != null) {
+			notasCreditoRecibo.clear();
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, ReciboDetNC[].class);
+			for(Object obj: list){
+				notasCreditoRecibo.add( (ReciboDetNC) obj);
+			}
+		}
+	}
+
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+
+        public Recibo createFromParcel(Parcel parcel) {
+             return new Recibo(parcel);
+        }
+
+        public Recibo[] newArray(int size) {
+             return new Recibo[size];
+        }
+      	 
+      	 
+   };
+	
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
 		return 0;
-	}
+	}	
 
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		// TODO Auto-generated method stub
-		
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong( Id );
+		parcel.writeInt( Numero );
+		parcel.writeLong( Fecha );
+		parcel.writeString( Notas );
+		parcel.writeFloat( TotalRecibo );
+		parcel.writeFloat( TotalFacturas );
+		parcel.writeFloat( TotalND );
+		parcel.writeFloat( TotalInteres );
+		parcel.writeFloat( SubTotal );
+		parcel.writeFloat( TotalDesc );
+		parcel.writeFloat( TotalRetenido );
+		parcel.writeFloat( TotalOtrasDed );
+		parcel.writeFloat( TotalNC );
+		parcel.writeInt( Referencia );
+		parcel.writeLong( ObjClienteID );
+		parcel.writeLong( ObjSucursalID );
+		parcel.writeString( NombreCliente );
+		parcel.writeLong( ObjColectorID );
+		parcel.writeInt( AplicaDescOca ? 1 : 0  );
+		parcel.writeString( ClaveAutorizaDescOca );
+		parcel.writeFloat( PorcDescOcaColector );
+		parcel.writeLong( ObjEstadoID );
+		parcel.writeString( CodEstado );
+		parcel.writeString( DescEstado );
+		parcel.writeFloat( TotalDescOca );
+		parcel.writeFloat( TotalDescPromo );
+		parcel.writeFloat( TotalDescPP );
+		parcel.writeFloat( TotalImpuestoProporcional );
+		parcel.writeFloat( TotalImpuestoExonerado );
+		parcel.writeInt( Exento ? 1 : 0 );
+		parcel.writeString( AutorizacionDGI );
+		parcel.writeParcelableArray(getArrayFacturas(), flags);
+		parcel.writeParcelableArray(getArrayNotasDebito(), flags);
+		parcel.writeParcelableArray(getArrayNotasCredito(), flags);		
+	}
+	
+	private ReciboDetFactura [] getArrayFacturas(){
+		ReciboDetFactura [] facturas = new ReciboDetFactura[ facturasRecibo.size()]; 
+		int index = 0;
+		for(ReciboDetFactura factura : facturasRecibo){
+			facturas[index++] = factura;
+		}
+		return facturas;
+	}
+	
+	private ReciboDetND [] getArrayNotasDebito(){
+		ReciboDetND [] notasDebito = new ReciboDetND[ notasDebitoRecibo.size()]; 
+		int index = 0;
+		for(ReciboDetND factura : notasDebitoRecibo){
+			notasDebito[index++] = factura;
+		}
+		return notasDebito;
+	}
+	
+	private ReciboDetNC [] getArrayNotasCredito(){
+		ReciboDetNC [] notasCredito = new ReciboDetNC[ notasCreditoRecibo.size()]; 
+		int index = 0;
+		for(ReciboDetNC factura : notasCreditoRecibo){
+			notasCredito[index++] = factura;
+		}
+		return notasCredito;
 	}
 
 	public Cliente getCliente() {

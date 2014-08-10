@@ -1,21 +1,24 @@
 package com.panzyma.nm.serviceproxy;
 
-public class ReciboDetND implements Documento {
+import android.os.Parcel;
+import android.os.Parcelable;
 
-	protected long id;
-	protected long objNotaDebitoID;
-	protected long objReciboID;
-	protected float montoInteres;
-	protected boolean esAbono;
-	protected float montoPagar;
-	protected java.lang.String numero;
-	protected long fecha;
-	protected long fechaVence;
-	protected float montoND;
-	protected float saldoND;
-	protected float interesMoratorio;
-	protected float saldoTotal;
-	protected float montoNeto;	
+public class ReciboDetND implements Documento, Parcelable {
+
+	protected long Id;
+	protected long ObjNotaDebitoID;
+	protected long ObjReciboID;
+	protected float MontoInteres;
+	protected boolean EsAbono;
+	protected float MontoPagar;
+	protected java.lang.String Numero;
+	protected long Fecha;
+	protected long FechaVence;
+	protected float MontoND;
+	protected float SaldoND;
+	protected float InteresMoratorio;
+	protected float SaldoTotal;
+	protected float MontoNeto;	
 
 	public ReciboDetND() {
 		super();
@@ -26,131 +29,131 @@ public class ReciboDetND implements Documento {
 			long fechaVence, float montoND, float saldoND,
 			float interesMoratorio, float saldoTotal, float montoNeto) {
 		super();
-		this.id = id;
-		this.objNotaDebitoID = objNotaDebitoID;
-		this.montoInteres = montoInteres;
-		this.esAbono = esAbono;
-		this.montoPagar = montoPagar;
-		this.numero = numero;
-		this.fecha = fecha;
-		this.fechaVence = fechaVence;
-		this.montoND = montoND;
-		this.saldoND = saldoND;
-		this.interesMoratorio = interesMoratorio;
-		this.saldoTotal = saldoTotal;
-		this.montoNeto = montoNeto;
+		this.Id = id;
+		this.ObjNotaDebitoID = objNotaDebitoID;
+		this.MontoInteres = montoInteres;
+		this.EsAbono = esAbono;
+		this.MontoPagar = montoPagar;
+		this.Numero = numero;
+		this.Fecha = fecha;
+		this.FechaVence = fechaVence;
+		this.MontoND = montoND;
+		this.SaldoND = saldoND;
+		this.InteresMoratorio = interesMoratorio;
+		this.SaldoTotal = saldoTotal;
+		this.MontoNeto = montoNeto;
 	}
 
 	public long getId() {
-		return id;
+		return Id;
 	}
 
 	public void setId(long id) {
-		this.id = id;
+		this.Id = id;
 	}
 
 	public long getObjNotaDebitoID() {
-		return objNotaDebitoID;
+		return ObjNotaDebitoID;
 	}
 
 	public void setObjNotaDebitoID(long objNotaDebitoID) {
-		this.objNotaDebitoID = objNotaDebitoID;
+		this.ObjNotaDebitoID = objNotaDebitoID;
 	}	
 
 	public long getObjReciboID() {
-		return objReciboID;
+		return ObjReciboID;
 	}
 
 	public void setObjReciboID(long objReciboID) {
-		this.objReciboID = objReciboID;
+		this.ObjReciboID = objReciboID;
 	}
 
 	public float getMontoInteres() {
-		return montoInteres;
+		return MontoInteres;
 	}
 
 	public void setMontoInteres(float montoInteres) {
-		this.montoInteres = montoInteres;
+		this.MontoInteres = montoInteres;
 	}
 
 	public boolean isEsAbono() {
-		return esAbono;
+		return EsAbono;
 	}
 
 	public void setEsAbono(boolean esAbono) {
-		this.esAbono = esAbono;
+		this.EsAbono = esAbono;
 	}
 
 	public float getMontoPagar() {
-		return montoPagar;
+		return MontoPagar;
 	}
 
 	public void setMontoPagar(float montoPagar) {
-		this.montoPagar = montoPagar;
+		this.MontoPagar = montoPagar;
 	}
 
 	public java.lang.String getNumero() {
-		return numero;
+		return Numero;
 	}
 
 	public void setNumero(java.lang.String numero) {
-		this.numero = numero;
+		this.Numero = numero;
 	}
 
 	public long getFecha() {
-		return fecha;
+		return Fecha;
 	}
 
 	public void setFecha(long fecha) {
-		this.fecha = fecha;
+		this.Fecha = fecha;
 	}
 
 	public long getFechaVence() {
-		return fechaVence;
+		return FechaVence;
 	}
 
 	public void setFechaVence(long fechaVence) {
-		this.fechaVence = fechaVence;
+		this.FechaVence = fechaVence;
 	}
 
 	public float getMontoND() {
-		return montoND;
+		return MontoND;
 	}
 
 	public void setMontoND(float montoND) {
-		this.montoND = montoND;
+		this.MontoND = montoND;
 	}
 
 	public float getSaldoND() {
-		return saldoND;
+		return SaldoND;
 	}
 
 	public void setSaldoND(float saldoND) {
-		this.saldoND = saldoND;
+		this.SaldoND = saldoND;
 	}
 
 	public float getInteresMoratorio() {
-		return interesMoratorio;
+		return InteresMoratorio;
 	}
 
 	public void setInteresMoratorio(float interesMoratorio) {
-		this.interesMoratorio = interesMoratorio;
+		this.InteresMoratorio = interesMoratorio;
 	}
 
 	public float getSaldoTotal() {
-		return saldoTotal;
+		return SaldoTotal;
 	}
 
 	public void setSaldoTotal(float saldoTotal) {
-		this.saldoTotal = saldoTotal;
+		this.SaldoTotal = saldoTotal;
 	}
 
 	public float getMontoNeto() {
-		return montoNeto;
+		return MontoNeto;
 	}
 
 	public void setMontoNeto(float montoNeto) {
-		this.montoNeto = montoNeto;
+		this.MontoNeto = montoNeto;
 	}
 
 	@Override
@@ -188,6 +191,60 @@ public class ReciboDetND implements Documento {
 	public float getRetencion() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public ReciboDetND(Parcel parcel){  	   
+  	   readFromParcel(parcel);
+	}
+  
+	private void readFromParcel(Parcel parcel) {
+		this.Id = parcel.readLong();
+		this.ObjNotaDebitoID = parcel.readLong();
+		this.ObjReciboID = parcel.readLong();
+		this.MontoInteres = parcel.readFloat();
+		this.EsAbono = parcel.readInt() == 1;
+		this.MontoPagar = parcel.readFloat();
+		this.Numero = parcel.readString();
+		this.Fecha = parcel.readLong();
+		this.FechaVence = parcel.readLong();
+		this.MontoND = parcel.readFloat();
+		this.SaldoND = parcel.readFloat();
+		this.InteresMoratorio = parcel.readFloat();
+		this.SaldoTotal = parcel.readFloat();
+		this.MontoNeto = parcel.readFloat();		
+	}
+
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {	
+	      public ReciboDetND createFromParcel(Parcel parcel) {
+	           return new ReciboDetND(parcel);
+	      }	
+	      public ReciboDetND[] newArray(int size) {
+	           return new ReciboDetND[size];
+	      } 
+	 };
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(  Id );
+		parcel.writeLong(  ObjNotaDebitoID );
+		parcel.writeLong(  ObjReciboID );
+		parcel.writeFloat(  MontoInteres );
+		parcel.writeInt( EsAbono ? 1 : 0 );
+		parcel.writeFloat(  MontoPagar );
+		parcel.writeString( Numero );
+		parcel.writeLong(  Fecha );
+		parcel.writeLong(  FechaVence );
+		parcel.writeFloat(  MontoND );
+		parcel.writeFloat(  SaldoND );
+		parcel.writeFloat(  InteresMoratorio );
+		parcel.writeFloat(  SaldoTotal );
+		parcel.writeFloat(  MontoNeto );		
 	}
 
 }

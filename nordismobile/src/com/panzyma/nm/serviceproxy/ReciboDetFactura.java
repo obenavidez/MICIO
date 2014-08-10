@@ -1,34 +1,37 @@
 package com.panzyma.nm.serviceproxy;
 
-public class ReciboDetFactura implements Documento {
+import android.os.Parcel;
+import android.os.Parcelable;
 
-	protected long id;
-	protected long objFacturaID;
-	protected long objReciboID;
-	protected float monto;
-	protected boolean esAbono;
-	protected float montoDescEspecifico;
-	protected float montoDescOcasional;
-	protected float montoRetencion;
-	protected float montoImpuesto;
-	protected float montoInteres;
-	protected float montoNeto;
-	protected float montoOtrasDeducciones;
-	protected float montoDescPromocion;
-	protected float porcDescOcasional;
-	protected float porcDescPromo;
-	protected java.lang.String numero;
-	protected long fecha;
-	protected long fechaVence;
-	protected long fechaAplicaDescPP;
-	protected float subTotal;
-	protected float impuesto;
-	protected float totalfactura;
-	protected float saldofactura;
-	protected float interesMoratorio;
-	protected float saldoTotal;
-	protected float montoImpuestoExento;
-	protected float montoDescEspecificoCalc;
+public class ReciboDetFactura implements Documento, Parcelable {
+
+	protected long Id;
+	protected long ObjFacturaID;
+	protected long ObjReciboID;
+	protected float Monto;
+	protected boolean EsAbono;
+	protected float MontoDescEspecifico;
+	protected float MontoDescOcasional;
+	protected float MontoRetencion;
+	protected float MontoImpuesto;
+	protected float MontoInteres;
+	protected float MontoNeto;
+	protected float MontoOtrasDeducciones;
+	protected float MontoDescPromocion;
+	protected float PorcDescOcasional;
+	protected float PorcDescPromo;
+	protected java.lang.String Numero;
+	protected long Fecha;
+	protected long FechaVence;
+	protected long FechaAplicaDescPP;
+	protected float SubTotal;
+	protected float Impuesto;
+	protected float Totalfactura;
+	protected float Saldofactura;
+	protected float InteresMoratorio;
+	protected float SaldoTotal;
+	protected float MontoImpuestoExento;
+	protected float MontoDescEspecificoCalc;
 	
 	public ReciboDetFactura() {
 		super();
@@ -45,248 +48,248 @@ public class ReciboDetFactura implements Documento {
 			float saldofactura, float interesMoratorio, float saldoTotal,
 			float montoImpuestoExento, float montoDescEspecificoCalc) {
 		super();
-		this.id = id;
-		this.objFacturaID = objFacturaID;
-		this.monto = monto;
-		this.esAbono = esAbono;
-		this.montoDescEspecifico = montoDescEspecifico;
-		this.montoDescOcasional = montoDescOcasional;
-		this.montoRetencion = montoRetencion;
-		this.montoImpuesto = montoImpuesto;
-		this.montoInteres = montoInteres;
-		this.montoNeto = montoNeto;
-		this.montoOtrasDeducciones = montoOtrasDeducciones;
-		this.montoDescPromocion = montoDescPromocion;
-		this.porcDescOcasional = porcDescOcasional;
-		this.porcDescPromo = porcDescPromo;
-		this.numero = numero;
-		this.fecha = fecha;
-		this.fechaVence = fechaVence;
-		this.fechaAplicaDescPP = fechaAplicaDescPP;
-		this.subTotal = subTotal;
-		this.impuesto = impuesto;
-		this.totalfactura = totalfactura;
-		this.saldofactura = saldofactura;
-		this.interesMoratorio = interesMoratorio;
-		this.saldoTotal = saldoTotal;
-		this.montoImpuestoExento = montoImpuestoExento;
-		this.montoDescEspecificoCalc = montoDescEspecificoCalc;
+		this.Id = id;
+		this.ObjFacturaID = objFacturaID;
+		this.Monto = monto;
+		this.EsAbono = esAbono;
+		this.MontoDescEspecifico = montoDescEspecifico;
+		this.MontoDescOcasional = montoDescOcasional;
+		this.MontoRetencion = montoRetencion;
+		this.MontoImpuesto = montoImpuesto;
+		this.MontoInteres = montoInteres;
+		this.MontoNeto = montoNeto;
+		this.MontoOtrasDeducciones = montoOtrasDeducciones;
+		this.MontoDescPromocion = montoDescPromocion;
+		this.PorcDescOcasional = porcDescOcasional;
+		this.PorcDescPromo = porcDescPromo;
+		this.Numero = numero;
+		this.Fecha = fecha;
+		this.FechaVence = fechaVence;
+		this.FechaAplicaDescPP = fechaAplicaDescPP;
+		this.SubTotal = subTotal;
+		this.Impuesto = impuesto;
+		this.Totalfactura = totalfactura;
+		this.Saldofactura = saldofactura;
+		this.InteresMoratorio = interesMoratorio;
+		this.SaldoTotal = saldoTotal;
+		this.MontoImpuestoExento = montoImpuestoExento;
+		this.MontoDescEspecificoCalc = montoDescEspecificoCalc;
 	}
 
 	public long getId() {
-		return id;
+		return Id;
 	}
 
 	public void setId(long id) {
-		this.id = id;
+		this.Id = id;
 	}
 
 	public long getObjFacturaID() {
-		return objFacturaID;
+		return ObjFacturaID;
 	}
 
 	public void setObjFacturaID(long objFacturaID) {
-		this.objFacturaID = objFacturaID;
+		this.ObjFacturaID = objFacturaID;
 	}
 	
 	public long getObjReciboID() {
-		return objReciboID;
+		return ObjReciboID;
 	}
 
 	public void setObjReciboID(long objReciboID) {
-		this.objReciboID = objReciboID;
+		this.ObjReciboID = objReciboID;
 	}
 
 	public float getMonto() {
-		return monto;
+		return Monto;
 	}
 
 	public void setMonto(float monto) {
-		this.monto = monto;
+		this.Monto = monto;
 	}
 
 	public boolean isEsAbono() {
-		return esAbono;
+		return EsAbono;
 	}
 
 	public void setEsAbono(boolean esAbono) {
-		this.esAbono = esAbono;
+		this.EsAbono = esAbono;
 	}
 
 	public float getMontoDescEspecifico() {
-		return montoDescEspecifico;
+		return MontoDescEspecifico;
 	}
 
 	public void setMontoDescEspecifico(float montoDescEspecifico) {
-		this.montoDescEspecifico = montoDescEspecifico;
+		this.MontoDescEspecifico = montoDescEspecifico;
 	}
 
 	public float getMontoDescOcasional() {
-		return montoDescOcasional;
+		return MontoDescOcasional;
 	}
 
 	public void setMontoDescOcasional(float montoDescOcasional) {
-		this.montoDescOcasional = montoDescOcasional;
+		this.MontoDescOcasional = montoDescOcasional;
 	}
 
 	public float getMontoRetencion() {
-		return montoRetencion;
+		return MontoRetencion;
 	}
 
 	public void setMontoRetencion(float montoRetencion) {
-		this.montoRetencion = montoRetencion;
+		this.MontoRetencion = montoRetencion;
 	}
 
 	public float getMontoImpuesto() {
-		return montoImpuesto;
+		return MontoImpuesto;
 	}
 
 	public void setMontoImpuesto(float montoImpuesto) {
-		this.montoImpuesto = montoImpuesto;
+		this.MontoImpuesto = montoImpuesto;
 	}
 
 	public float getMontoInteres() {
-		return montoInteres;
+		return MontoInteres;
 	}
 
 	public void setMontoInteres(float montoInteres) {
-		this.montoInteres = montoInteres;
+		this.MontoInteres = montoInteres;
 	}
 
 	public float getMontoNeto() {
-		return montoNeto;
+		return MontoNeto;
 	}
 
 	public void setMontoNeto(float montoNeto) {
-		this.montoNeto = montoNeto;
+		this.MontoNeto = montoNeto;
 	}
 
 	public float getMontoOtrasDeducciones() {
-		return montoOtrasDeducciones;
+		return MontoOtrasDeducciones;
 	}
 
 	public void setMontoOtrasDeducciones(float montoOtrasDeducciones) {
-		this.montoOtrasDeducciones = montoOtrasDeducciones;
+		this.MontoOtrasDeducciones = montoOtrasDeducciones;
 	}
 
 	public float getMontoDescPromocion() {
-		return montoDescPromocion;
+		return MontoDescPromocion;
 	}
 
 	public void setMontoDescPromocion(float montoDescPromocion) {
-		this.montoDescPromocion = montoDescPromocion;
+		this.MontoDescPromocion = montoDescPromocion;
 	}
 
 	public float getPorcDescOcasional() {
-		return porcDescOcasional;
+		return PorcDescOcasional;
 	}
 
 	public void setPorcDescOcasional(float porcDescOcasional) {
-		this.porcDescOcasional = porcDescOcasional;
+		this.PorcDescOcasional = porcDescOcasional;
 	}
 
 	public float getPorcDescPromo() {
-		return porcDescPromo;
+		return PorcDescPromo;
 	}
 
 	public void setPorcDescPromo(float porcDescPromo) {
-		this.porcDescPromo = porcDescPromo;
+		this.PorcDescPromo = porcDescPromo;
 	}
 
 	public java.lang.String getNumero() {
-		return numero;
+		return Numero;
 	}
 
 	public void setNumero(java.lang.String numero) {
-		this.numero = numero;
+		this.Numero = numero;
 	}
 
 	public long getFecha() {
-		return fecha;
+		return Fecha;
 	}
 
 	public void setFecha(long fecha) {
-		this.fecha = fecha;
+		this.Fecha = fecha;
 	}
 
 	public long getFechaVence() {
-		return fechaVence;
+		return FechaVence;
 	}
 
 	public void setFechaVence(long fechaVence) {
-		this.fechaVence = fechaVence;
+		this.FechaVence = fechaVence;
 	}
 
 	public long getFechaAplicaDescPP() {
-		return fechaAplicaDescPP;
+		return FechaAplicaDescPP;
 	}
 
 	public void setFechaAplicaDescPP(long fechaAplicaDescPP) {
-		this.fechaAplicaDescPP = fechaAplicaDescPP;
+		this.FechaAplicaDescPP = fechaAplicaDescPP;
 	}
 
 	public float getSubTotal() {
-		return subTotal;
+		return SubTotal;
 	}
 
 	public void setSubTotal(float subTotal) {
-		this.subTotal = subTotal;
+		this.SubTotal = subTotal;
 	}
 
 	public float getImpuesto() {
-		return impuesto;
+		return Impuesto;
 	}
 
 	public void setImpuesto(float impuesto) {
-		this.impuesto = impuesto;
+		this.Impuesto = impuesto;
 	}
 
 	public float getTotalfactura() {
-		return totalfactura;
+		return Totalfactura;
 	}
 
 	public void setTotalFactura(float totalfactura) {
-		this.totalfactura = totalfactura;
+		this.Totalfactura = totalfactura;
 	}
 
 	public float getSaldofactura() {
-		return saldofactura;
+		return Saldofactura;
 	}
 
 	public void setSaldoFactura(float saldofactura) {
-		this.saldofactura = saldofactura;
+		this.Saldofactura = saldofactura;
 	}
 
 	public float getInteresMoratorio() {
-		return interesMoratorio;
+		return InteresMoratorio;
 	}
 
 	public void setInteresMoratorio(float interesMoratorio) {
-		this.interesMoratorio = interesMoratorio;
+		this.InteresMoratorio = interesMoratorio;
 	}
 
 	public float getSaldoTotal() {
-		return saldoTotal;
+		return SaldoTotal;
 	}
 
 	public void setSaldoTotal(float saldoTotal) {
-		this.saldoTotal = saldoTotal;
+		this.SaldoTotal = saldoTotal;
 	}
 
 	public float getMontoImpuestoExento() {
-		return montoImpuestoExento;
+		return MontoImpuestoExento;
 	}
 
 	public void setMontoImpuestoExento(float montoImpuestoExento) {
-		this.montoImpuestoExento = montoImpuestoExento;
+		this.MontoImpuestoExento = montoImpuestoExento;
 	}
 
 	public float getMontoDescEspecificoCalc() {
-		return montoDescEspecificoCalc;
+		return MontoDescEspecificoCalc;
 	}
 
 	public void setMontoDescEspecificoCalc(float montoDescEspecificoCalc) {
-		this.montoDescEspecificoCalc = montoDescEspecificoCalc;
+		this.MontoDescEspecificoCalc = montoDescEspecificoCalc;
 	}
 
 	@Override
@@ -323,6 +326,88 @@ public class ReciboDetFactura implements Documento {
 	public float getRetencion() {
 		// TODO Auto-generated method stub
 		return getMontoRetencion();
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public ReciboDetFactura(Parcel parcel){ 	   
+ 	   readFromParcel(parcel);
+	}
+ 
+	private void readFromParcel(Parcel parcel) {
+		this.Id = parcel.readLong();
+		this.ObjFacturaID = parcel.readLong();
+		this.ObjReciboID = parcel.readLong();
+		this.Monto = parcel.readFloat();
+		this.EsAbono = parcel.readInt() == 1;
+		this.MontoDescEspecifico = parcel.readFloat();
+		this.MontoDescOcasional = parcel.readFloat();
+		this.MontoRetencion = parcel.readFloat();
+		this.MontoImpuesto = parcel.readFloat();
+		this.MontoInteres = parcel.readFloat();
+		this.MontoNeto = parcel.readFloat();
+		this.MontoOtrasDeducciones = parcel.readFloat();
+		this.MontoDescPromocion = parcel.readFloat();
+		this.PorcDescOcasional = parcel.readFloat();
+		this.PorcDescPromo = parcel.readFloat();
+		this.Numero = parcel.readString();
+		this.Fecha = parcel.readLong();
+		this.FechaVence = parcel.readLong();
+		this.FechaAplicaDescPP = parcel.readLong();
+		this.SubTotal = parcel.readFloat();
+		this.Impuesto = parcel.readFloat();
+		this.Totalfactura = parcel.readFloat();
+		this.Saldofactura = parcel.readFloat();
+		this.InteresMoratorio = parcel.readFloat();
+		this.SaldoTotal = parcel.readFloat();
+		this.MontoImpuestoExento = parcel.readFloat();
+		this.MontoDescEspecificoCalc = parcel.readFloat();
+	}
+
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {	
+	     public ReciboDetFactura createFromParcel(Parcel parcel) {
+	          return new ReciboDetFactura(parcel);
+	     }
+	
+	     public ReciboDetFactura[] newArray(int size) {
+	          return new ReciboDetFactura[size];
+	     }
+	};
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(  Id );
+		parcel.writeLong(  ObjFacturaID );
+		parcel.writeLong(  ObjReciboID );
+		parcel.writeFloat(  Monto );
+		parcel.writeInt( EsAbono ? 1 : 0 );
+		parcel.writeFloat(  MontoDescEspecifico );
+		parcel.writeFloat(  MontoDescOcasional );
+		parcel.writeFloat(  MontoRetencion );
+		parcel.writeFloat(  MontoImpuesto );
+		parcel.writeFloat(  MontoInteres );
+		parcel.writeFloat(  MontoNeto );
+		parcel.writeFloat(  MontoOtrasDeducciones );
+		parcel.writeFloat(  MontoDescPromocion );
+		parcel.writeFloat(  PorcDescOcasional );
+		parcel.writeFloat(  PorcDescPromo );
+		parcel.writeString( Numero );
+		parcel.writeLong(  Fecha );
+		parcel.writeLong(  FechaVence );
+		parcel.writeLong(  FechaAplicaDescPP );
+		parcel.writeFloat(  SubTotal );
+		parcel.writeFloat(  Impuesto );
+		parcel.writeFloat(  Totalfactura );
+		parcel.writeFloat(  Saldofactura );
+		parcel.writeFloat(  InteresMoratorio );
+		parcel.writeFloat(  SaldoTotal );
+		parcel.writeFloat(  MontoImpuestoExento );
+		parcel.writeFloat(  MontoDescEspecificoCalc );
+		
 	}
 
 }

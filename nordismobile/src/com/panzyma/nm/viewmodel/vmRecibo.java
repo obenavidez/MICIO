@@ -3,6 +3,7 @@ package com.panzyma.nm.viewmodel;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.interfaces.Item;
 
 public class vmRecibo implements Item, Parcelable {
@@ -18,6 +19,17 @@ public class vmRecibo implements Item, Parcelable {
 	public vmRecibo(int id, int numero, long fecha, float totalRecibo,
 			String nombreCliente, String descEstado, long objSucursalID) {
 		super();
+		this.id = id;
+		this.numero = numero;
+		this.fecha = fecha;
+		this.totalRecibo = totalRecibo;
+		this.nombreCliente = nombreCliente;
+		this.descEstado = descEstado;
+		this.objSucursalID = objSucursalID;
+	}
+	
+	public void setRecibo(int id, int numero, long fecha, float totalRecibo,
+			String nombreCliente, String descEstado, long objSucursalID) {		
 		this.id = id;
 		this.numero = numero;
 		this.fecha = fecha;
@@ -117,7 +129,7 @@ public class vmRecibo implements Item, Parcelable {
 
 	@Override
 	public String getItemDescription() {
-		return "Fecha: " + getFecha() + ", Total: " + getTotalRecibo()
+		return "Fecha: " + DateUtil.idateToStr( getFecha() ) + ", Total: " + getTotalRecibo()
 				+ ", Estado: " + getDescEstado();
 	}
 

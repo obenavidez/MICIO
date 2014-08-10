@@ -1,14 +1,17 @@
 package com.panzyma.nm.serviceproxy;
 
-public class ReciboDetNC implements Documento {
+import android.os.Parcel;
+import android.os.Parcelable;
 
-	protected long id;
-	protected long objNotaCreditoID;
-	protected long objReciboID;
-	protected float monto;
-	protected java.lang.String numero;
-	protected long fecha;
-	protected long fechaVence;	
+public class ReciboDetNC implements Documento, Parcelable {
+
+	protected long Id;
+	protected long ObjNotaCreditoID;
+	protected long ObjReciboID;
+	protected float Monto;
+	protected java.lang.String Numero;
+	protected long Fecha;
+	protected long FechaVence;	
 
 	public ReciboDetNC() {
 		super();
@@ -17,68 +20,68 @@ public class ReciboDetNC implements Documento {
 	public ReciboDetNC(long id, long objNotaCreditoID, float monto,
 			String numero, long fecha, long fechaVence) {
 		super();
-		this.id = id;
-		this.objNotaCreditoID = objNotaCreditoID;
-		this.monto = monto;
-		this.numero = numero;
-		this.fecha = fecha;
-		this.fechaVence = fechaVence;
+		this.Id = id;
+		this.ObjNotaCreditoID = objNotaCreditoID;
+		this.Monto = monto;
+		this.Numero = numero;
+		this.Fecha = fecha;
+		this.FechaVence = fechaVence;
 	}
 
 	public long getId() {
-		return id;
+		return Id;
 	}
 
 	public void setId(long id) {
-		this.id = id;
+		this.Id = id;
 	}
 
 	public long getObjReciboID() {
-		return objReciboID;
+		return ObjReciboID;
 	}
 
 	public void setObjReciboID(long objReciboID) {
-		this.objReciboID = objReciboID;
+		this.ObjReciboID = objReciboID;
 	}
 
 	public long getObjNotaCreditoID() {
-		return objNotaCreditoID;
+		return ObjNotaCreditoID;
 	}
 
 	public void setObjNotaCreditoID(long objNotaCreditoID) {
-		this.objNotaCreditoID = objNotaCreditoID;
+		this.ObjNotaCreditoID = objNotaCreditoID;
 	}
 
 	public float getMonto() {
-		return monto;
+		return Monto;
 	}
 
 	public void setMonto(float monto) {
-		this.monto = monto;
+		this.Monto = monto;
 	}
 
 	public java.lang.String getNumero() {
-		return numero;
+		return Numero;
 	}
 
 	public void setNumero(java.lang.String numero) {
-		this.numero = numero;
+		this.Numero = numero;
 	}
 
 	public long getFecha() {
-		return fecha;
+		return Fecha;
 	}
 
 	public void setFecha(long fecha) {
-		this.fecha = fecha;
+		this.Fecha = fecha;
 	}
 
 	public long getFechaVence() {
-		return fechaVence;
+		return FechaVence;
 	}
 
 	public void setFechaVence(long fechaVence) {
-		this.fechaVence = fechaVence;
+		this.FechaVence = fechaVence;
 	}
 
 	@Override
@@ -111,6 +114,46 @@ public class ReciboDetNC implements Documento {
 	public float getRetencion() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public ReciboDetNC(Parcel parcel){ 	   
+ 	   readFromParcel(parcel);
+	 }
+	 
+	 private void readFromParcel(Parcel parcel) {
+		this.Id = parcel.readLong();
+		this.ObjNotaCreditoID = parcel.readLong();
+		this.ObjReciboID = parcel.readLong();
+		this.Monto = parcel.readFloat();
+		this.Numero = parcel.readString();
+		this.Fecha = parcel.readLong();
+		this.FechaVence = parcel.readLong();	
+	}
+
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {	
+	     public ReciboDetNC createFromParcel(Parcel parcel) {
+	          return new ReciboDetNC(parcel);
+	     }	
+	     public ReciboDetNC[] newArray(int size) {
+	          return new ReciboDetNC[size];
+	     }
+	};
+	
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(  Id );
+		parcel.writeLong(  ObjNotaCreditoID );
+		parcel.writeLong(  ObjReciboID );
+		parcel.writeFloat( Monto );
+		parcel.writeString( Numero );
+		parcel.writeLong(  Fecha );
+		parcel.writeLong(  FechaVence );		
 	}
 
 }
