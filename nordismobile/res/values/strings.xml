@@ -20,7 +20,7 @@
     <string name="FichaClienteDialogTitle">Nordis Mobile | Ficha del Cliente</string>
 
     <!-- cliente.xml titles -->
-    <string name="txtclient_tittle">Lista de Clientes</string>
+    <string name="txtclient_tittle">Lista de Registros</string>
     <string name="txtclient_entymessage">No hay Registros</string>
      
     

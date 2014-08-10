@@ -1,22 +1,29 @@
 package com.panzyma.nm.auxiliar;
-
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.viewdialog.GenericCustomDialog;
-import com.panzyma.nm.viewdialog.GenericCustomDialog.OnActionButtonClickListener;
-import com.panzyma.nm.viewdialog.GenericCustomDialog.OnDismissDialogListener;
+import com.panzyma.nordismobile.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.app.DialogFragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
 
-public class AppDialog {
-
+public class AppDialog  extends DialogFragment  implements OnDismissListener{
+	public static final int OK_BUTTOM=11;
+	public static final int NO_BUTTOM=22;
 	static Object lock=new Object();
-	static Object lock2=new Object(); 
-	private static Boolean response=false;
-    private static  Activity context;
+	static String Message=null;
+	static String Tittle=null; 
 	private static android.support.v4.app.FragmentManager manager;
-	private static GenericCustomDialog dialog;
-	public static enum DialogType {
+	public static enum DialogType 
+	{
 		 DIALOGO_NOTIFICACION (0),
 		 DIALOGO_ALERTA (1),
 		 DIALOGO_CONFIRMACION (2),
@@ -34,70 +41,158 @@ public class AppDialog {
 		 public static DialogType toInt(int x) {
 		 return DialogType.values()[x];
 		 }
-		 }
-	
-    public static Boolean showMessage(final String title,final String msg,final DialogType  type)
-   	{
-    	response=false;	
-    	NMApp nmapp =((NMApp) context.getApplicationContext());
-    	
-    	try {
-			nmapp.getThreadPool().execute(new Runnable() {
-					@Override
-					public void run() {
-						context.runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								dialog = GenericCustomDialog.newInstance(title,msg,type);
-								dialog.setOnActionDialogButtonClickListener(new OnActionButtonClickListener()
-								{
-									@Override
-									public void onButtonClick(View _dialog, int actionId) {
-										if(actionId == GenericCustomDialog.OK_BUTTOM) 
-											response= true;
-										else 
-											response= false;
-										
-										dialog.dismiss();
-									}
-								});
-								dialog.setOnDismissDialogListener(new OnDismissDialogListener() {
-									@Override
-									public void onDismiss() {
-										synchronized (lock) { 
-											lock.notify(); 
-										} 
-									}
-								});
-						    	dialog.show(manager, "dialog");
-							}
-				    	});
-						
-						synchronized (lock) {
-							try {
-								lock.wait();
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						} 
-						
-					}
-				});
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} 
-    	
-    	return response;
-   	}
-    
-    public static void setContext(Activity _context)
-	{
-		context=_context;
 	}
-    public static void setContext(android.support.v4.app.FragmentManager _manager)
+	static AlertDialog alert = null;
+	static View vDialog;
+	static Builder mybuilder;
+	static LayoutInflater inflater;
+	static TextView tvtittle;
+	static TextView tvmessage;
+	static Button btn_aceptar;
+	static Button btn_cancelar;
+	public OnButtonClickListener mButtonClickListener;
+	private OnDismissDialogListener mDismissListener;
+	
+	public interface OnButtonClickListener {
+		public abstract void onButtonClick(AlertDialog alert,int actionId);
+	}
+	
+	public interface OnDismissDialogListener {
+		public abstract void onDismiss();
+	}
+	
+	public void setOnDialogButtonClickListener(OnButtonClickListener listener){
+		mButtonClickListener = listener;
+	}
+
+	public void setOnDismissDialogListener(OnDismissDialogListener listener) {  
+		mDismissListener = listener;
+	}
+	public static void showMessage (Activity mContext,String title,String msg, DialogType type)
 	{
-    	manager = _manager;
-    }
+		mybuilder = new AlertDialog.Builder(mContext);
+		inflater = mContext.getLayoutInflater();
+		Tittle = title;
+		Message = msg;
+		switch(type)
+		{
+			case DIALOGO_ALERTA :
+				CreateDialog(null);
+			break;
+		case DIALOGO_CONFIRMACION :
+				CreateConfirmDialog(null);
+			break;
+		default:
+			break;
+			
+		}
+		alert = mybuilder.create();
+		alert.setCancelable(false);
+		int margen = -2;
+		alert.setView(vDialog, margen, margen, margen, margen);
+		alert.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+		alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alert.show();
+	}
+	public static void showMessage (Activity mContext,String title,String msg, DialogType type ,final OnButtonClickListener mylistener)
+	{
+		mybuilder = new AlertDialog.Builder(mContext);
+		inflater = mContext.getLayoutInflater();
+		Tittle = title;
+		Message = msg;
+		switch(type)
+		{
+			case DIALOGO_ALERTA :
+				CreateDialog(mylistener);
+			break;
+			case DIALOGO_CONFIRMACION :
+				CreateConfirmDialog(mylistener);
+			break;
+			default:
+			break;
+			
+		}
+		//mybuilder.setView(vDialog);
+		alert = mybuilder.create();
+		alert.setCancelable(false);
+		int margen = -2;
+		alert.setView(vDialog, margen, margen, margen, margen);
+		alert.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+		alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alert.show();
+	}
+	
+	@SuppressWarnings("unused")
+	private static void CreateConfirmDialog(final OnButtonClickListener mylistener)
+	{
+		vDialog =inflater.inflate(R.layout.confirm_dialog, null,false);
+		tvtittle = (TextView)vDialog.findViewById(R.id.tittle_dialog_confirm);
+		tvtittle.setText(Tittle.toString());
+		tvmessage =(TextView)vDialog.findViewById(R.id.bodymessage_dialog_confirm);
+		tvmessage.setText(Message.toString());
+		btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_confirm);
+		btn_aceptar.setOnClickListener(new Button.OnClickListener()
+    	{
+			@Override
+			public void onClick(View v) {
+				if(mylistener!=null)
+					mylistener.onButtonClick(alert, OK_BUTTOM); 
+				alert.dismiss();
+			}	
+    	});
+		btn_cancelar = (Button) vDialog.findViewById(R.id.btncancelar_dialog_confirm);
+		btn_cancelar.setOnClickListener( new Button.OnClickListener()
+	    {
+			@Override
+			public void onClick(View v) {
+				mylistener.onButtonClick(alert, NO_BUTTOM); 
+				alert.dismiss();
+			}
+	    });
+		
+	}
+	@SuppressWarnings("unused")
+	private static void CreateDialog(final OnButtonClickListener mylistener)
+	{
+		vDialog =inflater.inflate(R.layout.alert_dialog, null, false);
+		tvtittle = (TextView)vDialog.findViewById(R.id.tittle_dialog_alert);
+		tvtittle.setText(Tittle.toString());
+		tvmessage =(TextView)vDialog.findViewById(R.id.bodymessage_dialog_alert);
+		tvmessage.setText(Message.toString());
+		btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_alert);
+		btn_aceptar.setOnClickListener(new Button.OnClickListener()
+    	{
+			@Override
+			public void onClick(View v) {
+				if(mylistener!=null){
+					mylistener.onButtonClick(alert, OK_BUTTOM);
+				} 
+				alert.dismiss();
+			}	
+    	});
+		/*mybuilder.setView(vDialog);
+		alert = mybuilder.create();*/
+	}
+	
+	@Override	
+	public void onDestroyView() {
+	  if (getDialog() != null && getRetainInstance())
+	    getDialog().setOnDismissListener(null);
+	  super.onDestroyView();
+	}
+	@Override
+	public void onResume()
+	{
+	  super.onResume();       
+	  getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+	  setStyle(DialogFragment.STYLE_NO_FRAME, android.R.style.Theme);
+	}
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		mDismissListener.onDismiss();
+	}	
+	
+	
+
     
 }

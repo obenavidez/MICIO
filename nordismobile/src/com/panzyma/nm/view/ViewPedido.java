@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -41,10 +42,11 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM; 
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMNetWork;
-import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener; 
+import com.panzyma.nm.auxiliar.NMNetWork; 
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
@@ -159,8 +161,6 @@ public class ViewPedido extends ActionBarActivity implements
 		fragmentActive = FragmentActive.LIST;
 
 		vp = this;
-		AppDialog.setContext(vp);
-		AppDialog.setContext(getSupportFragmentManager());
 		transaction = getSupportFragmentManager().beginTransaction();
 		gridheader.setVisibility(View.VISIBLE);
 		opcionesMenu = new String[] { "Nuevo Pedido", "Editar Pedido",
@@ -210,7 +210,8 @@ public class ViewPedido extends ActionBarActivity implements
             } catch (Exception e)
             { 
             	e.printStackTrace();
-            	AppDialog.showMessage("",e.getMessage(),DialogType.DIALOGO_ALERTA);
+            	//AppDialog.showMessage(vp, "Primer Mensaje",e.getMessage(),DialogType.DIALOGO_ALERTA, null);
+            	AppDialog.showMessage(vp,"Información",e.getMessage(),DialogType.DIALOGO_ALERTA);
             }  
             // with requestCode 2
             break;
@@ -228,17 +229,15 @@ public class ViewPedido extends ActionBarActivity implements
 		        if("PORVALIDAR".equals(state) || "APROBADO".equals(state) )
 		        {
 		            //Toast.makeText(getApplicationContext(),"No puede borrar pedidos por validar o aprobados.", Toast.LENGTH_SHORT).show();
-		            AppDialog.showMessage("","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
+		            //AppDialog.showMessage("","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
+		        	AppDialog.showMessage(vp,"Información","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
 		            return;
 		        }
-		        AllowRemove("¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_CONFIRMACION);
+		        AllowRemove("Confirmación","¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_CONFIRMACION);
 	        }
 	        else
 	        { 
-	        	if(pedidos.size()>0 && pedido_selected!=null)
-	        		AppDialog.showMessage("","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-	        	else	
-	        		AppDialog.showMessage("","No existen pedidos registrados.",DialogType.DIALOGO_ALERTA);
+	        	ShowNoRecords();
             }
             //CERRAR EL MENU DEL DRAWER
             drawerLayout.closeDrawers();
@@ -294,22 +293,33 @@ public class ViewPedido extends ActionBarActivity implements
 	            pos = customArrayAdapter.getSelectedPosition();
 	            //OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
 	            pedido_selected = customArrayAdapter.getItem(pos);
-	            //OBTENER EL ESTADO DEL REGISTRO
-	            state = pedido_selected.getDescEstado();
-	            
-	            //VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
-	            if ("APROBADO".compareTo(state) != 0)
-	            {
-	                Toast.makeText(getApplicationContext(),"Solo se pueden anular pedidos en estado de APROBADO.", Toast.LENGTH_SHORT).show();
-	              //CERRAR EL MENU DEL DRAWER
-	                drawerLayout.closeDrawers();
-	                return;
-	            }
+	            if(pedido_selected!=null)
+		        {
+		            //OBTENER EL ESTADO DEL REGISTRO
+		            state = pedido_selected.getDescEstado();
+		            //VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
+		            if ("APROBADO".compareTo(state) != 0)
+		            {
+		                //Toast.makeText(getApplicationContext(),"Solo se pueden anular pedidos en estado de APROBADO.", Toast.LENGTH_SHORT).show();
+		            	AppDialog.showMessage(vp,"Información","Solo se pueden anular pedidos en estado de APROBADO.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
+							@Override
+							public void onButtonClick(AlertDialog alert,int actionId) {
+							}
+		        		});
+		              //CERRAR EL MENU DEL DRAWER
+		                drawerLayout.closeDrawers();
+		                return;
+		            }
 	            //SI SE ESTÁ FUERA DE LA COBERTURA
 	            if(!NMNetWork.isPhoneConnected(context,nmapp.getController()) && !NMNetWork.CheckConnection(nmapp.getController()))
 	            
 	            {
-	                Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
+	                //Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
+	            	AppDialog.showMessage(vp,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
+						@Override
+						public void onButtonClick(AlertDialog alert,int actionId) {
+						}
+	        		});
 	                return;
 	            }
 	            try
@@ -318,13 +328,24 @@ public class ViewPedido extends ActionBarActivity implements
 	            	Pedido pedido=(Pedido)nmapp.getController().getBridge().getClass().getMethod("anularPedido", long.class ).invoke(null,pedido_selected.getId());
 	            	if(pedido==null) return;
 	            	
-	            	Toast.makeText(getApplicationContext(),"El pedido ha sido anulado.", Toast.LENGTH_SHORT).show();
+	            	//Toast.makeText(getApplicationContext(),"El pedido ha sido anulado.", Toast.LENGTH_SHORT).show();
+	            	AppDialog.showMessage(vp,"Información","El pedido ha sido anulado.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
+						@Override
+						public void onButtonClick(AlertDialog alert,int actionId) {
+						}
+	        		});
 	            	
 	            }
 	            catch(Exception ex)
 	            {
 	                ex.printStackTrace();
 	            }
+		    }
+	        else{
+	            //CERRAR EL MENU DEL DRAWER
+                drawerLayout.closeDrawers();
+	            ShowNoRecords();
+	        }
             break;
         }
         
@@ -509,7 +530,8 @@ public class ViewPedido extends ActionBarActivity implements
 				        			firstFragment.getAdapter().setSelectedPosition(0);
 				        			pedido_selected = pedidos.get(0);
 				        		}
-				        		AppDialog.showMessage("","Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
+				        		//AppDialog.showMessage("","Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
+				        		AppDialog.showMessage(vp, "Exíto","Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
 				        	}
 			             }
 			        }
@@ -520,7 +542,11 @@ public class ViewPedido extends ActionBarActivity implements
 				ErrorMessage error=((ErrorMessage)msg.obj);
 				//buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();
 				Toast.makeText(getApplicationContext(),error.getTittle(), Toast.LENGTH_SHORT).show();
-            	
+				AppDialog.showMessage(vp,error.getTittle(),error.getMessage()+error.getCause(),DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
+					@Override
+					public void onButtonClick(AlertDialog alert,int actionId) {
+					}
+        		});
 				val=true;
 				break;
 		}
@@ -636,18 +662,30 @@ public class ViewPedido extends ActionBarActivity implements
 		finish();
 	}
 	
-	public void AllowRemove(final String msg,final DialogType type)
+	public void AllowRemove(final String title ,final String msg,final DialogType type)
 	{
-
-		if(AppDialog.showMessage("",msg,type))
-		{
-		//nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
-			Message ms = new  Message();
-			ms.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST; 
-			ms.obj = pedido_selected.getId();
-			nmapp.getController().getInboxHandler().sendMessage(ms);
-		}
-				
+		AppDialog.showMessage(vp, title,msg,type,new OnButtonClickListener() {
+			@Override
+			public void onButtonClick(AlertDialog _dialog, int actionId) {
+				if(actionId == AppDialog.OK_BUTTOM) {
+					Message ms = new  Message();
+					ms.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST; 
+					ms.obj = pedido_selected.getId();
+					nmapp.getController().getInboxHandler().sendMessage(ms);
+				}				
+			}
+		});
 	}
 
+	@SuppressWarnings("unused")
+	private void ShowNoRecords()
+	{
+		if(pedidos.size()>0 && pedido_selected!=null){
+    		AppDialog.showMessage(vp,"","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+    	}
+    	else{	
+    		AppDialog.showMessage(vp,"","No existen pedidos registrados.",DialogType.DIALOGO_ALERTA);
+    	}
+	}
+	
 } 

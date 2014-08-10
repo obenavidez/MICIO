@@ -71,11 +71,11 @@ public class vmEntity implements Item,Parcelable,Serializable
 	}
 	@Override
 	public Object isMatch(CharSequence constraint) {
-		if (String.valueOf(getNumero()).toLowerCase().startsWith(constraint.toString()))
+		if (String.valueOf(getNumero()).toLowerCase().contains(constraint.toString()))
 			return true;
-		else if (String.valueOf(getNombre()).toLowerCase().startsWith(constraint.toString()))
+		else if (String.valueOf(getNombre()).toLowerCase().contains(constraint.toString()))
 			return true;
-		else if (String.valueOf(getId()).toLowerCase().startsWith(constraint.toString()))
+		else if (String.valueOf(getId()).toLowerCase().contains(constraint.toString()))
 			return true;
 		return false;
 	}

@@ -13,7 +13,6 @@ import android.os.Parcelable;
 
 import com.google.gson.Gson;
 import com.panzyma.nm.interfaces.Item;
-import com.panzyma.nm.viewmodel.vmCliente;
 
 public class Producto implements Parcelable,KvmSerializable,Item {
 	public long Id;
@@ -355,8 +354,7 @@ public class Producto implements Parcelable,KvmSerializable,Item {
 
 	@Override
 	public Object isMatch(CharSequence constraint) {
-		if (this.getNombre().toLowerCase()
-				.startsWith(constraint.toString()))
+		if (this.getNombre().toLowerCase().contains(constraint.toString()))
 			return true;
 		return false;
 	}
