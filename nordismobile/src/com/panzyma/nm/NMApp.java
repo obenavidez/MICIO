@@ -12,6 +12,19 @@ public class NMApp extends Application
 	
 	public  Controller controller;
 	private ThreadPool pool;
+	
+	public enum Modulo {
+		HOME,
+		CLIENTE,
+		PRODUCTO,
+		PEDIDO,
+		RECIBO,
+		CONFIGURACION,
+		DEVOLUCION
+	}
+	
+	public static Modulo modulo;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
