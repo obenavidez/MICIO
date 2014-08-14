@@ -57,6 +57,7 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_PEDIDODETALLE = Uri.parse(CONTENT_URI+ "/pedidodetalle");
 	public static final Uri CONTENT_URI_PEDIDOPROMOCION = Uri.parse(CONTENT_URI+ "/pedidopromocion");
 	public static final Uri CONTENT_URI_PEDIDOPROMOCIONDETALLE = Uri.parse(CONTENT_URI+ "/pedidopromociondetalle");
+	
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
 	private static final int CLIENTE_ID = 2;
@@ -203,8 +204,6 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "recibodetallenotacredito", RECIBODETALLENOTACREDITO);
 		uriMatcher.addURI(AUTHORITY, "recibodetallenotacredito/#", RECIBODETALLENOTACREDITO_ID);
-		
-		
 		
 	}
 	
