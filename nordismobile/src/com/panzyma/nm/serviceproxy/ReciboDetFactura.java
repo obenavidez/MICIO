@@ -424,7 +424,7 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 	@Override
 	public int getPropertyCount() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 27;
 	}
 
 	@Override
