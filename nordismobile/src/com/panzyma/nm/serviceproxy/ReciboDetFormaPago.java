@@ -367,6 +367,5 @@ public class ReciboDetFormaPago implements KvmSerializable,Parcelable {
         this.Fecha = parcel.readInt();
         this.SerieBilletes = parcel.readString();
         this.TasaCambio = parcel.readFloat();	 	
-	 }
-	
+	 } 
 }

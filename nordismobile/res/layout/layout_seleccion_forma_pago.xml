@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/lblTitulo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:background="@color/LightSteelBlue"
+        android:gravity="center_horizontal"
+        android:text="Seleccione la forma de Pago"
+        android:textColor="@color/DarkBlue"
+        android:textStyle="bold" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/lblFormaPago"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="3dp"
+                android:text="Forma Pago:"
+                android:textSize="11sp" />
+
+            <Spinner
+                android:id="@+id/cmb_forma_pago"
+                android:layout_width="fill_parent"
+                android:layout_height="45dp"
+                android:textSize="11sp"
+                android:layout_marginTop="10dp" />
+        </TableRow>
+        
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            
+            <TextView
+                android:id="@+id/lblNumero"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"               
+                android:layout_marginLeft="3dp"
+                android:text="Número:"
+                android:textSize="11sp" />
+            
+            <TextView
+                android:id="@+id/txtNumero"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="3dp"
+                android:text=""
+                android:textSize="11sp" />
+            
+        </TableRow>
+        
+         <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            
+            <TextView
+                android:id="@+id/lblFecha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="3dp"
+                android:text="Fecha:"
+                android:textSize="11sp" />
+            
+            <TextView
+                android:id="@+id/txtFecha"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"                
+                android:layout_marginLeft="3dp"
+                android:text=""
+                android:textSize="11sp" />
+            
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/lblBanco"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="3dp"
+                android:text="Banco:"
+                android:textSize="11sp" />
+
+            <Spinner
+                android:id="@+id/cmb_banco"
+                android:layout_width="fill_parent"
+                android:layout_height="45dp"
+                android:textSize="11sp"
+                android:layout_marginTop="10dp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/lblMoneda"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="3dp"
+                android:text="Moneda:"
+                android:textSize="11sp" />
+
+            <Spinner
+                android:id="@+id/cmb_moneda"
+                android:layout_width="fill_parent"
+                android:layout_height="45dp"
+                android:textSize="11sp"
+                android:layout_marginTop="10dp" />
+        </TableRow>
+        
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            
+            <TextView
+                android:id="@+id/lblTasa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="3dp"
+                android:text="Tasa:"
+                android:textSize="11sp" />
+            
+            <TextView
+                android:id="@+id/txtTasa"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"                
+                android:layout_marginLeft="3dp"
+                android:text=""
+                android:textSize="11sp" />
+            
+        </TableRow>
+        
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            
+            <TextView
+                android:id="@+id/lblMontoPago"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="3dp"
+                android:text="Monto Pago:"
+                android:textSize="11sp" />
+            
+            <EditText
+                android:id="@+id/txtMontoPago"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_margin="3dp"
+                android:ems="10"
+                android:enabled="false"
+                android:inputType="numberDecimal" />
+            
+        </TableRow>
+        
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            
+            <TextView
+                android:id="@+id/lblMontoNacional"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="3dp"
+                android:text="Monto Nacional:"
+                android:textSize="11sp" />
+            
+            <TextView
+                android:id="@+id/txtMontoNacional"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"                
+                android:layout_marginLeft="3dp"
+                android:text=""
+                android:textSize="11sp" />
+            
+        </TableRow>
+        
+    </TableLayout>
+
+</LinearLayout>

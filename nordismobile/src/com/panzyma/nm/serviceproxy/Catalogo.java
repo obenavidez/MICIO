@@ -16,6 +16,10 @@ public class Catalogo {
      
 	public Catalogo() { 
 	}
+	
+	public Catalogo(String NombreCatalogo) { 
+		this.NombreCatalogo = NombreCatalogo;
+	}
 
     public int getId(){
     	return Id;
@@ -24,9 +28,15 @@ public class Catalogo {
     public String getNombreCatalogo(){
     	return NombreCatalogo;
     }
+    
     public List<ValorCatalogo> getValoresCatalogo(){
     	return ValoresCatalogo;
     }
+    
+    public void setValoresCatalogo(List<ValorCatalogo> ValoresCatalogo){
+    	this.ValoresCatalogo = ValoresCatalogo;
+    }    
+    
     public static ArrayList<Catalogo> ParseArrayJSON_To_Entity(JSONArray arrayjson) throws Exception
 	{
 		ArrayList<Catalogo> valorescatologos=new ArrayList<Catalogo>();

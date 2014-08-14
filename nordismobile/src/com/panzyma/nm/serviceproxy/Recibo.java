@@ -43,12 +43,12 @@ public class Recibo implements KvmSerializable,Parcelable {
 	protected float TotalImpuestoProporcional;
 	protected float TotalImpuestoExonerado;
 	protected boolean Exento;
-	protected java.lang.String AutorizacionDGI;
+	protected java.lang.String AutorizacionDGI; 
 	protected Cliente cliente;	
 	protected ArrayList<ReciboDetFactura> DetalleFacturas = new ArrayList<ReciboDetFactura>(); 
 	protected ArrayList<ReciboDetND> DetalleNotasDebito = new ArrayList<ReciboDetND>();
 	protected ArrayList<ReciboDetNC> DetalleNotasCredito = new ArrayList<ReciboDetNC>(); 
-	protected ArrayList<ReciboDetFormaPago> DetalleFormasPago = new ArrayList<ReciboDetFormaPago>();
+	protected ArrayList<ReciboDetFormaPago> DetalleFormasPago = new ArrayList<ReciboDetFormaPago>(); 
 	
 	public Recibo() {
 		super();		
@@ -369,8 +369,8 @@ public class Recibo implements KvmSerializable,Parcelable {
 
 	public void setNotasDebitoRecibo(ArrayList<ReciboDetND> notasDebitoRecibo) {
 		this.DetalleNotasDebito = notasDebitoRecibo;
-	}
-	
+	} 
+
 	public Recibo(Parcel parcel){ 	   
  	   readFromParcel(parcel);
 	}
