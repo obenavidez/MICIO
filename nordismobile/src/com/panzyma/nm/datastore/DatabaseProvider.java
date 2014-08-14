@@ -80,6 +80,7 @@ public class DatabaseProvider extends ContentProvider
 	private static final int LOTE_ID=19;
 	private static final int CATALOGO=20;
 	private static final int CATALOGO_ID=21;
+	private static final int CATALOGO_BY_NAME=50;
 	private static final int VALORCATALOGO=22;
 	private static final int VALORCATALOGO_ID=23;
 	private static final int PROMOCION=24;
@@ -227,7 +228,7 @@ public class DatabaseProvider extends ContentProvider
 		   bdd=d.getWritableDatabase();
 		}
 		return bdd;
-	}
+	}	
 	
 	@SuppressWarnings({ "rawtypes"})
 	@Override
@@ -244,6 +245,52 @@ public class DatabaseProvider extends ContentProvider
 		c = db.query(TABLE_NAME_L, columns, where,selectionArgs, null, null, sortOrder); 
 		return c;
 	}
+	
+	public abstract static class Helper {
+		
+		private static SQLiteDatabase db;
+
+		public static SQLiteDatabase getDatabase(Context view) {
+			// OBTENER LA RUTA DE LA BASE DE DATOS
+			String dataBasePath = view.getDatabasePath(DATABASE_NAME).getPath();	
+			// SI NO EXISTE NINGUNA INSTANCIA DE LA BASE DE DATOS, CREAR UNA
+			if ( db == null ) {
+				NM_SQLiteHelper d = new NM_SQLiteHelper(
+						view,
+						DATABASE_NAME,
+						null,
+						BD_VERSION);
+				db = d.getWritableDatabase();
+			}
+			//SI LA BASE DE DATOS NO SE ENCUENTRA ABIERTA, ABRIRLA 
+			if ( !db.isOpen() ) {
+				db = view.openOrCreateDatabase(
+						dataBasePath,
+						SQLiteDatabase.CREATE_IF_NECESSARY,
+						null);
+			}	
+			//REGRESAR UNA UNICA INSTANCIA DE LA BASE DE DATOS
+			return db;
+		}
+
+	}
+	
+	@SuppressWarnings({ "rawtypes"})	
+	public static synchronized Cursor query( SQLiteDatabase db, String strQuery)
+	{			
+		Cursor c = null; 
+		try {					
+			db.beginTransaction();
+			c = db.rawQuery(strQuery, null);
+			db.setTransactionSuccessful(); 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	 
+		 
+		return c;
+	}
+	
+	
 
 	public static void RegistrarTasaCambios(JSONArray objL,Context view) throws Exception
 	{		 
@@ -965,6 +1012,11 @@ public class DatabaseProvider extends ContentProvider
 			case CATALOGO_ID: 			dictionary.put(CATALOGO, TABLA_CATALOGO);
 										dictionary.put(CATALOGO+1,"Id=" + uri.getLastPathSegment());
 										break;
+										
+			case CATALOGO_BY_NAME:      dictionary.put(CATALOGO, TABLA_CATALOGO);
+										dictionary.put(CATALOGO_BY_NAME,"NombreCatalogo=" + uri.getLastPathSegment());
+										break;
+				
 			case PROMOCION:				dictionary.put(PROMOCION, TABLA_PROMOCION);
 										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_PROMOCION.toString());
 										break;

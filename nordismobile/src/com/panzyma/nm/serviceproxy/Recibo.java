@@ -45,6 +45,7 @@ public class Recibo implements Parcelable {
 	protected ArrayList<ReciboDetFactura> facturasRecibo = new ArrayList<ReciboDetFactura>(); 
 	protected ArrayList<ReciboDetNC> notasCreditoRecibo = new ArrayList<ReciboDetNC>();
 	protected ArrayList<ReciboDetND> notasDebitoRecibo = new ArrayList<ReciboDetND>();
+	protected ArrayList<ReciboDetFormaPago> formasPagoRecibo = new ArrayList<ReciboDetFormaPago>();
 	
 	public Recibo() {
 		super();		
@@ -367,6 +368,14 @@ public class Recibo implements Parcelable {
 		this.notasDebitoRecibo = notasDebitoRecibo;
 	}
 	
+	public ArrayList<ReciboDetFormaPago> getFormasPagoRecibo() {
+		return formasPagoRecibo;
+	}
+
+	public void setFormasPagoRecibo(ArrayList<ReciboDetFormaPago> formasPagoRecibo) {
+		this.formasPagoRecibo = formasPagoRecibo;
+	}
+
 	public Recibo(Parcel parcel){ 	   
  	   readFromParcel(parcel);
 	}
