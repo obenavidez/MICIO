@@ -21,6 +21,7 @@ import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;
 
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 @SuppressLint("ParserError")@SuppressWarnings("rawtypes")
@@ -41,8 +42,7 @@ public class SessionManager
     private static Parameters params;
     private static String errormessage=""; 
     private static boolean isOK;
-    private static boolean _esAdmin;
-    private static boolean setting_session;
+    private static boolean _esAdmin; 
     private static NMApp nmapp;
     static Object lock=new Object();
     static Object lock2=new Object(); 
@@ -81,14 +81,7 @@ public class SessionManager
 	public static boolean isAdmin() 
 	{
 	       return _esAdmin;
-    }	
-	public static boolean isCheckedSettingSession(){
-		return setting_session;
-	}
-	
-	public static void setCheckedSettingSession(boolean checked){
-		setting_session=checked;
-	}
+    }	 
 	
 	public static Usuario getLoginUser()
 	{
@@ -117,20 +110,44 @@ public class SessionManager
 		return islogged;
 	}
 	
-	public static String getCredenciales(){
+public static String getCredenciales(){
 		
-		if (!islogged) 
-			if(!SessionManager.SignIn(false))
-				return ""; 
-         
+		if (!islogged)
+		{			
+			if (NMApp.modulo != NMApp.Modulo.CONFIGURACION) 
+			{
+				if(!SessionManager.SignIn(false))
+					return "";  
+					
+			}else if (SessionManager.SignIn(true))
+				return "";
+		} 
+		else
+		{		
+			if(SessionManager.isAdmin() && NMApp.modulo != NMApp.Modulo.CONFIGURACION)  
+				if(!SessionManager.SignIn(false))
+					return "";			
+		}        
         return nameuser + "-" + password + "-" + empresa; 
 	} 
-	public static String getCredentials(){
-		
-		if (!islogged) 
-			if(!SessionManager.SignIn(false))
-				return ""; 
-         
+	public static String getCredentials()
+	{		
+		if (!islogged)
+		{			
+			if (NMApp.modulo != NMApp.Modulo.CONFIGURACION) 
+			{
+				if(!SessionManager.SignIn(false))
+					return "";  
+					
+			}else if (SessionManager.SignIn(true))
+				return "";
+		} 
+		else
+		{		
+			if(SessionManager.isAdmin() && NMApp.modulo != NMApp.Modulo.CONFIGURACION)  
+				if(!SessionManager.SignIn(false))
+					return "";			
+		}          
         return nameuser + "||" + password + "||" + empresa; 
 	}
 	
@@ -145,43 +162,11 @@ public class SessionManager
 	public synchronized static boolean SignIn(final boolean admin)
     {
 		isOK=true; 
-	while(  ( (!SessionManager.isLogged() && isOK) && !(SessionManager.setting_session)) || 
-			(admin && !SessionManager.isAdmin() && isOK)
-		 )
+		while( ((!SessionManager.isLogged()) && isOK) || (admin && !SessionManager.isAdmin() && isOK) )
 		{
 			isOK=false;
 			SessionManager.bloque1(admin);
-			SessionManager.bloque2();
-			if(admin && SessionManager.isLogged() && !SessionManager.isAdmin() )
-			{			
-				context.runOnUiThread(new Runnable()
-		        {
-		            @Override
-					public void run()
-		            { 
-						dlg= new CustomDialog(context,"Usuario no cuenta con suficiente permiso para realizar esta acción.",true,NOTIFICATION_DIALOG2);						 
-						dlg.setOnActionDialogButtonClickListener(new OnActionButtonClickListener()
-						{
-							@Override
-							public void onButtonClick(View _dialog, int actionId) 
-							{ 
-								synchronized(lock){                            
-		                        	lock.notify();
-		                        }
-							}
-						}); 
-						dlg.show();		
-		            }
-		        });
-			    synchronized(lock)
-		        {
-		            try {
-		            	lock.wait();
-					} catch (InterruptedException e) { 
-						e.printStackTrace();
-					}
-		        }
-			}
+			SessionManager.bloque2(admin);  			
 		}
         return SessionManager.isLogged();
     }
@@ -198,8 +183,7 @@ public class SessionManager
         		dl.setOnDialogLoginButtonClickListener(new OnButtonClickListener(){
 				@Override
 				public void onButtonClick(boolean btn) { 
-					isOK=btn; 
-					setting_session=(isOK==true)?((admin)?false:dl.isCheckedSettingSession()):false;
+					isOK=btn;  
 					dl.dismiss();   
 				}}); 
         		dl.setOnDismissListener(new OnDismissListener()
@@ -227,33 +211,35 @@ public class SessionManager
         
 	}
 	
-	public static void bloque2()
-	{
-		if(!setting_session)
+	public static void bloque2(final boolean admin)
+	{ 
+        if(isOK)
         {
-	        if(isOK)
+        	context.runOnUiThread(new Runnable()
 	        {
-	        	context.runOnUiThread(new Runnable()
-		        {
-		            @Override
-					public void run()
-		            {		         
-		            	SessionManager.login();   
-		            }	        
-		        });        	
-		        synchronized(lock)
-		        {
-		            try {
-		            	lock.wait();
-					} catch (InterruptedException e) { 
-						e.printStackTrace();
-					}
-		        }
+	            @Override
+				public void run()
+	            {		         
+	            	SessionManager.login(admin);   
+	            }	        
+	        });        	
+	        synchronized(lock)
+	        {
+	            try {
+	            	lock.wait();
+				} catch (InterruptedException e) { 
+					e.printStackTrace();
+				}
 	        }
         } 
 	}
 	
-	public  static boolean  login()
+	public static Boolean isPhoneConnected()
+	{
+		return NMNetWork.isPhoneConnected(context,nmapp.getController());		
+	}
+	
+	public  static boolean  login(final boolean admin)
 	{
 		final Controller controller=nmapp.getController();
 		final String empresa=dl.getEmpresa();
@@ -282,13 +268,14 @@ public class SessionManager
 										try 
 										{
 											res =ModelConfiguracion.verifyLogin((nombreusuario+"-"+password+"-"+empresa),"ADMIN");
-											if (res.getAuntenticateRS() == AUT_EXITOSA)
-											{ 
+											
+											if (res.getAuntenticateRS() == AUT_EXITOSA && res.IsAdmin() == admin)
+											{ 												
 												 _esAdmin=res.IsAdmin();
 												SessionManager.setEmpresa(empresa);
 												SessionManager.setNameUser(nombreusuario);
 												SessionManager.setPassword(password);
-												SessionManager.setLogged(true);  											    
+												SessionManager.setLogged(true); 
 												unlock();
 											}
 											else
@@ -299,6 +286,8 @@ public class SessionManager
 													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Contraseña inválida.","")); 
 												else if (res.getAuntenticateRS() == AUT_FALLIDA)
 													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Fallo de autenticación.",""));
+												else
+													sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario "+nombreusuario+" no es Administrador",""));
 												unlock();											
 											}
 											
@@ -313,16 +302,16 @@ public class SessionManager
 						} catch (InterruptedException e) { 
 							e.printStackTrace();
 						} 
-						//sendnotificationMessage(NOTIFICATION, 0, new NotificationMessage("","Validando Credenciales.",""));
-						controller._notifyOutboxHandlers(NOTIFICATION, 0, 0, new NotificationMessage("","Validando Credenciales.","")); 
+						showStatus(new NotificationMessage("","Validando Credenciales.",""));
+						//controller._notifyOutboxHandlers(NOTIFICATION, 0, 0, new NotificationMessage("","Validando Credenciales.","")); 
 							
 					}
 					else
 						unlock();
 				 }
-			});	
-			//sendnotificationMessage(NOTIFICATION, 0, new NotificationMessage("","Probando Conexión.",""));
-			controller._notifyOutboxHandlers(NOTIFICATION, 0, 0, new NotificationMessage("","Probando Conexión.",""));   
+			});	 
+			showStatus(new NotificationMessage("","Probando Conexión.",""));
+			//controller._notifyOutboxHandlers(NOTIFICATION, 0, 0, new NotificationMessage("","Probando Conexión.",""));   
 
 		}
 	    catch (Exception e) {  
@@ -331,9 +320,7 @@ public class SessionManager
 		} 
 		return SessionManager.isLogged();
 
- 	}
-		  
-	
+ 	} 
 	 
 	public static void unlock()
 	{
@@ -347,6 +334,21 @@ public class SessionManager
                     }
 	            }
 	      });
+	}
+	
+	public static void showStatus(final NotificationMessage notificacion)
+	{
+		if(dlg!=null)
+			dlg.dismiss();
+		context.runOnUiThread(new Runnable()
+        {
+            @Override
+			public void run()
+            { 
+            	dlg= new CustomDialog(context,notificacion.getMessage()+notificacion.getCause(),false,NOTIFICATION_DIALOG); 
+            	dlg.show();
+            }
+        });		
 	}
 	
 	public static void sendErrorMessage(final ErrorMessage error)
@@ -384,8 +386,7 @@ public class SessionManager
 	public static void clean(){
 		SessionManager.setEmpresa("");
 		SessionManager.setNameUser("");
-		SessionManager.setPassword("");
-		SessionManager.setCheckedSettingSession(false);
+		SessionManager.setPassword(""); 
 		SessionManager.setLogged(false);
 		userinfo=null;
 	}

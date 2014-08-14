@@ -77,7 +77,7 @@ public class ViewPedido extends ActionBarActivity implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		if(drawerLayout!=null && drawerLayout.isShown())drawerLayout.closeDrawers();
 	}
 
 	@Override
@@ -227,9 +227,7 @@ public class ViewPedido extends ActionBarActivity implements
 		        //OBTENER EL ESTADO DEL REGISTRO
 		        state = pedido_selected.getDescEstado();
 		        if("PORVALIDAR".equals(state) || "APROBADO".equals(state) )
-		        {
-		            //Toast.makeText(getApplicationContext(),"No puede borrar pedidos por validar o aprobados.", Toast.LENGTH_SHORT).show();
-		            //AppDialog.showMessage("","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
+		        { 
 		        	AppDialog.showMessage(vp,"Información","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
 		            return;
 		        }
