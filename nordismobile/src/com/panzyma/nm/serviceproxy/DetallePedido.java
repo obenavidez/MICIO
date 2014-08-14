@@ -263,8 +263,8 @@ public  class DetallePedido implements KvmSerializable,Parcelable{
         case 19: CantidadADespachar = Integer.parseInt(_obj.toString()); break;
         case 20: CantidadPromocion = Integer.parseInt(_obj.toString()); break;
         }
-    }
-
+    } 
+    
     @Override
 	@SuppressWarnings("rawtypes")
 	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
@@ -335,26 +335,23 @@ public  class DetallePedido implements KvmSerializable,Parcelable{
         }
     }
 
-    
-    
-    
     public DetallePedido(Parcel parcel){
  	   this();
  	   readFromParcel(parcel);
- }
+    }
  
- public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+     public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
 
-     public DetallePedido createFromParcel(Parcel parcel) {
-          return new DetallePedido(parcel);
-     }
-
-     public DetallePedido[] newArray(int size) {
-          return new DetallePedido[size];
-     }
+	     public DetallePedido createFromParcel(Parcel parcel) {
+	          return new DetallePedido(parcel);
+	     }
+	
+	     public DetallePedido[] newArray(int size) {
+	          return new DetallePedido[size];
+	     }
    	 
    	 
-};
+     };
  
 	@Override
 	public void writeToParcel(Parcel parcel, int arg1) {	
@@ -382,31 +379,31 @@ public  class DetallePedido implements KvmSerializable,Parcelable{
 		  
 	}
 	
- private void readFromParcel(Parcel parcel) 
- {
- 	this.Id = parcel.readLong(); 
- 	this.objPedidoID=parcel.readLong();
- 	this.objProductoID=parcel.readLong();
- 	this.CodProducto=parcel.readString();
- 	this.NombreProducto=parcel.readString();
- 	this.CantidadOrdenada=parcel.readInt();
- 	this.CantidadBonificada=parcel.readInt();
- 	this.objBonificacionID=parcel.readLong();
- 	this.BonifEditada = (parcel.readInt()==1)?true:false;
- 	this.CantidadBonificadaEditada=parcel.readInt();
- 	this.Precio=parcel.readFloat();
- 	this.MontoPrecioEditado=parcel.readFloat();
- 	this.PrecioEditado = (parcel.readInt()==1)?true:false; 
- 	this.Subtotal=parcel.readFloat();
- 	this.Descuento=parcel.readFloat();
- 	this.PorcImpuesto=parcel.readFloat();
- 	this.Impuesto=parcel.readFloat(); 
- 	this.Total=parcel.readFloat(); 
- 	this.CantidadDespachada=parcel.readInt();
- 	this.CantidadADespachar=parcel.readInt();
- 	this.CantidadPromocion=parcel.readInt();
- 	
- }
+	 private void readFromParcel(Parcel parcel) 
+	 {
+	 	this.Id = parcel.readLong(); 
+	 	this.objPedidoID=parcel.readLong();
+	 	this.objProductoID=parcel.readLong();
+	 	this.CodProducto=parcel.readString();
+	 	this.NombreProducto=parcel.readString();
+	 	this.CantidadOrdenada=parcel.readInt();
+	 	this.CantidadBonificada=parcel.readInt();
+	 	this.objBonificacionID=parcel.readLong();
+	 	this.BonifEditada = (parcel.readInt()==1)?true:false;
+	 	this.CantidadBonificadaEditada=parcel.readInt();
+	 	this.Precio=parcel.readFloat();
+	 	this.MontoPrecioEditado=parcel.readFloat();
+	 	this.PrecioEditado = (parcel.readInt()==1)?true:false; 
+	 	this.Subtotal=parcel.readFloat();
+	 	this.Descuento=parcel.readFloat();
+	 	this.PorcImpuesto=parcel.readFloat();
+	 	this.Impuesto=parcel.readFloat(); 
+	 	this.Total=parcel.readFloat(); 
+	 	this.CantidadDespachada=parcel.readInt();
+	 	this.CantidadADespachar=parcel.readInt();
+	 	this.CantidadPromocion=parcel.readInt();
+	 	
+	 }
 
 
 	@Override

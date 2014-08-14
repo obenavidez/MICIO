@@ -2,12 +2,16 @@ package com.panzyma.nm.serviceproxy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
+
+import org.ksoap2.serialization.KvmSerializable;
+import org.ksoap2.serialization.PropertyInfo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Recibo implements Parcelable {
+public class Recibo implements KvmSerializable,Parcelable {
 
 	protected long Id;
 	protected int Numero;
@@ -40,11 +44,11 @@ public class Recibo implements Parcelable {
 	protected float TotalImpuestoExonerado;
 	protected boolean Exento;
 	protected java.lang.String AutorizacionDGI;
-	protected Cliente cliente;
-	
-	protected ArrayList<ReciboDetFactura> facturasRecibo = new ArrayList<ReciboDetFactura>(); 
-	protected ArrayList<ReciboDetNC> notasCreditoRecibo = new ArrayList<ReciboDetNC>();
-	protected ArrayList<ReciboDetND> notasDebitoRecibo = new ArrayList<ReciboDetND>();
+	protected Cliente cliente;	
+	protected ArrayList<ReciboDetFactura> DetalleFacturas = new ArrayList<ReciboDetFactura>(); 
+	protected ArrayList<ReciboDetND> DetalleNotasDebito = new ArrayList<ReciboDetND>();
+	protected ArrayList<ReciboDetNC> DetalleNotasCredito = new ArrayList<ReciboDetNC>(); 
+	protected ArrayList<ReciboDetFormaPago> DetalleFormasPago = new ArrayList<ReciboDetFormaPago>();
 	
 	public Recibo() {
 		super();		
@@ -169,7 +173,7 @@ public class Recibo implements Parcelable {
 
 	public float getTotalDesc() {
 		return TotalDesc;
-	}
+	} 
 
 	public void setTotalDesc(float totalDesc) {
 		this.TotalDesc = totalDesc;
@@ -344,31 +348,39 @@ public class Recibo implements Parcelable {
 	}
 
 	public ArrayList<ReciboDetFactura> getFacturasRecibo() {
-		return facturasRecibo;
+		return DetalleFacturas;
 	}
 
 	public void setFacturasRecibo(ArrayList<ReciboDetFactura> facturasRecibo) {
-		this.facturasRecibo = facturasRecibo;
+		this.DetalleFacturas = facturasRecibo;
 	}
 
 	public ArrayList<ReciboDetNC> getNotasCreditoRecibo() {
-		return notasCreditoRecibo;
+		return DetalleNotasCredito;
 	}
 
 	public void setNotasCreditoRecibo(ArrayList<ReciboDetNC> notasCreditoRecibo) {
-		this.notasCreditoRecibo = notasCreditoRecibo;
+		this.DetalleNotasCredito = notasCreditoRecibo;
 	}
 
 	public ArrayList<ReciboDetND> getNotasDebitoRecibo() {
-		return notasDebitoRecibo;
+		return DetalleNotasDebito;
 	}
 
 	public void setNotasDebitoRecibo(ArrayList<ReciboDetND> notasDebitoRecibo) {
-		this.notasDebitoRecibo = notasDebitoRecibo;
+		this.DetalleNotasDebito = notasDebitoRecibo;
 	}
 	
 	public Recibo(Parcel parcel){ 	   
  	   readFromParcel(parcel);
+	}
+	
+	public ArrayList<ReciboDetFormaPago> getFormasPagoRecibo() {
+		return DetalleFormasPago;
+	}
+
+	public void setFormasPagoRecibo(ArrayList<ReciboDetFormaPago> formasPagoRecibo) {
+		this.DetalleFormasPago = formasPagoRecibo;
 	}
 
 	private void readFromParcel(Parcel parcel) {
@@ -406,28 +418,28 @@ public class Recibo implements Parcelable {
 		
 		Parcelable[] parcelableArray = parcel.readParcelableArray(ReciboDetFactura.class.getClassLoader()); 
 		if (parcelableArray != null) {
-			facturasRecibo.clear();
+			DetalleFacturas.clear();
 			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, ReciboDetFactura[].class);
 			for(Object obj: list){
-				facturasRecibo.add( (ReciboDetFactura) obj);
+				DetalleFacturas.add( (ReciboDetFactura) obj);
 			}
 		}
 		
 		parcelableArray = parcel.readParcelableArray(ReciboDetND.class.getClassLoader()); 
 		if (parcelableArray != null) {
-			notasDebitoRecibo.clear();
+			DetalleNotasDebito.clear();
 			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, ReciboDetND[].class);
 			for(Object obj: list){
-				notasDebitoRecibo.add( (ReciboDetND) obj);
+				DetalleNotasDebito.add( (ReciboDetND) obj);
 			}
 		}
 		
 		parcelableArray = parcel.readParcelableArray(ReciboDetNC.class.getClassLoader()); 
 		if (parcelableArray != null) {
-			notasCreditoRecibo.clear();
+			DetalleNotasCredito.clear();
 			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, ReciboDetNC[].class);
 			for(Object obj: list){
-				notasCreditoRecibo.add( (ReciboDetNC) obj);
+				DetalleNotasCredito.add( (ReciboDetNC) obj);
 			}
 		}
 	}
@@ -490,27 +502,27 @@ public class Recibo implements Parcelable {
 	}
 	
 	private ReciboDetFactura [] getArrayFacturas(){
-		ReciboDetFactura [] facturas = new ReciboDetFactura[ facturasRecibo.size()]; 
+		ReciboDetFactura [] facturas = new ReciboDetFactura[ DetalleFacturas.size()]; 
 		int index = 0;
-		for(ReciboDetFactura factura : facturasRecibo){
+		for(ReciboDetFactura factura : DetalleFacturas){
 			facturas[index++] = factura;
 		}
 		return facturas;
 	}
 	
 	private ReciboDetND [] getArrayNotasDebito(){
-		ReciboDetND [] notasDebito = new ReciboDetND[ notasDebitoRecibo.size()]; 
+		ReciboDetND [] notasDebito = new ReciboDetND[ DetalleNotasDebito.size()]; 
 		int index = 0;
-		for(ReciboDetND factura : notasDebitoRecibo){
+		for(ReciboDetND factura : DetalleNotasDebito){
 			notasDebito[index++] = factura;
 		}
 		return notasDebito;
 	}
 	
 	private ReciboDetNC [] getArrayNotasCredito(){
-		ReciboDetNC [] notasCredito = new ReciboDetNC[ notasCreditoRecibo.size()]; 
+		ReciboDetNC [] notasCredito = new ReciboDetNC[ DetalleNotasCredito.size()]; 
 		int index = 0;
-		for(ReciboDetNC factura : notasCreditoRecibo){
+		for(ReciboDetNC factura : DetalleNotasCredito){
 			notasCredito[index++] = factura;
 		}
 		return notasCredito;
@@ -522,6 +534,216 @@ public class Recibo implements Parcelable {
 
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
+	}
+
+	@Override
+	public Object getProperty(int index) 
+	{
+		switch(index)  
+		{
+			case 0:return null;
+			case 1:return null;
+			case 2:return null;
+			case 3:return null;
+        	case 4: return new Long(Id);
+        	case 5: return new Integer(Numero);
+        	case 6: return new Long(Fecha);
+        	case 7: return Notas;
+        	case 8: return TotalRecibo;
+        	case 9: return TotalFacturas;
+        	case 10:return TotalND;
+        	case 11:return TotalInteres;
+        	case 12:return SubTotal;
+        	case 13: return TotalDesc;
+        	case 14: return TotalRetenido;
+        	case 15: return TotalOtrasDed;
+        	case 16:return TotalNC;
+        	case 17:return new Integer(Referencia);
+        	case 18: return new Long(ObjClienteID);
+        	case 19: return new Long(ObjSucursalID);
+        	case 20: return NombreCliente;
+        	case 21: return new Long(ObjColectorID);
+        	case 22: return new Boolean(AplicaDescOca);
+        	case 23: return ClaveAutorizaDescOca;
+        	case 24: return PorcDescOcaColector;
+        	case 25: return new Long(ObjEstadoID);
+        	case 26: return CodEstado;
+        	case 27: return DescEstado;
+        	case 28: return TotalDescOca;
+        	case 29: return TotalDescPromo;
+        	case 30: return TotalDescPP;
+        	case 31: return TotalImpuestoProporcional;
+        	case 32: return TotalImpuestoExonerado;
+        	case 33: return Exento;
+        	case 34: return AutorizacionDGI;
+		}
+		return null;
+	}
+
+	@Override
+	public int getPropertyCount() {
+		// TODO Auto-generated method stub
+		return 35;
+	}
+
+	@Override
+	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
+		try 
+		   {	   
+	    	   switch(_index)  
+	    	   {
+		           case 0:
+		               _info.name = "DetalleFacturas";
+		               _info.type = Long.class; 
+		               break;
+		           case 1:
+		               _info.name = "Id";
+		               _info.type = Long.class; 
+		               break;
+		           case 2:
+		               _info.name = "Id";
+		               _info.type = Long.class; 
+		               break;
+		           case 3:
+		               _info.name = "Id";
+		               _info.type = Long.class; 
+		               break;
+		           case 4:
+		               _info.name = "Id";
+		               _info.type = Long.class; 
+		               break;
+		           case 5:
+		               _info.name = "Numero";
+		               _info.type = Integer.class; 
+		               break;
+		           case 6:
+		               _info.name = "Fecha";
+		               _info.type = Long.class; 
+		               break;
+		           case 7:
+		               _info.name = "Notas";
+		               _info.type = String.class; 
+		               break;
+		           case 8:
+		               _info.name = "TotalRecibo";
+		               _info.type = Float.class; 
+		               break;
+		           case 9:
+		               _info.name = "TotalFacturas";
+		               _info.type = Float.class; 
+		               break;
+		           case 10:
+		               _info.name = "TotalND";
+		               _info.type = Float.class; 
+		               break;
+		           case 11:
+		               _info.name = "TotalInteres";
+		               _info.type = Float.class; 
+		               break;
+		           case 12:
+		               _info.name = "SubTotal";
+		               _info.type = Float.class; 
+		               break;
+		           case 13:
+		               _info.name = "TotalDesc";
+		               _info.type = Float.class; 
+		               break;
+		           case 14:
+		               _info.name = "TotalRetenido";
+		               _info.type = Float.class; 
+		               break;
+		           case 15:
+		               _info.name = "TotalOtrasDed";
+		               _info.type = Float.class; 
+		               break;
+		           case 16:
+		               _info.name = "TotalNC";
+		               _info.type = Float.class; 
+		               break;
+		           case 17:
+		               _info.name = "Referencia";
+		               _info.type = Integer.class; 
+		               break;
+		           case 18:
+		               _info.name = "ObjClienteID";
+		               _info.type = Long.class; 
+		               break;
+		           case 19:
+		               _info.name = "ObjSucursalID";
+		               _info.type = Long.class; 
+		               break;
+		           case 20:
+		               _info.name = "NombreCliente";
+		               _info.type = String.class; 
+		               break;
+		           case 21:
+		               _info.name = "ObjColectorID";
+		               _info.type = Long.class; 
+		               break;
+		           case 22:
+		               _info.name = "AplicaDescOca";
+		               _info.type = Boolean.class; 
+		               break;
+		           case 23:
+		               _info.name = "ClaveAutorizaDescOca";
+		               _info.type = String.class; 
+		               break;
+		           case 24:
+		               _info.name = "PorcDescOcaColector";
+		               _info.type = Float.class; 
+		               break;
+		           case 25:
+		               _info.name = "ObjEstadoID";
+		               _info.type = Long.class; 
+		               break;
+		           case 26:
+		               _info.name = "CodEstado";
+		               _info.type = String.class; 
+		               break;
+		           case 27:
+		               _info.name = "DescEstado";
+		               _info.type = String.class; 
+		               break;
+		           case 28:
+		               _info.name = "TotalDescOca";
+		               _info.type = Float.class; 
+		               break;
+		           case 29:
+		               _info.name = "TotalDescPromo";
+		               _info.type = Float.class; 
+		               break;
+		           case 30:
+		               _info.name = "TotalDescPP";
+		               _info.type = Float.class; 
+		               break;
+		           case 31:
+		               _info.name = "TotalImpuestoProporcional";
+		               _info.type = Float.class; 
+		               break;
+		           case 32:
+		               _info.name = "TotalImpuestoExonerado";
+		               _info.type = Float.class; 
+		               break;
+		           case 33:
+		               _info.name = "Exento";
+		               _info.type = Boolean.class; 
+		               break;
+		           case 34:
+		               _info.name = "AutorizacionDGI";
+		               _info.type = String.class; 
+		               break;
+		               
+	    	   }
+		   }catch(Exception e){
+			   
+		   }
+		
+	}
+
+	@Override
+	public void setProperty(int arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

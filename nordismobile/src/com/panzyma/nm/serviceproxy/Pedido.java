@@ -21,11 +21,11 @@ import com.panzyma.nm.interfaces.Item;
 import com.panzyma.nm.logic.DataArray;
   
 public class Pedido  implements KvmSerializable,Item,Parcelable{ 
+	
 	public Pedido() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
 	private long Id;
     private int NumeroMovil;
     private int NumeroCentral;
@@ -388,8 +388,7 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 18: return Condicion; 
         case 19: return Subtotal;
         case 20: return (Descuento);
-        case 21: return (Impuesto);
-        //case 22: return new Float(Total);
+        case 21: return (Impuesto); 
         case 22: return Total;
         case 23: return new Long(objEstadoID);
         case 24: return CodEstado;
@@ -770,7 +769,6 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 		this.Nota=parcel.readString();
 		this.AutorizacionDGI=parcel.readString();
 	}
-
    
 	@Override
 	public int describeContents() {
