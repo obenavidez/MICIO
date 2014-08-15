@@ -64,6 +64,12 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	public EditFormaPago() {
 		super();
 	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+	    super.onCreate(savedInstanceState);
+	    this.savedInstanceState = getArguments();
+	}
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -85,8 +91,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 			}
 		});
 		initComponents();
-		cargarCatalogoFormasPago();
-		this.savedInstanceState = savedInstanceState;
+		cargarCatalogoFormasPago();		
 		return builder.create();
 	}
 
