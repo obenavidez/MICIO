@@ -416,27 +416,191 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 	}
 
 	@Override
-	public Object getProperty(int arg0) {
-		// TODO Auto-generated method stub
+	public Object getProperty(int _index) { 
+		switch(_index)  {
+			case 0: return new Long(Id);
+			case 1: return new Long(ObjFacturaID);
+			case 2: return new Long(ObjReciboID);
+			case 3: return Monto;
+			case 4: return (EsAbono)?1:0;
+			case 5: return MontoDescEspecifico;
+			case 6: return MontoDescOcasional;
+			case 7: return MontoRetencion;
+			case 8: return MontoImpuesto;
+			case 9: return MontoInteres;
+			case 10:return MontoNeto;
+			case 11:return MontoOtrasDeducciones;
+			case 12:return MontoDescPromocion;
+			case 13:return PorcDescOcasional;
+			case 14:return PorcDescPromo;
+			case 15:return Numero;
+			case 16: return new Long(Fecha);
+			case 17: return new Long(FechaVence);
+			case 18: return new Long(FechaAplicaDescPP);
+			case 19: return SubTotal;
+			case 20: return Impuesto;
+			case 21: return Totalfactura;
+			case 22: return Saldofactura;
+			case 23:return InteresMoratorio;
+			case 24:return SaldoTotal;
+			case 25:return MontoImpuestoExento;
+			case 26:return MontoDescEspecificoCalc; 
+		} 		
 		return null;
 	}
 
 	@Override
-	public int getPropertyCount() {
-		// TODO Auto-generated method stub
+	public int getPropertyCount() { 
 		return 27;
 	}
 
 	@Override
-	public void getPropertyInfo(int arg0, Hashtable arg1, PropertyInfo arg2) {
-		// TODO Auto-generated method stub
-		
+	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) { 
+		switch(_index)  
+		{
+	        case 0:
+	            _info.name = "Id";
+	            _info.type = Long.class; 
+	            break;
+	        case 1:
+	            _info.name = "ObjFacturaID";
+	            _info.type = Long.class; 
+	            break;
+	        case 2:
+	            _info.name = "ObjReciboID";
+	            _info.type = Long.class; 
+	            break;
+	        case 3:
+	            _info.name = "Monto";
+	            _info.type = Float.class; 
+	            break;
+	        case 4:
+	            _info.name = "EsAbono";
+	            _info.type = Boolean.class; 
+	            break;
+	        case 5:
+	            _info.name = "MontoDescEspecifico";
+	            _info.type = Float.class; 
+	            break;
+	        case 6:
+	            _info.name = "MontoDescOcasional";
+	            _info.type = Float.class; 
+	            break;
+	        case 7:
+	            _info.name = "MontoRetencion";
+	            _info.type = Float.class; 
+	            break;
+	        case 8:
+	            _info.name = "MontoImpuesto";
+	            _info.type = Float.class; 
+	            break;
+	        case 9:
+	            _info.name = "MontoInteres";
+	            _info.type = Float.class; 
+	            break;
+	        case 10:
+	            _info.name = "MontoNeto";
+	            _info.type = Float.class; 
+	            break;
+	        case 11:
+	            _info.name = "MontoOtrasDeducciones";
+	            _info.type = Float.class; 
+	            break;
+	        case 12:
+	            _info.name = "MontoDescPromocion";
+	            _info.type = Float.class; 
+	            break;
+	        case 13:
+	            _info.name = "PorcDescOcasional";
+	            _info.type = Float.class; 
+	            break;
+	        case 14:
+	            _info.name = "PorcDescPromo";
+	            _info.type = Float.class; 
+	            break;
+	        case 15:
+	            _info.name = "Numero";
+	            _info.type = String.class; 
+	            break;
+	        case 16:
+	            _info.name = "Fecha";
+	            _info.type = Long.class; 
+	            break;
+	        case 17:
+	            _info.name = "FechaVence";
+	            _info.type = Long.class; 
+	            break;
+	        case 18:
+	            _info.name = "FechaAplicaDescPP";
+	            _info.type = Long.class; 
+	            break;
+	        case 19:
+	            _info.name = "SubTotal";
+	            _info.type = Float.class; 
+	            break;
+	        case 20:
+	            _info.name = "Impuesto";
+	            _info.type = Float.class; 
+	            break;
+	        case 21:
+	            _info.name = "Totalfactura";
+	            _info.type = Float.class; 
+	            break;
+	        case 22:
+	            _info.name = "Saldofactura";
+	            _info.type = Float.class; 
+	            break;
+	        case 23:
+	            _info.name = "InteresMoratorio";
+	            _info.type = Float.class; 
+	            break;
+	        case 24:
+	            _info.name = "SaldoTotal";
+	            _info.type = Float.class; 
+	            break;
+	        case 25:
+	            _info.name = "MontoImpuestoExento";
+	            _info.type = Float.class; 
+	            break;
+	        case 26:
+	            _info.name = "MontoDescEspecificoCalc";
+	            _info.type = Float.class; 
+	            break;
+		}
 	}
 
 	@Override
-	public void setProperty(int arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		
+	public void setProperty(int _index, Object obj) {
+        switch(_index)  
+        {
+	        case 0: Id = Long.parseLong(obj.toString()); break;
+	        case 1: ObjFacturaID = Long.parseLong(obj.toString()); break;
+	        case 2: ObjReciboID = Long.parseLong(obj.toString()); break;
+	        case 3: Monto = Float.parseFloat(obj.toString()); break;
+	        case 4: EsAbono = "true".equals(obj.toString()); break;
+	        case 5: MontoDescEspecifico = Float.parseFloat(obj.toString()); break;
+	        case 6: MontoDescOcasional = Float.parseFloat(obj.toString()); break;
+	        case 7: MontoRetencion = Float.parseFloat(obj.toString()); break;
+	        case 8: MontoImpuesto =Float.parseFloat(obj.toString()); break;
+	        case 9: MontoInteres =Float.parseFloat(obj.toString()); break;
+	        case 10: MontoNeto =Float.parseFloat(obj.toString()); break;
+	        case 11: MontoOtrasDeducciones = Float.parseFloat(obj.toString()); break;
+	        case 12: MontoDescPromocion = Float.parseFloat(obj.toString()); break;
+	        case 13: PorcDescOcasional =Float.parseFloat(obj.toString()); break;
+	        case 14: PorcDescPromo = Float.parseFloat(obj.toString()); break;
+	        case 15: Numero =  (obj.toString()); break;
+	        case 16: Fecha = Long.parseLong(obj.toString()); break;
+	        case 17: FechaVence = Long.parseLong(obj.toString()); break;
+	        case 18: FechaAplicaDescPP = Long.parseLong(obj.toString()); break;       
+	        case 19: SubTotal = Float.parseFloat(obj.toString()); break;  
+	        case 20: Impuesto = Float.parseFloat(obj.toString()); break;
+	        case 21: Totalfactura = Float.parseFloat(obj.toString()); break;
+	        case 22: Saldofactura = Float.parseFloat(obj.toString()); break; 
+	        case 23: InteresMoratorio = Float.parseFloat(obj.toString()); break;
+	        case 24: SaldoTotal = Float.parseFloat(obj.toString()); break;
+	        case 25: MontoImpuestoExento = Float.parseFloat(obj.toString()); break;
+	        case 26: MontoDescEspecificoCalc = Float.parseFloat(obj.toString()); break;
+        }
 	}
 
 }

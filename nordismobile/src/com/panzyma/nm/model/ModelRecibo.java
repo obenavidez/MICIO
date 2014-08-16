@@ -1,19 +1,27 @@
 package com.panzyma.nm.model;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+
+import org.ksoap2.serialization.PropertyInfo;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.comunicator.Parameters;
+import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
+import com.panzyma.nm.serviceproxy.RespuestaEnviarRecibo;
 import com.panzyma.nm.viewmodel.vmRecibo;
 
 public class ModelRecibo {
@@ -22,6 +30,16 @@ public class ModelRecibo {
 
 	public ModelRecibo() {
 		super();
+	}
+	
+	public  synchronized static RespuestaEnviarRecibo enviarRecibo(String credenciales,Recibo recibo) throws Exception
+	{		
+		Parameters params=new Parameters((new String[]{"Credentials","r"}),
+				 (new Object[]{credenciales,recibo}),
+				 (new Type[]{PropertyInfo.STRING_CLASS,recibo.getClass()}));
+		
+		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarRecibo,Recibo.class);
+		return NMTranslate.ToObject(rs,new RespuestaEnviarRecibo()); 
 	}
 	
 	public synchronized static int borraReciboByID (ContentResolver content,int reciboID){

@@ -1,9 +1,14 @@
 package com.panzyma.nm.serviceproxy;
 
+import java.util.Hashtable;
+
+import org.ksoap2.serialization.KvmSerializable;
+import org.ksoap2.serialization.PropertyInfo;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ReciboDetNC implements Documento, Parcelable {
+public class ReciboDetNC implements KvmSerializable,Documento, Parcelable {
 
 	protected long Id;
 	protected long ObjNotaCreditoID;
@@ -154,6 +159,86 @@ public class ReciboDetNC implements Documento, Parcelable {
 		parcel.writeString( Numero );
 		parcel.writeLong(  Fecha );
 		parcel.writeLong(  FechaVence );		
+	}
+
+	@Override
+	public Object getProperty(int _index) {
+        switch(_index)  
+        {
+        	case 0: return new Long(Id);
+        	case 1: return new Long(ObjNotaCreditoID);
+        	case 2: return new Long(ObjReciboID);
+        	case 3: return (Monto);
+        	case 4: return (Numero);
+        	case 5: return  new Long(Fecha);
+        	case 6: return new Long(FechaVence);
+        }
+		return null;
+	}
+
+	@Override
+	public int getPropertyCount() {
+		// TODO Auto-generated method stub
+		return 7;
+	}
+
+	@Override
+	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
+        switch(_index)  
+        {
+	        case 0:
+	            _info.name = "Id";
+	            _info.type = Long.class; 
+	            break;
+	        case 1:
+	            _info.name = "ObjNotaCreditoID";
+	            _info.type = Long.class; 
+	            break;
+	        case 2:
+	            _info.name = "ObjReciboID";
+	            _info.type = Long.class; 
+	            break;
+	        case 3:
+	            _info.name = "Monto";
+	            _info.type = Float.class; 
+	            break;
+	        case 4:
+	            _info.name = "Numero";
+	            _info.type = String.class; 
+	            break;
+	        case 5:
+	            _info.name = "Fecha";
+	            _info.type = Long.class; 
+	            break;
+	        case 6:
+	            _info.name = "FechaVence";
+	            _info.type = Long.class; 
+	            break;
+	    }
+		
+	}
+
+	@Override
+	public void setProperty(int _index, Object obj) 
+	{
+        switch(_index)  
+        {
+        	case 0: Id = Long.parseLong(obj.toString()); 
+        	             break;
+        	case 1: ObjNotaCreditoID = Long.parseLong(obj.toString()); 
+            			break;
+        	case 2: ObjReciboID = Long.parseLong(obj.toString()); 
+						break;						
+        	case 3: Monto = Float.parseFloat(obj.toString()); 
+						break;
+        	case 4: Numero = (obj.toString()); 
+						break;						
+        	case 5: Fecha = Long.parseLong(obj.toString()); 
+						break;
+        	case 6: FechaVence = Long.parseLong(obj.toString()); 
+						break;
+        }
+		
 	}
 
 }

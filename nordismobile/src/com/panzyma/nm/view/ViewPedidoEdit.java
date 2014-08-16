@@ -1375,7 +1375,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			    			@Override
 			    			public void run() 
 			    			{ 
-			    				 AppDialog.showMessage(me,"Confirme por favor.!!!","Desea Imprimir un comprobante de Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+			    				 AppDialog.showMessage(me,"Confirme por favor.!!!","Desea Imprimir el Pedido?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
 			    				 {						
 						    			@Override
 						    			public void onButtonClick(AlertDialog _dialog, int actionId) 

@@ -8,27 +8,61 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
+import static com.panzyma.nm.controller.ControllerProtocol.IMPRIMIR;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import org.json.JSONArray;
+ 
 
+
+
+
+
+
+
+
+
+
+
+
+import android.app.AlertDialog;
+import android.app.Notification;
 /*import android.os.Handler;*/
 import android.os.Message;
 import android.util.Log;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.Cobro;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NumberToLetterConverter;
 /*import com.panzyma.nm.auxiliar.NMNetWork;*/
 /*import com.panzyma.nm.auxiliar.Parameters; by jrostran */
 import com.panzyma.nm.auxiliar.Processor;
+import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.ThreadPool;
+import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelRecibo;
+import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
+import com.panzyma.nm.serviceproxy.ReciboDetNC;
+import com.panzyma.nm.serviceproxy.ReciboDetND;
+import com.panzyma.nm.serviceproxy.RespuestaEnviarRecibo;
 import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.viewdialog.DialogDocumentos;
@@ -43,11 +77,12 @@ public final class BReciboM {
 	private ViewRecibo view;
 	private DialogDocumentos view1;
 	private ViewReciboEdit reciboEdit;
-
+	private Object lock=new Object();
 	boolean OK = false;
 	ArrayList<Producto> obj = new ArrayList<Producto>();
 	JSONArray jsonA = new JSONArray();
-
+	static boolean imprimir = false;
+    static boolean pagarOnLine = false;
 	public BReciboM() {
 	}
 
@@ -97,6 +132,9 @@ public final class BReciboM {
 		case UPDATE_ITEM_FROM_SERVER:
 			// onUpdateItem_From_Server();
 			return true;
+		case SEND_DATA_FROM_SERVER: 
+			enviarRecibo();
+			break;
 
 		}
 		return false;
@@ -285,5 +323,813 @@ public final class BReciboM {
 		}
 
 	}
+	
+	private void enviarRecibo()
+	{
+		try 
+		{
+			pool.execute(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					try 
+					{ 						
+						String credenciales="";
+						credenciales=SessionManager.getCredentials(); 
+						Recibo recibo=reciboEdit.getRecibo();
+						
+						if(credenciales!="")
+						{
+							
+							if (recibo.getCodEstado().compareTo("PAGADO") == 0) return;
+					        
+					        if (recibo.getNumero() > 0) {
+					        	//Util.Message.buildToastMessage(reciboEdit,"El recibo ya fue enviado.", TIME_TO_VIEW_MESSAGE).show(); 
+					            return;
+					        }
+					        
+					        imprimir = true;
+					        pagarOnLine = true;        
+					        //Si se está fuera de covertura, salir        
+					        if (recibo.getCodEstado().compareTo("PAGADO_OFFLINE") == 0) 
+					        {
+					        	imprimir = false;
+					            if (SessionManager.isPhoneConnected()) 
+					            {
+					            	Processor.notifyToView(controller,ERROR,0,0,
+											new ErrorMessage(
+													          "Error en el Modulo Recibo.",
+													          "Error en el proceso de envio del recibo", "\nCausa: "
+															  + "Falta de covertura."
+															 )
+									      );  
+					                return;
+					            }
+					            
+					        } else 
+					        {                
+					            if (SessionManager.isPhoneConnected()) 
+					            {	
+					            	pagarOnLine = false;
+					            	Processor.notifyToView(controller,ERROR,0,0,
+											new ErrorMessage(
+													          "Error en el Modulo Recibo.",
+													          "Error en el proceso de envio del recibo", "\nCausa: "
+															  + "El recibo no será enviado por falta de cobertura\r\nEl recibo será impreso y quedará pendiente de enviarse."
+															 )
+									      );   
+					            
+					            }
+					        } 
 
+							//Guardando cambios en el Dispositivo
+					        onSaveDataToLocalHost();
+					        
+					        if (pagarOnLine) 
+							{
+								
+								
+								RespuestaEnviarRecibo rs=ModelRecibo.enviarRecibo(credenciales,recibo);
+								if (rs == null) 
+								{
+									Processor.notifyToView(controller,ERROR,0,0,
+											new ErrorMessage(
+													          "Error en el Modulo Recibo.",
+													          "Error en el proceso de envio del recibo", "\nCausa: "
+															  + "No se conocen las causas."
+															 )
+									      ); 
+								}
+								else if (rs.getNuevoEstado().getCodigo().compareTo("RECHAZADO_FECHA") == 0) 
+				                {
+								
+									Processor.notifyToView(controller,ERROR,0,0,
+											new ErrorMessage(
+													          "Error en el Modulo Recibo.",
+													          "El recibo fue rechazado por el servidor", "\nCausa: "
+															  + "Fecha inválida."
+															 )
+									      ); 
+				                }
+								//Actualizar información del nuevo estaado del recibo
+				                recibo.setObjEstadoID(rs.getNuevoEstado().getId());
+				                recibo.setCodEstado(rs.getNuevoEstado().getCodigo());
+				                recibo.setDescEstado(rs.getNuevoEstado().getDescripcion());
+				                recibo.setNumero(rs.getNumeroCentral());
+				                
+				                //Guardando cambios en el Dispositivo
+				                DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext());
+				                //Trayendo información del Cliente actualizada desde el servidor y guadarla localmente automaticamente 
+								Cliente cliente=BClienteM.actualizarCliente(reciboEdit.getContext(), credenciales,recibo.getObjSucursalID());
+								//actualizando el cliente en el hilo principal
+								recibo.setCliente(cliente);
+								//Salvar los cambios en el hilo pricipal
+				                reciboEdit.setRecibo(recibo);
+				              //Guardando cambios en el Dispositivo
+				                onSaveDataToLocalHost();
+							}
+							else
+							{								 
+				                //Poner estado de recibo en PAGADO_OFFLINE                   
+								recibo.setCodEstado("PAGADO_OFFLINE");
+								recibo.setDescEstado("Registrado"); 	
+				                //Salvar los cambios en el hilo pricipal
+				                reciboEdit.setRecibo(recibo);
+				                //Guardando cambios en el Dispositivo
+				                onSaveDataToLocalHost();
+							}
+							
+					        if(imprimir)
+					        	enviarImprimirRecibo(recibo);
+							
+						} 
+						
+					} catch (Exception e) 
+					{ 
+						
+						try {
+							Processor.notifyToView(controller,ERROR,0,0,
+													new ErrorMessage(
+															          "Error en el proceso de enviar el recibo al servidor",
+															          e.toString(), "\nCausa: "
+																	  + e.getCause()
+																	 )
+											      );
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					
+					}
+				}
+			});
+			 
+			
+		} catch (Exception e) 
+		{
+			// TODO: handle exception
+		}
+				
+		
+        
+	}
+ 
+	
+    public boolean valido(Recibo recibo) 
+    {        
+    	
+    	try 
+    	{
+    		
+    		//Validar fecha del pedido
+            Date d = new Date(recibo.getFecha());            
+            if (DateUtil.d2i(d) > DateUtil.d2i(Calendar.getInstance().getTime())) 
+            {
+            	Processor.notifyToView(controller,ERROR,0,0,
+    					new ErrorMessage(
+    							          "Error en el proceso de enviar el recibo al servidor",
+    							          "Fecha invalida", "\nCausa: "+"La fecha del recibo no debe ser mayor a la fecha actual."));				
+                 
+                return false;
+            }
+        
+            if (recibo.getNombreCliente().trim() == "") 
+            {            
+            	Processor.notifyToView(controller,ERROR,0,0,
+    					new ErrorMessage(
+    							          "Error en el proceso de enviar el recibo al servidor",
+    							          "El cliente del recibo no ha sido ingresado.", "")); 
+                return false;
+            }
+            
+            //Se incluya al menos una factura y/o la cantidad de facturas marcadas para ser incluidas       
+            int cantFac = Cobro.cantFacturas(recibo);
+            int cantND = Cobro.cantNDs(recibo);
+            if (cantFac == 0) {
+                if(cantND == 0) {
+                	Processor.notifyToView(controller,ERROR,0,0,
+        					new ErrorMessage(
+        							          "Error en el proceso de enviar el recibo al servidor",
+        							          "Problemas con las Facturas.", "Debe incluir al menos una factura o nota de débito."));
+                    
+                    return false;
+                }
+            }
+            
+            //Validar que la cantidad de facturas incluidas no sea mayor que el valor del parámetro CantMaxFacturasEnRecibo.
+            int max = Integer.parseInt(Cobro.getParametro(reciboEdit,"CantMaxFacturasEnRecibo")+"");
+            if (cantFac > max) {
+            	Processor.notifyToView(controller,ERROR,0,0,
+    					new ErrorMessage(
+    							          "Error en el proceso de enviar el recibo al servidor",
+    							          "Problemas con los Documentos.", "La cantidad de facturas no debe ser mayor que "+max));             
+     
+                return false;
+            }
+                    
+            //La cantidad de notas de débito marcadas para ser incluidas en el recibo 
+            //no debe ser mayor que el valor del párametro CantMaxNotasDebitoEnRecibo        
+            max = Integer.parseInt(Cobro.getParametro(reciboEdit,"CantMaxNotasDebitoEnRecibo")+"");
+            if (cantND > max) {
+            	
+            	Processor.notifyToView(controller,ERROR,0,0,
+    					new ErrorMessage(
+    							          "Error en el proceso de enviar el recibo al servidor",
+    							          "Problemas con los Documentos.", "La cantidad de notas de débito no debe ser mayor que "+max));             
+                return false;
+            }
+            
+            //La cantidad de notas de crédito incluidas a pagar no debe ser mayor 
+            //que el valor del parámetro CantMaxNotasCreditoEnRecibo        
+            max = Integer.parseInt(Cobro.getParametro(reciboEdit,"CantMaxNotasCreditoEnRecibo")+"");
+            if (Cobro.cantNCs(recibo) > max) {
+                //Dialog.alert("La cantidad de notas de crédito no debe ser mayor que " + max + ".");
+                return false;
+            }
+            
+            //Validar que se haya ingresado al menos un pago
+            if (Cobro.cantFPs(recibo) == 0) {
+                //Dialog.alert("Detalle de pagos no ingresado.");
+                return false;
+            }
+            
+            //Validar que la sumatoria de los montos de las NC seleccionadas no sea mayor ni igual que la sumatoria
+            //de los montos a pagar de las facturas incluidas en el recibo, a excepción de que solamente se estén
+            //pagando facturas vencidas en cuyo caso SÍ se permite un monto igual
+            if (recibo.getTotalNC() > 0) { //Si hay NC aplicadas
+            
+                //Ver si todas las facturas aplicadas son vencidas
+                boolean todasVencidas = true;
+                int diasAplicaMora = Integer.parseInt(Cobro.getParametro(reciboEdit, "DiasDespuesVenceCalculaMora")+"");
+                long fechaHoy = DateUtil.getTime(DateUtil.getToday());
+                if (recibo.getFacturasRecibo().size() != 0) {
+                    ReciboDetFactura[] ff = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray();
+                    if (ff != null) {
+                        for(int i=0; i<ff.length; i++) {
+                            ReciboDetFactura f = ff[i];
+                            String s = f.getFechaVence() + "";
+                            int fechaVence = Integer.parseInt(s.substring(0, 8));
+                            long fechaCaeEnMora = DateUtil.addDays(DateUtil.getTime(fechaVence), diasAplicaMora);
+                            if (fechaCaeEnMora > fechaHoy) {
+                                todasVencidas = false;
+                                break;
+                            }
+                        }
+                    }
+                } //Ver si todas las facturas aplicadas son vencidas
+                
+                if (todasVencidas && (recibo.getTotalNC() > recibo.getTotalFacturas()))  {
+                   // Dialog.alert("El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas.");
+                    return false;
+                }
+                            
+                if (todasVencidas && (recibo.getTotalNC() >= recibo.getTotalFacturas()))  {
+                   // Dialog.alert("El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas.");
+                    return false;
+                }
+                  
+            } //Si hay NC aplicadas
+
+
+            //Monto Mínimo Recibo: Para aplicar descuento específico a cada factura que se va cancelar,
+            //el total del recibo deber mayor o igual al valor del parámetro 'MontoMinReciboAplicaDpp'
+            boolean ValidarMontoAplicaDpp = false;
+            
+            //Determinando si hay descPP que validar
+            if (recibo.getFacturasRecibo().size() != 0) {
+                ReciboDetFactura[] ff = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray();
+                if (ff != null) {
+                    for(int i=0; i<ff.length; i++) {
+                        ReciboDetFactura f = ff[i];
+                        if (f.getMontoDescEspecifico() != 0) {
+                            ValidarMontoAplicaDpp = true;
+                            break;
+                        }
+                    }
+                }
+            } //Determinando si hay descPP que validar
+            
+            //Validando el monto mínimo del recibo
+            float montoMinimoRecibo = Float.parseFloat(Cobro.getParametro(reciboEdit,"MontoMinReciboAplicaDpp")+"");
+            if ((recibo.getTotalRecibo() < montoMinimoRecibo) && ValidarMontoAplicaDpp) {
+                //Recalcular detalles del recibo sin aplicar DescPP
+                Cobro.calcularDetFacturasRecibo(reciboEdit,recibo, recibo.getCliente(), false);
+               // CalculaTotales();            
+              //  Dialog.alert("Para aplicar descuento pronto pago \r\nel monto del recibo no debe ser menor que " + StringUtil.formatReal(montoMinimoRecibo) + ".");            
+                //LoadScreen(true); //Refrescar pantalla
+                return false;
+            }
+
+            //Validar que cuadre el monto pagado
+            if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) {            
+               // Dialog.alert("El monto pagado no cuadra con el total del recibo.");
+                return false;
+            }
+            return true;
+
+			
+		} catch (Exception e) 
+		{
+			
+		}
+    	return false;
+   }
+	
+	private void enviarImprimirRecibo(final Recibo recibo)
+	{		
+		reciboEdit.runOnUiThread(new Runnable() 
+        {
+			@Override
+			public void run() 
+			{ 
+				 AppDialog.showMessage(reciboEdit,"Confirme por favor.!!!","Desea Imprimir el Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+				 {						 
+						@Override
+		    			public void onButtonClick(AlertDialog _dialog, int actionId) 
+		    			{
+		    				if(actionId == AppDialog.OK_BUTTOM) 
+		    				{		    					
+		    					try 
+		    					{  		    						
+	    							String credenciales="";
+	    							credenciales=SessionManager.getCredentials(); 
+	    							if(credenciales!="")
+	    							{ 
+	    								if(recibo.getReferencia()==0)							
+	    					                onSaveDataToLocalHost();//GUARDANDO LOCALMENTE EL RECIBO QUE SE VA ENVIAR AL SERVIDOR CENTRAL
+	    								ImprimirReciboColector(recibo, false);
+	    							}
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+		    				}	
+		    				synchronized(lock)
+		    				{
+		    					lock.notify();
+		    				}
+		    			}
+				  }); 
+	          }
+		});
+		
+        synchronized(lock)
+        {
+            try {
+            	lock.wait();
+			} catch (InterruptedException e) { 
+				e.printStackTrace();
+			}
+        }
+		
+	}
+	
+	 
+	public  void ImprimirReciboColector(Recibo rcol,boolean reimpresion) {                
+        String recibo = "";  
+        String monedaNac = Cobro.getMoneda(reciboEdit);
+          
+        //Encabezado del recibo    
+        recibo += "T 7 0 120 2 Distribuidora Panzyma - DISPAN\r\n";        
+        recibo += "T 7 0 170 33 Recibo de Colector\r\n";
+        recibo += "LINE 0 70 575 70 1\r\n";
+        
+        //Fecha y número
+        recibo += "T 7 0 0 80 Fecha:\r\n";
+        recibo += "T 7 0 155 80 " + DateUtil.idateToStr(rcol.getFecha()) + "\r\n";
+        recibo += "T 7 0 0 110 Recibo:\r\n";
+        recibo += "T 7 0 155 110 " + Cobro.getNumeroRecibo(reciboEdit,rcol.getReferencia()) + "\r\n"; 
+        
+        //Monto total del recibo
+        recibo += "RIGHT 575\r\n"; 
+        recibo += "T 7 0 0 110 Monto: C$ " + StringUtil.formatReal(rcol.getTotalRecibo()) + "\r\n"; 
+        recibo += "LEFT\r\n";
+        
+        //Nombre del cliente
+        String nombreCliente = rcol.getCliente().getNombreLegalCliente();
+        String linea1 = nombreCliente;
+        String linea2 = "";
+        if (nombreCliente.length() > 35) {
+            int idxLastSpace = nombreCliente.substring(0, 35).lastIndexOf(' ');
+            linea1 = nombreCliente.substring(0, idxLastSpace);
+            linea2 = nombreCliente.substring(idxLastSpace, nombreCliente.length());
+        }
+        
+        int y = 140;
+        recibo += "T 7 0 0 " + y + " Recibimos de:\r\n";        
+        recibo += "T 7 0 155 " + y + " " + linea1.trim() + "\r\n";
+        if (linea2.length() > 0) {
+            y += 20;
+            recibo += "T 7 0 155 " + y + " " + linea2.trim() + "\r\n";
+        }
+        
+        //Monto en letras        
+        String montoLetras = NumberToLetterConverter.convertNumberToLetter(rcol.getTotalRecibo());
+        linea1 = montoLetras;
+        linea2 = "";
+        String linea3 = "";
+        if (montoLetras.length() > 35) {
+            int idxLastSpace = montoLetras.substring(0, 35).lastIndexOf(' ');
+            linea1 = montoLetras.substring(0, idxLastSpace);
+            linea2 = montoLetras.substring(idxLastSpace, montoLetras.length());
+            montoLetras = linea2;           
+            if (montoLetras.length() > 35) {
+                idxLastSpace = montoLetras.substring(0, 35).lastIndexOf(' ');
+                linea2 = montoLetras.substring(0, idxLastSpace);
+                linea3 = montoLetras.substring(idxLastSpace, montoLetras.length());
+            }
+        }       
+         
+        y += 30;
+        recibo += "T 7 0 0 " + y + " El monto de:\r\n";
+        recibo += "T 7 0 155 " + y + " " + linea1.trim() + "\r\n";      
+        if (linea2.length() > 0) {
+            y += 20;
+            recibo += "T 7 0 155 " + y + " " + linea2.trim() + "\r\n";
+        }
+        if (linea3.length() > 0) {
+            y += 20;
+            recibo += "T 7 0 155 " + y + " " + linea3.trim() + "\r\n";
+        }
+        
+        //Concepto
+        y += 30;
+        recibo += "T 7 0 0 " + y + " En concepto:\r\n";
+        recibo += "T 7 0 155 " + y + " Abono/cancelación de facturas y/o\r\n";
+        y += 20;
+        recibo += "T 7 0 155 " + y + " notas de débito que se detallan.\r\n";
+        
+        //Encabezados de detalle de documentos que se están pagando
+        y += 45;
+        recibo += "T 7 0 0 " + y + " Doc\r\n";
+        recibo += "T 7 0 50 " + y + " Numero\r\n";
+        recibo += "T 7 0 170 " + y + " A/C\r\n";        
+        recibo += "RIGHT 360\r\n"; 
+        recibo += "T 7 0 0 " + y + " Monto\r\n";
+        recibo += "RIGHT 480\r\n"; 
+        recibo += "T 7 0 0 " + y + " Desc.\r\n";
+        recibo += "RIGHT 575\r\n"; 
+        recibo += "T 7 0 0 " + y + " Reten.\r\n";
+        recibo += "LEFT\r\n";
+        y += 30;
+        recibo += "LINE 0 " + y + " 575 " + y + " 1\r\n";
+        y += 10;
+        
+        float totalPago = 0, totalDesc = 0, totalRet = 0, totalOtros = 0;
+        boolean hayDocAbonados = false;
+        //Imprimiendo detalle de facturas que se están pagando
+        if ((rcol.getFacturasRecibo().size()!=0)) {
+            ReciboDetFactura[] ff = (ReciboDetFactura[]) rcol.getFacturasRecibo().toArray();
+            for(int i=0; i<ff.length; i++) {
+                ReciboDetFactura f = ff[i];
+                hayDocAbonados = hayDocAbonados || f.isEsAbono();
+                
+                if (i > 0) y += 30;
+                
+                //Tipo doc, número y tipo pago
+                recibo += "T 7 0 0 " + y + " FA\r\n";
+                recibo += "T 7 0 50 " + y + " " + f.getNumero() + "\r\n";
+                recibo += "T 7 0 180 " + y + " " + (f.isEsAbono() ? "A" : "C") + "\r\n";
+                
+                //Monto
+                recibo += "RIGHT 360\r\n"; 
+                recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(f.getMonto()) + "\r\n";
+                totalPago += f.getMonto();
+                
+                //Descuento
+                float desc = StringUtil.round(f.getMontoDescEspecifico() + f.getMontoDescOcasional() + f.getMontoDescPromocion(), 2);
+                recibo += "RIGHT 480\r\n"; 
+                recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(desc) + "\r\n";
+                totalDesc += desc;
+                
+                //Retención
+                float ret = StringUtil.round(f.getMontoRetencion() + f.getMontoOtrasDeducciones(), 2);
+                recibo += "RIGHT 575\r\n"; 
+                recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(ret) + "\r\n";
+                recibo += "LEFT\r\n";
+                totalRet += ret;
+            }
+        }
+        
+        //Imprimiendo detalle de notas de débito que se están pagando
+        if (rcol.getNotasDebitoRecibo().size() != 0) {
+            ReciboDetND[] dd = (ReciboDetND[]) rcol.getNotasDebitoRecibo().toArray();
+            for(int i=0; i<dd.length; i++) {
+                ReciboDetND d = dd[i];     
+                hayDocAbonados = hayDocAbonados || d.isEsAbono();
+                           
+                y += 30;
+                
+                //Tipo doc, número y tipo pago
+                recibo += "T 7 0 0 " + y + " ND\r\n";
+                recibo += "T 7 0 50 " + y + " " + d.getNumero() + "\r\n";
+                recibo += "T 7 0 180 " + y + " " + (d.isEsAbono() ? "A" : "C") + "\r\n";
+                
+                //Monto
+                recibo += "RIGHT 360\r\n"; 
+                recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(d.getMontoPagar()) + "\r\n";
+                totalPago += d.getMontoPagar();
+            }
+        }
+        
+        //Imprimiendo totales de pagos
+        y += 30;
+        recibo += "LINE 0 " + y + " 575 " + y + " 1\r\n";
+        y += 10;
+        
+        //Monto Total
+        recibo += "RIGHT 360\r\n"; 
+        recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(StringUtil.round(totalPago, 2)) + "\r\n";
+                
+        //Descuento Total        
+        recibo += "RIGHT 480\r\n"; 
+        recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(StringUtil.round(totalDesc, 2)) + "\r\n";
+                
+        //Retención Total        
+        recibo += "RIGHT 575\r\n"; 
+        recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(StringUtil.round(totalRet, 2)) + "\r\n";
+        recibo += "LEFT\r\n";
+       
+        //Imprimiendo encabezado de detalle de formas de pago
+        y += 55;        
+        recibo += "T 7 0 0 " + y + " F/Pago\r\n";
+        recibo += "T 7 0 80 " + y + " Banco\r\n";
+        recibo += "RIGHT 340\r\n";
+        recibo += "T 7 0 0 " + y + " Monto\r\n";
+        recibo += "LEFT\r\n";
+        recibo += "T 7 0 360 " + y + " Fecha\r\n";
+        recibo += "T 7 0 470 " + y + " Numero\r\n";
+        y += 30;
+        recibo += "LINE 0 " + y + " 575 " + y + " 1\r\n";
+        y += 10;
+        
+        //Imprimiendo detalle de otras formas de pago        
+        Hashtable hashTasas = new Hashtable();
+        if (rcol.getFormasPagoRecibo().size() != 0) {
+            ReciboDetFormaPago[] pp = (ReciboDetFormaPago[]) rcol.getFormasPagoRecibo().toArray();
+            for(int i=0; i<pp.length; i++) {
+                ReciboDetFormaPago p = pp[i];                
+                if (i > 0) y += 30;
+                
+                //Forma de pago, entidad bancaria
+                recibo += "T 7 0 0 " + y + " " + p.getCodFormaPago() + "\r\n";
+                if (p.getCodEntidad().length() > 0) 
+                    recibo += "T 7 0 80 " + y + " " + p.getCodEntidad() + "\r\n";
+                
+                //Monto
+                String moneda = p.getCodMoneda();                 
+                if (!hashTasas.containsKey(moneda) && (moneda.compareTo(monedaNac) != 0))
+                    hashTasas.put(moneda, new Float(p.getTasaCambio()));
+                    
+                recibo += "RIGHT 340\r\n";
+                recibo += "T 7 0 0 " + y + " " + moneda + " " + StringUtil.formatReal(p.getMonto()) + "\r\n";
+                recibo += "LEFT\r\n";
+        
+                //Fecha y número si pago no es efectivo
+                if (p.getCodFormaPago().compareTo("EFEC") == 0) continue;
+                
+                if (p.getFecha() > 0) recibo += "T 7 0 360 " + y + " " + DateUtil.idateToStrYY(p.getFecha()) + "\r\n";
+                if (p.getNumero().length() > 0) recibo += "T 7 0 470 " + y + " " + p.getNumero() + "\r\n";
+            }
+        }
+        
+        //Imprimiendo detalle de notas de crédito aplicadas
+        if (rcol.getNotasCreditoRecibo().size() != 0) {
+            ReciboDetNC[] cc = (ReciboDetNC[]) rcol.getNotasCreditoRecibo().toArray();
+            for(int i=0; i<cc.length; i++) {
+                ReciboDetNC c = cc[i];                
+                y += 30;
+                
+                //Forma de pago
+                recibo += "T 7 0 0 " + y + " NC\r\n";
+                                
+                //Monto                
+                recibo += "RIGHT 340\r\n";
+                recibo += "T 7 0 0 " + y + " " + monedaNac + " " + StringUtil.formatReal(c.getMonto()) + "\r\n";
+                recibo += "LEFT\r\n";
+        
+                //Número de NC
+                recibo += "T 7 0 470 " + y + " " + c.getNumero() + "\r\n";
+            }
+        }
+        
+        y += 30;
+        recibo += "LINE 0 " + y + " 575 " + y + " 1\r\n";
+        y += 40;
+                
+        // Resumen del Recibo
+        recibo += "T 7 0 0 " + y + " Resumen\r\n";
+        y += 30; 
+        recibo += "LINE 0 " + y + " 575 " + y + " 1\r\n";
+        y += 5;           
+            
+        //Total Facturas
+        if (rcol.getTotalFacturas() > 0) {
+            recibo += "LEFT\r\n";
+            recibo += "T 7 0 0 " + y + " +Total Facturas:\r\n";
+            recibo += "RIGHT 400\r\n";
+            recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(rcol.getTotalFacturas()) + "\r\n";
+            y += 30;
+        }
+        
+        if (rcol.getTotalND() > 0) {
+            recibo += "LEFT\r\n";
+            recibo += "T 7 0 0 " + y + " +ND:\r\n";
+            recibo += "RIGHT 400\r\n";
+            recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(rcol.getTotalND()) + "\r\n";
+            y += 30;
+        }
+        
+        if (rcol.getTotalInteres() > 0) {
+            recibo += "LEFT\r\n";
+            recibo += "T 7 0 0 " + y + " +Interés Moratorio:\r\n";
+            recibo += "T 7 0 200 " + y + " " + StringUtil.formatReal(rcol.getTotalInteres()) + "\r\n";
+            y += 30;
+        }
+    
+        if (rcol.getTotalNC() > 0) {
+            recibo += "LEFT\r\n";
+            recibo += "T 7 0 0 " + y + " -NC:\r\n";
+            recibo += "RIGHT 400\r\n";
+            recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(rcol.getTotalNC()) + "\r\n";
+            y += 30;
+        }
+        
+        if (rcol.getTotalDesc() > 0) {
+            recibo += "LEFT\r\n";
+            recibo += "T 7 0 0 " + y + " -Descuento:\r\n";
+            recibo += "RIGHT 400\r\n";
+            recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(rcol.getTotalDesc()) + "\r\n";
+            y += 30;
+        }
+        
+        if (rcol.getTotalRetenido() > 0) {
+            recibo += "LEFT\r\n";
+            recibo += "T 7 0 0 " + y + " -Retención:\r\n";
+            recibo += "RIGHT 400\r\n";
+            recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(rcol.getTotalRetenido()) + "\r\n";        
+            y += 30;        
+        }
+        
+        if (rcol.getTotalOtrasDed() > 0) {
+            recibo += "LEFT\r\n";
+            recibo += "T 7 0 0 " + y + " -Otros:\r\n";
+            recibo += "RIGHT 400\r\n";
+            recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(rcol.getTotalOtrasDed()) + "\r\n";        
+            y += 30;
+        }
+                
+        if (rcol.getTotalImpuestoExonerado() > 0) {
+            recibo += "LEFT\r\n";
+            recibo += "T 7 0 0 " + y + " -Impuesto Exento:\r\n";
+            recibo += "RIGHT 400\r\n";
+            recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(rcol.getTotalImpuestoExonerado()) + "\r\n";        
+            y += 30;
+        }
+        
+        recibo += "LEFT\r\n";        
+        recibo += "LINE 0 " + y + " 575 " + y + " 1\r\n";
+        y += 5;
+        
+        recibo += "T 7 0 0 " + y + " Neto a Pagar:\r\n";
+        recibo += "RIGHT 400\r\n";
+        recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(rcol.getTotalRecibo()) + "\r\n";        
+        recibo += "LEFT\r\n";
+
+        y += 40;
+        
+        // Saldo Pendiente de Documentos Abonados        
+        if (hayDocAbonados) {
+            recibo += "T 7 0 0 " + y + " Saldo Pendiente de Documentos Abonados\r\n";
+            y += 30;
+            recibo += "LINE 0 " + y + " 576 " + y + " 1\r\n";
+            y += 5;
+            
+            if (rcol.getFacturasRecibo().size() != 0) {
+                ReciboDetFactura[] ff = (ReciboDetFactura[]) rcol.getFacturasRecibo().toArray();
+                for(int i=0; i<ff.length; i++) {
+                    ReciboDetFactura f = ff[i];
+                    if (!f.isEsAbono()) continue;
+                    
+                    recibo += "T 7 0 0 " + y + " FA\r\n";
+                    recibo += "T 7 0 50 " + y + " " + f.getNumero() + "\r\n";
+                    
+                    recibo += "RIGHT 400\r\n";
+                    recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(StringUtil.round(f.getSaldoTotal() - f.getMonto(), 2)) + "\r\n";
+                    recibo += "LEFT\r\n";
+                    y += 30;
+                }
+            }
+            
+            if (rcol.getNotasDebitoRecibo().size() != 0 ) {
+                ReciboDetND[] dd = (ReciboDetND[]) rcol.getNotasDebitoRecibo().toArray();
+                for(int i=0; i<dd.length; i++) {
+                    ReciboDetND d = dd[i];
+                    if (!d.isEsAbono()) continue;
+                    
+                    recibo += "T 7 0 0 " + y + " ND\r\n";
+                    recibo += "T 7 0 50 " + y + " " + d.getNumero() + "\r\n";
+                    
+                    recibo += "RIGHT 400\r\n";
+                    recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(StringUtil.round(d.getSaldoTotal() - d.getMontoPagar(), 2)) + "\r\n";
+                    recibo += "LEFT\r\n";
+                    y += 30; 
+                }
+            }
+                
+            recibo += "LINE 0 " + y + " 575 " + y + " 1\r\n";
+            y += 40;
+        } //if (hayDocAbonados)
+        
+                
+        //Tasas de cambio
+        if (hashTasas.size() > 0) {
+            String tc = "";  
+            
+            for (Enumeration e = hashTasas.keys() ; e.hasMoreElements() ;) {
+                String cod = (String)e.nextElement();
+                Float valor = (Float)hashTasas.get(cod);
+                tc = tc + " " + cod + " -> " + StringUtil.formatReal(valor.floatValue()) + ",";        
+            }
+            tc = tc.trim();
+            tc = tc.substring(0, tc.length() - 1);
+            
+            tc = "Tasas de cambio: " + tc;
+            recibo += "T 0 0 0 " + y + " " + tc + "\r\n";
+            y += 20;
+        }
+                
+        //Notas
+        String notas = rcol.getNotas();
+        if (notas == null) notas = "";
+        linea1 = notas;
+        linea2 = "";
+        linea3 = ""; 
+        if (notas.length() > 60) {
+            int idxLastSpace = notas.substring(0, 60).lastIndexOf(' ');
+            linea1 = notas.substring(0, idxLastSpace);
+            linea2 = notas.substring(idxLastSpace, notas.length());
+            notas = linea2;           
+            if (notas.length() > 60) {
+                idxLastSpace = notas.substring(0, 60).lastIndexOf(' ');
+                linea2 = notas.substring(0, idxLastSpace);
+                linea3 = notas.substring(idxLastSpace, notas.length());
+            }
+        } 
+        
+        if (linea1.length() > 0) {
+            recibo += "T 0 0 0 " + y + " Notas:\r\n";
+            recibo += "T 0 0 80 " + y + " " + linea1.trim() + "\r\n";      
+            if (linea2.length() > 0) {
+                y += 20;
+                recibo += "T 0 0 80 " + y + " " + linea2.trim() + "\r\n";
+            }
+            if (linea3.length() > 0) {
+                y += 20;
+                recibo += "T 0 0 80 " + y + " " + linea3.trim() + "\r\n";
+            }
+             y += 30;
+        }     
+                
+        //Nombre del colector                
+        recibo += "T 7 0 0 " + y + " Colector: " + SessionManager.getLoginUser().getNombre() + "\r\n";
+        
+        y += 40;
+        recibo += "T 7 0 50 " + y + " Este recibo no requiere firma y sello\r\n";
+        y += 30;        
+        recibo += "T 7 0 80 " + y + " ******Gracias por su pago******\r\n";
+        
+        if (reimpresion) {
+            y += 30;        
+            recibo += "T 7 0 210 " + y + " Reimpresion\r\n";
+        }
+        
+        recibo += "FORM\r\n";
+        recibo += "PRINT\r\n";
+        
+        y += 60;
+        
+        String header = "! 0 200 200 " + y + " 1\r\n";
+        header += "LABEL\r\n";
+        header += "CONTRAST 0\r\n";
+        header += "TONE 0\r\n";
+        header += "SPEED 3\r\n";
+        header += "PAGE-WIDTH 600\r\n";
+        header += "BAR-SENSE\r\n";
+                                
+        recibo = header + recibo;        
+        try
+        {
+//            ZebraPrint zp = new ZebraPrint();
+//            zp.Print(recibo);
+//            zp = null;
+            //Dialog.alert("El recibo fue enviado a la impresora.");
+        }
+        catch(Exception ioex)
+        {
+            //Status.show("Error: " + ioex.getMessage());
+        }
+    }
+ 
 }

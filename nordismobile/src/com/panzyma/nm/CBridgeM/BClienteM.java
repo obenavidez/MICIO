@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.comunicator.Parameters;
+import com.google.gson.Gson;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
@@ -19,6 +20,7 @@ import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.model.ModelCliente;  
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;   
+import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.ViewCliente;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.vCliente;
@@ -215,16 +217,20 @@ public final class BClienteM
 		 return ModelCliente.getClienteBySucursalID(content,objSucursalID);
 	}
 	
-	public static void actualizarCliente(Context cnt,String credenciales, long objSucursalID) throws Exception
+	public static Cliente actualizarCliente(Context cnt,String credenciales, long objSucursalID) throws Exception
 	{
 		JSONObject modelcliente = null;
+		Cliente cliente=null;
 		if(NMNetWork.isPhoneConnected(cnt))
 	    {
-			modelcliente =ModelCliente.actualizarCliente(credenciales,objSucursalID);
+			modelcliente =ModelCliente.actualizarCliente(credenciales,objSucursalID); 
+			cliente=(new Gson().fromJson(modelcliente.toString(), Cliente.class)); 
 			if(modelcliente!=null)  
-				ModelCliente.actualizarClienteLocalmente(modelcliente,cnt);				 
+				ModelCliente.actualizarClienteLocalmente(modelcliente,cnt);	
+			
+			
 	    } 
-	
+		return cliente;
 	}
 	
 	private void onUpdateItem_From_Server() 

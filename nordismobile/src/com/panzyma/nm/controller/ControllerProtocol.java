@@ -48,12 +48,14 @@ public interface ControllerProtocol {
     int UPDATE_DATA_FROM_LOCALHOST=401;
     int DELETE_DATA_FROM_LOCALHOST=402;  
     int DELETE_ITEM_FINISHED = 605;
+    int SEND_DATA_FROM_SERVER=607;
     
     int ERROR=600;
     int NOTIFICATION=601;
     int ERROR_INSERT=602;
     int ERROR_UPDATE=603;    
     int ERROR_DELETE=604;
+    int IMPRIMIR=605;
     
     int C_INVETORY_UPDATED=200;
     

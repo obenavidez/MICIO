@@ -1,9 +1,14 @@
 package com.panzyma.nm.serviceproxy;
 
+import java.util.Hashtable;
+
+import org.ksoap2.serialization.KvmSerializable;
+import org.ksoap2.serialization.PropertyInfo;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ReciboDetND implements Documento, Parcelable {
+public class ReciboDetND implements KvmSerializable,Documento, Parcelable {
 
 	protected long Id;
 	protected long ObjNotaDebitoID;
@@ -245,6 +250,134 @@ public class ReciboDetND implements Documento, Parcelable {
 		parcel.writeFloat(  InteresMoratorio );
 		parcel.writeFloat(  SaldoTotal );
 		parcel.writeFloat(  MontoNeto );		
+	}
+
+	@Override
+	public Object getProperty(int _index) {
+        switch(_index)  
+        {
+        	case 0: return new Long(Id);
+        	case 1: return new Long(ObjNotaDebitoID);
+        	case 2: return new Long(ObjReciboID);
+        	case 3: return MontoInteres;
+        	case 4: return EsAbono;
+        	case 5: return MontoPagar;
+        	case 6: return Numero;
+        	case 7: return Fecha;
+        	case 8: return new Long(FechaVence);
+        	case 9: return MontoND;
+        	case 10: return SaldoND;
+        	case 11: return InteresMoratorio;
+        	case 12: return SaldoTotal;
+        	case 13: return MontoNeto; 
+        }
+		return null;
+	}
+
+	@Override
+	public int getPropertyCount() {
+		// TODO Auto-generated method stub
+		return 14;
+	}
+
+	@Override
+	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
+		switch(_index)  
+		{
+	        case 0:
+	            _info.name = "Id";
+	            _info.type = Long.class; 
+	            break;
+	        case 1:
+	            _info.name = "ObjNotaDebitoID";
+	            _info.type = Long.class; 
+	            break;
+	        case 2:
+	            _info.name = "ObjReciboID";
+	            _info.type = Long.class; 
+	            break;
+	        case 3:
+	            _info.name = "MontoInteres";
+	            _info.type = Float.class; 
+	            break;
+	        case 4:
+	            _info.name = "EsAbono";
+	            _info.type = Boolean.class; 
+	            break;
+	        case 5:
+	            _info.name = "MontoPagar";
+	            _info.type = Float.class; 
+	            break;
+	        case 6:
+	            _info.name = "Numero";
+	            _info.type = String.class; 
+	            break;
+	        case 7:
+	            _info.name = "Fecha";
+	            _info.type = Long.class; 
+	            break;
+	        case 8:
+	            _info.name = "FechaVence";
+	            _info.type = Long.class; 
+	            break;
+	        case 9:
+	            _info.name = "MontoND";
+	            _info.type = Float.class; 
+	            break;
+	        case 10:
+	            _info.name = "SaldoND";
+	            _info.type = Float.class; 
+	            break;
+	        case 11:
+	            _info.name = "InteresMoratorio";
+	            _info.type = Float.class; 
+	            break;
+	        case 12:
+	            _info.name = "SaldoTotal";
+	            _info.type = Float.class; 
+	            break;
+	        case 13:
+	            _info.name = "MontoNeto";
+	            _info.type = Float.class; 
+	            break;
+		}
+		
+	}
+
+	@Override
+	public void setProperty(int _index, Object obj) 
+	{
+        switch(_index)  
+        {
+        	case 0: Id = Long.parseLong(obj.toString()); 
+        				 break;
+        	case 1: ObjNotaDebitoID = Long.parseLong(obj.toString()); 
+			 			break;
+        	case 2: ObjReciboID = Long.parseLong(obj.toString()); 
+ 						break;
+        	case 3: MontoInteres = Float.valueOf(obj.toString()); 
+						break;
+        	case 4: EsAbono = Boolean.valueOf(obj.toString()); 
+						break;
+        	case 5: MontoPagar = Float.valueOf(obj.toString()); 
+						break;
+        	case 6: Numero = (obj.toString()); 
+						break;
+        	case 7: Fecha = Long.parseLong(obj.toString()); 
+						break;
+        	case 8: FechaVence = Long.parseLong(obj.toString()); 
+						break;
+        	case 9: MontoND = Float.valueOf(obj.toString()); 
+						break;
+        	case 10: SaldoND = Float.valueOf(obj.toString()); 
+						break;
+        	case 11: InteresMoratorio = Float.valueOf(obj.toString()); 
+						break;
+        	case 12: SaldoTotal = Float.valueOf(obj.toString()); 
+						break;
+        	case 13: MontoNeto = Float.valueOf(obj.toString()); 
+						break;
+        }
 	}
 
 }
