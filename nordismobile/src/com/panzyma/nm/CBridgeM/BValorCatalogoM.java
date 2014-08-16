@@ -1,6 +1,10 @@
 package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import android.os.Message;
 import android.util.Log;
 
@@ -22,12 +26,15 @@ public class BValorCatalogoM {
 	private EditFormaPago view;
 	private String catalogName = "";
 	private String valorCatalogName = "";
+	private Map<Integer, String> catalogos = new HashMap<Integer, String>();
 	
 	private static final String TAG = BValorCatalogoM.class.getSimpleName();
 	
 	public enum Petition {
-
-		GET_VALORES_CATALOGO_BY_NAME(0);
+		
+		FORMAS_PAGOS(0),
+		MONEDAS(1),
+		BANCOS(2);
 
 		int result;
 
@@ -48,13 +55,16 @@ public class BValorCatalogoM {
 
 	}
 	
-	public BValorCatalogoM(){}
+	public BValorCatalogoM(){ }
 	
 	public BValorCatalogoM(EditFormaPago view)
 	{		
     	this.controller=((NMApp)view.getActivity().getApplicationContext()).getController();  
     	this.view = view; 
-    	this.pool=((NMApp)view.getActivity().getApplicationContext()).getThreadPool();    	  	
+    	this.pool=((NMApp)view.getActivity().getApplicationContext()).getThreadPool(); 
+    	catalogos.clear();
+    	catalogos.put(0, "FormaPago");
+		catalogos.put(1, "Moneda");
     }	
 	
 	public boolean handleMessage(Message msg) throws Exception 
@@ -62,11 +72,10 @@ public class BValorCatalogoM {
 		Petition request = Petition.toInt(msg.what);
 		switch (request) 
 		{  
-			case GET_VALORES_CATALOGO_BY_NAME: 
+			default: 
 				onLoadValorCatalogoListener(request);
 				return true;
 		}
-		return false;
 	}
 
 	private void onLoadValorCatalogoListener(final Petition peticion) {
@@ -84,7 +93,7 @@ public class BValorCatalogoM {
 								0,
 								ModelValorCatalogo.getCatalogByName(
 										view.getActivity(),
-										view.getCatalogNameToFound())
+										catalogos.get(peticion.getActionCode()))
 								);
 
 					} catch (Exception e) {

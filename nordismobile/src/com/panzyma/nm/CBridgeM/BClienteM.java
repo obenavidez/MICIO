@@ -17,11 +17,13 @@ import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.model.ModelCliente;  
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;   
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.ViewCliente;
+import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.vCliente;
 import com.panzyma.nm.viewdialog.DialogCliente;
@@ -41,7 +43,9 @@ public final class BClienteM
 	Controller controller;
 	ViewCliente view2;
 	ViewReciboEdit view3;
+	ViewRecibo view4;
 	vCliente view;
+	FichaClienteFragment view5;
 	DialogCuentasPorCobrar viewcc;
     ArrayList<Cliente> obj=new ArrayList<Cliente>();
     CCCliente objccc=new CCCliente(); 
@@ -60,7 +64,6 @@ public final class BClienteM
     	this.pool =((NMApp)view.getApplication()).getThreadPool();
     	view_activated=1;
     }
-
 	
 	public BClienteM(ViewReciboEdit view)
 	{
@@ -86,7 +89,25 @@ public final class BClienteM
     	this.pool = ((NMApp)view.getContext().getApplicationContext()).getThreadPool();
     	view_activated=3;
     }
-	
+
+	public BClienteM(ViewRecibo view)
+	{
+		this.view4 = view;
+    	this.controller=((NMApp)view.getApplication()).getController();      	
+    	this.pool =((NMApp)view.getApplication()).getThreadPool();
+    	view_activated=5;
+    }
+	public BClienteM(FichaClienteFragment view)
+	{
+		this.view5 = view;
+		this.controller=this.controller=((NMApp)view.getActivity().getApplication()).getController();      	
+    	this.pool =((NMApp)view.getActivity().getApplication()).getThreadPool();
+		/*
+    	this.controller=((NMApp)view.getActivity().getApplication()).getController();      	
+    	this.pool =((NMApp)view.getActivity().getApplication()).getThreadPool();
+    	*/
+    	view_activated=6;
+    }
 	public boolean handleMessage(Message msg) 
 	{
 		switch (msg.what) 
@@ -232,6 +253,7 @@ public final class BClienteM
 	    } 
 		return cliente;
 	}
+
 	
 	private void onUpdateItem_From_Server() 
 	{ 
@@ -296,9 +318,27 @@ public final class BClienteM
 					public void run() 
 					{
 						try 
-						{    
-							if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller)) 
+						{   
+							Boolean conected= false;
+							switch (view_activated) {
+							case 1:
+								if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller))
+									conected=true;
+								break;
+							case 6:
+								if(NMNetWork.isPhoneConnected(view5.getActivity(),controller) && NMNetWork.CheckConnection(controller)) 
+									conected=true;
+								break;
+
+							default:
+								break;
+							}
+							if(conected)
+								Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer("sa||nordis09||dp",sucursalID),controller);
+							
+							/*if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller)) 
 									Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer("sa||nordis09||dp",sucursalID),controller);
+									*/
 							 
 						}  
 						catch (Exception e) 

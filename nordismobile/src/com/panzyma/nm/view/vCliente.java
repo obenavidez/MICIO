@@ -43,14 +43,12 @@ import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
-import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.viewmodel.vmCliente;
-import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nordismobile.R;
 
 public class vCliente extends ActionBarActivity implements 
@@ -164,18 +162,10 @@ public class vCliente extends ActionBarActivity implements
 					
 				break;
 			case C_SETTING_DATA:
-				
 				 list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
 				SetData(list, C_SETTING_DATA);
-				
 				result=true;
 				
-				break;
-			case C_FICHACLIENTE:
-				vmFicha DetailCustomerSelected = ((vmFicha)((msg.obj==null)?new vmFicha():msg.obj));
-				ShowCustomerDetails(DetailCustomerSelected);
-				
-				result=true;
 				break;
 		   case C_UPDATE_ITEM_FINISHED:
 			   buildToastMessage(msg.obj.toString(), Toast.LENGTH_SHORT).show();
@@ -273,7 +263,10 @@ public class vCliente extends ActionBarActivity implements
 			
 			case R.id.consultar_fc:
 			case R.id.consultar_cxc:
+				drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+				drawerLayout.closeDrawers();
 				LOAD_FICHACLIENTE_FROMSERVER();
+		
 			break;
 			case R.id.sincronizar_selected:
 				UPDATE_SELECTEDITEM_FROMSERVER();
@@ -509,33 +502,30 @@ public class vCliente extends ActionBarActivity implements
 		}
 	}
 	
-	private void ShowCustomerDetails (vmFicha detailselected)
+	
+	private void ShowCustomerDetails ()
 	{
 		Bundle args = new Bundle();
 		args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
-		args.putParcelable(FichaClienteFragment.OBJECT, detailselected);
-
+		args.putLong(FichaClienteFragment.ARG_SUCURSAL, idsucursal);
 		
 		//establecemos el titulo
 		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
 		
-		FichaClienteFragment ficha;
+		FichaClienteFragment ficha;	
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		
 		if (findViewById(R.id.dynamic_fragment) != null) {
-			
 		}
-		else {
-
-			@SuppressWarnings("unused")
+		else
+		{
 			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 			if (fragment instanceof ListaFragment) {
 				ficha = new FichaClienteFragment();
 				ficha.setArguments(args);
-				transaction.addToBackStack("lista");
-				transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				transaction.replace(R.id.fragment_container, ficha,"detail");
-				/*gridheader.setVisibility(View.INVISIBLE);*/
+				transaction.addToBackStack(null);
+				transaction.replace(R.id.fragment_container, ficha);
+				gridheader.setVisibility(View.INVISIBLE);
 			}
 		}
 		// Commit the transaction transaction.commit();
@@ -548,12 +538,7 @@ public class vCliente extends ActionBarActivity implements
 		idsucursal=get_SucursalID();
 		if(idsucursal != 0 && idsucursal != 1)
 		{			
-			Message ms = new  Message();
-			ms.what=LOAD_FICHACLIENTE_FROM_SERVER; 
-			ms.obj = idsucursal;
-			nmapp.getController().getInboxHandler().sendMessage(ms);
-			//nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_FICHACLIENTE_FROM_SERVER);
-		    Toast.makeText(this, "Trayendo Ficha Cliente...",Toast.LENGTH_LONG); 			
+			ShowCustomerDetails();		
     	}
 		else 
 		{ 
@@ -648,30 +633,17 @@ public class vCliente extends ActionBarActivity implements
 		}
 	} 
 
-	   @Override
-	   public void onBackPressed() {
-		   Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-		   if (fragment instanceof FichaClienteFragment) {
-			   FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-			   transaction.replace(R.id.fragment_container, firstFragment,"lista");
-			   transaction.commit();
-		   }
-		   else
-		   {
-			   FINISH_ACTIVITY();
-		   }
-		   /*
-	       if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-	    	   FINISH_ACTIVITY();
-	       } else {
-	    	  
-				if (fragment instanceof ListaFragment) {
-					getSupportFragmentManager().beginTransaction()
-					.add(R.id.fragment_container, firstFragment,"lista")
-					.addToBackStack("list")
-					.commit();
-				}
-	    	   //getSupportFragmentManager().popBackStack();
-	       }*/
+	@Override
+	public void onBackPressed() {
+	  Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+	  if (fragment instanceof FichaClienteFragment) {
+		  gridheader.setVisibility(View.VISIBLE);
+		  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		  transaction.replace(R.id.fragment_container, firstFragment);
+		  transaction.addToBackStack(null);
+		  transaction.commit();
+	  }else{
+		  FINISH_ACTIVITY();
 	   }
+	}
 }

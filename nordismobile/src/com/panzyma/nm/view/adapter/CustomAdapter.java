@@ -2,6 +2,7 @@ package com.panzyma.nm.view.adapter;
 import java.util.ArrayList;
 
 import com.panzyma.nm.custom.model.SpinnerModel;
+import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.viewdialog.EditFormaPago;
 import com.panzyma.nordismobile.R;
 
@@ -16,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
  
 /***** Adapter class extends with ArrayAdapter ******/
-public class CustomAdapter extends ArrayAdapter<String> {
+public class CustomAdapter extends ArrayAdapter<SpinnerModel> {
      
     private Activity activity;
     private ArrayList data;
@@ -51,7 +52,13 @@ public class CustomAdapter extends ArrayAdapter<String> {
         return getCustomView(position, convertView, parent);
     }
  
-    // This funtion called for each row ( Called data.size() times )
+    @Override
+	public SpinnerModel getItem(int position) {
+		// TODO Auto-generated method stub
+		return (SpinnerModel) data.get(position);
+	}
+
+	// This funtion called for each row ( Called data.size() times )
     public View getCustomView(int position, View convertView, ViewGroup parent) {
  
         /********** Inflate spinner_rows.xml file for each row ( Defined below ) ************/
