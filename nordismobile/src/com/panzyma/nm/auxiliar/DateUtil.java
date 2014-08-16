@@ -147,6 +147,7 @@ public class DateUtil {
         String sdate = sy + sm + sd + sh + smin + sseg;
         return Long.parseLong(sdate);
     }
+     
     
     //Regresa la diferencia en minutos entre dos horas 
     //expresadas en milisegundos

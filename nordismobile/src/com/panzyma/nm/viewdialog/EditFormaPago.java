@@ -2,6 +2,7 @@ package com.panzyma.nm.viewdialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
@@ -78,6 +79,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	private CustomAdapter monedaAdapter;
 	private String catalogNameToFound = "";
 	private Bundle savedInstanceState = null;
+	private float montoPorPagar = 0.00F;
 
 	public EditFormaPago() {
 		super();
@@ -187,7 +189,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 				pagoRecibo.setFecha(0);
 				pagoRecibo.setId(0);
 
-				float montoPorPagar = StringUtil.round(_recibo.getTotalRecibo()
+				montoPorPagar = StringUtil.round(_recibo.getTotalRecibo()
 						- Cobro.getTotalPagoRecibo(_recibo), 2);
 				pagoRecibo.setMonto(montoPorPagar);
 				pagoRecibo.setMontoNacional(montoPorPagar);
@@ -382,6 +384,8 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
         
         if( pagoEnCordoba && ( codFormaPago.compareTo("EFEC") == 0 ) ) {
 			tblRowNumeroSerie.setVisibility(View.GONE);
+		} else {
+			tblRowNumeroSerie.setVisibility(View.VISIBLE);
 		}
                  
         numeroSerie.setEnabled((codFormaPago.compareTo("EFEC") == 0) && (nuevoCodMoneda.compareTo("COR") != 0));
@@ -406,4 +410,101 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
         this.tasa.setText(tasa + "");            
         montoNacional.setText(StringUtil.formatReal(mtoNac));
     }
+
+	private boolean validarDatos() {        
+        
+	       //validar que se haya ingresado monto a pagar
+	       if (montoPago.getText().toString().trim() == "") {
+	    	   Util.Message.buildToastMessage(this.getActivity(), "Ingrese el monto a pagar.", TIME_TO_MESSAGE);	           
+	           return false;
+	       }
+	       
+	       if (Float.parseFloat(montoPago.getText().toString().trim()) == 0) {
+	    	   Util.Message.buildToastMessage(this.getActivity(), "El monto a pagar debe ser mayor que cero.", TIME_TO_MESSAGE);	         
+	           return false;
+	       }
+	       
+	       ValorCatalogo vcM = (ValorCatalogo)((SpinnerModel)monedaAdapter.getItem(cmbMoneda.getSelectedItemPosition())).getObj();    
+	       if ( !editFormaPago ) {
+	            if (vcM.getCodigo().compareTo("COR") == 0) tasa.setText("1");
+	               
+	            //Validar que no sea mayor que el saldo total de la factura
+	            float mtoNac = StringUtil.round(Float.parseFloat(tasa.getText().toString()) * Float.parseFloat(montoPago.getText().toString().trim()), 2);
+	            if (mtoNac > montoPorPagar) {
+	            	Util.Message.buildToastMessage(this.getActivity(), "El monto a pagar no debe ser mayor al faltante de pago del recibo (" + StringUtil.formatReal(montoPorPagar) + ").", TIME_TO_MESSAGE);	                
+	                return false;
+	            }
+	       }
+	      
+	       //Si el pago no es en efectivo validar que se haya ingresado el número del documento
+	       //y que la fecha del cheque si es el caso sea válida              
+	       ValorCatalogo vcFP = (ValorCatalogo)((SpinnerModel)formaPagoAdapter.getItem(cmbFormaPago.getSelectedItemPosition())).getObj();; 
+	      
+	       if (vcFP.getCodigo().compareTo("EFEC") != 0) {
+	           if (numero.getText().toString().trim().compareTo("") == 0) {
+	        	   Util.Message.buildToastMessage(this.getActivity(), "Ingrese el número de " + vcFP.getDescripcion() + ".", TIME_TO_MESSAGE);	               
+	        	   cmbFormaPago.setFocusable(true);
+	                return false;
+	            }
+	           
+	           //Validar las fechas si es cheque
+	           if (vcFP.getCodigo().compareTo("CK") == 0) {               
+	               int minDiasFechaCheque = Integer.parseInt(Cobro.getParametro(this.getActivity(), "MinDiasFechaCheque").toString());	               
+	               int maxDiasFechaCheque = Integer.parseInt(Cobro.getParametro(this.getActivity(), "MaxDiasFechaCheque").toString());
+	               
+	               long hoy = DateUtil.getTime(DateUtil.getToday());
+	               int minFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy, -minDiasFechaCheque));
+	               int maxFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy, maxDiasFechaCheque));
+	               
+	               long fechaCK = DateUtil.time2int(fecha.getText().toString());               
+	               if (fechaCK < minFechaCheque) {
+	                   Date d = new Date(minFechaCheque);
+	                   Util.Message.buildToastMessage(this.getActivity(), "La fecha del cheque no debe ser menor que " + DateUtil.idateToStr(minFechaCheque) + ".", TIME_TO_MESSAGE);	               
+	                   return false;
+	               }
+	               
+	               if (fechaCK > maxFechaCheque) {
+	                   Date d = new Date(maxFechaCheque);
+	                   Util.Message.buildToastMessage(this.getActivity(), "La fecha del cheque no debe ser mayor que " + DateUtil.idateToStr(maxFechaCheque) + ".", TIME_TO_MESSAGE);
+	                   return false;
+	               }
+	           } else {
+	               //Si es otro tipo de documento validar que la fecha no sea mayor que la actual
+	               long hoy = DateUtil.getTime(DateUtil.getToday());               
+	               long fechaDoc = DateUtil.time2int(fecha.getDate());
+	               if (fechaDoc > hoy) {
+	            	   Util.Message.buildToastMessage(this.getActivity(), "La fecha del documento no debe ser mayor a la fecha actual.", TIME_TO_MESSAGE);
+	                   return false;
+	               }               
+	           }
+	       }
+	             
+	       //Si es cobro en efectivo y la moneda es diferente a la moneda nacional, pedir números de serie       
+	       if ((vcFP.getCodigo().compareTo("EFEC") == 0) && (vcM.getCodigo().compareTo("COR") != 0)) {
+	           if (numeroSerie.getText().toString().trim().compareTo("") == 0) {
+	        	   Util.Message.buildToastMessage(this.getActivity(), "Ingrese los números de serie de los billetes.", TIME_TO_MESSAGE);	        	  
+	        	   numeroSerie.setFocusable(true);
+	                return false;
+	           }
+	       }
+	       
+	       //Si pago es en moneda extranjera, validar que tasa sea mayor que cero
+	       if (vcM.getCodigo().compareTo("COR") != 0) {
+	           if (tasa.getText().toString().trim().compareTo("") == 0) {
+	        	   Util.Message.buildToastMessage(this.getActivity(), "La tasa de cambio no puede quedar vacía.", TIME_TO_MESSAGE);	               
+	               tasa.setFocusable(true);
+	               return false;
+	           }
+	           
+	           if (Float.parseFloat(tasa.getText().toString().trim()) == 0) {
+	        	   Util.Message.buildToastMessage(this.getActivity(), "La tasa de cambio no puede ser cero.", TIME_TO_MESSAGE);
+	               tasa.setFocusable(true);
+	               return false;
+	           }
+	       } else {
+	           tasa.setText("1.0");
+	       }
+	      
+	       return true;
+	   }
 }
