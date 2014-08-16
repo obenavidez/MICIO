@@ -301,11 +301,7 @@ public class ViewPedido extends ActionBarActivity implements
 		            if ("APROBADO".compareTo(state) != 0)
 		            {
 		                //Toast.makeText(getApplicationContext(),"Solo se pueden anular pedidos en estado de APROBADO.", Toast.LENGTH_SHORT).show();
-		            	AppDialog.showMessage(vp,"Información","Solo se pueden anular pedidos en estado de APROBADO.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
-							@Override
-							public void onButtonClick(AlertDialog alert,int actionId) {
-							}
-		        		});
+		            	AppDialog.showMessage(vp,"Información","Solo se pueden anular pedidos en estado de APROBADO.",DialogType.DIALOGO_ALERTA);
 		              //CERRAR EL MENU DEL DRAWER
 		                drawerLayout.closeDrawers();
 		                return;
@@ -315,11 +311,7 @@ public class ViewPedido extends ActionBarActivity implements
 	            
 	            {
 	                //Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
-	            	AppDialog.showMessage(vp,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
-						@Override
-						public void onButtonClick(AlertDialog alert,int actionId) {
-						}
-	        		});
+	            	AppDialog.showMessage(vp,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 	                return;
 	            }
 	            try
@@ -329,12 +321,7 @@ public class ViewPedido extends ActionBarActivity implements
 	            	if(pedido==null) return;
 	            	
 	            	//Toast.makeText(getApplicationContext(),"El pedido ha sido anulado.", Toast.LENGTH_SHORT).show();
-	            	AppDialog.showMessage(vp,"Información","El pedido ha sido anulado.",DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
-						@Override
-						public void onButtonClick(AlertDialog alert,int actionId) {
-						}
-	        		});
-	            	
+	            	AppDialog.showMessage(vp,"Información","El pedido ha sido anulado.",DialogType.DIALOGO_ALERTA);
 	            }
 	            catch(Exception ex)
 	            {
@@ -529,8 +516,7 @@ public class ViewPedido extends ActionBarActivity implements
 				        		if(pedidos.size()>0){
 				        			firstFragment.getAdapter().setSelectedPosition(0);
 				        			pedido_selected = pedidos.get(0);
-				        		}
-				        		//AppDialog.showMessage("","Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
+				        		};
 				        		AppDialog.showMessage(vp, "Exíto","Se ha Elimando Correctamente el pedido.",DialogType.DIALOGO_ALERTA);
 				        	}
 			             }
