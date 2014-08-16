@@ -459,7 +459,7 @@ public class Cobro {
             if (fs != null) count += fs.length;
         }                
         return count;
-    }
+    } 
 	
     public static int cantFPs(Recibo recibo) {
         int count = 0;

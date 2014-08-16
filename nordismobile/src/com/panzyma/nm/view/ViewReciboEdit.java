@@ -13,6 +13,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER
 
 
 
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -381,6 +382,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 								case ID_SALVAR_RECIBO:
 									guardarRecibo();
 									break;
+								case ID_ENVIAR_RECIBO:
+									enviarRecibo();
+									break;
 								case ID_CERRAR:
 									//finalizarvidad();
 									break;
@@ -525,17 +529,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	}
 	
+	@SuppressWarnings("static-access")
 	private void enviarRecibo()
 	{ 
-        if(!valido()) return; 
-        if (SessionManager.isPhoneConnected())
-        {
-        	Util.Message.buildToastMessage(me,"Operación abortada por falta de covertura", TIME_TO_VIEW_MESSAGE).show();
-        	return;
-        }
+        if(!valido()) return;  
         pd.show(this, "Enviando recibo a la central", "Espere por favor", true);
-        nmapp.getController().getInboxHandler().sendEmptyMessage(SEND_DATA_FROM_SERVER);	
-        
+        nmapp.getController().getInboxHandler().sendEmptyMessage(SEND_DATA_FROM_SERVER);	        
 	}
 	
 	
@@ -608,7 +607,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             if (Cobro.cantNCs(recibo) > max) {
             	showStatusOnUI(
     					new ErrorMessage(
-    							          "Alerta",
+    							"Error al Validar el Recibo",
     							          "Problemas con los Documentos.", "La cantidad de notas de crédito no debe ser mayor que " + max + "."));
                 //Dialog.alert("La cantidad de notas de crédito no debe ser mayor que " + max + ".");
                 return false;
@@ -648,7 +647,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
                 if (todasVencidas && (recibo.getTotalNC() > recibo.getTotalFacturas()))  {
                 	showStatusOnUI(
         					new ErrorMessage(
-        							          "Alerta",
+        							"Error al Validar el Recibo",
         							          "Problemas con los Documentos.", "El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas." + max + "."));
                    // Dialog.alert("El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas.");
                     return false;
@@ -657,7 +656,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
                 if (todasVencidas && (recibo.getTotalNC() >= recibo.getTotalFacturas()))  {
                 	showStatusOnUI(
         					new ErrorMessage(
-        							          "Alerta",
+        							"Error al Validar el Recibo",
         							          "Problemas con los Documentos.", "El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas."));
 
                    // Dialog.alert("El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas.");
@@ -691,13 +690,21 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
                 //Recalcular detalles del recibo sin aplicar DescPP
                 Cobro.calcularDetFacturasRecibo(me,recibo, recibo.getCliente(), false);
                 actualizaTotales();            
-              //  Dialog.alert("Para aplicar descuento pronto pago \r\nel monto del recibo no debe ser menor que " + StringUtil.formatReal(montoMinimoRecibo) + ".");            
-                //LoadScreen(true); //Refrescar pantalla
+                showStatusOnUI(
+    					new ErrorMessage(
+    							"Error al Validar el Recibo",
+    							          "Problemas el Descuento PP.","Para aplicar descuento pronto pago \r\nel monto del recibo no debe ser menor que " + StringUtil.formatReal(montoMinimoRecibo) + "."));
+ 
                 return false;
             }
 
             //Validar que cuadre el monto pagado
-            if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) {            
+            if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) {
+            	  showStatusOnUI(
+      					new ErrorMessage(
+      							          "Error al Validar el Recibo",
+      							          "Problema con el Monto Total del Recibo","El monto pagado no cuadra con el total del recibo."));
+
                // Dialog.alert("El monto pagado no cuadra con el total del recibo.");
                 return false;
             }
@@ -1043,6 +1050,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	 
 	public void showStatusOnUI(Object msg) throws InterruptedException{
 		
+		final String titulo=""+((ErrorMessage)msg).getTittle();
+		final String mensaje=""+((ErrorMessage)msg).getMessage();
+		
 		
 		nmapp.getThreadPool().execute(new Runnable()
 		{ 
@@ -1058,7 +1068,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 						@Override
 						public void run() 
 						{ 
-							 AppDialog.showMessage(me,"Confirme por favor.!!!","Desea Imprimir el Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+							 AppDialog.showMessage(me,titulo,mensaje,AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
 							 {						 
 									@Override
 					    			public void onButtonClick(AlertDialog _dialog, int actionId) 
