@@ -44,8 +44,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class EditFormaPago extends DialogFragment implements Handler.Callback {
-
+public class EditFormaPago extends DialogFragment implements Handler.Callback 
+{
 	private static final int TIME_TO_MESSAGE = 3000;	
 	private View view;
 	private EditText numero;
@@ -396,7 +396,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
         float tasa = 1;
         if (nuevoCodMoneda.compareTo("COR") != 0) {
             //Buscar tasa de cambio asociada a la moneda seleccionada para la fecha actual
-            tasa = Cobro.getTasaCambioHoy(nuevoCodMoneda);
+           // tasa = Cobro.getTasaCambioHoy(nuevoCodMoneda);
             if (tasa == 0) {
                 mto = 0;
                 Util.Message.buildToastMessage(this.getActivity(), "No hay tasa de cambio registrada.", TIME_TO_MESSAGE);               
