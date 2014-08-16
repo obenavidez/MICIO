@@ -14,6 +14,26 @@ public class DateUtil {
         return d2i(d);
     }
     
+    public static long strTimeToLong(String fecha){
+    	
+    	String [] part = fecha.split("/");
+    	String anio = "20" + part[2];
+        String mes =  part[1];
+        mes = (Integer.parseInt(mes) - 1) + "";
+        String dia = part[1];
+        
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dia));
+        cal.set(Calendar.MONTH, Integer.parseInt(mes));
+        cal.set(Calendar.YEAR, Integer.parseInt(anio));
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        
+        return dt2i(cal.getTime());
+    }
+    
     public static long getNow() {
         return dt2i(getCalendar().getTime());
     }

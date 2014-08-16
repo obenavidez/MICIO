@@ -456,7 +456,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 	               int minFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy, -minDiasFechaCheque));
 	               int maxFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy, maxDiasFechaCheque));
 	               
-	               long fechaCK = DateUtil.time2int(fecha.getText().toString());               
+	               long fechaCK = DateUtil.strTimeToLong(fecha.getText().toString());               
 	               if (fechaCK < minFechaCheque) {
 	                   Date d = new Date(minFechaCheque);
 	                   Util.Message.buildToastMessage(this.getActivity(), "La fecha del cheque no debe ser menor que " + DateUtil.idateToStr(minFechaCheque) + ".", TIME_TO_MESSAGE);	               
@@ -471,7 +471,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 	           } else {
 	               //Si es otro tipo de documento validar que la fecha no sea mayor que la actual
 	               long hoy = DateUtil.getTime(DateUtil.getToday());               
-	               long fechaDoc = DateUtil.time2int(fecha.getDate());
+	               long fechaDoc = DateUtil.strTimeToLong(fecha.getText().toString());
 	               if (fechaDoc > hoy) {
 	            	   Util.Message.buildToastMessage(this.getActivity(), "La fecha del documento no debe ser mayor a la fecha actual.", TIME_TO_MESSAGE);
 	                   return false;
