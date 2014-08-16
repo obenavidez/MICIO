@@ -21,6 +21,28 @@ public class Ventas {
 	Ventas() {
 	}
 
+	public static ArrayList<PrecioProducto> parseListaPrecio(Producto prod, long idTipoPrecio) 
+	{
+		ArrayList<PrecioProducto> vec = new ArrayList<PrecioProducto>();
+		String tipoPrecio = idTipoPrecio + "";
+		String[] listaPrecios = StringUtil.split(prod.getListaPrecios(), "|");
+		for (int i = 0; i < listaPrecios.length; i++) {
+			String[] precioProd = StringUtil.split(listaPrecios[i], ",");
+
+			if ((idTipoPrecio == 0)
+					|| (tipoPrecio.compareTo(precioProd[0]) == 0)) {
+				PrecioProducto p = new PrecioProducto();
+				p.setObjTipoPrecioID(idTipoPrecio);
+				p.setMinimo(Integer.parseInt(precioProd[1]));
+				p.setMaximo(Integer.parseInt(precioProd[2]));
+				p.setPrecio(Float.parseFloat(precioProd[3]));
+				p.setDescTipoPrecio(precioProd[4]);
+				vec.add(p);
+			}
+		}
+		return vec;
+	}
+	
 	public static Vector parseListaPrecios(Producto prod, long idTipoPrecio) {
 		Vector vec = new Vector();
 		String tipoPrecio = idTipoPrecio + "";
@@ -78,6 +100,36 @@ public class Ventas {
 		return precio;
 	}
 
+	public static ArrayList<Bonificacion> parseListaBonificacion(Producto prod,long idCatCliente) 
+	{
+		if (prod.getListaBonificaciones() == null)
+			return null;
+		if (prod.getListaBonificaciones() == "")
+			return null;
+
+		ArrayList<Bonificacion> lb = new ArrayList<Bonificacion>();
+		String catCLiente = idCatCliente + "";
+		String[] listaBonif = StringUtil.split(prod.getListaBonificaciones(),
+				"|");
+		for (int i = 0; i < listaBonif.length; i++) 
+		{
+			String[] bonifProd = StringUtil.split(listaBonif[i], ",");
+
+			if ((idCatCliente == 0)	|| (catCLiente.compareTo(bonifProd[1]) == 0)) 
+			{
+				Bonificacion b = new Bonificacion();
+				b.setObjBonificacionID(Long.parseLong(bonifProd[0]));
+				b.setObjCategoriaClienteID(idCatCliente);
+				b.setCantidad(Integer.parseInt(bonifProd[2]));
+				b.setCantBonificacion(Integer.parseInt(bonifProd[3]));
+				b.setCategoriaCliente(bonifProd[4]);
+				lb.add(b);
+			}
+		}
+
+		return lb;
+	}
+	
 	public static Vector parseListaBonificaciones(Producto prod,
 			long idCatCliente) {
 		if (prod.getListaBonificaciones() == null)

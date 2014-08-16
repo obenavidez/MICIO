@@ -14,6 +14,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.ActionType;
+import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMConfig;
@@ -49,12 +50,14 @@ import com.panzyma.nm.viewdialog.DialogDocumentos;
 import com.panzyma.nm.viewdialog.DialogDocumentos.OnDocumentoButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
+import com.panzyma.nm.viewdialog.EditFormaPago;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -133,6 +136,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_SALVAR_RECIBO = 7;
 	private static final int ID_ENVIAR_RECIBO = 8;
 	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 9;
+	private static final int TIME_TO_VIEW_MESSAGE = 3000;
+	public static final String FORMA_PAGO_IN_EDITION = "edit"; 
+	public static final String OBJECT_TO_EDIT = "recibo"; 
 	// 
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
@@ -365,6 +371,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 								case ID_AGREGAR_DOCUMENTOS:
 									agregarDocumentosPendientesCliente();
 									break;
+								case ID_AGREGAR_PAGOS:
+									agregarPago();
+									break;
 								case ID_SALVAR_RECIBO:
 									guardarRecibo();
 									break;
@@ -372,7 +381,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									//finalizarvidad();
 									break;
 								}
-							}
+							}							
 						});
 
 					}
@@ -401,8 +410,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return super.onKeyUp(keyCode, event);
 	}
 	
-	
-
 	@Override
 	public boolean handleMessage(Message msg) {
 		switch(msg.what){
@@ -603,25 +610,46 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	}
 
+	private void agregarPago() {
+		if (recibo != null && recibo.getTotalRecibo() == 0) return;
+        
+        if ("REGISTRADO".compareTo(recibo.getDescEstado()) != 0) return;		
+        
+        //Validar que haya pendiente por pagar
+        float montoPorPagar = StringUtil.round(recibo.getTotalRecibo() - Cobro.getTotalPagoRecibo(recibo), 2);
+        if (montoPorPagar <= 0) {
+            Util.Message.buildToastMessage(this.contexto, "No hay monto pendiente de pago.", TIME_TO_VIEW_MESSAGE);
+            return;
+        }
+        
+        FragmentManager fragmentManager = getSupportFragmentManager();        
+        EditFormaPago editarPago = new EditFormaPago();        
+        Bundle parameters = new Bundle();     
+        parameters.putBoolean(FORMA_PAGO_IN_EDITION, false);
+        parameters.putParcelable(OBJECT_TO_EDIT, recibo);
+        editarPago.setArguments(parameters);        
+        editarPago.show(fragmentManager, "");
+	}
+	
 	private boolean valido() {
 		boolean valido = true;
 
 		if (recibo.getObjClienteID() == 0) {
 			valido = false;
 			Util.Message.buildToastMessage(contexto,
-					"DEBE seleccionar un cliente", 1000).show();
+					"DEBE seleccionar un cliente", TIME_TO_VIEW_MESSAGE).show();
 		}
 
 		if (recibo.getNumero() == 0) {
 			valido = false;
 			Util.Message.buildToastMessage(contexto,
-					"ESPECIFIQUE número de recibo", 1000).show();
+					"ESPECIFIQUE número de recibo", TIME_TO_VIEW_MESSAGE).show();
 		}
 
 		if (recibo.getReferencia() == 0) {
 			valido = false;
 			Util.Message.buildToastMessage(contexto,
-					"ESPECIFIQUE número de referencia", 1000).show();
+					"ESPECIFIQUE número de referencia", TIME_TO_VIEW_MESSAGE).show();
 		}
 
 		return valido;
@@ -812,9 +840,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	public Recibo getRecibo(){
 		return recibo;
 	}
-	
-	
-	
+		
 	private void FINISH_ACTIVITY()
 	{
 		int requescode=0;

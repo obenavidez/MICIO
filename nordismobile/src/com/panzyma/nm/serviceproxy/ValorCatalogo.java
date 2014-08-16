@@ -7,8 +7,15 @@ public class ValorCatalogo {
     private String Descripcion;
     
 	public ValorCatalogo() { 
-	}
+	}	
 	
+	public ValorCatalogo(long id, String codigo, String descripcion) {
+		super();
+		Id = id;
+		Codigo = codigo;
+		Descripcion = descripcion;
+	}
+
 	public long getId(){
 		return Id;
 	}

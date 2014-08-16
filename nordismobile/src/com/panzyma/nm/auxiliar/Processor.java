@@ -96,8 +96,7 @@ public class Processor {
 	{
 		synchronized(lock)
 	     {
-			controller._notifyOutboxHandlers(what,arg1, arg2,obj);
-			Thread.sleep(500);
+			controller._notifyOutboxHandlers(what,arg1, arg2,obj); 
 	     } 
     }
 	

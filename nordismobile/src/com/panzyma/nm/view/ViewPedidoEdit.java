@@ -4,13 +4,14 @@ import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_INVETORY_UPDATED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar; 
-import java.util.Date; 
+import java.util.Calendar;
+import java.util.Date;
 
-import android.annotation.SuppressLint; 
-import android.app.Activity; 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -20,7 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
@@ -45,6 +46,7 @@ import android.widget.Toast;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.BluetoothComunication;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
@@ -64,6 +66,8 @@ import com.panzyma.nm.serviceproxy.Promociones;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.PProductoViewHolder;
+import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
+import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewdialog.DetalleProducto;
 import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
 import com.panzyma.nm.viewdialog.DialogCliente;
@@ -75,7 +79,7 @@ import com.panzyma.nm.viewdialog.ExonerarImpuesto;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("NewApi")
-public class ViewPedidoEdit extends Activity implements Handler.Callback,
+public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback,
 		Editable {
 	public EditText tbxFecha;
 	public EditText tbxNumReferencia;
@@ -302,11 +306,11 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 		setTotales(false);
 
 		gridheader.setText("Productos a Facturar(0)");
-
 		adapter = new GenericAdapter(this, PProductoViewHolder.class,
 				Lvmpproducto, R.layout.gridproductosavender);
 		grid_dp.setAdapter(adapter);
 		adapter.setSelectedPosition(0);
+		dpselected = Lvmpproducto.get(0);
 		gridheader.setText("Productos a Facturar(" + adapter.getCount() + ")");
 
 		initMenu();
@@ -398,15 +402,19 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 									if (actionId == ID_SELECCIONAR_CLIENTE)
 										seleccionarCliente();
 									else if (actionId == ID_AGREGAR_PRODUCTOS)
-										seleccionarProducto();
+										agregarProducto();
 									else if (actionId == ID_CONDICIONES_Y_NOTAS)
-										establecerCondiciones();
+										agregarCondicionesYNotas();
 									else if (actionId == ID_EDITAR_PRODUCTO)
 										editarProducto();
 									else if (actionId == ID_ELIMINAR_PRODUCTO)
 										eliminarProducto();
+									else if (actionId == ID_CONSULTAR_BONIFICACIONES)
+										consultarBonificaciones();
+									else if (actionId == ID_CONSULTAR_LISTA_PRECIOS)
+										consultarPrecioProducto();
 									else if (actionId == ID_APLICAR_PROMOCIONES)
-										seleccionarPromociones();
+										aplicarPromociones();
 									else if (actionId == ID_DESAPLICAR_PROMOCIONES)
 										desaplicarPromociones();
 									else if (actionId == ID_EXONERAR_IMPUESTO)
@@ -455,7 +463,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 				255, 0, 0));
 
 		// Span to set text color to some RGB value
-		final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
+          //final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
 
 		// Span to make text bold
 		int start = 0, start2 = 0, end = 0, end2;
@@ -525,14 +533,14 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 		return super.onKeyUp(keyCode, event);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
 		pd.dismiss();
 		switch (msg.what) {
 		case C_DATA:
 
-			setData((ArrayList<Pedido>) ((msg.obj == null) ? new ArrayList<Pedido>()
-					: msg.obj), C_DATA);
+			setData((ArrayList<Pedido>) ((msg.obj == null) ? new ArrayList<Pedido>(): msg.obj), C_DATA);
 			return true;
 		case C_INVETORY_UPDATED:
 			return true;
@@ -650,7 +658,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 		dc.show();
 	}
 
-	private void seleccionarProducto() {
+	private void agregarProducto() {
 
 		invActualizado = true;
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
@@ -802,8 +810,36 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 		}
 		adapter.notifyDataSetChanged();
 	}
+	
+	private void consultarBonificaciones() 
+	{
 
-	public void seleccionarPromociones() {
+		if(dpselected==null || cliente==null)
+			return;   		 
+		FragmentTransaction ft =getSupportFragmentManager().beginTransaction(); 
+	    android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+	    if (prev != null) 
+	        ft.remove(prev);
+	    ft.addToBackStack(null); 
+	    ConsultaBonificacionesProducto cbp =ConsultaBonificacionesProducto.newInstance(dpselected.getObjProductoID(),cliente.getObjCategoriaClienteID());
+	    cbp.show(ft, "dialog"); 	
+	}
+	
+	private void consultarPrecioProducto()
+	{		
+		if(dpselected==null || cliente==null)
+			return;   
+		FragmentTransaction ft =getSupportFragmentManager().beginTransaction(); 
+	    android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+	    if (prev != null) {
+	        ft.remove(prev);
+	    }
+	    ft.addToBackStack(null); 
+	    ConsultaPrecioProducto newFragment =ConsultaPrecioProducto.newInstance(dpselected.getObjProductoID(),pedido.getObjTipoPrecioVentaID());
+	    newFragment.show(ft, "dialog"); 
+	}
+
+	public void aplicarPromociones() {
 
 		// TODO Auto-generated method stub
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
@@ -930,7 +966,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 				Toast.LENGTH_LONG).show();
 	}
 
-	public void establecerCondiciones() {
+	public void agregarCondicionesYNotas() {
 		DialogCondicionesNotas cn = new DialogCondicionesNotas(me, pedido,
 				cliente,
 				android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -1200,6 +1236,7 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 			}
 		});
 	}
+	
 	public String getTipoVenta() {
 		return (tbxTipoVenta.getSelectedItemPosition() == 0) ? "CO" : "CR";
 	}
@@ -1275,7 +1312,6 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 				Toast.LENGTH_LONG).show();
 	}
 
-	
 	@Override
 	protected void onResume() { 
 		SessionManager.setContext(me); 
@@ -1293,11 +1329,9 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
             }
         }
         
-        //Si se está fuera de covertura, salir
-//        if (Session.isOutOfCoverage()) {
-//            Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
-//            return;
-//        }
+       // Si se está fuera de covertura, salir
+        if (!SessionManager.isPhoneConnected())
+            return; 
       
         try
         {  
@@ -1313,39 +1347,71 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
 			    {
 					 
 					try
-					{
-//						String credenciales=SessionManager.getCredentials();
-//						if(credenciales!="")  
-//						{  
-						Object d = Ventas.enviarPedido(me,pedido);
-						//	pedido = Ventas.enviarPedido(me,pedido);
+					{  
+						    
+						pedido = (Pedido) Ventas.enviarPedido(me,pedido); 
 	            
-							if (pedido == null) return; 
-							//Salvar los cambios en la memoria del dispositivo
-				            salvarPedido();
-				                        
-				            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
-				            Ventas.actualizarCliente(me.getContext(),pedido.getObjSucursalID()); 
-				            
-				            //Informar al usuario
-				            if (pedido.getCodEstado().compareTo("FACTURADO") == 0)
-				            	Toast.makeText(me,"El pedido ha sido enviado y facturado.",Toast.LENGTH_LONG).show();
-				            else
-				            	Toast.makeText(me,"El pedido ha sido enviado.\r\nEstado: " + pedido.getDescEstado() + "\r\nCausa: " + pedido.getDescCausaEstado(),Toast.LENGTH_LONG).show();;
-				    
-				            actualizarOnUINumRec(); 
-				            salvado = true;
-				            
-				            //Imprimir comprobante
-				//            if (Dialog.ask(Dialog.D_YES_NO, "¿Desea imprimir el comprobante del pedido?") == Dialog.YES) {
-				//                ImprimirComprobante();
-				//            }
-				            
-				           // close();
-						//} 
+						if (pedido == null) return; 
+						//Salvar los cambios en la memoria del dispositivo
+			            salvarPedido();
+			                        
+			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
+			            Ventas.actualizarCliente(me.getContext(),pedido.getObjSucursalID()); 
+			            
+			            //Informar al usuario
+			            if (pedido.getCodEstado().compareTo("FACTURADO") == 0)
+			            	showStatus("El pedido ha sido enviado y facturado.");
+			         
+			            else 
+			            	showStatus("El pedido ha sido enviado.\r\nEstado: " + pedido.getDescEstado() + "\r\nCausa: " + pedido.getDescCausaEstado());
+			        		 
+			            	 
+			    
+			            actualizarOnUINumRec(); 
+			            salvado = true;
+			            
+			            runOnUiThread(new Runnable() 
+			            {
+			    			@Override
+			    			public void run() 
+			    			{ 
+			    				 AppDialog.showMessage(me,"Confirme por favor.!!!","Desea Imprimir un comprobante de Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+			    				 {						
+						    			@Override
+						    			public void onButtonClick(AlertDialog _dialog, int actionId) 
+						    			{
+						    				if(actionId == AppDialog.OK_BUTTOM) {
+						    					
+						    					try 
+						    					{
+													ImprimirComprobante();
+												} catch (Exception e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												}
+						    				}	
+						    				synchronized(lock)
+						    				{
+						    					lock.notify();
+						    				}
+						    			}
+			    				  }); 
+					          }
+			    		});
+			    		
+			            synchronized(lock)
+			            {
+			                try {
+			                	lock.wait();
+			    			} catch (InterruptedException e) { 
+			    				e.printStackTrace();
+			    			}
+			            }
+			           
 					}catch(Exception e)
 					{
 						e.printStackTrace();
+					    showStatus("Error al enviar el pedido.\r\n" + e.toString());
 					}
 			    }
 				
@@ -1356,4 +1422,18 @@ public class ViewPedidoEdit extends Activity implements Handler.Callback,
             Toast.makeText(me,"Error al enviar el pedido.\r\n" + ex.toString(),Toast.LENGTH_LONG).show();
         }
     }
+	
+	public void showStatus(final String msg){
+		
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				 Toast.makeText(me,msg,Toast.LENGTH_LONG).show();
+			}
+		});
+		
+	}
+	
 }

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/LightGrey"
+    android:orientation="vertical" >  
+
+    <EditText
+        android:id="@+id/etProducto"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="3dp"
+        android:enabled="false" 
+        android:textColor="@color/DarkBlue"
+        android:textStyle="bold" />
+    
+    
+     <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/bnflbl_tipoprecio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Tipo Precio"
+            android:textColor="@color/Teal"
+            android:textSize="12sp" />
+
+       <TextView
+           android:id="@+id/bnglbl_preciominimo"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginLeft="3dp"
+           android:layout_weight="1"
+           android:text="Minimo"
+           android:textColor="@color/Teal"
+           android:textSize="12sp" />
+
+       <TextView
+           android:id="@+id/bnflbl_preciomax"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:text="Máximo"
+           android:textColor="@color/Teal"
+           android:textSize="12sp" />
+       
+       <TextView
+           android:id="@+id/bnflbl_precio"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:text="Precio"
+           android:textColor="@color/Teal"
+           android:textSize="12sp" />
+       
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/bnflv_detalleprecios"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:choiceMode="singleChoice"
+        android:divider="@color/DarkGray"
+        android:dividerHeight="0.3sp"
+        android:listSelector="@drawable/statelist"
+        android:scrollingCache="false">
+    </ListView>
+
+</LinearLayout>

@@ -23,6 +23,7 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
+import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.view.ViewPedido;
@@ -134,40 +135,44 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	}
 
 	@SuppressLint("ParserError")
-	public void callDialogLogin() {
-		try {
-			nmapp.getThreadPool().execute(new Runnable() {
+	public void callDialogLogin()
+    {
+    	try 
+    	{ 
+			nmapp.getThreadPool().execute(new Runnable()
+			{ 
 				@Override
-				public void run() {
-					try {
-
-						if (SessionManager.SignIn(false)
-								|| SessionManager.isCheckedSettingSession()) {
-							Intent intent = new Intent(context,
-									ViewConfiguracion.class);
-							intent.putExtra(
-									"isEditActive",
-									(SessionManager.isCheckedSettingSession() == false) ? SessionManager
-											.isAdmin() : true);
-							SessionManager.setCheckedSettingSession(false);
+				public void run()
+			    {
+					try
+			        { 						 
+						Usuario user = SessionManager.getLoginUser();
+						NMApp.modulo = NMApp.Modulo.HOME;
+						if(user==null || SessionManager.SignIn(false) )  
+						{  
+							NMApp.modulo = NMApp.Modulo.CONFIGURACION;
+							Intent intent = new Intent(context, ViewConfiguracion.class);
+							intent.putExtra("isEditActive",(user!=null)?SessionManager.isAdmin():true);
 							startActivity(intent);
-							FINISH_COMPONENT();
-						} else
-							Log.d(TAG, "Error in login");
-
-					} catch (Exception e) {
-						e.printStackTrace();
-						dialog("", SessionManager.getErrorAuntentication(),
-								ALERT_DIALOG);
+							FINISH_COMPONENT(); 
+						}
+						else 
+							Log.d(TAG, "Error in login");  
 					}
+			        catch (Exception e)
+			        {
+			        	NMApp.modulo = NMApp.Modulo.HOME;
+			            e.printStackTrace();
+			            dialog("",SessionManager.getErrorAuntentication(),ALERT_DIALOG);
+			        } 
 
-				}
+			     }
 
 			});
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e) { 
 			e.printStackTrace();
 		}
-	}
+    } 
 
 	public Toast ToastMessage(String msg, int duration) {
 		Toast toast = Toast.makeText(this, msg, duration);
