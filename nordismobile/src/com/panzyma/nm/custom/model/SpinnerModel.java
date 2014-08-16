@@ -5,6 +5,7 @@ public class SpinnerModel {
 	private long id = 0;
 	private String codigo = "";
 	private String descripcion = "";
+	private Object obj ;
 
 	public long getId() {
 		return id;
@@ -29,5 +30,13 @@ public class SpinnerModel {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
+
+	public Object getObj() {
+		return obj;
+	}
+
+	public void setObj(Object obj) {
+		this.obj = obj;
+	}	
 
 }

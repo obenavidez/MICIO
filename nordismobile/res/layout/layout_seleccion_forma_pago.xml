@@ -5,232 +5,257 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TableLayout
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffffff"
-        android:shrinkColumns="*"
-        android:stretchColumns="*" >
+        android:layout_height="wrap_content" >
 
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="15dp"
-            android:background="#b0b0b0"
-            android:gravity="center_horizontal" >
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:shrinkColumns="*"
+            android:stretchColumns="*" >
 
-            <TextView
+            <TableRow
                 android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_span="2"
+                android:layout_height="15dp"
                 android:background="#b0b0b0"
-                android:padding="15dip"
-                android:text="Seleccione la forma de Pago"
-                android:textColor="@color/DarkBlue"
-                android:textSize="13sp" />
+                android:gravity="center_horizontal" >
 
-        </TableRow>
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_span="2"
+                    android:background="#b0b0b0"
+                    android:padding="15dip"
+                    android:text="Seleccione la forma de Pago"
+                    android:textColor="@color/DarkBlue"
+                    android:textSize="13sp" />
+            </TableRow>
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/lblFormaPago"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="3dp"
-                android:gravity="left|center"
-                android:text="Forma Pago:"
-                android:textSize="11sp" />
-
-            <Spinner
-                android:id="@+id/cmb_forma_pago"
-                android:layout_width="fill_parent"
+            <TableRow
+                android:id="@+id/tblRowFormaPago"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                tools:listitem="@android:layout/simple_spinner_item" />
-        </TableRow>
+                android:gravity="center" >
 
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:gravity="center" >
+                <TextView
+                    android:id="@+id/lblFormaPago"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Forma Pago:"
+                    android:textSize="11sp" />
 
-            <TextView
-                android:id="@+id/lblNumero"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="3dp"
-                android:gravity="left|center"
-                android:text="Número:"
-                android:textSize="11sp" />
+                <Spinner
+                    android:id="@+id/cmb_forma_pago"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    tools:listitem="@android:layout/simple_spinner_item" />
+            </TableRow>
 
-            <EditText
-                android:id="@+id/txtNumero"
-                android:layout_width="fill_parent"
+            <TableRow
+                android:id="@+id/tblRowNumero"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:ems="10"
-                android:enabled="false"
-                android:inputType="numberDecimal" />
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblNumero"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Número:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtNumero"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowFecha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblFecha"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Fecha:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtFecha"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowBanco"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblBanco"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Banco:"
+                    android:textSize="11sp" />
+
+                <Spinner
+                    android:id="@+id/cmb_banco"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    tools:listitem="@android:layout/simple_spinner_item" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowMoneda"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblMoneda"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Moneda:"
+                    android:textSize="11sp" />
+
+                <Spinner
+                    android:id="@+id/cmb_moneda"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    tools:listitem="@android:layout/simple_spinner_item" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowTasa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblTasa"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Tasa:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtTasa"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowMontoPago"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblMontoPago"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Monto Pago:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtMontoPago"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:ems="10"
+                    android:enabled="true"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowMontoNacional"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblMontoNacional"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Monto Nacional:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtMontoNacional"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="numberDecimal" />
+            </TableRow>
             
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/lblFecha"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="3dp"
-                android:gravity="left|center"
-                android:text="Fecha:"
-                android:textSize="11sp" />
-
-            <EditText
-                android:id="@+id/txtFecha"
-                android:layout_width="fill_parent"
+            <TableRow
+                android:id="@+id/tblRowNumeroSerie"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:ems="10"
-                android:enabled="false"
-                android:inputType="numberDecimal" />
-           
-        </TableRow>
+                android:gravity="center" >
 
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:gravity="center" >
+                <TextView
+                    android:id="@+id/lblNumeroSerie"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Numero Serie:"
+                    android:textSize="11sp" />
 
-            <TextView
-                android:id="@+id/lblBanco"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="3dp"
-                android:gravity="left|center"
-                android:text="Banco:"
-                android:textSize="11sp" />
-
-            <Spinner
-                android:id="@+id/cmb_banco"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                tools:listitem="@android:layout/simple_spinner_item" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow5"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/lblMoneda"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="3dp"
-                android:gravity="left|center"
-                android:text="Moneda:"
-                android:textSize="11sp" />
-
-            <Spinner
-                android:id="@+id/cmb_moneda"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                tools:listitem="@android:layout/simple_spinner_item" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow6"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/lblTasa"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="3dp"
-                android:gravity="left|center"
-                android:text="Tasa:"
-                android:textSize="11sp" />
-
-            <EditText
-                android:id="@+id/txtTasa"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:ems="10"
-                android:enabled="false"
-                android:inputType="numberDecimal" />
+                <EditText
+                    android:id="@+id/txtNumeroSerie"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="numberDecimal" />
+            </TableRow>
             
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow7"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/lblMontoPago"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:gravity="left|center"
-                android:text="Monto Pago:"
-                android:textSize="11sp" />
-
-            <EditText
-                android:id="@+id/txtMontoPago"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:ems="10"
-                android:enabled="true"
-                android:inputType="numberDecimal" />
-     
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow8"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/lblMontoNacional"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="3dp"
-                android:gravity="left|center"
-                android:text="Monto Nacional:"
-                android:textSize="11sp" />
-
-            <EditText
-                android:id="@+id/txtMontoNacional"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:ems="10"
-                android:enabled="false"
-                android:inputType="numberDecimal" />
-            
-        </TableRow>
-    </TableLayout>
+        </TableLayout>
+    </ScrollView>
 
 </LinearLayout>
