@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
+
+import com.panzyma.nm.auxiliar.NMConfig;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -382,7 +385,7 @@ public class Recibo implements KvmSerializable,Parcelable {
 	public void setFormasPagoRecibo(ArrayList<ReciboDetFormaPago> formasPagoRecibo) {
 		this.DetalleFormasPago = formasPagoRecibo;
 	}
-
+ 
 	private void readFromParcel(Parcel parcel) {
 		this.Id = parcel.readLong(  );
 		this.Numero = parcel.readInt(  );
@@ -541,10 +544,82 @@ public class Recibo implements KvmSerializable,Parcelable {
 	{
 		switch(index)  
 		{
-			case 0:return null;
-			case 1:return null;
-			case 2:return null;
-			case 3:return null;
+			case 0:
+					if (DetalleFacturas != null && DetalleFacturas.size() > 0) 
+					{
+						SoapObject _detallefacturas=new SoapObject(NMConfig.NAME_SPACE, "DetalleFacturas");
+						for(ReciboDetFactura rf:DetalleFacturas)
+			    		{
+							SoapObject item=new SoapObject(NMConfig.NAME_SPACE, "ReciboDetFactura");
+			    			int cont=rf.getPropertyCount();
+			    			for(int i=0;i<cont;i++)
+			    			{
+			    				PropertyInfo info=new PropertyInfo();
+			    				rf.getPropertyInfo(i, null, info);
+			    				info.setNamespace(NMConfig.NAME_SPACE);
+			    				item.addProperty(info.name,rf.getProperty(i));
+			    			}
+			    			_detallefacturas.addSoapObject(item);
+			    		}
+					}
+				    break;
+			case 1:
+					if (DetalleNotasDebito != null && DetalleNotasDebito.size() > 0) 
+					{
+						SoapObject _detallenotasdebito=new SoapObject(NMConfig.NAME_SPACE, "DetalleNotasDebito");
+						for(ReciboDetND rnd:DetalleNotasDebito)
+			    		{
+							SoapObject item=new SoapObject(NMConfig.NAME_SPACE, "ReciboDetND");
+			    			int cont=rnd.getPropertyCount();
+			    			for(int i=0;i<cont;i++)
+			    			{
+			    				PropertyInfo info=new PropertyInfo();
+			    				rnd.getPropertyInfo(i, null, info);
+			    				info.setNamespace(NMConfig.NAME_SPACE);
+			    				item.addProperty(info.name,rnd.getProperty(i));
+			    			}
+			    			_detallenotasdebito.addSoapObject(item);
+			    		}
+					}
+				    break;
+			case 2:
+					if (DetalleNotasCredito != null && DetalleNotasCredito.size() > 0) 
+					{
+						SoapObject _detallenotascredito=new SoapObject(NMConfig.NAME_SPACE, "DetalleNotasCredito");
+						for(ReciboDetNC rnc:DetalleNotasCredito)
+			    		{
+							SoapObject item=new SoapObject(NMConfig.NAME_SPACE, "ReciboDetNC");
+			    			int cont=rnc.getPropertyCount();
+			    			for(int i=0;i<cont;i++)
+			    			{
+			    				PropertyInfo info=new PropertyInfo();
+			    				rnc.getPropertyInfo(i, null, info);
+			    				info.setNamespace(NMConfig.NAME_SPACE);
+			    				item.addProperty(info.name,rnc.getProperty(i));
+			    			}
+			    			_detallenotascredito.addSoapObject(item);
+			    		}
+					}
+				    break;
+			case 3:	
+					if (DetalleFormasPago != null && DetalleFormasPago.size() > 0) 
+					{
+						SoapObject _detalleformaspago=new SoapObject(NMConfig.NAME_SPACE, "DetalleFormasPago");
+						for(ReciboDetFormaPago rfp:DetalleFormasPago)
+			    		{
+							SoapObject item=new SoapObject(NMConfig.NAME_SPACE, "ReciboDetFormaPago");
+			    			int cont=rfp.getPropertyCount();
+			    			for(int i=0;i<cont;i++)
+			    			{
+			    				PropertyInfo info=new PropertyInfo();
+			    				rfp.getPropertyInfo(i, null, info);
+			    				info.setNamespace(NMConfig.NAME_SPACE);
+			    				item.addProperty(info.name,rfp.getProperty(i));
+			    			}
+			    			_detalleformaspago.addSoapObject(item);
+			    		}
+					}
+				    break;
         	case 4: return new Long(Id);
         	case 5: return new Integer(Numero);
         	case 6: return new Long(Fecha);
@@ -591,22 +666,22 @@ public class Recibo implements KvmSerializable,Parcelable {
 		try 
 		   {	   
 	    	   switch(_index)  
-	    	   {
+	    	   { 
 		           case 0:
 		               _info.name = "DetalleFacturas";
-		               _info.type = Long.class; 
+		               _info.type = ReciboDetFactura[].class; 
 		               break;
 		           case 1:
-		               _info.name = "Id";
-		               _info.type = Long.class; 
+		               _info.name = "DetalleNotasDebito";
+		               _info.type = ReciboDetND[].class; 
 		               break;
 		           case 2:
-		               _info.name = "Id";
-		               _info.type = Long.class; 
+		               _info.name = "DetalleNotasCredito";
+		               _info.type = ReciboDetNC[].class; 
 		               break;
 		           case 3:
-		               _info.name = "Id";
-		               _info.type = Long.class; 
+		               _info.name = "DetalleFormasPago";
+		               _info.type = ReciboDetFormaPago[].class; 
 		               break;
 		           case 4:
 		               _info.name = "Id";

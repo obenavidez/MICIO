@@ -32,6 +32,7 @@ public class NMConfig
 		public static final String TraerNotasCreditoCliente = "TraerNotasCreditoCliente";
 		public static final String GetVentaVendedor = "GetVentaVendedor";	
 		public static final String AnularPedido = "AnularPedido";
+		public static final String EnviarRecibo="EnviarRecibo";
 	}
 	public static final class Cliente
 	{  		

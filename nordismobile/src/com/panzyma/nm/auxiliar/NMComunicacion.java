@@ -11,6 +11,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.Marshal;
+import org.ksoap2.serialization.MarshalBase64;
+import org.ksoap2.serialization.MarshalFloat;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
@@ -120,6 +123,20 @@ public class NMComunicacion {
         	request.addProperty(pinfo);   
         
         SoapSerializationEnvelope envelope = GetEnvelope(request);
+        return  MakeCall(URL,envelope,NAME_SPACE,METHOD_NAME);
+    } 
+	
+	public static synchronized Object InvokeMethod(ArrayList<Parameters> params,String URL,String NAME_SPACE,String METHOD_NAME,Class<?> mapping)throws Exception
+    { 
+        SoapObject request =new SoapObject(NAME_SPACE,METHOD_NAME); 
+        for(PropertyInfo pinfo:params) 
+        	request.addProperty(pinfo);          
+        SoapSerializationEnvelope envelope = GetEnvelope(request);
+        if(mapping!=null)
+        	envelope.addMapping(NAME_SPACE,mapping.getSimpleName(),mapping); 		
+		Marshal floatMarshal = new MarshalFloat();
+		floatMarshal.register(envelope);
+		new MarshalBase64().register(envelope); 
         return  MakeCall(URL,envelope,NAME_SPACE,METHOD_NAME);
     } 
 	

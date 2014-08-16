@@ -6,6 +6,7 @@ import android.os.Parcelable;
  
  
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -15,6 +16,7 @@ import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
  
+
 
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.interfaces.Item;
@@ -362,7 +364,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
          }
     	 return dataarray;
     }
-
+    
+    
     @SuppressLint("UseValueOf")
 	@Override 
 	public Object getProperty(int _index) {
@@ -451,7 +454,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         }
         return null;
     }
-
+     
+    
     @Override
 	public void setProperty(int _index, Object _) {
         switch(_index)  {
@@ -497,13 +501,12 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
         case 33: Exento = "true".equals(_.toString()); break;
         case 34: AutorizacionDGI = (java.lang.String) _; break;
         }
-    }
-
+    }    
+    
+    
     @Override
 	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
-       try {
-    	   
-    	   
+       try {   	   
     	   
     	   switch(_index)  {
            case 0:

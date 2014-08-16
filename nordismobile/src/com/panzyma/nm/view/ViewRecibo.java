@@ -23,7 +23,6 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -32,11 +31,9 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -59,27 +56,24 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.CBridgeM.BReciboM;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
+import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
-import com.panzyma.nm.logic.TareaWSConsulta;
-import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Recibo;
-import com.panzyma.nm.serviceproxy.Usuario;
-import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
@@ -181,7 +175,8 @@ public class ViewRecibo extends ActionBarActivity implements
 	public enum FragmentActive {
 		LIST,
 		ITEM,
-		CUENTAS_POR_COBRAR
+		CUENTAS_POR_COBRAR,
+		FICHA_CLIENTE
 	};
 
 	private static final String TAG = ViewRecibo.class.getSimpleName();
@@ -190,11 +185,12 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int EDITAR_RECIBO = 1;
 	private static final int BORRAR_RECIBO = 2;
 	protected static final int ENVIAR_RECIBO = 3;
+	private static final int FICHA_CLIENTE = 5;
 	private static final int CUENTAS_POR_COBRAR = 6;
 	public static final String RECIBO_ID = "recibo_id";
 	private FragmentActive fragmentActive = null;
 	private BReciboM bpm;
-
+	private ViewRecibo vr;
 	CustomArrayAdapter<vmRecibo> customArrayAdapter;
 	private SearchView searchView;
 	int listFragmentId;
@@ -210,7 +206,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	private QuickAction quickAction;
 	private Button btnMenu;
 	private Display display;
-	
+	Bundle args = new Bundle();
 	ProgressDialog pDialog;
 	TextView gridheader;
 	TextView footerView;
@@ -396,6 +392,51 @@ public class ViewRecibo extends ActionBarActivity implements
 					{
 						// TODO: handle exception
 					} 
+					break;
+				case FICHA_CLIENTE :
+					drawerLayout.closeDrawers();
+					
+					if(recibo_selected== null)
+					{
+						AppDialog.showMessage(vr,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					//SI SE ESTÁ FUERA DE LA COBERTURA
+		            if(!NMNetWork.isPhoneConnected(context,nmapp.getController()) && !NMNetWork.CheckConnection(nmapp.getController()))
+		            {
+		            	AppDialog.showMessage(vr,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+		            	return;
+		            }
+		            long sucursal=recibo_selected.getObjSucursalID();
+		            
+		            args = new Bundle();
+					args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
+					args.putLong(FichaClienteFragment.ARG_SUCURSAL, sucursal);
+		            
+					FichaClienteFragment ficha;	
+		            FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
+		            
+					fragmentActive = FragmentActive.FICHA_CLIENTE;
+					if (findViewById(R.id.dynamic_fragment) != null) {
+					}
+					else{
+						ficha = new FichaClienteFragment();
+						ficha.setArguments(args);
+						mytransaction.addToBackStack(null);
+						mytransaction.replace(R.id.fragment_container,ficha);
+						mytransaction.commit();	
+					}
+					/*
+					if (findViewById(R.id.fragment_container) != null) 
+					{
+						mytransaction.replace(R.id.fragment_container,ficha);
+					}
+					mytransaction.addToBackStack(null);
+					mytransaction.commit();*/	
+					gridheader.setVisibility(View.INVISIBLE);
+					
+					//OCULTAR LA BARRA DE ACCION
+					//getSupportActionBar().hide();
 					break;
 				case CUENTAS_POR_COBRAR:
 					fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
@@ -805,6 +846,7 @@ public class ViewRecibo extends ActionBarActivity implements
 			getSupportActionBar().show();
 			gridheader.setVisibility(View.VISIBLE);
 		}
+		
 		return super.onKeyUp(keyCode, event);
 	}
 	
@@ -822,6 +864,18 @@ public class ViewRecibo extends ActionBarActivity implements
 	public Dialog buildCustomDialog(String tittle, String msg, int type) {
 		return new CustomDialog(this.getApplicationContext(), tittle, msg,
 				false, type);
+	}
+	@Override
+	public void onBackPressed() {
+		Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		if (fragment instanceof FichaClienteFragment) {
+			fragmentActive = FragmentActive.LIST;
+			gridheader.setVisibility(View.VISIBLE);
+			getSupportActionBar().show();
+			FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
+			mytransaction.replace(R.id.fragment_container, firstFragment);
+			mytransaction.commit();
+		}
 	}
 
 }

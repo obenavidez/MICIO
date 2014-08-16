@@ -65,23 +65,28 @@ public class ModelCliente
 	}
 	
 	
+//	public synchronized static JSONObject actualizarCliente(String Credentials,long idSucursal) throws Exception
+//	{
+//	    ArrayList<Parameters> arrayparams=new ArrayList<Parameters>();
+//		String[] paramname=new String[]{"Credentials","idSucursal"}; 
+//		Object[] values=new Object[]{Credentials,idSucursal}; 
+//		Type[] type=new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS};		 
+//		for(int i=0;i<2;i++)
+//		{
+//			Parameters params=new Parameters();
+//			params.setName(paramname[i]);
+//			params.setValue(values[i]);
+//			params.setType(type[i]);  
+//			arrayparams.add(params); 
+//		}  			 
+//		//return  new JSONObject(NMComunicacion.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCliente).toString());
+//		return  new JSONObject(AppNMComunication.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCliente).toString());
+//	 }
+	
 	public synchronized static JSONObject actualizarCliente(String Credentials,long idSucursal) throws Exception
-	{
-	    ArrayList<Parameters> arrayparams=new ArrayList<Parameters>();
-		String[] paramname=new String[]{"Credentials","idSucursal"}; 
-		Object[] values=new Object[]{Credentials,idSucursal}; 
-		Type[] type=new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS};		 
-		for(int i=0;i<2;i++)
-		{
-			Parameters params=new Parameters();
-			params.setName(paramname[i]);
-			params.setValue(values[i]);
-			params.setType(type[i]);  
-			arrayparams.add(params); 
-		}  			 
-		//return  new JSONObject(NMComunicacion.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCliente).toString());
-		return  new JSONObject(AppNMComunication.InvokeMethod(arrayparams,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCliente).toString());
-	 }
+	{ 
+		return  AppNMComunication.InvokeService(NMConfig.URL2+NMConfig.MethodName.GetCliente+"/"+Credentials+"/"+idSucursal); 
+	}
 	
 	public synchronized static ArrayList<vmCliente> getArrayCustomerFromLocalHost(ContentResolver content)throws Exception
 	{  		 

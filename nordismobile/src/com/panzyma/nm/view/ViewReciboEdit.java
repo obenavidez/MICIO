@@ -1,46 +1,51 @@
 package com.panzyma.nm.view;
-
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+ 
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
+ 
 
-import java.text.SimpleDateFormat;
+
+
+
+
+
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.ActionType;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
-import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.DateUtil; 
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.Processor;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.VentasUtil;
 import com.panzyma.nm.controller.Controller;
-import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.controller.ControllerProtocol; 
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
-import com.panzyma.nm.menu.QuickAction;
-import com.panzyma.nm.model.ModelProducto;
-import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.menu.QuickAction; 
+import com.panzyma.nm.serviceproxy.Cliente; 
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
-import com.panzyma.nm.serviceproxy.ReciboDetND;
-import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.serviceproxy.ReciboDetND; 
 import com.panzyma.nm.view.adapter.GenericAdapter;
-import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
-import com.panzyma.nm.view.viewholder.FacturaViewHolder;
-import com.panzyma.nm.view.viewholder.PProductoViewHolder;
+import com.panzyma.nm.view.viewholder.DocumentoViewHolder; 
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Seleccionable;
@@ -50,19 +55,14 @@ import com.panzyma.nm.viewdialog.DialogDocumentos;
 import com.panzyma.nm.viewdialog.DialogDocumentos.OnDocumentoButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
-import com.panzyma.nm.viewdialog.EditFormaPago;
-import com.panzyma.nm.viewmodel.vmRecibo;
+import com.panzyma.nm.viewdialog.EditFormaPago; 
 import com.panzyma.nordismobile.R;
 
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.app.Activity;
-import android.app.Dialog;
+import android.support.v4.app.FragmentActivity; 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.DialogInterface.OnClickListener;
+import android.content.Context; 
+import android.content.Intent; 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -139,6 +139,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit"; 
 	public static final String OBJECT_TO_EDIT = "recibo"; 
+	private boolean salvado;
 	// 
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
@@ -153,11 +154,15 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private com.panzyma.nm.serviceproxy.Documento documento_selected;
 	private boolean onEdit = false;
 	private boolean onNew;	
-
+	private static Object lock = new Object();
+    private boolean isReimpresion=false;
 	private NMApp nmapp;
 	private List<Factura> facturasRecibo;
 	private List<com.panzyma.nm.serviceproxy.Documento> documents;
 	
+	boolean imprimir = false;
+    boolean pagarOnLine = false; 
+    
 	public List<Factura> getFacturasRecibo() {
 		return facturasRecibo;
 	}
@@ -377,6 +382,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 								case ID_SALVAR_RECIBO:
 									guardarRecibo();
 									break;
+								case ID_ENVIAR_RECIBO:
+									enviarRecibo();
+									break;
 								case ID_CERRAR:
 									//finalizarvidad();
 									break;
@@ -421,6 +429,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			Util.Message.buildToastMessage(contexto,
 					"Recibo Guardado!!", 1000).show();
 			break;
+		 
 		}
 		return false;
 	}
@@ -519,6 +528,196 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 
 	}
+	
+	@SuppressWarnings("static-access")
+	private void enviarRecibo()
+	{ 
+        if(!valido()) return;  
+        pd.show(this, "Enviando recibo a la central", "Espere por favor", true);
+        nmapp.getController().getInboxHandler().sendEmptyMessage(SEND_DATA_FROM_SERVER);	        
+	}
+	
+	
+	public boolean valido(Recibo recibo) 
+    {        
+    	
+    	try 
+    	{ 
+    		//Validar fecha del pedido
+            Date d = new Date(recibo.getFecha());            
+            if (DateUtil.d2i(d) > DateUtil.d2i(Calendar.getInstance().getTime())) 
+            {
+            	showStatusOnUI(
+    					new ErrorMessage(
+    							          "Error en el proceso de enviar el recibo al servidor",
+    							          "Fecha invalida", "\nCausa: "+"La fecha del recibo no debe ser mayor a la fecha actual."));				
+                 
+                return false;
+            }
+        
+            if (recibo.getNombreCliente().trim() == "") 
+            {            
+            	showStatusOnUI(
+    					new ErrorMessage(
+    							          "Error en el proceso de enviar el recibo al servidor",
+    							          "El cliente del recibo no ha sido ingresado.", "")); 
+                return false;
+            }
+            
+            //Se incluya al menos una factura y/o la cantidad de facturas marcadas para ser incluidas       
+            int cantFac = Cobro.cantFacturas(recibo);
+            int cantND = Cobro.cantNDs(recibo);
+            if (cantFac == 0) {
+                if(cantND == 0) {
+                	showStatusOnUI(
+        					new ErrorMessage(
+        							          "Error en el proceso de enviar el recibo al servidor",
+        							          "Problemas con las Facturas.", "Debe incluir al menos una factura o nota de débito."));
+                    
+                    return false;
+                }
+            }
+            
+            //Validar que la cantidad de facturas incluidas no sea mayor que el valor del parámetro CantMaxFacturasEnRecibo.
+            int max = Integer.parseInt(Cobro.getParametro(me,"CantMaxFacturasEnRecibo")+"");
+            if (cantFac > max) {
+            	showStatusOnUI(
+    					new ErrorMessage(
+    							          "Error en el proceso de enviar el recibo al servidor",
+    							          "Problemas con los Documentos.", "La cantidad de facturas no debe ser mayor que "+max));             
+     
+                return false;
+            }
+                    
+            //La cantidad de notas de débito marcadas para ser incluidas en el recibo 
+            //no debe ser mayor que el valor del párametro CantMaxNotasDebitoEnRecibo        
+            max = Integer.parseInt(Cobro.getParametro(me,"CantMaxNotasDebitoEnRecibo")+"");
+            if (cantND > max) {
+            	
+            	showStatusOnUI(
+    					new ErrorMessage(
+    							          "Error en el proceso de enviar el recibo al servidor",
+    							          "Problemas con los Documentos.", "La cantidad de notas de débito no debe ser mayor que "+max + "."));             
+                return false;
+            }
+            
+            //La cantidad de notas de crédito incluidas a pagar no debe ser mayor 
+            //que el valor del parámetro CantMaxNotasCreditoEnRecibo        
+            max = Integer.parseInt(Cobro.getParametro(me,"CantMaxNotasCreditoEnRecibo")+"");
+            if (Cobro.cantNCs(recibo) > max) {
+            	showStatusOnUI(
+    					new ErrorMessage(
+    							"Error al Validar el Recibo",
+    							          "Problemas con los Documentos.", "La cantidad de notas de crédito no debe ser mayor que " + max + "."));
+                //Dialog.alert("La cantidad de notas de crédito no debe ser mayor que " + max + ".");
+                return false;
+            }
+            
+            //Validar que se haya ingresado al menos un pago
+            if (Cobro.cantFPs(recibo) == 0) {
+                //Dialog.alert("Detalle de pagos no ingresado.");
+                return false;
+            }
+            
+            //Validar que la sumatoria de los montos de las NC seleccionadas no sea mayor ni igual que la sumatoria
+            //de los montos a pagar de las facturas incluidas en el recibo, a excepción de que solamente se estén
+            //pagando facturas vencidas en cuyo caso SÍ se permite un monto igual
+            if (recibo.getTotalNC() > 0) { //Si hay NC aplicadas
+            
+                //Ver si todas las facturas aplicadas son vencidas
+                boolean todasVencidas = true;
+                int diasAplicaMora = Integer.parseInt(Cobro.getParametro(me, "DiasDespuesVenceCalculaMora")+"");
+                long fechaHoy = DateUtil.getTime(DateUtil.getToday());
+                if (recibo.getFacturasRecibo().size() != 0) {
+                    ReciboDetFactura[] ff = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray();
+                    if (ff != null) {
+                        for(int i=0; i<ff.length; i++) {
+                            ReciboDetFactura f = ff[i];
+                            String s = f.getFechaVence() + "";
+                            int fechaVence = Integer.parseInt(s.substring(0, 8));
+                            long fechaCaeEnMora = DateUtil.addDays(DateUtil.getTime(fechaVence), diasAplicaMora);
+                            if (fechaCaeEnMora > fechaHoy) {
+                                todasVencidas = false;
+                                break;
+                            }
+                        }
+                    }
+                } //Ver si todas las facturas aplicadas son vencidas
+                
+                if (todasVencidas && (recibo.getTotalNC() > recibo.getTotalFacturas()))  {
+                	showStatusOnUI(
+        					new ErrorMessage(
+        							"Error al Validar el Recibo",
+        							          "Problemas con los Documentos.", "El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas." + max + "."));
+                   // Dialog.alert("El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas.");
+                    return false;
+                }
+                            
+                if (todasVencidas && (recibo.getTotalNC() >= recibo.getTotalFacturas()))  {
+                	showStatusOnUI(
+        					new ErrorMessage(
+        							"Error al Validar el Recibo",
+        							          "Problemas con los Documentos.", "El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas."));
+
+                   // Dialog.alert("El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas.");
+                    return false;
+                }
+                  
+            } //Si hay NC aplicadas
+
+
+            //Monto Mínimo Recibo: Para aplicar descuento específico a cada factura que se va cancelar,
+            //el total del recibo deber mayor o igual al valor del parámetro 'MontoMinReciboAplicaDpp'
+            boolean ValidarMontoAplicaDpp = false;
+            
+            //Determinando si hay descPP que validar
+            if (recibo.getFacturasRecibo().size() != 0) {
+                ReciboDetFactura[] ff = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray();
+                if (ff != null) {
+                    for(int i=0; i<ff.length; i++) {
+                        ReciboDetFactura f = ff[i];
+                        if (f.getMontoDescEspecifico() != 0) {
+                            ValidarMontoAplicaDpp = true;
+                            break;
+                        }
+                    }
+                }
+            } //Determinando si hay descPP que validar
+            
+            //Validando el monto mínimo del recibo
+            float montoMinimoRecibo = Float.parseFloat(Cobro.getParametro(me,"MontoMinReciboAplicaDpp")+"");
+            if ((recibo.getTotalRecibo() < montoMinimoRecibo) && ValidarMontoAplicaDpp) {
+                //Recalcular detalles del recibo sin aplicar DescPP
+                Cobro.calcularDetFacturasRecibo(me,recibo, recibo.getCliente(), false);
+                actualizaTotales();            
+                showStatusOnUI(
+    					new ErrorMessage(
+    							"Error al Validar el Recibo",
+    							          "Problemas el Descuento PP.","Para aplicar descuento pronto pago \r\nel monto del recibo no debe ser menor que " + StringUtil.formatReal(montoMinimoRecibo) + "."));
+ 
+                return false;
+            }
+
+            //Validar que cuadre el monto pagado
+            if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) {
+            	  showStatusOnUI(
+      					new ErrorMessage(
+      							          "Error al Validar el Recibo",
+      							          "Problema con el Monto Total del Recibo","El monto pagado no cuadra con el total del recibo."));
+
+               // Dialog.alert("El monto pagado no cuadra con el total del recibo.");
+                return false;
+            }
+            return true;
+
+			
+		} catch (Exception e) 
+		{
+			
+		}
+    	return false;
+   }
+	
 	
 	private void actualizaTotales() {
 		// ENCONTRANDO EL SUBTOTAL DEL RECIBO
@@ -841,6 +1040,64 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return recibo;
 	}
 		
+	public Recibo setRecibo(Recibo r){
+		return recibo=r;
+	}
+	
+	public boolean getEstadoConexionPago(){
+		return pagarOnLine;
+	}
+	 
+	public void showStatusOnUI(Object msg) throws InterruptedException{
+		
+		final String titulo=""+((ErrorMessage)msg).getTittle();
+		final String mensaje=""+((ErrorMessage)msg).getMessage();
+		
+		
+		nmapp.getThreadPool().execute(new Runnable()
+		{ 
+			@Override
+			public void run()
+		    {
+				 
+				try 
+				{
+					
+					runOnUiThread(new Runnable() 
+			        {
+						@Override
+						public void run() 
+						{ 
+							 AppDialog.showMessage(me,titulo,mensaje,AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+							 {						 
+									@Override
+					    			public void onButtonClick(AlertDialog _dialog, int actionId) 
+					    			{ 
+					    				synchronized(lock)
+					    				{
+					    					lock.notify();
+					    				}
+					    			}
+							  }); 
+				          }
+					});
+					
+			        synchronized(lock)
+			        {
+			            try {
+			            	lock.wait();
+						} catch (InterruptedException e) { 
+							e.printStackTrace();
+						}
+			        }
+					
+				} catch (Exception e) 
+				{ 
+				}
+		    }
+		}); 
+		
+	}
 	private void FINISH_ACTIVITY()
 	{
 		int requescode=0;
@@ -877,5 +1134,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}				
 		
 	}
+	
 	
 }
