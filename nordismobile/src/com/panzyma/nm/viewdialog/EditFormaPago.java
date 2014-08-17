@@ -124,7 +124,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		return builder.create();
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("unchecked")
 	private void cargarCatalogoFormasPago() {
 		try {
 			nmapp = (NMApp) this.getActivity().getApplication();
@@ -140,7 +140,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		}
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("unchecked")
 	private void cargarCatalogoMonedas() {
 		try {
 			catalogosReady = false;
@@ -152,6 +152,23 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
 					.sendEmptyMessage(Petition.MONEDAS.getActionCode());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void cargarCatalogoBancos() {
+		try {
+			catalogosReady = false;
+			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp.getController().removebridgeByName(
+					BValorCatalogoM.class.toString());			
+			nmapp.getController().setEntities(this, new BValorCatalogoM());
+			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController().getInboxHandler()
+					.sendEmptyMessage(Petition.BANCOS.getActionCode());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -296,7 +313,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 
 				public boolean onKey(View v, int keyCode, KeyEvent event) {
 					// TODO Auto-generated method stub
-					if (keyCode == KeyEvent.KEYCODE_BACK) {
+					if ( keyCode == KeyEvent.KEYCODE_DEL ) {
 						int pos = montoPago.getSelectionStart();
 						if (pos == 0)
 							return true;
@@ -398,9 +415,14 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 			monedaAdapter = new CustomAdapter(this.getActivity(),
 					R.layout.spinner_rows, setListData(monedas));
 			cmbMoneda.setAdapter(monedaAdapter);
-			setValuesToView();
-		} else if ("banco".equals(obj.getNombreCatalogo().trim())) {
+			cargarCatalogoBancos();			
+		} else if ("EntidadBancaria".equals(obj.getNombreCatalogo().trim())) {
 			bancos = obj.getValoresCatalogo();
+			bancos.add(0, new ValorCatalogo(-1, "", ""));
+			bancoAdapter = new CustomAdapter(this.getActivity(),
+					R.layout.spinner_rows, setListData(bancos));
+			cmbBanco.setAdapter(bancoAdapter);
+			setValuesToView();
 		}
 	}
 
@@ -684,4 +706,13 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		float montoNac = StringUtil.round(tasa * mto, 2);
 		montoNacional.setText(StringUtil.formatReal(montoNac));
 	}
+	
+	public int getFecha() {
+		return pagoRecibo.getFecha();
+	}
+	
+	public String getCodigoMoneda() {
+		return pagoRecibo.getCodMoneda();
+	}
+	
 }
