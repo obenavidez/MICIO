@@ -29,12 +29,17 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.inputmethodservice.Keyboard.Key;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -44,9 +49,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class EditFormaPago extends DialogFragment implements Handler.Callback 
-{
-	private static final int TIME_TO_MESSAGE = 3000;	
+public class EditFormaPago extends DialogFragment implements Handler.Callback {
+	
+	private static final int TIME_TO_MESSAGE = 3000;
 	private View view;
 	private EditText numero;
 	private EditText fecha;
@@ -66,7 +71,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 	private TableRow tblRowMontoPago;
 	private TableRow tblRowMontoPagoNacional;
 	private TableRow tblRowNumeroSerie;
-	
+
 	private Recibo _recibo;
 	private ReciboDetFormaPago pagoRecibo;
 	private boolean editFormaPago = false;
@@ -77,6 +82,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 	private NMApp nmapp;
 	private CustomAdapter formaPagoAdapter;
 	private CustomAdapter monedaAdapter;
+	private CustomAdapter bancoAdapter;
 	private String catalogNameToFound = "";
 	private Bundle savedInstanceState = null;
 	private float montoPorPagar = 0.00F;
@@ -101,7 +107,10 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 		builder.setPositiveButton("AGREGAR", new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-
+				if( validarDatos() ){
+					accept();
+					dialog.dismiss();
+				}				
 			}
 		});
 		builder.setNegativeButton("CANCELAR", new OnClickListener() {
@@ -115,7 +124,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 		return builder.create();
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("unchecked")
 	private void cargarCatalogoFormasPago() {
 		try {
 			nmapp = (NMApp) this.getActivity().getApplication();
@@ -131,7 +140,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 		}
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("unchecked")
 	private void cargarCatalogoMonedas() {
 		try {
 			catalogosReady = false;
@@ -143,6 +152,23 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
 					.sendEmptyMessage(Petition.MONEDAS.getActionCode());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void cargarCatalogoBancos() {
+		try {
+			catalogosReady = false;
+			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp.getController().removebridgeByName(
+					BValorCatalogoM.class.toString());			
+			nmapp.getController().setEntities(this, new BValorCatalogoM());
+			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController().getInboxHandler()
+					.sendEmptyMessage(Petition.BANCOS.getActionCode());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -175,8 +201,10 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 	private void setValuesToView() {
 		// INICIANDO MIEMBROS INTERNOS
 		if (savedInstanceState != null) {
-			editFormaPago = savedInstanceState.getBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION);
-			_recibo = savedInstanceState.getParcelable(ViewReciboEdit.OBJECT_TO_EDIT);
+			editFormaPago = savedInstanceState
+					.getBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION);
+			_recibo = savedInstanceState
+					.getParcelable(ViewReciboEdit.OBJECT_TO_EDIT);
 			if (!editFormaPago) {
 				// AGREGANDO UNA FORMA DE PAGO
 				pagoRecibo = new ReciboDetFormaPago();
@@ -204,82 +232,139 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 			} else {
 				// EDITANDO UNA FORMA DE PAGO
 			}
-			boolean pagoEnEfectivo = pagoRecibo.getCodFormaPago().compareTo("EFEC") == 0;
+			boolean pagoEnEfectivo = pagoRecibo.getCodFormaPago().compareTo(
+					"EFEC") == 0;
 			boolean pagoEnCordoba = pagoRecibo.getCodMoneda().compareTo("COR") == 0;
 
-			//ESTABLECIENDO VISIBILIDAD PARA LAS FILAS DEL LAYOUT 
-			if( pagoEnEfectivo )
-			{								
-				tblRowNumero.setVisibility(View.GONE);			
+			// ESTABLECIENDO VISIBILIDAD PARA LAS FILAS DEL LAYOUT
+			if (pagoEnEfectivo) {
+				tblRowNumero.setVisibility(View.GONE);
 				tblRowFecha.setVisibility(View.GONE);
 				tblRowBanco.setVisibility(View.GONE);
 				tblRowTasa.setVisibility(View.GONE);
 			}
-			if( pagoEnCordoba ) {
+			if (pagoEnCordoba) {
 				tblRowNumeroSerie.setVisibility(View.GONE);
 			}
-			
+
 			numero.setText(pagoRecibo.getNumero());
 			tasa.setText(StringUtil.formatReal(pagoRecibo.getTasaCambio()));
 			montoPago.setText(StringUtil.formatReal(pagoRecibo.getMonto()));
 			montoNacional.setText(StringUtil.formatReal(pagoRecibo
 					.getMontoNacional()));
 			numeroSerie.setText(pagoRecibo.getSerieBilletes());
-					
-			numero.setEnabled( !pagoEnEfectivo );
-			fecha.setEnabled( !pagoEnEfectivo );
-			cmbBanco.setEnabled( !pagoEnEfectivo );
-			numeroSerie.setEnabled( !pagoEnCordoba );
+
+			numero.setEnabled(!pagoEnEfectivo);
+			fecha.setEnabled(!pagoEnEfectivo);
+			cmbBanco.setEnabled(!pagoEnEfectivo);
+			numeroSerie.setEnabled(!pagoEnCordoba);
 
 			if (pagoRecibo.getFecha() == 0) {
 				fecha.setText(DateUtil.idateToStr(DateUtil.getNow()).toString());
 			} else {
 				fecha.setText(DateUtil.idateToStr(pagoRecibo.getFecha())
 						.toString());
-			}	
-			
-			for(int i=0; ( formasPago != null && i < formasPago.size() ); i++) {
-	            if(formasPago.get(i).getCodigo().compareTo(pagoRecibo.getCodFormaPago()) == 0) {
-	                cmbFormaPago.setSelection(i);
-	                break;
-	            }
-	        }
-						 
-			for (int i = 0; ( bancos != null && i < bancos.size() ); i++) {
+			}
+
+			for (int i = 0; (formasPago != null && i < formasPago.size()); i++) {
+				if (formasPago.get(i).getCodigo()
+						.compareTo(pagoRecibo.getCodFormaPago()) == 0) {
+					cmbFormaPago.setSelection(i);
+					break;
+				}
+			}
+
+			for (int i = 0; (bancos != null && i < bancos.size()); i++) {
 				if (bancos.get(i).getCodigo()
 						.compareTo(pagoRecibo.getCodEntidad()) == 0) {
 					cmbBanco.setSelection(i);
 					break;
 				}
 			}
-			
-			for(int i=0; ( monedas != null && i < monedas.size() ); i++) {
-	            if(monedas.get(i).getCodigo().compareTo(pagoRecibo.getCodMoneda()) == 0) {
-	                cmbMoneda.setSelection(i);
-	                break;
-	            }
-	        }
-			
-			cmbFormaPago.setOnItemSelectedListener(new OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-					if( position == 0 ) return;
-					ValorCatalogo _formaPago = (ValorCatalogo) ((SpinnerModel)formaPagoAdapter.getItem(position)).getObj();
-					CambiaFormaPago(_formaPago.getCodigo());
-				}
 
-				@Override
-				public void onNothingSelected(AdapterView<?> parentView) {
-					// your code here
+			for (int i = 0; (monedas != null && i < monedas.size()); i++) {
+				if (monedas.get(i).getCodigo()
+						.compareTo(pagoRecibo.getCodMoneda()) == 0) {
+					cmbMoneda.setSelection(i);
+					break;
 				}
+			}
 
+			cmbFormaPago
+					.setOnItemSelectedListener(new OnItemSelectedListener() {
+						@Override
+						public void onItemSelected(AdapterView<?> parentView,
+								View selectedItemView, int position, long id) {
+							if (position == 0)
+								return;
+							ValorCatalogo _formaPago = (ValorCatalogo) ((SpinnerModel) formaPagoAdapter
+									.getItem(position)).getObj();
+							CambiaFormaPago(_formaPago.getCodigo());
+						}
+
+						@Override
+						public void onNothingSelected(AdapterView<?> parentView) {
+							// your code here
+						}
+
+					});
+
+			montoPago.setOnKeyListener(new OnKeyListener() {
+
+				public boolean onKey(View v, int keyCode, KeyEvent event) {
+					// TODO Auto-generated method stub
+					if ( keyCode == KeyEvent.KEYCODE_DEL ) {
+						int pos = montoPago.getSelectionStart();
+						if (pos == 0)
+							return true;
+						if (montoPago.getText().toString().compareTo("") != 0) {
+							String t = montoPago.getText().toString();
+							String s = "";
+							if (t.length() > 0) {
+								if (pos == t.length())
+									s = t.substring(0, t.length() - 1);
+								else {
+									String s1 = t.substring(0, pos - 1);
+									String s2 = t.substring(pos, t.length());
+									s = s1 + s2;
+								}
+							}
+
+							montoPago.setText(s);
+							montoPago.setSelection(pos - 1);
+							RecalcularMontoNacional();
+							return true;
+						}
+
+					} else {
+						if (Character.isDigit(keyCode)) {
+							int pos = montoPago.getSelectionStart();
+							String t = montoPago.getText().toString();
+							String s1 = "";
+							if (pos > 0)
+								s1 = t.substring(0, pos);
+							String s2 = "";
+							if (pos < t.length())
+								s2 = t.substring(pos, t.length());
+
+							montoPago.setText(s1 + keyCode + s2);
+							RecalcularMontoNacional();
+							montoPago.setSelection(pos + 1);
+							return true;
+						}
+					}
+					return false;
+				}
 			});
-			
+
 			cmbMoneda.setOnItemSelectedListener(new OnItemSelectedListener() {
 				@Override
-				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-					if( position == 0 ) return;
-					ValorCatalogo _moneda = (ValorCatalogo) ((SpinnerModel)monedaAdapter.getItem(position)).getObj();
+				public void onItemSelected(AdapterView<?> parentView,
+						View selectedItemView, int position, long id) {
+					if (position == 0)
+						return;
+					ValorCatalogo _moneda = (ValorCatalogo) ((SpinnerModel) monedaAdapter
+							.getItem(position)).getObj();
 					CambioMoneda(_moneda.getCodigo());
 				}
 
@@ -309,9 +394,9 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 	public boolean handleMessage(Message msg) {
 		Petition response = Petition.toInt(msg.what);
 		switch (response) {
-			default:
-				establecer((Catalogo) msg.obj);
-				break;
+		default:
+			establecer((Catalogo) msg.obj);
+			break;
 		}
 		return false;
 	}
@@ -319,24 +404,29 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 	private void establecer(Catalogo obj) {
 		if ("FormaPago".equals(obj.getNombreCatalogo().trim())) {
 			formasPago = obj.getValoresCatalogo();
-			formasPago.add(0, new ValorCatalogo(-1,"",""));
+			formasPago.add(0, new ValorCatalogo(-1, "", ""));
 			formaPagoAdapter = new CustomAdapter(this.getActivity(),
 					R.layout.spinner_rows, setListData(formasPago));
 			cmbFormaPago.setAdapter(formaPagoAdapter);
 			cargarCatalogoMonedas();
 		} else if ("Moneda".equals(obj.getNombreCatalogo().trim())) {
 			monedas = obj.getValoresCatalogo();
-			monedas.add(0, new ValorCatalogo(-1,"",""));
+			monedas.add(0, new ValorCatalogo(-1, "", ""));
 			monedaAdapter = new CustomAdapter(this.getActivity(),
 					R.layout.spinner_rows, setListData(monedas));
 			cmbMoneda.setAdapter(monedaAdapter);
-			setValuesToView();
-		} else if ("banco".equals(obj.getNombreCatalogo().trim())) {
+			cargarCatalogoBancos();			
+		} else if ("EntidadBancaria".equals(obj.getNombreCatalogo().trim())) {
 			bancos = obj.getValoresCatalogo();
+			bancos.add(0, new ValorCatalogo(-1, "", ""));
+			bancoAdapter = new CustomAdapter(this.getActivity(),
+					R.layout.spinner_rows, setListData(bancos));
+			cmbBanco.setAdapter(bancoAdapter);
+			setValuesToView();
 		}
 	}
 
-	public ArrayList<SpinnerModel> setListData(List<ValorCatalogo> valores) {
+	private ArrayList<SpinnerModel> setListData(List<ValorCatalogo> valores) {
 		ArrayList<SpinnerModel> CustomListViewValuesArr = new ArrayList<SpinnerModel>();
 		// Now i have taken static values by loop.
 		// For further inhancement we can take data by webservice / json / xml;
@@ -357,154 +447,272 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback
 		return CustomListViewValuesArr;
 	}
 
+	public void accept() {
+        //Salvando monto que se va a pagar
+        ValorCatalogo vcFP = (ValorCatalogo)((SpinnerModel)formaPagoAdapter.getItem(cmbFormaPago.getSelectedItemPosition())).getObj();
+        pagoRecibo.setObjFormaPagoID(vcFP.getId());
+        pagoRecibo.setCodFormaPago(vcFP.getCodigo());
+        pagoRecibo.setDescFormaPago(vcFP.getDescripcion());
+        
+        pagoRecibo.setNumero("");
+        pagoRecibo.setFecha(0);
+        pagoRecibo.setObjEntidadID(0);
+        pagoRecibo.setCodEntidad("");
+        pagoRecibo.setDescEntidad("");
+        if (vcFP.getCodigo().compareTo("EFEC") != 0) {
+            pagoRecibo.setNumero(numero.getText().toString().trim());            
+            pagoRecibo.setFecha(DateUtil.strTimeToInt(fecha.getText().toString()));            
+            ValorCatalogo vcBco = (ValorCatalogo)((SpinnerModel)bancoAdapter.getItem(cmbBanco.getSelectedItemPosition())).getObj();
+            pagoRecibo.setObjEntidadID(vcBco.getId());
+            pagoRecibo.setCodEntidad(vcBco.getCodigo());
+            pagoRecibo.setDescEntidad(vcBco.getDescripcion());
+        }
+        
+        ValorCatalogo vcM = (ValorCatalogo)((SpinnerModel)monedaAdapter.getItem(cmbMoneda.getSelectedItemPosition())).getObj();
+        pagoRecibo.setObjMonedaID(vcM.getId());
+        pagoRecibo.setCodMoneda(vcM.getCodigo());
+        pagoRecibo.setDescMoneda(vcM.getDescripcion());
+        
+        if (vcM.getCodigo().compareTo("COR") == 0)
+            pagoRecibo.setTasaCambio(1.0F);
+        else
+            pagoRecibo.setTasaCambio(Float.parseFloat(tasa.getText().toString()));
+        
+        pagoRecibo.setMonto(Float.parseFloat(montoPago.getText().toString().trim()));
+        pagoRecibo.setMontoNacional(pagoRecibo.getMonto() * pagoRecibo.getTasaCambio());
+        
+        pagoRecibo.setSerieBilletes("");
+        if ((vcFP.getCodigo().compareTo("EFEC") == 0) && (vcM.getCodigo().compareTo("COR") != 0)) 
+            pagoRecibo.setSerieBilletes(numeroSerie.getText().toString().trim());
+        
+        //_canceled = false;        
+    }
+	
 	private void CambiaFormaPago(String codNuevaFormaPago) {
-        if (numero == null) return;
-        boolean pagoEnEfectivo = codNuevaFormaPago.compareTo("EFEC") == 0;
+		if (numero == null)
+			return;
+		boolean pagoEnEfectivo = codNuevaFormaPago.compareTo("EFEC") == 0;
 
-		//ESTABLECIENDO VISIBILIDAD PARA LAS FILAS DEL LAYOUT
+		// ESTABLECIENDO VISIBILIDAD PARA LAS FILAS DEL LAYOUT
 		tblRowNumero.setVisibility(pagoEnEfectivo ? View.GONE : View.VISIBLE);
 		tblRowFecha.setVisibility(pagoEnEfectivo ? View.GONE : View.VISIBLE);
 		tblRowBanco.setVisibility(pagoEnEfectivo ? View.GONE : View.VISIBLE);
 		tblRowTasa.setVisibility(pagoEnEfectivo ? View.GONE : View.VISIBLE);
 
-		numero.setEnabled( !pagoEnEfectivo );
-		fecha.setEnabled( !pagoEnEfectivo );
-		cmbBanco.setEnabled( !pagoEnEfectivo );  
-    }
-	
+		numero.setEnabled(!pagoEnEfectivo);
+		fecha.setEnabled(!pagoEnEfectivo);
+		cmbBanco.setEnabled(!pagoEnEfectivo);
+	}
+
 	private void CambioMoneda(String nuevoCodMoneda) {
-        if (tasa == null) return;
-        boolean pagoEnCordoba = nuevoCodMoneda.compareTo("COR") == 0;
-        
-        tasa.setEnabled( !pagoEnCordoba );
-        tblRowTasa.setVisibility(pagoEnCordoba ? View.GONE : View.VISIBLE);
-        
-        ValorCatalogo vc = (ValorCatalogo)((SpinnerModel)formaPagoAdapter.getItem(cmbFormaPago.getSelectedItemPosition())).getObj();
-        String codFormaPago = vc.getCodigo();
-        
-        if( pagoEnCordoba && ( codFormaPago.compareTo("EFEC") == 0 ) ) {
+		if (tasa == null)
+			return;
+		boolean pagoEnCordoba = nuevoCodMoneda.compareTo("COR") == 0;
+
+		tasa.setEnabled(!pagoEnCordoba);
+		tblRowTasa.setVisibility(pagoEnCordoba ? View.GONE : View.VISIBLE);
+
+		ValorCatalogo vc = (ValorCatalogo) ((SpinnerModel) formaPagoAdapter
+				.getItem(cmbFormaPago.getSelectedItemPosition())).getObj();
+		String codFormaPago = vc.getCodigo();
+
+		if (pagoEnCordoba && (codFormaPago.compareTo("EFEC") == 0)) {
 			tblRowNumeroSerie.setVisibility(View.GONE);
 		} else {
 			tblRowNumeroSerie.setVisibility(View.VISIBLE);
 		}
-                 
-        numeroSerie.setEnabled((codFormaPago.compareTo("EFEC") == 0) && (nuevoCodMoneda.compareTo("COR") != 0));
-       
-        float montoPorPagar = StringUtil.round(_recibo.getTotalRecibo() - Cobro.getTotalPagoRecibo(_recibo), 2);
-        float mtoNac = montoPorPagar;
-        float mto = mtoNac;
-        float tasa = 1;
-        if (nuevoCodMoneda.compareTo("COR") != 0) {
-            //Buscar tasa de cambio asociada a la moneda seleccionada para la fecha actual
-           // tasa = Cobro.getTasaCambioHoy(nuevoCodMoneda);
-            if (tasa == 0) {
-                mto = 0;
-                Util.Message.buildToastMessage(this.getActivity(), "No hay tasa de cambio registrada.", TIME_TO_MESSAGE);               
-            } else {
-                pagoRecibo.setTasaCambio(tasa);                
-                mto = StringUtil.round(montoPorPagar / tasa, 2);                
-            }
-        }
-        pagoRecibo.setTasaCambio(tasa);      
-        montoPago.setText(mto + "");
-        this.tasa.setText(tasa + "");            
-        montoNacional.setText(StringUtil.formatReal(mtoNac));
-    }
 
-	private boolean validarDatos() {        
-        
-	       //validar que se haya ingresado monto a pagar
-	       if (montoPago.getText().toString().trim() == "") {
-	    	   Util.Message.buildToastMessage(this.getActivity(), "Ingrese el monto a pagar.", TIME_TO_MESSAGE);	           
-	           return false;
-	       }
-	       
-	       if (Float.parseFloat(montoPago.getText().toString().trim()) == 0) {
-	    	   Util.Message.buildToastMessage(this.getActivity(), "El monto a pagar debe ser mayor que cero.", TIME_TO_MESSAGE);	         
-	           return false;
-	       }
-	       
-	       ValorCatalogo vcM = (ValorCatalogo)((SpinnerModel)monedaAdapter.getItem(cmbMoneda.getSelectedItemPosition())).getObj();    
-	       if ( !editFormaPago ) {
-	            if (vcM.getCodigo().compareTo("COR") == 0) tasa.setText("1");
-	               
-	            //Validar que no sea mayor que el saldo total de la factura
-	            float mtoNac = StringUtil.round(Float.parseFloat(tasa.getText().toString()) * Float.parseFloat(montoPago.getText().toString().trim()), 2);
-	            if (mtoNac > montoPorPagar) {
-	            	Util.Message.buildToastMessage(this.getActivity(), "El monto a pagar no debe ser mayor al faltante de pago del recibo (" + StringUtil.formatReal(montoPorPagar) + ").", TIME_TO_MESSAGE);	                
-	                return false;
-	            }
-	       }
-	      
-	       //Si el pago no es en efectivo validar que se haya ingresado el número del documento
-	       //y que la fecha del cheque si es el caso sea válida              
-	       ValorCatalogo vcFP = (ValorCatalogo)((SpinnerModel)formaPagoAdapter.getItem(cmbFormaPago.getSelectedItemPosition())).getObj();; 
-	      
-	       if (vcFP.getCodigo().compareTo("EFEC") != 0) {
-	           if (numero.getText().toString().trim().compareTo("") == 0) {
-	        	   Util.Message.buildToastMessage(this.getActivity(), "Ingrese el número de " + vcFP.getDescripcion() + ".", TIME_TO_MESSAGE);	               
-	        	   cmbFormaPago.setFocusable(true);
-	                return false;
-	            }
-	           
-	           //Validar las fechas si es cheque
-	           if (vcFP.getCodigo().compareTo("CK") == 0) {               
-	               int minDiasFechaCheque = Integer.parseInt(Cobro.getParametro(this.getActivity(), "MinDiasFechaCheque").toString());	               
-	               int maxDiasFechaCheque = Integer.parseInt(Cobro.getParametro(this.getActivity(), "MaxDiasFechaCheque").toString());
-	               
-	               long hoy = DateUtil.getTime(DateUtil.getToday());
-	               int minFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy, -minDiasFechaCheque));
-	               int maxFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy, maxDiasFechaCheque));
-	               
-	               long fechaCK = DateUtil.strTimeToLong(fecha.getText().toString());               
-	               if (fechaCK < minFechaCheque) {
-	                   Date d = new Date(minFechaCheque);
-	                   Util.Message.buildToastMessage(this.getActivity(), "La fecha del cheque no debe ser menor que " + DateUtil.idateToStr(minFechaCheque) + ".", TIME_TO_MESSAGE);	               
-	                   return false;
-	               }
-	               
-	               if (fechaCK > maxFechaCheque) {
-	                   Date d = new Date(maxFechaCheque);
-	                   Util.Message.buildToastMessage(this.getActivity(), "La fecha del cheque no debe ser mayor que " + DateUtil.idateToStr(maxFechaCheque) + ".", TIME_TO_MESSAGE);
-	                   return false;
-	               }
-	           } else {
-	               //Si es otro tipo de documento validar que la fecha no sea mayor que la actual
-	               long hoy = DateUtil.getTime(DateUtil.getToday());               
-	               long fechaDoc = DateUtil.strTimeToLong(fecha.getText().toString());
-	               if (fechaDoc > hoy) {
-	            	   Util.Message.buildToastMessage(this.getActivity(), "La fecha del documento no debe ser mayor a la fecha actual.", TIME_TO_MESSAGE);
-	                   return false;
-	               }               
-	           }
-	       }
-	             
-	       //Si es cobro en efectivo y la moneda es diferente a la moneda nacional, pedir números de serie       
-	       if ((vcFP.getCodigo().compareTo("EFEC") == 0) && (vcM.getCodigo().compareTo("COR") != 0)) {
-	           if (numeroSerie.getText().toString().trim().compareTo("") == 0) {
-	        	   Util.Message.buildToastMessage(this.getActivity(), "Ingrese los números de serie de los billetes.", TIME_TO_MESSAGE);	        	  
-	        	   numeroSerie.setFocusable(true);
-	                return false;
-	           }
-	       }
-	       
-	       //Si pago es en moneda extranjera, validar que tasa sea mayor que cero
-	       if (vcM.getCodigo().compareTo("COR") != 0) {
-	           if (tasa.getText().toString().trim().compareTo("") == 0) {
-	        	   Util.Message.buildToastMessage(this.getActivity(), "La tasa de cambio no puede quedar vacía.", TIME_TO_MESSAGE);	               
-	               tasa.setFocusable(true);
-	               return false;
-	           }
-	           
-	           if (Float.parseFloat(tasa.getText().toString().trim()) == 0) {
-	        	   Util.Message.buildToastMessage(this.getActivity(), "La tasa de cambio no puede ser cero.", TIME_TO_MESSAGE);
-	               tasa.setFocusable(true);
-	               return false;
-	           }
-	       } else {
-	           tasa.setText("1.0");
-	       }
-	      
-	       return true;
-	   }
+		numeroSerie.setEnabled((codFormaPago.compareTo("EFEC") == 0)
+				&& (nuevoCodMoneda.compareTo("COR") != 0));
+
+		float montoPorPagar = StringUtil
+				.round(_recibo.getTotalRecibo()
+						- Cobro.getTotalPagoRecibo(_recibo), 2);
+		float mtoNac = montoPorPagar;
+		float mto = mtoNac;
+		float tasa = 1;
+		if (nuevoCodMoneda.compareTo("COR") != 0) {
+			// Buscar tasa de cambio asociada a la moneda seleccionada para la
+			// fecha actual
+			// tasa = Cobro.getTasaCambioHoy(nuevoCodMoneda);
+			if (tasa == 0) {
+				mto = 0;
+				Util.Message.buildToastMessage(this.getActivity(),
+						"No hay tasa de cambio registrada.", TIME_TO_MESSAGE);
+			} else {
+				pagoRecibo.setTasaCambio(tasa);
+				mto = StringUtil.round(montoPorPagar / tasa, 2);
+			}
+		}
+		pagoRecibo.setTasaCambio(tasa);
+		montoPago.setText(mto + "");
+		this.tasa.setText(tasa + "");
+		montoNacional.setText(StringUtil.formatReal(mtoNac));
+	}
+
+	private boolean validarDatos() {
+
+		// validar que se haya ingresado monto a pagar
+		if (montoPago.getText().toString().trim() == "") {
+			Util.Message.buildToastMessage(this.getActivity(),
+					"Ingrese el monto a pagar.", TIME_TO_MESSAGE);
+			return false;
+		}
+
+		if (Float.parseFloat(montoPago.getText().toString().trim()) == 0) {
+			Util.Message.buildToastMessage(this.getActivity(),
+					"El monto a pagar debe ser mayor que cero.",
+					TIME_TO_MESSAGE);
+			return false;
+		}
+
+		ValorCatalogo vcM = (ValorCatalogo) ((SpinnerModel) monedaAdapter
+				.getItem(cmbMoneda.getSelectedItemPosition())).getObj();
+		if (!editFormaPago) {
+			if (vcM.getCodigo().compareTo("COR") == 0)
+				tasa.setText("1");
+
+			// Validar que no sea mayor que el saldo total de la factura
+			float mtoNac = StringUtil.round(
+					Float.parseFloat(tasa.getText().toString())
+							* Float.parseFloat(montoPago.getText().toString()
+									.trim()), 2);
+			if (mtoNac > montoPorPagar) {
+				Util.Message.buildToastMessage(this.getActivity(),
+						"El monto a pagar no debe ser mayor al faltante de pago del recibo ("
+								+ StringUtil.formatReal(montoPorPagar) + ").",
+						TIME_TO_MESSAGE);
+				return false;
+			}
+		}
+
+		// Si el pago no es en efectivo validar que se haya ingresado el número
+		// del documento
+		// y que la fecha del cheque si es el caso sea válida
+		ValorCatalogo vcFP = (ValorCatalogo) ((SpinnerModel) formaPagoAdapter
+				.getItem(cmbFormaPago.getSelectedItemPosition())).getObj();
+		;
+
+		if (vcFP.getCodigo().compareTo("EFEC") != 0) {
+			if (numero.getText().toString().trim().compareTo("") == 0) {
+				Util.Message.buildToastMessage(this.getActivity(),
+						"Ingrese el número de " + vcFP.getDescripcion() + ".",
+						TIME_TO_MESSAGE);
+				cmbFormaPago.setFocusable(true);
+				return false;
+			}
+
+			// Validar las fechas si es cheque
+			if (vcFP.getCodigo().compareTo("CK") == 0) {
+				int minDiasFechaCheque = Integer.parseInt(Cobro.getParametro(
+						this.getActivity(), "MinDiasFechaCheque").toString());
+				int maxDiasFechaCheque = Integer.parseInt(Cobro.getParametro(
+						this.getActivity(), "MaxDiasFechaCheque").toString());
+
+				long hoy = DateUtil.getTime(DateUtil.getToday());
+				int minFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy,
+						-minDiasFechaCheque));
+				int maxFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy,
+						maxDiasFechaCheque));
+
+				long fechaCK = DateUtil.strTimeToLong(fecha.getText()
+						.toString());
+				if (fechaCK < minFechaCheque) {
+					Date d = new Date(minFechaCheque);
+					Util.Message
+							.buildToastMessage(
+									this.getActivity(),
+									"La fecha del cheque no debe ser menor que "
+											+ DateUtil
+													.idateToStr(minFechaCheque)
+											+ ".", TIME_TO_MESSAGE);
+					return false;
+				}
+
+				if (fechaCK > maxFechaCheque) {
+					Date d = new Date(maxFechaCheque);
+					Util.Message
+							.buildToastMessage(
+									this.getActivity(),
+									"La fecha del cheque no debe ser mayor que "
+											+ DateUtil
+													.idateToStr(maxFechaCheque)
+											+ ".", TIME_TO_MESSAGE);
+					return false;
+				}
+			} else {
+				// Si es otro tipo de documento validar que la fecha no sea
+				// mayor que la actual
+				long hoy = DateUtil.getTime(DateUtil.getToday());
+				long fechaDoc = DateUtil.strTimeToLong(fecha.getText()
+						.toString());
+				if (fechaDoc > hoy) {
+					Util.Message
+							.buildToastMessage(
+									this.getActivity(),
+									"La fecha del documento no debe ser mayor a la fecha actual.",
+									TIME_TO_MESSAGE);
+					return false;
+				}
+			}
+		}
+
+		// Si es cobro en efectivo y la moneda es diferente a la moneda
+		// nacional, pedir números de serie
+		if ((vcFP.getCodigo().compareTo("EFEC") == 0)
+				&& (vcM.getCodigo().compareTo("COR") != 0)) {
+			if (numeroSerie.getText().toString().trim().compareTo("") == 0) {
+				Util.Message.buildToastMessage(this.getActivity(),
+						"Ingrese los números de serie de los billetes.",
+						TIME_TO_MESSAGE);
+				numeroSerie.setFocusable(true);
+				return false;
+			}
+		}
+
+		// Si pago es en moneda extranjera, validar que tasa sea mayor que cero
+		if (vcM.getCodigo().compareTo("COR") != 0) {
+			if (tasa.getText().toString().trim().compareTo("") == 0) {
+				Util.Message.buildToastMessage(this.getActivity(),
+						"La tasa de cambio no puede quedar vacía.",
+						TIME_TO_MESSAGE);
+				tasa.setFocusable(true);
+				return false;
+			}
+
+			if (Float.parseFloat(tasa.getText().toString().trim()) == 0) {
+				Util.Message
+						.buildToastMessage(this.getActivity(),
+								"La tasa de cambio no puede ser cero.",
+								TIME_TO_MESSAGE);
+				tasa.setFocusable(true);
+				return false;
+			}
+		} else {
+			tasa.setText("1.0");
+		}
+
+		return true;
+	}
+
+	private void RecalcularMontoNacional() {
+		float mto = 0, tasa = 0;
+		if (this.tasa.getText().toString().trim().compareTo("") != 0)
+			tasa = Float.parseFloat(this.tasa.getText().toString().trim());
+
+		if (montoPago.getText().toString().trim().compareTo("") != 0)
+			mto = Float.parseFloat(montoPago.getText().toString().trim());
+
+		float montoNac = StringUtil.round(tasa * mto, 2);
+		montoNacional.setText(StringUtil.formatReal(montoNac));
+	}
+	
+	public int getFecha() {
+		return pagoRecibo.getFecha();
+	}
+	
+	public String getCodigoMoneda() {
+		return pagoRecibo.getCodMoneda();
+	}
+	
 }

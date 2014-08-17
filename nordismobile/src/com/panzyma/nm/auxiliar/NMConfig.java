@@ -5,8 +5,10 @@ public class NMConfig
 {   
 	public static String URL_SERVER="http://www.panzyma.com/nordisserverprod";
 	public static final String NAME_SPACE = "http://www.panzyma.com/"; 
-    public static String URL = "http://www.panzyma.com/nordisserverdev/mobileservice.asmx";
-    public static String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/";
+    //public static String URL = "http://www.panzyma.com/nordisserverdev/mobileservice.asmx";
+    public static String URL = "http://192.168.1.100/NordisServer/mobileservice.asmx"; 
+    //public static String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/";
+    public static String URL2 ="http://192.168.1.102:8080/Servicios/SimfacService.svc/";
     public static class MethodName
     { 	
     	public static final String CheckConnection="CheckConnection";
