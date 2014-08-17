@@ -148,7 +148,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 		try 
 		{ 
-			//SessionManager.setContext(this);
+			SessionManager.setContext(this);
 			aprodselected = new ArrayList<Producto>();
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();

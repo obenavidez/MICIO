@@ -25,13 +25,12 @@ import com.panzyma.nm.serviceproxy.ReciboDetND;
 public class Cobro {
 	
 	public static float getTotalPagoRecibo(Recibo rcol) {
-        if (rcol.getFormasPagoRecibo() == null) return 0;
+        if (rcol.getFormasPagoRecibo().size() == 0) return 0;
         
-        ArrayList<ReciboDetFormaPago> fp = rcol.getFormasPagoRecibo();
-        if (fp == null) return 0;
-        
+        ArrayList<ReciboDetFormaPago> fp = rcol.getFormasPagoRecibo();         
         float totalPago = 0;
-        for(int i=0; i < fp.size(); i++) totalPago += fp.get(i).getMontoNacional();
+        for(int i=0; i < fp.size(); i++) 
+        	totalPago += fp.get(i).getMontoNacional();
         
         return StringUtil.round(totalPago, 2);
     }
@@ -57,13 +56,13 @@ public class Cobro {
 	
 	public static void calcularDetFacturasRecibo(Context cnt,Recibo rcol, Cliente cliente, boolean blnCalcDesc) {        
         if (rcol.getFacturasRecibo().size() == 0) return;        
-        ReciboDetFactura[] _ff = (ReciboDetFactura[]) rcol.getFacturasRecibo().toArray();
+        ArrayList<ReciboDetFactura> _ff =  rcol.getFacturasRecibo();
         if (_ff == null) return;
         
         //Inicializar descuento PP en cero en todas las facturas
-        for(int i=0; i < _ff.length; i++) {
-            _ff[i].setMontoDescEspecificoCalc(0);       
-            _ff[i].setMontoDescEspecifico(0);       
+        for(int i=0; i < _ff.size(); i++) {
+            _ff.get(i).setMontoDescEspecificoCalc(0);       
+            _ff.get(i).setMontoDescEspecifico(0);       
         }
         
         if (blnCalcDesc)
@@ -78,8 +77,8 @@ public class Cobro {
             }
             
             //Aplicarlo a las facturas
-            for(int i=0; i < _ff.length; i++) {
-                ReciboDetFactura _f = _ff[i];
+            for(int i=0; i < _ff.size(); i++) {
+                ReciboDetFactura _f =  _ff.get(i);
                 if (descFacturas.containsKey(_f.getObjFacturaID() + "")) {
                     _f.setMontoDescEspecificoCalc(Float.parseFloat(descFacturas.get(_f.getObjFacturaID() + "") + ""));                    
                     _f.setMontoDescEspecifico(_f.getMontoDescEspecificoCalc());
@@ -91,8 +90,8 @@ public class Cobro {
         calcularDescuentoOcasional(cnt,rcol, cliente);
                 
         //Otros cálculos
-        for(int i=0; i < _ff.length; i++) {
-            ReciboDetFactura _f = _ff[i];
+        for(int i=0; i < _ff.size(); i++) {
+            ReciboDetFactura _f =_ff.get(i);
             
             //Si no es cancelación, no hay descuento pronto pago
             if (_f.isEsAbono()) _f.setMontoDescEspecifico(0);
@@ -113,12 +112,12 @@ public class Cobro {
         CalcDescPP_Output out = new CalcDescPP_Output(0, 0, 0, 0);
         if (rcol.getFacturasRecibo().size() == 0) return out;
         
-        ReciboDetFactura[] facturasRCol = (ReciboDetFactura[]) rcol.getFacturasRecibo().toArray();
+        ArrayList<ReciboDetFactura> facturasRCol =rcol.getFacturasRecibo();
         if (facturasRCol == null) return out;
         
         //Calcular el monto total de las facturas sobre el cual se aplicará el descuento PP
-        for(int i=0; i < facturasRCol.length; i++) {
-            ReciboDetFactura facRCol = facturasRCol[i];
+        for(int i=0; i < facturasRCol.size(); i++) {
+            ReciboDetFactura facRCol = facturasRCol.get(i);
             
             //Traer objeto factura en 
             Factura fac = getFacturaCliente(cliente, facRCol.getObjFacturaID());
@@ -250,7 +249,7 @@ public class Cobro {
 	        CalcDescOca_Output out = new CalcDescOca_Output(0, 0);        
 	        if (rcol.getFacturasRecibo().size() == 0) return out;
 	        
-	        ReciboDetFactura[] facturasRCol = (ReciboDetFactura[]) rcol.getFacturasRecibo().toArray();
+	        ArrayList<ReciboDetFactura> facturasRCol = rcol.getFacturasRecibo();
 	        if (facturasRCol == null) return out;
 	        
 	        //Montos para cálculo
@@ -265,8 +264,9 @@ public class Cobro {
 	        int HolgDiasAPp = Integer.parseInt(Cobro.getParametro(cnt,"HolguraDiasAplicarDescPP")+"");
 	        
 	        //Calculando montos de facturas
-	        for(int i=0; i < facturasRCol.length; i++) {                
-	            ReciboDetFactura facRCol = facturasRCol[i];
+	        for(int i=0; i < facturasRCol.size(); i++) 
+	        {                
+	            ReciboDetFactura facRCol =  facturasRCol.get(i);
 	            
 	            //Tiene que estar seleccionada y cancelándose
 	            if (facRCol.isEsAbono()) {
@@ -354,8 +354,8 @@ public class Cobro {
 	            //Realizar aplicación de los porcentajes de decuentos ocasionales 
 	            //(tanto por promoción como por negociación del usuario)
 	            //Calculando montos de facturas
-	            for(int i=0; i < facturasRCol.length; i++) {                
-	                ReciboDetFactura facRCol = facturasRCol[i];
+	            for(int i=0; i < facturasRCol.size(); i++) {                
+	                ReciboDetFactura facRCol = facturasRCol.get(i);
 	                float descOca = 0;
 	                float descPromo = 0;
 	                
@@ -422,9 +422,9 @@ public class Cobro {
         float totalNC = 0;
         
         if (rcol.getNotasCreditoRecibo().size() != 0) {
-            ReciboDetNC[] _cc = (ReciboDetNC[]) rcol.getNotasCreditoRecibo().toArray();
+            ArrayList<ReciboDetNC> _cc =  rcol.getNotasCreditoRecibo();
             if (_cc != null) {
-                for(int i=0; i < _cc.length; i++) totalNC += _cc[i].getMonto();                
+                for(int i=0; i < _cc.size(); i++) totalNC += _cc.get(i).getMonto();                
             }          
         } 
         
@@ -454,37 +454,29 @@ public class Cobro {
 	
 	public static int cantFacturas(Recibo recibo) {
         int count = 0;
-        if (recibo.getFacturasRecibo().size() != 0) {
-            ReciboDetFactura[] fs = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray();
-            if (fs != null) count += fs.length;
-        }                
+        if (recibo.getFacturasRecibo().size() != 0) 
+             count +=recibo.getFacturasRecibo().size(); 
         return count;
     } 
 	
     public static int cantFPs(Recibo recibo) {
         int count = 0;
-        if (recibo.getFormasPagoRecibo().size() != 0) {
-            ReciboDetFormaPago[] fp = (ReciboDetFormaPago[]) recibo.getFormasPagoRecibo().toArray();
-            if (fp != null) count += fp.length;
-        }                
+        if (recibo.getFormasPagoRecibo().size() != 0) 
+        		count += recibo.getFormasPagoRecibo().size(); 
         return count;
     }
     
     public static int cantNDs(Recibo recibo) {
         int count = 0;        
-        if (recibo.getNotasDebitoRecibo().size() != 0) {
-            ReciboDetND[] nds = (ReciboDetND[]) recibo.getNotasDebitoRecibo().toArray();
-            if (nds != null) count += nds.length;
-        }        
+        if (recibo.getNotasDebitoRecibo().size() != 0)
+        	count += recibo.getNotasDebitoRecibo().size(); 
         return count;
     }
     
     public static int  cantNCs(Recibo recibo) {
         int count = 0;        
-        if (recibo.getNotasCreditoRecibo().size() != 0) {
-            ReciboDetNC[] ncs = (ReciboDetNC[]) recibo.getNotasCreditoRecibo().toArray();
-            if (ncs != null) count += ncs.length;
-        }        
+        if (recibo.getNotasCreditoRecibo().size() != 0)
+        	count += recibo.getNotasCreditoRecibo().size(); 
         return count;
     }
 }

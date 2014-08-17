@@ -20,7 +20,7 @@ public class DateUtil {
     	String anio = "20" + part[2];
         String mes =  part[1];
         mes = (Integer.parseInt(mes) - 1) + "";
-        String dia = part[1];
+        String dia = part[0];
         
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dia));
@@ -31,7 +31,7 @@ public class DateUtil {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         
-        return dt2i(cal.getTime());
+        return d2i(cal.getTime());
     }
     
     public static int strTimeToInt(String fecha){

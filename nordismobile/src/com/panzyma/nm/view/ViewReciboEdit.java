@@ -181,7 +181,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			Bundle bundle =  getIntent().getExtras();
 			//OBTENER EL ID DEL RECIBO 
 			reciboId = (Integer)bundle.get(ViewRecibo.RECIBO_ID);
-			
+			SessionManager.setContext(this);
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
 			nmapp.getController().removebridgeByName(BReciboM.class.toString());
@@ -469,8 +469,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 		recibo.setNotas((tbxNotas.getText().toString().trim().equals("") ? "0"
 				: tbxNotas.getText().toString()));
-
-		if (valido()) {
+		//if (valido()) {
+		if (true) {
 
 			this.subTotal = (this.totalFacturas + this.totalNotasDebito + this.totalInteres)
 					- this.totalNotasCredito;
@@ -529,23 +529,24 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	}
 	
+//        if(!valido()) return; 
 	@SuppressWarnings("static-access")
 	private void enviarRecibo()
-	{ 
-        if(!valido()) return;  
+	{  
         pd.show(this, "Enviando recibo a la central", "Espere por favor", true);
         nmapp.getController().getInboxHandler().sendEmptyMessage(SEND_DATA_FROM_SERVER);	        
 	}
 	
 	
-	public boolean valido(Recibo recibo) 
+	public boolean valido() 
     {        
     	
     	try 
-    	{ 
+    	{
+    		
     		//Validar fecha del pedido
-            Date d = new Date(recibo.getFecha());            
-            if (DateUtil.d2i(d) > DateUtil.d2i(Calendar.getInstance().getTime())) 
+            long d =(DateUtil.strTimeToLong(tbxFecha.getText().toString()));            
+            if (d > DateUtil.d2i(Calendar.getInstance().getTime())) 
             {
             	showStatusOnUI(
     					new ErrorMessage(
@@ -616,7 +617,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             //Validar que se haya ingresado al menos un pago
             if (Cobro.cantFPs(recibo) == 0) {
                 //Dialog.alert("Detalle de pagos no ingresado.");
-                return false;
+            	//return false; 
             }
             
             //Validar que la sumatoria de los montos de las NC seleccionadas no sea mayor ni igual que la sumatoria
@@ -672,10 +673,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             
             //Determinando si hay descPP que validar
             if (recibo.getFacturasRecibo().size() != 0) {
-                ReciboDetFactura[] ff = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray();
+                ArrayList<ReciboDetFactura> ff =recibo.getFacturasRecibo();
                 if (ff != null) {
-                    for(int i=0; i<ff.length; i++) {
-                        ReciboDetFactura f = ff[i];
+                    for(int i=0; i<ff.size(); i++) {
+                        ReciboDetFactura f = ff.get(i);
                         if (f.getMontoDescEspecifico() != 0) {
                             ValidarMontoAplicaDpp = true;
                             break;
@@ -759,7 +760,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					@Override
 					public void onButtonClick(Object documento) {
 						//SI EL DOCUMENTO ES UNA FACTURA
-						if (documento instanceof Factura){
+						if (documento instanceof Factura)
+						{
 							final Factura factura = (Factura)documento;
 							//CREAR UN OBJETO DETALLE DE FACURA
 							final ReciboDetFactura facturaDetalle = new ReciboDetFactura();
@@ -785,8 +787,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									}
 									factura.setSaldo(factura.getSaldo() - factura.getAbonado());
 									recibo.setTotalFacturas(recibo.getTotalFacturas() + montoAbonado);
-									facturasRecibo.add(factura);
-									//																	
+									facturasRecibo.add(factura); 
+									recibo.getFacturasRecibo().add(facturaDetalle);
 									documents.add(facturaDetalle);
 									agregarDocumentosAlDetalleDeRecibo();
 									actualizaTotales();
@@ -830,29 +832,29 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         editarPago.show(fragmentManager, "");
 	}
 	
-	private boolean valido() {
-		boolean valido = true;
-
-		if (recibo.getObjClienteID() == 0) {
-			valido = false;
-			Util.Message.buildToastMessage(contexto,
-					"DEBE seleccionar un cliente", TIME_TO_VIEW_MESSAGE).show();
-		}
-
-		if (recibo.getNumero() == 0) {
-			valido = false;
-			Util.Message.buildToastMessage(contexto,
-					"ESPECIFIQUE número de recibo", TIME_TO_VIEW_MESSAGE).show();
-		}
-
-		if (recibo.getReferencia() == 0) {
-			valido = false;
-			Util.Message.buildToastMessage(contexto,
-					"ESPECIFIQUE número de referencia", TIME_TO_VIEW_MESSAGE).show();
-		}
-
-		return valido;
-	}
+//	private boolean valido() {
+//		boolean valido = true;
+//
+//		if (recibo.getObjClienteID() == 0) {
+//			valido = false;
+//			Util.Message.buildToastMessage(contexto,
+//					"DEBE seleccionar un cliente", TIME_TO_VIEW_MESSAGE).show();
+//		}
+//
+//		if (recibo.getNumero() == 0) {
+//			valido = false;
+//			Util.Message.buildToastMessage(contexto,
+//					"ESPECIFIQUE número de recibo", TIME_TO_VIEW_MESSAGE).show();
+//		}
+//
+//		if (recibo.getReferencia() == 0) {
+//			valido = false;
+//			Util.Message.buildToastMessage(contexto,
+//					"ESPECIFIQUE número de referencia", TIME_TO_VIEW_MESSAGE).show();
+//		}
+//
+//		return valido;
+//	}
 
 	private void finalizarActividad() {
 		nmapp.getController().removeOutboxHandler(TAG);
@@ -989,7 +991,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void editarDocumento() {
-		if (!recibo.getDescEstado().equals("REGISTRADO")) return;
+		if(!"REGISTRADO".equals(recibo.getDescEstado()))  return;
 		int posicion = positioncache;
 		if (posicion == -1) return;		
 			
