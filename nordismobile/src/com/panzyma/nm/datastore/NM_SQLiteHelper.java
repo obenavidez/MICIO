@@ -261,6 +261,27 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			+ "       fecha BLOB, "
 			+ "       fechaVence BLOB, "						 			
             + "       FOREIGN KEY(objReciboID) REFERENCES Recibo(id) " 
+			+ ")";
+    
+    String sqlReciboDetalleFormaPago = "CREATE TABLE IF NOT EXISTS ReciboDetalleFormaPago ("
+			+ "       Id INTEGER PRIMARY KEY AUTOINCREMENT,  "
+			+ "       objReciboID BLOB, "
+    		+ "       ObjFormaPagoID BLOB, "	
+    		+ "       CodFormaPago TEXT, "	
+			+ "       DescFormaPago TEXT, "				
+			+ "       Numero TEXT, "
+			+ "       ObjMonedaID BLOB, "			
+			+ "       CodMoneda TEXT, "	
+			+ "       DescMoneda TEXT, "
+			+ "       Monto FLOAT, "
+			+ "       MontoNacional FLOAT, "
+			+ "       ObjEntidadID BLOB, "			
+			+ "       CodEntidad TEXT, "
+			+ "       DescEntidad TEXT, "
+			+ "       Fecha BLOB, "	
+			+ "       SerieBilletes TEXT, "
+			+ "       TasaCambio FLOAT, "			
+            + "       FOREIGN KEY(objReciboID) REFERENCES Recibo(id) " 
 			+ ");";
     
     String sqlDrop_Cliente=			  "DROP TABLE IF EXISTS Cliente";
@@ -281,6 +302,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDrop_ReciboDetalleFactura = "DROP TABLE IF EXISTS ReciboDetalleFactura"; 
     String sqlDrop_ReciboDetalleND = "DROP TABLE IF EXISTS ReciboDetalleNotaDebito";
     String sqlDrop_ReciboDetalleNC = "DROP TABLE IF EXISTS ReciboDetalleNotaCredito";
+    String sqlDrop_ReciboDetalleFormaPago = "DROP TABLE IF EXISTS ReciboDetalleFormaPago ";
+    
     
     String sqlDrop_Pedido = "DROP TABLE IF EXISTS Pedido";
     String sqlDrop_PedidoDetalle = "DROP TABLE IF EXISTS PedidoDetalle";
@@ -311,6 +334,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDelete_PedidoDetalle = "DELETE FROM  PedidoDetalle"; 
     String sqlDelete_PedidoPromocion = "DELETE FROM PedidoPromocion";
     String sqlDelete_PedidoPromocionDetalle = "DELETE FROM PedidoPromocionDetalle";
+    String sqlDelete_ReciboDetalleFormaPago = "DROP TABLE IF EXISTS ReciboDetalleFormaPago ";
 
     
     public NM_SQLiteHelper(Context contexto, String nombre, CursorFactory factory, int version) 
@@ -371,7 +395,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlRecibo);
 			db.execSQL(sqlReciboDetalleFatura);
 			db.execSQL(sqlReciboDetalleNotaDebito);
-			db.execSQL(sqlReciboDetalleNotaCredito);			
+			db.execSQL(sqlReciboDetalleNotaCredito);
+			db.execSQL(sqlReciboDetalleFormaPago);
         } 
     	catch (SQLException e) 
         {
@@ -410,6 +435,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlDrop_PedidoDetalle);
 			db.execSQL(sqlDrop_PedidoPromocion);
 			db.execSQL(sqlDrop_PedidoPromocionDetalle);
+			db.execSQL(sqlDrop_ReciboDetalleFormaPago);
         } 
     	catch (SQLException e) 
         {

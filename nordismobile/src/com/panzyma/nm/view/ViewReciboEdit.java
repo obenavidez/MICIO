@@ -814,7 +814,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void agregarPago() {
 		if (recibo != null && recibo.getTotalRecibo() == 0) return;
         
-        if ("REGISTRADO".compareTo(recibo.getDescEstado()) != 0) return;		
+        if ("REG".compareTo(recibo.getCodEstado()) != 0) return;		
         
         //Validar que haya pendiente por pagar
         float montoPorPagar = StringUtil.round(recibo.getTotalRecibo() - Cobro.getTotalPagoRecibo(recibo), 2);

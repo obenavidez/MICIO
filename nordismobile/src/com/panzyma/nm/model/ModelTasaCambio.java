@@ -1,6 +1,7 @@
 package com.panzyma.nm.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -14,25 +15,25 @@ import com.panzyma.nm.serviceproxy.ValorCatalogo;
 
 public class ModelTasaCambio {
 	
-	public synchronized static TasaCambio getTasaCambio(Context cnt, String codigoMoneda, int fechaTasaCambio) {
+	public synchronized static List<TasaCambio> getTasaCambio(Context cnt, int fechaTasaCambio) {
 		StringBuilder query = new StringBuilder();
 		query.append(" SELECT Id , ");
+		query.append("        CodMoneda , ");
 		query.append("        Tasa ");
 		query.append(" FROM TasaCambio tc ");
-		query.append(String.format(" WHERE tc.CodMoneda = '%s'  ", codigoMoneda));
-		query.append(String.format("       AND tc.Fecha = %d    ", fechaTasaCambio));
-		TasaCambio paridaCambiaria = null;
+		query.append(String.format(" WHERE tc.Fecha = %d  ", fechaTasaCambio));
+		List<TasaCambio> paridaCambiaria = null;
 		SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(cnt);
 		try {
 			Cursor c = DatabaseProvider.query( db, query.toString());
-			paridaCambiaria = new TasaCambio();
+			paridaCambiaria = new ArrayList<TasaCambio>();
 			// Nos aseguramos de que existe al menos un registro
 			if (c.moveToFirst()) {
 				// Recorremos el cursor hasta que no haya más registros
 				do {
-					paridaCambiaria.setCodMoneda(codigoMoneda);
-					paridaCambiaria.setFecha(fechaTasaCambio);	
-					paridaCambiaria.setTasa(c.getFloat(1));
+					paridaCambiaria.add(new TasaCambio(c.getString(1),
+							fechaTasaCambio, c.getFloat(2)));
+					
 				} while (c.moveToNext());
 			}			
 		} catch (Exception e) {
