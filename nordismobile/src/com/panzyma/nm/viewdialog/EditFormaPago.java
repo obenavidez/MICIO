@@ -255,7 +255,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		tblRowMontoPago = (TableRow) view.findViewById(R.id.tblRowMontoPago);
 		tblRowMontoPagoNacional = (TableRow) view
 				.findViewById(R.id.tblRowMontoNacional);
-		tblRowNumeroSerie = (TableRow) view.findViewById(R.id.tblRowNumero);	
+		tblRowNumeroSerie = (TableRow) view.findViewById(R.id.tblRowNumeroSerie);	
 		
 	}
 

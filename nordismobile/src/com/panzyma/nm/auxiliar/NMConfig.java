@@ -412,6 +412,7 @@ public class NMConfig
 		
 		public static final class DetalleFormaPago {
 			public static final java.lang.String ID = "Id";
+			public static final java.lang.String RECIBO_ID = "objReciboID";
 			public static final java.lang.String FORMA_PAGO_ID = "ObjFormaPagoID";
 			public static final java.lang.String COD_FORMA_PAGO = "CodFormaPago";
 			public static final java.lang.String DESC_FORMA_PAGO = "DescFormaPago";
