@@ -1,11 +1,13 @@
 package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BValorCatalogoM.Petition;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.ThreadPool;
@@ -19,8 +21,8 @@ public class BTasaCambioM {
 	private static final String TAG = BValorCatalogoM.class.getSimpleName();
 	private Controller controller;
 	private ThreadPool pool;
-	private EditFormaPago view; 
-
+	private EditFormaPago view;
+	
 	public enum Petition {
 
 		TASA_CAMBIO(0);
@@ -44,25 +46,28 @@ public class BTasaCambioM {
 
 	}
 
+	public BTasaCambioM() {
+	}
+
 	public BTasaCambioM(EditFormaPago view) {
 		this.controller = ((NMApp) view.getActivity().getApplicationContext())
 				.getController();
 		this.view = view;
 		this.pool = ((NMApp) view.getActivity().getApplicationContext())
 				.getThreadPool();
-	}
+	}	
 
 	public boolean handleMessage(Message msg) throws Exception {
-		Petition request = Petition.toInt(msg.what);
+		Petition request = Petition.toInt(msg.what);		
 		switch (request) {
 		case TASA_CAMBIO:
-			onLoadTasaCambioListener(request);
+			onLoadTasaCambioListener(request, DateUtil.getToday());
 			return true;
 		}
 		return false;
 	}
 
-	private void onLoadTasaCambioListener(final Petition request) {
+	private void onLoadTasaCambioListener(final Petition request, final int fecha) {
 		try {
 			pool.execute(new Runnable() {
 
@@ -73,13 +78,11 @@ public class BTasaCambioM {
 						Processor.notifyToView(
 								controller,
 								request.getActionCode(),
-								0,
+								10,
 								0,
 								ModelTasaCambio.getTasaCambio(
 										view.getActivity(),										
-										view.getCodigoMoneda(),
-										view.getFecha())
-										);
+										fecha));
 
 					} catch (Exception e) {
 						Log.e(TAG, "Error in the update thread", e);
