@@ -2,6 +2,7 @@ package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.ksoap2.serialization.PropertyInfo;
 
@@ -19,6 +20,7 @@ import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.RespuestaEnviarRecibo;
@@ -146,6 +148,7 @@ public class ModelRecibo {
 		recibo.setFacturasRecibo(getFacturasDelRecibo(content, integer));
 		recibo.setNotasDebitoRecibo(getNotasDebitoDelRecibo(content, integer));
 		recibo.setNotasCreditoRecibo(getNotasCreitoDelRecibo(content, integer));
+		recibo.setFormasPagoRecibo(getFormasPagoDelRecibo(content, integer));
 		return recibo;
 	}
 	
@@ -321,7 +324,67 @@ public class ModelRecibo {
 		}
 		return notascredito;
 	}
+	
+	public synchronized static ArrayList<ReciboDetFormaPago> getFormasPagoDelRecibo(
+			ContentResolver content, long reciboID) {
+		
+		ArrayList<ReciboDetFormaPago> formasPago = new ArrayList<ReciboDetFormaPago>();
+		String[] projection = new String[] {
+				NMConfig.Recibo.DetalleFormaPago.RECIBO_ID,
+				NMConfig.Recibo.DetalleFormaPago.FORMA_PAGO_ID,
+				NMConfig.Recibo.DetalleFormaPago.COD_FORMA_PAGO,
+				NMConfig.Recibo.DetalleFormaPago.DESC_FORMA_PAGO,
+				NMConfig.Recibo.DetalleFormaPago.NUMERO,
+				NMConfig.Recibo.DetalleFormaPago.MONEDA_ID,
+				NMConfig.Recibo.DetalleFormaPago.COD_MONEDA,
+				NMConfig.Recibo.DetalleFormaPago.DESC_MONEDA,
+				NMConfig.Recibo.DetalleFormaPago.MONTO,
+				NMConfig.Recibo.DetalleFormaPago.MONTO_NACIONAL,
+				NMConfig.Recibo.DetalleFormaPago.ENTIDAD_ID,
+				NMConfig.Recibo.DetalleFormaPago.COD_ENTIDAD,
+				NMConfig.Recibo.DetalleFormaPago.DESC_ENTIDAD,
+				NMConfig.Recibo.DetalleFormaPago.FECHA,
+				NMConfig.Recibo.DetalleFormaPago.SERIE_BILLETES,
+				NMConfig.Recibo.DetalleFormaPago.TASA_CAMBIO };
+		ReciboDetFormaPago formaPago = null;
+		try {
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFORMAPAGO	+ "/" + String.valueOf(reciboID);
+			Cursor cur = content.query(Uri.parse(uriString), 
+					projection, // Columnas a devolver
+					null, // Condición de la query
+					null, // Argumentos variables de la query
+					null);
+			
+			if (cur.moveToFirst()) {				
+				do {
+					formaPago = new ReciboDetFormaPago();
+					formaPago.setObjReciboID( Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))) );
+					formaPago.setObjFormaPagoID( Long.parseLong(cur.getString(cur.getColumnIndex(projection[1]))) );
+					formaPago.setCodFormaPago( cur.getString(cur.getColumnIndex(projection[2])) );
+					formaPago.setDescFormaPago( cur.getString(cur.getColumnIndex(projection[3])) );
+					formaPago.setNumero( cur.getString(cur.getColumnIndex(projection[4])) );
+					formaPago.setObjMonedaID( Long.parseLong(cur.getString(cur.getColumnIndex(projection[5]))) );
+					formaPago.setCodMoneda( cur.getString(cur.getColumnIndex(projection[6])) );
+					formaPago.setDescMoneda( cur.getString(cur.getColumnIndex(projection[7])) );
+					formaPago.setMonto( Float.parseFloat(cur.getString(cur.getColumnIndex(projection[8]))) );
+					formaPago.setMontoNacional( Float.parseFloat(cur.getString(cur.getColumnIndex(projection[9]))) );
+					formaPago.setObjEntidadID( Long.parseLong(cur.getString(cur.getColumnIndex(projection[10]))) );
+					formaPago.setCodEntidad( cur.getString(cur.getColumnIndex(projection[11])) );
+					formaPago.setDescEntidad( cur.getString(cur.getColumnIndex(projection[12])) );
+					formaPago.setFecha( Integer.parseInt(cur.getString(cur.getColumnIndex(projection[13]))) );
+					formaPago.setSerieBilletes( cur.getString(cur.getColumnIndex(projection[14])) );
+					formaPago.setTasaCambio( Float.parseFloat(cur.getString(cur.getColumnIndex(projection[15]))) );
+					
+					formasPago.add(formaPago);
+				} while(cur.moveToNext());
+			}
 
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return formasPago;
+	}
+	
 	public synchronized static ArrayList<vmRecibo> getArrayCustomerFromLocalHost(
 			ContentResolver content) throws Exception {
 
