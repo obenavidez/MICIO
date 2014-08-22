@@ -15,8 +15,6 @@ import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.serviceproxy.Factura;
-import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
@@ -391,7 +389,9 @@ public class ModelRecibo {
 							null, // Argumentos variables de la query
 							null);
 			    Recibo recibo = null;
+			    if(cur.moveToFirst()){
 					do {
+						recibo = new Recibo();
 						recibo.setId(Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))));
 						recibo.setNumero(Integer.parseInt(cur.getString(cur.getColumnIndex(projection[1]))));
 						recibo.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))));
@@ -435,6 +435,7 @@ public class ModelRecibo {
 						recibos.add(recibo);
 					}
 					while (cur.moveToNext());
+			    }
 		}
 		catch (Exception e) {
 			e.printStackTrace();

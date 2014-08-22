@@ -1,7 +1,6 @@
 package com.panzyma.nm.view;
  
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
@@ -15,9 +14,9 @@ import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER
 
 
 
+
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
@@ -28,11 +27,11 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil; 
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.VentasUtil;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol; 
 import com.panzyma.nm.interfaces.Editable;
@@ -43,7 +42,6 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
-import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND; 
 import com.panzyma.nm.view.adapter.GenericAdapter;
@@ -382,6 +380,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									agregarPago();
 									break;
 								case ID_PAGAR_TODO :
+									if(cliente==null){
+										AppDialog.showMessage(me,"Información","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
+										return;
+									}
 									PagarTodo();
 									break;
 								case ID_SALVAR_RECIBO:
@@ -538,7 +540,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	@SuppressWarnings("static-access")
 	private void enviarRecibo()
 	{  
-        pd.show(this, "Enviando recibo a la central", "Espere por favor", true);
+        ProgressDialog.show(this, "Enviando recibo a la central", "Espere por favor", true);
         nmapp.getController().getInboxHandler().sendEmptyMessage(SEND_DATA_FROM_SERVER);	        
 	}
 	
@@ -1153,31 +1155,37 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		ArrayList<Factura> facturas = new ArrayList<Factura>();
 		 //Traer las facturas del cliente
 		Factura[] facturaspendientes = cliente.getFacturasPendientes();
-		if (facturaspendientes.length > 0){   
-			
-			 for(int i=0; i< facturaspendientes.length; i++) {
-				 Factura fac = facturaspendientes[i];
-				 if(Cobro.FacturaEstaEnOtroRecibo(getContentResolver(),fac.getId(),true) ==0){
-					 facturas.add(fac);
+		if(facturaspendientes!=null){
+			if (facturaspendientes.length > 0){   
+				
+				 for(int i=0; i< facturaspendientes.length; i++) {
+					 Factura fac = facturaspendientes[i];
+					//Si la factura no está en otro recibo
+					 if(Cobro.FacturaEstaEnOtroRecibo(getApplicationContext().getContentResolver(),fac.getId(),true) ==0){
+						 facturas.add(fac);
+					 }
 				 }
-			 }
+			}
 		}
 		//Traer las notas de débito del cliente
 		ArrayList<CCNotaDebito> notas= new ArrayList<CCNotaDebito>();
 		CCNotaDebito[] NotasDebitoPendientes= cliente.getNotasDebitoPendientes();
-		if(NotasDebitoPendientes.length>0){
-			for(int i=0; i<NotasDebitoPendientes.length; i++) {
-				if (Cobro.NDEstaEnOtroRecibo(getContentResolver(),NotasDebitoPendientes[i].getId(), true) == 0)
-					notas.add(NotasDebitoPendientes[i]);
+		if(NotasDebitoPendientes!=null){
+			if(NotasDebitoPendientes.length>0){
+				for(int i=0; i<NotasDebitoPendientes.length; i++) {
+					if (Cobro.NDEstaEnOtroRecibo(getApplicationContext().getContentResolver(),NotasDebitoPendientes[i].getId(), true) == 0)
+						notas.add(NotasDebitoPendientes[i]);
+				}
 			}
 		}
 		
 		if (((facturas == null) || (facturas.size() == 0)) && ((notas == null) || (notas.size() == 0))) return;
 		
+		String interes= getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcInteresMoratorio", "0");
 		//Facturas
         if ((facturas != null) && (facturas.size() > 0)) {   
         	 for(int i = 0; i < facturas.size(); i++) {
-        		 Factura _fac = (Factura)facturas.get(i);
+        		 Factura _fac = facturas.get(i);
         		 ReciboDetFactura _facRecibo = new ReciboDetFactura();
         		 _facRecibo.setId(0);
                  _facRecibo.setObjFacturaID(_fac.getId());
@@ -1189,8 +1197,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
                  _facRecibo.setImpuesto(_fac.getImpuestoFactura()); 
                  _facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional                
                  //Calcular el interés moratorio de la factura si está en mora
-                 _facRecibo.setInteresMoratorio(Float.parseFloat("0"/*Params.getValue("PorcInteresMoratorio")*/));
-                 _facRecibo.setMontoInteres(Cobro.getInteresMoratorio(_fac.getFechaVencimiento(), _fac.getSaldo()));                
+                 _facRecibo.setInteresMoratorio(Float.parseFloat(interes));
+                 _facRecibo.setMontoInteres(Cobro.getInteresMoratorio(this, _fac.getFechaVencimiento(), _fac.getSaldo()));                
                  _facRecibo.setMontoDescEspecifico(0.0F);                
                  _facRecibo.setPorcDescPromo(0.0F);
                  _facRecibo.setMontoDescPromocion(0.0F);                
@@ -1212,7 +1220,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         }//Facturas
         if ((notas != null) && (notas.size() >0)) {  
         	for(int i = 0; i < notas.size(); i++) {
-        		CCNotaDebito _nd = (CCNotaDebito)notas.get(i);
+        		CCNotaDebito _nd = notas.get(i);
         		ReciboDetND _ndRecibo = new ReciboDetND();
         		_ndRecibo.setId(0);
                 _ndRecibo.setObjNotaDebitoID(_nd.getId());
@@ -1220,8 +1228,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
                 _ndRecibo.setFecha(_nd.getFecha());
                 _ndRecibo.setFechaVence(_nd.getFechaVence());        
                 _ndRecibo.setEsAbono(false);
-                _ndRecibo.setMontoInteres(Cobro.getInteresMoratorio(_nd.getFechaVence(), _nd.getSaldo()));
-                _ndRecibo.setInteresMoratorio(Float.parseFloat("0"/*Params.getValue("PorcInteresMoratorio")*/));
+                _ndRecibo.setMontoInteres(Cobro.getInteresMoratorio( this,_nd.getFechaVence(), _nd.getSaldo()));
+                _ndRecibo.setInteresMoratorio(Float.parseFloat(interes));
                 _ndRecibo.setMontoND(_nd.getMonto());
                 _ndRecibo.setSaldoND(_nd.getSaldo());
                 _ndRecibo.setMontoNeto(0.0F);
@@ -1236,12 +1244,15 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         	//Insertar nuevas facturas en el detalle de facturas del recibo    
         	ArrayList<ReciboDetFactura> fff = new ArrayList<ReciboDetFactura>();
             //Copiar facturas seleccionadas
-            for(int i = 0; i < _facSeleccionadas.size(); i++)
-                fff.add((ReciboDetFactura)_facSeleccionadas.get(i));
-            
+            for(int i = 0; i < _facSeleccionadas.size(); i++){
+                fff.add(_facSeleccionadas.get(i));
+                float totalfactura = recibo.getTotalFacturas();
+                recibo.setTotalFacturas(totalfactura + _facSeleccionadas.get(i).getTotalfactura());
+            }
             //Actualizar detalle de facturas
             recibo.setFacturasRecibo(fff);
-            
+
+            documents.addAll(fff);
         }
         if (_ndsSeleccionadas.size() > 0) {
             //Insertar nuevas ncs en el detalle de ncs del recibo
@@ -1249,11 +1260,29 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         	
         	//Copiar notas de crédito seleccionadas
             for(int i = 0; i < _ndsSeleccionadas.size(); i++)
-                ccc.add((ReciboDetND)_ndsSeleccionadas.get(i));
+                ccc.add(_ndsSeleccionadas.get(i));
             
             //Actualizar detalle de facturas
             recibo.setNotasDebitoRecibo(ccc);
-            
+            documents.addAll(ccc);
         }
+        adapter = null;
+        agregarDocumentosAlDetalleDeRecibo();
+        actualizaTotales();
+        /*
+        tbxNumRecibo.setText(""+recibo.getNumero());
+		tbxNotas.setText(""+recibo.getNotas());
+		tbxNumReferencia.setText(""+VentasUtil.getNumeroPedido(me,
+				recibo.getReferencia()));
+		tbxNombreDelCliente.setText(""+recibo.getNombreCliente());
+		tbxFecha.setText("" + DateUtil.idateToStrYY(recibo.getFecha()));
+		// ESTABLECER LOS TOTALES
+		txtTotalAbonadoFacturas.setText("" + recibo.getTotalFacturas());
+		txtTotalAbonadoND.setText("" + recibo.getTotalND());
+		txtTotalAbonadoNC.setText("" + recibo.getTotalNC());
+		txtSubTotal.setText("" + recibo.getSubTotal());
+		txtTotal.setText("" + recibo.getTotalRecibo());
+		*/
+       // loadData();
 	}
 }
