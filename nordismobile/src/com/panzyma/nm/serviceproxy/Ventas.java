@@ -207,19 +207,7 @@ public class Ventas {
 		return bb;
 	}
 
-	public static String getNumeroPedido(int numero, Context cnt) {
-		int cr = Integer.parseInt(cnt.getSharedPreferences("SystemParams",
-				android.content.Context.MODE_PRIVATE).getString(
-				"CerosRellenoNumRefPedido", "0"));
-
-		char[] num = new char[cr];
-		for (int i = 0; i < cr; i++)
-			num[i] = '0';
-
-		String strNum = new String(num);
-		strNum = strNum + numero;
-		return strNum.substring(strNum.length() - cr, strNum.length());
-	}
+//	
 
 	public static int getLastOrderId(Context cnt) {
 		return cnt.getSharedPreferences("VConfiguracion",

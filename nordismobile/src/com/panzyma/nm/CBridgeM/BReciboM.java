@@ -31,8 +31,15 @@ import org.json.JSONArray;
 
 
 
+
+
+
+
+
 import android.app.AlertDialog;
 import android.app.Notification;
+import android.content.Context;
+import android.os.Bundle;
 /*import android.os.Handler;*/
 import android.os.Message;
 import android.util.Log;
@@ -42,7 +49,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NumberToLetterConverter;
+import com.panzyma.nm.auxiliar.NumberUtil;
 /*import com.panzyma.nm.auxiliar.NMNetWork;*/
 /*import com.panzyma.nm.auxiliar.Parameters; by jrostran */
 import com.panzyma.nm.auxiliar.Processor;
@@ -54,6 +61,7 @@ import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
+import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Producto;
@@ -112,12 +120,13 @@ public final class BReciboM {
 	public boolean handleMessage(Message msg) throws Exception {
 		switch (msg.what) {
 		case SAVE_DATA_FROM_LOCALHOST:
-			onSaveDataToLocalHost();
+			Bundle rec=msg.getData();
+			onSaveDataToLocalHost((Recibo)rec.getParcelable("recibo"));
 			break;
 		case LOAD_DATA_FROM_LOCALHOST:
 			onLoadALLDataFromLocalHost();
 			return true;
-		case LOAD_ITEM_FROM_LOCALHOST:
+		case LOAD_ITEM_FROM_LOCALHOST: 
 			onLoadItemFromLocalHost();
 			return true;
 		case DELETE_DATA_FROM_LOCALHOST:
@@ -140,23 +149,33 @@ public final class BReciboM {
 		return false;
 	}
 
-	private void onSaveDataToLocalHost() {
+	private void onSaveDataToLocalHost(final Recibo recibo) 
+	{
 		try {
 			pool.execute(new Runnable() {
 				@Override
 				public void run() {
 					
-					try {
+					try 
+					{
+						
+						//Guardando localmente el recibo
+						Recibo reciboL=DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext()); 
+						//Actualizando el id máximo de recibo generado
+						Integer prefijo =Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(reciboEdit.getContext()), reciboL.getId()));						
+						ModelConfiguracion.setMaxReciboId(reciboEdit.getContext(),(int) ((reciboL.getId())-prefijo));
+						Integer idrec =ModelConfiguracion.getMaxReciboID(reciboEdit.getContext());
+						Log.d("IDREC", idrec+"");
 						Processor
 						.notifyToView(
 								controller,
-								ControllerProtocol.NOTIFICATION,
+								ControllerProtocol.ID_REQUEST_SALVARPEDIDO,
 								0,
 								0,
-								DatabaseProvider.registrarRecibo(reciboEdit.getRecibo(), reciboEdit.getContext())
+								recibo
 								);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
+					} catch (Exception e) 
+					{ 
 						e.printStackTrace();
 					}				
 					
@@ -205,20 +224,21 @@ public final class BReciboM {
 				@Override
 				public void run() {
 
-					try {
-
-						Processor.send_ViewDeleteReciboToView(
-								ModelRecibo
-										.borraReciboByID((view != null) ? view
-												.getContentResolver() : view1
-												.getContext()
-												.getContentResolver(), view.getReciboSelected().getId() ),
-								controller);
-					} catch (Exception e) {
+					try 
+					{						
+						int idrecibo=view.getReciboSelected().getId();
+						ModelRecibo.borraReciboByID(view.getContentResolver(), idrecibo);
+						//Actualizando el id máximo de recibo generado
+						Integer prefijo =Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(view.getContext()), idrecibo));						
+						ModelConfiguracion.setMaxReciboId(view.getContext(),(idrecibo-1)-prefijo); 
+						Processor.send_ViewDeleteReciboToView(1,controller);
+						
+					} catch (Exception e) 
+					{
 						Log.e(logger, "Error in the update thread", e);
-						try {
-							Processor
-									.notifyToView(
+						try 
+						{
+							Processor.notifyToView(
 											controller,
 											ERROR,
 											0,
@@ -345,6 +365,8 @@ public final class BReciboM {
 							if (recibo.getCodEstado().compareTo("PAGADO") == 0) return;
 					        
 					        if (recibo.getNumero() > 0) {
+					        	Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"El recibo ya fue enviado"
+								      ); 
 					        	//Util.Message.buildToastMessage(reciboEdit,"El recibo ya fue enviado.", TIME_TO_VIEW_MESSAGE).show(); 
 					            return;
 					        }
@@ -384,7 +406,7 @@ public final class BReciboM {
 					        } 
 
 							//Guardando cambios en el Dispositivo
-					        onSaveDataToLocalHost();
+					        onSaveDataToLocalHost(recibo);
 					        
 					        if (pagarOnLine) 
 							{
@@ -427,7 +449,7 @@ public final class BReciboM {
 								//Salvar los cambios en el hilo pricipal
 				                reciboEdit.setRecibo(recibo);
 				              //Guardando cambios en el Dispositivo
-				                onSaveDataToLocalHost();
+				                onSaveDataToLocalHost(recibo);
 							}
 							else
 							{								 
@@ -437,7 +459,7 @@ public final class BReciboM {
 				                //Salvar los cambios en el hilo pricipal
 				                reciboEdit.setRecibo(recibo);
 				                //Guardando cambios en el Dispositivo
-				                onSaveDataToLocalHost();
+				                onSaveDataToLocalHost(recibo);
 							}
 							
 					        if(imprimir)
@@ -480,8 +502,7 @@ public final class BReciboM {
     {        
     	
     	try 
-    	{
-    		
+    	{ 
     		//Validar fecha del pedido
             Date d = new Date(recibo.getFecha());            
             if (DateUtil.d2i(d) > DateUtil.d2i(Calendar.getInstance().getTime())) 
@@ -657,7 +678,7 @@ public final class BReciboM {
 	    							if(credenciales!="")
 	    							{ 
 	    								if(recibo.getReferencia()==0)							
-	    					                onSaveDataToLocalHost();//GUARDANDO LOCALMENTE EL RECIBO QUE SE VA ENVIAR AL SERVIDOR CENTRAL
+	    					                onSaveDataToLocalHost(recibo);//GUARDANDO LOCALMENTE EL RECIBO QUE SE VA ENVIAR AL SERVIDOR CENTRAL
 	    								ImprimirReciboColector(recibo, false);
 	    							}
 								} catch (Exception e) {
@@ -725,7 +746,7 @@ public final class BReciboM {
         }
         
         //Monto en letras        
-        String montoLetras = NumberToLetterConverter.convertNumberToLetter(rcol.getTotalRecibo());
+        String montoLetras = NumberUtil.convertNumberToLetter(rcol.getTotalRecibo());
         linea1 = montoLetras;
         linea2 = "";
         String linea3 = "";

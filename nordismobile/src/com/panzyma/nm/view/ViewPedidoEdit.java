@@ -51,6 +51,7 @@ import com.panzyma.nm.auxiliar.BluetoothComunication;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.interfaces.Editable;
@@ -282,11 +283,11 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
 
 		if (pedido.getNumeroMovil() > 0)
-			tbxNumReferencia.setText(Ventas.getNumeroPedido(
+			tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
 					pedido.getNumeroMovil(), me.getContext()));
 
 		if (pedido.getNumeroCentral() > 0)
-			tbxNumPedido.setText(Ventas.getNumeroPedido(
+			tbxNumPedido.setText(NumberUtil.getFormatoNumero(
 					pedido.getNumeroCentral(), me.getContext()));
 
 		if (pedido.getNombreCliente() != null)
@@ -1089,7 +1090,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		recibo += "T 0 0 400 90 Referencia:\r\n";
 		recibo += "RIGHT 576\r\n";
 		recibo += "T 0 0 490 90 "
-				+ Ventas.getNumeroPedido(pedido.getNumeroMovil(),
+				+ NumberUtil.getFormatoNumero(pedido.getNumeroMovil(),
 						me.getApplicationContext()) + "\r\n";
 		recibo += "LEFT\r\n";
 		recibo += "T 0 0 0 118 Cliente:\r\n";
@@ -1219,7 +1220,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				tbxNumReferencia.setText(Ventas.getNumeroPedido(
+				tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
 						p.getNumeroMovil(), me.getApplicationContext()));
 				salvado = true;
 			}
@@ -1232,7 +1233,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				tbxNumPedido.setText(Ventas.getNumeroPedido(pedido.getNumeroCentral(),me.getContext())); 
+				tbxNumPedido.setText(NumberUtil.getFormatoNumero(pedido.getNumeroCentral(),me.getContext())); 
 			}
 		});
 	}

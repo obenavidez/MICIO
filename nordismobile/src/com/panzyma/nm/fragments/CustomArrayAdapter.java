@@ -19,6 +19,11 @@ import com.panzyma.nordismobile.R;
 public class CustomArrayAdapter<E> extends ArrayAdapter<E> {
 
 	@Override
+	public void remove(E object) {
+		items.remove(object);
+	}
+
+	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
 		return items.size();
@@ -112,6 +117,8 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> {
 		else 
 			return null;
 	}
+	
+	
 	
 	@Override
 	public long getItemId(int position) {

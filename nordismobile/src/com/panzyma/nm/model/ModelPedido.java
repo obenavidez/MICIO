@@ -80,6 +80,7 @@ public class ModelPedido {
         	   e.setNombre(cur.getString(cur.getColumnIndex(NMConfig.Pedido.NombreCliente))+"/"+cur.getString(cur.getColumnIndex(NMConfig.Pedido.NombreSucursal)));
         	   e.setDescEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.DescEstado)));
         	   e.setTotal(cur.getFloat(cur.getColumnIndex(NMConfig.Pedido.Total)));
+        	   e.setCodEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.CodEstado)));
         	   le.add(e);
            }while (cur.moveToNext());
 		 }		

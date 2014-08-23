@@ -8,6 +8,7 @@ import org.ksoap2.serialization.PropertyInfo;
 
 import android.content.Context;
 import android.content.SharedPreferences; 
+import android.content.SharedPreferences.Editor;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
@@ -41,9 +42,9 @@ public class ModelConfiguracion {
 		return (AppNMComunication.InvokeService(NMConfig.URL2+NMConfig.MethodName.GetDevicePrefix+"/"+Credentials+"/"+PIN)).getInt("getDevicePrefixResult");
     }
 	
-	public static vmConfiguracion getVMConfiguration(Context view)
+	public static vmConfiguracion getVMConfiguration(Context cnt)
 	{ 
-		pref=view.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  
+		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  
 		
 		return vmConfiguracion.setConfiguration(
 										 pref.getString("url_server",NMConfig.URL_SERVER), 
@@ -52,6 +53,29 @@ public class ModelConfiguracion {
 										 pref.getString("name_user",""), 
 										 pref.getInt("max_idpedido",0),
 										 pref.getInt("max_idrecibo",0));
+	}
+	
+	public static int getMaxReciboID(Context cnt)
+	{
+		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  		
+		if(pref==null)
+			return 0;
+		return pref.getInt("max_idrecibo",0); 
+	}
+	
+	public static int getDeviceID(Context cnt)
+	{
+		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  		
+		if(pref==null)
+			return 0;
+		return Integer.parseInt(pref.getString("device_id","0")); 
+	}
+	
+	public static void setMaxReciboId(Context cnt, int value) 
+	{
+		Editor e=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE).edit();  
+		e.putInt("max_idrecibo", value);
+		e.commit();
 	}
 	
 	public static LoginUserResult verifyLogin(String Credentials,String Roll) throws Exception

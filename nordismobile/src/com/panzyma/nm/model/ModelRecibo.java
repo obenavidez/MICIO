@@ -44,20 +44,16 @@ public class ModelRecibo {
 	
 	public synchronized static int borraReciboByID (ContentResolver content,int reciboID){
 		String[] projection = new String[] {};
-		int result = 0;
-		try {
-			String url = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA +"/"+String.valueOf(reciboID);			
-			content.delete(Uri.parse(url), "", projection);
-			url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO +"/"+String.valueOf(reciboID);
-			content.delete(Uri.parse(url), "", projection);
-			url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTACREDITO +"/"+String.valueOf(reciboID);
-			content.delete(Uri.parse(url), "", projection);
-			url = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(reciboID);
-			content.delete(Uri.parse(url), "", projection);
-			result = 1;
-		} catch (Exception e) {
-			
-		}
+		int result = 0; 
+		String url = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA +"/"+String.valueOf(reciboID);			
+		content.delete(Uri.parse(url), "", projection);
+		url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO +"/"+String.valueOf(reciboID);
+		content.delete(Uri.parse(url), "", projection);
+		url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTACREDITO +"/"+String.valueOf(reciboID);
+		content.delete(Uri.parse(url), "", projection);
+		url = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(reciboID);
+		content.delete(Uri.parse(url), "", projection);
+		result = 1; 
 		return result;		
 	}
 	
@@ -328,7 +324,7 @@ public class ModelRecibo {
 		String[] projection = new String[] { NMConfig.Recibo.ID,
 				NMConfig.Recibo.NUMERO, NMConfig.Recibo.FECHA,
 				NMConfig.Recibo.TOTAL_RECIBO, NMConfig.Recibo.NOMBRE_CLIENTE,
-				NMConfig.Recibo.DESCRICION_ESTADO, NMConfig.Recibo.SUCURSAL_ID };
+				NMConfig.Recibo.DESCRICION_ESTADO,NMConfig.Recibo.CODIGO_ESTADO, NMConfig.Recibo.SUCURSAL_ID };
 
 		int count = 0;
 		ArrayList<vmRecibo> a_vmprod = new ArrayList<vmRecibo>();
@@ -349,7 +345,8 @@ public class ModelRecibo {
 								.getColumnIndex(projection[3]))), cur
 						.getString(cur.getColumnIndex(projection[4])), cur
 						.getString(cur.getColumnIndex(projection[5])), cur
-						.getLong(cur.getColumnIndex(projection[6]))));
+						.getString(cur.getColumnIndex(projection[6])), cur
+						.getLong(cur.getColumnIndex(projection[7]))));
 			} while (cur.moveToNext());
 		}
 

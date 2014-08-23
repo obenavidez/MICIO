@@ -14,10 +14,20 @@ public class vmRecibo implements Item, Parcelable {
 	protected float totalRecibo;
 	protected java.lang.String nombreCliente;
 	protected java.lang.String descEstado;
+	protected java.lang.String codEstado;
+	
+	public java.lang.String getCodEstado() {
+		return codEstado;
+	}
+
+	public void setCodEstado(java.lang.String codEstado) {
+		this.codEstado = codEstado;
+	}
+
 	protected long objSucursalID;
 
 	public vmRecibo(int id, int numero, long fecha, float totalRecibo,
-			String nombreCliente, String descEstado, long objSucursalID) {
+			String nombreCliente, String descEstado,java.lang.String _codEstado, long objSucursalID) {
 		super();
 		this.id = id;
 		this.numero = numero;
@@ -25,17 +35,19 @@ public class vmRecibo implements Item, Parcelable {
 		this.totalRecibo = totalRecibo;
 		this.nombreCliente = nombreCliente;
 		this.descEstado = descEstado;
+		this.codEstado=_codEstado;
 		this.objSucursalID = objSucursalID;
 	}
 	
 	public void setRecibo(int id, int numero, long fecha, float totalRecibo,
-			String nombreCliente, String descEstado, long objSucursalID) {		
+			String nombreCliente, String descEstado,java.lang.String _codEstado, long objSucursalID) {		
 		this.id = id;
 		this.numero = numero;
 		this.fecha = fecha;
 		this.totalRecibo = totalRecibo;
 		this.nombreCliente = nombreCliente;
 		this.descEstado = descEstado;
+		this.codEstado=_codEstado;
 		this.objSucursalID = objSucursalID;
 	}
 	

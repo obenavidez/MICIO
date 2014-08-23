@@ -3,9 +3,13 @@ package com.panzyma.nm.view;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
  
+
+
+
 
 
 
@@ -27,6 +31,8 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil; 
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
+import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
@@ -39,11 +45,13 @@ import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction; 
 import com.panzyma.nm.serviceproxy.Cliente; 
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND; 
+import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder; 
 import com.panzyma.nm.viewdialog.DialogCliente;
@@ -147,7 +155,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_CERRAR = 10;
 	private ViewReciboEdit me;
 	private Cliente cliente;
-	private Recibo recibo;
+	private Recibo recibo=null;
 	private Context contexto;
 	private BReciboM brm;
 	private Integer reciboId;
@@ -196,9 +204,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				//OBTENER EL RECIBO DESDE LOCALHOST
 				nmapp.getController()
 				.getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST);
-			} else {
-				recibo = null;
-			}
+			}  
 
 			contexto = this.getApplicationContext();
 
@@ -256,7 +262,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void loadData() {
 
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
-		if (recibo == null) {
+		if (recibo == null || !onEdit) {
 			// NUEVO RECIBO
 			recibo = new Recibo();
 			recibo.setId(0);
@@ -425,15 +431,34 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo = (Recibo)msg.obj;
 			loadData();
 			break;
-		case ControllerProtocol.NOTIFICATION:
+		case ControllerProtocol.ID_REQUEST_SALVARPEDIDO:
+			recibo = (Recibo)msg.obj;
+			actualizarOnUINumRef(recibo);
 			Util.Message.buildToastMessage(contexto,
 					"Recibo Guardado!!", 1000).show();
+			
+			salvado=true;
 			break;
-		 
+		case ControllerProtocol.NOTIFICATION: 
+			break;
+			
 		}
 		return false;
 	}
 
+	public void actualizarOnUINumRef(final Recibo r) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
+						r.getReferencia(), me.getApplicationContext()));
+				salvado = true;
+			}
+		});
+	}
+	
 	private void seleccionarCliente() {
 		DialogCliente dc = new DialogCliente(me,
 				android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -469,8 +494,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 		recibo.setNotas((tbxNotas.getText().toString().trim().equals("") ? "0"
 				: tbxNotas.getText().toString()));
-		//if (valido()) {
-		if (true) {
+		//
+		if (valido()) 
+		{
+		//cambiar por el true
+		//if (true) {
 
 			this.subTotal = (this.totalFacturas + this.totalNotasDebito + this.totalInteres)
 					- this.totalNotasCredito;
@@ -490,8 +518,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setPorcDescOcaColector(this.porcentajeDescuentoOcasional);
 			// estado
 			recibo.setObjEstadoID(100);
-			recibo.setCodEstado("REG");
-			recibo.setDescEstado("REGISTRADO");
+			recibo.setCodEstado("REGISTRADO");
+			recibo.setDescEstado("Registrado");
 			
 			// LIMPIAR LOS DOCUMENTOS DEL RECIBO
 			recibo.getFacturasRecibo().clear();
@@ -517,10 +545,16 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 			}
 
-			try {
+			try 
+			{				 
 				nmapp.getController().setEntities(this,new BReciboM());
 				nmapp.getController().addOutboxHandler(new Handler(this));				
-				nmapp.getController().getInboxHandler().sendEmptyMessage(SAVE_DATA_FROM_LOCALHOST);				
+				Message msg = new Message();
+			    Bundle b = new Bundle();
+			    b.putParcelable("recibo", recibo); 
+			    msg.setData(b);
+			    msg.what=SAVE_DATA_FROM_LOCALHOST;
+			    nmapp.getController().getInboxHandler().sendMessage(msg);  			
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -529,14 +563,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	}
 	
-//        if(!valido()) return; 
+
 	@SuppressWarnings("static-access")
 	private void enviarRecibo()
 	{  
+		if(!valido()) return; 
         pd.show(this, "Enviando recibo a la central", "Espere por favor", true);
         nmapp.getController().getInboxHandler().sendEmptyMessage(SEND_DATA_FROM_SERVER);	        
 	}
-	
 	
 	public boolean valido() 
     {        
@@ -616,8 +650,13 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             
             //Validar que se haya ingresado al menos un pago
             if (Cobro.cantFPs(recibo) == 0) {
+            	showStatusOnUI(
+    					new ErrorMessage(
+    							"Error al Validar el Recibo",
+    							          "Problemas con los Pagos.", "No se ha agregado ningun pago."));
+
                 //Dialog.alert("Detalle de pagos no ingresado.");
-            	//return false; 
+            	return false; 
             }
             
             //Validar que la sumatoria de los montos de las NC seleccionadas no sea mayor ni igual que la sumatoria
@@ -697,9 +736,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
     							          "Problemas el Descuento PP.","Para aplicar descuento pronto pago \r\nel monto del recibo no debe ser menor que " + StringUtil.formatReal(montoMinimoRecibo) + "."));
  
                 return false;
-            }
-
-            //Validar que cuadre el monto pagado
+            }              
             if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) {
             	  showStatusOnUI(
       					new ErrorMessage(
@@ -718,8 +755,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
     	return false;
    }
-	
-	
+	 
 	private void actualizaTotales() {
 		// ENCONTRANDO EL SUBTOTAL DEL RECIBO
 		txtTotalAbonadoFacturas.setText(String.valueOf(recibo
@@ -949,7 +985,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void eliminarDocumento() {
-		if (!recibo.getDescEstado().equals("REGISTRADO")) return;
+		if (!"REGISTRADO".equals(recibo.getDescEstado())) return;
 		int posicion = positioncache;
 		if (posicion == -1) return;		
 			
@@ -1123,18 +1159,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 		if(onEdit)
 			requescode = getIntent().getIntExtra("requestcode", 0);
-		setResult(requescode,intent); 
-		try {
-			nmapp.getController().setEntities(this,getBridge());
-			//finalize();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}				
-		
+		setResult(requescode,intent);  
+		onEdit=false;
 	}
 	
 	

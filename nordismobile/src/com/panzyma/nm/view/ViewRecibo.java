@@ -23,6 +23,7 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -59,6 +60,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
@@ -85,7 +87,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestcode, resultcode, data);
 		try 
-		{
+		{ 
 			nmapp.getController().setEntities(this,this.getBridge());
 			request_code = requestcode;
 			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)
@@ -130,7 +132,7 @@ public class ViewRecibo extends ActionBarActivity implements
 						p.getFecha(),
 						p.getTotalRecibo(),
 						p.getNombreCliente(),
-						p.getDescEstado(),
+						p.getDescEstado(),p.getCodEstado(),
 						p.getObjSucursalID());				
 				
 			}else if (NUEVO_RECIBO == request_code) {
@@ -140,7 +142,7 @@ public class ViewRecibo extends ActionBarActivity implements
 								p.getFecha(),
 								p.getTotalRecibo(),
 								p.getNombreCliente(),
-								p.getDescEstado(),
+								p.getDescEstado(),p.getCodEstado(),
 								p.getObjSucursalID())	
 				);
 				positioncache = recibos.size() - 1;
@@ -155,6 +157,7 @@ public class ViewRecibo extends ActionBarActivity implements
 				if (recibos.size() == 0) {
 					TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
 					txtenty.setVisibility(View.VISIBLE);
+					
 				} 
 				else
 				{
@@ -216,6 +219,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	ListaFragment<vmRecibo> firstFragment;
 	FragmentTransaction transaction;
 	CuentasPorCobrarFragment cuentasPorCobrar;
+	Object lock=new Object();
 	
 	private static final int MOSTRAR_FACTURAS = 0;
 	private static final int MOSTRAR_NOTAS_DEBITO = 1;
@@ -283,7 +287,9 @@ public class ViewRecibo extends ActionBarActivity implements
 					break;
 				case BORRAR_RECIBO:
 					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
-					if ( "REGISTRADO".equals(recibo_selected.getDescEstado())) {
+					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
+					if ("REGISTRADO".equals(recibo_selected.getCodEstado())) 
+					{
 						nmapp.getController()
 								.getInboxHandler()
 								.sendEmptyMessage(
@@ -292,12 +298,12 @@ public class ViewRecibo extends ActionBarActivity implements
 						Toast.makeText(getApplicationContext(), String.format("Los recibos con estado '%s'.\n No se pueden eliminar.", recibo_selected.getDescEstado()), Toast.LENGTH_SHORT).show();
 						return;
 					}
+					drawerLayout.closeDrawers();
 					break;	
 				case ENVIAR_RECIBO: 
 					
 					try 
-					{
-						 
+					{					 
 							
 							nmapp.getThreadPool().execute(new Runnable()
 							{ 
@@ -467,6 +473,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		tituloSeccion = getTitle();
 		tituloApp = getTitle();
+		vr=this;
 
 		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
 				R.drawable.ic_navigation_drawer, R.string.drawer_open,
@@ -640,9 +647,36 @@ public class ViewRecibo extends ActionBarActivity implements
 		case C_DATA:
 			establecer(msg);
 			return true;
-		case DELETE_ITEM_FINISHED:			
-			buildCustomDialog("Nordis Movile",msg.obj.equals(1)?"Eliminado Satisfactoriamente":"Error al eliminar",ALERT_DIALOG).show();
-			customArrayAdapter.remove(recibo_selected);			
+		case DELETE_ITEM_FINISHED:	
+			Toast.makeText(vr,msg.obj.equals(1)?"Eliminado Satisfactoriamente":"Error al eliminar", Toast.LENGTH_LONG); 
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() 
+				{
+					gridheader.setVisibility(View.VISIBLE);
+					gridheader.setText(String.format("Listado de Recibos (%s)",recibos.size()));
+					if(recibos!=null && recibos.size()!=0)
+						recibos.remove(recibo_selected);
+					if (recibos.size() == 0) 
+					{
+						TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
+						txtenty.setVisibility(View.VISIBLE);
+						firstFragment.getAdapter().clearItems();
+						firstFragment.getAdapter().notifyDataSetChanged();
+						
+					} 
+					else
+					{
+						positioncache = 0;
+						firstFragment.setItems(recibos);
+						firstFragment.getAdapter().setSelectedPosition(positioncache);
+						recibo_selected = firstFragment.getAdapter().getItem(positioncache);
+						firstFragment.getAdapter().notifyDataSetChanged();
+					}
+				}
+			});
+			//CERRAR EL MENU DEL DRAWER
+			drawerLayout.closeDrawers();
 			return true;
 		case C_FICHACLIENTE:
 
@@ -667,6 +701,57 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		}
 		return false;
+	}
+
+public void showStatusOnUI(Object msg) throws InterruptedException{
+		
+		final String titulo=""+((ErrorMessage)msg).getTittle();
+		final String mensaje=""+((ErrorMessage)msg).getMessage();
+		
+		
+		nmapp.getThreadPool().execute(new Runnable()
+		{ 
+			@Override
+			public void run()
+		    {
+				 
+				try 
+				{
+					
+					runOnUiThread(new Runnable() 
+			        {
+						@Override
+						public void run() 
+						{ 
+							 AppDialog.showMessage(vr,titulo,mensaje,AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+							 {						 
+									@Override
+					    			public void onButtonClick(AlertDialog _dialog, int actionId) 
+					    			{ 
+					    				synchronized(lock)
+					    				{
+					    					lock.notify();
+					    				}
+					    			}
+							  }); 
+				          }
+					});
+					
+			        synchronized(lock)
+			        {
+			            try {
+			            	lock.wait();
+						} catch (InterruptedException e) { 
+							e.printStackTrace();
+						}
+			        }
+					
+				} catch (Exception e) 
+				{ 
+				}
+		    }
+		}); 
+		
 	}
 
 	private void setData(final ArrayList<vmRecibo> data, final int what) {
@@ -878,5 +963,9 @@ public class ViewRecibo extends ActionBarActivity implements
 		}
 	}
 
+	public Context getContext()
+	{
+		return this.context;
+	}
 }
 

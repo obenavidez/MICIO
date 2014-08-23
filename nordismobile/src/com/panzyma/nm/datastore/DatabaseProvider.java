@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Factura; 
@@ -1142,7 +1143,7 @@ public class DatabaseProvider extends ContentProvider
 		ContentValues values;
 		ContentValues factura;
 		
-		SQLiteDatabase bdd = d.getWritableDatabase();
+		SQLiteDatabase bdd = Helper.getDatabase(cnt);
 		
 		bdd.beginTransaction();
 		
@@ -1179,15 +1180,32 @@ public class DatabaseProvider extends ContentProvider
 		values.put(NMConfig.Recibo.TOTAL_IMPUESTO_EXONERADO, recibo.getTotalImpuestoExonerado());
 		values.put(NMConfig.Recibo.EXENTO, recibo.isExento());
 		values.put(NMConfig.Recibo.AUTORIZA_DGI, recibo.getAutorizacionDGI());
-				
-		if (recibo.getId() == 0) {
-			// AGREGANDO UN RECIBO NUEVO
-			long id = Ventas.getMaxReciboId(cnt) + 1;
-			recibo.setId(id);
-			values.put(NMConfig.Recibo.ID, recibo.getId());			
-			bdd.insert(TABLA_RECIBO, null, values);
-			Ventas.setMaxReciboId(cnt, id);
-		} else {
+				 
+		
+		 //Generar Id del recibo
+       if (recibo.getReferencia() == 0 || recibo.getId() == 0) 
+       {            
+           Integer intId =ModelConfiguracion.getMaxReciboID(cnt);
+           if (intId == null) 
+               intId = new Integer(1);
+           else
+               intId = intId + 1; 
+           Integer prefix = ModelConfiguracion.getDeviceID(cnt);
+           String strIdMovil = prefix.intValue() + "" + intId.intValue();
+           int idMovil = Integer.parseInt(strIdMovil);
+           
+           recibo.setId(idMovil);
+           recibo.setReferencia(idMovil);
+           recibo.setObjEstadoID(0); 
+           recibo.setCodEstado("REGISTRADO");
+           recibo.setDescEstado("Registrado");
+           values.put(NMConfig.Recibo.ID, recibo.getId());
+           values.put(NMConfig.Recibo.REFERENCIA, recibo.getReferencia());
+           values.put(NMConfig.Recibo.ESTADO_ID, recibo.getObjEstadoID());
+           values.put(NMConfig.Recibo.CODIGO_ESTADO, recibo.getCodEstado());
+   		   values.put(NMConfig.Recibo.DESCRICION_ESTADO, recibo.getDescEstado()); 
+   		   bdd.insert(TABLA_RECIBO, null, values);
+        }else {
 			// ACTUALIZANDO RECIBO
 			bdd.update(TABLA_RECIBO, values, null, null);
 		}	

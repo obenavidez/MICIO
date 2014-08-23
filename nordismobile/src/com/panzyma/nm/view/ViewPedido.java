@@ -562,11 +562,11 @@ public class ViewPedido extends ActionBarActivity implements
 						positioncache,
 						new vmEntity(p.getId(), p.getNumeroMovil(), p
 								.getFecha(), p.getTotal(),
-								p.getNombreCliente(), p.getDescEstado()));
+								p.getNombreCliente(), p.getDescEstado(),p.getCodEstado()));
 			else if (NUEVO_PEDIDO == request_code) {
 				pedidos.add(new vmEntity(p.getId(), p.getNumeroMovil(), p
 						.getFecha(), p.getTotal(), p.getNombreCliente(), p
-						.getDescEstado()));
+						.getDescEstado(),p.getCodEstado()));
 				positioncache = pedidos.size() - 1;
 			}
 		}

@@ -15,7 +15,7 @@ public class vmEntity implements Item,Parcelable,Serializable
 	}
 	
 	public vmEntity(long id, int numero, long fecha, float total,
-			String nombre, String descEstado) {
+			String nombre, String descEstado,String codEstado) {
 		super();
 		this.id = id;
 		this.numero = numero;
@@ -30,6 +30,7 @@ public class vmEntity implements Item,Parcelable,Serializable
 	protected long fecha;
 	protected float total;
 	protected java.lang.String nombre;
+	protected java.lang.String codEstado;
 	protected java.lang.String descEstado;
 	
 	
@@ -69,6 +70,15 @@ public class vmEntity implements Item,Parcelable,Serializable
 	public void setDescEstado(java.lang.String descEstado) {
 		this.descEstado = descEstado;
 	}
+	
+	public java.lang.String getCodEstado() {
+		return codEstado;
+	}
+
+	public void setCodEstado(java.lang.String codEstado) {
+		this.codEstado = codEstado;
+	}
+	
 	@Override
 	public Object isMatch(CharSequence constraint) {
 		if (String.valueOf(getNumero()).toLowerCase().contains(constraint.toString()))
