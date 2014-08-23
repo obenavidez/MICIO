@@ -364,7 +364,8 @@ public final class BReciboM {
 							
 							if (recibo.getCodEstado().compareTo("PAGADO") == 0) return;
 					        
-					        if (recibo.getNumero() > 0) {
+					        if (recibo.getNumero() > 0) 
+					        {
 					        	Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"El recibo ya fue enviado"
 								      ); 
 					        	//Util.Message.buildToastMessage(reciboEdit,"El recibo ya fue enviado.", TIME_TO_VIEW_MESSAGE).show(); 

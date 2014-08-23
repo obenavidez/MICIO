@@ -169,8 +169,7 @@ public static String getCredenciales(){
 			SessionManager.bloque2(admin);  			
 		}
         return SessionManager.isLogged();
-    }
-	 
+    } 
 	
 	public static void bloque1(final boolean admin)
 	{
@@ -269,13 +268,20 @@ public static String getCredenciales(){
 										{
 											res =ModelConfiguracion.verifyLogin((nombreusuario+"-"+password+"-"+empresa),"ADMIN");
 											
-											if (res.getAuntenticateRS() == AUT_EXITOSA && res.IsAdmin() == admin)
-											{ 												
-												 _esAdmin=res.IsAdmin();
-												SessionManager.setEmpresa(empresa);
-												SessionManager.setNameUser(nombreusuario);
-												SessionManager.setPassword(password);
-												SessionManager.setLogged(true); 
+											if (res.getAuntenticateRS() == AUT_EXITOSA )
+											{				
+												if(NMApp.modulo != NMApp.Modulo.CONFIGURACION && res.IsAdmin())
+												     sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario no es valido para realizar esta operación",""));
+												if(NMApp.modulo == NMApp.Modulo.CONFIGURACION && admin && (res.IsAdmin()!=admin))
+													sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario "+nombreusuario+" no es Administrador",""));
+												else
+												{
+													 _esAdmin=res.IsAdmin();
+													SessionManager.setEmpresa(empresa);
+													SessionManager.setNameUser(nombreusuario);
+													SessionManager.setPassword(password);
+													SessionManager.setLogged(true);
+												}
 												unlock();
 											}
 											else
@@ -285,9 +291,9 @@ public static String getCredenciales(){
 												else if (res.getAuntenticateRS() == AUT_PWD_INVALIDO) 
 													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Contraseña inválida.","")); 
 												else if (res.getAuntenticateRS() == AUT_FALLIDA)
-													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Fallo de autenticación.",""));
+													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Fallo de autenticación.","")); 
 												else
-													sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario "+nombreusuario+" no es Administrador",""));
+													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo en la conexión con el servidor de aplicaciones.\r\n",""));
 												unlock();											
 											}
 											
