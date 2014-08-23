@@ -7,9 +7,8 @@ public class NMConfig
 	public static final String NAME_SPACE = "http://www.panzyma.com/"; 
     //public static String URL = "http://www.panzyma.com/nordisserverdev/mobileservice.asmx";
     public static String URL = "http://192.168.1.100/NordisServer/mobileservice.asmx"; 
-    //public static String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/";
-    public static String URL2 ="http://192.168.1.5:8080/Servicios/SimfacService.svc/";
-    
+    //public static String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/"; 
+    public static String URL2 ="http://192.168.1.5:8080/Servicios/SimfacService.svc/"; 
     public static class MethodName
     { 	
     	public static final String CheckConnection="CheckConnection";
@@ -409,6 +408,26 @@ public class NMConfig
 			public static final java.lang.String NUMERO = "numero";
 			public static final java.lang.String FECHA = "fecha";
 			public static final java.lang.String FECHA_VENCE = "fechaVence";	
+		}
+		
+		public static final class DetalleFormaPago {
+			public static final java.lang.String ID = "Id";
+			public static final java.lang.String RECIBO_ID = "objReciboID";
+			public static final java.lang.String FORMA_PAGO_ID = "ObjFormaPagoID";
+			public static final java.lang.String COD_FORMA_PAGO = "CodFormaPago";
+			public static final java.lang.String DESC_FORMA_PAGO = "DescFormaPago";
+			public static final java.lang.String NUMERO = "Numero";
+			public static final java.lang.String MONEDA_ID = "ObjMonedaID";
+			public static final java.lang.String COD_MONEDA = "CodMoneda";
+			public static final java.lang.String DESC_MONEDA = "DescMoneda";
+			public static final java.lang.String MONTO = "Monto";
+			public static final java.lang.String MONTO_NACIONAL = "MontoNacional";
+			public static final java.lang.String ENTIDAD_ID = "ObjEntidadID";
+			public static final java.lang.String COD_ENTIDAD = "CodEntidad";
+			public static final java.lang.String DESC_ENTIDAD = "DescEntidad";
+			public static final java.lang.String FECHA = "Fecha";
+			public static final java.lang.String SERIE_BILLETES = "SerieBilletes";
+			public static final java.lang.String TASA_CAMBIO = "TasaCambio";
 		}
 	}
 

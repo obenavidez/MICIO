@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import android.content.ContentResolver;
 import android.content.Context;
 
+import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.CalcDescOca_Output;
 import com.panzyma.nm.serviceproxy.CalcDescPP_Output;
 import com.panzyma.nm.serviceproxy.Cliente;
@@ -478,5 +480,67 @@ public class Cobro {
         if (recibo.getNotasCreditoRecibo().size() != 0)
         	count += recibo.getNotasCreditoRecibo().size(); 
         return count;
+    }
+
+
+    public static int FacturaEstaEnOtroRecibo(ContentResolver content,long idFactura, boolean agregando) {
+    	int referencia =0;
+    			
+        ArrayList<Recibo> list = ModelRecibo.getArrayRecibosFromLocalHost(content);
+        if(list== null) 
+        	return 0;
+        
+        for(int r=0; r< list.size(); r++) {
+            Recibo rowrecibo = list.get(r);
+            if(rowrecibo.getFacturasRecibo()==null) continue;
+            
+            if("REGISTRADO".equals(rowrecibo.getDescEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getDescEstado()))) {
+                ArrayList<ReciboDetFactura> facturas= rowrecibo.getFacturasRecibo();
+                
+                for(ReciboDetFactura f : facturas) {
+                    if (f.getObjFacturaID() == idFactura){ 
+                    	referencia=rowrecibo.getReferencia();
+                    	return referencia;
+                    }
+                }
+            }
+        }
+        return referencia;
+    }
+    //Verifica si una nota de débito ya está incluida en un recibo local    
+    public static int NDEstaEnOtroRecibo(ContentResolver content,long idND, boolean agregando) {
+    	int referencia =0;
+    	ArrayList<Recibo> list = ModelRecibo.getArrayRecibosFromLocalHost(content);
+        if(list.size()==0) return 0;
+        for(int r=0; r< list.size(); r++) {
+            Recibo rowrecibo = list.get(r);
+            if(rowrecibo.getNotasDebitoRecibo()==null) continue;
+            
+            if("REGISTRADO".equals(rowrecibo.getDescEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getDescEstado()))) {
+                ArrayList<ReciboDetND> notasdebito= rowrecibo.getNotasDebitoRecibo();
+                for(ReciboDetND n : notasdebito) {
+                    if (n.getObjNotaDebitoID() == idND) return referencia=rowrecibo.getReferencia();
+                }
+            }
+        }
+    	 return referencia;
+    }
+    public static float getInteresMoratorio(Context cnt,long iFechaVen, float saldo) {
+    	float interes = 0;
+    	String interesmoratorio=cnt.getApplicationContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcInteresMoratorio", "0");
+    	float porcInteresMoratorio = Float.parseFloat(interesmoratorio);    
+    	if (porcInteresMoratorio == 0) return 0;
+    	
+    	int diasDespuesVenceCalculaMora = Integer.parseInt(interesmoratorio);
+    	String sFechaVen = iFechaVen + "";
+        sFechaVen = sFechaVen.substring(0, 8);        
+        int fechaVen = Integer.parseInt(sFechaVen);
+        long fechaMora = DateUtil.addDays(DateUtil.getTime(fechaVen), diasDespuesVenceCalculaMora);
+    	
+        long fechaActual = DateUtil.getTime(DateUtil.getToday());        
+        if (fechaMora < fechaActual)
+            interes = saldo * porcInteresMoratorio / 100;
+        
+    	return StringUtil.round(interes, 2);
     }
 }

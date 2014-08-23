@@ -19,6 +19,9 @@ import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
+import com.panzyma.nm.serviceproxy.ReciboDetNC;
+import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.Ventas;
 
 import android.annotation.SuppressLint;
@@ -58,6 +61,7 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_PEDIDODETALLE = Uri.parse(CONTENT_URI+ "/pedidodetalle");
 	public static final Uri CONTENT_URI_PEDIDOPROMOCION = Uri.parse(CONTENT_URI+ "/pedidopromocion");
 	public static final Uri CONTENT_URI_PEDIDOPROMOCIONDETALLE = Uri.parse(CONTENT_URI+ "/pedidopromociondetalle");
+	public static final Uri CONTENT_URI_RECIBODETALLEFORMAPAGO = Uri.parse(CONTENT_URI+ "/recibodetalleformapago");
 	
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
@@ -97,7 +101,9 @@ public class DatabaseProvider extends ContentProvider
 	private static final int RECIBODETALLENOTADEBITO = 32;
 	private static final int RECIBODETALLENOTADEBITO_ID = 33;
 	private static final int RECIBODETALLENOTACREDITO = 34;
-	private static final int RECIBODETALLENOTACREDITO_ID = 35;	
+	private static final int RECIBODETALLENOTACREDITO_ID = 35;
+	private static final int RECIBODETALLEFORMAPAGO = 44;
+	private static final int RECIBODETALLEFORMAPAGO_ID = 45;
 	private static final int PEDIDO = 36;
 	private static final int PEDIDO_ID = 37;
 	
@@ -134,6 +140,7 @@ public class DatabaseProvider extends ContentProvider
 	private static final String TABLA_RECIBO_DETALLE_FACTURA = "ReciboDetalleFactura";
 	private static final String TABLA_RECIBO_DETALLE_NOTA_DEBITO = "ReciboDetalleNotaDebito";
 	private static final String TABLA_RECIBO_DETALLE_NOTA_CREDITO = "ReciboDetalleNotaCredito";	
+	private static final String TABLA_RECIBO_DETALLE_FORMA_PAGO = "ReciboDetalleFormaPago";	
 	
 	private static final String TABLA_PEDIDODETALLE = "PedidoDetalle";
 	private static final String TABLA_PEDIDOPROMOCION = "PedidoPromocion";
@@ -205,6 +212,9 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "recibodetallenotacredito", RECIBODETALLENOTACREDITO);
 		uriMatcher.addURI(AUTHORITY, "recibodetallenotacredito/#", RECIBODETALLENOTACREDITO_ID);
+	
+		uriMatcher.addURI(AUTHORITY, "recibodetalleformapago", RECIBODETALLEFORMAPAGO);
+		uriMatcher.addURI(AUTHORITY, "recibodetalleformapago/#", RECIBODETALLEFORMAPAGO_ID);
 		
 	}
 	
@@ -1091,6 +1101,12 @@ public class DatabaseProvider extends ContentProvider
 			case RECIBODETALLENOTACREDITO_ID:  dictionary.put(RECIBODETALLENOTACREDITO, TABLA_RECIBO_DETALLE_NOTA_CREDITO);			                            
 										dictionary.put(RECIBODETALLENOTACREDITO+1,"objReciboID=" + uri.getLastPathSegment());				
 										break;
+			case RECIBODETALLEFORMAPAGO : dictionary.put(RECIBODETALLEFORMAPAGO, TABLA_RECIBO_DETALLE_FORMA_PAGO);
+										dictionary.put(CONTENT_URI_LOCALID, CONTENT_URI_RECIBODETALLEFORMAPAGO.toString());
+										break;
+			case RECIBODETALLEFORMAPAGO_ID : dictionary.put(RECIBODETALLEFORMAPAGO, TABLA_RECIBO_DETALLE_FORMA_PAGO);
+										dictionary.put(RECIBODETALLEFORMAPAGO_ID,"objReciboID=" + uri.getLastPathSegment());
+										break;
 		} 
 		Iterator it = dictionary.entrySet().iterator();
 		while (it.hasNext()) 
@@ -1142,6 +1158,9 @@ public class DatabaseProvider extends ContentProvider
 		
 		ContentValues values;
 		ContentValues factura;
+		ContentValues notaDebito;
+		ContentValues notaCredito;
+		ContentValues formasPago;
 		
 		SQLiteDatabase bdd = Helper.getDatabase(cnt);
 		
@@ -1215,6 +1234,15 @@ public class DatabaseProvider extends ContentProvider
 		//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
 		bdd.delete(TABLA_RECIBO_DETALLE_FACTURA, where ,null); 
 		
+		//BORRAR LOS DETALLES DE NOTAS DE DEBITO DEL RECIBO
+		bdd.delete(TABLA_RECIBO_DETALLE_NOTA_DEBITO, where ,null);
+		
+		//BORRAR LOS DETALLES DE NOTAS DE CREDITO DEL RECIBO
+		bdd.delete(TABLA_RECIBO_DETALLE_NOTA_CREDITO, where ,null);
+		
+		//BORRAR LOS DETALLES DE NOTAS DE CREDITO DEL RECIBO
+		bdd.delete(TABLA_RECIBO_DETALLE_FORMA_PAGO, where ,null);
+		
 		//INSERTAR EL DETALLE DE FACTURAS DEL RECIBO
 		for(ReciboDetFactura dt : recibo.getFacturasRecibo()){
 			
@@ -1243,10 +1271,65 @@ public class DatabaseProvider extends ContentProvider
 			factura.put(NMConfig.Recibo.DetalleFactura.SALDO_FACTURA, dt.getSaldofactura());
 			factura.put(NMConfig.Recibo.DetalleFactura.SALDO_TOTAL, dt.getSaldoTotal());
 			factura.put(NMConfig.Recibo.DetalleFactura.SUB_TOTAL, dt.getSubTotal());
-			factura.put(NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA, dt.getTotalfactura());
-			
+			factura.put(NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA, dt.getTotalfactura());			
 			
 			bdd.insert(TABLA_RECIBO_DETALLE_FACTURA, null, factura);
+		}
+		
+		for(ReciboDetND nd: recibo.getNotasDebitoRecibo()){
+			
+			notaDebito = new ContentValues();			
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.NOTADEBITO_ID, nd.getObjNotaDebitoID() );
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.RECIBO_ID, recibo.getId() );
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_INTERES, nd.getMontoInteres() );
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.ESABONO, (nd.isEsAbono() ? 255 : 0 ) );
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_PAGAR, nd.getMontoPagar());
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.NUMERO, nd.getNumero());
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.FECHA, nd.getFecha() );
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.FECHA_VENCE, nd.getFechaVence());
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_ND, nd.getMontoND());
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.SALDO_ND, nd.getSaldoND());
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.INTERES_MORATORIO, nd.getInteresMoratorio() );
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.SALDO_TOTAL, nd.getSaldo() );
+			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_NETO, nd.getMontoNeto() );
+			
+			bdd.insert(TABLA_RECIBO_DETALLE_NOTA_DEBITO, null, notaDebito);
+		}
+		
+		for(ReciboDetNC nd: recibo.getNotasCreditoRecibo()){
+			
+			notaCredito = new ContentValues();			
+			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.NOTACREDITO_ID, nd.getObjNotaCreditoID() );
+			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.RECIBO_ID, recibo.getId() );
+			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.FECHA, nd.getFecha() );
+			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.FECHA_VENCE, nd.getFechaVence() );
+			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.MONTO, nd.getMonto() );
+			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.NUMERO, nd.getNumero());
+			
+			bdd.insert(TABLA_RECIBO_DETALLE_NOTA_CREDITO, null, notaCredito);
+		}
+		
+		for(ReciboDetFormaPago fp: recibo.getFormasPagoRecibo()){
+			
+			formasPago = new ContentValues();			
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.RECIBO_ID, recibo.getId());
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.FORMA_PAGO_ID, fp.getId() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_FORMA_PAGO, fp.getCodFormaPago() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_FORMA_PAGO, fp.getDescFormaPago() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.NUMERO, fp.getNumero() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.MONEDA_ID, fp.getObjMonedaID() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_MONEDA, fp.getCodMoneda() );			
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_MONEDA, fp.getDescMoneda() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.MONTO, fp.getMonto());
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.MONTO_NACIONAL, fp.getMontoNacional() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.ENTIDAD_ID, fp.getObjEntidadID() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_ENTIDAD, fp.getCodEntidad() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_ENTIDAD, fp.getDescEntidad() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.FECHA, fp.getFecha() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.SERIE_BILLETES, fp.getSerieBilletes() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.TASA_CAMBIO, fp.getTasaCambio() );
+			
+			bdd.insert(TABLA_RECIBO_DETALLE_FORMA_PAGO, null, formasPago);
 		}
 		
 		bdd.setTransactionSuccessful();

@@ -1,16 +1,23 @@
 package com.panzyma.nm.viewdialog;
 
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BTasaCambioM;
 import com.panzyma.nm.CBridgeM.BValorCatalogoM;
 import com.panzyma.nm.CBridgeM.BVentaM;
 import com.panzyma.nm.CBridgeM.BValorCatalogoM.Petition;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.ValorCatalogoUtil;
@@ -18,6 +25,7 @@ import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
+import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.CustomAdapter;
@@ -36,6 +44,7 @@ import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +52,7 @@ import android.view.View.OnKeyListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -52,6 +62,7 @@ import android.widget.TextView;
 public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	
 	private static final int TIME_TO_MESSAGE = 3000;
+	private static final String TAG = EditFormaPago.class.getSimpleName();
 	private View view;
 	private EditText numero;
 	private EditText fecha;
@@ -71,6 +82,10 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	private TableRow tblRowMontoPago;
 	private TableRow tblRowMontoPagoNacional;
 	private TableRow tblRowNumeroSerie;
+	private List<TasaCambio> _tasaDeCambio = new ArrayList<TasaCambio>();
+	private static Object lock = new Object();
+	int iCurrentSelection = 0;
+	float _montoPago = 0.00F;
 
 	private Recibo _recibo;
 	private ReciboDetFormaPago pagoRecibo;
@@ -106,11 +121,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		builder.setView(view);
 		builder.setPositiveButton("AGREGAR", new OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if( validarDatos() ){
-					accept();
-					dialog.dismiss();
-				}				
+			public void onClick(DialogInterface dialog, int which) {				
 			}
 		});
 		builder.setNegativeButton("CANCELAR", new OnClickListener() {
@@ -124,7 +135,42 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		return builder.create();
 	}
 
-	@SuppressWarnings("unused")
+	@Override
+	public void onStart()
+	{
+	    super.onStart();    
+	    AlertDialog d = (AlertDialog)getDialog();
+	    if(d != null)
+	    {
+	        Button positiveButton = (Button) d.getButton(Dialog.BUTTON_POSITIVE);
+	        positiveButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+					
+					try {
+						if( validarDatos() ){
+							accept();
+							dismiss();
+						}						
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						try {
+							showStatusOnUI(new ErrorMessage(
+									"Error de validación", e.getMessage(), ""));
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+					
+                }
+            });
+	    }
+	}
+	
+	@SuppressWarnings("unchecked")
 	private void cargarCatalogoFormasPago() {
 		try {
 			nmapp = (NMApp) this.getActivity().getApplication();
@@ -140,14 +186,13 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		}
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("unchecked")
 	private void cargarCatalogoMonedas() {
 		try {
 			catalogosReady = false;
 			nmapp = (NMApp) this.getActivity().getApplication();
 			nmapp.getController().removebridgeByName(
-					BValorCatalogoM.class.toString());
-			catalogNameToFound = "Moneda";
+					BValorCatalogoM.class.toString());			
 			nmapp.getController().setEntities(this, new BValorCatalogoM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
@@ -157,7 +202,39 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 			e.printStackTrace();
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void cargarCatalogoBancos() {
+		try {
+			catalogosReady = false;
+			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp.getController().removebridgeByName(
+					BValorCatalogoM.class.toString());			
+			nmapp.getController().setEntities(this, new BValorCatalogoM());
+			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController().getInboxHandler()
+					.sendEmptyMessage(Petition.BANCOS.getActionCode());
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void cargarTasaCambio(){
+		try {
+			BTasaCambioM bridge = null;
+			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp.getController().removebridgeByName(
+					BTasaCambioM.class.toString());			
+			nmapp.getController().setEntities(this,bridge = new BTasaCambioM());			
+			nmapp.getController().addOutboxHandler(new Handler(this));			
+			 nmapp.getController().getInboxHandler().sendEmptyMessage(BTasaCambioM.Petition.TASA_CAMBIO.getActionCode());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void initComponents() {
 		// OBTENIENDO LAS REFERENCIAS DE LAS VIEWS
 		numero = (EditText) view.findViewById(R.id.txtNumero);
@@ -178,45 +255,49 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		tblRowMontoPago = (TableRow) view.findViewById(R.id.tblRowMontoPago);
 		tblRowMontoPagoNacional = (TableRow) view
 				.findViewById(R.id.tblRowMontoNacional);
-		tblRowNumeroSerie = (TableRow) view.findViewById(R.id.tblRowNumero);
+		tblRowNumeroSerie = (TableRow) view.findViewById(R.id.tblRowNumeroSerie);	
+		
 	}
 
 	private void setValuesToView() {
 		// INICIANDO MIEMBROS INTERNOS
 		if (savedInstanceState != null) {
-			editFormaPago = savedInstanceState
-					.getBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION);
-			_recibo = savedInstanceState
-					.getParcelable(ViewReciboEdit.OBJECT_TO_EDIT);
-			if (!editFormaPago) {
-				// AGREGANDO UNA FORMA DE PAGO
-				pagoRecibo = new ReciboDetFormaPago();
-				pagoRecibo.setCodEntidad("");
-				pagoRecibo.setCodFormaPago("EFEC");
-				pagoRecibo.setCodMoneda("COR");
-				pagoRecibo.setDescEntidad("");
-				pagoRecibo.setDescFormaPago("Efectivo");
-				pagoRecibo.setDescMoneda("Córdoba");
-				pagoRecibo.setFecha(0);
-				pagoRecibo.setId(0);
+			
+			if( savedInstanceState != null) {
+				editFormaPago = savedInstanceState
+						.getBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION);
+				_recibo = savedInstanceState
+						.getParcelable(ViewReciboEdit.OBJECT_TO_EDIT);
+				if (!editFormaPago) {
+					// AGREGANDO UNA FORMA DE PAGO
+					pagoRecibo = new ReciboDetFormaPago();
+					pagoRecibo.setCodEntidad("");
+					pagoRecibo.setCodFormaPago("EFEC");
+					pagoRecibo.setCodMoneda("COR");
+					pagoRecibo.setDescEntidad("");
+					pagoRecibo.setDescFormaPago("Efectivo");
+					pagoRecibo.setDescMoneda("Córdoba");
+					pagoRecibo.setFecha(0);
+					pagoRecibo.setId(0);
 
-				montoPorPagar = StringUtil.round(_recibo.getTotalRecibo()
-						- Cobro.getTotalPagoRecibo(_recibo), 2);
-				pagoRecibo.setMonto(montoPorPagar);
-				pagoRecibo.setMontoNacional(montoPorPagar);
-				pagoRecibo.setNumero(""); // No es CHK
-				pagoRecibo.setObjEntidadID(0);
-				pagoRecibo.setObjFormaPagoID(ValorCatalogoUtil
-						.getValorCatalogoID(formasPago, "EFEC"));
-				pagoRecibo.setObjMonedaID(ValorCatalogoUtil.getValorCatalogoID(
-						formasPago, "COR"));
-				pagoRecibo.setSerieBilletes("");
-				pagoRecibo.setTasaCambio(1.0F);
-			} else {
-				// EDITANDO UNA FORMA DE PAGO
-			}
-			boolean pagoEnEfectivo = pagoRecibo.getCodFormaPago().compareTo(
-					"EFEC") == 0;
+					montoPorPagar = StringUtil.round(_recibo.getTotalRecibo()
+							- Cobro.getTotalPagoRecibo(_recibo), 2);
+					pagoRecibo.setMonto(montoPorPagar);
+					pagoRecibo.setMontoNacional(montoPorPagar);
+					pagoRecibo.setNumero(""); // No es CHK
+					pagoRecibo.setObjEntidadID(0);
+					pagoRecibo.setObjFormaPagoID(ValorCatalogoUtil
+							.getValorCatalogoID(formasPago, "EFEC"));
+					pagoRecibo.setObjMonedaID(ValorCatalogoUtil.getValorCatalogoID(
+							formasPago, "COR"));
+					pagoRecibo.setSerieBilletes("");
+					pagoRecibo.setTasaCambio(1.0F);
+				} else {
+					// EDITANDO UNA FORMA DE PAGO
+				}
+			} 
+			
+			boolean pagoEnEfectivo = pagoRecibo.getCodFormaPago().compareTo("EFEC") == 0;
 			boolean pagoEnCordoba = pagoRecibo.getCodMoneda().compareTo("COR") == 0;
 
 			// ESTABLECIENDO VISIBILIDAD PARA LAS FILAS DEL LAYOUT
@@ -233,8 +314,8 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 			numero.setText(pagoRecibo.getNumero());
 			tasa.setText(StringUtil.formatReal(pagoRecibo.getTasaCambio()));
 			montoPago.setText(StringUtil.formatReal(pagoRecibo.getMonto()));
-			montoNacional.setText(StringUtil.formatReal(pagoRecibo
-					.getMontoNacional()));
+			_montoPago = pagoRecibo.getMonto();
+			montoNacional.setText(StringUtil.formatReal(pagoRecibo.getMontoNacional()));
 			numeroSerie.setText(pagoRecibo.getSerieBilletes());
 
 			numero.setEnabled(!pagoEnEfectivo);
@@ -273,82 +354,43 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 				}
 			}
 
-			cmbFormaPago
-					.setOnItemSelectedListener(new OnItemSelectedListener() {
-						@Override
-						public void onItemSelected(AdapterView<?> parentView,
-								View selectedItemView, int position, long id) {
-							if (position == 0)
-								return;
-							ValorCatalogo _formaPago = (ValorCatalogo) ((SpinnerModel) formaPagoAdapter
-									.getItem(position)).getObj();
-							CambiaFormaPago(_formaPago.getCodigo());
-						}
-
-						@Override
-						public void onNothingSelected(AdapterView<?> parentView) {
-							// your code here
-						}
-
-					});
-
-			montoPago.setOnKeyListener(new OnKeyListener() {
-
-				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					// TODO Auto-generated method stub
-					if (keyCode == KeyEvent.KEYCODE_BACK) {
-						int pos = montoPago.getSelectionStart();
-						if (pos == 0)
-							return true;
-						if (montoPago.getText().toString().compareTo("") != 0) {
-							String t = montoPago.getText().toString();
-							String s = "";
-							if (t.length() > 0) {
-								if (pos == t.length())
-									s = t.substring(0, t.length() - 1);
-								else {
-									String s1 = t.substring(0, pos - 1);
-									String s2 = t.substring(pos, t.length());
-									s = s1 + s2;
-								}
-							}
-
-							montoPago.setText(s);
-							montoPago.setSelection(pos - 1);
-							RecalcularMontoNacional();
-							return true;
-						}
-
-					} else {
-						if (Character.isDigit(keyCode)) {
-							int pos = montoPago.getSelectionStart();
-							String t = montoPago.getText().toString();
-							String s1 = "";
-							if (pos > 0)
-								s1 = t.substring(0, pos);
-							String s2 = "";
-							if (pos < t.length())
-								s2 = t.substring(pos, t.length());
-
-							montoPago.setText(s1 + keyCode + s2);
-							RecalcularMontoNacional();
-							montoPago.setSelection(pos + 1);
-							return true;
-						}
-					}
-					return false;
-				}
-			});
-
-			cmbMoneda.setOnItemSelectedListener(new OnItemSelectedListener() {
+			cmbFormaPago.setOnItemSelectedListener(new OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> parentView,
 						View selectedItemView, int position, long id) {
 					if (position == 0)
 						return;
-					ValorCatalogo _moneda = (ValorCatalogo) ((SpinnerModel) monedaAdapter
+					ValorCatalogo _formaPago = (ValorCatalogo) ((SpinnerModel) formaPagoAdapter
 							.getItem(position)).getObj();
+					CambiaFormaPago(_formaPago.getCodigo());
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> parentView) {
+					// your code here
+				}
+
+			});
+			
+			montoPago.addTextChangedListener(new TextWatcher() {
+				public void afterTextChanged(Editable s) {
+				}
+
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				}
+
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					RecalcularMontoNacional();
+				}
+			});			
+
+			cmbMoneda.setOnItemSelectedListener(new OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+					if (position == 0)	return;
+					ValorCatalogo _moneda = (ValorCatalogo) ((SpinnerModel) monedaAdapter.getItem(position)).getObj();
 					CambioMoneda(_moneda.getCodigo());
+					iCurrentSelection = position;
 				}
 
 				@Override
@@ -361,10 +403,6 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		}
 	}
 
-	public String getCatalogNameToFound() {
-		return catalogNameToFound;
-	}
-
 	public ReciboDetFormaPago getPagoRecibo() {
 		return pagoRecibo;
 	}
@@ -374,16 +412,52 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	}
 
 	@Override
-	public boolean handleMessage(Message msg) {
-		Petition response = Petition.toInt(msg.what);
-		switch (response) {
-		default:
-			establecer((Catalogo) msg.obj);
-			break;
+	public boolean handleMessage(Message msg) {		
+		if( msg.arg1 != 10 ){
+			Petition response = Petition.toInt(msg.what);
+			switch (response) {
+				case BANCOS:
+				case FORMAS_PAGOS:
+				case MONEDAS:
+					establecer((Catalogo) msg.obj);
+					break;
+			}
+		} else {
+			estableceTasaCambio((List<TasaCambio>) msg.obj);
 		}
 		return false;
 	}
 
+	private void estableceTasaCambio(List<TasaCambio> obj) {		
+		this._tasaDeCambio.clear();
+		this._tasaDeCambio = obj;
+		setValuesToView();
+	}
+
+	private boolean hasTasaCambio(String codMoneda){
+		boolean encontrado = false;
+		for(TasaCambio tasaCambio : _tasaDeCambio) {
+			if( tasaCambio.getCodMoneda().equals(codMoneda) )
+			{
+				encontrado = true;
+				break;
+			}
+		}
+		return encontrado;
+	}
+	
+	private float getTasaCambioByCodigoMoneda(String codMoneda){
+		float _tasaCambio = 0.00F;
+		for(TasaCambio tasaCambio : _tasaDeCambio) {
+			if( tasaCambio.getCodMoneda().equals(codMoneda) )
+			{
+				_tasaCambio = tasaCambio.getTasa();
+				break;
+			}
+		}
+		return _tasaCambio;
+	}
+	
 	private void establecer(Catalogo obj) {
 		if ("FormaPago".equals(obj.getNombreCatalogo().trim())) {
 			formasPago = obj.getValoresCatalogo();
@@ -398,9 +472,14 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 			monedaAdapter = new CustomAdapter(this.getActivity(),
 					R.layout.spinner_rows, setListData(monedas));
 			cmbMoneda.setAdapter(monedaAdapter);
-			setValuesToView();
-		} else if ("banco".equals(obj.getNombreCatalogo().trim())) {
+			cargarCatalogoBancos();			
+		} else if ("EntidadBancaria".equals(obj.getNombreCatalogo().trim())) {
 			bancos = obj.getValoresCatalogo();
+			bancos.add(0, new ValorCatalogo(-1, "", ""));
+			bancoAdapter = new CustomAdapter(this.getActivity(),
+					R.layout.spinner_rows, setListData(bancos));
+			cmbBanco.setAdapter(bancoAdapter);
+			cargarTasaCambio();
 		}
 	}
 
@@ -463,6 +542,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
         if ((vcFP.getCodigo().compareTo("EFEC") == 0) && (vcM.getCodigo().compareTo("COR") != 0)) 
             pagoRecibo.setSerieBilletes(numeroSerie.getText().toString().trim());
         
+        _recibo.getFormasPagoRecibo().add(pagoRecibo);
         //_canceled = false;        
     }
 	
@@ -483,10 +563,9 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	}
 
 	private void CambioMoneda(String nuevoCodMoneda) {
-		if (tasa == null)
-			return;
+		if (tasa == null) return;
 		boolean pagoEnCordoba = nuevoCodMoneda.compareTo("COR") == 0;
-
+		
 		tasa.setEnabled(!pagoEnCordoba);
 		tblRowTasa.setVisibility(pagoEnCordoba ? View.GONE : View.VISIBLE);
 
@@ -512,6 +591,21 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		if (nuevoCodMoneda.compareTo("COR") != 0) {
 			// Buscar tasa de cambio asociada a la moneda seleccionada para la
 			// fecha actual
+			if( !hasTasaCambio(nuevoCodMoneda) )
+			{
+				try {					
+					showStatusOnUI(new ErrorMessage("Error en Tasa Cambio", 
+							"No hay tasa de cambio registrada para el tipo de moneda " , ""));
+					cmbMoneda.setSelection(iCurrentSelection);					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
+				/*Util.Message.buildToastMessage(this.getActivity(),
+						, TIME_TO_MESSAGE);*/
+				return;
+			}
+			tasa = getTasaCambioByCodigoMoneda(nuevoCodMoneda);
 			// tasa = Cobro.getTasaCambioHoy(nuevoCodMoneda);
 			if (tasa == 0) {
 				mto = 0;
@@ -519,7 +613,8 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 						"No hay tasa de cambio registrada.", TIME_TO_MESSAGE);
 			} else {
 				pagoRecibo.setTasaCambio(tasa);
-				mto = StringUtil.round(montoPorPagar / tasa, 2);
+				_montoPago = montoPorPagar / tasa;
+				mto = StringUtil.round(_montoPago, 2);
 			}
 		}
 		pagoRecibo.setTasaCambio(tasa);
@@ -528,24 +623,25 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		montoNacional.setText(StringUtil.formatReal(mtoNac));
 	}
 
-	private boolean validarDatos() {
-
+	private boolean validarDatos() throws InterruptedException {
+ 
+		
 		// validar que se haya ingresado monto a pagar
 		if (montoPago.getText().toString().trim() == "") {
-			Util.Message.buildToastMessage(this.getActivity(),
-					"Ingrese el monto a pagar.", TIME_TO_MESSAGE);
+			showStatusOnUI(new ErrorMessage("Error de validación",
+					"Ingrese el monto a pagar.", ""));
 			return false;
 		}
 
 		if (Float.parseFloat(montoPago.getText().toString().trim()) == 0) {
-			Util.Message.buildToastMessage(this.getActivity(),
-					"El monto a pagar debe ser mayor que cero.",
-					TIME_TO_MESSAGE);
+			showStatusOnUI(new ErrorMessage("Error de validación",
+					"El monto a pagar debe ser mayor que cero.", ""));			
 			return false;
 		}
 
 		ValorCatalogo vcM = (ValorCatalogo) ((SpinnerModel) monedaAdapter
 				.getItem(cmbMoneda.getSelectedItemPosition())).getObj();
+		
 		if (!editFormaPago) {
 			if (vcM.getCodigo().compareTo("COR") == 0)
 				tasa.setText("1");
@@ -553,13 +649,11 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 			// Validar que no sea mayor que el saldo total de la factura
 			float mtoNac = StringUtil.round(
 					Float.parseFloat(tasa.getText().toString())
-							* Float.parseFloat(montoPago.getText().toString()
-									.trim()), 2);
+							* _montoPago, 2);
 			if (mtoNac > montoPorPagar) {
-				Util.Message.buildToastMessage(this.getActivity(),
+				showStatusOnUI(new ErrorMessage("Error de validación",
 						"El monto a pagar no debe ser mayor al faltante de pago del recibo ("
-								+ StringUtil.formatReal(montoPorPagar) + ").",
-						TIME_TO_MESSAGE);
+								+ StringUtil.formatReal(montoPorPagar) + ").", ""));				
 				return false;
 			}
 		}
@@ -573,9 +667,8 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 
 		if (vcFP.getCodigo().compareTo("EFEC") != 0) {
 			if (numero.getText().toString().trim().compareTo("") == 0) {
-				Util.Message.buildToastMessage(this.getActivity(),
-						"Ingrese el número de " + vcFP.getDescripcion() + ".",
-						TIME_TO_MESSAGE);
+				showStatusOnUI(new ErrorMessage("Error de validación",
+						"Ingrese el número de " + vcFP.getDescripcion() + ".", ""));				
 				cmbFormaPago.setFocusable(true);
 				return false;
 			}
@@ -597,25 +690,21 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 						.toString());
 				if (fechaCK < minFechaCheque) {
 					Date d = new Date(minFechaCheque);
-					Util.Message
-							.buildToastMessage(
-									this.getActivity(),
-									"La fecha del cheque no debe ser menor que "
-											+ DateUtil
-													.idateToStr(minFechaCheque)
-											+ ".", TIME_TO_MESSAGE);
+					showStatusOnUI(new ErrorMessage(
+							"Error de validación",
+							"La fecha del cheque no debe ser menor que "
+									+ DateUtil.idateToStr(minFechaCheque) + ".",
+							""));					
 					return false;
 				}
 
 				if (fechaCK > maxFechaCheque) {
 					Date d = new Date(maxFechaCheque);
-					Util.Message
-							.buildToastMessage(
-									this.getActivity(),
-									"La fecha del cheque no debe ser mayor que "
-											+ DateUtil
-													.idateToStr(maxFechaCheque)
-											+ ".", TIME_TO_MESSAGE);
+					showStatusOnUI(new ErrorMessage(
+							"Error de validación",
+							"La fecha del cheque no debe ser mayor que "
+									+ DateUtil.idateToStr(maxFechaCheque) + ".",
+							""));					
 					return false;
 				}
 			} else {
@@ -625,11 +714,10 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 				long fechaDoc = DateUtil.strTimeToLong(fecha.getText()
 						.toString());
 				if (fechaDoc > hoy) {
-					Util.Message
-							.buildToastMessage(
-									this.getActivity(),
-									"La fecha del documento no debe ser mayor a la fecha actual.",
-									TIME_TO_MESSAGE);
+					showStatusOnUI(new ErrorMessage(
+							"Error de validación",
+							"La fecha del documento no debe ser mayor a la fecha actual.",
+							""));					
 					return false;
 				}
 			}
@@ -640,9 +728,10 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		if ((vcFP.getCodigo().compareTo("EFEC") == 0)
 				&& (vcM.getCodigo().compareTo("COR") != 0)) {
 			if (numeroSerie.getText().toString().trim().compareTo("") == 0) {
-				Util.Message.buildToastMessage(this.getActivity(),
+				showStatusOnUI(new ErrorMessage(
+						"Error de validación",
 						"Ingrese los números de serie de los billetes.",
-						TIME_TO_MESSAGE);
+						""));				
 				numeroSerie.setFocusable(true);
 				return false;
 			}
@@ -651,25 +740,26 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		// Si pago es en moneda extranjera, validar que tasa sea mayor que cero
 		if (vcM.getCodigo().compareTo("COR") != 0) {
 			if (tasa.getText().toString().trim().compareTo("") == 0) {
-				Util.Message.buildToastMessage(this.getActivity(),
+				showStatusOnUI(new ErrorMessage(
+						"Error de validación",
 						"La tasa de cambio no puede quedar vacía.",
-						TIME_TO_MESSAGE);
+						""));					
 				tasa.setFocusable(true);
 				return false;
 			}
 
 			if (Float.parseFloat(tasa.getText().toString().trim()) == 0) {
-				Util.Message
-						.buildToastMessage(this.getActivity(),
-								"La tasa de cambio no puede ser cero.",
-								TIME_TO_MESSAGE);
+				showStatusOnUI(new ErrorMessage(
+						"Error de validación",
+						"La tasa de cambio no puede ser cero.",
+						""));				
 				tasa.setFocusable(true);
 				return false;
 			}
 		} else {
 			tasa.setText("1.0");
 		}
-
+		
 		return true;
 	}
 
@@ -678,10 +768,72 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		if (this.tasa.getText().toString().trim().compareTo("") != 0)
 			tasa = Float.parseFloat(this.tasa.getText().toString().trim());
 
-		if (montoPago.getText().toString().trim().compareTo("") != 0)
-			mto = Float.parseFloat(montoPago.getText().toString().trim());
+		if (montoPago.getText().toString().trim().compareTo("") != 0) {
+			mto = _montoPago;
+		}
+			//mto = Float.parseFloat(montoPago.getText().toString().trim());
 
 		float montoNac = StringUtil.round(tasa * mto, 2);
 		montoNacional.setText(StringUtil.formatReal(montoNac));
 	}
+	
+	public int getFecha() {
+		return pagoRecibo.getFecha();
+	}
+	
+	public String getCodigoMoneda() {
+		return pagoRecibo.getCodMoneda();
+	}
+	
+	public void showStatusOnUI(Object msg) throws InterruptedException{
+		
+		final String titulo=""+((ErrorMessage)msg).getTittle();
+		final String mensaje=""+((ErrorMessage)msg).getMessage();
+		
+		
+		nmapp.getThreadPool().execute(new Runnable()
+		{ 
+			@Override
+			public void run()
+		    {
+				 
+				try 
+				{
+					
+					getActivity().runOnUiThread(new Runnable() 
+			        {
+						@Override
+						public void run() 
+						{ 
+							 AppDialog.showMessage(getActivity(),titulo,mensaje,AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+							 {						 
+									@Override
+					    			public void onButtonClick(AlertDialog _dialog, int actionId) 
+					    			{ 
+					    				synchronized(lock)
+					    				{
+					    					lock.notify();
+					    				}
+					    			}
+							  }); 
+				          }
+					});
+					
+			        synchronized(lock)
+			        {
+			            try {
+			            	lock.wait();
+						} catch (InterruptedException e) { 
+							e.printStackTrace();
+						}
+			        }
+					
+				} catch (Exception e) 
+				{ 
+				}
+		    }
+		}); 
+		
+	}
+	
 }
