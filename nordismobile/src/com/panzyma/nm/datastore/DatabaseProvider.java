@@ -1100,6 +1100,12 @@ public class DatabaseProvider extends ContentProvider
 			case RECIBODETALLENOTACREDITO_ID:  dictionary.put(RECIBODETALLENOTACREDITO, TABLA_RECIBO_DETALLE_NOTA_CREDITO);			                            
 										dictionary.put(RECIBODETALLENOTACREDITO+1,"objReciboID=" + uri.getLastPathSegment());				
 										break;
+			case RECIBODETALLEFORMAPAGO : dictionary.put(RECIBODETALLEFORMAPAGO, TABLA_RECIBO_DETALLE_FORMA_PAGO);
+										dictionary.put(CONTENT_URI_LOCALID, CONTENT_URI_RECIBODETALLEFORMAPAGO.toString());
+										break;
+			case RECIBODETALLEFORMAPAGO_ID : dictionary.put(RECIBODETALLEFORMAPAGO, TABLA_RECIBO_DETALLE_FORMA_PAGO);
+										dictionary.put(RECIBODETALLEFORMAPAGO_ID,"objReciboID=" + uri.getLastPathSegment());
+										break;
 		} 
 		Iterator it = dictionary.entrySet().iterator();
 		while (it.hasNext()) 
