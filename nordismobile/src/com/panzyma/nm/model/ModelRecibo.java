@@ -340,7 +340,9 @@ public class ModelRecibo {
 				NMConfig.Recibo.DetalleFormaPago.FECHA,
 				NMConfig.Recibo.DetalleFormaPago.SERIE_BILLETES,
 				NMConfig.Recibo.DetalleFormaPago.TASA_CAMBIO };
+		
 		ReciboDetFormaPago formaPago = null;
+		
 		try {
 			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFORMAPAGO	+ "/" + String.valueOf(reciboID);
 			Cursor cur = content.query(Uri.parse(uriString), 
