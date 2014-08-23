@@ -1324,7 +1324,7 @@ public class DatabaseProvider extends ContentProvider
 		return recibo;
 	}
 		
-public static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception{
+	public static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception{
 		
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	
 		long idpedido=-1;
