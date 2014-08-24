@@ -417,7 +417,8 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 
 	@Override
 	public Object getProperty(int _index) { 
-		switch(_index)  {
+		switch(_index)  
+		{
 			case 0: return new Long(Id);
 			case 1: return new Long(ObjFacturaID);
 			case 2: return new Long(ObjReciboID);

@@ -37,7 +37,7 @@ import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente; 
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND; 
@@ -145,7 +145,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_CERRAR = 10;
 	private ViewReciboEdit me;
 	private Cliente cliente;
-	private Recibo recibo=null;
+	private ReciboColector recibo=null;
 	private Context contexto;
 	private BReciboM brm;
 	private Handler handler;
@@ -190,11 +190,16 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			facturasRecibo = new ArrayList<Factura> ();
 			documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
 			 
-			if(reciboId != 0){
+			if(reciboId != 0)
+			{
 				onEdit = true;
-				//OBTENER EL RECIBO DESDE LOCALHOST
-				nmapp.getController()
-				.getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST);
+				//OBTENER EL RECIBO DESDE LOCALHOST  	 
+				Message msg = new Message();
+			    Bundle b = new Bundle();
+			    b.putInt("idrecibo", reciboId);  
+			    msg.setData(b);
+			    msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
+			    nmapp.getController().getInboxHandler().sendMessage(msg);  
 			}  
 
 			contexto = this.getApplicationContext();
@@ -256,7 +261,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		salvado=false;
 		if (recibo == null || !onEdit) {
 			// NUEVO RECIBO
-			recibo = new Recibo();
+			recibo = new ReciboColector();
 			recibo.setId(0);
 			cliente = null;
 			recibo.setCodEstado("REGISTRADO");
@@ -431,11 +436,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		switch(msg.what)
 		{
 			case C_DATA:
-				recibo = (Recibo)msg.obj;
+				recibo = (ReciboColector)msg.obj;
 				loadData();
 				break;
 			case ControllerProtocol.ID_REQUEST_SALVARPEDIDO:
-				recibo = (Recibo)msg.obj;
+				recibo = (ReciboColector)msg.obj;
 				actualizarOnUINumRef(recibo);
 				Util.Message.buildToastMessage(contexto,
 						"Recibo Guardado!!", 1000).show();
@@ -448,7 +453,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return false;
 	}
 
-	public void actualizarOnUINumRef(final Recibo r) {
+	public void actualizarOnUINumRef(final ReciboColector r) {
 		runOnUiThread(new Runnable() {
 
 			@Override
@@ -1079,7 +1084,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void editarDocumento() {
-		if(!"REGISTRADO".equals(recibo.getDescEstado()))  return;
+		if(!"REGISTRADO".equals(recibo.getCodEstado()))  return;
 		int posicion = positioncache;
 		if (posicion == -1) return;		
 			
@@ -1130,11 +1135,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return this.me;
 	}
 
-	public Recibo getRecibo(){
+	public ReciboColector getRecibo(){
 		return recibo;
 	}
 		
-	public Recibo setRecibo(Recibo r){
+	public ReciboColector setRecibo(ReciboColector r){
 		return recibo=r;
 	}
 	

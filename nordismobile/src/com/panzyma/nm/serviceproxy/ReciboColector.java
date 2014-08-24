@@ -14,7 +14,7 @@ import com.panzyma.nm.auxiliar.NMConfig;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Recibo implements KvmSerializable,Parcelable {
+public class ReciboColector implements KvmSerializable,Parcelable {
 
 	protected long Id;
 	protected int Numero;
@@ -53,11 +53,11 @@ public class Recibo implements KvmSerializable,Parcelable {
 	protected ArrayList<ReciboDetNC> DetalleNotasCredito = new ArrayList<ReciboDetNC>(); 
 	protected ArrayList<ReciboDetFormaPago> DetalleFormasPago = new ArrayList<ReciboDetFormaPago>(); 
 	
-	public Recibo() {
+	public ReciboColector() {
 		super();		
 	}
 
-	public Recibo(long id, int numero, long fecha, String notas,
+	public ReciboColector(long id, int numero, long fecha, String notas,
 			float totalRecibo, float totalFacturas, float totalND,
 			float totalInteres, float subTotal, float totalDesc,
 			float totalRetenido, float totalOtrasDed, float totalNC,
@@ -374,7 +374,7 @@ public class Recibo implements KvmSerializable,Parcelable {
 		this.DetalleNotasDebito = notasDebitoRecibo;
 	} 
 
-	public Recibo(Parcel parcel){ 	   
+	public ReciboColector(Parcel parcel){ 	   
  	   readFromParcel(parcel);
 	}
 	
@@ -449,12 +449,12 @@ public class Recibo implements KvmSerializable,Parcelable {
 
 	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
 
-        public Recibo createFromParcel(Parcel parcel) {
-             return new Recibo(parcel);
+        public ReciboColector createFromParcel(Parcel parcel) {
+             return new ReciboColector(parcel);
         }
 
-        public Recibo[] newArray(int size) {
-             return new Recibo[size];
+        public ReciboColector[] newArray(int size) {
+             return new ReciboColector[size];
         }
       	 
       	 
@@ -561,6 +561,7 @@ public class Recibo implements KvmSerializable,Parcelable {
 			    			}
 			    			_detallefacturas.addSoapObject(item);
 			    		}
+						return _detallefacturas;
 					}
 				    break;
 			case 1:
@@ -580,6 +581,7 @@ public class Recibo implements KvmSerializable,Parcelable {
 			    			}
 			    			_detallenotasdebito.addSoapObject(item);
 			    		}
+						return _detallenotasdebito;
 					}
 				    break;
 			case 2:
@@ -599,6 +601,7 @@ public class Recibo implements KvmSerializable,Parcelable {
 			    			}
 			    			_detallenotascredito.addSoapObject(item);
 			    		}
+						return _detallenotascredito;
 					}
 				    break;
 			case 3:	
@@ -618,6 +621,7 @@ public class Recibo implements KvmSerializable,Parcelable {
 			    			}
 			    			_detalleformaspago.addSoapObject(item);
 			    		}
+						return _detalleformaspago;
 					}
 				    break;
         	case 4: return new Long(Id);
@@ -668,20 +672,56 @@ public class Recibo implements KvmSerializable,Parcelable {
 	    	   switch(_index)  
 	    	   { 
 		           case 0:
-		               _info.name = "DetalleFacturas";
-		               _info.type = ReciboDetFactura[].class; 
+		        	   _info.name = "DetalleFacturas";
+		               _info.type= ReciboDetFactura[].class;
+//		               if(DetalleFacturas!= null && DetalleFacturas.size() > 0) 
+//		               {
+//		        		   _info.type = PropertyInfo.VECTOR_CLASS;
+//		                   _info.name = "DetalleFacturas";
+//		                   PropertyInfo arrayType = new PropertyInfo();
+//		                   arrayType.name = "ReciboDetFactura";
+//		                   arrayType.type =  ReciboDetFactura[].class;               
+//		                   _info.elementType = arrayType;
+//		        	   }     
 		               break;
-		           case 1:
-		               _info.name = "DetalleNotasDebito";
-		               _info.type = ReciboDetND[].class; 
+		           case 1: 
+		        	   _info.name = "DetalleNotasDebito";
+		               _info.type= ReciboDetND[].class;
+//		               if(DetalleNotasDebito!= null && DetalleNotasDebito.size() > 0) 
+//		               {
+//		        		   _info.type = PropertyInfo.VECTOR_CLASS;
+//		                   _info.name = "DetalleNotasDebito";
+//		                   PropertyInfo arrayType = new PropertyInfo();
+//		                   arrayType.name = "ReciboDetND";
+//		                   arrayType.type =  ReciboDetND[].class;               
+//		                   _info.elementType = arrayType;
+//		        	   }    
 		               break;
-		           case 2:
-		               _info.name = "DetalleNotasCredito";
-		               _info.type = ReciboDetNC[].class; 
-		               break;
-		           case 3:
-		               _info.name = "DetalleFormasPago";
-		               _info.type = ReciboDetFormaPago[].class; 
+		           case 2: 
+		        	   _info.name = "DetalleNotasCredito";
+		               _info.type= ReciboDetNC[].class;
+//		               if(DetalleNotasCredito!= null && DetalleNotasCredito.size() > 0) 
+//		               {
+//		        		   _info.type = PropertyInfo.VECTOR_CLASS;
+//		                   _info.name = "DetalleNotasCredito";
+//		                   PropertyInfo arrayType = new PropertyInfo();
+//		                   arrayType.name = "ReciboDetNC";
+//		                   arrayType.type =  ReciboDetNC[].class;               
+//		                   _info.elementType = arrayType;
+//		        	   }        	   		               
+		               break; 
+		           case 3: 		        
+		        	   _info.name = "DetalleFormasPago";
+		               _info.type= ReciboDetFormaPago[].class;
+//		               if(DetalleFormasPago!= null && DetalleFormasPago.size() > 0) 
+//		               {
+//		        		   _info.type = PropertyInfo.VECTOR_CLASS;
+//		                   _info.name = "DetalleFormasPago";
+//		                   PropertyInfo arrayType = new PropertyInfo();
+//		                   arrayType.name = "ReciboDetFormaPago";
+//		                   arrayType.type =  ReciboDetFormaPago[].class;               
+//		                   _info.elementType = arrayType;
+//		        	   }        	   		               
 		               break;
 		           case 4:
 		               _info.name = "Id";
