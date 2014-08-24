@@ -14,6 +14,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.ActionType;
+import com.panzyma.nm.auxiliar.Ammount;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil; 
@@ -295,6 +296,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			for (ReciboDetNC nc : recibo.getNotasCreditoRecibo()) {
 				documents.add(nc);
 			}
+			
 			adapter = null;
 			agregarDocumentosAlDetalleDeRecibo();
 						
@@ -772,6 +774,38 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				- recibo.getTotalImpuestoExonerado());
 		txtTotal.setText(String.valueOf(recibo.getTotalRecibo()));
 	}
+	
+	private void procesaFactura(ReciboDetFactura facturaDetalle,
+			Factura factura, List<Ammount> montos) {
+		for (Ammount ammount : montos) {
+			switch (ammount.getAmmountType()) {
+				case ABONADO:
+					float montoAbonado = 0.00F;
+					factura.setAbonado(factura.getAbonado() + montoAbonado);
+					if (factura.Saldo < montoAbonado)
+						factura.setEstado("ABONADA");
+					else if (factura.Saldo == montoAbonado)
+						factura.setEstado("CANCELADA");
+					facturaDetalle.setMonto(factura.getAbonado());
+					facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
+							.getAbonado());
+					factura.setSaldo(factura.getSaldo() - factura.getAbonado());
+					facturaDetalle.setSaldoFactura(factura.getSaldo());
+					recibo.setTotalFacturas(recibo.getTotalFacturas()
+							+ montoAbonado);
+					break;
+				case RETENIDO:
+					break;
+				default:
+					break;
+			}
+		}
+		facturasRecibo.add(factura);
+		recibo.getFacturasRecibo().add(facturaDetalle);
+		documents.add(facturaDetalle);
+		agregarDocumentosAlDetalleDeRecibo();
+		actualizaTotales();
+	}
 
 	private void agregarDocumentosPendientesCliente() {
 		
@@ -798,32 +832,16 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							//CREAR UN OBJETO DETALLE DE FACURA
 							final ReciboDetFactura facturaDetalle = new ReciboDetFactura();
 							facturaDetalle.setObjFacturaID(factura.getId());
-							facturaDetalle.setFecha(factura.getFecha());
-							facturaDetalle.setMonto(factura.getAbonado());
-							facturaDetalle.setNumero(factura.getNoFactura());
-							facturaDetalle.setSaldoFactura(factura.getSaldo());
+							facturaDetalle.setFecha(factura.getFecha());							
+							facturaDetalle.setNumero(factura.getNoFactura());							
 							facturaDetalle.setMontoRetencion(0.00f);
 							facturaDetalle.setTotalFactura(factura.getTotalFacturado());
 							
 							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.ADD);
 							dialogConfirmacion.setActionPago(new Pagable() {					
 								@Override
-								public void onPagarEvent(Float montoAbonado) {
-									factura.setAbonado(factura.getAbonado() + montoAbonado);
-									if(factura.Saldo < montoAbonado )							
-										factura.setEstado("ABONADA");
-									else if (factura.Saldo == montoAbonado)
-										factura.setEstado("CANCELADA");
-									else { 
-										//ERROR
-									}
-									factura.setSaldo(factura.getSaldo() - factura.getAbonado());
-									recibo.setTotalFacturas(recibo.getTotalFacturas() + montoAbonado);
-									facturasRecibo.add(factura); 
-									recibo.getFacturasRecibo().add(facturaDetalle);
-									documents.add(facturaDetalle);
-									agregarDocumentosAlDetalleDeRecibo();
-									actualizaTotales();
+								public void onPagarEvent(List<Ammount> montos) {
+									procesaFactura(facturaDetalle,factura,montos);
 								}
 							});
 							FragmentManager fragmentManager = getSupportFragmentManager();
@@ -1021,6 +1039,17 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         adapter.notifyDataSetChanged();
         gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
 	}
+	
+	private Factura getFacturaByID(long id){
+		Factura facturaToFound = null;
+		for(Factura factura : facturasRecibo){
+			if( factura.getId() == id ) {
+				facturaToFound = factura;
+				break;
+			}
+		}
+		return facturaToFound;
+	}
 
 	private void editarDocumento() {
 		if(!"REGISTRADO".equals(recibo.getDescEstado()))  return;
@@ -1034,12 +1063,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(documentToEdit, ActionType.EDIT);
 		dialogConfirmacion.setActionPago(new Pagable() {					
 			@Override
-			public void onPagarEvent(Float montoAbonado) {
+			public void onPagarEvent(List<Ammount> montos) {
 				
 				if( documentToEdit instanceof ReciboDetFactura ){
-					ReciboDetFactura factura = (ReciboDetFactura)documentToEdit;
-					factura.setMonto(montoAbonado);
-					factura.setSaldoFactura(factura.getSaldofactura() - montoAbonado);
+					
+					ReciboDetFactura facturaDetalle = (ReciboDetFactura)documentToEdit;
+					Factura factura = getFacturaByID(facturaDetalle.getId());	
+					procesaFactura(facturaDetalle, factura, montos);					
+					
 				} else if ( documentToEdit instanceof ReciboDetND ){
 					
 				}				

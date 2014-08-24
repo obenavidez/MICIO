@@ -1,6 +1,12 @@
 package com.panzyma.nm.viewdialog;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.panzyma.nm.auxiliar.ActionType;
+import com.panzyma.nm.auxiliar.Ammount;
+import com.panzyma.nm.auxiliar.AmmountType;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.serviceproxy.Documento;
 import com.panzyma.nm.serviceproxy.Factura;
@@ -41,7 +47,7 @@ public class DialogoConfirmacion extends DialogFragment {
 	private ActionType actionType;
 		
 	public interface Pagable {
-		public void onPagarEvent(Float montoAbonado); 
+		public void onPagarEvent(List<Ammount> montos);
 	}
 
 	public DialogoConfirmacion(Documento documento, ActionType actionType) {
@@ -56,10 +62,14 @@ public class DialogoConfirmacion extends DialogFragment {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		view = inflater.inflate(R.layout.layout_detalle_pago_recibo, null);
 		builder.setView(view);
-		builder.setPositiveButton("ACEPTAR", new OnClickListener() {			
+		builder.setPositiveButton("ACEPTAR", new OnClickListener() {
+			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				eventPago.onPagarEvent(getMontoAbonado());			
+				List<Ammount> montos = new ArrayList<Ammount>();
+				montos.add(new Ammount(AmmountType.ABONADO, getMontoAbonado()));
+				montos.add(new Ammount(AmmountType.RETENIDO, getMontoRetenido()));				
+				eventPago.onPagarEvent(montos);			
 			}
 		});
 		builder.setNegativeButton("CANCELAR", new OnClickListener() {			
@@ -122,7 +132,7 @@ public class DialogoConfirmacion extends DialogFragment {
 		//SI ESTAMOS ANTE UNA FACTURA Y ESTAMOS EDITANDO EL ITEM
 		if ( document instanceof ReciboDetFactura ){
 			if( this.actionType == ActionType.ADD )
-				rowRetencion.setVisibility(View.INVISIBLE);
+				rowRetencion.setVisibility(View.GONE);
 			else 
 				rowRetencion.setVisibility(View.VISIBLE);
 			
@@ -130,7 +140,13 @@ public class DialogoConfirmacion extends DialogFragment {
 	}
 	
 	private float getMontoAbonado(){
-		return Float.parseFloat(monto.getText().toString());
+		String value = monto.getText().toString().trim();
+		return Float.parseFloat(value == "" ? "0.00" : value);
+	}
+	
+	private float getMontoRetenido(){
+		String value = retencion.getText().toString().trim();
+		return Float.parseFloat(value == "" ? "0.00" : value);
 	}
 	
 	public void setActionPago(Pagable actionPago) {
