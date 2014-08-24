@@ -651,7 +651,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             	showStatusOnUI(
     					new ErrorMessage(
     							"Error al Validar el Recibo",
-    							          "Problemas con los Pagos.", "No se ha agregado ningun pago."));
+    							          "No se ha agregado ningun pago.", ""));
 
                 //Dialog.alert("Detalle de pagos no ingresado.");
             	return false; 
@@ -781,6 +781,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			switch (ammount.getAmmountType()) {
 				case ABONADO:
 					float montoAbonado = 0.00F;
+					montoAbonado=ammount.getValue();
 					factura.setAbonado(factura.getAbonado() + montoAbonado);
 					if (factura.Saldo < montoAbonado)
 						factura.setEstado("ABONADA");
