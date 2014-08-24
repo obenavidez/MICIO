@@ -834,12 +834,15 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			switch (ammount.getAmmountType()) {
 				case ABONADO:
 					float montoAbonado = 0.00F;
-					montoAbonado=ammount.getValue();
+					montoAbonado = ammount.getValue();
 					factura.setAbonado(factura.getAbonado() + montoAbonado);
-					if (factura.Saldo < montoAbonado)
-						factura.setEstado("ABONADA");
-					else if (factura.Saldo == montoAbonado)
-						factura.setEstado("CANCELADA");
+					if (factura.Saldo < montoAbonado) {
+						factura.setCodEstado("ABONADA");
+						factura.setEstado("Abonada");
+					} else if (factura.Saldo == montoAbonado) {
+						factura.setCodEstado("CANCELADA");
+						factura.setEstado("Cancelada");
+					}
 					facturaDetalle.setMonto(factura.getAbonado());
 					facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
 							.getAbonado());
@@ -849,7 +852,30 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							+ montoAbonado);
 					break;
 				case RETENIDO:
+					float montoRetencion = 0.00F;
+					montoRetencion = ammount.getValue();
+					factura.setRetenido(montoRetencion);
+					facturaDetalle.setMontoRetencion(montoRetencion);
 					break;
+				case DESCONTADO:
+					float montoDescuento = 0.00F;
+					montoDescuento = ammount.getValue();
+					factura.setDescontado(montoDescuento);
+					factura.setDescuentoFactura(factura.getDescuentoFactura() + montoDescuento);					
+					if ( montoDescuento > facturaDetalle.getMontoDescEspecificoCalc() ) {
+						try {
+							showStatusOnUI(
+									new ErrorMessage(
+											          "Error al editar descuento",
+											          "El nuevo descuento no debe ser mayor que " + StringUtil.formatReal(facturaDetalle.getMontoDescEspecificoCalc()) + ".", ""));
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}	                          
+			            return;
+			        }
+					//Recalcular monto neto
+			        Cobro.ActualizaMtoNetoFacturasrecibo(recibo);
+					facturaDetalle.setMontoDescEspecificoCalc(montoDescuento);
 				default:
 					break;
 			}
