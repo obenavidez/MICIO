@@ -555,6 +555,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				Message msg = new Message();
 			    Bundle b = new Bundle();
 			    b.putParcelable("recibo", recibo); 
+			    b.putParcelableArray("facturasToUpdate", getArrayOfFacturas() );
 			    msg.setData(b);
 			    msg.what=SAVE_DATA_FROM_LOCALHOST;
 			    nmapp.getController().getInboxHandler().sendMessage(msg);  			
@@ -564,6 +565,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 		}
 
+	}
+	
+	private Factura [] getArrayOfFacturas(){
+		Factura [] facturas = new Factura [ facturasRecibo.size() ];
+		for(int i = 0; (facturasRecibo != null && i < facturasRecibo.size() ) ; i++ ) {
+			facturas[i] = facturasRecibo.get(i);
+		}
+		return facturas;
 	}
 	
 

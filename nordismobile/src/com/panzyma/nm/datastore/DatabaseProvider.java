@@ -1152,7 +1152,7 @@ public class DatabaseProvider extends ContentProvider
 	}
 	
 	
-	public static Recibo registrarRecibo(Recibo recibo, Context cnt) throws Exception {
+	public static Recibo registrarRecibo(Recibo recibo, Context cnt, ArrayList<Factura> facturasToUpdate) throws Exception {
 		
 		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
 		
@@ -1330,6 +1330,20 @@ public class DatabaseProvider extends ContentProvider
 			formasPago.put(NMConfig.Recibo.DetalleFormaPago.TASA_CAMBIO, fp.getTasaCambio() );
 			
 			bdd.insert(TABLA_RECIBO_DETALLE_FORMA_PAGO, null, formasPago);
+		}
+		
+		for(int f = 0; ( facturasToUpdate != null && f < facturasToUpdate.size() ); f++ ){
+			StringBuilder sQuery = new StringBuilder();
+			sQuery.append("UPDATE Factura ");
+			sQuery.append(String.format("	SET Estado     = '%s', ", facturasToUpdate.get(f).getEstado()));
+			sQuery.append(String.format("	    CodEstado  = '%s', ", facturasToUpdate.get(f).getCodEstado()));
+			sQuery.append(String.format("	    Abonado    =  %f , ", facturasToUpdate.get(f).getAbonado()));
+			sQuery.append(String.format("	    Descontado =  %f , ", facturasToUpdate.get(f).getDescontado()));
+			sQuery.append(String.format("	    Retenido   =  %f , ", facturasToUpdate.get(f).getRetenido()));
+			sQuery.append(String.format("	    Otro       =  %f , ", facturasToUpdate.get(f).getOtro()));
+			sQuery.append(String.format("	    Saldo      =  %f  ", facturasToUpdate.get(f).getSaldo()));
+			sQuery.append(String.format("	WHERE Id       =  %d  ", facturasToUpdate.get(f).getId()));			
+			bdd.execSQL(sQuery.toString());			
 		}
 		
 		bdd.setTransactionSuccessful();

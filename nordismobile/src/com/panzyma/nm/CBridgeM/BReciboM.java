@@ -12,6 +12,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER
 import static com.panzyma.nm.controller.ControllerProtocol.IMPRIMIR;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -40,6 +41,7 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 /*import android.os.Handler;*/
 import android.os.Message;
 import android.util.Log;
@@ -64,6 +66,7 @@ import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.Recibo;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
@@ -121,7 +124,13 @@ public final class BReciboM {
 		switch (msg.what) {
 		case SAVE_DATA_FROM_LOCALHOST:
 			Bundle rec=msg.getData();
-			onSaveDataToLocalHost((Recibo)rec.getParcelable("recibo"));
+			Parcelable [] arrayParcelable = rec.getParcelableArray("facturasToUpdate");			
+			ArrayList<Factura> facturasToUpdate = new ArrayList<Factura>();
+			Object [] list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , Factura[].class);
+			for(Object obj: list){
+				facturasToUpdate.add((Factura)obj);
+			}			
+			onSaveDataToLocalHost((Recibo)rec.getParcelable("recibo"), facturasToUpdate);
 			break;
 		case LOAD_DATA_FROM_LOCALHOST:
 			onLoadALLDataFromLocalHost();
@@ -149,7 +158,7 @@ public final class BReciboM {
 		return false;
 	}
 
-	private void onSaveDataToLocalHost(final Recibo recibo) 
+	private void onSaveDataToLocalHost(final Recibo recibo, final ArrayList<Factura> facturasToUpdate) 
 	{
 		try {
 			pool.execute(new Runnable() {
@@ -160,7 +169,7 @@ public final class BReciboM {
 					{
 						
 						//Guardando localmente el recibo
-						Recibo reciboL=DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext()); 
+						Recibo reciboL=DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext(), facturasToUpdate); 
 						//Actualizando el id máximo de recibo generado
 						Integer prefijo =Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(reciboEdit.getContext()), reciboL.getId()));						
 						ModelConfiguracion.setMaxReciboId(reciboEdit.getContext(),(int) ((reciboL.getId())-prefijo));
@@ -406,7 +415,7 @@ public final class BReciboM {
 					        } 
 
 							//Guardando cambios en el Dispositivo
-					        onSaveDataToLocalHost(recibo);
+					        onSaveDataToLocalHost(recibo, null);
 					        
 					        if (pagarOnLine) 
 							{
@@ -441,7 +450,7 @@ public final class BReciboM {
 				                recibo.setNumero(rs.getNumeroCentral());
 				                
 				                //Guardando cambios en el Dispositivo
-				                DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext());
+				                DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext(), null);
 				                //Trayendo información del Cliente actualizada desde el servidor y guadarla localmente automaticamente 
 								Cliente cliente=BClienteM.actualizarCliente(reciboEdit.getContext(), credenciales,recibo.getObjSucursalID());
 								//actualizando el cliente en el hilo principal
@@ -449,7 +458,7 @@ public final class BReciboM {
 								//Salvar los cambios en el hilo pricipal
 				                reciboEdit.setRecibo(recibo);
 				              //Guardando cambios en el Dispositivo
-				                onSaveDataToLocalHost(recibo);
+				                onSaveDataToLocalHost(recibo, null);
 							}
 							else
 							{								 
@@ -459,7 +468,7 @@ public final class BReciboM {
 				                //Salvar los cambios en el hilo pricipal
 				                reciboEdit.setRecibo(recibo);
 				                //Guardando cambios en el Dispositivo
-				                onSaveDataToLocalHost(recibo);
+				                onSaveDataToLocalHost(recibo, null);
 							}
 							
 					        if(imprimir)
@@ -516,7 +525,7 @@ public final class BReciboM {
 	    							if(credenciales!="")
 	    							{ 
 	    								if(recibo.getReferencia()==0)							
-	    					                onSaveDataToLocalHost(recibo);//GUARDANDO LOCALMENTE EL RECIBO QUE SE VA ENVIAR AL SERVIDOR CENTRAL
+	    					                onSaveDataToLocalHost(recibo, null);//GUARDANDO LOCALMENTE EL RECIBO QUE SE VA ENVIAR AL SERVIDOR CENTRAL
 	    								ImprimirReciboColector(recibo, false);
 	    							}
 								} catch (Exception e) {
