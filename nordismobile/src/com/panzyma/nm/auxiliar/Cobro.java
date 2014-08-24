@@ -545,7 +545,7 @@ public class Cobro {
     	return StringUtil.round(interes, 2);
     }
     
-    public static void ActualizaMtoNetoFacturasrecibo(Recibo rcol) {
+    public static void ActualizaMtoNetoFacturasrecibo(ReciboColector rcol) {
         if (rcol.getFacturasRecibo() == null) return;        
         ReciboDetFactura[] _ff = getArraOfFacturaDetalle( rcol.getFacturasRecibo() );
         if (_ff == null) return;
