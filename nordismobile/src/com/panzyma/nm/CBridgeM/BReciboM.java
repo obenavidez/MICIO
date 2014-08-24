@@ -229,8 +229,7 @@ public final class BReciboM {
 						int idrecibo=view.getReciboSelected().getId();
 						ModelRecibo.borraReciboByID(view.getContentResolver(), idrecibo);
 						//Actualizando el id máximo de recibo generado
-						Integer prefijo =Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(view.getContext()), idrecibo));						
-						ModelConfiguracion.setMaxReciboId(view.getContext(),(idrecibo-1)-prefijo); 
+						Integer prefijo =Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(view.getContext()), idrecibo)); 
 						Processor.send_ViewDeleteReciboToView(1,controller);
 						
 					} catch (Exception e) 
