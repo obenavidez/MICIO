@@ -23,7 +23,7 @@ import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.ValorCatalogoUtil;
 import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.serviceproxy.Catalogo;
-import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
@@ -87,7 +87,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	int iCurrentSelection = 0;
 	float _montoPago = 0.00F;
 
-	private Recibo _recibo;
+	private ReciboColector _recibo;
 	private ReciboDetFormaPago pagoRecibo;
 	private boolean editFormaPago = false;
 	private List<ValorCatalogo> monedas;
@@ -289,7 +289,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 					pagoRecibo.setObjFormaPagoID(ValorCatalogoUtil
 							.getValorCatalogoID(formasPago, "EFEC"));
 					pagoRecibo.setObjMonedaID(ValorCatalogoUtil.getValorCatalogoID(
-							formasPago, "COR"));
+							monedas, "COR"));
 					pagoRecibo.setSerieBilletes("");
 					pagoRecibo.setTasaCambio(1.0F);
 				} else {

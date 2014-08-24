@@ -417,7 +417,8 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 
 	@Override
 	public Object getProperty(int _index) { 
-		switch(_index)  {
+		switch(_index)  
+		{
 			case 0: return new Long(Id);
 			case 1: return new Long(ObjFacturaID);
 			case 2: return new Long(ObjReciboID);
@@ -601,6 +602,12 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 	        case 25: MontoImpuestoExento = Float.parseFloat(obj.toString()); break;
 	        case 26: MontoDescEspecificoCalc = Float.parseFloat(obj.toString()); break;
         }
+	}
+
+	@Override
+	public float getDescuento() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

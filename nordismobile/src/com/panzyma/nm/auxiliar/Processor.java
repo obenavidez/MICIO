@@ -18,7 +18,7 @@ import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura; 
 import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.viewmodel.vmProducto;
@@ -180,7 +180,7 @@ public class Processor {
 		}
 	}
 	public static void send_ViewReciboEditToView(
-			Recibo result,
+			ReciboColector result,
 			Controller controller) {
 		synchronized (lock) {
 			controller._notifyOutboxHandlers(C_DATA, 0, 0, result);

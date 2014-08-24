@@ -2,6 +2,7 @@ package com.panzyma.nm.auxiliar;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import android.content.ContentResolver;
@@ -17,7 +18,7 @@ import com.panzyma.nm.serviceproxy.DescuentoProveedor;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.MontoProveedor;
 import com.panzyma.nm.serviceproxy.PromocionCobro;
-import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
@@ -26,7 +27,7 @@ import com.panzyma.nm.serviceproxy.ReciboDetND;
 
 public class Cobro {
 	
-	public static float getTotalPagoRecibo(Recibo rcol) {
+	public static float getTotalPagoRecibo(ReciboColector rcol) {
         if (rcol.getFormasPagoRecibo().size() == 0) return 0;
         
         ArrayList<ReciboDetFormaPago> fp = rcol.getFormasPagoRecibo();         
@@ -56,7 +57,7 @@ public class Cobro {
 									.getString("MonedaNacional", "--")).toString(); 
     }
 	
-	public static void calcularDetFacturasRecibo(Context cnt,Recibo rcol, Cliente cliente, boolean blnCalcDesc) {        
+	public static void calcularDetFacturasRecibo(Context cnt,ReciboColector rcol, Cliente cliente, boolean blnCalcDesc) {        
         if (rcol.getFacturasRecibo().size() == 0) return;        
         ArrayList<ReciboDetFactura> _ff =  rcol.getFacturasRecibo();
         if (_ff == null) return;
@@ -109,7 +110,7 @@ public class Cobro {
                       
     }
 	
-	public static CalcDescPP_Output calcularDescPP(Context cnt,Recibo rcol, Cliente cliente) {
+	public static CalcDescPP_Output calcularDescPP(Context cnt,ReciboColector rcol, Cliente cliente) {
         //Creando objeto a devolver
         CalcDescPP_Output out = new CalcDescPP_Output(0, 0, 0, 0);
         if (rcol.getFacturasRecibo().size() == 0) return out;
@@ -247,7 +248,7 @@ public class Cobro {
         return out;
     }
 	
-	 public static CalcDescOca_Output calcularDescuentoOcasional(Context cnt,Recibo rcol, Cliente cliente) {
+	 public static CalcDescOca_Output calcularDescuentoOcasional(Context cnt,ReciboColector rcol, Cliente cliente) {
 	        CalcDescOca_Output out = new CalcDescOca_Output(0, 0);        
 	        if (rcol.getFacturasRecibo().size() == 0) return out;
 	        
@@ -420,7 +421,7 @@ public class Cobro {
         return 0;
     }
 	
-	private static float getTotalNC_RCol(Recibo rcol) {
+	private static float getTotalNC_RCol(ReciboColector rcol) {
         float totalNC = 0;
         
         if (rcol.getNotasCreditoRecibo().size() != 0) {
@@ -454,28 +455,28 @@ public class Cobro {
 									.getString(propiedad, "--"))); 
     }
 	
-	public static int cantFacturas(Recibo recibo) {
+	public static int cantFacturas(ReciboColector recibo) {
         int count = 0;
         if (recibo.getFacturasRecibo().size() != 0) 
              count +=recibo.getFacturasRecibo().size(); 
         return count;
     } 
 	
-    public static int cantFPs(Recibo recibo) {
+    public static int cantFPs(ReciboColector recibo) {
         int count = 0;
         if (recibo.getFormasPagoRecibo().size() != 0) 
         		count += recibo.getFormasPagoRecibo().size(); 
         return count;
     }
     
-    public static int cantNDs(Recibo recibo) {
+    public static int cantNDs(ReciboColector recibo) {
         int count = 0;        
         if (recibo.getNotasDebitoRecibo().size() != 0)
         	count += recibo.getNotasDebitoRecibo().size(); 
         return count;
     }
     
-    public static int  cantNCs(Recibo recibo) {
+    public static int  cantNCs(ReciboColector recibo) {
         int count = 0;        
         if (recibo.getNotasCreditoRecibo().size() != 0)
         	count += recibo.getNotasCreditoRecibo().size(); 
@@ -486,12 +487,12 @@ public class Cobro {
     public static int FacturaEstaEnOtroRecibo(ContentResolver content,long idFactura, boolean agregando) {
     	int referencia =0;
     			
-        ArrayList<Recibo> list = ModelRecibo.getArrayRecibosFromLocalHost(content);
+        ArrayList<ReciboColector> list = ModelRecibo.getArrayRecibosFromLocalHost(content);
         if(list== null) 
         	return 0;
         
         for(int r=0; r< list.size(); r++) {
-            Recibo rowrecibo = list.get(r);
+            ReciboColector rowrecibo = list.get(r);
             if(rowrecibo.getFacturasRecibo()==null) continue;
             
             if("REGISTRADO".equals(rowrecibo.getDescEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getDescEstado()))) {
@@ -510,10 +511,10 @@ public class Cobro {
     //Verifica si una nota de débito ya está incluida en un recibo local    
     public static int NDEstaEnOtroRecibo(ContentResolver content,long idND, boolean agregando) {
     	int referencia =0;
-    	ArrayList<Recibo> list = ModelRecibo.getArrayRecibosFromLocalHost(content);
+    	ArrayList<ReciboColector> list = ModelRecibo.getArrayRecibosFromLocalHost(content);
         if(list.size()==0) return 0;
         for(int r=0; r< list.size(); r++) {
-            Recibo rowrecibo = list.get(r);
+            ReciboColector rowrecibo = list.get(r);
             if(rowrecibo.getNotasDebitoRecibo()==null) continue;
             
             if("REGISTRADO".equals(rowrecibo.getDescEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getDescEstado()))) {
@@ -543,4 +544,25 @@ public class Cobro {
         
     	return StringUtil.round(interes, 2);
     }
+    
+    public static void ActualizaMtoNetoFacturasrecibo(Recibo rcol) {
+        if (rcol.getFacturasRecibo() == null) return;        
+        ReciboDetFactura[] _ff = getArraOfFacturaDetalle( rcol.getFacturasRecibo() );
+        if (_ff == null) return;
+        
+        //Inicializar descuento PP en cero en todas las facturas
+        for(int i=0; i < _ff.length; i++) {
+            ReciboDetFactura _f = _ff[i];
+            _f.setMontoNeto(_f.getMonto() - _f.getMontoInteres() - _f.getMontoDescEspecifico() - _f.getMontoDescOcasional() - _f.getMontoDescPromocion() - _f.getMontoRetencion() - _f.getMontoOtrasDeducciones() - _f.getMontoImpuestoExento());
+        }        
+   }
+    
+   private static ReciboDetFactura[] getArraOfFacturaDetalle(List<ReciboDetFactura> objList) {
+	   ReciboDetFactura[] list = new ReciboDetFactura[objList.size()];
+	   for(ReciboDetFactura rdf : objList ) {
+		   list[0] = rdf;
+	   }
+	   return list;
+   }
+    
 }

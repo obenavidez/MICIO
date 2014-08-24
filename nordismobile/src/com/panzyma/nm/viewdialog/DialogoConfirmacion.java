@@ -41,19 +41,23 @@ public class DialogoConfirmacion extends DialogFragment {
 	private EditText monto;
 	private EditText interes;
 	private EditText retencion;
+	private EditText descuento;
 	private TableRow rowRetencion;
+	private TableRow rowDescuento;
 	private Documento document;	
 	private Pagable eventPago;
 	private ActionType actionType;
+	private boolean editDescuento;
 		
 	public interface Pagable {
 		public void onPagarEvent(List<Ammount> montos);
 	}
 
-	public DialogoConfirmacion(Documento documento, ActionType actionType) {
+	public DialogoConfirmacion(Documento documento, ActionType actionType,boolean... editDescuento) {
 		super();
 		this.document = documento;
 		this.actionType = actionType;
+		this.editDescuento = editDescuento.length > 0 && editDescuento[0];
 	}
 
 	@Override
@@ -68,7 +72,8 @@ public class DialogoConfirmacion extends DialogFragment {
 			public void onClick(DialogInterface dialog, int which) {
 				List<Ammount> montos = new ArrayList<Ammount>();
 				montos.add(new Ammount(AmmountType.ABONADO, getMontoAbonado()));
-				montos.add(new Ammount(AmmountType.RETENIDO, getMontoRetenido()));				
+				montos.add(new Ammount(AmmountType.RETENIDO, getMontoRetenido()));
+				montos.add(new Ammount(AmmountType.DESCONTADO, getMontoDescontado()));
 				eventPago.onPagarEvent(montos);			
 			}
 		});
@@ -90,7 +95,9 @@ public class DialogoConfirmacion extends DialogFragment {
 		monto = (EditText) view.findViewById(R.id.txtMonto);
 		interes = (EditText) view.findViewById(R.id.txtInteres);
 		rowRetencion = (TableRow) view.findViewById(R.id.tableRowLdpr);
+		rowDescuento = (TableRow) view.findViewById(R.id.tableRowDescuento);
 		retencion = (EditText) view.findViewById(R.id.txtRetencion);
+		descuento = (EditText) view.findViewById(R.id.txtDescuento);
 		
 		monto.addTextChangedListener(new TextWatcher(){
 
@@ -125,16 +132,26 @@ public class DialogoConfirmacion extends DialogFragment {
 		
 		// establecer valores		
 		numero.setText(document.getNumero());
-		saldo.setText(String.valueOf(document.getSaldo()));
+		saldo.setText(StringUtil.formatReal(document.getSaldo()));
 		interes.setText("0.00");
-		monto.setText(String.valueOf(document.getMonto()));
-		retencion.setText(String.valueOf(document.getRetencion()));
+		monto.setText(StringUtil.formatReal((document.getMonto())));
+		retencion.setText(StringUtil.formatReal(document.getRetencion()));
+		descuento.setText(StringUtil.formatReal(document.getRetencion()));
 		//SI ESTAMOS ANTE UNA FACTURA Y ESTAMOS EDITANDO EL ITEM
 		if ( document instanceof ReciboDetFactura ){
-			if( this.actionType == ActionType.ADD )
+			if( this.actionType == ActionType.ADD ) {
 				rowRetencion.setVisibility(View.GONE);
-			else 
+				rowDescuento.setVisibility(View.GONE);
+			}
+			else {
 				rowRetencion.setVisibility(View.VISIBLE);
+				rowDescuento.setVisibility(editDescuento ? View.VISIBLE : View.GONE);
+			}				
+			
+			if (this.editDescuento) {			
+				monto.setEnabled(false);
+				retencion.setEnabled(false);
+			}
 			
 		} 
 	}
@@ -146,6 +163,11 @@ public class DialogoConfirmacion extends DialogFragment {
 	
 	private float getMontoRetenido(){
 		String value = retencion.getText().toString().trim();
+		return Float.parseFloat(value == "" ? "0.00" : value);
+	}
+	
+	private float getMontoDescontado(){
+		String value = descuento.getText().toString().trim();
 		return Float.parseFloat(value == "" ? "0.00" : value);
 	}
 	

@@ -69,7 +69,7 @@ import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
@@ -131,13 +131,14 @@ public final class BReciboM {
 			for(Object obj: list){
 				facturasToUpdate.add((Factura)obj);
 			}			
-			onSaveDataToLocalHost((Recibo)rec.getParcelable("recibo"), facturasToUpdate);
+			onSaveDataToLocalHost((ReciboColector)rec.getParcelable("recibo"), facturasToUpdate);
 			break;
 		case LOAD_DATA_FROM_LOCALHOST:
 			onLoadALLDataFromLocalHost();
 			return true;
 		case LOAD_ITEM_FROM_LOCALHOST: 
-			onLoadItemFromLocalHost();
+			Bundle rec2=msg.getData();
+			onLoadItemFromLocalHost(rec2.getInt("idrecibo"));
 			return true;
 		case DELETE_DATA_FROM_LOCALHOST:
 			onDeleteDataFromLocalHost();
@@ -152,23 +153,23 @@ public final class BReciboM {
 			// onUpdateItem_From_Server();
 			return true;
 		case SEND_DATA_FROM_SERVER:  
-			Bundle rec2=msg.getData();
-			Parcelable [] arrayParcelable2 = rec2.getParcelableArray("facturasToUpdate");			
+			Bundle rec3=msg.getData();
+			Parcelable [] arrayParcelable2 = rec3.getParcelableArray("facturasToUpdate");			
 			ArrayList<Factura> facturasToUpdate2 = new ArrayList<Factura>();
 			Object [] list2 = Arrays.copyOf(arrayParcelable2, arrayParcelable2.length , Factura[].class);
 			for(Object obj: list2){
 				facturasToUpdate2.add((Factura)obj);
 			}			 
-			enviarRecibo((Recibo)rec2.getParcelable("recibo"), facturasToUpdate2);
+			enviarRecibo((ReciboColector)rec3.getParcelable("recibo"), facturasToUpdate2);
 			break;
 
 		}
 		return false;
 	}
 	
-	private void saveRecibo( Recibo recibo,ArrayList<Factura> facturasToUpdate) throws Exception{
+	private void saveRecibo( ReciboColector recibo,ArrayList<Factura> facturasToUpdate) throws Exception{
 		//Guardando localmente el recibo
-		Recibo reciboL=DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext(), facturasToUpdate); 
+		ReciboColector reciboL=DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext(), facturasToUpdate); 
 		//Actualizando el id máximo de recibo generado
 		Integer prefijo =Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(reciboEdit.getContext()), reciboL.getId()));						
 		ModelConfiguracion.setMaxReciboId(reciboEdit.getContext(),(int) ((reciboL.getId())-prefijo));
@@ -183,7 +184,7 @@ public final class BReciboM {
 				);
 	}
 
-	private void onSaveDataToLocalHost(final Recibo recibo, final ArrayList<Factura> facturasToUpdate) 
+	private void onSaveDataToLocalHost(final ReciboColector recibo, final ArrayList<Factura> facturasToUpdate) 
 	{
 		try {
 			pool.execute(new Runnable() {
@@ -219,15 +220,12 @@ public final class BReciboM {
 		}		
 	}
 
-	private void onLoadItemFromLocalHost() {
+	private void onLoadItemFromLocalHost(final Integer idrecibo) {
 		try {
 			pool.execute(new Runnable() {
 				@Override
 				public void run() {
-					Processor.send_ViewReciboEditToView(
-							ModelRecibo.getReciboByID(
-									reciboEdit.getContentResolver(),
-									reciboEdit.getReciboID()), controller);
+					Processor.send_ViewReciboEditToView(ModelRecibo.getReciboByID(reciboEdit.getContentResolver(),idrecibo), controller);
 				}
 			});
 		}catch(Exception e){
@@ -366,7 +364,7 @@ public final class BReciboM {
 
 	}
 	
-	private void enviarRecibo(final Recibo recibo, final ArrayList<Factura> facturasToUpdate)
+	private void enviarRecibo(final ReciboColector recibo, final ArrayList<Factura> facturasToUpdate)
 	{
 		try 
 		{
@@ -379,7 +377,7 @@ public final class BReciboM {
 					{ 						
 						String credenciales="";
 						credenciales=SessionManager.getCredentials(); 
-						Recibo recibo=reciboEdit.getRecibo();
+						ReciboColector recibo=reciboEdit.getRecibo();
 						
 						if(credenciales!="")
 						{
@@ -429,8 +427,7 @@ public final class BReciboM {
 					        } 
 
 							//Guardando cambios en el Dispositivo 
-					        saveRecibo(recibo,facturasToUpdate); 
-					        onSaveDataToLocalHost(recibo, null);  
+					        saveRecibo(recibo,facturasToUpdate);  
 					        if (pagarOnLine) 
 							{
 								
@@ -518,7 +515,7 @@ public final class BReciboM {
 	}
     
 	
-	private void enviarImprimirRecibo(final Recibo recibo)
+	private void enviarImprimirRecibo(final ReciboColector recibo)
 	{		
 		reciboEdit.runOnUiThread(new Runnable() 
         {
@@ -568,7 +565,7 @@ public final class BReciboM {
 	}
 	
 	 
-	public  void ImprimirReciboColector(Recibo rcol,boolean reimpresion) {                
+	public  void ImprimirReciboColector(ReciboColector rcol,boolean reimpresion) {                
         String recibo = "";  
         String monedaNac = Cobro.getMoneda(reciboEdit);
           
