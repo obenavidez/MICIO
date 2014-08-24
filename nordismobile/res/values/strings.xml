@@ -44,4 +44,6 @@
     <string name="view_product_nombre">Descripción</string>
     <string name="view_product_disponibilidad">Existencias</string>
     <string name="txtdocumentos_title">Lista de Documentos</string>
+    <string name="message_pay_amount">Ingrese el monto</string>
+    
 </resources>
