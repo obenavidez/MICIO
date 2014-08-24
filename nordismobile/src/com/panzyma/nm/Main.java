@@ -147,7 +147,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 					try
 			        { 						 
 						Usuario user = SessionManager.getLoginUser();
-						NMApp.modulo = NMApp.Modulo.HOME;
+						NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 						if(user==null || SessionManager.SignIn(false) )  
 						{  
 							NMApp.modulo = NMApp.Modulo.CONFIGURACION;
@@ -157,7 +157,10 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 							FINISH_COMPONENT(); 
 						}
 						else 
-							Log.d(TAG, "Error in login");  
+						{
+							Log.d(TAG, "Error in login");
+							NMApp.modulo = NMApp.Modulo.HOME;
+						}
 					}
 			        catch (Exception e)
 			        {

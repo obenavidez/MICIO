@@ -1,6 +1,8 @@
 package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,6 +11,9 @@ import org.ksoap2.serialization.PropertyInfo;
 import android.content.Context;
 import android.content.SharedPreferences; 
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
@@ -19,6 +24,7 @@ import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
+import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 
@@ -54,14 +60,49 @@ public class ModelConfiguracion {
 										 pref.getInt("max_idpedido",0),
 										 pref.getInt("max_idrecibo",0));
 	}
+//	
+//	public static int getMaxReciboID(Context cnt)
+//	{
+//		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  		
+//		if(pref==null)
+//			return 0;
+//		return pref.getInt("max_idrecibo",0); 
+//	}
+//	
 	
-	public static int getMaxReciboID(Context cnt)
-	{
-		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  		
-		if(pref==null)
-			return 0;
-		return pref.getInt("max_idrecibo",0); 
-	}
+	public synchronized static int getMaxReciboID(Context cnt) {
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT max(Id) "); 
+		query.append(" FROM Recibo r "); 
+		int maxreciboid_local = 0;
+		int maxreciboid_server=0;
+		SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(cnt);
+		try {
+			Cursor c = DatabaseProvider.query( db, query.toString()); 
+			// Nos aseguramos de que existe al menos un registro
+			if (c.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registros
+				do {
+					maxreciboid_local=c.getInt(1);
+					
+				} while (c.moveToNext());
+			}			
+		} catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if( db != null  )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		}
+		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  	 
+		maxreciboid_server= pref.getInt("max_idrecibo",0); 	
+		if(maxreciboid_local==0 || maxreciboid_local<maxreciboid_server)
+			return maxreciboid_server;
+		return maxreciboid_local; 
+	} 
 	
 	public static int getDeviceID(Context cnt)
 	{
