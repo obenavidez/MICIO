@@ -263,7 +263,8 @@ public class ViewRecibo extends ActionBarActivity implements
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
+				//CERRAR EL MENU DEL DRAWER
+				drawerLayout.closeDrawers();
 				//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
 				int pos = customArrayAdapter.getSelectedPosition();
 				//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
@@ -296,110 +297,12 @@ public class ViewRecibo extends ActionBarActivity implements
 					} else {
 						Toast.makeText(getApplicationContext(), String.format("Los recibos con estado '%s'.\n No se pueden eliminar.", recibo_selected.getDescEstado()), Toast.LENGTH_SHORT).show();
 						return;
-					}
-					drawerLayout.closeDrawers();
-					break;	
-				case ENVIAR_RECIBO: 
-					
-					try 
-					{					 
-							
-							nmapp.getThreadPool().execute(new Runnable()
-							{ 
-								@Override
-								public void run()
-							    { 	
-									try 
-									{				
-										String credentials = "kpineda||123||dp";	
-										/*if(SessionManager.isLogged() && SessionManager.isAdmin())
-										{
-											if(SessionManager.SignIn(false)) 
-												credentials=SessionManager.getCredentials(); 
-										
-										}
-										else 	
-											credentials=SessionManager.getCredentials(); 
-								        */
-										Pedido pedido = null;
-										if(credentials!="")
-										{
-											pedido = ModelPedido.obtenerPedidoByID(2968 ,context.getContentResolver());
-											
-											
-											
-											boolean resul = true;
-
-											final String NAMESPACE = "http://www.panzyma.com/";		
-										//	final String URL = "http://www.panzyma.com/nordisserverdev/mobileservice.asmx";
-											final String URL = "http://192.168.1.100/NordisServer/MobileService.asmx";		
-											final String METHOD_NAME = "EnviarPedido";		
-											final String SOAP_ACTION = "http://www.panzyma.com/EnviarPedido";
-
-											SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
-
-											PropertyInfo cr = new PropertyInfo();
-											cr.setName("Credentials");
-											cr.setValue(credentials);
-											cr.setType(String.class);
-											request.addProperty(cr);
-											
-											PropertyInfo p = new PropertyInfo();
-									        p.setName("pedido");
-									        p.setValue(pedido);
-									        p.setNamespace(NAMESPACE);
-									        p.setType(new Pedido().getClass()); 
-									        request.addProperty(p);
-
-											SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(
-													SoapEnvelope.VER11);
-											envelope.dotNet = true;
-											envelope.implicitTypes = true;
-
-											envelope.setOutputSoapObject(request);
-											
-											envelope.addMapping(NAMESPACE, "Pedido", new Pedido().getClass()); 
-											
-											Marshal floatMarshal = new MarshalFloat();
-											floatMarshal.register(envelope);
-											new MarshalBase64().register(envelope); 
-											HttpTransportSE transporte = new HttpTransportSE(URL);
-											
-											transporte.debug = true;
-											Log.i("bodyout", "" + envelope.bodyOut.toString());
-											try {											
-												
-												transporte.call(SOAP_ACTION, envelope);
-												
-												SoapObject resSoap = (SoapObject) envelope.getResponse();
-
-												Log.i("Resultado", resSoap.toString());
-
-											} catch (Exception e) {
-												Log.e("ERROR", e.getMessage());
-												resul = false;
-											}
-											
-											//TareaWSConsulta tarea = new TareaWSConsulta(credentials,pedido);
-										//	tarea.execute();
-										}
-										
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-											
-							    }
-							}); 
-						
-						
-					} catch (Exception e) 
-					{
-						// TODO: handle exception
 					} 
+					break;	
+				case ENVIAR_RECIBO:  
 					break;
 				case FICHA_CLIENTE :
-					drawerLayout.closeDrawers();
+					
 					
 					if(recibo_selected== null)
 					{
