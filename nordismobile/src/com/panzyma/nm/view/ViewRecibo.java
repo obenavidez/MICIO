@@ -301,8 +301,7 @@ public class ViewRecibo extends ActionBarActivity implements
 					break;	
 				case ENVIAR_RECIBO:  
 					break;
-				case FICHA_CLIENTE :
-					
+				case FICHA_CLIENTE :			
 					
 					if(recibo_selected== null)
 					{

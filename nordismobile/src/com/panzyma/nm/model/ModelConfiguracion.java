@@ -115,7 +115,7 @@ public class ModelConfiguracion {
 		StringBuilder query = new StringBuilder();
 		query.append(" SELECT MAX(Id) as maximo from Recibo");  
 
-		SQLiteDatabase db = (_db[0]==null)?DatabaseProvider.Helper.getDatabase(cnt):_db[0];
+		SQLiteDatabase db = (_db.length == 0)?DatabaseProvider.Helper.getDatabase(cnt):_db[0];
 		try {
 			Cursor c = DatabaseProvider.query( db, query.toString()); 
 			// Nos aseguramos de que existe al menos un registro
@@ -130,7 +130,7 @@ public class ModelConfiguracion {
 		} catch (Exception e) {
 			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
 		} finally {
-			if( db != null && (_db[0]==null) )
+			if( db != null && (_db.length == 0) )
 			{	
 				if(db.isOpen())				
 					db.close();
