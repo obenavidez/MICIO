@@ -16,7 +16,7 @@ import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
@@ -32,13 +32,13 @@ public class ModelRecibo {
 		super();
 	}
 	
-	public  synchronized static RespuestaEnviarRecibo enviarRecibo(String credenciales,Recibo recibo) throws Exception
+	public  synchronized static RespuestaEnviarRecibo enviarRecibo(String credenciales,ReciboColector recibo) throws Exception
 	{		
 		Parameters params=new Parameters((new String[]{"Credentials","r"}),
 				 (new Object[]{credenciales,recibo}),
 				 (new Type[]{PropertyInfo.STRING_CLASS,recibo.getClass()}));
 		
-		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarRecibo,Recibo.class);
+		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarRecibo,ReciboColector.class);
 		return NMTranslate.ToObject(rs,new RespuestaEnviarRecibo()); 
 	}
 	
@@ -57,7 +57,7 @@ public class ModelRecibo {
 		return result;		
 	}
 	
-	public synchronized static Recibo getReciboByID(ContentResolver content,Integer integer){
+	public synchronized static ReciboColector getReciboByID(ContentResolver content,Integer integer){
 		String[] projection = new String[] { NMConfig.Recibo.ID,
 				NMConfig.Recibo.NUMERO, NMConfig.Recibo.FECHA,
 				NMConfig.Recibo.NOTAS, NMConfig.Recibo.TOTAL_RECIBO,
@@ -82,7 +82,7 @@ public class ModelRecibo {
 				NMConfig.Recibo.TOTAL_IMPUESTO_PROPORCIONAL,
 				NMConfig.Recibo.TOTAL_IMPUESTO_EXONERADO,
 				NMConfig.Recibo.EXENTO, NMConfig.Recibo.AUTORIZA_DGI };	
-		Recibo recibo = null;
+		ReciboColector recibo = null;
 		try {
 			String uriString = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(integer);
 			Cursor cur = content.query(Uri.parse(uriString),
@@ -91,7 +91,7 @@ public class ModelRecibo {
 					null, // Argumentos variables de la query
 					null);
 			if (cur.moveToFirst()) {
-				recibo = new Recibo();
+				recibo = new ReciboColector();
 				do {
 					recibo.setId(Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))));
 					recibo.setNumero(Integer.parseInt(cur.getString(cur.getColumnIndex(projection[1]))));
@@ -416,9 +416,9 @@ public class ModelRecibo {
 		return a_vmprod;
 	}
 
-	public synchronized static ArrayList<Recibo> getArrayRecibosFromLocalHost(ContentResolver content)
+	public synchronized static ArrayList<ReciboColector> getArrayRecibosFromLocalHost(ContentResolver content)
 	{
-		ArrayList<Recibo> recibos = new ArrayList<Recibo>();
+		ArrayList<ReciboColector> recibos = new ArrayList<ReciboColector>();
 		
 		String[] projection = new String[] { NMConfig.Recibo.ID,
 				NMConfig.Recibo.NUMERO, NMConfig.Recibo.FECHA,
@@ -450,10 +450,10 @@ public class ModelRecibo {
 							null, // Condición de la query
 							null, // Argumentos variables de la query
 							null);
-			    Recibo recibo = null;
+			    ReciboColector recibo = null;
 			    if(cur.moveToFirst()){
 					do {
-						recibo = new Recibo();
+						recibo = new ReciboColector();
 						recibo.setId(Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))));
 						recibo.setNumero(Integer.parseInt(cur.getString(cur.getColumnIndex(projection[1]))));
 						recibo.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))));

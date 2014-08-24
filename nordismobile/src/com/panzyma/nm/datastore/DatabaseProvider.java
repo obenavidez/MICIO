@@ -17,7 +17,7 @@ import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
-import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
@@ -1149,7 +1149,7 @@ public class DatabaseProvider extends ContentProvider
 		return null;
 	}
 	 
-	public static Recibo registrarRecibo(Recibo recibo, Context cnt, ArrayList<Factura> facturasToUpdate) throws Exception 
+	public static ReciboColector registrarRecibo(ReciboColector recibo, Context cnt, ArrayList<Factura> facturasToUpdate) throws Exception 
 	{
  
 	 	ContentValues values;
@@ -1309,7 +1309,7 @@ public class DatabaseProvider extends ContentProvider
 			
 			formasPago = new ContentValues();			
 			formasPago.put(NMConfig.Recibo.DetalleFormaPago.RECIBO_ID, recibo.getId());
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.FORMA_PAGO_ID, fp.getId() );
+			formasPago.put(NMConfig.Recibo.DetalleFormaPago.FORMA_PAGO_ID, fp.getObjFormaPagoID() );
 			formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_FORMA_PAGO, fp.getCodFormaPago() );
 			formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_FORMA_PAGO, fp.getDescFormaPago() );
 			formasPago.put(NMConfig.Recibo.DetalleFormaPago.NUMERO, fp.getNumero() );

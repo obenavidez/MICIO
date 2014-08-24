@@ -75,7 +75,7 @@ import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.Recibo;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
@@ -122,8 +122,8 @@ public class ViewRecibo extends ActionBarActivity implements
 			Message msg = (Message) _obj;
 			recibos = (ArrayList<vmRecibo>) ((msg.obj == null) ? new ArrayList<vmRecibo>(): msg.obj); 
 		}
-		if (_obj instanceof Recibo) {
-			Recibo p = (Recibo) _obj;
+		if (_obj instanceof ReciboColector) {
+			ReciboColector p = (ReciboColector) _obj;
 			if (EDITAR_RECIBO == request_code) {
 				vmRecibo recibe = recibos.get(positioncache);
 				recibe.setRecibo(Integer.parseInt(String.valueOf(p.getId())),
