@@ -289,10 +289,8 @@ public class DatabaseProvider extends ContentProvider
 	public static synchronized Cursor query( SQLiteDatabase db, String strQuery)
 	{			
 		Cursor c = null; 
-		try {					
-			db.beginTransaction();
-			c = db.rawQuery(strQuery, null);
-			db.setTransactionSuccessful(); 
+		try {					 
+				c = db.rawQuery(strQuery, null); 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	 
@@ -1152,9 +1150,9 @@ public class DatabaseProvider extends ContentProvider
 	}
 	
 	
-	public static Recibo registrarRecibo(Recibo recibo, Context cnt) throws Exception {
+	public static synchronized Recibo registrarRecibo(Recibo recibo, Context cnt) throws Exception {
 		
-		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
+		//NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);
 		
 		ContentValues values;
 		ContentValues factura;
@@ -1204,7 +1202,7 @@ public class DatabaseProvider extends ContentProvider
 		 //Generar Id del recibo
        if (recibo.getReferencia() == 0 || recibo.getId() == 0) 
        {            
-           Integer intId =ModelConfiguracion.getMaxReciboID(cnt);
+           Integer intId =ModelConfiguracion.getMaxReciboID(cnt,bdd);
            if (intId == null) 
                intId = new Integer(1);
            else

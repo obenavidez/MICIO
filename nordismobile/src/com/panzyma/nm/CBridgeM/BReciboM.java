@@ -36,6 +36,7 @@ import org.json.JSONArray;
 
 
 
+
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.content.Context;
@@ -148,6 +149,23 @@ public final class BReciboM {
 		}
 		return false;
 	}
+	
+	private void saveRecibo( Recibo recibo) throws Exception{
+		//Guardando localmente el recibo
+		Recibo reciboL=DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext()); 
+		//Actualizando el id máximo de recibo generado
+		Integer prefijo =Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(reciboEdit.getContext()), reciboL.getId()));						
+		ModelConfiguracion.setMaxReciboId(reciboEdit.getContext(),(int) ((reciboL.getId())-prefijo));
+		 
+		Processor
+		.notifyToView(
+				controller,
+				ControllerProtocol.ID_REQUEST_SALVARPEDIDO,
+				0,
+				0,
+				recibo
+				);
+	}
 
 	private void onSaveDataToLocalHost(final Recibo recibo) 
 	{
@@ -158,22 +176,7 @@ public final class BReciboM {
 					
 					try 
 					{
-						
-						//Guardando localmente el recibo
-						Recibo reciboL=DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext()); 
-						//Actualizando el id máximo de recibo generado
-						Integer prefijo =Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(reciboEdit.getContext()), reciboL.getId()));						
-						ModelConfiguracion.setMaxReciboId(reciboEdit.getContext(),(int) ((reciboL.getId())-prefijo));
-						Integer idrec =ModelConfiguracion.getMaxReciboID(reciboEdit.getContext());
-						Log.d("IDREC", idrec+"");
-						Processor
-						.notifyToView(
-								controller,
-								ControllerProtocol.ID_REQUEST_SALVARPEDIDO,
-								0,
-								0,
-								recibo
-								);
+						saveRecibo(recibo);						
 					} catch (Exception e) 
 					{ 
 						e.printStackTrace();
@@ -406,7 +409,7 @@ public final class BReciboM {
 					        } 
 
 							//Guardando cambios en el Dispositivo
-					        onSaveDataToLocalHost(recibo);
+					        saveRecibo(recibo);
 					        
 					        if (pagarOnLine) 
 							{
@@ -449,7 +452,7 @@ public final class BReciboM {
 								//Salvar los cambios en el hilo pricipal
 				                reciboEdit.setRecibo(recibo);
 				              //Guardando cambios en el Dispositivo
-				                onSaveDataToLocalHost(recibo);
+				                saveRecibo(recibo);
 							}
 							else
 							{								 
@@ -459,7 +462,7 @@ public final class BReciboM {
 				                //Salvar los cambios en el hilo pricipal
 				                reciboEdit.setRecibo(recibo);
 				                //Guardando cambios en el Dispositivo
-				                onSaveDataToLocalHost(recibo);
+				                saveRecibo(recibo);
 							}
 							
 					        if(imprimir)

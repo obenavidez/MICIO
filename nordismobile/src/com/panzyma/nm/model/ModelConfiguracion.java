@@ -20,6 +20,7 @@ import com.comunicator.Parameters;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
+import com.panzyma.nm.auxiliar.NumberUtil;
 /*import com.panzyma.nm.auxiliar.Parameters;*/  
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
@@ -71,30 +72,71 @@ public class ModelConfiguracion {
 //	}
 //	
 	
-	public synchronized static int getMaxReciboID(Context cnt) 
+	
+	public synchronized static List<TasaCambio> getTasaCambio(Context cnt, int fechaTasaCambio) {
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT Id , ");
+		query.append("        CodMoneda , ");
+		query.append("        Tasa ");
+		query.append(" FROM TasaCambio tc ");
+		query.append(String.format(" WHERE tc.Fecha = %d  ", fechaTasaCambio));
+		List<TasaCambio> paridaCambiaria = null;
+		SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(cnt);
+		try {
+			Cursor c = DatabaseProvider.query( db, query.toString());
+			paridaCambiaria = new ArrayList<TasaCambio>();
+			// Nos aseguramos de que existe al menos un registro
+			if (c.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registros
+				do {
+					paridaCambiaria.add(new TasaCambio(c.getString(1),
+							fechaTasaCambio, c.getFloat(2)));
+					
+				} while (c.moveToNext());
+			}			
+		} catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if( db != null  )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		}
+		return paridaCambiaria;
+		
+	}
+	
+	public synchronized static int getMaxReciboID(Context cnt,SQLiteDatabase... _db) 
 	{
 		int maxreciboid_local = 0;
 		int maxreciboid_server=0;
-		String[] projection = new String[] {"MAX(Id)"}; 
-		 
-		try 
-		{
-			Cursor cur = cnt.getContentResolver().query(DatabaseProvider.CONTENT_URI_RECIBO,
-		       projection, //Columnas a devolver
-		       null,       //Condición de la query
-		       null,       //Argumentos variables de la query
-		       null);   
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT MAX(Id) as maximo from Recibo");  
+
+		SQLiteDatabase db = (_db[0]==null)?DatabaseProvider.Helper.getDatabase(cnt):_db[0];
+		try {
+			Cursor c = DatabaseProvider.query( db, query.toString()); 
 			// Nos aseguramos de que existe al menos un registro
-			if (cur.moveToFirst()) {
-				// Recorremos el cursor hasta que no haya más registros
+			if (c.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
 				do {
-					maxreciboid_local=cur.getInt(1);
 					
-				} while (cur.moveToNext());
+					maxreciboid_local=(int)c.getInt(0);					
+					
+				} while (c.moveToNext());
 			}			
 		} catch (Exception e) {
-			Log.d(ModelConfiguracion.class.getName(), e.getMessage());
-		}  
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if( db != null && (_db[0]==null) )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		} 
 		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  	 
 		maxreciboid_server= pref.getInt("max_idrecibo",0); 	
 		if(maxreciboid_local==0 || maxreciboid_local<maxreciboid_server)
