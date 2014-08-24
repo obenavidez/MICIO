@@ -11,7 +11,6 @@ import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BReciboM;
@@ -56,8 +55,8 @@ import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
 import com.panzyma.nm.viewdialog.EditFormaPago; 
 import com.panzyma.nordismobile.R;
-
 import android.support.v4.app.FragmentActivity; 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context; 
@@ -550,11 +549,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 			try 
 			{				 
-				nmapp.getController().setEntities(this,new BReciboM());
-				nmapp.getController().addOutboxHandler(new Handler(this));				
+				nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
+				nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());			
 				Message msg = new Message();
 			    Bundle b = new Bundle();
 			    b.putParcelable("recibo", recibo); 
+			    b.putParcelableArray("facturasToUpdate", getArrayOfFacturas() );
 			    msg.setData(b);
 			    msg.what=SAVE_DATA_FROM_LOCALHOST;
 			    nmapp.getController().getInboxHandler().sendMessage(msg);  			
@@ -566,8 +566,16 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	}
 	
+	private Factura [] getArrayOfFacturas(){
+		Factura [] facturas = new Factura [ facturasRecibo.size() ];
+		for(int i = 0; (facturasRecibo != null && i < facturasRecibo.size() ) ; i++ ) {
+			facturas[i] = facturasRecibo.get(i);
+		}
+		return facturas;
+	}
+	
 
-	@SuppressWarnings("static-access")
+	@SuppressLint("ShowToast") @SuppressWarnings({ "static-access", "unchecked" })
 	private void enviarRecibo()
 	{   
 		
@@ -577,8 +585,15 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         {
 			nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
 			nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());
-			ProgressDialog.show(this, "Enviando recibo a la central", "Espere por favor", true); 
-			nmapp.getController().getInboxHandler().sendEmptyMessage(SEND_DATA_FROM_SERVER);	
+			Toast.makeText(this, "Enviando recibo a la central", Toast.LENGTH_LONG);  	 
+			Message msg = new Message();
+		    Bundle b = new Bundle();
+		    b.putParcelable("recibo", recibo); 
+		    b.putParcelableArray("facturasToUpdate", getArrayOfFacturas());
+		    msg.setData(b);
+		    msg.what=SEND_DATA_FROM_SERVER;
+		    nmapp.getController().getInboxHandler().sendMessage(msg);  	 
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

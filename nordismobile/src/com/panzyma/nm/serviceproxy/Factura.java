@@ -1,7 +1,10 @@
 package com.panzyma.nm.serviceproxy;
 
 import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;
@@ -9,7 +12,7 @@ import org.ksoap2.serialization.PropertyInfo;
 
 import com.panzyma.nm.interfaces.GenericDocument;
 
-public  class Factura implements KvmSerializable, GenericDocument {
+public  class Factura implements KvmSerializable, GenericDocument, Parcelable {
      
 	public long Id;
 	public java.lang.String NombreSucursal;
@@ -384,6 +387,101 @@ public  class Factura implements KvmSerializable, GenericDocument {
 	@Override
 	public Object getObject() {
 		return this;
+	}
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public Factura(Parcel parcel){ 	   
+	 	   readFromParcel(parcel);
+	}
+	
+	private void readFromParcel(Parcel parcel) {
+		Id = parcel.readLong();
+		NombreSucursal = parcel.readString();
+		NoFactura = parcel.readString();
+		Tipo = parcel.readString();
+	    NoPedido = parcel.readString() ;
+	    CodEstado = parcel.readString();
+	    Estado = parcel.readString();
+	    Fecha = parcel.readLong();
+	    FechaVencimiento = parcel.readLong();
+	    FechaAppDescPP = parcel.readLong();
+	    Dias = parcel.readInt();
+	    TotalFacturado = parcel.readFloat();
+	    Abonado = parcel.readFloat();
+	    Descontado = parcel.readFloat();
+	    Retenido = parcel.readFloat();
+	    Otro = parcel.readFloat();
+	    Saldo = parcel.readFloat();
+	    Exenta = parcel.readInt() == 1;
+	    SubtotalFactura = parcel.readFloat();
+	    DescuentoFactura = parcel.readFloat();
+	    ImpuestoFactura = parcel.readFloat();
+	    PuedeAplicarDescPP = parcel.readInt() == 1;	
+	    
+	    Parcelable[] parcelableArray = parcel.readParcelableArray(PromocionCobro.class.getClassLoader()); 
+		if (parcelableArray != null) {
+			DetallePromocionCobro = new PromocionCobro[]{};
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, PromocionCobro[].class);
+			int contador = 0;
+			for(Object obj: list){
+				DetallePromocionCobro[contador++] = (PromocionCobro) obj;				
+			}
+		}
+		
+		parcelableArray = parcel.readParcelableArray(MontoProveedor.class.getClassLoader()); 
+		if (parcelableArray != null) {
+			DetalleMontoProveedor = new MontoProveedor[]{};
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, MontoProveedor[].class);
+			int contador = 0;
+			for(Object obj: list){
+				DetalleMontoProveedor[contador++] = (MontoProveedor) obj;				
+			}
+		}
+	    
+	}
+
+	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+		public Factura createFromParcel(Parcel parcel) {
+			return new Factura(parcel);
+		}
+
+		public Factura[] newArray(int size) {
+			return new Factura[size];
+		}
+
+	};
+	
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(Id);
+		parcel.writeString(NombreSucursal);
+		parcel.writeString(NoFactura);
+		parcel.writeString(Tipo);
+	    parcel.writeString(NoPedido) ;
+	    parcel.writeString(CodEstado);
+	    parcel.writeString(Estado);
+	    parcel.writeLong(Fecha);
+	    parcel.writeLong(FechaVencimiento);
+	    parcel.writeLong(FechaAppDescPP);
+	    parcel.writeInt(Dias);
+	    parcel.writeFloat(TotalFacturado);
+	    parcel.writeFloat(Abonado);
+	    parcel.writeFloat(Descontado);
+	    parcel.writeFloat(Retenido);
+	    parcel.writeFloat(Otro);
+	    parcel.writeFloat(Saldo);
+	    parcel.writeInt(Exenta ? 1 : 0);
+	    parcel.writeFloat(SubtotalFactura);
+	    parcel.writeFloat(DescuentoFactura);
+	    parcel.writeFloat(ImpuestoFactura);
+	    parcel.writeInt(PuedeAplicarDescPP ? 1 : 0);	
+	    parcel.writeParcelableArray(DetallePromocionCobro, flags);
+		parcel.writeParcelableArray(DetalleMontoProveedor, flags);
 	}
 
 }
