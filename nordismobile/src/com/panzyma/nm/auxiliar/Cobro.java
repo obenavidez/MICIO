@@ -2,6 +2,7 @@ package com.panzyma.nm.auxiliar;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import android.content.ContentResolver;
@@ -543,4 +544,25 @@ public class Cobro {
         
     	return StringUtil.round(interes, 2);
     }
+    
+    public static void ActualizaMtoNetoFacturasrecibo(Recibo rcol) {
+        if (rcol.getFacturasRecibo() == null) return;        
+        ReciboDetFactura[] _ff = getArraOfFacturaDetalle( rcol.getFacturasRecibo() );
+        if (_ff == null) return;
+        
+        //Inicializar descuento PP en cero en todas las facturas
+        for(int i=0; i < _ff.length; i++) {
+            ReciboDetFactura _f = _ff[i];
+            _f.setMontoNeto(_f.getMonto() - _f.getMontoInteres() - _f.getMontoDescEspecifico() - _f.getMontoDescOcasional() - _f.getMontoDescPromocion() - _f.getMontoRetencion() - _f.getMontoOtrasDeducciones() - _f.getMontoImpuestoExento());
+        }        
+   }
+    
+   private static ReciboDetFactura[] getArraOfFacturaDetalle(List<ReciboDetFactura> objList) {
+	   ReciboDetFactura[] list = new ReciboDetFactura[objList.size()];
+	   for(ReciboDetFactura rdf : objList ) {
+		   list[0] = rdf;
+	   }
+	   return list;
+   }
+    
 }

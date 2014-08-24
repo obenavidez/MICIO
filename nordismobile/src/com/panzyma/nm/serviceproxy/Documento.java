@@ -16,6 +16,8 @@ public interface Documento {
 	
 	public float getRetencion();
 	
+	public float getDescuento();
+	
 	public Object getObject();
 
 }

@@ -603,4 +603,10 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
         }
 	}
 
+	@Override
+	public float getDescuento() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

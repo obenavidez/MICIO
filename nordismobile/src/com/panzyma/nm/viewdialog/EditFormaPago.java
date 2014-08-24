@@ -289,7 +289,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 					pagoRecibo.setObjFormaPagoID(ValorCatalogoUtil
 							.getValorCatalogoID(formasPago, "EFEC"));
 					pagoRecibo.setObjMonedaID(ValorCatalogoUtil.getValorCatalogoID(
-							formasPago, "COR"));
+							monedas, "COR"));
 					pagoRecibo.setSerieBilletes("");
 					pagoRecibo.setTasaCambio(1.0F);
 				} else {

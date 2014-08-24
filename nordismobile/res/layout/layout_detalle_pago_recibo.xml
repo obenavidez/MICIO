@@ -139,6 +139,30 @@
                 android:enabled="true"
                 android:inputType="numberDecimal" />
         </TableRow>
+        
+         <TableRow
+            android:id="@+id/tableRowDescuento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/lblDescuento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:text="Retención:"
+                android:textSize="11sp" />
+
+            <EditText
+                android:id="@+id/txtDescuento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:ems="10"
+                android:enabled="true"
+                android:inputType="numberDecimal" />
+        </TableRow>
+         
     </TableLayout>
 
 </LinearLayout>

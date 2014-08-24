@@ -380,4 +380,9 @@ public class ReciboDetND implements KvmSerializable,Documento, Parcelable {
         }
 	}
 
+	@Override
+	public float getDescuento() {
+		return 0.0F;
+	}
+
 }
