@@ -391,7 +391,7 @@ public final class BReciboM {
 					            
 					        } else 
 					        {                
-					            if (SessionManager.isPhoneConnected()) 
+					            if (!SessionManager.isPhoneConnected()) 
 					            {	
 					            	pagarOnLine = false;
 					            	Processor.notifyToView(controller,ERROR,0,0,

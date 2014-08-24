@@ -6,6 +6,8 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
   
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -136,7 +138,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit"; 
 	public static final String OBJECT_TO_EDIT = "recibo"; 
-	private boolean salvado;
+	private boolean salvado=false;
 	// 
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
@@ -147,6 +149,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private Recibo recibo=null;
 	private Context contexto;
 	private BReciboM brm;
+	private Handler handler;
 	private Integer reciboId;
 	private com.panzyma.nm.serviceproxy.Documento documento_selected;
 	private boolean onEdit = false;
@@ -183,7 +186,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			nmapp = (NMApp) this.getApplicationContext();
 			nmapp.getController().removebridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this, brm =  new BReciboM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController().addOutboxHandler(handler=new Handler(this));
 			
 			facturasRecibo = new ArrayList<Factura> ();
 			documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
@@ -251,6 +254,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void loadData() {
 
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
+		salvado=false;
 		if (recibo == null || !onEdit) {
 			// NUEVO RECIBO
 			recibo = new Recibo();
@@ -384,6 +388,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									break;
 								case ID_SALVAR_RECIBO:
 									guardarRecibo();
+									salvado=true;
 									break;
 								case ID_ENVIAR_RECIBO:
 									enviarRecibo();
@@ -422,23 +427,24 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 	
 	@Override
-	public boolean handleMessage(Message msg) {
-		switch(msg.what){
-		case C_DATA:
-			recibo = (Recibo)msg.obj;
-			loadData();
-			break;
-		case ControllerProtocol.ID_REQUEST_SALVARPEDIDO:
-			recibo = (Recibo)msg.obj;
-			actualizarOnUINumRef(recibo);
-			Util.Message.buildToastMessage(contexto,
-					"Recibo Guardado!!", 1000).show();
-			
-			salvado=true;
-			break;
-		case ControllerProtocol.NOTIFICATION: 
-			break;
-			
+	public boolean handleMessage(Message msg) 
+	{
+		switch(msg.what)
+		{
+			case C_DATA:
+				recibo = (Recibo)msg.obj;
+				loadData();
+				break;
+			case ControllerProtocol.ID_REQUEST_SALVARPEDIDO:
+				recibo = (Recibo)msg.obj;
+				actualizarOnUINumRef(recibo);
+				Util.Message.buildToastMessage(contexto,
+						"Recibo Guardado!!", 1000).show();
+				
+				salvado=true;
+				break;
+			case ControllerProtocol.NOTIFICATION: 
+				break;			
 		}
 		return false;
 	}
@@ -564,10 +570,20 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	@SuppressWarnings("static-access")
 	private void enviarRecibo()
 	{   
+		
 		if(!valido()) return; 
         pd.show(this, "Enviando recibo a la central", "Espere por favor", true); 
-        ProgressDialog.show(this, "Enviando recibo a la central", "Espere por favor", true); 
-        nmapp.getController().getInboxHandler().sendEmptyMessage(SEND_DATA_FROM_SERVER);	        
+        try 
+        {
+			nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
+			nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());
+			ProgressDialog.show(this, "Enviando recibo a la central", "Espere por favor", true); 
+			nmapp.getController().getInboxHandler().sendEmptyMessage(SEND_DATA_FROM_SERVER);	
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		        
 	}
 	
 	public boolean valido() 
@@ -906,12 +922,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 //
 //		return valido;
 //	}
-
-	private void finalizarActividad() {
-		nmapp.getController().removeOutboxHandler(TAG);
-		Log.d(TAG, "Activity quitting");
-		finish();
-	}
+ 
 
 	public Long getObjectSucursalID() {
 		if (recibo != null)
@@ -1095,7 +1106,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		// TODO Auto-generated method stub
 		return brm;
 	}
-
+    public Handler getHandler(){
+    	return handler;
+    }
 	@Override
 	public Context getContext() {
 		// TODO Auto-generated method stub
@@ -1172,22 +1185,24 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		nmapp.getController().disposeEntities();
 		if(pd!=null)
 			pd.dismiss();	
-		Log.d(TAG, "Activity quitting"); 
-		pd = null;
+		Log.d(TAG, "Activity quitting");
+		
 		Intent intent =null;
-		if( recibo !=null 
-				&& ( recibo.getFacturasRecibo().size() > 0 
-				     || recibo.getNotasCreditoRecibo().size() > 0
-				     || recibo.getNotasDebitoRecibo().size() > 0 ) )
+		if(salvado)
 		{
-			intent = new Intent();
-			Bundle b = new Bundle();
-			b.putParcelable("recibo", recibo);
-			intent.putExtras(b);
+			if( recibo !=null 
+					&& ( recibo.getFacturasRecibo().size() > 0 
+					     || recibo.getNotasCreditoRecibo().size() > 0
+					     || recibo.getNotasDebitoRecibo().size() > 0 ) )
+			{
+				intent = new Intent();
+				Bundle b = new Bundle();
+				b.putParcelable("recibo", recibo);
+				intent.putExtras(b);
+			} 
+			requescode = getIntent().getIntExtra("requestcode", (onEdit)?1:0);			
+			setResult(requescode,intent);
 		}
-		if(onEdit)
-			requescode = getIntent().getIntExtra("requestcode", 0);
-		setResult(requescode,intent);  
 		onEdit=false;
 	}
 	

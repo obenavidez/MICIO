@@ -90,8 +90,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		{ 
 			nmapp.getController().setEntities(this,this.getBridge());
 			request_code = requestcode;
-			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)
-					&& data != null)
+			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)	&& data != null)
 				establecer(data.getParcelableExtra("recibo"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

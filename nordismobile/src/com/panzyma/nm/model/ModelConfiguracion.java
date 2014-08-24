@@ -27,6 +27,7 @@ import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
+import com.panzyma.nm.viewmodel.vmProducto;
 
 public class ModelConfiguracion {
 
@@ -70,33 +71,30 @@ public class ModelConfiguracion {
 //	}
 //	
 	
-	public synchronized static int getMaxReciboID(Context cnt) {
-		StringBuilder query = new StringBuilder();
-		query.append(" SELECT max(Id) "); 
-		query.append(" FROM Recibo r "); 
+	public synchronized static int getMaxReciboID(Context cnt) 
+	{
 		int maxreciboid_local = 0;
 		int maxreciboid_server=0;
-		SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(cnt);
-		try {
-			Cursor c = DatabaseProvider.query( db, query.toString()); 
+		String[] projection = new String[] {"MAX(Id)"}; 
+		 
+		try 
+		{
+			Cursor cur = cnt.getContentResolver().query(DatabaseProvider.CONTENT_URI_RECIBO,
+		       projection, //Columnas a devolver
+		       null,       //Condición de la query
+		       null,       //Argumentos variables de la query
+		       null);   
 			// Nos aseguramos de que existe al menos un registro
-			if (c.moveToFirst()) {
+			if (cur.moveToFirst()) {
 				// Recorremos el cursor hasta que no haya más registros
 				do {
-					maxreciboid_local=c.getInt(1);
+					maxreciboid_local=cur.getInt(1);
 					
-				} while (c.moveToNext());
+				} while (cur.moveToNext());
 			}			
 		} catch (Exception e) {
-			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
-		} finally {
-			if( db != null  )
-			{	
-				if(db.isOpen())				
-					db.close();
-				db = null;
-			}
-		}
+			Log.d(ModelConfiguracion.class.getName(), e.getMessage());
+		}  
 		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  	 
 		maxreciboid_server= pref.getInt("max_idrecibo",0); 	
 		if(maxreciboid_local==0 || maxreciboid_local<maxreciboid_server)
