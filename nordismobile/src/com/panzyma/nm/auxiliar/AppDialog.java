@@ -9,10 +9,13 @@ import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class AppDialog  extends DialogFragment  implements OnDismissListener{
@@ -29,8 +32,9 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		 DIALOGO_CONFIRMACION (2),
 		 DIALOGO_SELECCION (3),
 		 DIALOGO_DINAMICO(4),
+		 DIALOGO_PAGAR(5),
 		 DIALOGO_NOTIFICACION2 (10);
-		
+		 
 		 int result;
 		 DialogType(int result) {
 		 this.result = result;
@@ -50,6 +54,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	static TextView tvmessage;
 	static Button btn_aceptar;
 	static Button btn_cancelar;
+	static EditText txtpayamount;
 	public OnButtonClickListener mButtonClickListener;
 	private OnDismissDialogListener mDismissListener;
 	
@@ -82,6 +87,9 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		case DIALOGO_CONFIRMACION :
 				CreateConfirmDialog(null);
 			break;
+		case  DIALOGO_PAGAR:
+			CreatePayAmountDialog(null);
+		break;
 		default:
 			break;
 			
@@ -108,6 +116,9 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 			case DIALOGO_CONFIRMACION :
 				CreateConfirmDialog(mylistener);
 			break;
+			case DIALOGO_PAGAR :
+				CreatePayAmountDialog(mylistener);
+				break;
 			default:
 			break;
 			
@@ -173,6 +184,38 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		/*mybuilder.setView(vDialog);
 		alert = mybuilder.create();*/
 	}
+	
+	private static void CreatePayAmountDialog(final OnButtonClickListener mylistener){
+		vDialog =inflater.inflate(R.layout.dialog_pay_amount, null,false);
+		tvtittle = (TextView)vDialog.findViewById(R.id.title_pay_amount);
+		tvtittle.setText(Tittle.toString());
+		btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_confirm);
+		btn_aceptar.setOnClickListener(new Button.OnClickListener()
+    	{
+			@Override
+			public void onClick(View v) {
+				if(txtpayamount.getText().length()>0){
+					if(txtpayamount.getText().toString().compareTo("0")==1){
+						if(mylistener!=null)
+							mylistener.onButtonClick(alert, OK_BUTTOM); 
+						alert.dismiss();
+					}
+				}
+			}	
+    	});
+		btn_cancelar = (Button) vDialog.findViewById(R.id.btncancelar_dialog_confirm);
+		btn_cancelar.setOnClickListener( new Button.OnClickListener()
+	    {
+			@Override
+			public void onClick(View v) {
+				if(mylistener!=null)
+					mylistener.onButtonClick(alert, NO_BUTTOM); 
+				alert.dismiss();
+			}
+	    });
+		txtpayamount =(EditText) vDialog.findViewById(R.id.txtpayamount);
+	}
+	
 	
 	@Override	
 	public void onDestroyView() {

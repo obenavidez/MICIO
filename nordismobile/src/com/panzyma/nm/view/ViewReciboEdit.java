@@ -8,9 +8,16 @@ import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER
   
 
 
+
+
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BReciboM;
@@ -33,6 +40,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction; 
+import com.panzyma.nm.model.FacND;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente; 
 import com.panzyma.nm.serviceproxy.Factura;
@@ -55,6 +63,7 @@ import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
 import com.panzyma.nm.viewdialog.EditFormaPago; 
 import com.panzyma.nordismobile.R;
+
 import android.support.v4.app.FragmentActivity; 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -385,6 +394,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									}
 									PagarTodo();
 									break;
+								case  ID_PAGAR_MONTO :
+									if(cliente==null){
+										AppDialog.showMessage(me,"Información","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
+										return;
+									}
+									PagarMonto();
+									
+								break;
 								case ID_SALVAR_RECIBO:
 									guardarRecibo();
 									salvado=true;
@@ -396,7 +413,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									//finalizarvidad();
 									break;
 								}
-							}							
+							}
 						});
 
 					}
@@ -1362,4 +1379,68 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		*/
        // loadData();
 	}
+
+	private void PagarMonto() {
+		AppDialog.showMessage(me,"Ingrese el monto","",DialogType.DIALOGO_PAGAR,new AppDialog.OnButtonClickListener(){
+			@Override
+			public void onButtonClick(AlertDialog alert, int actionId) {
+				if(actionId == AppDialog.OK_BUTTOM)
+				{
+					float amount=0;
+					amount = Float.parseFloat(((TextView)alert.findViewById(R.id.txtpayamount)).getText().toString());
+					payamount(amount);
+					
+				}
+			}});
+	}	
+
+	
+	private void payamount (float mto)
+	{
+		//Declaracion de variables ;
+		 float mtoOrig = mto;   
+	     boolean seguir = true;
+         boolean primeraPasada = true;
+         while (seguir) {
+        	recibo.getFacturasRecibo().clear();
+        	recibo.getNotasDebitoRecibo().clear();
+        	// Declaración de las listas principales
+        	ArrayList<ReciboDetFactura> _facSeleccionadas = new ArrayList<ReciboDetFactura>();
+     		ArrayList<ReciboDetND> _ndsSeleccionadas = new ArrayList<ReciboDetND>();
+     	    ArrayList<Factura> facturas = new ArrayList<Factura>();
+     		 
+     		Factura[] facturaspendientes = cliente.getFacturasPendientes();
+     		if((facturaspendientes!=null) && (facturaspendientes.length>0)){
+     			 for(int i=0; i<facturaspendientes.length; i++) {
+     				if(Cobro.FacturaEstaEnOtroRecibo(me.getContentResolver(),facturaspendientes[i].Id, true)==0){
+     					facturas.add(facturaspendientes[i]);
+     				}
+     			 }
+     		}
+     		
+     		ArrayList<CCNotaDebito> notas= new ArrayList<CCNotaDebito>();
+     		CCNotaDebito[] notaspendientes = cliente.getNotasDebitoPendientes(); 
+     		if ((notaspendientes != null) && (notaspendientes.length > 0)) {
+     			 for(int i=0; i<notaspendientes.length; i++) {
+     				 if (Cobro.NDEstaEnOtroRecibo(me.getContentResolver(),notaspendientes[i].getId(), true) == 0){
+     					notas.add(notaspendientes[i]);
+     				 }
+     			 }
+     		}
+        	 
+     		if (((facturas == null) || (facturas.size() == 0)) && ((notas == null) || (notas.size() == 0))) return;
+     		
+     		ArrayList<FacND> fact = new ArrayList<FacND>();
+     		 for (Factura factura : facturas) {
+     			FacND fnd = new FacND();
+   				fnd.fac = factura;
+				fnd.fechaVence= factura.getFechaVencimiento();
+				fnd.tipo="FAC";
+				fact.add(fnd);
+			}
+     		
+
+         }
+	}
+	
 }
