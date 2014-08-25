@@ -124,7 +124,7 @@ public class DialogoConfirmacion extends DialogFragment {
 					nTotalDocumento = ((ReciboDetFactura)document).getTotalfactura();
 				else if (document instanceof ReciboDetND)
 					nTotalDocumento = ((ReciboDetND)document).getMontoND();
-				nSaldo = nTotalDocumento - Float.parseFloat(String.valueOf(monto)) ;
+				nSaldo = nTotalDocumento - Float.parseFloat(String.valueOf(monto.replace(",", ""))) ;
 				saldo.setText(StringUtil.formatReal(nSaldo));				
 			}
 			
@@ -158,17 +158,17 @@ public class DialogoConfirmacion extends DialogFragment {
 	
 	private float getMontoAbonado(){
 		String value = monto.getText().toString().trim();
-		return Float.parseFloat(value == "" ? "0.00" : value);
+		return Float.parseFloat(value == "" ? "0.00" : value.replace(",", "") );
 	}
 	
 	private float getMontoRetenido(){
 		String value = retencion.getText().toString().trim();
-		return Float.parseFloat(value == "" ? "0.00" : value);
+		return Float.parseFloat(value == "" ? "0.00" : value.replace(",", "") );
 	}
 	
 	private float getMontoDescontado(){
 		String value = descuento.getText().toString().trim();
-		return Float.parseFloat(value == "" ? "0.00" : value);
+		return Float.parseFloat(value == "" ? "0.00" : value.replace(",", "") );
 	}
 	
 	public void setActionPago(Pagable actionPago) {

@@ -8,39 +8,16 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
-import static com.panzyma.nm.controller.ControllerProtocol.IMPRIMIR;
+import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER; 
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Arrays; 
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.json.JSONArray;
- 
+import org.json.JSONArray; 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import android.app.AlertDialog;
-import android.app.Notification;
-import android.content.Context;
+import android.app.AlertDialog; 
 import android.os.Bundle;
 import android.os.Parcelable;
 /*import android.os.Handler;*/

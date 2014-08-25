@@ -831,30 +831,31 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				- recibo.getTotalOtrasDed()
 				- recibo.getTotalImpuestoExonerado());
 		txtTotal.setText(String.valueOf(recibo.getTotalRecibo()));
-	}
+	}	
 	
 	private void procesaFactura(ReciboDetFactura facturaDetalle,
-			Factura factura, List<Ammount> montos) {
+			Factura factura, List<Ammount> montos, boolean agregar) {
 		for (Ammount ammount : montos) {
 			switch (ammount.getAmmountType()) {
 				case ABONADO:
-					float montoAbonado = 0.00F;
-					montoAbonado = ammount.getValue();
-					factura.setAbonado(factura.getAbonado() + montoAbonado);
-					if (factura.Saldo < montoAbonado) {
+					float montoAbonado = 0.00F, saldo = 0.00F;
+					montoAbonado = factura.getAbonado() - ammount.getValue();					
+					montoAbonado = ( montoAbonado <= 0 ) ? 0 : montoAbonado ;
+					saldo = factura.getTotalFacturado() - montoAbonado;
+					factura.setAbonado( montoAbonado + ammount.getValue() );
+					if ( saldo < factura.getAbonado() ) {
 						factura.setCodEstado("ABONADA");
 						factura.setEstado("Abonada");
-					} else if (factura.Saldo == montoAbonado) {
+					} else if ( saldo == factura.getAbonado() ) {
 						factura.setCodEstado("CANCELADA");
 						factura.setEstado("Cancelada");
-					}
-					facturaDetalle.setMonto(factura.getAbonado());
+					}					
 					facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
 							.getAbonado());
-					factura.setSaldo(factura.getSaldo() - factura.getAbonado());
+					factura.setSaldo(factura.getTotalFacturado()- factura.getAbonado());
+					facturaDetalle.setMonto(factura.getAbonado());
 					facturaDetalle.setSaldoFactura(factura.getSaldo());
-					recibo.setTotalFacturas(recibo.getTotalFacturas()
-							+ montoAbonado);
+					Cobro.ActualizaTotalFacturas(recibo);
 					break;
 				case RETENIDO:
 					float montoRetencion = 0.00F;
@@ -885,9 +886,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					break;
 			}
 		}
-		facturasRecibo.add(factura);
-		recibo.getFacturasRecibo().add(facturaDetalle);
-		documents.add(facturaDetalle);
+		if( agregar ) {
+			facturasRecibo.add(factura);
+			recibo.getFacturasRecibo().add(facturaDetalle);
+			documents.add(facturaDetalle);
+		}		
 		agregarDocumentosAlDetalleDeRecibo();
 		actualizaTotales();
 	}
@@ -926,7 +929,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							dialogConfirmacion.setActionPago(new Pagable() {					
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
-									procesaFactura(facturaDetalle,factura,montos);
+									procesaFactura(facturaDetalle, factura, montos, true);
 								}
 							});
 							FragmentManager fragmentManager = getSupportFragmentManager();
@@ -1148,8 +1151,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				if( documentToEdit instanceof ReciboDetFactura ){
 					
 					ReciboDetFactura facturaDetalle = (ReciboDetFactura)documentToEdit;
-					Factura factura = getFacturaByID(facturaDetalle.getId());	
-					procesaFactura(facturaDetalle, factura, montos);					
+					Factura factura = getFacturaByID(facturaDetalle.getObjFacturaID());	
+					procesaFactura(facturaDetalle, factura, montos, false);					
 					
 				} else if ( documentToEdit instanceof ReciboDetND ){
 					

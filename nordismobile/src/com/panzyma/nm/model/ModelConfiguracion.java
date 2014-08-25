@@ -139,6 +139,7 @@ public class ModelConfiguracion {
 		} 
 		pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);  	 
 		maxreciboid_server= pref.getInt("max_idrecibo",0); 	
+		
 		if(maxreciboid_local==0 || maxreciboid_local<maxreciboid_server)
 			return maxreciboid_server;
 		return maxreciboid_local; 
