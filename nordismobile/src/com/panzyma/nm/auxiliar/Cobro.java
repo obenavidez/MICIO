@@ -557,6 +557,20 @@ public class Cobro {
         }        
    }
     
+    public static void ActualizaTotalFacturas(ReciboColector rcol) {
+    	if (rcol.getFacturasRecibo() == null) return;        
+        ReciboDetFactura[] _ff = getArraOfFacturaDetalle( rcol.getFacturasRecibo() );
+        if (_ff == null) return;
+        
+        rcol.setTotalFacturas(0.00F);
+      //Inicializar descuento PP en cero en todas las facturas
+        for(int i=0; i < _ff.length; i++) {
+            ReciboDetFactura _f = _ff[i];
+            rcol.setTotalFacturas(rcol.getTotalFacturas() + _f.getMonto() );
+        }  
+    	
+    }
+    
    private static ReciboDetFactura[] getArraOfFacturaDetalle(List<ReciboDetFactura> objList) {
 	   ReciboDetFactura[] list = new ReciboDetFactura[objList.size()];
 	   for(ReciboDetFactura rdf : objList ) {
