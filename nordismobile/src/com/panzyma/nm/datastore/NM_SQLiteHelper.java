@@ -65,7 +65,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     							 "MontoBaseUnico INTEGER,MontoBaseMinimo INTEGER,MontoBaseMaximo INTEGER,MontoPremioUnico INTEGER,MontoPremio FLOAT); ";
 
     String sqlPedido=         "CREATE TABLE IF NOT EXISTS Pedido("
-    		+ "Id INTEGER PRIMARY KEY,"
+    		+ "Id INTEGER PRIMARY KEY AUTOINCREMENT,"
     		+ "NumeroMovil INTEGER,"
     		+ "NumeroCentral INTEGER,"
     		+ "Tipo TEXT,"
@@ -169,7 +169,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 							");" ;
     
     String sqlRecibo = "CREATE TABLE IF NOT EXISTS Recibo ("
-					+ "       id INTEGER PRIMARY KEY,  "
+					+ "       id INTEGER PRIMARY KEY AUTOINCREMENT,  "
 					+ "       numero INTEGER,       " 
 					+ "       fecha TEXT, "
 					+ "       notas TEXT, " 

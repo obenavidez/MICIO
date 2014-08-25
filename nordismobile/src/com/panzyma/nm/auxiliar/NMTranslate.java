@@ -107,8 +107,7 @@ public class NMTranslate
 							    	if(soap.getPropertyCount()!=0)
 							    	{									    		 
 								    	soap.getPropertyInfo(0, pInfo);
-								    	Class<?> c=Class.forName("com.panzyma.nm.serviceproxy."+pInfo.getName());
-								    	 
+								    	Class<?> c=Class.forName("com.panzyma.nm.serviceproxy."+pInfo.getName()); 
 								    	ArrayList<?> o=ToCollection(soap,c);
 								    	T[] objrs =(T[]) Array.newInstance(c, o.size());  
 								    	objrs=o.toArray(objrs); 
