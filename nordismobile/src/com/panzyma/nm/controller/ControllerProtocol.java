@@ -41,7 +41,7 @@ public interface ControllerProtocol {
     int UPDATE_ITEM_FROM_SERVER =303;
     int LOAD_FICHACLIENTE_FROM_SERVER=304; 
     int LOAD_FACTURASCLIENTE_FROM_SERVER=305;    
-    
+    int SOLICITAR_DESCUENTO=306;
     
     
     int SAVE_DATA_FROM_LOCALHOST=400;

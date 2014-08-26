@@ -32,7 +32,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		 DIALOGO_CONFIRMACION (2),
 		 DIALOGO_SELECCION (3),
 		 DIALOGO_DINAMICO(4),
-		 DIALOGO_PAGAR(5),
+		 DIALOGO_INPUT(5),
 		 DIALOGO_NOTIFICACION2 (10);
 		 
 		 int result;
@@ -87,7 +87,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		case DIALOGO_CONFIRMACION :
 				CreateConfirmDialog(null);
 			break;
-		case  DIALOGO_PAGAR:
+		case  DIALOGO_INPUT:
 			CreatePayAmountDialog(null);
 		break;
 		default:
@@ -116,7 +116,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 			case DIALOGO_CONFIRMACION :
 				CreateConfirmDialog(mylistener);
 			break;
-			case DIALOGO_PAGAR :
+			case DIALOGO_INPUT :
 				CreatePayAmountDialog(mylistener);
 				break;
 			default:
