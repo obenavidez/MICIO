@@ -5,11 +5,18 @@ import java.util.ArrayList;
 
 import org.ksoap2.serialization.PropertyInfo;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
+import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 /*import com.panzyma.nm.auxiliar.Parameters; by jrostran*/
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
@@ -44,6 +51,42 @@ public class ModelLogic {
 			return null;
 		}
 
+	}
+	
+	/***
+	 * OBTENER EL VALOR DE MONTO ABONADO PARA LA FACTURA EN OTROS RECIBOS
+	 * @param view
+	 * @param objFacturaId
+	 * @return
+	 */
+	public synchronized static float getAbonosFacturaEnOtrosRecibos(Context view, long objFacturaId, long objReciboId){
+		SQLiteDatabase bd = Helper.getDatabase(view);
+		float montoAbonado = 0.00F;
+		try {			
+			StringBuilder sQuery = new StringBuilder();
+			sQuery.append("SELECT SUM(monto) as montoAbonado ");
+			sQuery.append(" FROM ReciboDetalleFactura ");
+			sQuery.append(" WHERE objFacturaID = " + objFacturaId);
+			sQuery.append("       AND objReciboID <> " + objReciboId);
+			Cursor c = DatabaseProvider.query(bd, sQuery.toString());
+			// Nos aseguramos de que existe al menos un registro
+			if (c.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
+				do {				
+					montoAbonado = (float)c.getInt(0);
+				} while (c.moveToNext());
+			}			
+		} catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if( bd != null )
+			{	
+				if(bd.isOpen())				
+					bd.close();
+				bd = null;
+			}
+		} 
+		return montoAbonado;
 	}
 
 	/**

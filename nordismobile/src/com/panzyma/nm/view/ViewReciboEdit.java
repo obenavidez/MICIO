@@ -4,10 +4,12 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
-   
+import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER; 
+
 import java.util.ArrayList;
 import java.util.Calendar; 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
@@ -32,7 +34,7 @@ import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction; 
 import com.panzyma.nm.model.FacND;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
-import com.panzyma.nm.serviceproxy.Cliente; 
+import com.panzyma.nm.serviceproxy.Cliente;  
 import com.panzyma.nm.serviceproxy.Factura; 
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
@@ -816,7 +818,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             float montoMinimoRecibo = Float.parseFloat(Cobro.getParametro(me,"MontoMinReciboAplicaDpp")+"");
             if ((recibo.getTotalRecibo() < montoMinimoRecibo) && ValidarMontoAplicaDpp) {
                 //Recalcular detalles del recibo sin aplicar DescPP
-                Cobro.calcularDetFacturasRecibo(me,recibo, recibo.getCliente(), false);
+                Cobro.calcularDetFacturasRecibo(recibo, recibo.getCliente(), false);
                 actualizaTotales();            
                 showStatusOnUI(
     					new ErrorMessage(
@@ -866,29 +868,30 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}	
 	
 	private void procesaFactura(ReciboDetFactura facturaDetalle,
-			Factura factura, List<Ammount> montos, boolean agregar) 
-	{
-		for (Ammount ammount : montos) 
-		{
-			switch (ammount.getAmmountType()) 
-			{
+			Factura factura, List<Ammount> montos, boolean agregar) {
+		for (Ammount ammount : montos) {
+			switch (ammount.getAmmountType()) {
+				case ABONADO_OTROS_RECIBOS:
+					factura.setAbonado(ammount.getValue());
+					factura.setSaldo(factura.getTotalFacturado() - factura.getAbonado());
+					break; 
 				case ABONADO:
-					float montoAbonado = 0.00F, saldo = 0.00F;
-					montoAbonado = factura.getAbonado() - ammount.getValue();					
-					montoAbonado = ( montoAbonado <= 0 ) ? 0 : montoAbonado ;
-					saldo = factura.getTotalFacturado() - montoAbonado;
-					factura.setAbonado( montoAbonado + ammount.getValue() );
-					if ( saldo < factura.getAbonado() ) {
+					float montoAbonado = 0.00F,
+					      saldo = 0.00F;
+					montoAbonado = ammount.getValue();
+					factura.setAbonado(factura.getAbonado() + montoAbonado);
+					saldo = factura.getTotalFacturado() - factura.getAbonado();
+					if ( saldo > 0 ) {
 						factura.setCodEstado("ABONADA");
 						factura.setEstado("Abonada");
-					} else if ( saldo == factura.getAbonado() ) {
+					} else  {
 						factura.setCodEstado("CANCELADA");
 						factura.setEstado("Cancelada");
 					}					
 					facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
 							.getAbonado());
-					factura.setSaldo(factura.getTotalFacturado()- factura.getAbonado());
-					facturaDetalle.setMonto(factura.getAbonado());
+					factura.setSaldo(saldo);
+					facturaDetalle.setMonto(ammount.getValue());
 					facturaDetalle.setSaldoFactura(factura.getSaldo());
 					Cobro.ActualizaTotalFacturas(recibo);
 					break;
@@ -1471,6 +1474,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}	
 
 	
+	@SuppressLint("UseValueOf")
+	@SuppressWarnings("unchecked")
 	private void payamount (float mto)
 	{
 		//Declaracion de variables ;
@@ -1505,18 +1510,223 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
      		}
         	 
      		if (((facturas == null) || (facturas.size() == 0)) && ((notas == null) || (notas.size() == 0))) return;
-     		
-     		ArrayList<FacND> fact = new ArrayList<FacND>();
+     		//Añadimos a la lista
+     		ArrayList<FacND> list = new ArrayList<FacND>();
      		 for (Factura factura : facturas) {
      			FacND fnd = new FacND();
    				fnd.fac = factura;
 				fnd.fechaVence= factura.getFechaVencimiento();
 				fnd.tipo="FAC";
-				fact.add(fnd);
+				list.add(fnd);
 			}
+     		 //Añadimos la Lista
+     		for (CCNotaDebito nota : notas) {
+     			FacND fnd = new FacND();
+   				fnd.nd = nota;
+				fnd.fechaVence= nota.getFechaVence();
+				fnd.tipo="ND";
+				list.add(fnd);
+			}
+     		//ordenando vector por fecha de vencimiento (descendente)
+ 		    Collections.sort(list, new Comparator<FacND>() {
+ 		           @Override
+ 		           public int compare(FacND  item1, FacND  item2){
+ 		               return  String.valueOf(item1.fechaVence).compareTo(String.valueOf(item2.fechaVence));
+ 		           }
+ 		    });
      		
-
+    		//Procesando documentos ordenados
+     		for (FacND fnd : list) {
+				if(fnd.tipo=="FAC"){
+					Factura _fac = fnd.fac;
+					 float mtoInteres = Cobro.getInteresMoratorio(me,_fac.getFechaVencimiento(), _fac.getSaldo());
+					 float saldoTotalFac = _fac.getSaldo() + mtoInteres;
+	                 float mtoFac = (saldoTotalFac <= mto) ? saldoTotalFac : mto;
+	                 mto -= mtoFac;
+	                 
+	                 ReciboDetFactura _facRecibo = new ReciboDetFactura();
+		          	 _facRecibo.setId(0);
+		             _facRecibo.setObjFacturaID(_fac.getId());
+		             _facRecibo.setNumero(_fac.getNoFactura());
+		             _facRecibo.setFecha(_fac.getFecha());
+		             _facRecibo.setFechaVence(_fac.getFechaVencimiento());
+		             _facRecibo.setFechaAplicaDescPP(_fac.getFechaAppDescPP());
+		             _facRecibo.setImpuesto(_fac.getImpuestoFactura()); 
+		             _facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional                
+		             //Calcular el interés moratorio de la factura si está en mora
+		             _facRecibo.setInteresMoratorio(Float.parseFloat("0"));
+		             _facRecibo.setMontoInteres(mtoInteres);                
+		             _facRecibo.setMontoDescEspecifico(0.0F);                
+		             _facRecibo.setPorcDescPromo(0.0F);
+		             _facRecibo.setMontoDescPromocion(0.0F);                
+		             _facRecibo.setPorcDescOcasional(0.0F);
+		             _facRecibo.setMontoDescOcasional(0.0F);                        
+		             _facRecibo.setMontoNeto(0.0F);
+		             _facRecibo.setMontoOtrasDeducciones(0.0F);
+		             _facRecibo.setMontoRetencion(0.0F);                
+		             _facRecibo.setSaldoFactura(_fac.getSaldo());
+		             _facRecibo.setSaldoTotal(saldoTotalFac);                
+		             _facRecibo.setMonto(mtoFac);       
+		             _facRecibo.setSubTotal(_fac.getSubtotalFactura() - _fac.getDescuentoFactura());
+		             _facRecibo.setTotalFactura(_fac.getTotalFacturado());            
+		             _facRecibo.setEsAbono(_facRecibo.getMonto() < _facRecibo.getSaldoTotal());        
+		             //Agregarla a facturas seleccionadas
+		             _facSeleccionadas.add(_facRecibo);                         
+		                    
+		             if (mto <= 0) break;                
+		             continue;                    					
+				} // FAC
+				if (fnd.tipo == "ND") {
+					CCNotaDebito _nd = fnd.nd;
+                    float mtoInteres = Cobro.getInteresMoratorio(me,_nd.getFechaVence(), _nd.getSaldo());
+                    float saldoTotalND = _nd.getSaldo() + mtoInteres;
+                    float mtoND = (saldoTotalND <= mto) ? saldoTotalND : mto;
+                    mto -= mtoND;
+                    
+                    ReciboDetND _ndRecibo = new ReciboDetND();
+                    _ndRecibo.setId(0);
+                    _ndRecibo.setObjNotaDebitoID(_nd.getId());
+                    _ndRecibo.setNumero(_nd.getNumero());
+                    _ndRecibo.setFecha(_nd.getFecha());
+                    _ndRecibo.setFechaVence(_nd.getFechaVence());
+                    _ndRecibo.setMontoInteres(mtoInteres);
+                    _ndRecibo.setInteresMoratorio(Float.parseFloat("0"));
+                    _ndRecibo.setMontoND(_nd.getMonto());
+                    _ndRecibo.setSaldoND(_nd.getSaldo());                    
+                    _ndRecibo.setSaldoTotal(saldoTotalND); 
+                    _ndRecibo.setMontoPagar(mtoND);  
+                    _ndRecibo.setMontoNeto(_ndRecibo.getMontoPagar() - _ndRecibo.getMontoInteres());
+                    _ndRecibo.setEsAbono(_ndRecibo.getMontoPagar() < _ndRecibo.getSaldoTotal());
+                    
+                    _ndsSeleccionadas.add(_ndRecibo);
+                    if (mto <= 0) break;  
+				}// FIn ND
+			}
+     		 if (_facSeleccionadas.size() > 0) {
+                 //Insertar nuevas facturas en el detalle de facturas del recibo
+     			ArrayList<ReciboDetFactura> fff = new ArrayList<ReciboDetFactura>();
+     			for (ReciboDetFactura facturaseleccionada : _facSeleccionadas) {
+					fff.add(facturaseleccionada);
+				}
+     			//Actualizar detalle de facturas
+                recibo.setFacturasRecibo(fff);
+     		 }
+     		 if (_ndsSeleccionadas.size() > 0) {
+     			 //Insertar nuevas ncs en el detalle de ncs del recibo            
+     			ArrayList<ReciboDetND> ccc = new ArrayList<ReciboDetND>();
+     			for (ReciboDetND ndseleccionada : _ndsSeleccionadas) {
+					ccc.add(ndseleccionada);
+				}
+     			recibo.setNotasDebitoRecibo(ccc);
+     		 }
+     		 
+     		Cobro.calcularDetFacturasRecibo(recibo, cliente, true);
+     		CalculaTotales(); 
+     		
+     		//Ver si hay monto de descuento que quede de remanente
+            seguir = false;
+            if (primeraPasada && (recibo.getTotalDesc() > 0)) {
+                mto = mtoOrig + recibo.getTotalDesc();
+                seguir = true;
+                primeraPasada = false;
+            } 
+     	
          }
 	}
 	
+	private void CalculaTotales() {        
+        double totalInteresFac = 0;
+        double totalFacturas = 0;
+        double totalND = 0;
+        double totalNC = 0;
+        double totalDescOca = 0;
+        double totalDescPromo = 0;
+        double totalDescPP = 0;
+        double totalRetencion = 0;
+        double totalOtro = 0;
+        double totalInteresND = 0;
+        double totalImpProp = 0;
+        double totalImpExe = 0;
+        
+        if (recibo.getFacturasRecibo() != null) {
+           ArrayList<ReciboDetFactura> _ff = recibo.getFacturasRecibo();
+            if (_ff != null) {
+            	for (ReciboDetFactura reciboDetFactura : _ff) {
+					totalInteresFac += reciboDetFactura.getMontoInteres();     
+                    totalFacturas += reciboDetFactura.getMonto();
+                    totalDescOca += reciboDetFactura.getMontoDescOcasional();
+                    totalDescPromo += reciboDetFactura.getMontoDescPromocion();
+                    totalDescPP += reciboDetFactura.getMontoDescEspecifico();
+                    totalRetencion += reciboDetFactura.getMontoRetencion();
+                    totalOtro += reciboDetFactura.getMontoOtrasDeducciones();     
+                    totalImpProp += reciboDetFactura.getMontoImpuesto();  
+                    totalImpExe += reciboDetFactura.getMontoImpuestoExento();
+				}
+            }
+        } 
+        
+        if (recibo.getNotasDebitoRecibo() != null) {
+        	ArrayList< ReciboDetND> _dd = recibo.getNotasDebitoRecibo();
+            if (_dd != null) {
+            	for (ReciboDetND reciboDetND : _dd) {
+            		totalND += reciboDetND.getMontoPagar();
+                    totalInteresND += reciboDetND.getMontoInteres();
+				}           
+            }
+        } 
+        
+        if (recibo.getNotasCreditoRecibo() != null) {
+        	ArrayList<ReciboDetNC> _cc = recibo.getNotasCreditoRecibo();
+            if (_cc != null) {
+            	for (ReciboDetNC reciboDetNC : _cc) {
+            		totalNC += reciboDetNC.getMonto();
+				}
+            }          
+        } 
+        
+        totalInteresFac = StringUtil.round(totalInteresFac, 2);
+        totalFacturas = StringUtil.round(totalFacturas, 2);
+        totalDescOca = StringUtil.round(totalDescOca, 2);
+        totalDescPromo = StringUtil.round(totalDescPromo, 2);
+        totalDescPP = StringUtil.round(totalDescPP, 2);
+        totalRetencion = StringUtil.round(totalRetencion, 2);
+        totalOtro = StringUtil.round(totalOtro, 2);
+        totalImpProp = StringUtil.round(totalImpProp, 2);
+        totalImpExe = StringUtil.round(totalImpExe, 2);
+        totalND = StringUtil.round(totalND, 2);
+        totalInteresND = StringUtil.round(totalInteresND, 2);
+        totalNC = StringUtil.round(totalNC, 2);    
+                    
+        recibo.setTotalFacturas((float)StringUtil.round(totalFacturas - totalInteresFac, 2));
+        recibo.setTotalND((float)StringUtil.round(totalND - totalInteresND, 2));
+        recibo.setTotalInteres((float)StringUtil.round(totalInteresFac + totalInteresND, 2));
+        recibo.setSubTotal((float)StringUtil.round(totalFacturas + totalND, 2));
+        recibo.setTotalNC((float)StringUtil.round(totalNC, 2));
+        recibo.setTotalDesc((float)StringUtil.round(totalDescOca + totalDescPromo + totalDescPP, 2));
+        recibo.setTotalRetenido((float)StringUtil.round(totalRetencion, 2));
+        recibo.setTotalOtrasDed((float)StringUtil.round(totalOtro, 2));
+        recibo.setTotalDescOca((float)StringUtil.round(totalDescOca, 2));
+        recibo.setTotalDescPP((float)StringUtil.round(totalDescPP, 2));
+        recibo.setTotalDescPromo((float)StringUtil.round(totalDescPromo, 2));
+        recibo.setTotalImpuestoProporcional((float)StringUtil.round(totalImpProp, 2));
+        recibo.setTotalImpuestoExonerado((float)StringUtil.round(totalImpExe, 2));
+        
+        
+        double netoPago = totalFacturas + totalND;
+        netoPago = netoPago - totalNC;
+        netoPago = netoPago - totalDescOca;
+        netoPago = netoPago - totalDescPromo;
+        netoPago = netoPago - totalDescPP;
+        netoPago = netoPago - totalRetencion;
+        netoPago = netoPago - totalOtro;
+        netoPago = netoPago - totalImpExe;
+        
+        netoPago = StringUtil.round(netoPago, 2);
+        
+        //recibo.setTotalRecibo((float)netoPago);
+        
+        String snp = netoPago + "";
+        float np = Float.parseFloat(snp);
+        recibo.setTotalRecibo(np);
+    } //CalculaTotales
 }
