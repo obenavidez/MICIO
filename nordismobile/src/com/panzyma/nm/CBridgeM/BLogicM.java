@@ -5,6 +5,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
@@ -19,6 +20,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelProducto;
+import com.panzyma.nm.viewdialog.DialogoConfirmacion;
 
 public class BLogicM {
 
@@ -27,6 +29,7 @@ public class BLogicM {
 	private String TAG = BLogicM.class.getSimpleName();
 	boolean OK = false;
 	private CuentasPorCobrarFragment fragment = null;	
+	private DialogoConfirmacion view;
 	
 	public enum Result 
 	{		
@@ -35,7 +38,8 @@ public class BLogicM {
 		NOTAS_DEBITO(2), 
 		NOTAS_CREDITO(3), 
 		PEDIDOS(4), 
-		RECIBOS_COLECTOR(5);
+		RECIBOS_COLECTOR(5),
+		ABONOS_FACTURAS_OTROS_RECIBOS(6);
 		
 		int result;
 		
@@ -63,6 +67,14 @@ public class BLogicM {
 		this.pool = ((NMApp) cuentasPorCobrarFragment.getActivity()
 				.getApplication()).getThreadPool();
 	}
+	
+	public BLogicM(DialogoConfirmacion view) {
+		this.view = view;
+		this.controller = ((NMApp) this.view.getActivity()
+				.getApplication()).getController();
+		this.pool = ((NMApp) this.view.getActivity()
+				.getApplication()).getThreadPool();
+	}
 
 	public boolean handleMessage(Message msg) throws Exception {
 		switch (msg.what) {
@@ -84,8 +96,58 @@ public class BLogicM {
 		case ControllerProtocol.LOAD_RECIBOS_FROM_SERVER:
 			onLoadRecibosClienteFromServer();
 			break;
+		case ControllerProtocol.LOAD_ABONOS_FACTURA_EN_OTROS_RECIBOS:
+			Bundle params = msg.getData();			
+			onLoadAbonosOtrasOtrosRecibosFactura(
+					params.getLong("objFacturaID"),
+					params.getLong("objReciboID"));
+			break;
 		}
 		return false;
+	}
+
+	private void onLoadAbonosOtrasOtrosRecibosFactura(final long facturaId, final long reciboId) {
+		try {
+			pool.execute(new Runnable() {
+
+				@Override
+				public void run() {
+
+					try {
+						Processor.notifyToView(controller,
+								Result.ABONOS_FACTURAS_OTROS_RECIBOS.getResult(),
+								0, 
+								0,
+								ModelLogic.getAbonosFacturaEnOtrosRecibos(
+										view.getActivity(),
+										facturaId,
+										reciboId)
+							);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			});
+		} catch (InterruptedException e) {
+			Log.e(TAG, "Error in the update thread", e);
+			try {
+				Processor
+						.notifyToView(
+								controller,
+								ERROR,
+								0,
+								0,
+								new ErrorMessage(
+										"Error interno en la sincronización con la BDD",
+										e.toString(), "\n Causa: "
+												+ e.getCause()));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 	}
 
 	private void onLoadRecibosClienteFromServer() {

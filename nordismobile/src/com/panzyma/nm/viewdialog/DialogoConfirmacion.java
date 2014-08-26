@@ -4,10 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BLogicM;
+import com.panzyma.nm.CBridgeM.BLogicM.Result;
+import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.ActionType;
 import com.panzyma.nm.auxiliar.Ammount;
 import com.panzyma.nm.auxiliar.AmmountType;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.Documento;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
@@ -21,6 +27,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,7 +42,7 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 
 @SuppressLint("ValidFragment")
-public class DialogoConfirmacion extends DialogFragment {	
+public class DialogoConfirmacion extends DialogFragment implements Callback {	
 	
 	private View view;
 	private EditText numero;
@@ -48,6 +57,8 @@ public class DialogoConfirmacion extends DialogFragment {
 	private Pagable eventPago;
 	private ActionType actionType;
 	private boolean editDescuento;
+	private float montoAbonado;
+	private NMApp nmapp;
 		
 	public interface Pagable {
 		public void onPagarEvent(List<Ammount> montos);
@@ -71,6 +82,7 @@ public class DialogoConfirmacion extends DialogFragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				List<Ammount> montos = new ArrayList<Ammount>();
+				montos.add(new Ammount(AmmountType.ABONADO_OTROS_RECIBOS, montoAbonado));
 				montos.add(new Ammount(AmmountType.ABONADO, getMontoAbonado()));
 				montos.add(new Ammount(AmmountType.RETENIDO, getMontoRetenido()));
 				montos.add(new Ammount(AmmountType.DESCONTADO, getMontoDescontado()));
@@ -82,12 +94,13 @@ public class DialogoConfirmacion extends DialogFragment {
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();				
 			}
-		} );
-
+		} );		
+		
 		initComponents();
 		return builder.create();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initComponents() {
 		// obtención de las views		
 		numero = (EditText) view.findViewById(R.id.txtNoFactura);
@@ -98,6 +111,29 @@ public class DialogoConfirmacion extends DialogFragment {
 		rowDescuento = (TableRow) view.findViewById(R.id.tableRowDescuento);
 		retencion = (EditText) view.findViewById(R.id.txtRetencion);
 		descuento = (EditText) view.findViewById(R.id.txtDescuento);
+		
+		nmapp = (NMApp) this.getActivity().getApplicationContext();
+		
+		if( document instanceof ReciboDetFactura) {
+			try {
+				
+				Message msg = new Message();
+				msg.what = ControllerProtocol.LOAD_ABONOS_FACTURA_EN_OTROS_RECIBOS;
+				Bundle params = new Bundle();
+				ReciboDetFactura fac = (ReciboDetFactura) document.getObject();
+				params.putLong("objFacturaID", fac.getObjFacturaID());
+				params.putLong("objReciboID", fac.getObjReciboID());
+				msg.setData(params);
+				nmapp.getController().removebridgeByName(BLogicM.class.toString());
+				nmapp.getController().setEntities(this, new BLogicM());
+				nmapp.getController().addOutboxHandler(new Handler(this));
+				nmapp.getController()
+						.getInboxHandler()
+						.sendMessage(msg);
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+		}		
 		
 		monto.addTextChangedListener(new TextWatcher(){
 
@@ -173,6 +209,18 @@ public class DialogoConfirmacion extends DialogFragment {
 	
 	public void setActionPago(Pagable actionPago) {
 		this.eventPago = actionPago;
+	}
+
+	@SuppressWarnings("incomplete-switch")
+	@Override
+	public boolean handleMessage(Message arg0) {
+		Result respuesta = Result.toInt(arg0.what);
+		switch(respuesta){
+		case ABONOS_FACTURAS_OTROS_RECIBOS:
+			montoAbonado = (Float)arg0.obj;
+			break;
+		}
+		return false;
 	}	
 
 }

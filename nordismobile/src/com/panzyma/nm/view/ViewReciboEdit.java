@@ -837,23 +837,27 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			Factura factura, List<Ammount> montos, boolean agregar) {
 		for (Ammount ammount : montos) {
 			switch (ammount.getAmmountType()) {
+				case ABONADO_OTROS_RECIBOS:
+					factura.setAbonado(ammount.getValue());
+					factura.setSaldo(factura.getTotalFacturado() - factura.getAbonado());
+					break;
 				case ABONADO:
-					float montoAbonado = 0.00F, saldo = 0.00F;
-					montoAbonado = factura.getAbonado() - ammount.getValue();					
-					montoAbonado = ( montoAbonado <= 0 ) ? 0 : montoAbonado ;
-					saldo = factura.getTotalFacturado() - montoAbonado;
-					factura.setAbonado( montoAbonado + ammount.getValue() );
-					if ( saldo < factura.getAbonado() ) {
+					float montoAbonado = 0.00F,
+					      saldo = 0.00F;
+					montoAbonado = ammount.getValue();
+					factura.setAbonado(factura.getAbonado() + montoAbonado);
+					saldo = factura.getTotalFacturado() - factura.getAbonado();
+					if ( saldo > 0 ) {
 						factura.setCodEstado("ABONADA");
 						factura.setEstado("Abonada");
-					} else if ( saldo == factura.getAbonado() ) {
+					} else  {
 						factura.setCodEstado("CANCELADA");
 						factura.setEstado("Cancelada");
 					}					
 					facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
 							.getAbonado());
-					factura.setSaldo(factura.getTotalFacturado()- factura.getAbonado());
-					facturaDetalle.setMonto(factura.getAbonado());
+					factura.setSaldo(saldo);
+					facturaDetalle.setMonto(ammount.getValue());
 					facturaDetalle.setSaldoFactura(factura.getSaldo());
 					Cobro.ActualizaTotalFacturas(recibo);
 					break;
