@@ -2,21 +2,12 @@ package com.panzyma.nm.view;
  
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
-  
-
-
-
-
-
-
-
-
-
+import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER; 
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Calendar; 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -406,6 +397,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									PagarMonto();
 									
 								break;
+								case ID_SOLICITAR_DESCUENTO_OCASIONAL:
+									 solicitardescuento();
+									break;
 								case ID_SALVAR_RECIBO:
 									guardarRecibo();
 									salvado=true;
@@ -505,6 +499,52 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		dc.show();
 	}
 
+	private void solicitardescuento()
+	{ 
+		//Si se está fuera de covertura, salir
+        if (SessionManager.isPhoneConnected()) {
+            //Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
+            return;
+        }
+        
+        if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
+        {            
+        	AppDialog.showMessage(me,"Alerta","Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",DialogType.DIALOGO_ALERTA);
+            return;
+        }  
+        if(cliente==null){
+			AppDialog.showMessage(me,"Alerta","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
+			return;
+		} 
+		AppDialog.showMessage(me,"Solicitar descuento Ocosional","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener()
+		{
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onButtonClick(AlertDialog alert, int actionId) 
+			{
+				if(actionId == AppDialog.OK_BUTTOM)
+				{ 					 
+					try 
+					{
+						String nota =  ((TextView)alert.findViewById(R.id.txtpayamount)).getText().toString();
+						nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
+						nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(me):getHandler()); 
+						Message msg = new Message();
+					    Bundle b = new Bundle();
+					    b.putParcelable("recibo", recibo);
+					    b.putString("notas",nota); 
+					    msg.setData(b);
+					    msg.what=SOLICITAR_DESCUENTO;
+					    nmapp.getController().getInboxHandler().sendMessage(msg); 
+					} catch (Exception e) 
+					{ 
+						e.printStackTrace();
+					} 					
+				}
+			}
+		}); 
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void guardarRecibo() {
 
@@ -831,23 +871,27 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			Factura factura, List<Ammount> montos, boolean agregar) {
 		for (Ammount ammount : montos) {
 			switch (ammount.getAmmountType()) {
+				case ABONADO_OTROS_RECIBOS:
+					factura.setAbonado(ammount.getValue());
+					factura.setSaldo(factura.getTotalFacturado() - factura.getAbonado());
+					break; 
 				case ABONADO:
-					float montoAbonado = 0.00F, saldo = 0.00F;
-					montoAbonado = factura.getAbonado() - ammount.getValue();					
-					montoAbonado = ( montoAbonado <= 0 ) ? 0 : montoAbonado ;
-					saldo = factura.getTotalFacturado() - montoAbonado;
-					factura.setAbonado( montoAbonado + ammount.getValue() );
-					if ( saldo < factura.getAbonado() ) {
+					float montoAbonado = 0.00F,
+					      saldo = 0.00F;
+					montoAbonado = ammount.getValue();
+					factura.setAbonado(factura.getAbonado() + montoAbonado);
+					saldo = factura.getTotalFacturado() - factura.getAbonado();
+					if ( saldo > 0 ) {
 						factura.setCodEstado("ABONADA");
 						factura.setEstado("Abonada");
-					} else if ( saldo == factura.getAbonado() ) {
+					} else  {
 						factura.setCodEstado("CANCELADA");
 						factura.setEstado("Cancelada");
 					}					
 					facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
 							.getAbonado());
-					factura.setSaldo(factura.getTotalFacturado()- factura.getAbonado());
-					facturaDetalle.setMonto(factura.getAbonado());
+					factura.setSaldo(saldo);
+					facturaDetalle.setMonto(ammount.getValue());
 					facturaDetalle.setSaldoFactura(factura.getSaldo());
 					Cobro.ActualizaTotalFacturas(recibo);
 					break;
@@ -880,7 +924,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					break;
 			}
 		}
-		if( agregar ) {
+		if( agregar ) 
+		{
+			facturaDetalle.setFechaAplicaDescPP(factura.getFechaAppDescPP());
 			facturasRecibo.add(factura);
 			recibo.getFacturasRecibo().add(facturaDetalle);
 			documents.add(facturaDetalle);
@@ -1076,7 +1122,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void eliminarDocumento() {
-		if (!"REGISTRADO".equals(recibo.getDescEstado())) return;
+		if (!"REGISTRADO".equals(recibo.getCodEstado())) return;
 		int posicion = positioncache;
 		if (posicion == -1) return;		
 			
@@ -1414,7 +1460,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void PagarMonto() {
-		AppDialog.showMessage(me,"Ingrese el monto","",DialogType.DIALOGO_PAGAR,new AppDialog.OnButtonClickListener(){
+		AppDialog.showMessage(me,"Ingrese el monto","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener(){
 			@Override
 			public void onButtonClick(AlertDialog alert, int actionId) {
 				if(actionId == AppDialog.OK_BUTTOM)

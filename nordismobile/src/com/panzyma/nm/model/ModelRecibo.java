@@ -42,6 +42,16 @@ public class ModelRecibo {
 		return NMTranslate.ToObject(rs,new RespuestaEnviarRecibo()); 
 	}
 	
+	public  synchronized static long solicitarDescuentoOcacional(String credenciales,ReciboColector recibo,String notas) throws Exception
+	{		
+		Parameters params=new Parameters((new String[]{"Credentials","idCliente","idSucursal","referencia","notas"}),
+				 (new Object[]{credenciales,recibo.getObjClienteID(),recibo.getObjSucursalID(),recibo.getReferencia(),notas}),
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.STRING_CLASS}));
+		
+		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
+		return 0; 
+	}
+	
 	public synchronized static int borraReciboByID (ContentResolver content,int reciboID){
 		String[] projection = new String[] {};
 		int result = 0; 

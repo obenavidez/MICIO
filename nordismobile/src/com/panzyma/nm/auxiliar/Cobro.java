@@ -25,7 +25,38 @@ import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 
 
-public class Cobro {
+public class Cobro 
+{ 
+	public static boolean validaAplicDescOca(Context cnt,ReciboColector recibo)
+    {
+        //Validar que de las facturas marcadas y que se están cancelando (no es abono)
+        //exista al menos una vencida
+        if (recibo.getFacturasRecibo() == null || recibo.getFacturasRecibo().size()==0) return false;
+        
+        ArrayList<ReciboDetFactura> _ff = recibo.getFacturasRecibo();
+        if ((_ff == null) || (_ff.size() == 0)) return false;
+        
+        boolean puedeAplicarDescOca = false;
+        int diasAplicaMora = Integer.parseInt((String) Cobro.getParametro(cnt,"HolguraDiasAplicarDescPP"));
+        for(int i = 0; i < _ff.size(); i++) 
+        {
+            ReciboDetFactura fac = _ff.get(i);
+            
+            //Tiene que estar seleccionada y cancelándose
+            if (!fac.isEsAbono()) {
+                //Ver si factura ya está vencida
+                long fechaVence = fac.getFechaAplicaDescPP();
+                long fechaNoAplicaDescPP = DateUtil.addDays(fechaVence, diasAplicaMora);
+                if (fechaNoAplicaDescPP < DateUtil.getTime())
+                {
+                    puedeAplicarDescOca = true;
+                    break;
+                }
+            }
+        }
+        
+        return puedeAplicarDescOca;
+    } //ValidaAplicDescOca
 	
 	public static float getTotalPagoRecibo(ReciboColector rcol) {
         if (rcol.getFormasPagoRecibo().size() == 0) return 0;
@@ -453,7 +484,7 @@ public class Cobro {
 	{         
          return ( (cnt.getApplicationContext()
 									.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE)
-									.getString(propiedad, "--"))); 
+									.getString(propiedad, "0"))); 
     }
 	
 	public static int cantFacturas(ReciboColector recibo) {

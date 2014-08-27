@@ -41,7 +41,7 @@ public interface ControllerProtocol {
     int UPDATE_ITEM_FROM_SERVER =303;
     int LOAD_FICHACLIENTE_FROM_SERVER=304; 
     int LOAD_FACTURASCLIENTE_FROM_SERVER=305;    
-    
+    int SOLICITAR_DESCUENTO=306;
     
     
     int SAVE_DATA_FROM_LOCALHOST=400;
@@ -68,6 +68,7 @@ public interface ControllerProtocol {
 	int LOAD_NOTAS_CREDITO_FROM_SERVER = 701;
 	int LOAD_PEDIDOS_FROM_SERVER = 702;
 	int LOAD_RECIBOS_FROM_SERVER = 703;
+	int LOAD_ABONOS_FACTURA_EN_OTROS_RECIBOS = 704;
 	
 	int ANULAR_PEDIDO = 900;
     
