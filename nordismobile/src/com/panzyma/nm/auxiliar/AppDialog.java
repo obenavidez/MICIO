@@ -9,8 +9,6 @@ import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.DialogFragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -195,7 +193,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 			@Override
 			public void onClick(View v) {
 				if(txtpayamount.getText().length()>0){
-					if(txtpayamount.getText().toString().compareTo("0")==1){
+					if(txtpayamount.getText().toString().compareTo("0")!=0){
 						if(mylistener!=null)
 							mylistener.onButtonClick(alert, OK_BUTTOM); 
 						alert.dismiss();

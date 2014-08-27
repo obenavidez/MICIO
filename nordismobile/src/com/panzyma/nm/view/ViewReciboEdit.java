@@ -2,7 +2,6 @@ package com.panzyma.nm.view;
  
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
   
@@ -31,9 +30,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil; 
 import com.panzyma.nm.auxiliar.ErrorMessage; 
-import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.NumberUtil;
-import com.panzyma.nm.auxiliar.Processor; 
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
@@ -48,13 +45,10 @@ import com.panzyma.nm.model.FacND;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente; 
 import com.panzyma.nm.serviceproxy.Factura;
-import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND; 
-import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder; 
 import com.panzyma.nm.viewdialog.DialogCliente;
@@ -607,7 +601,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	{   
 		
 		if(!valido()) return; 
-        pd.show(this, "Enviando recibo a la central", "Espere por favor", true); 
+        ProgressDialog.show(this, "Enviando recibo a la central", "Espere por favor", true); 
         try 
         {
 			nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
@@ -784,7 +778,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             float montoMinimoRecibo = Float.parseFloat(Cobro.getParametro(me,"MontoMinReciboAplicaDpp")+"");
             if ((recibo.getTotalRecibo() < montoMinimoRecibo) && ValidarMontoAplicaDpp) {
                 //Recalcular detalles del recibo sin aplicar DescPP
-                Cobro.calcularDetFacturasRecibo(recibo, recibo.getCliente(), false);
+                Cobro.calcularDetFacturasRecibo(me,recibo, recibo.getCliente(), false);
                 actualizaTotales();            
                 showStatusOnUI(
     					new ErrorMessage(
@@ -1494,7 +1488,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
  		               return  String.valueOf(item1.fechaVence).compareTo(String.valueOf(item2.fechaVence));
  		           }
  		    });
-     		
+ 		     String interes= getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcInteresMoratorio", "0");
     		//Procesando documentos ordenados
      		for (FacND fnd : list) {
 				if(fnd.tipo=="FAC"){
@@ -1512,9 +1506,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		             _facRecibo.setFechaVence(_fac.getFechaVencimiento());
 		             _facRecibo.setFechaAplicaDescPP(_fac.getFechaAppDescPP());
 		             _facRecibo.setImpuesto(_fac.getImpuestoFactura()); 
-		             _facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional                
+		             _facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional  
 		             //Calcular el interés moratorio de la factura si está en mora
-		             _facRecibo.setInteresMoratorio(Float.parseFloat("0"));
+		             _facRecibo.setInteresMoratorio(Float.parseFloat(interes));
 		             _facRecibo.setMontoInteres(mtoInteres);                
 		             _facRecibo.setMontoDescEspecifico(0.0F);                
 		             _facRecibo.setPorcDescPromo(0.0F);
@@ -1550,7 +1544,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
                     _ndRecibo.setFecha(_nd.getFecha());
                     _ndRecibo.setFechaVence(_nd.getFechaVence());
                     _ndRecibo.setMontoInteres(mtoInteres);
-                    _ndRecibo.setInteresMoratorio(Float.parseFloat("0"));
+                    _ndRecibo.setInteresMoratorio(Float.parseFloat(interes));
                     _ndRecibo.setMontoND(_nd.getMonto());
                     _ndRecibo.setSaldoND(_nd.getSaldo());                    
                     _ndRecibo.setSaldoTotal(saldoTotalND); 
@@ -1570,6 +1564,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				}
      			//Actualizar detalle de facturas
                 recibo.setFacturasRecibo(fff);
+                documents.addAll(fff);
+                
      		 }
      		 if (_ndsSeleccionadas.size() > 0) {
      			 //Insertar nuevas ncs en el detalle de ncs del recibo            
@@ -1578,9 +1574,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					ccc.add(ndseleccionada);
 				}
      			recibo.setNotasDebitoRecibo(ccc);
+     			documents.addAll(ccc);
      		 }
      		 
-     		Cobro.calcularDetFacturasRecibo(recibo, cliente, true);
+     		Cobro.calcularDetFacturasRecibo(me,recibo, cliente, true);
      		CalculaTotales(); 
      		
      		//Ver si hay monto de descuento que quede de remanente
@@ -1592,6 +1589,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             } 
      	
          }
+         adapter = null;
+         agregarDocumentosAlDetalleDeRecibo();
+         actualizaTotales();
 	}
 	
 	private void CalculaTotales() {        
