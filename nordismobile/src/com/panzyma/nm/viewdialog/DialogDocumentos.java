@@ -108,7 +108,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			display = wm.getDefaultDisplay();
 			setObjSucursalId(cliente.getIdSucursal());
 			nmapp=(NMApp) me.getApplication();
-			nmapp.getController().removebridgeByName(BReciboM.class.toString());
+			nmapp.getController().removeBridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this,new BReciboM()); 
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 

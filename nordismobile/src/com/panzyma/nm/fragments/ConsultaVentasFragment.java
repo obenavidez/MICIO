@@ -170,7 +170,7 @@ public class ConsultaVentasFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(BVentaM.class.toString());
+			nmapp.getController().removeBridgeByName(BVentaM.class.toString());
 			nmapp.getController().setEntities(this, new BVentaM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
@@ -186,7 +186,7 @@ public class ConsultaVentasFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(BVentaM.class.toString());
+			nmapp.getController().removeBridgeByName(BVentaM.class.toString());
 			nmapp.getController().setEntities(this, new BVentaM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()
@@ -204,7 +204,7 @@ public class ConsultaVentasFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(BVentaM.class.toString());
+			nmapp.getController().removeBridgeByName(BVentaM.class.toString());
 			nmapp.getController().setEntities(this, new BVentaM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()

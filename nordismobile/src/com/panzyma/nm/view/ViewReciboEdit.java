@@ -197,7 +197,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			SessionManager.setContext(this);
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
-			nmapp.getController().removebridgeByName(BReciboM.class.toString());
+			nmapp.getController().removeBridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this, brm =  new BReciboM());
 			nmapp.getController().addOutboxHandler(handler=new Handler(this));
 			
@@ -397,6 +397,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 								case ID_AGREGAR_PAGOS:
 									agregarPago();
 									break;
+								case ID_EDITAR_DESCUENTO:
+									editarDescuento();
+									break;
 								case ID_PAGAR_TODO :
 									if(cliente==null){
 										AppDialog.showMessage(me,"Información","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
@@ -424,6 +427,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									break;
 								}
 							}
+							
 						});
 
 					}
@@ -600,7 +604,37 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 		return facturas;
 	}
-	
+
+	private void editarDescuento() {
+		if(!"REGISTRADO".equals(recibo.getCodEstado()))  return;
+		int posicion = positioncache;
+		if (posicion == -1) return;		
+			
+		final com.panzyma.nm.serviceproxy.Documento documentToEdit;
+		
+		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);
+		
+		if ( documentToEdit instanceof ReciboDetFactura) {
+			
+			final ReciboDetFactura facturaDetalle = (ReciboDetFactura) documentToEdit.getObject();
+			final Factura factura = getFacturaByID(facturaDetalle.getObjFacturaID());
+			
+			final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.EDIT, true);
+			dialogConfirmacion.setActionPago(new Pagable() {					
+				@Override
+				public void onPagarEvent(List<Ammount> montos) {
+					procesaFactura(facturaDetalle, factura, montos, true);
+				}
+			});
+			FragmentManager fragmentManager = getSupportFragmentManager();
+			
+			dialogConfirmacion.show(fragmentManager, "");
+			
+		} else {
+			Util.Message.buildToastMessage(this.getContext(), "No es posible editar el descuento", TIME_TO_VIEW_MESSAGE);
+		}		
+		
+	}
 
 	@SuppressLint("ShowToast") @SuppressWarnings({ "static-access", "unchecked" })
 	private void enviarRecibo()
@@ -837,55 +871,65 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			Factura factura, List<Ammount> montos, boolean agregar) {
 		for (Ammount ammount : montos) {
 			switch (ammount.getAmmountType()) {
-				case ABONADO_OTROS_RECIBOS:
-					factura.setAbonado(ammount.getValue());
-					factura.setSaldo(factura.getTotalFacturado() - factura.getAbonado());
+				case ABONADO_OTROS_RECIBOS :
+					if( ammount.isEvaluar() ){
+						factura.setAbonado(ammount.getValue());
+						factura.setSaldo(factura.getTotalFacturado() - factura.getAbonado());
+					}					
 					break;
 				case ABONADO:
-					float montoAbonado = 0.00F,
-					      saldo = 0.00F;
-					montoAbonado = ammount.getValue();
-					factura.setAbonado(factura.getAbonado() + montoAbonado);
-					saldo = factura.getTotalFacturado() - factura.getAbonado();
-					if ( saldo > 0 ) {
-						factura.setCodEstado("ABONADA");
-						factura.setEstado("Abonada");
-					} else  {
-						factura.setCodEstado("CANCELADA");
-						factura.setEstado("Cancelada");
-					}					
-					facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
-							.getAbonado());
-					factura.setSaldo(saldo);
-					facturaDetalle.setMonto(ammount.getValue());
-					facturaDetalle.setSaldoFactura(factura.getSaldo());
-					Cobro.ActualizaTotalFacturas(recibo);
+					if( ammount.isEvaluar() ){
+						
+						float montoAbonado = 0.00F,
+						      saldo = 0.00F;
+						
+						montoAbonado = ammount.getValue();
+						factura.setAbonado(factura.getAbonado() + montoAbonado);
+						saldo = factura.getTotalFacturado() - factura.getAbonado();
+						if ( saldo > 0 ) {
+							factura.setCodEstado("ABONADA");
+							factura.setEstado("Abonada");
+						} else  {
+							factura.setCodEstado("CANCELADA");
+							factura.setEstado("Cancelada");
+						}					
+						facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
+								.getAbonado());
+						factura.setSaldo(saldo);
+						facturaDetalle.setMonto(ammount.getValue());
+						facturaDetalle.setSaldoFactura(factura.getSaldo());
+						Cobro.ActualizaTotalFacturas(recibo);
+					}
 					break;
 				case RETENIDO:
-					float montoRetencion = 0.00F;
-					montoRetencion = ammount.getValue();
-					factura.setRetenido(montoRetencion);
-					facturaDetalle.setMontoRetencion(montoRetencion);
+					if( ammount.isEvaluar() ){
+						float montoRetencion = 0.00F;
+						montoRetencion = ammount.getValue();
+						factura.setRetenido(montoRetencion);
+						facturaDetalle.setMontoRetencion(montoRetencion);
+					}
 					break;
 				case DESCONTADO:
-					float montoDescuento = 0.00F;
-					montoDescuento = ammount.getValue();
-					factura.setDescontado(montoDescuento);
-					factura.setDescuentoFactura(factura.getDescuentoFactura() + montoDescuento);					
-					if ( montoDescuento > facturaDetalle.getMontoDescEspecificoCalc() ) {
-						try {
-							showStatusOnUI(
-									new ErrorMessage(
-											          "Error al editar descuento",
-											          "El nuevo descuento no debe ser mayor que " + StringUtil.formatReal(facturaDetalle.getMontoDescEspecificoCalc()) + ".", ""));
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}	                          
-			            return;
-			        }
-					//Recalcular monto neto
-			        Cobro.ActualizaMtoNetoFacturasrecibo(recibo);
-					facturaDetalle.setMontoDescEspecificoCalc(montoDescuento);
+					if( ammount.isEvaluar() ){
+						float montoDescuento = 0.00F;
+						montoDescuento = ammount.getValue();
+						factura.setDescontado(montoDescuento);
+						factura.setDescuentoFactura(factura.getDescuentoFactura() + montoDescuento);					
+						if ( montoDescuento > facturaDetalle.getMontoDescEspecificoCalc() ) {
+							try {
+								showStatusOnUI(
+										new ErrorMessage(
+												          "Error al editar descuento",
+												          "El nuevo descuento no debe ser mayor que " + StringUtil.formatReal(facturaDetalle.getMontoDescEspecificoCalc()) + ".", ""));
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}	                          
+				            return;
+				        }
+						//Recalcular monto neto
+				        Cobro.ActualizaMtoNetoFacturasrecibo(recibo);
+						facturaDetalle.setMontoDescEspecificoCalc(montoDescuento);
+					}
 				default:
 					break;
 			}
@@ -1034,8 +1078,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				public void run() 
 				{
 					quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1); 
-					quickAction2.addActionItem(new ActionItem(ID_EDITAR_DOCUMENTO,"Editar Documento"));
-					quickAction2.addActionItem(new ActionItem(VER_DETALLE_DOCUMENTO,"Ver Detalle Documento"));
+					quickAction2.addActionItem(new ActionItem(ID_EDITAR_DOCUMENTO,"Editar Documento"));					
+					quickAction2.addActionItem(new ActionItem(ID_EDITAR_DESCUENTO,"Editar Descuento"));
 					quickAction2.addActionItem(new ActionItem(ID_ELIMINAR_DOCUMENTO, "Eliminar Documento"));
 					quickAction2.setOnActionItemClickListener
 					(new QuickAction.OnActionItemClickListener() 
@@ -1044,13 +1088,19 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							@Override
 							public void onItemClick(QuickAction source, final int pos,final int actionId) 
 							{ 
-										ActionItem actionItem = quickAction2
-												.getActionItem(pos);
-										
-										if(actionId==ID_EDITAR_DOCUMENTO)
-											editarDocumento();
-										else if(actionId==ID_ELIMINAR_DOCUMENTO)
-											eliminarDocumento();							
+								ActionItem actionItem = quickAction2.getActionItem(pos);
+
+								switch (actionId) {
+								case ID_EDITAR_DOCUMENTO:
+									editarDocumento();
+									break;
+								case ID_EDITAR_DESCUENTO:
+									editarDescuento();
+									break;
+								case ID_ELIMINAR_DOCUMENTO:
+									eliminarDocumento();
+									break;
+								}								
 									 
 							}
 
@@ -1252,6 +1302,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}); 
 		
 	}
+	
 	private void FINISH_ACTIVITY()
 	{
 		int requescode=0;
