@@ -25,7 +25,38 @@ import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 
 
-public class Cobro {
+public class Cobro 
+{ 
+	public static boolean validaAplicDescOca(Context cnt,ReciboColector recibo)
+    {
+        //Validar que de las facturas marcadas y que se están cancelando (no es abono)
+        //exista al menos una vencida
+        if (recibo.getFacturasRecibo() == null || recibo.getFacturasRecibo().size()==0) return false;
+        
+        ArrayList<ReciboDetFactura> _ff = recibo.getFacturasRecibo();
+        if ((_ff == null) || (_ff.size() == 0)) return false;
+        
+        boolean puedeAplicarDescOca = false;
+        int diasAplicaMora = Integer.parseInt((String) Cobro.getParametro(cnt,"HolguraDiasAplicarDescPP"));
+        for(int i = 0; i < _ff.size(); i++) 
+        {
+            ReciboDetFactura fac = _ff.get(i);
+            
+            //Tiene que estar seleccionada y cancelándose
+            if (!fac.isEsAbono()) {
+                //Ver si factura ya está vencida
+                long fechaVence = fac.getFechaAplicaDescPP();
+                long fechaNoAplicaDescPP = DateUtil.addDays(fechaVence, diasAplicaMora);
+                if (fechaNoAplicaDescPP < DateUtil.getTime())
+                {
+                    puedeAplicarDescOca = true;
+                    break;
+                }
+            }
+        }
+        
+        return puedeAplicarDescOca;
+    } //ValidaAplicDescOca
 	
 	public static float getTotalPagoRecibo(ReciboColector rcol) {
         if (rcol.getFormasPagoRecibo().size() == 0) return 0;
@@ -453,7 +484,7 @@ public class Cobro {
 	{         
          return ( (cnt.getApplicationContext()
 									.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE)
-									.getString(propiedad, "--"))); 
+									.getString(propiedad, "0"))); 
     }
 	
 	public static int cantFacturas(ReciboColector recibo) {
@@ -582,7 +613,7 @@ public class Cobro {
 		   return list;
 	 }
     
-    public static void calcularDetFacturasRecibo(ReciboColector rcol, Cliente cliente, boolean blnCalcDesc) {  
+    public static void calcularDetFacturasRecibo(Context cnt,ReciboColector rcol, Cliente cliente, boolean blnCalcDesc) {  
         if (rcol.getFacturasRecibo() == null) return;        
         ArrayList<ReciboDetFactura> facturas = rcol.getFacturasRecibo();
         if (facturas == null) return;
@@ -596,7 +627,7 @@ public class Cobro {
         if (blnCalcDesc)
         {
         	//Llamar al cálculo del descuento PP (MontoDescEspecifico)
-            CalcDescPP_Output outDPP = calcularDescPP(rcol, cliente);
+            CalcDescPP_Output outDPP = calcularDescPP(cnt,rcol, cliente);
             Hashtable descFacturas = new Hashtable();
             
             for(int i=0; i < outDPP.getDetalleFacturas().size(); i++) {
@@ -613,7 +644,7 @@ public class Cobro {
         } //if (blnCalcDesc)  
         
         //Llamar al cálculo del descuento ocasional y de promociones    
-        calcularDescuentoOcasional(rcol, cliente);
+        calcularDescuentoOcasional(cnt,rcol, cliente);
         
         for (ReciboDetFactura reciboDetFactura : facturas) {
         	 //Si no es cancelación, no hay descuento pronto pago
@@ -629,7 +660,7 @@ public class Cobro {
 		}   
     }
     
-    public static CalcDescPP_Output calcularDescPP(ReciboColector rcol, Cliente cliente) {
+    public static CalcDescPP_Output calcularDescPP(Context cnt,ReciboColector rcol, Cliente cliente) {
     	//Creando objeto a devolver
         CalcDescPP_Output out = new CalcDescPP_Output(0, 0, 0, 0);
         
@@ -645,9 +676,10 @@ public class Cobro {
             //Incrementar monto de facturas a cancelar
             out.setMtoTotalFacturasCancelar(out.getMtoTotalFacturasCancelar() + reciboDetFactura.getSubTotal());
             
-          //Calculando fecha de vencimiento más el tiempo de gracia para aplicar descuento PP
+            //Calculando fecha de vencimiento más el tiempo de gracia para aplicar descuento PP
             long fechavencePP = DateUtil.getTime(reciboDetFactura.getFechaAplicaDescPP());
-            int HolgDiasAPp = Integer.parseInt("0");
+            String days=cnt.getApplicationContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("HolguraDiasAplicarDescPP", "0");
+            int HolgDiasAPp = Integer.parseInt(days);
             fechavencePP = DateUtil.addDays(fechavencePP, HolgDiasAPp); //Agregar tiempo de gracia
             //Si la fecha no se ha pasado, se toma en cuenta
             if (fechavencePP >= DateUtil.getTime()) {
@@ -758,7 +790,7 @@ public class Cobro {
         return out;
     }
    
-    public static CalcDescOca_Output calcularDescuentoOcasional(ReciboColector rcol, Cliente cliente) {
+    public static CalcDescOca_Output calcularDescuentoOcasional(Context cnt,ReciboColector rcol, Cliente cliente) {
     	   CalcDescOca_Output out = new CalcDescOca_Output(0, 0);
     	   if (rcol.getFacturasRecibo() == null) return out;
     	   
@@ -773,8 +805,9 @@ public class Cobro {
            float mtoNcProporcionalVigente = 0; //Monto de notas de crédito proporcional al total de facturas vigentes
            float mtoNcProporcionalVencidas = 0; //Monto de notas de crédito proporcional al total de facturas vencidas
            
+           String days=cnt.getApplicationContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("HolguraDiasAplicarDescPP", "0");
            //Parámetro para determinar si una factura está vencida y ya pasó el periódo de gracia
-           int HolgDiasAPp = Integer.parseInt("0");
+           int HolgDiasAPp = Integer.parseInt(days);
            //Calculando montos de facturas
            for (ReciboDetFactura reciboDetFactura : facturasRCol) {
 			

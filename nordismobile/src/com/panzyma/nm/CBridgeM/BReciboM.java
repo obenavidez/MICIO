@@ -8,7 +8,9 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER; 
+import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
+import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
+import static com.panzyma.nm.controller.ControllerProtocol.APLICAR_DESCUENTO; 
 
 import java.util.ArrayList;
 import java.util.Arrays; 
@@ -19,8 +21,7 @@ import org.json.JSONArray;
 
 import android.app.AlertDialog; 
 import android.os.Bundle;
-import android.os.Parcelable;
-/*import android.os.Handler;*/
+import android.os.Parcelable; 
 import android.os.Message;
 import android.util.Log;
 
@@ -29,14 +30,11 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NumberUtil;
-/*import com.panzyma.nm.auxiliar.NMNetWork;*/
-/*import com.panzyma.nm.auxiliar.Parameters; by jrostran */
+import com.panzyma.nm.auxiliar.NumberUtil; 
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.auxiliar.ThreadPool;
-import com.panzyma.nm.auxiliar.Util;
+import com.panzyma.nm.auxiliar.ThreadPool; 
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
@@ -72,6 +70,7 @@ public final class BReciboM {
 	JSONArray jsonA = new JSONArray();
 	static boolean imprimir = false;
     static boolean pagarOnLine = false;
+    Bundle bdl=null;
 	public BReciboM() {
 	}
 
@@ -101,21 +100,21 @@ public final class BReciboM {
 	public boolean handleMessage(Message msg) throws Exception {
 		switch (msg.what) {
 		case SAVE_DATA_FROM_LOCALHOST:
-			Bundle rec=msg.getData();
-			Parcelable [] arrayParcelable = rec.getParcelableArray("facturasToUpdate");			
+		    bdl=msg.getData();
+			Parcelable [] arrayParcelable = bdl.getParcelableArray("facturasToUpdate");			
 			ArrayList<Factura> facturasToUpdate = new ArrayList<Factura>();
 			Object [] list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , Factura[].class);
 			for(Object obj: list){
 				facturasToUpdate.add((Factura)obj);
 			}			
-			onSaveDataToLocalHost((ReciboColector)rec.getParcelable("recibo"), facturasToUpdate);
+			onSaveDataToLocalHost((ReciboColector)bdl.getParcelable("recibo"), facturasToUpdate);
 			break;
 		case LOAD_DATA_FROM_LOCALHOST:
 			onLoadALLDataFromLocalHost();
 			return true;
 		case LOAD_ITEM_FROM_LOCALHOST: 
-			Bundle rec2=msg.getData();
-			onLoadItemFromLocalHost(rec2.getInt("idrecibo"));
+			bdl=msg.getData();
+			onLoadItemFromLocalHost(bdl.getInt("idrecibo"));
 			return true;
 		case DELETE_DATA_FROM_LOCALHOST:
 			onDeleteDataFromLocalHost();
@@ -129,6 +128,15 @@ public final class BReciboM {
 		case UPDATE_ITEM_FROM_SERVER:
 			// onUpdateItem_From_Server();
 			return true;
+		case SOLICITAR_DESCUENTO:
+			bdl=msg.getData();
+			solicitarDescuentoOcacional((ReciboColector)bdl.getParcelable("recibo"),bdl.getString("notas"));
+			return true;
+			
+		case APLICAR_DESCUENTO:
+			bdl=msg.getData();
+			aplicarDescuentoOcacional((ReciboColector)bdl.getParcelable("recibo"));
+			return true;
 		case SEND_DATA_FROM_SERVER:  
 			Bundle rec3=msg.getData();
 			Parcelable [] arrayParcelable2 = rec3.getParcelableArray("facturasToUpdate");			
@@ -138,12 +146,83 @@ public final class BReciboM {
 				facturasToUpdate2.add((Factura)obj);
 			}			 
 			enviarRecibo((ReciboColector)rec3.getParcelable("recibo"), facturasToUpdate2);
-			break;
+			break; 
 
 		}
 		return false;
 	}
 	
+	private void aplicarDescuentoOcacional(final ReciboColector recibo)
+	{
+		try 
+		{
+			pool.execute(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					try 
+					{
+						String credenciales="";
+						credenciales=SessionManager.getCredentials(); 					
+						if(credenciales!="")						
+							ModelRecibo.aplicarDescuentoOcacional(credenciales, recibo);
+						
+					} catch (Exception e) { 
+							e.printStackTrace();
+					}
+				}
+			});
+		} catch (InterruptedException e) 
+		{ 
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void solicitarDescuentoOcacional(final ReciboColector recibo,final String notas) 
+	{
+		try 
+		{
+			pool.execute(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					
+					try 
+					{   
+						String credenciales="";
+						credenciales=SessionManager.getCredentials(); 
+						if(credenciales!="")
+							ModelRecibo.solicitarDescuentoOcacional(credenciales, recibo, notas);
+						
+					} catch (Exception e) 
+					{ 
+						e.printStackTrace();
+						try 
+						{
+							Processor.notifyToView(
+									controller,
+									ERROR,
+									0,
+									0,
+									new ErrorMessage("Error interno en el registro de recibo",e.toString(), "\n Causa: "
+													+ e.getCause()));
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}				
+					
+				}
+			});
+		}catch(Exception e){ 
+				e.printStackTrace(); 
+		}		
+		 
+	}
+
 	private void saveRecibo( ReciboColector recibo,ArrayList<Factura> facturasToUpdate) throws Exception{
 		//Guardando localmente el recibo
 		ReciboColector reciboL=DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext(), facturasToUpdate); 
@@ -491,7 +570,6 @@ public final class BReciboM {
 		} 
 	}
     
-	
 	private void enviarImprimirRecibo(final ReciboColector recibo)
 	{		
 		reciboEdit.runOnUiThread(new Runnable() 
@@ -541,7 +619,6 @@ public final class BReciboM {
 		
 	}
 	
-	 
 	public  void ImprimirReciboColector(ReciboColector rcol,boolean reimpresion) {                
         String recibo = "";  
         String monedaNac = Cobro.getMoneda(reciboEdit);
@@ -988,4 +1065,5 @@ public final class BReciboM {
         }
     }
  
+	
 }

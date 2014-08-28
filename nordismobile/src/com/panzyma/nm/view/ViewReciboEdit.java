@@ -2,22 +2,12 @@ package com.panzyma.nm.view;
  
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
+import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
-  
-
-
-
-
-
-
-
-
-
+import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER; 
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Calendar; 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -31,9 +21,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil; 
 import com.panzyma.nm.auxiliar.ErrorMessage; 
-import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.NumberUtil;
-import com.panzyma.nm.auxiliar.Processor; 
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
@@ -48,13 +36,10 @@ import com.panzyma.nm.model.FacND;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente; 
 import com.panzyma.nm.serviceproxy.Factura;
-import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND; 
-import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder; 
 import com.panzyma.nm.viewdialog.DialogCliente;
@@ -148,6 +133,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_SALVAR_RECIBO = 7;
 	private static final int ID_ENVIAR_RECIBO = 8;
 	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 9;
+	private static final int ID_APLICAR_DESCUENTO_OCASIONAL = 10;
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit"; 
 	public static final String OBJECT_TO_EDIT = "recibo"; 
@@ -156,7 +142,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
 	private static final int VER_DETALLE_DOCUMENTO = 2;
-	private static final int ID_CERRAR = 10;
+	private static final int ID_CERRAR = 11;
 	private ViewReciboEdit me;
 	private Cliente cliente;
 	private ReciboColector recibo=null;
@@ -269,6 +255,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		initMenu();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void loadData() {
 
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
@@ -323,8 +310,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			agregarDocumentosAlDetalleDeRecibo();
 						
 			try {
-				nmapp.getController().setEntities(this,new BClienteM());
-				nmapp.getController().addOutboxHandler(new Handler(this));
+				nmapp.getController().setEntities(this,getBridge()==null?new BClienteM():getBridge());
+				nmapp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());
 				nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -373,6 +360,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		quickAction.addActionItem(new ActionItem(
 				ID_SOLICITAR_DESCUENTO_OCASIONAL,
 				"Solicitar Descuento Ocasional"));
+		quickAction.addActionItem(new ActionItem(
+				ID_APLICAR_DESCUENTO_OCASIONAL,
+				"Aplicar Descuento Ocasional")); 
 		quickAction.addActionItem(null);
 		quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
 
@@ -415,6 +405,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									PagarMonto();
 									
 								break;
+								case ID_SOLICITAR_DESCUENTO_OCASIONAL:
+									 solicitardescuento();
+									break;
+								case ID_APLICAR_DESCUENTO_OCASIONAL:
+									 aplicardescuento();
+									break;
 								case ID_SALVAR_RECIBO:
 									guardarRecibo();
 									salvado=true;
@@ -427,7 +423,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									break;
 								}
 							}
-							
+
 						});
 
 					}
@@ -515,6 +511,73 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		dc.show();
 	}
 
+	private void aplicardescuento() 
+	{
+
+		boolean aplicandoDescOca = ((recibo.getClaveAutorizaDescOca() != null) && (recibo.getClaveAutorizaDescOca().length() > 0)) || (recibo.getPorcDescOcaColector() > 0);
+        if (aplicandoDescOca)
+            DesaplicarDescuentoOcasional();
+        else                
+            AplicarDescuentoOcasional();
+
+	}
+	
+	private void AplicarDescuentoOcasional()
+	{
+		 
+	}
+	
+	private void DesaplicarDescuentoOcasional()
+	{
+		 
+	}
+	
+	private void solicitardescuento()
+	{ 
+		//Si se está fuera de covertura, salir
+        if (SessionManager.isPhoneConnected()) {
+            //Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
+            return;
+        }
+        
+        if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
+        {            
+        	AppDialog.showMessage(me,"Alerta","Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",DialogType.DIALOGO_ALERTA);
+            return;
+        }  
+        if(cliente==null){
+			AppDialog.showMessage(me,"Alerta","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
+			return;
+		} 
+		AppDialog.showMessage(me,"Solicitar descuento Ocosional","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener()
+		{
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onButtonClick(AlertDialog alert, int actionId) 
+			{
+				if(actionId == AppDialog.OK_BUTTOM)
+				{ 					 
+					try 
+					{
+						String nota =  ((TextView)alert.findViewById(R.id.txtpayamount)).getText().toString();
+						nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
+						nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(me):getHandler()); 
+						Message msg = new Message();
+					    Bundle b = new Bundle();
+					    b.putParcelable("recibo", recibo);
+					    b.putString("notas",nota); 
+					    msg.setData(b);
+					    msg.what=SOLICITAR_DESCUENTO;
+					    nmapp.getController().getInboxHandler().sendMessage(msg); 
+					} catch (Exception e) 
+					{ 
+						e.printStackTrace();
+					} 					
+				}
+			}
+		}); 
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void guardarRecibo() {
 
@@ -529,9 +592,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				: tbxNotas.getText().toString()));
 		//
 		if (valido()) 
-		{
-		//cambiar por el true
-		//if (true) {
+		{ 
 
 			this.subTotal = (this.totalFacturas + this.totalNotasDebito + this.totalInteres)
 					- this.totalNotasCredito;
@@ -581,7 +642,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			try 
 			{				 
 				nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-				nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());			
+				nmapp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());			
 				Message msg = new Message();
 			    Bundle b = new Bundle();
 			    b.putParcelable("recibo", recibo); 
@@ -641,7 +702,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	{   
 		
 		if(!valido()) return; 
-        pd.show(this, "Enviando recibo a la central", "Espere por favor", true); 
+        ProgressDialog.show(this, "Enviando recibo a la central", "Espere por favor", true); 
         try 
         {
 			nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
@@ -818,7 +879,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             float montoMinimoRecibo = Float.parseFloat(Cobro.getParametro(me,"MontoMinReciboAplicaDpp")+"");
             if ((recibo.getTotalRecibo() < montoMinimoRecibo) && ValidarMontoAplicaDpp) {
                 //Recalcular detalles del recibo sin aplicar DescPP
-                Cobro.calcularDetFacturasRecibo(recibo, recibo.getCliente(), false);
+                Cobro.calcularDetFacturasRecibo(me,recibo, recibo.getCliente(), false);
                 actualizaTotales();            
                 showStatusOnUI(
     					new ErrorMessage(
@@ -877,6 +938,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 						factura.setSaldo(factura.getTotalFacturado() - factura.getAbonado());
 					}					
 					break;
+
 				case ABONADO:
 					if( ammount.isEvaluar() ){
 						
@@ -934,7 +996,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					break;
 			}
 		}
-		if( agregar ) {
+		if( agregar ) 
+		{
+			facturaDetalle.setFechaAplicaDescPP(factura.getFechaAppDescPP());
 			facturasRecibo.add(factura);
 			recibo.getFacturasRecibo().add(facturaDetalle);
 			documents.add(facturaDetalle);
@@ -1136,7 +1200,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void eliminarDocumento() {
-		if (!"REGISTRADO".equals(recibo.getDescEstado())) return;
+		if (!"REGISTRADO".equals(recibo.getCodEstado())) return;
 		int posicion = positioncache;
 		if (posicion == -1) return;		
 			
@@ -1305,10 +1369,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	
 	private void FINISH_ACTIVITY()
 	{
-		int requescode=0;
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());
-		nmapp.getController().disposeEntities();
+		int requescode=0; 
 		if(pd!=null)
 			pd.dismiss();	
 		Log.d(TAG, "Activity quitting");
@@ -1475,7 +1536,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void PagarMonto() {
-		AppDialog.showMessage(me,"Ingrese el monto","",DialogType.DIALOGO_PAGAR,new AppDialog.OnButtonClickListener(){
+		AppDialog.showMessage(me,"Ingrese el monto","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener(){
 			@Override
 			public void onButtonClick(AlertDialog alert, int actionId) {
 				if(actionId == AppDialog.OK_BUTTOM)
@@ -1549,7 +1610,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
  		               return  String.valueOf(item1.fechaVence).compareTo(String.valueOf(item2.fechaVence));
  		           }
  		    });
-     		
+ 		     String interes= getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcInteresMoratorio", "0");
     		//Procesando documentos ordenados
      		for (FacND fnd : list) {
 				if(fnd.tipo=="FAC"){
@@ -1567,9 +1628,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		             _facRecibo.setFechaVence(_fac.getFechaVencimiento());
 		             _facRecibo.setFechaAplicaDescPP(_fac.getFechaAppDescPP());
 		             _facRecibo.setImpuesto(_fac.getImpuestoFactura()); 
-		             _facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional                
+		             _facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional  
 		             //Calcular el interés moratorio de la factura si está en mora
-		             _facRecibo.setInteresMoratorio(Float.parseFloat("0"));
+		             _facRecibo.setInteresMoratorio(Float.parseFloat(interes));
 		             _facRecibo.setMontoInteres(mtoInteres);                
 		             _facRecibo.setMontoDescEspecifico(0.0F);                
 		             _facRecibo.setPorcDescPromo(0.0F);
@@ -1605,7 +1666,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
                     _ndRecibo.setFecha(_nd.getFecha());
                     _ndRecibo.setFechaVence(_nd.getFechaVence());
                     _ndRecibo.setMontoInteres(mtoInteres);
-                    _ndRecibo.setInteresMoratorio(Float.parseFloat("0"));
+                    _ndRecibo.setInteresMoratorio(Float.parseFloat(interes));
                     _ndRecibo.setMontoND(_nd.getMonto());
                     _ndRecibo.setSaldoND(_nd.getSaldo());                    
                     _ndRecibo.setSaldoTotal(saldoTotalND); 
@@ -1625,6 +1686,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				}
      			//Actualizar detalle de facturas
                 recibo.setFacturasRecibo(fff);
+                documents.addAll(fff);
+                
      		 }
      		 if (_ndsSeleccionadas.size() > 0) {
      			 //Insertar nuevas ncs en el detalle de ncs del recibo            
@@ -1633,9 +1696,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					ccc.add(ndseleccionada);
 				}
      			recibo.setNotasDebitoRecibo(ccc);
+     			documents.addAll(ccc);
      		 }
      		 
-     		Cobro.calcularDetFacturasRecibo(recibo, cliente, true);
+     		Cobro.calcularDetFacturasRecibo(me,recibo, cliente, true);
      		CalculaTotales(); 
      		
      		//Ver si hay monto de descuento que quede de remanente
@@ -1647,6 +1711,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             } 
      	
          }
+         adapter = null;
+         agregarDocumentosAlDetalleDeRecibo();
+         actualizaTotales();
 	}
 	
 	private void CalculaTotales() {        
