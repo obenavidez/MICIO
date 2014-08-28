@@ -535,10 +535,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void solicitardescuento()
 	{ 
 		//Si se está fuera de covertura, salir
-        if (SessionManager.isPhoneConnected()) {
-            //Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
-            return;
-        }
+//        if (SessionManager.isPhoneConnected()) {
+//            //Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
+//            return;
+//        }
         
         if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
         {            
@@ -1002,8 +1002,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			facturasRecibo.add(factura);
 			recibo.getFacturasRecibo().add(facturaDetalle);
 			documents.add(facturaDetalle);
+			
 		}		
 		agregarDocumentosAlDetalleDeRecibo();
+		Cobro.ActualizaTotalFacturas(recibo);
 		actualizaTotales();
 	}
 
