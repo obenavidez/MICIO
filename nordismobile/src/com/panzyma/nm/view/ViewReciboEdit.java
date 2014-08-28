@@ -1064,14 +1064,36 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void agregarPago() {
-		if (recibo != null && recibo.getTotalRecibo() == 0) return;
+		if (recibo != null && recibo.getTotalRecibo() == 0) {
+			AppDialog
+					.showMessage(
+							me,
+							"Información",
+							"No es posible agregar pago, monto pendiente igual a cero.",
+							DialogType.DIALOGO_ALERTA);
+
+			return;
+		}
         
-        if ("REGISTRADO".compareTo(recibo.getCodEstado()) != 0) return;		
+		if ("REGISTRADO".compareTo(recibo.getCodEstado()) != 0) {
+			AppDialog
+					.showMessage(
+							me,
+							"Información",
+							String.format("El estado %s del recibo, no permite agregar pagos",recibo.getDescEstado()),
+							DialogType.DIALOGO_ALERTA);
+			return;
+		}
         
         //Validar que haya pendiente por pagar
         float montoPorPagar = StringUtil.round(recibo.getTotalRecibo() - Cobro.getTotalPagoRecibo(recibo), 2);
         if (montoPorPagar <= 0) {
-            Util.Message.buildToastMessage(this.contexto, "No hay monto pendiente de pago.", TIME_TO_VIEW_MESSAGE);
+        	AppDialog
+			.showMessage(
+					me,
+					"Información",
+					"No hay monto pendiente de pago.",
+					DialogType.DIALOGO_ALERTA);            
             return;
         }
         
