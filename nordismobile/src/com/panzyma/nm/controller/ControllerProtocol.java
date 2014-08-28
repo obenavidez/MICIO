@@ -42,6 +42,7 @@ public interface ControllerProtocol {
     int LOAD_FICHACLIENTE_FROM_SERVER=304; 
     int LOAD_FACTURASCLIENTE_FROM_SERVER=305;    
     int SOLICITAR_DESCUENTO=306;
+    int APLICAR_DESCUENTO=307;
     
     
     int SAVE_DATA_FROM_LOCALHOST=400;

@@ -133,6 +133,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_SALVAR_RECIBO = 7;
 	private static final int ID_ENVIAR_RECIBO = 8;
 	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 9;
+	private static final int ID_APLICAR_DESCUENTO_OCASIONAL = 10;
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit"; 
 	public static final String OBJECT_TO_EDIT = "recibo"; 
@@ -141,7 +142,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
 	private static final int VER_DETALLE_DOCUMENTO = 2;
-	private static final int ID_CERRAR = 10;
+	private static final int ID_CERRAR = 11;
 	private ViewReciboEdit me;
 	private Cliente cliente;
 	private ReciboColector recibo=null;
@@ -254,6 +255,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		initMenu();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void loadData() {
 
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
@@ -308,8 +310,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			agregarDocumentosAlDetalleDeRecibo();
 						
 			try {
-				nmapp.getController().setEntities(this,new BClienteM());
-				nmapp.getController().addOutboxHandler(new Handler(this));
+				nmapp.getController().setEntities(this,getBridge()==null?new BClienteM():getBridge());
+				nmapp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());
 				nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -358,6 +360,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		quickAction.addActionItem(new ActionItem(
 				ID_SOLICITAR_DESCUENTO_OCASIONAL,
 				"Solicitar Descuento Ocasional"));
+		quickAction.addActionItem(new ActionItem(
+				ID_APLICAR_DESCUENTO_OCASIONAL,
+				"Aplicar Descuento Ocasional")); 
 		quickAction.addActionItem(null);
 		quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
 
@@ -400,6 +405,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 								case ID_SOLICITAR_DESCUENTO_OCASIONAL:
 									 solicitardescuento();
 									break;
+								case ID_APLICAR_DESCUENTO_OCASIONAL:
+									 aplicardescuento();
+									break;
 								case ID_SALVAR_RECIBO:
 									guardarRecibo();
 									salvado=true;
@@ -412,6 +420,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									break;
 								}
 							}
+ 
 						});
 
 					}
@@ -499,6 +508,27 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		dc.show();
 	}
 
+	private void aplicardescuento() 
+	{
+
+		boolean aplicandoDescOca = ((recibo.getClaveAutorizaDescOca() != null) && (recibo.getClaveAutorizaDescOca().length() > 0)) || (recibo.getPorcDescOcaColector() > 0);
+        if (aplicandoDescOca)
+            DesaplicarDescuentoOcasional();
+        else                
+            AplicarDescuentoOcasional();
+
+	}
+	
+	private void AplicarDescuentoOcasional()
+	{
+		 
+	}
+	
+	private void DesaplicarDescuentoOcasional()
+	{
+		 
+	}
+	
 	private void solicitardescuento()
 	{ 
 		//Si se está fuera de covertura, salir
@@ -559,9 +589,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				: tbxNotas.getText().toString()));
 		//
 		if (valido()) 
-		{
-		//cambiar por el true
-		//if (true) {
+		{ 
 
 			this.subTotal = (this.totalFacturas + this.totalNotasDebito + this.totalInteres)
 					- this.totalNotasCredito;
@@ -611,7 +639,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			try 
 			{				 
 				nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-				nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());			
+				nmapp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());			
 				Message msg = new Message();
 			    Bundle b = new Bundle();
 			    b.putParcelable("recibo", recibo); 
@@ -1290,10 +1318,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 	private void FINISH_ACTIVITY()
 	{
-		int requescode=0;
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());
-		nmapp.getController().disposeEntities();
+		int requescode=0; 
 		if(pd!=null)
 			pd.dismiss();	
 		Log.d(TAG, "Activity quitting");

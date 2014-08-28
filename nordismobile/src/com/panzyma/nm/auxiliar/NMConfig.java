@@ -1,4 +1,5 @@
 package com.panzyma.nm.auxiliar;
+ 
 
 @SuppressWarnings("unused")
 public class NMConfig
@@ -36,6 +37,7 @@ public class NMConfig
 		public static final String AnularPedido = "AnularPedido";
 		public static final String EnviarRecibo="EnviarRecibo";
 		public static final String SolicitarDescuento="SolicitarDescuento";
+		public static final String VerificarAutorizacionDescuento="VerificarAutorizacionDescuento";
 	}
 	public static final class Cliente
 	{  		
