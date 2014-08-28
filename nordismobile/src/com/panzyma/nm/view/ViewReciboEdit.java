@@ -684,7 +684,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			dialogConfirmacion.setActionPago(new Pagable() {					
 				@Override
 				public void onPagarEvent(List<Ammount> montos) {
-					procesaFactura(facturaDetalle, factura, montos, true);
+					procesaFactura(facturaDetalle, factura, montos, false);
 				}
 			});
 			FragmentManager fragmentManager = getSupportFragmentManager();
