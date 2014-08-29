@@ -62,49 +62,5 @@
        	android:layout_marginBottom="8dp"
         android:ems="10"
         android:inputType="number"/>
-
-    
- 	<TableRow 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
-        android:layout_below="@+id/editkey"
-        android:layout_marginBottom="250dp"
-        android:layout_centerHorizontal="true" 
-        >
-	    <Button 
-	        android:id="@+id/btnaceptar_dialog_confirm" 
-	        android:layout_width="120dp"
-	        android:layout_height="30dp" 
-	        android:paddingTop="2dp"
-	        android:paddingBottom="2dp"
-	        android:layout_marginRight="5dp"
-	        android:background="@drawable/buttomdialog_state"
-	        android:text="Aceptar"
-	        android:textSize="16dip"
-	        android:textColor="@drawable/buttom_text_state" 
-	        android:textAppearance="?android:attr/textAppearanceLarge" 
-	        android:textStyle="normal"
-	        android:typeface="normal"
-	        android:focusable="true" 
-	        android:nextFocusLeft="@+id/btncancelar_dialog_confirm"
-	        android:nextFocusDown="@+id/btncancelar_dialog_confirm"	        
-	        />
-	    <Button 
-	        android:id="@+id/btncancelar_dialog_confirm"
-	        android:layout_width="120dp"
-	        android:layout_height="30dp"   
-	        android:paddingTop="2dp"
-	        android:paddingBottom="2dp"
-	        android:background="@drawable/buttomdialog_state" 
-	        android:text="Cancelar" 
-	        android:textSize="16dip"
-	        android:textColor="@drawable/buttom_text_state"
-	        android:textAppearance="?android:attr/textAppearanceLarge"
-	        android:textStyle="normal"
-	        android:typeface="normal" 
-	        android:focusable="true" 
-	        android:nextFocusRight="@+id/btncancelar_dialog_confirm"
-	        android:nextFocusUp="@+id/btnaceptar_dialog_confirm"
-	     />
-	</TableRow>
+ 
 </RelativeLayout>

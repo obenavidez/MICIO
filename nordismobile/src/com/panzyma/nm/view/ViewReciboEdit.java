@@ -42,6 +42,9 @@ import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND; 
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder; 
+import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
+import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
+import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Seleccionable;
@@ -55,6 +58,7 @@ import com.panzyma.nm.viewdialog.EditFormaPago;
 import com.panzyma.nordismobile.R;
 
 import android.support.v4.app.FragmentActivity; 
+import android.support.v4.app.FragmentTransaction;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -518,13 +522,32 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         if (aplicandoDescOca)
             DesaplicarDescuentoOcasional();
         else                
-            AplicarDescuentoOcasional();
+            aplicarDescuentoOcasional();
 
 	}
 	
-	private void AplicarDescuentoOcasional()
+	private void aplicarDescuentoOcasional()
 	{
-		 
+		if(cliente==null)
+			return;   
+		FragmentTransaction ft =getSupportFragmentManager().beginTransaction(); 
+	    android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+	    if (prev != null) {
+	        ft.remove(prev);
+	    }
+	    ft.addToBackStack(null); 
+	    AplicarDescuentoOcasional newFragment=AplicarDescuentoOcasional.newInstance(recibo);
+	    newFragment.escucharRespuestaAplicarDescOca(new RespuestaAlAplicarDescOca() {
+			
+			@Override
+			public void onButtonClick(Float percentcollector, String clave) 
+			{
+				 recibo.setClaveAutorizaDescOca(clave);
+				 recibo.setPorcDescOcaColector(percentcollector); 
+			}
+		});
+	    
+	    newFragment.show(ft, "dialog"); 
 	}
 	
 	private void DesaplicarDescuentoOcasional()

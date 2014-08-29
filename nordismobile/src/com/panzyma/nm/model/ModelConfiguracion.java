@@ -141,8 +141,8 @@ public class ModelConfiguracion {
 		maxreciboid_server= pref.getInt("max_idrecibo",0); 	
 		
 		if(maxreciboid_local==0 || maxreciboid_local<maxreciboid_server)
-			return maxreciboid_server=3620;
-		return maxreciboid_local=3620; 
+			return maxreciboid_server;
+		return maxreciboid_local; 
 	} 
 	
 	public static int getDeviceID(Context cnt)

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays; 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.ResourceBundle.Control;
 
 import org.json.JSONArray; 
 
@@ -165,8 +166,9 @@ public final class BReciboM {
 					{
 						String credenciales="";
 						credenciales=SessionManager.getCredentials(); 					
-						if(credenciales!="")						
-							ModelRecibo.aplicarDescuentoOcacional(credenciales, recibo);
+						if(credenciales!="") 
+							Processor.notifyToView(controller,ControllerProtocol.REQUEST_APLICAR_DESCUENTO,0,0,ModelRecibo.aplicarDescuentoOcacional(credenciales, recibo));
+							 
 						
 					} catch (Exception e) { 
 							e.printStackTrace();
