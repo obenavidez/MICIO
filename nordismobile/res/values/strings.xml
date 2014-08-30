@@ -45,5 +45,8 @@
     <string name="view_product_disponibilidad">Existencias</string>
     <string name="txtdocumentos_title">Lista de Documentos</string>
     <string name="message_pay_amount">Ingrese el monto</string>
+    <string name="message_ocational_discount">Aplicar Descuento Ocasional</string>
+    <string name="txt_collectorpercent">% Vendedor</string>
+    <string name="txt_ocational_discount_key">Clave</string>
     
 </resources>

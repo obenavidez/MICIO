@@ -9,19 +9,20 @@ import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCA
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
-import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO; 
+import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
+import static com.panzyma.nm.controller.ControllerProtocol.APLICAR_DESCUENTO; 
 
 import java.util.ArrayList;
 import java.util.Arrays; 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.ResourceBundle.Control;
 
 import org.json.JSONArray; 
 
 import android.app.AlertDialog; 
 import android.os.Bundle;
-import android.os.Parcelable;
-/*import android.os.Handler;*/
+import android.os.Parcelable; 
 import android.os.Message;
 import android.util.Log;
 
@@ -30,14 +31,11 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NumberUtil;
-/*import com.panzyma.nm.auxiliar.NMNetWork;*/
-/*import com.panzyma.nm.auxiliar.Parameters; by jrostran */
+import com.panzyma.nm.auxiliar.NumberUtil; 
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.auxiliar.ThreadPool;
-import com.panzyma.nm.auxiliar.Util;
+import com.panzyma.nm.auxiliar.ThreadPool; 
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
@@ -135,6 +133,11 @@ public final class BReciboM {
 			bdl=msg.getData();
 			solicitarDescuentoOcacional((ReciboColector)bdl.getParcelable("recibo"),bdl.getString("notas"));
 			return true;
+			
+		case APLICAR_DESCUENTO:
+			bdl=msg.getData();
+			aplicarDescuentoOcacional((ReciboColector)bdl.getParcelable("recibo"));
+			return true;
 		case SEND_DATA_FROM_SERVER:  
 			Bundle rec3=msg.getData();
 			Parcelable [] arrayParcelable2 = rec3.getParcelableArray("facturasToUpdate");			
@@ -144,10 +147,39 @@ public final class BReciboM {
 				facturasToUpdate2.add((Factura)obj);
 			}			 
 			enviarRecibo((ReciboColector)rec3.getParcelable("recibo"), facturasToUpdate2);
-			break;
+			break; 
 
 		}
 		return false;
+	}
+	
+	private void aplicarDescuentoOcacional(final ReciboColector recibo)
+	{
+		try 
+		{
+			pool.execute(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					try 
+					{
+						String credenciales="";
+						credenciales=SessionManager.getCredentials(); 					
+						if(credenciales!="") 
+							Processor.notifyToView(controller,ControllerProtocol.REQUEST_APLICAR_DESCUENTO,0,0,ModelRecibo.aplicarDescuentoOcacional(credenciales, recibo));
+							 
+						
+					} catch (Exception e) { 
+							e.printStackTrace();
+					}
+				}
+			});
+		} catch (InterruptedException e) 
+		{ 
+			e.printStackTrace();
+		}
+		
 	}
 	
 	private void solicitarDescuentoOcacional(final ReciboColector recibo,final String notas) 

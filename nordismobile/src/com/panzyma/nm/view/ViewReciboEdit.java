@@ -42,6 +42,8 @@ import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND; 
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder; 
+import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
+import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Seleccionable;
@@ -55,6 +57,7 @@ import com.panzyma.nm.viewdialog.EditFormaPago;
 import com.panzyma.nordismobile.R;
 
 import android.support.v4.app.FragmentActivity; 
+import android.support.v4.app.FragmentTransaction;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -133,6 +136,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_SALVAR_RECIBO = 7;
 	private static final int ID_ENVIAR_RECIBO = 8;
 	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 9;
+	private static final int ID_APLICAR_DESCUENTO_OCASIONAL = 10;
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit"; 
 	public static final String OBJECT_TO_EDIT = "recibo"; 
@@ -141,7 +145,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
 	private static final int VER_DETALLE_DOCUMENTO = 2;
-	private static final int ID_CERRAR = 10;
+	private static final int ID_CERRAR = 11;
 	private ViewReciboEdit me;
 	private Cliente cliente;
 	private ReciboColector recibo=null;
@@ -182,7 +186,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			SessionManager.setContext(this);
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
-			nmapp.getController().removebridgeByName(BReciboM.class.toString());
+			nmapp.getController().removeBridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this, brm =  new BReciboM());
 			nmapp.getController().addOutboxHandler(handler=new Handler(this));
 
@@ -254,6 +258,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		initMenu();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void loadData() {
 
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
@@ -308,8 +313,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			agregarDocumentosAlDetalleDeRecibo();
 
 			try {
-				nmapp.getController().setEntities(this,new BClienteM());
-				nmapp.getController().addOutboxHandler(new Handler(this));
+				nmapp.getController().setEntities(this,getBridge()==null?new BClienteM():getBridge());
+				nmapp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());
 				nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -358,62 +363,71 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		quickAction.addActionItem(new ActionItem(
 				ID_SOLICITAR_DESCUENTO_OCASIONAL,
 				"Solicitar Descuento Ocasional"));
+		quickAction.addActionItem(new ActionItem(
+				ID_APLICAR_DESCUENTO_OCASIONAL,
+				"Aplicar Descuento Ocasional")); 
 		quickAction.addActionItem(null);
 		quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
 
 		quickAction
 		.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
-			@Override
-			public void onItemClick(QuickAction source, final int pos,
-					int actionId) {
-
-				runOnUiThread(new Runnable() {
 					@Override
-					public void run() {
-						ActionItem actionItem = quickAction
-								.getActionItem(pos);
-						switch (actionItem.getActionId()) {
-						case ID_SELECCIONAR_CLIENTE:
-							seleccionarCliente();
-							break;
-						case ID_AGREGAR_DOCUMENTOS:
-							agregarDocumentosPendientesCliente();
-							break;
-						case ID_AGREGAR_PAGOS:
-							agregarPago();
-							break;
-						case ID_PAGAR_TODO :
-							if(cliente==null){
-								AppDialog.showMessage(me,"Información","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
-								return;
-							}
-							PagarTodo();
-							break;
-						case  ID_PAGAR_MONTO :
-							if(cliente==null){
-								AppDialog.showMessage(me,"Información","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
-								return;
-							}
-							PagarMonto();
+					public void onItemClick(QuickAction source, final int pos,
+							int actionId) {
 
-							break;
-						case ID_SOLICITAR_DESCUENTO_OCASIONAL:
-							solicitardescuento();
-							break;
-						case ID_SALVAR_RECIBO:
-							guardarRecibo();
-							salvado=true;
-							break;
-						case ID_ENVIAR_RECIBO:
-							enviarRecibo();
-							break;
-						case ID_CERRAR:
-							//finalizarvidad();
-							break;
-						}
-					}
-				});
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								ActionItem actionItem = quickAction
+										.getActionItem(pos);
+								switch (actionItem.getActionId()) {
+								case ID_SELECCIONAR_CLIENTE:
+									seleccionarCliente();
+									break;
+								case ID_AGREGAR_DOCUMENTOS:
+									agregarDocumentosPendientesCliente();
+									break;
+								case ID_AGREGAR_PAGOS:
+									agregarPago();
+									break;
+								case ID_EDITAR_DESCUENTO:
+									editarDescuento();
+									break;
+								case ID_PAGAR_TODO :
+									if(cliente==null){
+										AppDialog.showMessage(me,"Información","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
+										return;
+									}
+									PagarTodo();
+									break;
+								case  ID_PAGAR_MONTO :
+									if(cliente==null){
+										AppDialog.showMessage(me,"Información","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
+										return;
+									}
+									PagarMonto();
+									
+								break;
+								case ID_SOLICITAR_DESCUENTO_OCASIONAL:
+									 solicitardescuento();
+									break;
+								case ID_APLICAR_DESCUENTO_OCASIONAL:
+									 aplicardescuento();
+									break;
+								case ID_SALVAR_RECIBO:
+									guardarRecibo();
+									salvado=true;
+									break;
+								case ID_ENVIAR_RECIBO:
+									enviarRecibo();
+									break;
+								case ID_CERRAR:
+									//finalizarvidad();
+									break;
+								}
+							}
 
+						});
 			}
 
 		});
@@ -499,13 +513,53 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		dc.show();
 	}
 
+	private void aplicardescuento() 
+	{
+
+		boolean aplicandoDescOca = ((recibo.getClaveAutorizaDescOca() != null) && (recibo.getClaveAutorizaDescOca().length() > 0)) || (recibo.getPorcDescOcaColector() > 0);
+        if (aplicandoDescOca)
+            DesaplicarDescuentoOcasional();
+        else                
+            aplicarDescuentoOcasional();
+
+	}
+	
+	private void aplicarDescuentoOcasional()
+	{
+		if(cliente==null)
+			return;   
+		FragmentTransaction ft =getSupportFragmentManager().beginTransaction(); 
+	    android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+	    if (prev != null) {
+	        ft.remove(prev);
+	    }
+	    ft.addToBackStack(null); 
+	    AplicarDescuentoOcasional newFragment=AplicarDescuentoOcasional.newInstance(recibo);
+	    newFragment.escucharRespuestaAplicarDescOca(new RespuestaAlAplicarDescOca() {
+			
+			@Override
+			public void onButtonClick(Float percentcollector, String clave) 
+			{
+				 recibo.setClaveAutorizaDescOca(clave);
+				 recibo.setPorcDescOcaColector(percentcollector); 
+			}
+		});
+	    
+	    newFragment.show(ft, "dialog"); 
+	}
+	
+	private void DesaplicarDescuentoOcasional()
+	{
+		 
+	}
+	
 	private void solicitardescuento()
 	{ 
 		//Si se está fuera de covertura, salir
-		if (SessionManager.isPhoneConnected()) {
-			//Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
-			return;
-		}
+//      if (SessionManager.isPhoneConnected()) {
+//      //Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
+//      return;
+//  }
 
 		if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
 		{            
@@ -559,9 +613,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				: tbxNotas.getText().toString()));
 		//
 		if (valido()) 
-		{
-			//cambiar por el true
-			//if (true) {
+		{ 
+
 
 			this.subTotal = (this.totalFacturas + this.totalNotasDebito + this.totalInteres)
 					- this.totalNotasCredito;
@@ -611,7 +664,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			try 
 			{				 
 				nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-				nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());			
+				nmapp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());			
 				Message msg = new Message();
 				Bundle b = new Bundle();
 				b.putParcelable("recibo", recibo); 
@@ -633,6 +686,38 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			facturas[i] = facturasRecibo.get(i);
 		}
 		return facturas;
+	}
+
+
+	private void editarDescuento() {
+		if(!"REGISTRADO".equals(recibo.getCodEstado()))  return;
+		int posicion = positioncache;
+		if (posicion == -1) return;		
+			
+		final com.panzyma.nm.serviceproxy.Documento documentToEdit;
+		
+		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);
+		
+		if ( documentToEdit instanceof ReciboDetFactura) {
+			
+			final ReciboDetFactura facturaDetalle = (ReciboDetFactura) documentToEdit.getObject();
+			final Factura factura = getFacturaByID(facturaDetalle.getObjFacturaID());
+			
+			final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.EDIT, true);
+			dialogConfirmacion.setActionPago(new Pagable() {					
+				@Override
+				public void onPagarEvent(List<Ammount> montos) {
+					procesaFactura(facturaDetalle, factura, montos, false);
+				}
+			});
+			FragmentManager fragmentManager = getSupportFragmentManager();
+			
+			dialogConfirmacion.show(fragmentManager, "");
+			
+		} else {
+			Util.Message.buildToastMessage(this.getContext(), "No es posible editar el descuento", TIME_TO_VIEW_MESSAGE);
+		}		
+		
 	}
 
 
@@ -871,57 +956,68 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			Factura factura, List<Ammount> montos, boolean agregar) {
 		for (Ammount ammount : montos) {
 			switch (ammount.getAmmountType()) {
-			case ABONADO_OTROS_RECIBOS:
-				factura.setAbonado(ammount.getValue());
-				factura.setSaldo(factura.getTotalFacturado() - factura.getAbonado());
-				break; 
-			case ABONADO:
-				float montoAbonado = 0.00F,
-				saldo = 0.00F;
-				montoAbonado = ammount.getValue();
-				factura.setAbonado(factura.getAbonado() + montoAbonado);
-				saldo = factura.getTotalFacturado() - factura.getAbonado();
-				if ( saldo > 0 ) {
-					factura.setCodEstado("ABONADA");
-					factura.setEstado("Abonada");
-				} else  {
-					factura.setCodEstado("CANCELADA");
-					factura.setEstado("Cancelada");
-				}					
-				facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
-						.getAbonado());
-				factura.setSaldo(saldo);
-				facturaDetalle.setMonto(ammount.getValue());
-				facturaDetalle.setSaldoFactura(factura.getSaldo());
-				Cobro.ActualizaTotalFacturas(recibo);
-				break;
-			case RETENIDO:
-				float montoRetencion = 0.00F;
-				montoRetencion = ammount.getValue();
-				factura.setRetenido(montoRetencion);
-				facturaDetalle.setMontoRetencion(montoRetencion);
-				break;
-			case DESCONTADO:
-				float montoDescuento = 0.00F;
-				montoDescuento = ammount.getValue();
-				factura.setDescontado(montoDescuento);
-				factura.setDescuentoFactura(factura.getDescuentoFactura() + montoDescuento);					
-				if ( montoDescuento > facturaDetalle.getMontoDescEspecificoCalc() ) {
-					try {
-						showStatusOnUI(
-								new ErrorMessage(
-										"Error al editar descuento",
-										"El nuevo descuento no debe ser mayor que " + StringUtil.formatReal(facturaDetalle.getMontoDescEspecificoCalc()) + ".", ""));
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}	                          
-					return;
-				}
-				//Recalcular monto neto
-				Cobro.ActualizaMtoNetoFacturasrecibo(recibo);
-				facturaDetalle.setMontoDescEspecificoCalc(montoDescuento);
-			default:
-				break;
+				case ABONADO_OTROS_RECIBOS :
+					if( ammount.isEvaluar() ){
+						factura.setAbonado(ammount.getValue());
+						factura.setSaldo(factura.getTotalFacturado() - factura.getAbonado());
+					}					
+					break;
+
+				case ABONADO:
+					if( ammount.isEvaluar() ){
+						
+						float montoAbonado = 0.00F,
+						      saldo = 0.00F;
+						
+						montoAbonado = ammount.getValue();
+						factura.setAbonado(factura.getAbonado() + montoAbonado);
+						saldo = factura.getTotalFacturado() - factura.getAbonado();
+						if ( saldo > 0 ) {
+							factura.setCodEstado("ABONADA");
+							factura.setEstado("Abonada");
+						} else  {
+							factura.setCodEstado("CANCELADA");
+							factura.setEstado("Cancelada");
+						}					
+						facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
+								.getAbonado());
+						factura.setSaldo(saldo);
+						facturaDetalle.setMonto(ammount.getValue());
+						facturaDetalle.setSaldoFactura(factura.getSaldo());
+						Cobro.ActualizaTotalFacturas(recibo);
+					}
+					break;
+				case RETENIDO:
+					if( ammount.isEvaluar() ){
+						float montoRetencion = 0.00F;
+						montoRetencion = ammount.getValue();
+						factura.setRetenido(montoRetencion);
+						facturaDetalle.setMontoRetencion(montoRetencion);
+					}
+					break;
+				case DESCONTADO:
+					if( ammount.isEvaluar() ){
+						float montoDescuento = 0.00F;
+						montoDescuento = ammount.getValue();
+						factura.setDescontado(montoDescuento);
+						factura.setDescuentoFactura(factura.getDescuentoFactura() + montoDescuento);					
+						if ( montoDescuento > facturaDetalle.getMontoDescEspecificoCalc() ) {
+							try {
+								showStatusOnUI(
+										new ErrorMessage(
+												          "Error al editar descuento",
+												          "El nuevo descuento no debe ser mayor que " + StringUtil.formatReal(facturaDetalle.getMontoDescEspecificoCalc()) + ".", ""));
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}	                          
+				            return;
+				        }
+						//Recalcular monto neto
+				        Cobro.ActualizaMtoNetoFacturasrecibo(recibo);
+						facturaDetalle.setMontoDescEspecificoCalc(montoDescuento);
+					}
+				default:
+					break;
 			}
 		}
 		if( agregar ) 
@@ -930,8 +1026,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			facturasRecibo.add(factura);
 			recibo.getFacturasRecibo().add(facturaDetalle);
 			documents.add(facturaDetalle);
+			
 		}		
 		agregarDocumentosAlDetalleDeRecibo();
+		Cobro.ActualizaTotalFacturas(recibo);
 		actualizaTotales();
 	}
 
@@ -990,24 +1088,47 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void agregarPago() {
-		if (recibo != null && recibo.getTotalRecibo() == 0) return;
+		if (recibo != null && recibo.getTotalRecibo() == 0) {
+			AppDialog
+					.showMessage(
+							me,
+							"Información",
+							"No es posible agregar pago, monto pendiente igual a cero.",
+							DialogType.DIALOGO_ALERTA);
 
-		if ("REGISTRADO".compareTo(recibo.getCodEstado()) != 0) return;		
-
-		//Validar que haya pendiente por pagar
-		float montoPorPagar = StringUtil.round(recibo.getTotalRecibo() - Cobro.getTotalPagoRecibo(recibo), 2);
-		if (montoPorPagar <= 0) {
-			Util.Message.buildToastMessage(this.contexto, "No hay monto pendiente de pago.", TIME_TO_VIEW_MESSAGE);
 			return;
 		}
+        
+		if ("REGISTRADO".compareTo(recibo.getCodEstado()) != 0) {
+			AppDialog
+					.showMessage(
+							me,
+							"Información",
+							String.format("El estado %s del recibo, no permite agregar pagos",recibo.getDescEstado()),
+							DialogType.DIALOGO_ALERTA);
+			return;
+		}
+        
+        //Validar que haya pendiente por pagar
+        float montoPorPagar = StringUtil.round(recibo.getTotalRecibo() - Cobro.getTotalPagoRecibo(recibo), 2);
+        if (montoPorPagar <= 0) {
+        	AppDialog
+			.showMessage(
+					me,
+					"Información",
+					"No hay monto pendiente de pago.",
+					DialogType.DIALOGO_ALERTA);            
+            return;
+        }
+        
+        FragmentManager fragmentManager = getSupportFragmentManager();        
+        EditFormaPago editarPago = new EditFormaPago();        
+        Bundle parameters = new Bundle();     
+        parameters.putBoolean(FORMA_PAGO_IN_EDITION, false);
+        parameters.putParcelable(OBJECT_TO_EDIT, recibo);
+        editarPago.setArguments(parameters);        
+        editarPago.show(fragmentManager, "");
 
-		FragmentManager fragmentManager = getSupportFragmentManager();        
-		EditFormaPago editarPago = new EditFormaPago();        
-		Bundle parameters = new Bundle();     
-		parameters.putBoolean(FORMA_PAGO_IN_EDITION, false);
-		parameters.putParcelable(OBJECT_TO_EDIT, recibo);
-		editarPago.setArguments(parameters);        
-		editarPago.show(fragmentManager, "");
 	}
 
 	//	private boolean valido() {
@@ -1063,9 +1184,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	public void showMenu(final View view) 
 	{
 
-		runOnUiThread
-		(new Runnable() 
-		{
+		runOnUiThread(new Runnable() {
 			@Override
 			public void run() 
 			{
@@ -1073,29 +1192,30 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				quickAction2.addActionItem(new ActionItem(ID_EDITAR_DOCUMENTO,"Editar Documento"));
 				quickAction2.addActionItem(new ActionItem(VER_DETALLE_DOCUMENTO,"Ver Detalle Documento"));
 				quickAction2.addActionItem(new ActionItem(ID_ELIMINAR_DOCUMENTO, "Eliminar Documento"));
-				quickAction2.setOnActionItemClickListener
-				(new QuickAction.OnActionItemClickListener() 
-				{
+				quickAction2.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {				
+							@Override
+							public void onItemClick(QuickAction source, final int pos,final int actionId) 
+							{ 
+								ActionItem actionItem = quickAction2.getActionItem(pos);
 
-					@Override
-					public void onItemClick(QuickAction source, final int pos,final int actionId) 
-					{ 
-						ActionItem actionItem = quickAction2
-								.getActionItem(pos);
+								switch (actionId) {
+								case ID_EDITAR_DOCUMENTO:
+									editarDocumento();
+									break;
+								case ID_EDITAR_DESCUENTO:
+									editarDescuento();
+									break;
+								case ID_ELIMINAR_DOCUMENTO:
+									eliminarDocumento();
+									break;
+								}								
+									 
+							}
 
-						if(actionId==ID_EDITAR_DOCUMENTO)
-							editarDocumento();
-						else if(actionId==ID_ELIMINAR_DOCUMENTO)
-							eliminarDocumento();							
-
-					}
-
-				}
-						); 
+				}); 
 				quickAction2.show(view,display,false);
 			}
-		}
-				);
+		});
 	}
 
 	private void removeDocument(com.panzyma.nm.serviceproxy.Documento documentRemoved){
@@ -1288,12 +1408,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}); 
 
 	}
+	
 	private void FINISH_ACTIVITY()
 	{
-		int requescode=0;
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());
-		nmapp.getController().disposeEntities();
+		int requescode=0; 
 		if(pd!=null)
 			pd.dismiss();	
 		Log.d(TAG, "Activity quitting");
@@ -1483,6 +1601,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		boolean seguir = true;
 		boolean primeraPasada = true;
 		while (seguir) {
+			documents.clear();
 			recibo.getFacturasRecibo().clear();
 			recibo.getNotasDebitoRecibo().clear();
 			// Declaración de las listas principales

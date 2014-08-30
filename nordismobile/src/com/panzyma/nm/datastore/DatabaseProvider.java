@@ -1151,204 +1151,217 @@ public class DatabaseProvider extends ContentProvider
 	 
 	public static ReciboColector registrarRecibo(ReciboColector recibo, Context cnt, ArrayList<Factura> facturasToUpdate) throws Exception 
 	{
- 
-	 	ContentValues values;
-		ContentValues factura;
-		ContentValues notaDebito;
-		ContentValues notaCredito;
-		ContentValues formasPago;
-		
-		SQLiteDatabase bdd = Helper.getDatabase(cnt);
-		
-		bdd.beginTransaction();
-		
-		values = new ContentValues();
-		
-		values.put(NMConfig.Recibo.NUMERO, recibo.getNumero());
-		values.put(NMConfig.Recibo.FECHA, recibo.getFecha());
-		values.put(NMConfig.Recibo.NOTAS, recibo.getNotas());
-		values.put(NMConfig.Recibo.TOTAL_RECIBO, recibo.getTotalRecibo());		
-		values.put(NMConfig.Recibo.TOTAL_FACTURAS, recibo.getTotalFacturas());
-		values.put(NMConfig.Recibo.TOTAL_NOTAS_DEBITO, recibo.getTotalND());
-		values.put(NMConfig.Recibo.TOTAL_NOTAS_CREDITO, recibo.getTotalNC());
-		values.put(NMConfig.Recibo.TOTAL_INTERES, recibo.getTotalInteres());
-		values.put(NMConfig.Recibo.SUBTOTAL, recibo.getSubTotal());
-		values.put(NMConfig.Recibo.TOTAL_DESCUENTO, recibo.getTotalDesc());
-		values.put(NMConfig.Recibo.TOTAL_RETENIDO, recibo.getTotalRetenido());
-		values.put(NMConfig.Recibo.TOTAL_OTRAS_DEDUCCIONES, recibo.getTotalOtrasDed());
-		values.put(NMConfig.Recibo.TOTAL_OTRAS_DEDUCCIONES, recibo.getTotalOtrasDed());
-		values.put(NMConfig.Recibo.REFERENCIA, recibo.getReferencia());
-		values.put(NMConfig.Recibo.CLIENTE_ID, recibo.getObjClienteID());
-		values.put(NMConfig.Recibo.SUCURSAL_ID, recibo.getObjSucursalID());
-		values.put(NMConfig.Recibo.NOMBRE_CLIENTE, recibo.getNombreCliente());
-		values.put(NMConfig.Recibo.COLECTOR_ID, recibo.getObjColectorID());
-		values.put(NMConfig.Recibo.APLICA_DESCUENTO_OCASIONAL, recibo.isAplicaDescOca());
-		values.put(NMConfig.Recibo.CLAVE_AUTORIZA_DeSCUENTO_OCASIONAL, recibo.getClaveAutorizaDescOca());
-		values.put(NMConfig.Recibo.PORCENTAJE_DESCUENTO_OCASIONAL_COLECTOR, recibo.getPorcDescOcaColector());
-		values.put(NMConfig.Recibo.ESTADO_ID, recibo.getObjEstadoID());
-		values.put(NMConfig.Recibo.CODIGO_ESTADO, recibo.getCodEstado());
-		values.put(NMConfig.Recibo.DESCRICION_ESTADO, recibo.getDescEstado());
-		values.put(NMConfig.Recibo.TOTAL_DESCUENTO_OCASIONAL, recibo.getTotalDescOca());
-		values.put(NMConfig.Recibo.TOTAL_DESCUENTO_PROMOCION, recibo.getTotalDescPromo());
-		values.put(NMConfig.Recibo.TOTAL_DESCUENTO_PRONTO_PAGO, recibo.getTotalDescPP());
-		values.put(NMConfig.Recibo.TOTAL_IMPUESTO_PROPORCIONAL, recibo.getTotalImpuestoProporcional());
-		values.put(NMConfig.Recibo.TOTAL_IMPUESTO_EXONERADO, recibo.getTotalImpuestoExonerado());
-		values.put(NMConfig.Recibo.EXENTO, recibo.isExento());
-		values.put(NMConfig.Recibo.AUTORIZA_DGI, recibo.getAutorizacionDGI());
-				 
-		
-		 //Generar Id del recibo
-       if (recibo.getReferencia() == 0 || recibo.getId() == 0) 
-       {            
-           Integer intId =ModelConfiguracion.getMaxReciboID(cnt,bdd);
-           if (intId == null) 
-               intId = new Integer(1);
-           else
-               intId = intId + 1; 
-           Integer prefix = ModelConfiguracion.getDeviceID(cnt);
-           String strIdMovil = prefix.intValue() + "" + intId.intValue();
-           int idMovil = Integer.parseInt(strIdMovil);
-           
-           recibo.setId(idMovil);
-           recibo.setReferencia(idMovil);
-           recibo.setObjEstadoID(0); 
-           recibo.setCodEstado("REGISTRADO");
-           recibo.setDescEstado("Registrado");
-           values.put(NMConfig.Recibo.ID, recibo.getId());
-           values.put(NMConfig.Recibo.REFERENCIA, recibo.getReferencia());
-           values.put(NMConfig.Recibo.ESTADO_ID, recibo.getObjEstadoID());
-           values.put(NMConfig.Recibo.CODIGO_ESTADO, recibo.getCodEstado());
-   		   values.put(NMConfig.Recibo.DESCRICION_ESTADO, recibo.getDescEstado()); 
-   		   bdd.insert(TABLA_RECIBO, null, values);
-        }else {
-			// ACTUALIZANDO RECIBO
-			bdd.update(TABLA_RECIBO, values, null, null);
-		}	
-		
-		String where = NMConfig.Recibo.DetalleFactura.RECIBO_ID+"="+String.valueOf(recibo.getId());
-		
-		//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
-		bdd.delete(TABLA_RECIBO_DETALLE_FACTURA, where ,null); 
-		
-		//BORRAR LOS DETALLES DE NOTAS DE DEBITO DEL RECIBO
-		bdd.delete(TABLA_RECIBO_DETALLE_NOTA_DEBITO, where ,null);
-		
-		//BORRAR LOS DETALLES DE NOTAS DE CREDITO DEL RECIBO
-		bdd.delete(TABLA_RECIBO_DETALLE_NOTA_CREDITO, where ,null);
-		
-		//BORRAR LOS DETALLES DE NOTAS DE CREDITO DEL RECIBO
-		bdd.delete(TABLA_RECIBO_DETALLE_FORMA_PAGO, where ,null);
-		
-		//INSERTAR EL DETALLE DE FACTURAS DEL RECIBO
-		for(ReciboDetFactura dt : recibo.getFacturasRecibo()){
+		SQLiteDatabase bdd = null;
+		try 
+		{
 			
-			factura = new ContentValues();			
-			factura.put(NMConfig.Recibo.DetalleFactura.RECIBO_ID, recibo.getId());
-			factura.put(NMConfig.Recibo.DetalleFactura.FACTURA_ID, dt.getObjFacturaID());
-			factura.put(NMConfig.Recibo.DetalleFactura.ESABONO, (dt.isEsAbono() ? 255 : 0 ));
-			factura.put(NMConfig.Recibo.DetalleFactura.FECHA, dt.getFecha());
-			factura.put(NMConfig.Recibo.DetalleFactura.FECHA_VENCE, dt.getFechaVence());
-			factura.put(NMConfig.Recibo.DetalleFactura.FECHA_APLICA_DESCUENTO_PRONTO_PAGO, dt.getFechaAplicaDescPP());
-			factura.put(NMConfig.Recibo.DetalleFactura.IMPUESTO, dt.getImpuesto());
-			factura.put(NMConfig.Recibo.DetalleFactura.INTERES_MORATORIO, dt.getInteresMoratorio());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO, dt.getMonto());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO, dt.getMontoDescEspecifico());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_OCASIONAL, dt.getMontoDescOcasional());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_PROMOCION, dt.getMontoDescPromocion());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO, dt.getMontoImpuesto());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO_EXONERADO, dt.getMontoImpuestoExento());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_INTERES, dt.getMontoInteres());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_NETO, dt.getMontoNeto());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_OTRAS_DEDUCCIONES, dt.getMontoOtrasDeducciones());
-			factura.put(NMConfig.Recibo.DetalleFactura.MONTO_RETENCION, dt.getMontoRetencion());
-			factura.put(NMConfig.Recibo.DetalleFactura.NUMERO, dt.getNumero());
-			factura.put(NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_OCASIONAL, dt.getPorcDescOcasional());
-			factura.put(NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_PROMOCION, dt.getPorcDescPromo());
-			factura.put(NMConfig.Recibo.DetalleFactura.SALDO_FACTURA, dt.getSaldofactura());
-			factura.put(NMConfig.Recibo.DetalleFactura.SALDO_TOTAL, dt.getSaldoTotal());
-			factura.put(NMConfig.Recibo.DetalleFactura.SUB_TOTAL, dt.getSubTotal());
-			factura.put(NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA, dt.getTotalfactura());			
+			ContentValues values;
+			ContentValues factura;
+			ContentValues notaDebito;
+			ContentValues notaCredito;
+			ContentValues formasPago;
 			
-			bdd.insert(TABLA_RECIBO_DETALLE_FACTURA, null, factura);
-		}
-		
-		for(ReciboDetND nd: recibo.getNotasDebitoRecibo()){
+			bdd = Helper.getDatabase(cnt);
 			
-			notaDebito = new ContentValues();			
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.NOTADEBITO_ID, nd.getObjNotaDebitoID() );
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.RECIBO_ID, recibo.getId() );
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_INTERES, nd.getMontoInteres() );
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.ESABONO, (nd.isEsAbono() ? 255 : 0 ) );
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_PAGAR, nd.getMontoPagar());
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.NUMERO, nd.getNumero());
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.FECHA, nd.getFecha() );
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.FECHA_VENCE, nd.getFechaVence());
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_ND, nd.getMontoND());
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.SALDO_ND, nd.getSaldoND());
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.INTERES_MORATORIO, nd.getInteresMoratorio() );
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.SALDO_TOTAL, nd.getSaldo() );
-			notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_NETO, nd.getMontoNeto() );
+			bdd.beginTransaction();
 			
-			bdd.insert(TABLA_RECIBO_DETALLE_NOTA_DEBITO, null, notaDebito);
-		}
-		
-		for(ReciboDetNC nd: recibo.getNotasCreditoRecibo()){
+			values = new ContentValues();
 			
-			notaCredito = new ContentValues();			
-			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.NOTACREDITO_ID, nd.getObjNotaCreditoID() );
-			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.RECIBO_ID, recibo.getId() );
-			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.FECHA, nd.getFecha() );
-			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.FECHA_VENCE, nd.getFechaVence() );
-			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.MONTO, nd.getMonto() );
-			notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.NUMERO, nd.getNumero());
+			values.put(NMConfig.Recibo.NUMERO, recibo.getNumero());
+			values.put(NMConfig.Recibo.FECHA, recibo.getFecha());
+			values.put(NMConfig.Recibo.NOTAS, recibo.getNotas());
+			values.put(NMConfig.Recibo.TOTAL_RECIBO, recibo.getTotalRecibo());		
+			values.put(NMConfig.Recibo.TOTAL_FACTURAS, recibo.getTotalFacturas());
+			values.put(NMConfig.Recibo.TOTAL_NOTAS_DEBITO, recibo.getTotalND());
+			values.put(NMConfig.Recibo.TOTAL_NOTAS_CREDITO, recibo.getTotalNC());
+			values.put(NMConfig.Recibo.TOTAL_INTERES, recibo.getTotalInteres());
+			values.put(NMConfig.Recibo.SUBTOTAL, recibo.getSubTotal());
+			values.put(NMConfig.Recibo.TOTAL_DESCUENTO, recibo.getTotalDesc());
+			values.put(NMConfig.Recibo.TOTAL_RETENIDO, recibo.getTotalRetenido());
+			values.put(NMConfig.Recibo.TOTAL_OTRAS_DEDUCCIONES, recibo.getTotalOtrasDed());
+			values.put(NMConfig.Recibo.TOTAL_OTRAS_DEDUCCIONES, recibo.getTotalOtrasDed());
+			values.put(NMConfig.Recibo.REFERENCIA, recibo.getReferencia());
+			values.put(NMConfig.Recibo.CLIENTE_ID, recibo.getObjClienteID());
+			values.put(NMConfig.Recibo.SUCURSAL_ID, recibo.getObjSucursalID());
+			values.put(NMConfig.Recibo.NOMBRE_CLIENTE, recibo.getNombreCliente());
+			values.put(NMConfig.Recibo.COLECTOR_ID, recibo.getObjColectorID());
+			values.put(NMConfig.Recibo.APLICA_DESCUENTO_OCASIONAL, recibo.isAplicaDescOca());
+			values.put(NMConfig.Recibo.CLAVE_AUTORIZA_DeSCUENTO_OCASIONAL, recibo.getClaveAutorizaDescOca());
+			values.put(NMConfig.Recibo.PORCENTAJE_DESCUENTO_OCASIONAL_COLECTOR, recibo.getPorcDescOcaColector());
+			values.put(NMConfig.Recibo.ESTADO_ID, recibo.getObjEstadoID());
+			values.put(NMConfig.Recibo.CODIGO_ESTADO, recibo.getCodEstado());
+			values.put(NMConfig.Recibo.DESCRICION_ESTADO, recibo.getDescEstado());
+			values.put(NMConfig.Recibo.TOTAL_DESCUENTO_OCASIONAL, recibo.getTotalDescOca());
+			values.put(NMConfig.Recibo.TOTAL_DESCUENTO_PROMOCION, recibo.getTotalDescPromo());
+			values.put(NMConfig.Recibo.TOTAL_DESCUENTO_PRONTO_PAGO, recibo.getTotalDescPP());
+			values.put(NMConfig.Recibo.TOTAL_IMPUESTO_PROPORCIONAL, recibo.getTotalImpuestoProporcional());
+			values.put(NMConfig.Recibo.TOTAL_IMPUESTO_EXONERADO, recibo.getTotalImpuestoExonerado());
+			values.put(NMConfig.Recibo.EXENTO, recibo.isExento());
+			values.put(NMConfig.Recibo.AUTORIZA_DGI, recibo.getAutorizacionDGI());
+					 
 			
-			bdd.insert(TABLA_RECIBO_DETALLE_NOTA_CREDITO, null, notaCredito);
-		}
-		
-		for(ReciboDetFormaPago fp: recibo.getFormasPagoRecibo()){
+			 //Generar Id del recibo
+	       if (recibo.getReferencia() == 0 || recibo.getId() == 0) 
+	       {            
+	           Integer intId =ModelConfiguracion.getMaxReciboID(cnt,bdd);
+	           if (intId == null) 
+	               intId = new Integer(1);
+	           else
+	               intId = intId + 1; 
+	           Integer prefix = ModelConfiguracion.getDeviceID(cnt);
+	           String strIdMovil = prefix.intValue() + "" + intId.intValue();
+	           int idMovil = Integer.parseInt(strIdMovil);
+	           
+	           recibo.setId(idMovil);
+	           recibo.setReferencia(idMovil);
+	           recibo.setObjEstadoID(0); 
+	           recibo.setCodEstado("REGISTRADO");
+	           recibo.setDescEstado("Registrado");
+	           values.put(NMConfig.Recibo.ID, recibo.getId());
+	           values.put(NMConfig.Recibo.REFERENCIA, recibo.getReferencia());
+	           values.put(NMConfig.Recibo.ESTADO_ID, recibo.getObjEstadoID());
+	           values.put(NMConfig.Recibo.CODIGO_ESTADO, recibo.getCodEstado());
+	   		   values.put(NMConfig.Recibo.DESCRICION_ESTADO, recibo.getDescEstado()); 
+	   		   bdd.insert(TABLA_RECIBO, null, values);
+	        }else {
+				// ACTUALIZANDO RECIBO
+				bdd.update(TABLA_RECIBO, values, null, null);
+			}	
 			
-			formasPago = new ContentValues();			
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.RECIBO_ID, recibo.getId());
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.FORMA_PAGO_ID, fp.getObjFormaPagoID() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_FORMA_PAGO, fp.getCodFormaPago() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_FORMA_PAGO, fp.getDescFormaPago() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.NUMERO, fp.getNumero() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.MONEDA_ID, fp.getObjMonedaID() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_MONEDA, fp.getCodMoneda() );			
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_MONEDA, fp.getDescMoneda() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.MONTO, fp.getMonto());
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.MONTO_NACIONAL, fp.getMontoNacional() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.ENTIDAD_ID, fp.getObjEntidadID() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_ENTIDAD, fp.getCodEntidad() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_ENTIDAD, fp.getDescEntidad() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.FECHA, fp.getFecha() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.SERIE_BILLETES, fp.getSerieBilletes() );
-			formasPago.put(NMConfig.Recibo.DetalleFormaPago.TASA_CAMBIO, fp.getTasaCambio() );
+			String where = NMConfig.Recibo.DetalleFactura.RECIBO_ID+"="+String.valueOf(recibo.getId());
 			
-			bdd.insert(TABLA_RECIBO_DETALLE_FORMA_PAGO, null, formasPago);
-		}
-		
-		for(int f = 0; ( facturasToUpdate != null && f < facturasToUpdate.size() ); f++ ){
-			StringBuilder sQuery = new StringBuilder();
-			sQuery.append("UPDATE Factura ");
-			sQuery.append(String.format("	SET Estado     = '%s', ", facturasToUpdate.get(f).getEstado()));
-			sQuery.append(String.format("	    CodEstado  = '%s', ", facturasToUpdate.get(f).getCodEstado()));
-			sQuery.append(String.format("	    Abonado    =  %s , ", facturasToUpdate.get(f).getAbonado()));
-			sQuery.append(String.format("	    Descontado =  %s , ", facturasToUpdate.get(f).getDescontado()));
-			sQuery.append(String.format("	    Retenido   =  %s , ", facturasToUpdate.get(f).getRetenido()));
-			sQuery.append(String.format("	    Otro       =  %s , ", facturasToUpdate.get(f).getOtro()));
-			sQuery.append(String.format("	    Saldo      =  %s  ", facturasToUpdate.get(f).getSaldo()));
-			sQuery.append(String.format("	WHERE Id       =  %d  ", facturasToUpdate.get(f).getId()));			
-			bdd.execSQL(sQuery.toString());			
-		}
-		
-		bdd.setTransactionSuccessful();
+			//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
+			bdd.delete(TABLA_RECIBO_DETALLE_FACTURA, where ,null); 
+			
+			//BORRAR LOS DETALLES DE NOTAS DE DEBITO DEL RECIBO
+			bdd.delete(TABLA_RECIBO_DETALLE_NOTA_DEBITO, where ,null);
+			
+			//BORRAR LOS DETALLES DE NOTAS DE CREDITO DEL RECIBO
+			bdd.delete(TABLA_RECIBO_DETALLE_NOTA_CREDITO, where ,null);
+			
+			//BORRAR LOS DETALLES DE NOTAS DE CREDITO DEL RECIBO
+			bdd.delete(TABLA_RECIBO_DETALLE_FORMA_PAGO, where ,null);
+			
+			//INSERTAR EL DETALLE DE FACTURAS DEL RECIBO
+			for(ReciboDetFactura dt : recibo.getFacturasRecibo()){
+				
+				factura = new ContentValues();			
+				factura.put(NMConfig.Recibo.DetalleFactura.RECIBO_ID, recibo.getId());
+				factura.put(NMConfig.Recibo.DetalleFactura.FACTURA_ID, dt.getObjFacturaID());
+				factura.put(NMConfig.Recibo.DetalleFactura.ESABONO, (dt.isEsAbono() ? 255 : 0 ));
+				factura.put(NMConfig.Recibo.DetalleFactura.FECHA, dt.getFecha());
+				factura.put(NMConfig.Recibo.DetalleFactura.FECHA_VENCE, dt.getFechaVence());
+				factura.put(NMConfig.Recibo.DetalleFactura.FECHA_APLICA_DESCUENTO_PRONTO_PAGO, dt.getFechaAplicaDescPP());
+				factura.put(NMConfig.Recibo.DetalleFactura.IMPUESTO, dt.getImpuesto());
+				factura.put(NMConfig.Recibo.DetalleFactura.INTERES_MORATORIO, dt.getInteresMoratorio());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO, dt.getMonto());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO, dt.getMontoDescEspecifico());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_OCASIONAL, dt.getMontoDescOcasional());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_PROMOCION, dt.getMontoDescPromocion());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO, dt.getMontoImpuesto());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO_EXONERADO, dt.getMontoImpuestoExento());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO_INTERES, dt.getMontoInteres());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO_NETO, dt.getMontoNeto());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO_OTRAS_DEDUCCIONES, dt.getMontoOtrasDeducciones());
+				factura.put(NMConfig.Recibo.DetalleFactura.MONTO_RETENCION, dt.getMontoRetencion());
+				factura.put(NMConfig.Recibo.DetalleFactura.NUMERO, dt.getNumero());
+				factura.put(NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_OCASIONAL, dt.getPorcDescOcasional());
+				factura.put(NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_PROMOCION, dt.getPorcDescPromo());
+				factura.put(NMConfig.Recibo.DetalleFactura.SALDO_FACTURA, dt.getSaldofactura());
+				factura.put(NMConfig.Recibo.DetalleFactura.SALDO_TOTAL, dt.getSaldoTotal());
+				factura.put(NMConfig.Recibo.DetalleFactura.SUB_TOTAL, dt.getSubTotal());
+				factura.put(NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA, dt.getTotalfactura());			
+				
+				bdd.insert(TABLA_RECIBO_DETALLE_FACTURA, null, factura);
+			}
+			
+			for(ReciboDetND nd: recibo.getNotasDebitoRecibo()){
+				
+				notaDebito = new ContentValues();			
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.NOTADEBITO_ID, nd.getObjNotaDebitoID() );
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.RECIBO_ID, recibo.getId() );
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_INTERES, nd.getMontoInteres() );
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.ESABONO, (nd.isEsAbono() ? 255 : 0 ) );
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_PAGAR, nd.getMontoPagar());
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.NUMERO, nd.getNumero());
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.FECHA, nd.getFecha() );
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.FECHA_VENCE, nd.getFechaVence());
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_ND, nd.getMontoND());
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.SALDO_ND, nd.getSaldoND());
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.INTERES_MORATORIO, nd.getInteresMoratorio() );
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.SALDO_TOTAL, nd.getSaldo() );
+				notaDebito.put(NMConfig.Recibo.DetalleNotaDebito.MONTO_NETO, nd.getMontoNeto() );
+				
+				bdd.insert(TABLA_RECIBO_DETALLE_NOTA_DEBITO, null, notaDebito);
+			}
+			
+			for(ReciboDetNC nd: recibo.getNotasCreditoRecibo()){
+				
+				notaCredito = new ContentValues();			
+				notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.NOTACREDITO_ID, nd.getObjNotaCreditoID() );
+				notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.RECIBO_ID, recibo.getId() );
+				notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.FECHA, nd.getFecha() );
+				notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.FECHA_VENCE, nd.getFechaVence() );
+				notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.MONTO, nd.getMonto() );
+				notaCredito.put(NMConfig.Recibo.DetalleNotaCredito.NUMERO, nd.getNumero());
+				
+				bdd.insert(TABLA_RECIBO_DETALLE_NOTA_CREDITO, null, notaCredito);
+			}
+			
+			for(ReciboDetFormaPago fp: recibo.getFormasPagoRecibo()){
+				
+				formasPago = new ContentValues();			
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.RECIBO_ID, recibo.getId());
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.FORMA_PAGO_ID, fp.getObjFormaPagoID() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_FORMA_PAGO, fp.getCodFormaPago() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_FORMA_PAGO, fp.getDescFormaPago() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.NUMERO, fp.getNumero() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.MONEDA_ID, fp.getObjMonedaID() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_MONEDA, fp.getCodMoneda() );			
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_MONEDA, fp.getDescMoneda() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.MONTO, fp.getMonto());
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.MONTO_NACIONAL, fp.getMontoNacional() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.ENTIDAD_ID, fp.getObjEntidadID() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.COD_ENTIDAD, fp.getCodEntidad() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.DESC_ENTIDAD, fp.getDescEntidad() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.FECHA, fp.getFecha() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.SERIE_BILLETES, fp.getSerieBilletes() );
+				formasPago.put(NMConfig.Recibo.DetalleFormaPago.TASA_CAMBIO, fp.getTasaCambio() );
+				
+				bdd.insert(TABLA_RECIBO_DETALLE_FORMA_PAGO, null, formasPago);
+			}
+			
+			for(int f = 0; ( facturasToUpdate != null && f < facturasToUpdate.size() ); f++ ){
+				StringBuilder sQuery = new StringBuilder();
+				sQuery.append("UPDATE Factura ");
+				sQuery.append(String.format("	SET Estado     = '%s', ", facturasToUpdate.get(f).getEstado()));
+				sQuery.append(String.format("	    CodEstado  = '%s', ", facturasToUpdate.get(f).getCodEstado()));
+				sQuery.append(String.format("	    Abonado    =  %s , ", facturasToUpdate.get(f).getAbonado()));
+				sQuery.append(String.format("	    Descontado =  %s , ", facturasToUpdate.get(f).getDescontado()));
+				sQuery.append(String.format("	    Retenido   =  %s , ", facturasToUpdate.get(f).getRetenido()));
+				sQuery.append(String.format("	    Otro       =  %s , ", facturasToUpdate.get(f).getOtro()));
+				sQuery.append(String.format("	    Saldo      =  %s  ", facturasToUpdate.get(f).getSaldo()));
+				sQuery.append(String.format("	WHERE Id       =  %d  ", facturasToUpdate.get(f).getId()));			
+				bdd.execSQL(sQuery.toString());			
+			}
+			
+			bdd.setTransactionSuccessful();
 
-		if (bdd != null || (bdd.isOpen())) {
-			bdd.endTransaction();
-			bdd.close();
+			if (bdd != null || (bdd.isOpen())) {
+				bdd.endTransaction();
+				bdd.close();
+			}
+
+			
+		} catch (Exception e) 
+		{
+			if (bdd != null || (bdd.isOpen())) {
+				bdd.endTransaction();
+				bdd.close();
+			}
 		}
-		
+ 
+	 			
 		return recibo;
 	}
 		

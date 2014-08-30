@@ -40,6 +40,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 @SuppressLint("ValidFragment")
 public class DialogoConfirmacion extends DialogFragment implements Callback {	
@@ -51,6 +52,7 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 	private EditText interes;
 	private EditText retencion;
 	private EditText descuento;
+	private TextView titulo;
 	private TableRow rowRetencion;
 	private TableRow rowDescuento;
 	private Documento document;	
@@ -82,10 +84,10 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				List<Ammount> montos = new ArrayList<Ammount>();
-				montos.add(new Ammount(AmmountType.ABONADO_OTROS_RECIBOS, montoAbonado));
-				montos.add(new Ammount(AmmountType.ABONADO, getMontoAbonado()));
-				montos.add(new Ammount(AmmountType.RETENIDO, getMontoRetenido()));
-				montos.add(new Ammount(AmmountType.DESCONTADO, getMontoDescontado()));
+				montos.add(new Ammount(AmmountType.ABONADO_OTROS_RECIBOS, montoAbonado, !editDescuento ) );
+				montos.add(new Ammount(AmmountType.ABONADO, getMontoAbonado(), !editDescuento ) );
+				montos.add(new Ammount(AmmountType.RETENIDO, getMontoRetenido(), !editDescuento) );
+				montos.add(new Ammount(AmmountType.DESCONTADO, getMontoDescontado(), editDescuento));
 				eventPago.onPagarEvent(montos);			
 			}
 		});
@@ -111,6 +113,9 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		rowDescuento = (TableRow) view.findViewById(R.id.tableRowDescuento);
 		retencion = (EditText) view.findViewById(R.id.txtRetencion);
 		descuento = (EditText) view.findViewById(R.id.txtDescuento);
+		titulo = (TextView) view.findViewById(R.id.txtTitulo);
+		
+		titulo.setText("Detalle Abono Documento");
 		
 		nmapp = (NMApp) this.getActivity().getApplicationContext();
 		
@@ -124,7 +129,8 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 				params.putLong("objFacturaID", fac.getObjFacturaID());
 				params.putLong("objReciboID", fac.getObjReciboID());
 				msg.setData(params);
-				nmapp.getController().removebridgeByName(BLogicM.class.toString());
+				nmapp.getController().removeViewByName(DialogoConfirmacion.class.toString());
+				nmapp.getController().removeBridgeByName(BLogicM.class.toString());
 				nmapp.getController().setEntities(this, new BLogicM());
 				nmapp.getController().addOutboxHandler(new Handler(this));
 				nmapp.getController()
@@ -184,7 +190,8 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 				rowDescuento.setVisibility(editDescuento ? View.VISIBLE : View.GONE);
 			}				
 			
-			if (this.editDescuento) {			
+			if (this.editDescuento) {	
+				titulo.setText("Editando descuento");
 				monto.setEnabled(false);
 				retencion.setEnabled(false);
 			}

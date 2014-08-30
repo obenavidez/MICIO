@@ -2,15 +2,18 @@ package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
 import com.comunicator.Parameters;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
@@ -32,6 +35,14 @@ public class ModelRecibo {
 		super();
 	}
 	
+	public synchronized static Object aplicarDescuentoOcacional(String credenciales,ReciboColector recibo) throws Exception
+	{
+		Parameters params=new Parameters((new String[]{"Credentials","fecha","idCliente","idSucursal","referencia"}),
+				 (new Object[]{credenciales,(int)DateUtil.dt2i(Calendar.getInstance().getTime()),recibo.getObjClienteID(),recibo.getObjSucursalID(),recibo.getReferencia()}),
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS})); 
+		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.VerificarAutorizacionDescuento);
+		return rs;
+	}
 	public  synchronized static RespuestaEnviarRecibo enviarRecibo(String credenciales,ReciboColector recibo) throws Exception
 	{		
 		Parameters params=new Parameters((new String[]{"Credentials","r"}),
@@ -48,8 +59,9 @@ public class ModelRecibo {
 				 (new Object[]{credenciales,recibo.getObjClienteID(),recibo.getObjSucursalID(),recibo.getReferencia(),notas}),
 				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.STRING_CLASS}));
 		
-		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
-		return 0; 
+		@SuppressWarnings("unused")
+		SoapObject rs=(SoapObject) NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
+		return (Long) rs.getProperty(0); 
 	}
 	
 	public synchronized static int borraReciboByID (ContentResolver content,int reciboID){
