@@ -55,7 +55,7 @@ public class Cobro
             }
         }
         
-        return puedeAplicarDescOca;
+        return puedeAplicarDescOca=true;//quitar true
     } //ValidaAplicDescOca
 	
 	public static float getTotalPagoRecibo(ReciboColector rcol) {

@@ -7,7 +7,6 @@ import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

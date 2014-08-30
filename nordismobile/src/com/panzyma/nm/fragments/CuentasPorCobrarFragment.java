@@ -188,7 +188,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Info Cliente...", true, false);
@@ -206,7 +206,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			if( waiting != null ) waiting.dismiss();
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Facturas...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()
@@ -224,7 +224,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Débito...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()
@@ -243,7 +243,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Crédito...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()
@@ -262,7 +262,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Pedidos...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()
@@ -281,7 +281,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Recibos...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(BLogicM.class.toString());
+			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
 			nmapp.getController().setEntities(this, new BLogicM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()

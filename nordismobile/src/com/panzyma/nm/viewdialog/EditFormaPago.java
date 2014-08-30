@@ -174,8 +174,12 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	private void cargarCatalogoFormasPago() {
 		try {
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(
-					BValorCatalogoM.class.toString());
+			nmapp.getController().removeViewByName(
+					EditFormaPago.class.toString()
+					);			
+			nmapp.getController().removeBridgeByName(
+					BValorCatalogoM.class.toString()
+					);			
 			nmapp.getController().setEntities(this, new BValorCatalogoM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
@@ -191,8 +195,12 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		try {
 			catalogosReady = false;
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(
-					BValorCatalogoM.class.toString());			
+			nmapp.getController().removeViewByName(
+					EditFormaPago.class.toString()
+					);
+			nmapp.getController().removeBridgeByName(
+					BValorCatalogoM.class.toString()
+					);			
 			nmapp.getController().setEntities(this, new BValorCatalogoM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
@@ -208,8 +216,12 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		try {
 			catalogosReady = false;
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(
-					BValorCatalogoM.class.toString());			
+			nmapp.getController().removeViewByName(
+					EditFormaPago.class.toString()
+					);
+			nmapp.getController().removeBridgeByName(
+					BValorCatalogoM.class.toString()
+					);			
 			nmapp.getController().setEntities(this, new BValorCatalogoM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController().getInboxHandler()
@@ -225,11 +237,15 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		try {
 			BTasaCambioM bridge = null;
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removebridgeByName(
-					BTasaCambioM.class.toString());			
+			nmapp.getController().removeViewByName(
+					EditFormaPago.class.toString()
+					);
+			nmapp.getController().removeBridgeByName(
+					BValorCatalogoM.class.toString()
+					);			
 			nmapp.getController().setEntities(this,bridge = new BTasaCambioM());			
 			nmapp.getController().addOutboxHandler(new Handler(this));			
-			 nmapp.getController().getInboxHandler().sendEmptyMessage(BTasaCambioM.Petition.TASA_CAMBIO.getActionCode());
+			nmapp.getController().getInboxHandler().sendEmptyMessage(BTasaCambioM.Petition.TASA_CAMBIO.getActionCode());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

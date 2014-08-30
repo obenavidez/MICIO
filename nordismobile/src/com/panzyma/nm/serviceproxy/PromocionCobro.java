@@ -114,10 +114,12 @@ public class PromocionCobro implements Serializable, Parcelable {
 
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
 
+		@Override
 		public PromocionCobro createFromParcel(Parcel parcel) {
 			return new PromocionCobro(parcel);
 		}
 
+		@Override
 		public PromocionCobro[] newArray(int size) {
 			return new PromocionCobro[size];
 		}

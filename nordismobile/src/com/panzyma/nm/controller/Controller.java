@@ -113,7 +113,7 @@ public class Controller<T, U>
 		bridge=null;
 	}
 	
-	public void removebridgeByName(String bridgeName)
+	public void removeBridgeByName(String bridgeName)
     {
     	int index = -1;
     	bridgeName = bridgeName.replace("class", "").trim();    	
@@ -126,6 +126,21 @@ public class Controller<T, U>
     	}
     	if (index != -1 )
     		bridges.remove(index);
+    }
+	
+	public void removeViewByName(String viewName)
+    {
+    	int index = -1;
+    	viewName = viewName.replace("class", "").trim();    	
+    	for(int i = 0; i < views.size() ; i++ ){
+    		if (views.get(i).getClass().getName().equals(viewName))
+    		{
+    			index = i;
+    			break;
+    		}
+    	}
+    	if (index != -1 )
+    		views.remove(index);
     }
 	
     public void removebridge(T _bridge)

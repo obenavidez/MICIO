@@ -170,7 +170,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			nmapp.getController().removeOutboxHandler(TAG);
 		    nmapp.getController().removebridge(nmapp.getController().getBridge());
 		    nmapp.getController().disposeEntities();		
-		    nmapp.getController().setEntities(((ViewPedidoEdit)parent),((ViewPedidoEdit)parent).getBridge());
+		    nmapp.getController().setEntities((parent),parent.getBridge());
 		    
 		} catch (Exception e) 
 		{ 

@@ -9,9 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.panzyma.nm.datastore.DatabaseProvider;
-import com.panzyma.nm.serviceproxy.CVenta;
 import com.panzyma.nm.serviceproxy.TasaCambio;
-import com.panzyma.nm.serviceproxy.ValorCatalogo;
 
 public class ModelTasaCambio {
 	

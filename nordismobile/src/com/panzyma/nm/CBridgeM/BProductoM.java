@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
-import android.content.ContentResolver;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -23,7 +22,6 @@ import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.ProductoView;

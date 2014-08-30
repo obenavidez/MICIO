@@ -31,6 +31,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		 DIALOGO_SELECCION (3),
 		 DIALOGO_DINAMICO(4),
 		 DIALOGO_INPUT(5),
+		 DIALOGO_OCADISCOUNT(6),
 		 DIALOGO_NOTIFICACION2 (10);
 		 
 		 int result;
@@ -53,6 +54,8 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	static Button btn_aceptar;
 	static Button btn_cancelar;
 	static EditText txtpayamount;
+	static EditText tbox_discoutnkey;
+	static EditText tbox_percentcollector;
 	public OnButtonClickListener mButtonClickListener;
 	private OnDismissDialogListener mDismissListener;
 	
@@ -87,6 +90,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 			break;
 		case  DIALOGO_INPUT:
 			CreatePayAmountDialog(null);
+		case  DIALOGO_OCADISCOUNT:CreateOcationalDiscountDialog(null);
 		break;
 		default:
 			break;
@@ -117,6 +121,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 			case DIALOGO_INPUT :
 				CreatePayAmountDialog(mylistener);
 				break;
+			case  DIALOGO_OCADISCOUNT:CreateOcationalDiscountDialog(mylistener);
 			default:
 			break;
 			
@@ -181,6 +186,41 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
     	});
 		/*mybuilder.setView(vDialog);
 		alert = mybuilder.create();*/
+	}
+	
+	
+	private static void CreateOcationalDiscountDialog(final OnButtonClickListener mylistener){
+		vDialog =inflater.inflate(R.layout.oca_discount_dialog, null,false);
+		tvtittle = (TextView)vDialog.findViewById(R.id.title_ocadiscount);
+		tvtittle.setText(Tittle.toString());
+		tbox_discoutnkey =(EditText) vDialog.findViewById(R.id.editkey);
+		btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_confirm);
+		btn_aceptar.setOnClickListener(new Button.OnClickListener()
+    	{
+			@Override
+			public void onClick(View v) {
+				if(tbox_discoutnkey.getText().length()>0)
+				{
+					if(tbox_discoutnkey.getText().toString().compareTo("0")==1)
+					{
+						if(mylistener!=null)
+							mylistener.onButtonClick(alert, OK_BUTTOM); 
+						alert.dismiss();
+					}
+				}
+			}	
+    	});
+		btn_cancelar = (Button) vDialog.findViewById(R.id.btncancelar_dialog_confirm);
+		btn_cancelar.setOnClickListener( new Button.OnClickListener()
+	    {
+			@Override
+			public void onClick(View v) {
+				if(mylistener!=null)
+					mylistener.onButtonClick(alert, NO_BUTTOM); 
+				alert.dismiss();
+			}
+	    });
+		
 	}
 	
 	private static void CreatePayAmountDialog(final OnButtonClickListener mylistener){

@@ -342,11 +342,13 @@ public  class DetallePedido implements KvmSerializable,Parcelable{
  
      public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
 
-	     public DetallePedido createFromParcel(Parcel parcel) {
+	     @Override
+		public DetallePedido createFromParcel(Parcel parcel) {
 	          return new DetallePedido(parcel);
 	     }
 	
-	     public DetallePedido[] newArray(int size) {
+	     @Override
+		public DetallePedido[] newArray(int size) {
 	          return new DetallePedido[size];
 	     }
    	 

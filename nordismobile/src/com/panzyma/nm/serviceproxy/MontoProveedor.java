@@ -114,10 +114,12 @@ public final class MontoProveedor implements KvmSerializable, Parcelable {
 
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
 
+		@Override
 		public MontoProveedor createFromParcel(Parcel parcel) {
 			return new MontoProveedor(parcel);
 		}
 
+		@Override
 		public MontoProveedor[] newArray(int size) {
 			return new MontoProveedor[size];
 		}

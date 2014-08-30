@@ -446,10 +446,12 @@ public  class Factura implements KvmSerializable, GenericDocument, Parcelable {
 
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
 
+		@Override
 		public Factura createFromParcel(Parcel parcel) {
 			return new Factura(parcel);
 		}
 
+		@Override
 		public Factura[] newArray(int size) {
 			return new Factura[size];
 		}

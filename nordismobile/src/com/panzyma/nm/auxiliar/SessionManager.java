@@ -5,8 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;  
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;   
-import android.os.Bundle;
-import android.os.Message;
 import android.view.View;
 
 import com.comunicator.Parameters;
@@ -19,8 +17,6 @@ import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewdialog.DialogLogin; 
 import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener; 
 
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 

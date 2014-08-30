@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/LightGrey"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:paddingBottom="10dip"
+    android:orientation="vertical" 
+    >
+    <!-- <TextView
+        android:id="@+id/title_ocadiscount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:textColor="@color/Black"
+        android:textStyle="bold"
+        android:textSize="16sp" 
+        android:text="@string/message_ocational_discount" />
+  -->
+    <TextView
+        android:id="@+id/txtpercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/title_ocadiscount"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="4dp"
+        android:ems="5"
+        android:text="@string/txt_collectorpercent" />
+    
+    <EditText
+        android:id="@+id/editpercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title_ocadiscount"
+        android:layout_toRightOf="@+id/txtpercent" 
+        android:layout_marginTop="15dp"
+       	android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:inputType="number" />
+
+	<TextView
+	    android:id="@+id/txtkey"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/txtpercent"
+	    android:layout_marginBottom="8dp"
+	    android:layout_marginTop="25dp"
+	    android:layout_marginLeft="4dp"
+	    android:ems="5"
+	    android:text="@string/txt_ocational_discount_key" />
+    
+    <EditText
+        android:id="@+id/editkey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtpercent"
+        android:layout_toRightOf="@+id/txtkey" 
+        android:layout_marginTop="16dp"
+       	android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:inputType="number"/>
+ 
+</RelativeLayout>

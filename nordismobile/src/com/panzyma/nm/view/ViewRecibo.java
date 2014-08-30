@@ -400,7 +400,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		nmapp = (NMApp) this.getApplicationContext();
 		try {
-			nmapp.getController().removebridgeByName(BReciboM.class.toString());
+			nmapp.getController().removeBridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this, bpm = new BReciboM());
 			nmapp.getController().addOutboxHandler(new Handler(this));
 			nmapp.getController()

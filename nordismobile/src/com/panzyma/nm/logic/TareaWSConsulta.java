@@ -9,7 +9,6 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
-import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Pedido;
 
 import android.os.AsyncTask;
@@ -26,6 +25,7 @@ public class TareaWSConsulta extends AsyncTask<String, Integer, Boolean> {
 		this.pedido = pedido;
 	}
 
+	@Override
 	protected Boolean doInBackground(String... params) {
 
 		boolean resul = true;
@@ -83,6 +83,7 @@ public class TareaWSConsulta extends AsyncTask<String, Integer, Boolean> {
 		return resul;
 	}
 
+	@Override
 	protected void onPostExecute(Boolean result) {
 
 		if (result) {

@@ -4,165 +4,192 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/lblTitulo"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="3dp"
-        android:background="@color/LightSteelBlue"
-        android:gravity="center_horizontal"
-        android:text="Detalle Pago"
-        android:textColor="@color/DarkBlue"
-        android:textStyle="bold" />
-
-    <TableLayout
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:shrinkColumns="*"
+            android:stretchColumns="*" >
 
-            <TextView
-                android:id="@+id/lblNoFactura"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="3dp"
-                android:text="No. Factura:"
-                android:textSize="11sp" />
-
-            <EditText
-                android:id="@+id/txtNoFactura"
+            <TableRow
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:ems="10"
-                android:enabled="false"
-                android:inputType="text" >
+                android:layout_height="15dp"
+                android:background="#b0b0b0"
+                android:gravity="center_horizontal" >
 
-                <requestFocus />
-            </EditText>
-        </TableRow>
+                <TextView
+                    android:id="@+id/txtTitulo"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_span="2"
+                    android:background="#b0b0b0"
+                    android:padding="15dip"
+                    android:text="Detalle Abono Documento"
+                    android:textColor="@color/DarkBlue"
+                    android:textSize="13sp" />
+            </TableRow>
 
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/lblSaldo"
+            <TableRow
+                android:id="@+id/tableRow1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:text="Saldo:"
-                android:textSize="11sp" />
+                android:gravity="center" >
 
-            <EditText
-                android:id="@+id/txtSaldo"
-                android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/lblNoFactura"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="No. Factura:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtNoFactura"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="text" >
+
+                    <requestFocus />
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:ems="10"
-                android:enabled="false"
-                android:inputType="numberDecimal" />
+                android:gravity="center" >
 
-        </TableRow>
+                <TextView
+                    android:id="@+id/lblSaldo"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Saldo:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtSaldo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblInteres"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Interés:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtInteres"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblMonto"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Monto:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtMonto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:ems="10"
+                    android:enabled="true"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowLdpr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblRetencion"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Retención:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtRetencion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:ems="10"
+                    android:enabled="true"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowDescuento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblDescuento"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Descuento:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtDescuento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:ems="10"
+                    android:enabled="true"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+            
+        </TableLayout>
         
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/lblInteres"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:text="Interés:"
-                android:textSize="11sp" />
-
-            <EditText
-                android:id="@+id/txtInteres"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:ems="10"
-                android:enabled="false"
-                android:inputType="numberDecimal" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/lblMonto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:text="Monto:"
-                android:textSize="11sp" />
-
-            <EditText
-                android:id="@+id/txtMonto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:ems="10"
-                android:enabled="true"
-                android:inputType="numberDecimal" />
-        </TableRow>
-        
-         <TableRow
-            android:id="@+id/tableRowLdpr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/lblRetencion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:text="Retención:"
-                android:textSize="11sp" />
-
-            <EditText
-                android:id="@+id/txtRetencion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:ems="10"
-                android:enabled="true"
-                android:inputType="numberDecimal" />
-        </TableRow>
-        
-         <TableRow
-            android:id="@+id/tableRowDescuento"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/lblDescuento"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:text="Retención:"
-                android:textSize="11sp" />
-
-            <EditText
-                android:id="@+id/txtDescuento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:ems="10"
-                android:enabled="true"
-                android:inputType="numberDecimal" />
-        </TableRow>
-         
-    </TableLayout>
+    </ScrollView>
 
 </LinearLayout>
