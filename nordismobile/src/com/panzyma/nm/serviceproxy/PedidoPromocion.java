@@ -138,11 +138,13 @@ public final class PedidoPromocion implements KvmSerializable,Parcelable {
     public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() 
      {
 
-	      public PedidoPromocion createFromParcel(Parcel parcel) {
+	      @Override
+		public PedidoPromocion createFromParcel(Parcel parcel) {
 	           return new PedidoPromocion(parcel);
 	      }
 	
-	      public PedidoPromocion[] newArray(int size) {
+	      @Override
+		public PedidoPromocion[] newArray(int size) {
 	           return new PedidoPromocion[size];
 	      }
     	 

@@ -24,7 +24,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -1251,8 +1250,8 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         formatter.setCalendar(Calendar.getInstance());
-        Date d = (Date) formatter.parse(DateUtil.idateToStrYY(DateUtil.dt2i(Calendar.getInstance().getTime())));
-        Date d2 = (Date) formatter.parse(getFechaPedido()); 
+        Date d = formatter.parse(DateUtil.idateToStrYY(DateUtil.dt2i(Calendar.getInstance().getTime())));
+        Date d2 = formatter.parse(getFechaPedido()); 
 		if (DateUtil.d2i(d) > DateUtil.d2i(d2)) {
 			// Dialog.alert("La fecha del pedido no debe ser mayor a la fecha actual.");
 			return false;

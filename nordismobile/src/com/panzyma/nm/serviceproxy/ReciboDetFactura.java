@@ -105,6 +105,7 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 		this.ObjReciboID = objReciboID;
 	}
 
+	@Override
 	public float getMonto() {
 		return Monto;
 	}
@@ -201,6 +202,7 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 		this.PorcDescPromo = porcDescPromo;
 	}
 
+	@Override
 	public java.lang.String getNumero() {
 		return Numero;
 	}
@@ -374,11 +376,13 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 	}
 
 	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {	
-	     public ReciboDetFactura createFromParcel(Parcel parcel) {
+	     @Override
+		public ReciboDetFactura createFromParcel(Parcel parcel) {
 	          return new ReciboDetFactura(parcel);
 	     }
 	
-	     public ReciboDetFactura[] newArray(int size) {
+	     @Override
+		public ReciboDetFactura[] newArray(int size) {
 	          return new ReciboDetFactura[size];
 	     }
 	};

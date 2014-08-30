@@ -21,7 +21,6 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.model.ModelCliente;  
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;   
-import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.ViewCliente;
 import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.ViewReciboEdit;

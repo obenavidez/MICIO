@@ -17,10 +17,8 @@ import android.util.Log;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
-import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
-import com.panzyma.nm.auxiliar.NumberUtil;
 /*import com.panzyma.nm.auxiliar.Parameters;*/  
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
@@ -28,7 +26,6 @@ import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
-import com.panzyma.nm.viewmodel.vmProducto;
 
 public class ModelConfiguracion {
 
@@ -123,7 +120,7 @@ public class ModelConfiguracion {
 				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
 				do {
 					
-					maxreciboid_local=(int)c.getInt(0);					
+					maxreciboid_local=c.getInt(0);					
 					
 				} while (c.moveToNext());
 			}			
@@ -141,8 +138,8 @@ public class ModelConfiguracion {
 		maxreciboid_server= pref.getInt("max_idrecibo",0); 	
 		
 		if(maxreciboid_local==0 || maxreciboid_local<maxreciboid_server)
-			return maxreciboid_server=3620;
-		return maxreciboid_local=3620; 
+			return maxreciboid_server;
+		return maxreciboid_local; 
 	} 
 	
 	public static int getDeviceID(Context cnt)

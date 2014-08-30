@@ -17,6 +17,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -24,7 +25,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText; 
 
-public class AplicarDescuentoOcasional extends DialogFragment
+public class AplicarDescuentoOcasional extends DialogFragment implements Handler.Callback
 {
 	
 
@@ -38,13 +39,20 @@ public class AplicarDescuentoOcasional extends DialogFragment
 	    ado.setArguments(args);
 	    return ado;
 	}
-
+	RespuestaAlAplicarDescOca mylisterner;
+	public interface RespuestaAlAplicarDescOca {
+		public abstract void onButtonClick(Float percentcollector,String clave);
+	}
+	public void escucharRespuestaAplicarDescOca(RespuestaAlAplicarDescOca listener){
+		this.mylisterner=listener;
+	}
 	private ViewReciboEdit parent;
 	private View view;
 	private EditText tbox_discoutnkey;
 	private ReciboColector recibo;
 	private EditText tbox_collectorpercent;
 	private String _clave;
+	private Float percentcollector=0.0f;
 	private NMApp nmapp;
 	
 	@Override
@@ -95,11 +103,12 @@ public class AplicarDescuentoOcasional extends DialogFragment
             {
                 @Override
                 public void onClick(View v)
-                {	 
+                {
+                	validar();
                 }
             });
 	    }
-	}
+	} 
 	
 	private void validar()
 	{
@@ -110,20 +119,21 @@ public class AplicarDescuentoOcasional extends DialogFragment
 	           return;
 	       }
 	       
-	       float prc = Float.parseFloat(tbox_collectorpercent.getText().toString().trim());
+	       percentcollector = Float.parseFloat(tbox_collectorpercent.getText().toString().trim());
+	        
 	       //Validar que prc sea entre 0 y 100
-	       if (prc < 0) {
+	       if (percentcollector < 0) {
 	          // Dialog.alert("El porcentaje debe ser mayor o igual a cero.");
 	           return;
 	       }
 	        
-	       if (prc > 100) {
+	       if (percentcollector > 100) {
 	           //Dialog.alert("El porcentaje debe ser menor o igual a 100.");
 	           return;
 	       }
 	        
 	       //Si el porcentaje es menor de 100, pedir clave
-	       if (prc < 100) 
+	       if (percentcollector < 100) 
 	       {
 	           if (tbox_discoutnkey != null && tbox_discoutnkey.isShown()) 
 	           {
@@ -152,10 +162,7 @@ public class AplicarDescuentoOcasional extends DialogFragment
 	
 	
 	//1: válida, 0: inválida, -1: cancelado
-    private boolean verificarAutorizacionDesc(String resp) {
-        //No hay forma de verificar si se está fuera de cobertura
-        if (!SessionManager.isPhoneConnected()) return true; 
-        
+    private boolean verificarAutorizacionDesc(String resp) { 
         //0: No se ha solicitado autorización
         //1: La solicitud aún no ha sido autorizada
         //2: Error al lado del servidor
@@ -190,6 +197,25 @@ public class AplicarDescuentoOcasional extends DialogFragment
         }
         return  false;
     } //verificarClaveDescOca
+
+	@Override
+	public boolean handleMessage(Message msg) { 
+		switch (msg.what) 
+		{
+			case ControllerProtocol.REQUEST_APLICAR_DESCUENTO:	
+				if(verificarAutorizacionDesc(msg.obj.toString()))
+				{
+					mylisterner.onButtonClick(percentcollector,_clave);
+					dismiss();
+				}
+				break;
+			case ControllerProtocol.ERROR:
+				break;
+			default:
+				break;
+		}
+		return false;
+	}
     
 	
 	

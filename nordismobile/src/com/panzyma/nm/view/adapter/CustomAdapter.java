@@ -2,18 +2,14 @@ package com.panzyma.nm.view.adapter;
 import java.util.ArrayList;
 
 import com.panzyma.nm.custom.model.SpinnerModel;
-import com.panzyma.nm.serviceproxy.ValorCatalogo;
-import com.panzyma.nm.viewdialog.EditFormaPago;
 import com.panzyma.nordismobile.R;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
  
 /***** Adapter class extends with ArrayAdapter ******/

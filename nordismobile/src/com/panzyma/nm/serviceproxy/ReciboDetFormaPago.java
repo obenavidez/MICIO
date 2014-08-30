@@ -364,10 +364,12 @@ public class ReciboDetFormaPago implements KvmSerializable, Parcelable {
 	}
 
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+		@Override
 		public ReciboDetFormaPago createFromParcel(Parcel parcel) {
 			return new ReciboDetFormaPago(parcel);
 		}
 
+		@Override
 		public ReciboDetFormaPago[] newArray(int size) {
 			return new ReciboDetFormaPago[size];
 		}

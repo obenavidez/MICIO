@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -59,8 +60,8 @@ public class ModelRecibo {
 				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.STRING_CLASS}));
 		
 		@SuppressWarnings("unused")
-		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
-		return 0; 
+		SoapObject rs=(SoapObject) NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
+		return (Long) rs.getProperty(0); 
 	}
 	
 	public synchronized static int borraReciboByID (ContentResolver content,int reciboID){
