@@ -252,7 +252,17 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		});
 		
 		loadData();
+		loadScreen(true);
 		initMenu();
+	}
+	
+	private void loadScreen(boolean recalcular) {
+		if (recibo.getCodEstado().compareTo("REGISTRADO") == 0) {
+            //Recalcular campos calculados del detalle de las facturas
+            if(recalcular) Cobro.calcularDetFacturasRecibo(contexto, recibo, cliente, true);
+            //Refrescar totales (resumen) del recibo
+            CalculaTotales();             
+        }
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -319,6 +329,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			} 			        
 	        
 		}
+		
 		// ESTABLECER LOS VALORES EN LA VISTA DE EDICION DE RECIBO
 		tbxNumRecibo.setText(""+recibo.getNumero());
 		tbxNotas.setText(""+recibo.getNotas());
@@ -988,9 +999,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							}	                          
 				            return;
 				        }
-						//Recalcular monto neto
-				        Cobro.ActualizaMtoNetoFacturasrecibo(recibo);
+						//Recalcular monto neto				       
 						facturaDetalle.setMontoDescEspecificoCalc(montoDescuento);
+						 Cobro.ActualizaMtoNetoFacturasrecibo(recibo);
 					}
 				default:
 					break;
@@ -1031,12 +1042,34 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 						if (documento instanceof Factura)
 						{
 							final Factura factura = (Factura)documento;
-							//CREAR UN OBJETO DETALLE DE FACURA
+							//CREAR UN OBJETO DETALLE DE FACURA, E INICIALIZARLO
 							final ReciboDetFactura facturaDetalle = new ReciboDetFactura();
 							facturaDetalle.setObjFacturaID(factura.getId());
-							facturaDetalle.setFecha(factura.getFecha());							
+							facturaDetalle.setFecha(factura.getFecha());
+							facturaDetalle.setFechaVence(factura.getFechaVencimiento());
+							facturaDetalle.setFechaAplicaDescPP(factura.getFechaAppDescPP());
 							facturaDetalle.setNumero(factura.getNoFactura());							
 							facturaDetalle.setMontoRetencion(0.00f);
+							facturaDetalle.setEsAbono(false);
+							facturaDetalle.setImpuesto(factura.getImpuestoFactura());
+							facturaDetalle.setMontoImpuesto(0.00F);
+							//Calcular el interés moratorio de la factura si está en mora
+							float porcentajeIntMora = Float.parseFloat((String)Cobro.getParametro(contexto, "PorcInteresMoratorio")) ;														
+							facturaDetalle.setInteresMoratorio(porcentajeIntMora);
+							float interesMoratorio = Cobro.getInteresMoratorio(contexto, factura.getFechaVencimiento(), factura.getSaldo());
+							facturaDetalle.setMontoInteres(interesMoratorio);
+							facturaDetalle.setMontoDescEspecifico(0.0F);					        
+							facturaDetalle.setPorcDescPromo(0.0F);
+							facturaDetalle.setMontoDescPromocion(0.0F);					        
+							facturaDetalle.setPorcDescOcasional(0.0F);
+							facturaDetalle.setMontoDescOcasional(0.0F);					                
+							facturaDetalle.setMontoNeto(0.0F);
+							facturaDetalle.setMontoOtrasDeducciones(0.0F);
+							facturaDetalle.setMontoRetencion(0.0F);
+							facturaDetalle.setSaldoFactura(factura.getSaldo());
+							facturaDetalle.setSaldoTotal(factura.getSaldo() + interesMoratorio );
+							facturaDetalle.setMonto(facturaDetalle.getSaldoTotal());
+							facturaDetalle.setSubTotal(factura.getSubtotalFactura() - factura.getDescuentoFactura());
 							facturaDetalle.setTotalFactura(factura.getTotalFacturado());
 							
 							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.ADD);
