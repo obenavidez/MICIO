@@ -180,7 +180,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			case NOTA_DEBITO:
 				CCNotaDebito [] notasdebito = ((Cliente)msg.obj).getNotasDebitoPendientes();
 				if(notasdebito != null && notasdebito.length > 0 ){
-					loadNotasDebito((ArrayList<CCNotaDebito>)((msg.obj==null)?new ArrayList<CCNotaDebito>(): toList(notasdebito)),C_DATA);
+					loadNotasDebito(((msg.obj==null)? new CCNotaDebito[]{} : notasdebito ),C_DATA);
 				} else {
 					pd.dismiss();
 					FINISH_ACTIVITY();
@@ -190,7 +190,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			case NOTA_CREDITO:
 				CCNotaCredito [] notasCredito = ((Cliente)msg.obj).getNotasCreditoPendientes();
 				if(notasCredito != null && notasCredito.length > 0 ){
-					loadNotasCredito((ArrayList<CCNotaCredito>)((msg.obj==null)?new ArrayList<CCNotaCredito>(): toList(notasCredito)),C_DATA);
+					loadNotasCredito(((msg.obj==null)?new CCNotaCredito[]{} : notasCredito ),C_DATA);
 				} else {
 					pd.dismiss();
 					FINISH_ACTIVITY();
@@ -203,12 +203,13 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		return false;
 	}
 	
-	private void loadNotasCredito(ArrayList<CCNotaCredito> notasCredito, int cData) {
-try {
+	public void loadNotasCredito(CCNotaCredito [] notasCredito, int cData) {
+		try {
 			
-			if(notasCredito.size() > 0){
-				gridheader.setText("Listado Notas Crédito Pendientes ("+notasCredito.size()+")");				
-				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,notasCredito,R.layout.detalle_nota_credito);				 
+			if( notasCredito.length > 0 ){
+				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);
+				gridheader.setText("Listado Notas Crédito Pendientes (" + notasCredito.length + ")");				
+				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,_notasCredito,R.layout.detalle_nota_credito);				 
 				lvnotasd.setAdapter(adapter3);
 				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
 					@Override
@@ -305,14 +306,16 @@ try {
 	} 
 	
 	public void loadFacturas(Factura [] facturas, int cData) {
-		try {
-			/*Object [] objetos = new Object[facturas.size()];
-			Factura [] _facturas = new Factura[facturas.size()];
-			facturas.toArray(objetos);
-			toList(objetos).toArray(_facturas);
-			facturas = (ArrayList<Factura>) Arrays.asList(_facturas) ;*/			
+		try {						
 			if(facturas.length > 0){
+				//SE OBTIENEN LAS FACTURAS QUE NO ESTEN REPETIDAS
 				ArrayList<Factura> _facturas = (ArrayList<Factura>) getArray(facturas, facturas[0]);
+				if( _facturas.size() == 0 ){
+					pd.dismiss();
+					FINISH_ACTIVITY();
+					Util.Message.buildToastMessage(parent, "No existen facturas pendientes", 1000).show();
+					return;
+				}
 				gridheader.setText("Listado de Facturas Pendientes ("+_facturas.size()+")");				
 				adapter = new GenericAdapter<Factura, FacturaViewHolder>(mcontext,FacturaViewHolder.class,_facturas,R.layout.detalle_factura);				 
 				lvfacturas.setAdapter(adapter);
@@ -346,12 +349,13 @@ try {
 			pd.dismiss();	
 	}
 
-	private void loadNotasDebito(ArrayList<CCNotaDebito> notasDebito, int cData){
+	public void loadNotasDebito(CCNotaDebito [] notasDebito, int cData){
 		try {
 			
-			if(notasDebito.size() > 0){
-				gridheader.setText("Listado Notas Debito Pendientes ("+notasDebito.size()+")");				
-				adapter2 = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(mcontext,NotaDebitoViewHolder.class,notasDebito,R.layout.detalle_nota_debito);				 
+			if(notasDebito.length > 0){
+				ArrayList<CCNotaDebito> _notasDebito = (ArrayList<CCNotaDebito>) getArray(notasDebito, notasDebito[0]);
+				gridheader.setText("Listado Notas Debito Pendientes ("+notasDebito.length+")");				
+				adapter2 = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(mcontext,NotaDebitoViewHolder.class,_notasDebito,R.layout.detalle_nota_debito);				 
 				lvnotasd.setAdapter(adapter2);
 				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
 					@Override

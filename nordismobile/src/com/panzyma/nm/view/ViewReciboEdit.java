@@ -1047,7 +1047,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			@Override
 			public void onSeleccionarDocumento(Documento document) {
 
-				DialogDocumentos dialog= new DialogDocumentos(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, cliente, document);
+				final DialogDocumentos dialog= new DialogDocumentos(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, cliente, document);
 				dialog.setOnDialogDocumentoButtonClickListener(new OnDocumentoButtonClickListener() {			
 					@Override
 					public void onButtonClick(Object documento) {
@@ -1058,9 +1058,31 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							//CREAR UN OBJETO DETALLE DE FACURA
 							final ReciboDetFactura facturaDetalle = new ReciboDetFactura();
 							facturaDetalle.setObjFacturaID(factura.getId());
-							facturaDetalle.setFecha(factura.getFecha());							
+							facturaDetalle.setFecha(factura.getFecha());
+							facturaDetalle.setFechaVence(factura.getFechaVencimiento());
+							facturaDetalle.setFechaAplicaDescPP(factura.getFechaAppDescPP());
 							facturaDetalle.setNumero(factura.getNoFactura());							
 							facturaDetalle.setMontoRetencion(0.00f);
+							facturaDetalle.setEsAbono(false);
+							facturaDetalle.setImpuesto(factura.getImpuestoFactura());
+							facturaDetalle.setMontoImpuesto(0.00F);
+							//Calcular el interés moratorio de la factura si está en mora
+							float porcentajeIntMora = Float.parseFloat((String)Cobro.getParametro(contexto, "PorcInteresMoratorio")) ;														
+							facturaDetalle.setInteresMoratorio(porcentajeIntMora);
+							float interesMoratorio = Cobro.getInteresMoratorio(contexto, factura.getFechaVencimiento(), factura.getSaldo());
+							facturaDetalle.setMontoInteres(interesMoratorio);
+							facturaDetalle.setMontoDescEspecifico(0.0F);					        
+							facturaDetalle.setPorcDescPromo(0.0F);
+							facturaDetalle.setMontoDescPromocion(0.0F);					        
+							facturaDetalle.setPorcDescOcasional(0.0F);
+							facturaDetalle.setMontoDescOcasional(0.0F);					                
+							facturaDetalle.setMontoNeto(0.0F);
+							facturaDetalle.setMontoOtrasDeducciones(0.0F);
+							facturaDetalle.setMontoRetencion(0.0F);
+							facturaDetalle.setSaldoFactura(factura.getSaldo());
+							facturaDetalle.setSaldoTotal(factura.getSaldo() + interesMoratorio );
+							facturaDetalle.setMonto(facturaDetalle.getSaldoTotal());
+							facturaDetalle.setSubTotal(factura.getSubtotalFactura() - factura.getDescuentoFactura());
 							facturaDetalle.setTotalFactura(factura.getTotalFacturado());
 
 							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.ADD);
@@ -1068,6 +1090,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
 									procesaFactura(facturaDetalle, factura, montos, true);
+									dialog.loadFacturas(cliente.getFacturasPendientes(), 0);
 								}
 							});
 							FragmentManager fragmentManager = getSupportFragmentManager();
