@@ -6,6 +6,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
@@ -169,7 +170,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			case FACTURA:
 				Factura [] facturas = ((Cliente)msg.obj).getFacturasPendientes();
 				if(facturas != null && facturas.length > 0){
-					loadFacturas((ArrayList<Factura>) ( (msg.obj == null) ? new ArrayList<Factura>() : toList(facturas) ), C_DATA);
+					loadFacturas( ( (msg.obj == null) ? new Factura[]{} : facturas ), C_DATA);
 				}else{
 					pd.dismiss();
 					FINISH_ACTIVITY();
@@ -263,12 +264,57 @@ try {
 		return list;
 	}
 	
-	private void loadFacturas(ArrayList<Factura> facturas, int cData) {
-		try {
+	private ArrayList removeObjectNull(ArrayList arrayList) {
+		ArrayList arrayListResult = new ArrayList<Object>();
+		for(Object obj : arrayList){
+			if(obj != null) arrayListResult.add(obj);
+		}
+		return arrayListResult;
+	}
+	
+	private ArrayList getArray(Object [] array, Object type){
+		
+		List<Factura> facturas = null;
+		List<CCNotaDebito> notasDebito = null;
+		List<CCNotaCredito> notasCredito = null;
+		ArrayList arrayList = null;		
+		
+		if ( type instanceof Factura ) {
 			
-			if(facturas.size() > 0){
-				gridheader.setText("Listado de Facturas Pendientes ("+facturas.size()+")");				
-				adapter = new GenericAdapter<Factura, FacturaViewHolder>(mcontext,FacturaViewHolder.class,facturas,R.layout.detalle_factura);				 
+			Factura [] _facturas = new Factura[array.length];			
+			toList(array).toArray(_facturas);
+			arrayList = new ArrayList( Arrays.asList(_facturas) ) ;
+			return removeObjectNull(arrayList);
+			
+		} else if ( type instanceof CCNotaDebito ) {
+			
+			CCNotaDebito [] _notasDebito = new CCNotaDebito[array.length];			
+			toList(array).toArray(_notasDebito);
+			arrayList = new ArrayList( Arrays.asList(_notasDebito) ) ;
+			return removeObjectNull(arrayList);			
+			
+		} else if ( type instanceof CCNotaCredito ) {
+			
+			CCNotaCredito [] _notasCredito = new CCNotaCredito[array.length];			
+			toList(array).toArray(_notasCredito);
+			arrayList = new ArrayList( Arrays.asList(_notasCredito) ) ;
+			return removeObjectNull(arrayList);			
+			
+		}
+		return null;
+	} 
+	
+	public void loadFacturas(Factura [] facturas, int cData) {
+		try {
+			/*Object [] objetos = new Object[facturas.size()];
+			Factura [] _facturas = new Factura[facturas.size()];
+			facturas.toArray(objetos);
+			toList(objetos).toArray(_facturas);
+			facturas = (ArrayList<Factura>) Arrays.asList(_facturas) ;*/			
+			if(facturas.length > 0){
+				ArrayList<Factura> _facturas = (ArrayList<Factura>) getArray(facturas, facturas[0]);
+				gridheader.setText("Listado de Facturas Pendientes ("+_facturas.size()+")");				
+				adapter = new GenericAdapter<Factura, FacturaViewHolder>(mcontext,FacturaViewHolder.class,_facturas,R.layout.detalle_factura);				 
 				lvfacturas.setAdapter(adapter);
 				lvfacturas.setOnItemClickListener(new OnItemClickListener() {
 					@Override
@@ -287,7 +333,7 @@ try {
 		            	adapter.setSelectedPosition(position); 
 		            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));					            	 
 		            	mButtonClickListener.onButtonClick(factura_selected);
-		            	FINISH_ACTIVITY();						
+		            	//FINISH_ACTIVITY();						
 					}					
 				});
 			}
