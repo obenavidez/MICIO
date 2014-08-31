@@ -207,7 +207,14 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		try {
 			
 			if( notasCredito.length > 0 ){
-				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);
+				//SE OBTIENEN LAS NOTAS DE CREDITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
+				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);				
+				if( _notasCredito.size() == 0 ){
+					pd.dismiss();
+					FINISH_ACTIVITY();
+					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
+					return;
+				}
 				gridheader.setText("Listado Notas Crédito Pendientes (" + notasCredito.length + ")");				
 				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,_notasCredito,R.layout.detalle_nota_credito);				 
 				lvnotasd.setAdapter(adapter3);
@@ -308,7 +315,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	public void loadFacturas(Factura [] facturas, int cData) {
 		try {						
 			if(facturas.length > 0){
-				//SE OBTIENEN LAS FACTURAS QUE NO ESTEN REPETIDAS
+				//SE OBTIENEN LAS FACTURAS SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
 				ArrayList<Factura> _facturas = (ArrayList<Factura>) getArray(facturas, facturas[0]);
 				if( _facturas.size() == 0 ){
 					pd.dismiss();
@@ -353,7 +360,14 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		try {
 			
 			if(notasDebito.length > 0){
+				//SE OBTIENEN LAS NOTAS DE DEBITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
 				ArrayList<CCNotaDebito> _notasDebito = (ArrayList<CCNotaDebito>) getArray(notasDebito, notasDebito[0]);
+				if( _notasDebito.size() == 0 ){
+					pd.dismiss();
+					FINISH_ACTIVITY();
+					Util.Message.buildToastMessage(parent, "No existen notas de débito pendientes", 1000).show();
+					return;
+				}
 				gridheader.setText("Listado Notas Debito Pendientes ("+notasDebito.length+")");				
 				adapter2 = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(mcontext,NotaDebitoViewHolder.class,_notasDebito,R.layout.detalle_nota_debito);				 
 				lvnotasd.setAdapter(adapter2);
