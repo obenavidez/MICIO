@@ -1262,6 +1262,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				}
 				++count;
 			}
+			facturasRecibo.remove(positionDocument);
 			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());			
 		} else if (documentRemoved instanceof ReciboDetND) {
 			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE DEBITO
