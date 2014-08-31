@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -90,7 +91,7 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 		isEditActive=getIntent().getExtras().getBoolean("isEditActive");
 		 try 
 		    { 		
-			 
+			    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 			 	context=this;  
 			 	nmapp=(NMApp) this.getApplicationContext(); 
 		        nmapp.getController().setEntities(this,new BConfiguracionM());
@@ -275,6 +276,7 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 				else if (actionId == ID_SINCRONIZE_PARAMETROS)
 			    {  
 					try {
+						
 						nmapp.getThreadPool().execute(new Runnable()
 						{ 
 							@Override
@@ -417,6 +419,7 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 					   salvarConfiguracion();
 					
 					try {
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 						nmapp.getThreadPool().execute(new Runnable()
 						{ 
 							@Override
@@ -424,6 +427,7 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 						    {
 								try		
 								{
+									setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 									if(SessionManager.getCredenciales().trim()!="") 
 										controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS);
 								}

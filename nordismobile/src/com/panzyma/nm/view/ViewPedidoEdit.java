@@ -310,7 +310,8 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				Lvmpproducto, R.layout.gridproductosavender);
 		grid_dp.setAdapter(adapter);
 		adapter.setSelectedPosition(0);
-		dpselected = Lvmpproducto.get(0);
+		if(Lvmpproducto.size()>0)
+			dpselected = Lvmpproducto.get(0);
 		gridheader.setText("Productos a Facturar(" + adapter.getCount() + ")");
 
 		initMenu();
