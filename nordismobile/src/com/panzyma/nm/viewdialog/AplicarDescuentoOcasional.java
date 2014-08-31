@@ -72,6 +72,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		view = inflater.inflate(R.layout.oca_discount_dialog, null);
 		tbox_discoutnkey =(EditText) view.findViewById(R.id.editkey);
 		tbox_collectorpercent =(EditText) view.findViewById(R.id.editpercent);
+		tbox_collectorpercent.setText("0.0");
 		if(!SessionManager.isPhoneConnected())
 			tbox_discoutnkey.setVisibility(View.GONE);
 		builder.setTitle("Aplicar Descuento Ocasional");
@@ -114,7 +115,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	{
 		
 	       //Si el porcentaje es < 100, pedir clave
-	       if (tbox_collectorpercent.getText().toString().trim() == "") {
+	       if (tbox_collectorpercent.getText().toString().trim().equals("")) {
 	          // Dialog.alert("Ingrese porcentaje asumido por colector.");
 	           return;
 	       }

@@ -90,16 +90,17 @@ public class NMTranslate
 					    {
 							    if(value.getClass()==org.ksoap2.serialization.SoapPrimitive.class)
 							    {
-							    	if(type==String.class)
-							    		fields[i].set(unknowclass,value.toString());
-							    	else if(type==Integer.class || type==Integer.TYPE)
-								    	fields[i].set(unknowclass,(Integer.valueOf(value.toString())));
-							    	else if(type==Float.class || type==Float.TYPE)
-								    	fields[i].set(unknowclass,(Float.valueOf(value.toString())));
-							    	else if(type==Boolean.class || type==Boolean.TYPE)
-								    	fields[i].set(unknowclass,(Boolean.valueOf(value.toString())));
-							    	else if(type==Long.class || type==Long.TYPE)
-								    	fields[i].set(unknowclass,(Long.valueOf(value.toString()))); 
+							    	setValueToField(unknowclass,fields[i],value);
+//							    	if(type==String.class)
+//							    		fields[i].set(unknowclass,value.toString());
+//							    	else if(type==Integer.class || type==Integer.TYPE)
+//								    	fields[i].set(unknowclass,(Integer.valueOf(value.toString())));
+//							    	else if(type==Float.class || type==Float.TYPE)
+//								    	fields[i].set(unknowclass,(Float.valueOf(value.toString())));
+//							    	else if(type==Boolean.class || type==Boolean.TYPE)
+//								    	fields[i].set(unknowclass,(Boolean.valueOf(value.toString())));
+//							    	else if(type==Long.class || type==Long.TYPE)
+//								    	fields[i].set(unknowclass,(Long.valueOf(value.toString()))); 
 							    }
 							    else if(value.getClass()==org.ksoap2.serialization.SoapObject.class)
 							    {   
@@ -107,11 +108,21 @@ public class NMTranslate
 							    	if(soap.getPropertyCount()!=0)
 							    	{									    		 
 								    	soap.getPropertyInfo(0, pInfo);
-								    	Class<?> c=Class.forName("com.panzyma.nm.serviceproxy."+pInfo.getName()); 
-								    	ArrayList<?> o=ToCollection(soap,c);
-								    	T[] objrs =(T[]) Array.newInstance(c, o.size());  
-								    	objrs=o.toArray(objrs); 
-								    	fields[i].set(unknowclass,objrs); 	
+								    	 
+								    	if(fields[i].getType().isArray())
+								    	{
+									    	Class<?> c=Class.forName("com.panzyma.nm.serviceproxy."+pInfo.getName()); 
+									    	ArrayList<?> o=ToCollection(soap,c);
+									    	T[] objrs =(T[]) Array.newInstance(c, o.size());  
+									    	objrs=o.toArray(objrs); 
+									    	fields[i].set(unknowclass,objrs); 	
+							    		}
+								    	else
+								    	{
+								    		Class<?> c=Class.forName(fields[i].getType().getName());  
+								    		T entidad=(T) ToObject(soap,c.newInstance());	
+								    		fields[i].set(unknowclass,entidad); 	
+								    	}
 							    	}			    	 
 							    }
 					    }
@@ -121,6 +132,20 @@ public class NMTranslate
 	   return unknowclass;
 	}
 
+	public static <U> void setValueToField(U unknowclass,Field field,Object value) throws Exception
+	{
+		Type type=field.getType();  
+		if(type==String.class)
+    		field.set(unknowclass,value.toString());
+    	else if(type==Integer.class || type==Integer.TYPE)
+	    	field.set(unknowclass,(Integer.valueOf(value.toString())));
+    	else if(type==Float.class || type==Float.TYPE)
+	    	field.set(unknowclass,(Float.valueOf(value.toString())));
+    	else if(type==Boolean.class || type==Boolean.TYPE)
+	    	field.set(unknowclass,(Boolean.valueOf(value.toString())));
+    	else if(type==Long.class || type==Long.TYPE)
+	    	field.set(unknowclass,(Long.valueOf(value.toString())));
+	}
 	public synchronized static <U, T> ArrayList<T> ToCollection(Object object,Class<T> unKnowClass) throws Exception 
 	{ 
     	Field[] fields;

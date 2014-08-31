@@ -79,9 +79,11 @@ import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
+@SuppressWarnings("rawtypes")
 public class ViewRecibo extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		// TODO Auto-generated method stub
