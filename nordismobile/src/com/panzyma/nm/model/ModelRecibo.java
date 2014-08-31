@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -52,16 +53,14 @@ public class ModelRecibo {
 		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarRecibo,ReciboColector.class);
 		return NMTranslate.ToObject(rs,new RespuestaEnviarRecibo()); 
 	}
-	
+	@SuppressWarnings("unused")
 	public  synchronized static long solicitarDescuentoOcacional(String credenciales,ReciboColector recibo,String notas) throws Exception
 	{		
 		Parameters params=new Parameters((new String[]{"Credentials","idCliente","idSucursal","referencia","notas"}),
 				 (new Object[]{credenciales,recibo.getObjClienteID(),recibo.getObjSucursalID(),recibo.getReferencia(),notas}),
-				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.STRING_CLASS}));
-		
-		@SuppressWarnings("unused")
-		SoapObject rs=(SoapObject) NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
-		return (Long) rs.getProperty(0); 
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.STRING_CLASS}));		
+		SoapPrimitive rs=(SoapPrimitive) NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
+		return Long.parseLong(rs.toString()); 
 	}
 	
 	public synchronized static int borraReciboByID (ContentResolver content,int reciboID){

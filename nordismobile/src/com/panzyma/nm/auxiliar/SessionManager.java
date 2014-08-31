@@ -15,8 +15,8 @@ import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewdialog.DialogLogin; 
-import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener; 
-
+import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;  
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;  
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
@@ -47,7 +47,7 @@ public class SessionManager
 	private static ThreadPool pool;
 	private static CustomDialog dlg; 
     private static Usuario userinfo;
-    
+    public static boolean hasError=false;
 	public SessionManager(){};
 	
 	public static String getNameUser()
@@ -106,7 +106,7 @@ public class SessionManager
 		return islogged;
 	}
 	
-public static String getCredenciales(){
+	public static String getCredenciales(){
 		
 		if (!islogged)
 		{			
@@ -160,10 +160,12 @@ public static String getCredenciales(){
 		isOK=true; 
 		while( ((!SessionManager.isLogged()) && isOK) || (admin && !SessionManager.isAdmin() && isOK) )
 		{
+			if(hasError)break;
 			isOK=false;
 			SessionManager.bloque1(admin);
 			SessionManager.bloque2(admin);  			
 		}
+		SessionManager.hasError=false;
         return SessionManager.isLogged();
     } 
 	
@@ -242,6 +244,7 @@ public static String getCredenciales(){
 		final String password=dl.getPassword();  
 		SessionManager.setLogged(false); 
 		SessionManager.setErrorAuntentication("");		
+		hasError=false;
 		try 
 		{ 							
 			pool.execute(new Runnable()
@@ -304,16 +307,16 @@ public static String getCredenciales(){
 						} catch (InterruptedException e) { 
 							e.printStackTrace();
 						} 
-						showStatus(new NotificationMessage("","Validando Credenciales.",""));
-						//controller._notifyOutboxHandlers(NOTIFICATION, 0, 0, new NotificationMessage("","Validando Credenciales.","")); 
+						 //showStatus(new NotificationMessage("","Validando Credenciales.",""));
+						controller._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, new NotificationMessage("","Validando Credenciales.","")); 
 							
 					}
 					else
 						unlock();
 				 }
 			});	 
-			showStatus(new NotificationMessage("","Probando Conexión.",""));
-			//controller._notifyOutboxHandlers(NOTIFICATION, 0, 0, new NotificationMessage("","Probando Conexión.",""));   
+			//showStatus(new NotificationMessage("","Probando Conexión.",""));
+			controller._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, new NotificationMessage("","Probando Conexión.",""));   
 
 		}
 	    catch (Exception e) {  
@@ -336,25 +339,11 @@ public static String getCredenciales(){
                     }
 	            }
 	      });
-	}
-	
-	public static void showStatus(final NotificationMessage notificacion)
-	{
-		if(dlg!=null)
-			dlg.dismiss();
-		context.runOnUiThread(new Runnable()
-        {
-            @Override
-			public void run()
-            { 
-            	dlg= new CustomDialog(context,notificacion.getMessage()+notificacion.getCause(),false,NOTIFICATION_DIALOG); 
-            	dlg.show();
-            }
-        });		
-	}
+	} 
 	
 	public static void sendErrorMessage(final ErrorMessage error)
 	{
+		hasError=true;
 		context.runOnUiThread(new Runnable()
         {
             @Override

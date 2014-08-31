@@ -7,9 +7,9 @@ import org.ksoap2.serialization.PropertyInfo;
 
 public class ValorCatalogo implements KvmSerializable{
 
-	private long Id;
-    private String Codigo;
-    private String Descripcion;
+	public long Id;
+    public String Codigo;
+    public String Descripcion;
     
 	public ValorCatalogo() { 
 	}	

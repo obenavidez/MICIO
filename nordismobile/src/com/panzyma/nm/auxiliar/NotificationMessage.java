@@ -1,11 +1,35 @@
 package com.panzyma.nm.auxiliar; 
+
+import android.os.Bundle;
+
+import com.panzyma.nm.serviceproxy.ReciboColector;
+import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
+
 public class NotificationMessage {
 	
 	private String title;
 	private String message;
 	private String cause;
 	
+	private static NotificationMessage not;
+	
+	public static NotificationMessage newInstance(String title,String message,String cause) 
+	{
+		if(not==null)
+			not = new NotificationMessage();  
+		not.setNotificicacion(title, message, cause);
+	    return not;
+	}
+	NotificationMessage(){
+		
+	}; 
+	
 	public NotificationMessage(String title,String message,String cause){
+		this.title=title;this.message=message;this.cause=cause;
+	}
+	
+	public void setNotificicacion(String title,String message,String cause)
+	{
 		this.title=title;this.message=message;this.cause=cause;
 	}
 	public void setTittle(String title){

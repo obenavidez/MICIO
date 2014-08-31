@@ -31,6 +31,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil; 
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
@@ -54,6 +55,7 @@ import com.panzyma.nm.serviceproxy.RespuestaEnviarRecibo;
 import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.viewdialog.DialogDocumentos;
+import com.panzyma.nm.viewmodel.vmRecibo;
 
 @SuppressWarnings("rawtypes")
 public final class BReciboM {
@@ -82,8 +84,7 @@ public final class BReciboM {
 		this.pool = ((NMApp) view.getApplicationContext()).getThreadPool();
 	}
 
-	public BReciboM(ViewReciboEdit view) {
-		//view.getApplicationContext()
+	public BReciboM(ViewReciboEdit view) { 
 		this.controller = ((NMApp) view.getApplicationContext())
 				.getController();
 		this.reciboEdit = view;
@@ -197,7 +198,17 @@ public final class BReciboM {
 						String credenciales="";
 						credenciales=SessionManager.getCredentials(); 
 						if(credenciales!="")
-							ModelRecibo.solicitarDescuentoOcacional(credenciales, recibo, notas);
+						{
+							long rs=0;
+							rs=ModelRecibo.solicitarDescuentoOcacional(credenciales, recibo, notas);
+							if(rs!=0)
+								Processor.notifyToView(
+									controller,
+									ControllerProtocol.NOTIFICATION,
+									0,
+									0,
+									NotificationMessage.newInstance("","La solicitud descuento fue enviada a la central con exito",""));
+						}
 						
 					} catch (Exception e) 
 					{ 
@@ -255,6 +266,19 @@ public final class BReciboM {
 					} catch (Exception e) 
 					{ 
 						e.printStackTrace();
+						try 
+						{
+							Processor.notifyToView(
+									controller,
+									ERROR,
+									0,
+									0,
+									new ErrorMessage("Error interno al salvar recibo localmente",e.toString(), "\n Causa: "
+													+ e.getCause()));
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}				
 					
 				}
@@ -347,18 +371,19 @@ public final class BReciboM {
 			pool.execute(new Runnable() {
 
 				@Override
-				public void run() {
+				public void run() 
+				{
 
-					try {
-
-						Processor.send_ViewReciboToView(
-								ModelRecibo
-										.getArrayCustomerFromLocalHost((view != null) ? view
-												.getContentResolver() : view1
-												.getContext()
-												.getContentResolver()),
-								controller);
-					} catch (Exception e) {
+					try 
+					{
+						
+						ArrayList<vmRecibo> vmr=ModelRecibo.getArrayCustomerFromLocalHost((view != null) ? view
+								.getContentResolver() : (view1 != null) ?view1
+								.getContext()
+								.getContentResolver():reciboEdit.getContentResolver());
+						Processor.send_ViewReciboToView(vmr,controller);
+					} catch (Exception e) 
+					{
 						Log.e(logger, "Error in the update thread", e);
 						try {
 							Processor
@@ -440,7 +465,14 @@ public final class BReciboM {
 						if(credenciales!="")
 						{
 							
-							if (recibo.getCodEstado().compareTo("PAGADO") == 0) return;
+							if (recibo.getCodEstado().compareTo("PAGADO") == 0) 
+							{
+								Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION,0,0,
+										NotificationMessage.newInstance("Error en el Modulo Recibo.", 
+												          "Error en el proceso de envio del recibo","" )
+								      );
+								return;
+							}
 					        
 					        if (recibo.getNumero() > 0) 
 					        {
@@ -521,7 +553,7 @@ public final class BReciboM {
 				                //Guardando cambios en el Dispositivo
 				                DatabaseProvider.registrarRecibo(recibo, reciboEdit.getContext(), null);
 				                //Trayendo información del Cliente actualizada desde el servidor y guadarla localmente automaticamente 
-								Cliente cliente=BClienteM.actualizarCliente(reciboEdit.getContext(), credenciales,recibo.getObjSucursalID());
+								Cliente cliente=BClienteM.actualizarCliente(reciboEdit.getContext(), SessionManager.getCredenciales(),recibo.getObjSucursalID());
 								//actualizando el cliente en el hilo principal
 								recibo.setCliente(cliente);
 								//Salvar los cambios en el hilo pricipal
@@ -544,7 +576,8 @@ public final class BReciboM {
 					        	enviarImprimirRecibo(recibo);
 							
 						} 
-						
+						else
+							Processor.notifyToView(controller,0,0,0,null);
 					} catch (Exception e) 
 					{ 
 						

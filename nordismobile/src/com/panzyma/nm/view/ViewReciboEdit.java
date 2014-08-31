@@ -2,6 +2,7 @@ package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER; 
@@ -19,8 +20,10 @@ import com.panzyma.nm.auxiliar.ActionType;
 import com.panzyma.nm.auxiliar.Ammount;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
+import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil; 
 import com.panzyma.nm.auxiliar.ErrorMessage; 
+import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
@@ -84,6 +87,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 
 public class ViewReciboEdit extends FragmentActivity implements Handler.Callback, Editable {
 
+	private static CustomDialog dlg; 
 	private EditText tbxFecha;
 	private EditText tbxNumReferencia;
 	private EditText tbxNumRecibo;
@@ -173,6 +177,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return reciboId;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -206,8 +211,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}  
 
 			contexto = this.getApplicationContext();
-
-			// controller.getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+ 
 			WindowManager wm = (WindowManager) contexto
 					.getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
@@ -310,17 +314,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 
 			adapter = null;
-			agregarDocumentosAlDetalleDeRecibo();
-
-			try {
-				nmapp.getController().setEntities(this,getBridge()==null?new BClienteM():getBridge());
-				nmapp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());
-				nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 			        
-
+			agregarDocumentosAlDetalleDeRecibo(); 
 		}
 		// ESTABLECER LOS VALORES EN LA VISTA DE EDICION DE RECIBO
 		tbxNumRecibo.setText(""+recibo.getNumero());
@@ -457,22 +451,30 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	@Override
 	public boolean handleMessage(Message msg) 
 	{
+		if(dlg!=null)
+			dlg.dismiss();
 		switch(msg.what)
 		{
-		case C_DATA:
-			recibo = (ReciboColector)msg.obj;
-			loadData();
-			break;
-		case ControllerProtocol.ID_REQUEST_SALVARPEDIDO:
-			recibo = (ReciboColector)msg.obj;
-			actualizarOnUINumRef(recibo);
-			Util.Message.buildToastMessage(contexto,
-					"Recibo Guardado!!", 1000).show();
-
-			salvado=true;
-			break;
-		case ControllerProtocol.NOTIFICATION: 
-			break;			
+			case C_DATA:
+				recibo = (ReciboColector)msg.obj;
+				loadData();
+				break;
+			case ControllerProtocol.ID_REQUEST_SALVARPEDIDO:
+				recibo = (ReciboColector)msg.obj;
+				actualizarOnUINumRef(recibo);
+				Util.Message.buildToastMessage(contexto,
+						"Recibo Guardado!!", 1000).show();				
+				salvado=true;
+				break;
+			case ControllerProtocol.NOTIFICATION: 
+				AppDialog.showMessage(me,"",((NotificationMessage)msg.obj).getMessage(),DialogType.DIALOGO_ALERTA);
+				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG2:
+				showStatus(((NotificationMessage)msg.obj));
+				break;
+			case ControllerProtocol.ERROR: 
+				AppDialog.showMessage(me,((ErrorMessage)msg.obj).getTittle(),((ErrorMessage)msg.obj).getMessage(),DialogType.DIALOGO_ALERTA);
+				break;		 
 		}
 		return false;
 	}
@@ -555,18 +557,24 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	
 	private void solicitardescuento()
 	{ 
-		//Si se está fuera de covertura, salir
-//      if (SessionManager.isPhoneConnected()) {
-//      //Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
-//      return;
-//  }
+		//Si se está fuera de covertura, salir 
+        if(!SessionManager.isPhoneConnected()) 
+		{
+            //Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
+            return;
+        }        
+        if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
+        {            
+        	AppDialog.showMessage(me,"Alerta","Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",DialogType.DIALOGO_ALERTA);
+            return;
+        }   
 
 		if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
 		{            
 			AppDialog.showMessage(me,"Alerta","Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",DialogType.DIALOGO_ALERTA);
 			return;
 		}  
-		if(cliente==null){
+		if(cliente==null){ 
 			AppDialog.showMessage(me,"Alerta","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
 			return;
 		} 
@@ -596,9 +604,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					} 					
 				}
 			}
-		}); 
-	}
-
+		});   
+	}  
+ 
 	@SuppressWarnings("unchecked")
 	private void guardarRecibo() {
 
@@ -725,10 +733,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void enviarRecibo()
 	{   
 
-		if(!valido()) return; 
+		if(!valido()) return;  
+		showStatus(NotificationMessage.newInstance("Espere por favor","Enviando recibo a la central",""));  
 		ProgressDialog.show(this, "Enviando recibo a la central", "Espere por favor", true); 
 		try 
-		{
+		{ 
 			nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
 			nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());
 			Toast.makeText(this, "Enviando recibo a la central", Toast.LENGTH_LONG);  	 
@@ -1784,7 +1793,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		actualizaTotales();
 	}
 
-	private void CalculaTotales() {        
+	private void CalculaTotales() 
+	{        
 		double totalInteresFac = 0;
 		double totalFacturas = 0;
 		double totalND = 0;
@@ -1877,6 +1887,21 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 		String snp = netoPago + "";
 		float np = Float.parseFloat(snp);
-		recibo.setTotalRecibo(np);
-	} //CalculaTotales
+		recibo.setTotalRecibo(np); 
+	} // CalculaTotales
+
+	public  void showStatus(final NotificationMessage notificacion)
+	{
+		if(dlg!=null)
+			dlg.dismiss();
+		runOnUiThread(new Runnable()
+        {
+            @Override
+			public void run()
+            { 
+            	dlg= new CustomDialog(me,notificacion.getMessage()+notificacion.getCause(),false,NOTIFICATION_DIALOG); 
+            	dlg.show();
+            }
+        });		
+	} 
 }

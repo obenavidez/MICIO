@@ -93,6 +93,7 @@ public class NMNetWork {
         } 
         catch(Exception ex) 
         {         	 
+        	SessionManager.hasError=true;
         	error=new ErrorMessage("Error de conexión","error en la comunicación con el servidor de aplicaciones.\n",ex.toString());
         	try {
         		if(controller!=null)
