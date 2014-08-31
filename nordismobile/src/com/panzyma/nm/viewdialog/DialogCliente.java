@@ -43,8 +43,6 @@ import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.ClienteViewHolder;
 import com.panzyma.nm.viewmodel.vmCliente;

@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
 
 public class FichaProductoFragment extends Fragment {

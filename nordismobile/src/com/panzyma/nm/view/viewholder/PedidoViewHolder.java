@@ -4,7 +4,6 @@ import android.widget.TextView;
 
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.CCPedido;
 import com.panzyma.nm.view.adapter.InvokeView;
 import com.panzyma.nordismobile.R;

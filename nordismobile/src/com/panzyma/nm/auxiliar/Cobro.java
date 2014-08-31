@@ -607,8 +607,9 @@ public class Cobro
     
 	private static ReciboDetFactura[] getArraOfFacturaDetalle(List<ReciboDetFactura> objList) {
 		   ReciboDetFactura[] list = new ReciboDetFactura[objList.size()];
-		   for(ReciboDetFactura rdf : objList ) {
-			   list[0] = rdf;
+		   
+		   for(int rdf = 0; ( objList != null && rdf < objList.size() ) ; rdf++  ) {
+			   list[rdf] = objList.get(rdf);
 		   }
 		   return list;
 	 }

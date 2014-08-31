@@ -5,7 +5,6 @@ import android.widget.TextView;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.serviceproxy.CCReciboColector;
-import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.InvokeView;
 import com.panzyma.nordismobile.R;
 

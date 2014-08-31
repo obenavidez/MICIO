@@ -2,10 +2,6 @@ package com.panzyma.nm.auxiliar;
 
 import java.util.*;
 
-import android.text.Editable;
-import android.text.Spannable;
-import android.text.style.StyleSpan;
-
 /**
  * 
  */

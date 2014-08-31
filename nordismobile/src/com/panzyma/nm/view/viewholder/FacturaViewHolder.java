@@ -2,6 +2,7 @@ package com.panzyma.nm.view.viewholder;
 
 import android.widget.TextView;
 
+import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.serviceproxy.Factura;
@@ -59,10 +60,23 @@ public class FacturaViewHolder{
 		descontado.setText(""+StringUtil.formatReal(fact.getDescontado()));
 		retenido.setText(""+StringUtil.formatReal(fact.getRetenido()));
 		otro.setText(""+StringUtil.formatReal(fact.getOtro())); 
+		//Interés Moratorio
+        float interes = Cobro.getInteresMoratorio(nofactura.getContext(), fact.getFechaVencimiento(), fact.getSaldo());        
+        fact.setSaldo(fact.getSaldo() + interes);
 		saldo.setText(""+StringUtil.formatReal(fact.getSaldo()));
+		
+		//Número de la factura
+        //Si a la factura no se puede aplicar Desc PP ponerla en roja
+        int color =  R.color.Black;
+        long fechavencePP = DateUtil.getTime(fact.getFechaAppDescPP());
+        int HolgDiasAPp = (Integer) Cobro.getParametro(nofactura.getContext(), "HolguraDiasAplicarDescPP");        
+        fechavencePP = DateUtil.addDays(fechavencePP, HolgDiasAPp); //Agregar tiempo de holgura
+        //Si la fecha ya quedó atrás, pedir descuento ocasional
+        if (fechavencePP < DateUtil.getTime()) color = R.color.Red; 
+        nofactura.setTextColor(color);
  
 		//Estado 
-        int color = R.color.White;
+        color = R.color.White;
         if (fact.getCodEstado().toUpperCase().compareTo("PAGADA") == 0)
         	color = R.color.Blue;
         if ((fact.getCodEstado().toUpperCase().compareTo("EMITIDA") == 0) || (fact.getCodEstado().toUpperCase().compareTo("REIMPRESA") == 0)) 

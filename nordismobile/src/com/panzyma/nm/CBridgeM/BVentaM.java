@@ -5,16 +5,12 @@ import android.os.Message;
 import android.util.Log;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
-import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
-import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
-import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelVenta;
 
 public class BVentaM {
