@@ -282,10 +282,14 @@ public class ViewRecibo extends ActionBarActivity implements
 					break;
 				case EDITAR_RECIBO:
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
-					//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
-					intento.putExtra(RECIBO_ID, recibo_selected.getId());
-					//startActivity(intento);	
-					startActivityForResult(intento, EDITAR_RECIBO);
+					if(recibo_selected != null) {
+						//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
+						intento.putExtra(RECIBO_ID, recibo_selected.getId());
+						//startActivity(intento);	
+						startActivityForResult(intento, EDITAR_RECIBO);
+					} else {
+						Toast.makeText(getApplicationContext(), "No existen recibos para editar", Toast.LENGTH_SHORT).show();
+					}					
 					break;
 				case BORRAR_RECIBO:
 					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
