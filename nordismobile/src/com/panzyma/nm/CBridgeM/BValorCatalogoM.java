@@ -9,14 +9,11 @@ import android.os.Message;
 import android.util.Log;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BVentaM.Petition;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.model.ModelValorCatalogo;
-import com.panzyma.nm.model.ModelVenta;
-import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.viewdialog.EditFormaPago;
 
 public class BValorCatalogoM {

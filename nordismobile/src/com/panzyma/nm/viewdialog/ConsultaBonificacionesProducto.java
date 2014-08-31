@@ -28,7 +28,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -167,7 +166,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 			nmapp.getController().removeOutboxHandler(TAG);
 		    nmapp.getController().removebridge(nmapp.getController().getBridge());
 		    nmapp.getController().disposeEntities();		
-		    nmapp.getController().setEntities(((ViewPedidoEdit)parent),((ViewPedidoEdit)parent).getBridge());
+		    nmapp.getController().setEntities((parent),parent.getBridge());
 		    
 		} catch (Exception e) 
 		{ 

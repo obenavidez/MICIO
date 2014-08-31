@@ -15,9 +15,8 @@ import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewdialog.DialogLogin; 
-import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener; 
- 
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION; 
+import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;  
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;  
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
@@ -340,22 +339,7 @@ public class SessionManager
                     }
 	            }
 	      });
-	}
-	
-	public static void showStatus(final NotificationMessage notificacion)
-	{
-		if(dlg!=null)
-			dlg.dismiss();
-		context.runOnUiThread(new Runnable()
-        {
-            @Override
-			public void run()
-            { 
-            	dlg= new CustomDialog(context,notificacion.getMessage()+notificacion.getCause(),false,NOTIFICATION_DIALOG); 
-            	dlg.show();
-            }
-        });		
-	}
+	} 
 	
 	public static void sendErrorMessage(final ErrorMessage error)
 	{

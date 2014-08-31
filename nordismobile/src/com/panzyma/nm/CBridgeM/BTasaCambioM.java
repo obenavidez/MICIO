@@ -1,19 +1,16 @@
 package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BValorCatalogoM.Petition;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.model.ModelTasaCambio;
-import com.panzyma.nm.model.ModelValorCatalogo;
 import com.panzyma.nm.viewdialog.EditFormaPago;
 
 public class BTasaCambioM {

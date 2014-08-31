@@ -57,6 +57,7 @@ public class ReciboDetNC implements KvmSerializable,Documento, Parcelable {
 		this.ObjNotaCreditoID = objNotaCreditoID;
 	}
 
+	@Override
 	public float getMonto() {
 		return Monto;
 	}
@@ -65,6 +66,7 @@ public class ReciboDetNC implements KvmSerializable,Documento, Parcelable {
 		this.Monto = monto;
 	}
 
+	@Override
 	public java.lang.String getNumero() {
 		return Numero;
 	}
@@ -142,10 +144,12 @@ public class ReciboDetNC implements KvmSerializable,Documento, Parcelable {
 	}
 
 	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {	
-	     public ReciboDetNC createFromParcel(Parcel parcel) {
+	     @Override
+		public ReciboDetNC createFromParcel(Parcel parcel) {
 	          return new ReciboDetNC(parcel);
 	     }	
-	     public ReciboDetNC[] newArray(int size) {
+	     @Override
+		public ReciboDetNC[] newArray(int size) {
 	          return new ReciboDetNC[size];
 	     }
 	};

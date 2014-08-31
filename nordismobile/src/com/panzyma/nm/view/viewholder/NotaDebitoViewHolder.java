@@ -1,5 +1,6 @@
 package com.panzyma.nm.view.viewholder;
 
+import android.annotation.SuppressLint;
 import android.widget.TextView;
 
 import com.panzyma.nm.auxiliar.DateUtil;
@@ -8,6 +9,7 @@ import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.view.adapter.InvokeView;
 import com.panzyma.nordismobile.R;
 
+@SuppressLint("DefaultLocale")
 public class NotaDebitoViewHolder {
 
 	@InvokeView(viewId = R.id.cxctextv_nond)
@@ -29,10 +31,21 @@ public class NotaDebitoViewHolder {
 	@InvokeView(viewId = R.id.cxctext_detalle_saldo)
 	public TextView saldo;
 
+	@SuppressLint("DefaultLocale")
 	public void mappingData(Object entity) {
 		// PREGUNTAR SI SE TIENE UNA INSTANCIA ADECUADA
 		if (entity instanceof CCNotaDebito) {
-			CCNotaDebito cnota = (CCNotaDebito) entity;
+			int color = R.color.Black;			
+			CCNotaDebito cnota = (CCNotaDebito) entity;			
+            if (cnota.getCodEstado().toUpperCase().compareTo("PAGADA") == 0) color = R.color.Blue;
+            if (cnota.getCodEstado().toUpperCase().compareTo("AUTORIZADA") == 0) {
+                if (cnota.getDias() > 0) 
+                    color = R.color.Red;
+                else
+                    color = R.color.Green;
+            }
+            estado.setTextColor(color);
+            color = R.color.Black;	
 			numero.setText("" + cnota.getNumero());
 			estado.setText("" + cnota.getCodEstado());
 			fecha.setText("" + DateUtil.idateToStrYY( cnota.getFecha() ) );

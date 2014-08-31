@@ -5,9 +5,6 @@ import java.util.Vector;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
-import org.ksoap2.serialization.SoapObject;
-
-import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 
 public class DataArray extends Vector<DetallePedido> implements KvmSerializable {

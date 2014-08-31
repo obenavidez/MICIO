@@ -4,7 +4,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo;
 
 import android.content.ContentResolver;

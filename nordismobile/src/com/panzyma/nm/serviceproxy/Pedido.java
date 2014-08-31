@@ -7,7 +7,6 @@ import android.os.Parcelable;
  
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -670,11 +669,13 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
     
     public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
 
-        public Pedido createFromParcel(Parcel parcel) {
+        @Override
+		public Pedido createFromParcel(Parcel parcel) {
              return new Pedido(parcel);
         }
 
-        public Pedido[] newArray(int size) {
+        @Override
+		public Pedido[] newArray(int size) {
              return new Pedido[size];
         }
       	 

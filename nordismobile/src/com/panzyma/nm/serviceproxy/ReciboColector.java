@@ -3,8 +3,6 @@ package com.panzyma.nm.serviceproxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
-
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -449,11 +447,13 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 
 	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
 
-        public ReciboColector createFromParcel(Parcel parcel) {
+        @Override
+		public ReciboColector createFromParcel(Parcel parcel) {
              return new ReciboColector(parcel);
         }
 
-        public ReciboColector[] newArray(int size) {
+        @Override
+		public ReciboColector[] newArray(int size) {
              return new ReciboColector[size];
         }
       	 

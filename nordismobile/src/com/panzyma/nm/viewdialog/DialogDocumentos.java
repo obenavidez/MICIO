@@ -6,6 +6,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
@@ -169,7 +170,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			case FACTURA:
 				Factura [] facturas = ((Cliente)msg.obj).getFacturasPendientes();
 				if(facturas != null && facturas.length > 0){
-					loadFacturas((ArrayList<Factura>) ( (msg.obj == null) ? new ArrayList<Factura>() : toList(facturas) ), C_DATA);
+					loadFacturas( ( (msg.obj == null) ? new Factura[]{} : facturas ), C_DATA);
 				}else{
 					pd.dismiss();
 					FINISH_ACTIVITY();
@@ -179,7 +180,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			case NOTA_DEBITO:
 				CCNotaDebito [] notasdebito = ((Cliente)msg.obj).getNotasDebitoPendientes();
 				if(notasdebito != null && notasdebito.length > 0 ){
-					loadNotasDebito((ArrayList<CCNotaDebito>)((msg.obj==null)?new ArrayList<CCNotaDebito>(): toList(notasdebito)),C_DATA);
+					loadNotasDebito(((msg.obj==null)? new CCNotaDebito[]{} : notasdebito ),C_DATA);
 				} else {
 					pd.dismiss();
 					FINISH_ACTIVITY();
@@ -189,7 +190,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			case NOTA_CREDITO:
 				CCNotaCredito [] notasCredito = ((Cliente)msg.obj).getNotasCreditoPendientes();
 				if(notasCredito != null && notasCredito.length > 0 ){
-					loadNotasCredito((ArrayList<CCNotaCredito>)((msg.obj==null)?new ArrayList<CCNotaCredito>(): toList(notasCredito)),C_DATA);
+					loadNotasCredito(((msg.obj==null)?new CCNotaCredito[]{} : notasCredito ),C_DATA);
 				} else {
 					pd.dismiss();
 					FINISH_ACTIVITY();
@@ -202,12 +203,13 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		return false;
 	}
 	
-	private void loadNotasCredito(ArrayList<CCNotaCredito> notasCredito, int cData) {
-try {
+	public void loadNotasCredito(CCNotaCredito [] notasCredito, int cData) {
+		try {
 			
-			if(notasCredito.size() > 0){
-				gridheader.setText("Listado Notas Crédito Pendientes ("+notasCredito.size()+")");				
-				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,notasCredito,R.layout.detalle_nota_credito);				 
+			if( notasCredito.length > 0 ){
+				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);
+				gridheader.setText("Listado Notas Crédito Pendientes (" + notasCredito.length + ")");				
+				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,_notasCredito,R.layout.detalle_nota_credito);				 
 				lvnotasd.setAdapter(adapter3);
 				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
 					@Override
@@ -263,12 +265,59 @@ try {
 		return list;
 	}
 	
-	private void loadFacturas(ArrayList<Factura> facturas, int cData) {
-		try {
+	private ArrayList removeObjectNull(ArrayList arrayList) {
+		ArrayList arrayListResult = new ArrayList<Object>();
+		for(Object obj : arrayList){
+			if(obj != null) arrayListResult.add(obj);
+		}
+		return arrayListResult;
+	}
+	
+	private ArrayList getArray(Object [] array, Object type){
+		
+		List<Factura> facturas = null;
+		List<CCNotaDebito> notasDebito = null;
+		List<CCNotaCredito> notasCredito = null;
+		ArrayList arrayList = null;		
+		
+		if ( type instanceof Factura ) {
 			
-			if(facturas.size() > 0){
-				gridheader.setText("Listado de Facturas Pendientes ("+facturas.size()+")");				
-				adapter = new GenericAdapter<Factura, FacturaViewHolder>(mcontext,FacturaViewHolder.class,facturas,R.layout.detalle_factura);				 
+			Factura [] _facturas = new Factura[array.length];			
+			toList(array).toArray(_facturas);
+			arrayList = new ArrayList( Arrays.asList(_facturas) ) ;
+			return removeObjectNull(arrayList);
+			
+		} else if ( type instanceof CCNotaDebito ) {
+			
+			CCNotaDebito [] _notasDebito = new CCNotaDebito[array.length];			
+			toList(array).toArray(_notasDebito);
+			arrayList = new ArrayList( Arrays.asList(_notasDebito) ) ;
+			return removeObjectNull(arrayList);			
+			
+		} else if ( type instanceof CCNotaCredito ) {
+			
+			CCNotaCredito [] _notasCredito = new CCNotaCredito[array.length];			
+			toList(array).toArray(_notasCredito);
+			arrayList = new ArrayList( Arrays.asList(_notasCredito) ) ;
+			return removeObjectNull(arrayList);			
+			
+		}
+		return null;
+	} 
+	
+	public void loadFacturas(Factura [] facturas, int cData) {
+		try {						
+			if(facturas.length > 0){
+				//SE OBTIENEN LAS FACTURAS QUE NO ESTEN REPETIDAS
+				ArrayList<Factura> _facturas = (ArrayList<Factura>) getArray(facturas, facturas[0]);
+				if( _facturas.size() == 0 ){
+					pd.dismiss();
+					FINISH_ACTIVITY();
+					Util.Message.buildToastMessage(parent, "No existen facturas pendientes", 1000).show();
+					return;
+				}
+				gridheader.setText("Listado de Facturas Pendientes ("+_facturas.size()+")");				
+				adapter = new GenericAdapter<Factura, FacturaViewHolder>(mcontext,FacturaViewHolder.class,_facturas,R.layout.detalle_factura);				 
 				lvfacturas.setAdapter(adapter);
 				lvfacturas.setOnItemClickListener(new OnItemClickListener() {
 					@Override
@@ -287,7 +336,7 @@ try {
 		            	adapter.setSelectedPosition(position); 
 		            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));					            	 
 		            	mButtonClickListener.onButtonClick(factura_selected);
-		            	FINISH_ACTIVITY();						
+		            	//FINISH_ACTIVITY();						
 					}					
 				});
 			}
@@ -300,12 +349,13 @@ try {
 			pd.dismiss();	
 	}
 
-	private void loadNotasDebito(ArrayList<CCNotaDebito> notasDebito, int cData){
+	public void loadNotasDebito(CCNotaDebito [] notasDebito, int cData){
 		try {
 			
-			if(notasDebito.size() > 0){
-				gridheader.setText("Listado Notas Debito Pendientes ("+notasDebito.size()+")");				
-				adapter2 = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(mcontext,NotaDebitoViewHolder.class,notasDebito,R.layout.detalle_nota_debito);				 
+			if(notasDebito.length > 0){
+				ArrayList<CCNotaDebito> _notasDebito = (ArrayList<CCNotaDebito>) getArray(notasDebito, notasDebito[0]);
+				gridheader.setText("Listado Notas Debito Pendientes ("+notasDebito.length+")");				
+				adapter2 = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(mcontext,NotaDebitoViewHolder.class,_notasDebito,R.layout.detalle_nota_debito);				 
 				lvnotasd.setAdapter(adapter2);
 				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
 					@Override

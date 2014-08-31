@@ -1,16 +1,12 @@
 package com.panzyma.nm.serviceproxy;
 
-import static com.panzyma.nm.controller.ControllerProtocol.ID_REQUEST_SALVARPEDIDO;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Message;
-
 import com.panzyma.nm.CBridgeM.BClienteM;
+import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
@@ -243,7 +239,7 @@ public class Ventas {
     	
     	String f = vpe.getFechaPedido().toString();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date d = (Date) formatter.parse(f);
+        Date d = formatter.parse(f);
         
         pedido.setFecha(DateUtil.d2i(d));
         Integer intId = 0;
@@ -277,15 +273,18 @@ public class Ventas {
 
 	public static Producto getProductoByID(long objProductoID,ViewPedidoEdit vpe) throws Exception
 	{
-		return vpe.getBridge().getProductoByID(vpe.getContentResolver(), objProductoID);
+		vpe.getBridge();
+		return BPedidoM.getProductoByID(vpe.getContentResolver(), objProductoID);
 	}
 
     public static Object enviarPedido(ViewPedidoEdit vpe,Pedido pedido) throws Exception
     {
     	//final String credenciales=SessionManager.getCredentials();			  
     	final String credenciales="sa||nordis09||dp";
-		if(credenciales.trim()!="") 
-    	return vpe.getBridge().enviarPedido(credenciales, pedido);
+		if(credenciales.trim()!="") {
+			vpe.getBridge();
+			return BPedidoM.enviarPedido(credenciales, pedido);
+		}
 		return null;
     }
     
@@ -297,7 +296,8 @@ public class Ventas {
 	
     public static Pedido obtenerPedidoByID(long idpedido,ViewPedido vp) throws Exception
     {
-    	return vp.getBridge().obtenerPedidoByID(idpedido, vp.getContentResolver());
+    	vp.getBridge();
+		return BPedidoM.obtenerPedidoByID(idpedido, vp.getContentResolver());
     }
     
     public static Cliente getClienteBySucursalID(long objSucursalID,ContentResolver cr) throws Exception
