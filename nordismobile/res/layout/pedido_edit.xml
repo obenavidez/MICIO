@@ -107,37 +107,14 @@
 				    android:inputType="text"
 				    android:scrollHorizontally="true" />
                 
-				<TextView     	     
-				android:id="@+id/pddlbl_precio"
-				android:layout_width="55dp"
-				android:layout_height="wrap_content"
-				android:text="Precio :"
-				android:layout_below="@+id/pddlbl_cliente"
-				android:layout_marginTop="30dp"
-				android:textStyle="bold"
-			    android:textColor="@color/Black"
-				/>
-				
 
-				<TextView
-			    android:id="@+id/pddtextv_detalleprecio"
-			    android:layout_width="250dp"
-			    android:layout_height="40dp"
-			    android:layout_below="@+id/pddlbl_cliente" 
-			    android:layout_toRightOf="@+id/pddlbl_precio"
-			    android:background="@drawable/style_textbox"
-			    android:layout_marginTop="5dp"
-			    android:paddingTop="15dp"
-			    android:scrollHorizontally="true" 
-			    
-			    />
 				
 				<TextView     	     
 				android:id="@+id/pddlbl_tipo"
 				android:layout_width="45dp"
 				android:layout_height="40dp"
 				android:text="Tipo :"
-				android:layout_below="@+id/pddlbl_precio"  
+				android:layout_below="@+id/pddlbl_cliente"  
 				android:layout_marginTop="20dp"
 				android:textStyle="bold"
 			    android:textColor="@color/Black"
@@ -147,7 +124,7 @@
 			    android:id="@+id/pddcombox_detalletipo"
 			    android:layout_width="270dp"
 			    android:layout_height="45dp" 
-			    android:layout_below="@+id/pddlbl_precio" 
+			    android:layout_below="@+id/pddlbl_cliente" 
 				android:layout_toRightOf="@+id/pddlbl_tipo"
 				android:layout_marginTop="10dp" 
 				/>

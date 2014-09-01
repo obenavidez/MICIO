@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,7 @@ import com.panzyma.nm.view.viewholder.CNotaViewHolder;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nordismobile.R;
 
-@SuppressLint("ValidFragment")
+@SuppressLint({ "ValidFragment", "NewApi" })
 @SuppressWarnings({"static-access","unused", "rawtypes" })
 public class FichaClienteFragment extends Fragment implements Handler.Callback {
 	
@@ -68,6 +69,8 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 		super.onStart();
 		this.fcontext =getActivity().getApplicationContext();
 		Bundle args = getArguments();
+		android.support.v7.app.ActionBar a =((ActionBarActivity)getActivity()).getSupportActionBar();
+		a.hide();
 		if (args != null) {
 			sucursalID = args.getLong(ARG_SUCURSAL);
 			mCurrentPosition = args.getInt(ARG_POSITION);

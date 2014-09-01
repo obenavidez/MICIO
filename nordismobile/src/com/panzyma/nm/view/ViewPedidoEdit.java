@@ -85,7 +85,6 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 	public EditText tbxNumReferencia;
 	public EditText tbxNumPedido;
 	public EditText tbxNombreDelCliente;
-	public TextView tbxPrecio;
 	public Spinner tbxTipoVenta;
 	public TextView tbxTotalFact;
 
@@ -163,7 +162,12 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 					Lvmpproducto.add(detPed[i]); 
 				onEdit=true;
 				cliente=Ventas.getClienteBySucursalID(pedido.getObjSucursalID(),me.getContentResolver());
-		    } 
+		    }
+		    // BUscamos si 
+		    if(getIntent().getParcelableExtra("cliente")!=null){
+		    	
+		    }
+		
 		    onNew=!onEdit;
 			WindowManager wm = (WindowManager) this.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
@@ -192,7 +196,6 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		tbxNumReferencia = (EditText) findViewById(R.id.pdddetextv_detalle_numref);
 		tbxNumPedido = (EditText) findViewById(R.id.pdddetextv_detalle_num);
 		tbxNombreDelCliente = (EditText) findViewById(R.id.pddtextv_detallecliente);
-		tbxPrecio = (TextView) findViewById(R.id.pddtextv_detalleprecio);
 		tbxTotalFact = (TextView) findViewById(R.id.pddtextv_detalletotales);
 		tbxTipoVenta = (Spinner) findViewById(R.id.pddcombox_detalletipo);
 
@@ -293,8 +296,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			tbxNombreDelCliente.setText(pedido.getNombreSucursal() + "\\"
 					+ pedido.getNombreCliente());
 
-		if (pedido.getCodTipoPrecio() != null)
-			tbxPrecio.setText(pedido.getDescTipoPrecio());
+		
 
 		if (pedido.getTipo().compareTo("CO") == 0)
 			tbxTipoVenta.setSelection(0);
@@ -640,7 +642,6 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				// }
 				cliente = _cliente;
 				tbxNombreDelCliente.setText(cliente.getNombreCliente());
-				tbxPrecio.setText(cliente.getDesTipoPrecio());
 				pedido.setObjClienteID(cliente.getIdCliente());
 				pedido.setObjSucursalID(cliente.getIdSucursal());
 
