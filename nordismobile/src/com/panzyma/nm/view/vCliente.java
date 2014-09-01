@@ -326,16 +326,18 @@ public class vCliente extends ActionBarActivity implements
 				
 				switch (position) {
 					case NUEVO_PEDIDO:
-						intent = new Intent(vCliente.this,ViewPedido.class);
+						intent = new Intent(vCliente.this,ViewPedidoEdit.class);
 						intent.putExtra(PEDIDO_ID, 0);
-						intent.putExtra(CLIENTE,cliente_selected.getIdCliente());
-						startActivity(intent);	
+						intent.putExtra(CLIENTE,cliente_selected.IdSucursal);
+						startActivity(intent);
+						drawerLayout.closeDrawers();
 					break;
 					case NUEVO_RECIBO : 
 						intent = new Intent(vCliente.this,ViewReciboEdit.class);
 						intent.putExtra(RECIBO_ID, 0);
 						intent.putExtra(CLIENTE,cliente_selected.getIdCliente());
 						startActivity(intent);	
+						drawerLayout.closeDrawers();
 						break;
 					case NUEVO_DEVOLUCION:
 						

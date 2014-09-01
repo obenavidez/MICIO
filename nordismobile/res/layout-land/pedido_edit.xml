@@ -77,7 +77,11 @@
 			    android:background="@drawable/style_textbox"
 			    android:layout_marginTop="10dp"
 			    android:paddingTop="10dp"
-			    android:scrollHorizontally="true" />
+			    android:scrollHorizontally="true" >
+
+					<requestFocus />
+
+				</EditText>
 				
 				<TextView     	     
 				android:id="@+id/pddlbl_tipo"

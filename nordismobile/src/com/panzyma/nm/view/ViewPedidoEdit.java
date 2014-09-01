@@ -163,11 +163,11 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				onEdit=true;
 				cliente=Ventas.getClienteBySucursalID(pedido.getObjSucursalID(),me.getContentResolver());
 		    }
-		    // BUscamos si 
-		    if(getIntent().getParcelableExtra("cliente")!=null){
-		    	
+			 // BUscamos si 
+		    if(getIntent().hasExtra("cliente")){
+		    	long IdCliente = getIntent().getLongExtra("cliente", 0);
+		    	cliente=Ventas.getClienteBySucursalID(IdCliente,me.getContentResolver());
 		    }
-		
 		    onNew=!onEdit;
 			WindowManager wm = (WindowManager) this.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
@@ -198,7 +198,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		tbxNombreDelCliente = (EditText) findViewById(R.id.pddtextv_detallecliente);
 		tbxTotalFact = (TextView) findViewById(R.id.pddtextv_detalletotales);
 		tbxTipoVenta = (Spinner) findViewById(R.id.pddcombox_detalletipo);
-
+		tbxFecha.setEnabled(false);
 		grid_dp.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -260,7 +260,11 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 		if (pedido == null) {
 			pedido = new Pedido();
-			cliente = null;
+			if(getIntent().hasExtra("cliente")){
+				 setInformacionCliente();
+			 }
+			else
+				cliente = null;
 			pedido.setCodEstado("REGISTRADO");
 			pedido.setId(0);
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
@@ -317,7 +321,6 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		gridheader.setText("Productos a Facturar(" + adapter.getCount() + ")");
 
 		initMenu();
-
 	}
 
 	public void showMenu(final View view) {
@@ -641,6 +644,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				// != Dialog.YES) return;
 				// }
 				cliente = _cliente;
+				/*
 				tbxNombreDelCliente.setText(cliente.getNombreCliente());
 				pedido.setObjClienteID(cliente.getIdCliente());
 				pedido.setObjSucursalID(cliente.getIdSucursal());
@@ -652,6 +656,8 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				pedido.setObjTipoPrecioVentaID(cliente.getObjPrecioVentaID());
 				pedido.setCodTipoPrecio(cliente.getCodTipoPrecio());
 				pedido.setDescTipoPrecio(cliente.getDesTipoPrecio());
+				*/
+				setInformacionCliente();
 			}
 		});
 		Window window = dc.getWindow();
@@ -1436,6 +1442,21 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			}
 		});
 		
+	}
+	
+	private void setInformacionCliente()
+	{
+		tbxNombreDelCliente.setText(cliente.getNombreCliente());
+		pedido.setObjClienteID(cliente.getIdCliente());
+		pedido.setObjSucursalID(cliente.getIdSucursal());
+
+		String[] nomClie = StringUtil.split(cliente.getNombreCliente(),
+				"/");
+		pedido.setNombreCliente(nomClie[1]);
+		pedido.setNombreSucursal(nomClie[0]);
+		pedido.setObjTipoPrecioVentaID(cliente.getObjPrecioVentaID());
+		pedido.setCodTipoPrecio(cliente.getCodTipoPrecio());
+		pedido.setDescTipoPrecio(cliente.getDesTipoPrecio());
 	}
 	
 }

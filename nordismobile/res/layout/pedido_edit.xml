@@ -41,8 +41,6 @@
 				    android:layout_alignParentTop="true"
 				    android:background="@drawable/style_textbox"
 				    android:ems="10" >
-
-				    <requestFocus />
 				</EditText>
                 
                 <TextView
@@ -105,7 +103,11 @@
 				    android:background="@drawable/style_textbox"
 				    android:paddingTop="10dp"
 				    android:inputType="text"
-				    android:scrollHorizontally="true" />
+				    android:scrollHorizontally="true" >
+
+					<requestFocus />
+
+				</EditText>
                 
 
 				
