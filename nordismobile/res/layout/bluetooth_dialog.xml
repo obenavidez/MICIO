@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center" 
+    android:orientation="vertical" >   
+        
+    <RelativeLayout
+        android:id="@+id/rl_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/White" 
+        android:layout_margin="2dp">
+         
+			<TextView
+            android:id="@+id/bth_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:layout_alignParentLeft="true" 
+            android:layout_margin="10dp"
+            android:text="Bluetooth"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black" /> 
+            
+			<ToggleButton
+	        android:id="@+id/btn_activatebluetooth"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" 
+	        android:layout_alignParentTop="true"
+	        android:layout_toRightOf="@+id/bth_title"
+	        android:background="@drawable/bgtoggle"
+	        android:button="@null"
+	        android:textOff=""
+	        android:textOn="" />
+			
+			<Button
+	        android:id="@+id/btn_scan"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"  
+	        android:layout_below="@+id/bth_title"   
+	        android:layout_margin="10dp"    
+	        android:enabled="false"
+	        android:text="@string/text_scan_devices" />
+			
+			<TextView 
+         	android:id="@+id/tv_gridheader"
+			android:background="@drawable/style_textbox"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/btn_scan" 
+			android:text="@string/txtbluetoothdevice_title"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#005D7A"
+            android:shadowColor="@color/Black"
+			android:gravity="center"             
+		    />
+			
+			<ListView
+		    android:id="@+id/lv_bluetoothdevices"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+		    android:layout_below="@+id/tv_gridheader" 
+		    android:choiceMode="singleChoice"
+		    android:divider="@color/DarkGray"
+		    android:dividerHeight="0.3sp"
+		    android:listSelector="@drawable/statelist"
+		    android:scrollingCache="false" />
+			 
+	</RelativeLayout> 
+</RelativeLayout>

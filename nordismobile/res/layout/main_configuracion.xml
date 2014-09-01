@@ -107,16 +107,32 @@
 			    android:enabled="false"
 			    android:lines="1"/>
 			    
-				
-				
+				<TextView     	     
+				android:id="@+id/cfglbl_bluetoothprinter"
+				android:layout_width="85dp"
+				android:layout_height="wrap_content"
+				android:text="Impresora :"  
+				android:layout_marginTop="10dp"
+				android:layout_marginLeft="10dp"
+				android:layout_below="@+id/cfglbl_deviceid"
+				/> 
+			
+				<Spinner
+			    android:id="@+id/cfcombox_bluetoothprinter"
+			    android:layout_width="270dp"
+			    android:layout_height="45dp" 
+			    android:layout_below="@+id/cfglbl_deviceid"
+			    android:layout_toRightOf="@+id/cfglbl_bluetoothprinter"
+				android:layout_marginTop="10dp" 
+				/> 
 				
 				<TextView     	      
 		    	android:id="@+id/ccategoria3"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:text="Datos del Usuario"  
-				android:layout_marginTop="20dp"
-				android:layout_below="@+id/cfglbl_deviceid"
+				android:layout_marginTop="25dp"
+				android:layout_below="@+id/cfglbl_bluetoothprinter"
 				android:textColor="@color/Blue"
 				/> 
 				
