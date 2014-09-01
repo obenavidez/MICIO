@@ -64,10 +64,13 @@ public class ModelLogic {
 		float montoAbonado = 0.00F;
 		try {			
 			StringBuilder sQuery = new StringBuilder();
-			sQuery.append("SELECT SUM(monto) as montoAbonado ");
-			sQuery.append(" FROM ReciboDetalleFactura ");
-			sQuery.append(" WHERE objFacturaID = " + objFacturaId);
-			sQuery.append("       AND objReciboID <> " + objReciboId);
+			sQuery.append("SELECT SUM(monto) AS montoAbonado ");
+			sQuery.append(" FROM ReciboDetalleFactura AS rdf ");
+			sQuery.append("      INNER JOIN Recibo r ");
+			sQuery.append("      ON  r.id = rdf.objReciboID ");
+			sQuery.append(" WHERE rdf.objFacturaID = " + objFacturaId);
+			sQuery.append("       AND rdf.objReciboID <> " + objReciboId);
+			sQuery.append("       AND r.codEstado <> 'ANULADO' ");
 			Cursor c = DatabaseProvider.query(bd, sQuery.toString());
 			// Nos aseguramos de que existe al menos un registro
 			if (c.moveToFirst()) {

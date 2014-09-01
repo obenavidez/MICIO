@@ -54,9 +54,9 @@ public class BValorCatalogoM {
 	
 	public BValorCatalogoM(EditFormaPago view)
 	{		
-    	this.controller=((NMApp)view.getActivity().getApplicationContext()).getController();  
+    	this.controller=((NMApp)view.getContext().getApplicationContext()).getController();  
     	this.view = view; 
-    	this.pool=((NMApp)view.getActivity().getApplicationContext()).getThreadPool(); 
+    	this.pool=((NMApp)view.getContext().getApplicationContext()).getThreadPool(); 
     	catalogos.clear();
     	catalogos.put(0, "FormaPago");
 		catalogos.put(1, "Moneda");
@@ -88,7 +88,7 @@ public class BValorCatalogoM {
 								0,
 								0,
 								ModelValorCatalogo.getCatalogByName(
-										view.getActivity(),
+										view.getContext(),
 										catalogos.get(peticion.getActionCode()))
 								);
 

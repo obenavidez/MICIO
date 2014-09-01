@@ -16,12 +16,14 @@ import android.widget.TextView;
 public class CustomAdapter extends ArrayAdapter<SpinnerModel> {
      
     private Activity activity;
-    private ArrayList data;
+    @SuppressWarnings("rawtypes")
+	private ArrayList data;
     SpinnerModel tempValues=null;
     LayoutInflater inflater;
      
     /*************  CustomAdapter Constructor *****************/
-    public CustomAdapter(
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public CustomAdapter(
                           Context activitySpinner, 
                           int textViewResourceId,   
                           ArrayList objects

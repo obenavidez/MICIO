@@ -32,9 +32,11 @@ import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.inputmethodservice.Keyboard.Key;
@@ -101,6 +103,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	private String catalogNameToFound = "";
 	private Bundle savedInstanceState = null;
 	private float montoPorPagar = 0.00F;
+	private Activity activityMain; 
 
 	public EditFormaPago() {
 		super();
@@ -130,6 +133,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 				dialog.cancel();
 			}
 		});
+		activityMain = getActivity();
 		initComponents();
 		cargarCatalogoFormasPago();
 		return builder.create();
@@ -173,7 +177,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	@SuppressWarnings("unchecked")
 	private void cargarCatalogoFormasPago() {
 		try {
-			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp = (NMApp) activityMain.getApplication();
 			nmapp.getController().removeViewByName(
 					EditFormaPago.class.toString()
 					);			
@@ -192,9 +196,8 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 
 	@SuppressWarnings("unchecked")
 	private void cargarCatalogoMonedas() {
-		try {
-			catalogosReady = false;
-			nmapp = (NMApp) this.getActivity().getApplication();
+		try {			
+			nmapp = (NMApp) activityMain.getApplication();
 			nmapp.getController().removeViewByName(
 					EditFormaPago.class.toString()
 					);
@@ -214,8 +217,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	@SuppressWarnings("unchecked")
 	private void cargarCatalogoBancos() {
 		try {
-			catalogosReady = false;
-			nmapp = (NMApp) this.getActivity().getApplication();
+			nmapp = (NMApp) activityMain.getApplication();
 			nmapp.getController().removeViewByName(
 					EditFormaPago.class.toString()
 					);
@@ -234,16 +236,15 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 
 	@SuppressWarnings("unchecked")
 	private void cargarTasaCambio(){
-		try {
-			BTasaCambioM bridge = null;
-			nmapp = (NMApp) this.getActivity().getApplication();
+		try {			
+			nmapp = (NMApp) activityMain.getApplication();
 			nmapp.getController().removeViewByName(
 					EditFormaPago.class.toString()
 					);
 			nmapp.getController().removeBridgeByName(
-					BValorCatalogoM.class.toString()
+					BTasaCambioM.class.toString()
 					);			
-			nmapp.getController().setEntities(this,bridge = new BTasaCambioM());			
+			nmapp.getController().setEntities(this,new BTasaCambioM());			
 			nmapp.getController().addOutboxHandler(new Handler(this));			
 			nmapp.getController().getInboxHandler().sendEmptyMessage(BTasaCambioM.Petition.TASA_CAMBIO.getActionCode());
 		} catch (Exception e) {
@@ -478,21 +479,21 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		if ("FormaPago".equals(obj.getNombreCatalogo().trim())) {
 			formasPago = obj.getValoresCatalogo();
 			formasPago.add(0, new ValorCatalogo(-1, "", ""));
-			formaPagoAdapter = new CustomAdapter(this.getActivity(),
+			formaPagoAdapter = new CustomAdapter(activityMain,
 					R.layout.spinner_rows, setListData(formasPago));
 			cmbFormaPago.setAdapter(formaPagoAdapter);
 			cargarCatalogoMonedas();
 		} else if ("Moneda".equals(obj.getNombreCatalogo().trim())) {
 			monedas = obj.getValoresCatalogo();
 			monedas.add(0, new ValorCatalogo(-1, "", ""));
-			monedaAdapter = new CustomAdapter(this.getActivity(),
+			monedaAdapter = new CustomAdapter(activityMain,
 					R.layout.spinner_rows, setListData(monedas));
 			cmbMoneda.setAdapter(monedaAdapter);
 			cargarCatalogoBancos();			
 		} else if ("EntidadBancaria".equals(obj.getNombreCatalogo().trim())) {
 			bancos = obj.getValoresCatalogo();
 			bancos.add(0, new ValorCatalogo(-1, "", ""));
-			bancoAdapter = new CustomAdapter(this.getActivity(),
+			bancoAdapter = new CustomAdapter(activityMain,
 					R.layout.spinner_rows, setListData(bancos));
 			cmbBanco.setAdapter(bancoAdapter);
 			cargarTasaCambio();
@@ -639,8 +640,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		montoNacional.setText(StringUtil.formatReal(mtoNac));
 	}
 
-	private boolean validarDatos() throws InterruptedException {
- 
+	private boolean validarDatos() throws InterruptedException { 
 		
 		// validar que se haya ingresado monto a pagar
 		if (montoPago.getText().toString().trim() == "") {
@@ -852,4 +852,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		
 	}
 	
+	public Activity getContext(){
+		return activityMain;
+	}
 }

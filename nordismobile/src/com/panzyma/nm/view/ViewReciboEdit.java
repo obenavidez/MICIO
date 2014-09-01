@@ -1,7 +1,6 @@
 package com.panzyma.nm.view;
 
-import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+import static com.panzyma.nm.controller.ControllerProtocol.C_DATA; 
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
@@ -13,8 +12,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BClienteM;
+import com.panzyma.nm.NMApp; 
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.ActionType;
 import com.panzyma.nm.auxiliar.Ammount;
@@ -84,7 +82,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
-
+@SuppressLint("ShowToast") @SuppressWarnings({"unused","rawtypes","deprecation","unchecked"}) 
 public class ViewReciboEdit extends FragmentActivity implements Handler.Callback, Editable {
 
 	private static CustomDialog dlg; 
@@ -99,6 +97,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private TextView txtSubTotal;
 	private TextView txtTotal;
 
+	
 	private float totalRecibo = 0.00f;
 	private float totalFacturas = 0.00f;
 	private float totalNotasCredito = 0.00f;
@@ -121,6 +120,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private View gridDetalleRecibo;
 	private ListView item_document;
 	private TextView gridheader;
+	
 	private Controller controller;
 	private GenericAdapter adapter;
 	private ProgressDialog pd;
@@ -176,8 +176,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	public Integer getReciboID (){
 		return reciboId;
 	}
-
-	@SuppressWarnings("unchecked")
+ 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -242,7 +241,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		txtTotal = (TextView) findViewById(R.id.txtTotal);
 
 		item_document.setOnItemLongClickListener(new OnItemLongClickListener() {
-
+ 
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) {
 				// TODO Auto-generated method stub
@@ -261,8 +260,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		loadData();
 		initMenu();
 	}
-
-	@SuppressWarnings("unchecked")
+ 
 	private void loadData() {
 
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
@@ -579,8 +577,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			return;
 		} 
 		AppDialog.showMessage(me,"Solicitar descuento Ocosional","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener()
-		{
-			@SuppressWarnings("unchecked")
+		{ 
 			@Override
 			public void onButtonClick(AlertDialog alert, int actionId) 
 			{
@@ -606,8 +603,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 		});   
 	}  
- 
-	@SuppressWarnings("unchecked")
+  
 	private void guardarRecibo() {
 
 		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
@@ -727,9 +723,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}		
 		
 	}
-
-
-	@SuppressLint("ShowToast") @SuppressWarnings({ "static-access", "unchecked" })
+ 
 	private void enviarRecibo()
 	{   
 
@@ -1161,32 +1155,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         editarPago.setArguments(parameters);        
         editarPago.show(fragmentManager, "");
 
-	}
-
-	//	private boolean valido() {
-	//		boolean valido = true;
-	//
-	//		if (recibo.getObjClienteID() == 0) {
-	//			valido = false;
-	//			Util.Message.buildToastMessage(contexto,
-	//					"DEBE seleccionar un cliente", TIME_TO_VIEW_MESSAGE).show();
-	//		}
-	//
-	//		if (recibo.getNumero() == 0) {
-	//			valido = false;
-	//			Util.Message.buildToastMessage(contexto,
-	//					"ESPECIFIQUE número de recibo", TIME_TO_VIEW_MESSAGE).show();
-	//		}
-	//
-	//		if (recibo.getReferencia() == 0) {
-	//			valido = false;
-	//			Util.Message.buildToastMessage(contexto,
-	//					"ESPECIFIQUE número de referencia", TIME_TO_VIEW_MESSAGE).show();
-	//		}
-	//
-	//		return valido;
-	//	}
-
+	} 
 
 	public Long getObjectSucursalID() {
 		if (recibo != null)
@@ -1592,22 +1561,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 		adapter = null;
 		agregarDocumentosAlDetalleDeRecibo();
-		actualizaTotales();
-		/*
-        tbxNumRecibo.setText(""+recibo.getNumero());
-		tbxNotas.setText(""+recibo.getNotas());
-		tbxNumReferencia.setText(""+VentasUtil.getNumeroPedido(me,
-				recibo.getReferencia()));
-		tbxNombreDelCliente.setText(""+recibo.getNombreCliente());
-		tbxFecha.setText("" + DateUtil.idateToStrYY(recibo.getFecha()));
-		// ESTABLECER LOS TOTALES
-		txtTotalAbonadoFacturas.setText("" + recibo.getTotalFacturas());
-		txtTotalAbonadoND.setText("" + recibo.getTotalND());
-		txtTotalAbonadoNC.setText("" + recibo.getTotalNC());
-		txtSubTotal.setText("" + recibo.getSubTotal());
-		txtTotal.setText("" + recibo.getTotalRecibo());
-		 */
-		// loadData();
+		actualizaTotales(); 
 	}
 
 	private void PagarMonto() {
@@ -1623,10 +1577,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				}
 			}});
 	}	
-
-
-	@SuppressLint("UseValueOf")
-	@SuppressWarnings("unchecked")
+ 
 	private void payamount (float mto)
 	{
 		//Declaracion de variables ;
