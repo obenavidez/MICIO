@@ -26,6 +26,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -52,12 +53,14 @@ import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.NotificationMessage;
+import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
-import com.panzyma.nm.viewdialog.ConfigurarDispositivosBluetooth;
+import com.panzyma.nm.serviceproxy.Impresora;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 import com.panzyma.nordismobile.R;
 
@@ -89,6 +92,10 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 	static Object lockC=new Object();
 	private Intent intento;
 	private BConfiguracionM bcm;
+	private EditText txtImpresora;
+	public static int RESULTADO_IMPRESORA=1;
+	private Impresora impresora;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{ 
@@ -158,6 +165,14 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 	
 	public String getDeviceId(){
 		return this.deviceid;
+	}
+	
+	public void setImpresora(Impresora _impresora){
+		this.impresora=_impresora;
+	}
+	
+	public Impresora getImpresora(){
+		return this.impresora;
 	}
 	
 	@Override
@@ -248,7 +263,7 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 		txtEmpresa=(EditText)findViewById(R.id.cfgtextv_detallecodempresa);
 	    txtUsuario=(EditText)findViewById(R.id.cfgtextv_detalleuser); 
 	    txtDispositivoID=(EditText)findViewById(R.id.cfgtextv_detalledeviceid);
-	    
+	    txtImpresora=(EditText)findViewById(R.id.cf_bluetoothprinter);
 	    txtURL.setEnabled(isEditActive);
 	    txtEmpresa.setEnabled(isEditActive);
 	    txtUsuario.setEnabled(isEditActive); 
@@ -505,6 +520,7 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 							     Bundle b = new Bundle();
 							     b.putString("Credentials",SessionManager.getCredenciales());
 							     b.putString("LoginUsuario",txtUsuario.getText().toString());
+							     b.putParcelable("impresora", getImpresora());
 							     b.putString("PIN",NMNetWork.getDeviceId(context));
 							     msg.setData(b);
 							     msg.what=LOAD_SETTING;
@@ -542,11 +558,16 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
                 txtEmpresa.requestFocus();
                 return false;
 	    }
-        else if (txtUsuario.getText().toString().trim().length()==0){ 
-                txtUsuario.setError("Ingrese el nombre del usuario.");
-                txtUsuario.requestFocus();
+        else if (txtImpresora.getText().toString().trim().length()==0){ 
+	        	txtImpresora.setError("Configure Impresora.");
+	        	txtImpresora.requestFocus();
                 return false;
         }  
+        else if (txtUsuario.getText().toString().trim().length()==0){ 
+	            txtUsuario.setError("Ingrese el nombre del usuario.");
+	            txtUsuario.requestFocus();
+	            return false;
+        } 
 		return true;
 	}
   
@@ -623,15 +644,16 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 	public String getLoginUsuario(){
 		return txtUsuario.getText().toString();
 	}
-	
-	@SuppressWarnings("unchecked")
+	 
 	@Override
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestcode, resultcode, data);
 		try 
 		{ 
-			nmapp.getController().setEntities(this,this.getBridge()); 
+			if (RESULTADO_IMPRESORA == resultcode 	&& data != null)
+				actualizarImpresoraEnPantalla((Impresora)data.getParcelableExtra("impresora"));
+			nmapp.getController().setEntities(this,(bcm!=null)?getBridge():new BConfiguracionM()); 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -656,4 +678,15 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 		return bcm;
 	}
 	
+	public void actualizarImpresoraEnPantalla(final Impresora dispositivo) 
+	{
+		setImpresora(dispositivo);
+		runOnUiThread(new Runnable() 
+		{
+			@Override
+			public void run() {
+				txtImpresora.setText(dispositivo.obtenerNombre());
+			}
+		});
+	}
 }

@@ -117,14 +117,22 @@
 				android:layout_below="@+id/cfglbl_deviceid"
 				/> 
 			
-				<Spinner
-			    android:id="@+id/cfcombox_bluetoothprinter"
-			    android:layout_width="270dp"
-			    android:layout_height="45dp" 
+				<EditText
+			    android:id="@+id/cf_bluetoothprinter"
+			    android:layout_width="fill_parent"
+			    android:layout_height="25dp"  
 			    android:layout_below="@+id/cfglbl_deviceid"
 			    android:layout_toRightOf="@+id/cfglbl_bluetoothprinter"
-				android:layout_marginTop="10dp" 
-				/> 
+			    android:textStyle="bold"
+			    android:textSize="12dp" 
+			    android:layout_marginLeft="10dp"  
+			    android:paddingTop="8dp"
+			    android:paddingBottom="1dp"
+			    android:background="@drawable/style_textbox"
+			    android:enabled="false"
+			    android:lines="1"/>
+				
+				 
 				
 				<TextView     	      
 		    	android:id="@+id/ccategoria3"

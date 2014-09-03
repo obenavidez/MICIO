@@ -600,8 +600,7 @@ public final class BReciboM {
 			 
 			
 		} catch (Exception e) 
-		{
-			// TODO: handle exception
+		{ 
 		} 
 	}
     
