@@ -17,6 +17,7 @@ import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewdialog.DialogLogin; 
 import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;  
+
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 @SuppressLint("ParserError")@SuppressWarnings("rawtypes")
@@ -46,9 +47,10 @@ public class SessionManager
 	private static CustomDialog dlg; 
     private static Usuario userinfo;
     public static boolean hasError=false;
+    
 	public SessionManager(){};
 	
-	private static BluetoothDevice impresora;
+	private static Impresora impresora;
 	
 	public static String getNameUser()
 	{
@@ -90,10 +92,20 @@ public class SessionManager
 	       return _esAdmin;
     }	 
 	
+	@SuppressWarnings("static-access")
+	public static Impresora getImpresora(){
+		if(impresora==null || (impresora!=null && impresora.obtenerMac().trim()==""))
+			impresora=Impresora.get(context);
+		return impresora;
+	}
+	
+	public static void setImpresora(Impresora dispositivo){
+		impresora=dispositivo;
+	}
 	public static Usuario getLoginUser()
 	{
 		if(userinfo==null)
-			userinfo=ModelConfiguracion.getUser(context);
+			userinfo=Usuario.get(context);
 		return userinfo;
 	}
 

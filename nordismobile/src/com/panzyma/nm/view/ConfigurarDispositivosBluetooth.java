@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.Impresora;
@@ -65,15 +66,14 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 
 	private BluetoothDevice device;
 
-	private ConfigurarDispositivosBluetooth context;
+	public ConfigurarDispositivosBluetooth context;
 
-	private Object lock; 
+	private Object lock;
 
 	private GenericAdapter adapter;
 
 	private Intent intent;
- 
- 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -88,7 +88,7 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 		context = this;
 		mActivateBtn = (ToggleButton) findViewById(R.id.btn_activatebluetooth);
 		mScanBtn = (Button) findViewById(R.id.btn_scan);
-		mCancelBtn = (Button) findViewById(R.id.btn_cancel);
+		mCancelBtn = (Button) findViewById(R.id.btncancel);
 		lvdispositivos = (ListView) findViewById(R.id.lv_bluetoothdevices);
 		adapter = new GenericAdapter(this, BluetoothDeviceHolder.class,
 				mDeviceList, R.layout.list_item_device);
@@ -104,8 +104,7 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 			}
 		});
 
-		lvdispositivos
-				.setOnItemLongClickListener(new OnItemLongClickListener() {
+		lvdispositivos.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 					@Override
 					public boolean onItemLongClick(AdapterView<?> parent,
@@ -125,7 +124,6 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
-
 						mBluetoothAdapter.cancelDiscovery();
 					}
 				});
@@ -226,12 +224,13 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 
 				if (state == BluetoothDevice.BOND_BONDED
 						&& prevState == BluetoothDevice.BOND_BONDING) {
+					mProgressDlg.dismiss();
 					showToast("Vinculado");
-					synchronized (lock) {
-						lock.notify();
-					}
+					informarEnPantalla("Configuracion completada",
+							"Impresora vinculada correctamente.");
 				} else if (state == BluetoothDevice.BOND_NONE
 						&& prevState == BluetoothDevice.BOND_BONDED) {
+					mProgressDlg.dismiss();
 					showToast("desvinculado");
 				}
 				adapter.notifyDataSetChanged();
@@ -245,7 +244,10 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 	};
 
 	private void vincularDispositivo(BluetoothDevice device) {
-		try {
+		try 
+		{
+			mProgressDlg.setMessage("vinculando dispositivo");
+			mProgressDlg.show();
 			Method method = device.getClass().getMethod("createBond",
 					(Class[]) null);
 			method.invoke(device, (Object[]) null);
@@ -256,6 +258,8 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 
 	private void desvincularDispositivo(BluetoothDevice device) {
 		try {
+			mProgressDlg.setMessage("desvinculando dispositivo");
+			mProgressDlg.show();
 			Method method = device.getClass().getMethod("removeBond",
 					(Class[]) null);
 			method.invoke(device, (Object[]) null);
@@ -270,8 +274,8 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 		mScanBtn.setEnabled(true);
 	}
 
-	private void showDisabled() { 
-		 mScanBtn.setEnabled(false);
+	private void showDisabled() {
+		mScanBtn.setEnabled(false);
 	}
 
 	private void showUnsupported() {
@@ -318,74 +322,78 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 	public void establerComunicacion(final String titulo, final String mensaje,
 			BluetoothDevice... _device) {
 
-		try {
-			((NMApp) getApplication()).getThreadPool().execute(new Runnable() {
-
-				@Override
-				public void run() {
-
-					try {
-						runOnUiThread(new Runnable() {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				AppDialog.showMessage(context, titulo, mensaje,
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						new AppDialog.OnButtonClickListener() {
 							@Override
-							public void run() {
-								AppDialog
-										.showMessage(
-												context,
-												titulo,
-												mensaje,
-												AppDialog.DialogType.DIALOGO_CONFIRMACION,
-												new AppDialog.OnButtonClickListener() {
-													@Override
-													public void onButtonClick(
-															AlertDialog _dialog,
-															int actionId) 
-													{
-														if (AppDialog.OK_BUTTOM == actionId) 
-														{
-															if (!(device!=null && device.getBondState() == BluetoothDevice.BOND_BONDED)) 
-																vincularDispositivo(device); 
-															
-														}
-														synchronized (lock) {
-																lock.notify();
-														} 
-													}
-												});
-							}
-						});
+							public void onButtonClick(AlertDialog _dialog,
+									int actionId) {
 
-						synchronized (lock) {
-							try {
-								lock.wait();
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-
-					} catch (Exception e) {
+								if (AppDialog.OK_BUTTOM == actionId) 
+								{
+									if (!(device != null && device.getBondState() == BluetoothDevice.BOND_BONDED))
+										vincularDispositivo(device);
+									else
+										desvincularDispositivo(device);
+								 
+								}
 					}
-				}
-			});
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+				});
+			}
+		});
 
 	}
 
+	public void informarEnPantalla(final String titulo, final String mensaje) {
+
+		runOnUiThread(new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				AppDialog.showMessage
+				(context, titulo, mensaje,
+						AppDialog.DialogType.DIALOGO_ALERTA,
+						new AppDialog.OnButtonClickListener() 
+						{
+							@Override
+							public void onButtonClick(AlertDialog _dialog,
+									int actionId) 
+							{
+								FINISH_ACTIVITY(device.getBondState() == BluetoothDevice.BOND_BONDED);
+							}
+						}
+				);
+			}
+		});
+
+	}
+	
 	private void FINISH_ACTIVITY(boolean... withresult) 
 	{
 		int requescode = 1;
 		if (mProgressDlg != null)
 			mProgressDlg.dismiss();
-		if(withresult.length>0 && withresult[0])
+		if (mBluetoothAdapter.isEnabled()) 
+			mBluetoothAdapter.disable();
+		if (withresult.length > 0 && withresult[0]) 
 		{
 			intent = new Intent();
 			Bundle b = new Bundle();
-			b.putParcelable("impresora",Impresora.nuevaIntacia(device.getName(),device.getAddress(),device.getBondState()));
-			Log.d(ConfigurarDispositivosBluetooth.this.getClass().getSimpleName(), "Activity quitting");
+			b.putParcelable(
+					"impresora",
+					Impresora.nuevaIntacia(device.getName(),
+							device.getAddress(), device.getBondState()));
+			
+			intent.putExtras(b);
 			setResult(requescode, intent);
 		}
+		
+		Log.d(ConfigurarDispositivosBluetooth.this.getClass()
+					.getSimpleName(), "Activity quitting");
 		finish();
 	}
 

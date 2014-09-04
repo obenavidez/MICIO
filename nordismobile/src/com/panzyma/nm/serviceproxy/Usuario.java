@@ -9,7 +9,10 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
+import android.content.Context;
+
 import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.model.ModelConfiguracion;
  
 @SuppressWarnings({"rawtypes"})
 public class Usuario implements KvmSerializable
@@ -29,9 +32,34 @@ public class Usuario implements KvmSerializable
     protected java.lang.String Codigo;
     protected boolean PuedeEditarDescPP;
     
+    public static Usuario usuario;
+    
+    public static Usuario nuevaInstancia()
+    {
+    	if(usuario==null)
+    		usuario=new Usuario();
+    	return usuario;
+    }
+    
     public Usuario() {
     }
     
+    public static Usuario nuevaInstancia(Usuario _usuario)
+    { 
+    		usuario=new Usuario(_usuario.getId(),_usuario.getLogin(),
+    							_usuario.getNombre(),_usuario.getSexo(),
+    							_usuario.AccedeModuloPedidos,_usuario.isPuedeEditarPrecioAbajo(),
+    							_usuario.isPuedeEditarPrecioArriba(),
+    							_usuario.isPuedeEditarBonifAbajo(),_usuario.isPuedeEditarBonifArriba(),
+    							_usuario.isIsAdmin(),_usuario.isPuedeCrearPedido(),
+    							_usuario.isPuedeConsultarPedido(),_usuario.getCodigo(),_usuario.isPuedeEditarDescPP());
+    	return usuario;
+    }
+    
+    public static Usuario get(Context cnt)
+    {
+    	return ModelConfiguracion.getUser(cnt);
+    }
     public Usuario(long id, java.lang.String login, java.lang.String nombre, java.lang.String sexo, boolean accedeModuloPedidos, boolean puedeEditarPrecioAbajo, boolean puedeEditarPrecioArriba, boolean puedeEditarBonifAbajo, boolean puedeEditarBonifArriba, boolean isAdmin, boolean puedeCrearPedido, boolean puedeConsultarPedido, java.lang.String codigo, boolean puedeEditarDescPP) {
         this.Id = id;
         this.Login = login;

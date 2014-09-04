@@ -5,6 +5,7 @@ import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.res.Configuration;
 @SuppressWarnings({ "unused", "rawtypes"})
 public class NMApp extends Application
@@ -23,6 +24,8 @@ public class NMApp extends Application
 		DEVOLUCION
 	}
 	
+	public static Context ctx;
+	
 	public static Modulo modulo;
 	
 	@Override
@@ -31,10 +34,18 @@ public class NMApp extends Application
 		
 		controller=new Controller();
 		pool = new ThreadPool(5);
+		setContext(this);
 	}
 	
-	
+	public static Context setContext(NMApp app)
+	{ 
+		return ctx=app.getApplicationContext();
+	}
 
+	public static Context getContext()
+	{ 
+		return ctx;
+	}
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) { 
 		super.onConfigurationChanged(newConfig);

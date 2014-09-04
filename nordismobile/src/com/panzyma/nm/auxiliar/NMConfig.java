@@ -1,15 +1,19 @@
 package com.panzyma.nm.auxiliar;
- 
 
-@SuppressWarnings("unused")
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.model.ModelConfiguracion;
+ 
+ 
 public class NMConfig
-{   
+{    
+	public static String d=ModelConfiguracion.getURL_SERVER(NMApp.getContext());
 	public static String URL_SERVER="http://www.panzyma.com/nordisserverprod";
 	public static final String NAME_SPACE = "http://www.panzyma.com/"; 
     //public static String URL = "http://www.panzyma.com/nordisserverdev/mobileservice.asmx";
     public static String URL = "http://192.168.1.100/NordisServer/mobileservice.asmx"; 
     //public static String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/"; 
     public static String URL2 ="http://192.168.1.5:8080/Servicios/SimfacService.svc/"; 
+    
     public static class MethodName
     { 	
     	public static final String CheckConnection="CheckConnection";

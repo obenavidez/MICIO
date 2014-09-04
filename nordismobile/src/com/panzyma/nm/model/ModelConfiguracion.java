@@ -7,8 +7,9 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo;
+ 
 
-import android.bluetooth.BluetoothDevice;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -18,6 +19,7 @@ import android.util.Log;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 /*import com.panzyma.nm.auxiliar.Parameters;*/
@@ -54,27 +56,25 @@ public class ModelConfiguracion {
 				+ NMConfig.MethodName.GetDevicePrefix + "/" + Credentials + "/"
 				+ PIN)).getInt("getDevicePrefixResult");
 	}
+	
+	public static String getURL_SERVER(Context cnt)
+	{ 
+		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
+		return pref.getString("url_server", "http://www.panzyma.com/nordisserverprod");		
+	}
 
 	public static vmConfiguracion getVMConfiguration(Context cnt) {
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
-
-		return vmConfiguracion.setConfiguration(
+		vmConfiguracion config=vmConfiguracion.setConfiguration(
 				pref.getString("url_server", NMConfig.URL_SERVER),
 				pref.getString("device_id", ""),
 				pref.getString("enterprise", "dp"),
 				pref.getString("name_user", ""),
-				pref.getInt("max_idpedido", 0), pref.getInt("max_idrecibo", 0));
+				pref.getInt("max_idpedido", 0), pref.getInt("max_idrecibo", 0),null);
+		config.setImpresora(Impresora.get(cnt));
+		return config;
 	}
-
-	//
-	// public static int getMaxReciboID(Context cnt)
-	// {
-	// pref=cnt.getSharedPreferences("VConfiguracion",Context.MODE_PRIVATE);
-	// if(pref==null)
-	// return 0;
-	// return pref.getInt("max_idrecibo",0);
-	// }
-	//
+ 
 
 	public synchronized static List<TasaCambio> getTasaCambio(Context cnt,
 			int fechaTasaCambio) {
@@ -192,23 +192,30 @@ public class ModelConfiguracion {
 		edit.putString("enterprise", setting.getEnterprise());
 		edit.putString("name_user", setting.getNameUser());
 		edit.putInt("max_idpedido", setting.getMax_IdPedido());
-		edit.putInt("max_idrecibo", setting.getMax_Idrecibo());
+		edit.putInt("max_idrecibo", setting.getMax_Idrecibo());		
 		edit.commit();
+		ModelConfiguracion.guardarImpresora(view, setting.getImpresora());
 	}
 
-	public static Impresora obtenerImpresora(Context cnt) {
+	public static Impresora obtenerImpresora(Context cnt) 
+	{
 		pref = cnt.getSharedPreferences("Impresora", Context.MODE_PRIVATE);
+		if (pref.getString("mac", "")=="")
+			return null;
+		else
 		return Impresora.nuevaIntacia(pref.getString("nombre", ""),
-				pref.getString("mac", ""), pref.getInt("max_idrecibo", 0));
+				pref.getString("mac", ""), pref.getInt("estado", 0));
 	}
 
+	@SuppressWarnings("static-access")
 	public static void guardarImpresora(Context view,
-			BluetoothDevice dispositivo) throws Exception {
+			Impresora dispositivo)  
+	{
 		pref = view.getSharedPreferences("Impresora", Context.MODE_PRIVATE);
 		edit = pref.edit();
-		edit.putString("nombre", dispositivo.getName());
-		edit.putString("mac", dispositivo.getAddress());
-		edit.putInt("estado", dispositivo.getBondState());
+		edit.putString("nombre", dispositivo.obtenerNombre());
+		edit.putString("mac", dispositivo.obtenerMac());
+		edit.putInt("estado", dispositivo.obtenerEstado());
 		edit.commit();
 	}
 

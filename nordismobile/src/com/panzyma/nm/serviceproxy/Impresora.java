@@ -1,5 +1,8 @@
 package com.panzyma.nm.serviceproxy;
  
+import com.panzyma.nm.model.ModelConfiguracion;
+
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -45,6 +48,10 @@ public final class Impresora implements Parcelable
 		estado=_estado;
 	}
 	
+	public Impresora() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public static String establecerNombre(String _nombre){
 		return nombre=_nombre;
 	}
@@ -89,5 +96,10 @@ public final class Impresora implements Parcelable
 		establecerNombre(parcel.readString());
 		establecerMac(parcel.readString());
 		establecerEstado(parcel.readInt()); 		  
+	}
+	
+	public static Impresora get(Context cnt)
+	{		
+		return ModelConfiguracion.obtenerImpresora(cnt);
 	}
 }

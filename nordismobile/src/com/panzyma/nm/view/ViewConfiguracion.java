@@ -65,7 +65,7 @@ import com.panzyma.nm.viewmodel.vmConfiguracion;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("ShowToast")
-@SuppressWarnings({"unchecked","rawtypes","unused"}) 
+@SuppressWarnings({"unchecked","rawtypes","unused","static-access"})  
 public class ViewConfiguracion extends FragmentActivity implements Handler.Callback 
 {
 	
@@ -95,7 +95,7 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 	private EditText txtImpresora;
 	public static int RESULTADO_IMPRESORA=1;
 	private Impresora impresora;
-	
+	private vmConfiguracion oldata;
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{ 
@@ -228,6 +228,7 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 	
 	private void setData(vmConfiguracion setting)
 	{
+		oldata=vmConfiguracion.setConfiguration(setting);
 		txtURL.setText(setting.getAppServerURL());
 		txtEmpresa.setText(setting.getEnterprise());
 		txtUsuario.setText(setting.getNameUser());
@@ -236,7 +237,7 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 		this.setUrlServer(setting.getAppServerURL()); 
 		this.setDeviceId(setting.getEnterprise());
 		this.setUserName(setting.getNameUser());
-		//this.setPasswd(setting.getPassword());
+
 	}
 		 
 	@Override
@@ -274,7 +275,7 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 	public void initMenu()
     {  
         quickAction = new QuickAction(this, QuickAction.VERTICAL,1);
-		if(isEditActive)
+		//if(isEditActive)
 			quickAction.addActionItem((new ActionItem(ID_SALVAR_CONFIGURACION, "Salvar Configuración")));
         quickAction.addActionItem((new ActionItem(ID_SINCRONIZE_PARAMETROS, "Sincronizar Parametros")));
 		quickAction.addActionItem((new ActionItem(ID_SINCRONIZE_CATALOGOSBASICOS, "Sincronizar Catalogos Básicos")));
@@ -509,7 +510,7 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 						try
 				        {  							
 							Controller c=nmapp.getController();  
-							if(SessionManager.SignIn(true))
+							if(/*SessionManager.SignIn*/(true))
 							{			
 						         setEnterprise(txtEmpresa.getText().toString());
 						         setUserName(txtUsuario.getText().toString());
@@ -518,7 +519,8 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 						         
 								 Message msg = new Message();
 							     Bundle b = new Bundle();
-							     b.putString("Credentials",SessionManager.getCredenciales());
+//							     b.putString("Credentials",SessionManager.getCredenciales());
+							     b.putString("Credentials","kpineda-123-dp");
 							     b.putString("LoginUsuario",txtUsuario.getText().toString());
 							     b.putParcelable("impresora", getImpresora());
 							     b.putString("PIN",NMNetWork.getDeviceId(context));
@@ -544,7 +546,7 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 		}
 		return false;
 	}
-	
+	 
 	public boolean isValidInformation()
 	{ 
 		
@@ -568,6 +570,10 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 	            txtUsuario.requestFocus();
 	            return false;
         } 
+        else if (getImpresora()==null || (getImpresora()!=null && getImpresora().obtenerNombre().trim()=="")){ 
+            txtUsuario.setError("No se ha configurado impresora de trabajo."); 
+            return false;
+    } 
 		return true;
 	}
   
@@ -683,6 +689,7 @@ public class ViewConfiguracion extends FragmentActivity implements Handler.Callb
 		setImpresora(dispositivo);
 		runOnUiThread(new Runnable() 
 		{
+			
 			@Override
 			public void run() {
 				txtImpresora.setText(dispositivo.obtenerNombre());
