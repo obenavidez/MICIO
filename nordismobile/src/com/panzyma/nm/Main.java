@@ -116,8 +116,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			break;
 		case R.id.hbtndevolucion:
 			break;
-		case R.id.hbtncliente:
-			// intent = new Intent(this, ViewCliente.class);
+		case R.id.hbtncliente: 
 			intent = new Intent(this, vCliente.class);
 			startActivity(intent);
 			break;
@@ -148,7 +147,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			        { 						 
 						Usuario user = SessionManager.getLoginUser();
 						NMApp.modulo = NMApp.Modulo.CONFIGURACION;
-						if(user==null || SessionManager.SignIn(false) )  
+						//if(user==null || SessionManager.SignIn(false) )
+						if(true)  
 						{  
 							NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 							Intent intent = new Intent(context, ViewConfiguracion.class);

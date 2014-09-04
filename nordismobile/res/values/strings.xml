@@ -48,5 +48,7 @@
     <string name="message_ocational_discount">Aplicar Descuento Ocasional</string>
     <string name="txt_collectorpercent">% Vendedor</string>
     <string name="txt_ocational_discount_key">Clave</string>
+    <string name="text_scan_devices">Buscar Dispositivos</string>
+    <string name="txtbluetoothdevice_title">Lista de Dispositivos</string>
     
 </resources>

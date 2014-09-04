@@ -16,6 +16,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_PARAMET
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_PRODUCTOS;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_PROMOCIONES;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_TODOS;
+import static com.panzyma.nm.controller.ControllerProtocol.ID_SETTING_BLUETOOTHDEVICE;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
@@ -25,11 +26,16 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -47,17 +53,20 @@ import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.NotificationMessage;
+import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
+import com.panzyma.nm.serviceproxy.Impresora;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("ShowToast")
 @SuppressWarnings({"unchecked","rawtypes","unused"}) 
-public class ViewConfiguracion extends Activity implements Handler.Callback 
+public class ViewConfiguracion extends FragmentActivity implements Handler.Callback 
 {
 	
 	String TAG=ViewConfiguracion.class.getSimpleName();
@@ -81,6 +90,11 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 	private DataConfigurationResult settingdata;
 	private CustomDialog dlg;
 	static Object lockC=new Object();
+	private Intent intento;
+	private BConfiguracionM bcm;
+	private EditText txtImpresora;
+	public static int RESULTADO_IMPRESORA=1;
+	private Impresora impresora;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -94,7 +108,7 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 			    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 			 	context=this;  
 			 	nmapp=(NMApp) this.getApplicationContext(); 
-		        nmapp.getController().setEntities(this,new BConfiguracionM());
+		        nmapp.getController().setEntities(this,bcm=new BConfiguracionM());
 		        nmapp.getController().addOutboxHandler(new Handler(this));
 				nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA); 
 				
@@ -151,6 +165,14 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 	
 	public String getDeviceId(){
 		return this.deviceid;
+	}
+	
+	public void setImpresora(Impresora _impresora){
+		this.impresora=_impresora;
+	}
+	
+	public Impresora getImpresora(){
+		return this.impresora;
 	}
 	
 	@Override
@@ -241,7 +263,7 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 		txtEmpresa=(EditText)findViewById(R.id.cfgtextv_detallecodempresa);
 	    txtUsuario=(EditText)findViewById(R.id.cfgtextv_detalleuser); 
 	    txtDispositivoID=(EditText)findViewById(R.id.cfgtextv_detalledeviceid);
-	    
+	    txtImpresora=(EditText)findViewById(R.id.cf_bluetoothprinter);
 	    txtURL.setEnabled(isEditActive);
 	    txtEmpresa.setEnabled(isEditActive);
 	    txtUsuario.setEnabled(isEditActive); 
@@ -262,10 +284,14 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
         quickAction.addActionItem(null);
         quickAction.addActionItem((new ActionItem(ID_SINCRONIZE_TODOS, "Sincronizar Todo")));
         quickAction.addActionItem(null);
+        quickAction.addActionItem((new ActionItem(ID_SETTING_BLUETOOTHDEVICE, "Configurar Impresora")));
+        quickAction.addActionItem(null);
         quickAction.addActionItem((new ActionItem(ID_CERRAR, "Cerrar")));
         
         quickAction.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() 
 		{			
+			
+
 			@Override
 			public void onItemClick(QuickAction source, int pos, int actionId) 
 			{				
@@ -444,6 +470,11 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 					}
 					
 						
+				} 
+				else if (actionId == ID_SETTING_BLUETOOTHDEVICE)
+				{ 
+					intento = new Intent(ViewConfiguracion.this, ConfigurarDispositivosBluetooth.class); 
+					startActivityForResult(intento, 0);  
 				}
 				else if (actionId == ID_CERRAR) 
 					FINISH_ACTIVITY();
@@ -489,6 +520,7 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 							     Bundle b = new Bundle();
 							     b.putString("Credentials",SessionManager.getCredenciales());
 							     b.putString("LoginUsuario",txtUsuario.getText().toString());
+							     b.putParcelable("impresora", getImpresora());
 							     b.putString("PIN",NMNetWork.getDeviceId(context));
 							     msg.setData(b);
 							     msg.what=LOAD_SETTING;
@@ -526,11 +558,16 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
                 txtEmpresa.requestFocus();
                 return false;
 	    }
-        else if (txtUsuario.getText().toString().trim().length()==0){ 
-                txtUsuario.setError("Ingrese el nombre del usuario.");
-                txtUsuario.requestFocus();
+        else if (txtImpresora.getText().toString().trim().length()==0){ 
+	        	txtImpresora.setError("Configure Impresora.");
+	        	txtImpresora.requestFocus();
                 return false;
         }  
+        else if (txtUsuario.getText().toString().trim().length()==0){ 
+	            txtUsuario.setError("Ingrese el nombre del usuario.");
+	            txtUsuario.requestFocus();
+	            return false;
+        } 
 		return true;
 	}
   
@@ -606,5 +643,50 @@ public class ViewConfiguracion extends Activity implements Handler.Callback
 	
 	public String getLoginUsuario(){
 		return txtUsuario.getText().toString();
+	}
+	 
+	@Override
+	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestcode, resultcode, data);
+		try 
+		{ 
+			if (RESULTADO_IMPRESORA == resultcode 	&& data != null)
+				actualizarImpresoraEnPantalla((Impresora)data.getParcelableExtra("impresora"));
+			nmapp.getController().setEntities(this,(bcm!=null)?getBridge():new BConfiguracionM()); 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+	
+	@Override
+	public void startActivityForResult(Intent intent, int requestCode) {
+		// TODO Auto-generated method stub
+		super.startActivityForResult(intent, requestCode);
+	}
+
+	@Override
+	public void startActivityFromFragment(Fragment fragment, Intent intent,
+			int requestCode) {
+		// TODO Auto-generated method stub
+		super.startActivityFromFragment(fragment, intent, requestCode);
+	}
+	
+	private BConfiguracionM getBridge()
+	{
+		return bcm;
+	}
+	
+	public void actualizarImpresoraEnPantalla(final Impresora dispositivo) 
+	{
+		setImpresora(dispositivo);
+		runOnUiThread(new Runnable() 
+		{
+			@Override
+			public void run() {
+				txtImpresora.setText(dispositivo.obtenerNombre());
+			}
+		});
 	}
 }

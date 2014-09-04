@@ -10,7 +10,8 @@ public interface ControllerProtocol {
     int ID_SINCRONIZE_PRODUCTOS = 5;	
     int ID_SINCRONIZE_PROMOCIONES = 6;
     int ID_SINCRONIZE_TODOS = 7;
-    int ID_CERRAR = 8; 
+    int ID_SETTING_BLUETOOTHDEVICE = 8;
+    int ID_CERRAR = 9; 
 	int ID_SALVAR=01;
 	int ID_REQUEST_SALVARPEDIDO=104;
 	

@@ -3,21 +3,20 @@ package com.panzyma.nm.auxiliar;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;  
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;   
 import android.view.View;
 
-import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.model.ModelConfiguracion;
+import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewdialog.DialogLogin; 
 import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;  
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;  
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 @SuppressLint("ParserError")@SuppressWarnings("rawtypes")
@@ -35,7 +34,6 @@ public class SessionManager
     private static final int AUT_USER_NO_EXIST = 2; 
     private static final int AUT_PWD_INVALIDO = 3;  
     
-    private static Parameters params;
     private static String errormessage=""; 
     private static boolean isOK;
     private static boolean _esAdmin; 
@@ -50,30 +48,43 @@ public class SessionManager
     public static boolean hasError=false;
 	public SessionManager(){};
 	
+	private static BluetoothDevice impresora;
+	
 	public static String getNameUser()
 	{
 		return nameuser;
 	}
+	
 	public static void setNameUser(String _nameuser)
 	{
 		nameuser=_nameuser;
 	}
+	
 	public static String getPassword()
 	{
 		return password;
 	}
+	
 	public static void setPassword(String _password)
 	{
 		password=_password;
 	}
+	
 	public static String getEmpresa()
 	{
 		return empresa;
 	}
+	
+	public static Impresora obtenerImpresora()
+	{
+		return ModelConfiguracion.obtenerImpresora(context);
+	}
+	
 	public static void setEmpresa(String _empresa)
 	{
 		empresa=_empresa;
 	}
+	
 	public static boolean isAdmin() 
 	{
 	       return _esAdmin;
@@ -85,7 +96,7 @@ public class SessionManager
 			userinfo=ModelConfiguracion.getUser(context);
 		return userinfo;
 	}
-	
+
 	public static void setLoguedUser(Usuario user){
 		userinfo=user;
 	}
