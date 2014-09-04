@@ -41,6 +41,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
@@ -103,7 +104,7 @@ public class vCliente extends ActionBarActivity implements
 		footerView = (TextView) findViewById(R.id.ctextv_gridheader);
 		
 		CreateMenu();
-		
+		SessionManager.setContext(this); 
 		nmapp = (NMApp) this.getApplicationContext();
 		try 
 		{
@@ -269,7 +270,7 @@ public class vCliente extends ActionBarActivity implements
 				LOAD_FICHACLIENTE_FROMSERVER();
 		
 			break;
-			case R.id.sincronizar_selected:
+			case R.id.sincronizar_selected: 
 				UPDATE_SELECTEDITEM_FROMSERVER();
 				break;
 			case R.id.salir:
@@ -622,7 +623,11 @@ public class vCliente extends ActionBarActivity implements
 
 	private void UPDATE_SELECTEDITEM_FROMSERVER()
 	{
-		nmapp.getController().getInboxHandler().sendEmptyMessage(UPDATE_ITEM_FROM_SERVER);
+		Message ms = new  Message();
+		ms.what=UPDATE_ITEM_FROM_SERVER; 
+		ms.obj = get_SucursalID();
+		
+		nmapp.getController().getInboxHandler().sendMessage(ms);
 	    Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);  
 	} 	
 

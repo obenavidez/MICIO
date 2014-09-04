@@ -51,6 +51,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
+import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable; 
 import com.panzyma.nm.serviceproxy.Pedido;
@@ -265,7 +266,9 @@ public class ViewPedido extends ActionBarActivity implements
                 cuentasPorCobrar);
                 transaction.addToBackStack(null);
                 transaction.commit();
+                drawerLayout.closeDrawers();
             }
+            drawerLayout.closeDrawers();
             break;
             case CONSULTA_VENTAS:
             fragmentActive = FragmentActive.CONSULTA_VENTAS;
@@ -672,4 +675,15 @@ public class ViewPedido extends ActionBarActivity implements
     	}
 	}
 	
+	@Override
+	public void onBackPressed() {
+		  Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		  if (fragment instanceof CuentasPorCobrarFragment) {
+			  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			  transaction.replace(R.id.fragment_container, firstFragment);
+			  transaction.addToBackStack(null);
+			  transaction.commit();
+		  }
+			  
+	}
 } 
