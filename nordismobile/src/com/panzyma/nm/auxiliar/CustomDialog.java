@@ -37,6 +37,52 @@ public class CustomDialog extends Dialog implements OnDismissListener
 	View viewdialog;
 	private Context cnt;
 	
+	public static CustomDialog _dialog;
+	
+	public static CustomDialog nuevaInstancia(Context context,String mensaje,boolean interfac,int... mensajetype){
+		if(_dialog==null)
+			_dialog=new CustomDialog(context,mensaje,interfac,mensajetype);
+		else
+		{
+			_dialog.setContext(context);
+			_dialog.setMensaje(mensaje);
+			if(mensajetype!=null)
+				_dialog.setMessageType(mensajetype[0]);	
+			_dialog.setCancelable(true);
+			_dialog.setCanceledOnTouchOutside(true);
+			
+			_dialog.setInterface(interfac);
+			_dialog.initDialog();
+		}
+		return _dialog;
+	}
+	
+	public static CustomDialog nuevaInstancia(Context context,String titulo,String mensaje,int... mensajetype){
+		if(_dialog==null)
+			_dialog=new CustomDialog(context,titulo,mensaje,mensajetype);
+		else
+		{ 
+			_dialog.setContext(context);
+			_dialog.setMensaje(mensaje);
+			_dialog.setTitulo(titulo);
+			if(mensajetype!=null)
+				_dialog.setMessageType(mensajetype[0]);	
+			_dialog.setCancelable(true);
+			_dialog.setCanceledOnTouchOutside(true);
+			_dialog.initDialog();
+		}
+		return _dialog;
+	}
+	
+	public void setContext(Context context)
+	{
+		this.cnt = context;
+	}
+	
+	public void setInterface(boolean interfac)
+	{
+		this.imple_interfc=interfac;
+	}
 	/**
 	 * CustomDialog  Interfaces  Variables
 	 */ 

@@ -241,6 +241,7 @@ public class ViewPedido extends ActionBarActivity implements
             //CERRAR EL MENU DEL DRAWER
             drawerLayout.closeDrawers();
             break;
+            
             case CUENTAS_POR_COBRAR:
             fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
             if (findViewById(R.id.fragment_container) != null)
@@ -654,7 +655,8 @@ public class ViewPedido extends ActionBarActivity implements
 		AppDialog.showMessage(vp, title,msg,type,new OnButtonClickListener() {
 			@Override
 			public void onButtonClick(AlertDialog _dialog, int actionId) {
-				if(actionId == AppDialog.OK_BUTTOM) {
+				if(actionId == AppDialog.OK_BUTTOM) 
+				{
 					Message ms = new  Message();
 					ms.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST; 
 					ms.obj = pedido_selected.getId();

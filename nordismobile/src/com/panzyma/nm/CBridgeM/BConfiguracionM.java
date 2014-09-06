@@ -32,6 +32,7 @@ import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelProducto;
@@ -136,9 +137,10 @@ public class BConfiguracionM {
 								DataConfigurationResult res = ModelConfiguracion
 										.getDataConfiguration(Credentials,
 												LoginUsuario, PIN);
-								if (res.get_error() == null) {
+								if (res.get_error() == null) 
+								{
 									Processor.notifyToView(controller,
-											NOTIFICATION, 0, 0,
+											ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
 											new NotificationMessage("",
 													"Salvando configuración.",
 													""));
@@ -159,7 +161,7 @@ public class BConfiguracionM {
 											.notifyToView(
 													controller,
 													C_FINISH,
-													0,
+													res.get_devicePrefix(),
 													1,
 													new NotificationMessage(
 															"",
@@ -199,7 +201,7 @@ public class BConfiguracionM {
 							}
 						}
 					});
-			Processor.notifyToView(controller, NOTIFICATION, 0, 0,
+			Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
 					new NotificationMessage("",
 							"Validando información con el servidor.", ""));
 		} catch (Exception e) {
@@ -600,7 +602,7 @@ public class BConfiguracionM {
 					});
 
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 
 	}

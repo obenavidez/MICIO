@@ -33,44 +33,6 @@ public class NMTranslate
 		//return (ArrayList<U>) unknowclass.getClass().getMethod("ParseArrayJSON_To_Entity",JSONArray.class).invoke(unknowclass,json);	
 	}
 	
-	public synchronized static SoapObject ToObject(Object obj,String NAME_SPACE,String METHOD_NAME) throws Exception 
-	{	 
-		Field[] fields; 
-    	Type type;   
-    	Object d;
-    	if(obj==null)
-    		return null;
-    	
-    	SoapObject _obj=(SoapObject) obj;
-    	fields=(obj.getClass().getDeclaredFields().length !=0)? obj.getClass().getDeclaredFields():obj.getClass().getFields();
-		SoapObject rs=new SoapObject(NAME_SPACE,METHOD_NAME);
-    	for(int i=0;i<fields.length;i++)
-		{   
-		        type=fields[i].getType();
-		        if(type==android.os.Parcelable.Creator.class)
-		        { 
-		        	System.out.println(type.toString());
-		        }  
-		        else if(type==String.class)
-		        { 
-		        	d=_obj.getProperty(fields[i].getName());
-		        	rs.addProperty(fields[i].getName(),_obj.getProperty(fields[i].getName()));
-		        } 		        
-		    	else if(type==Integer.class || type==Integer.TYPE)
-		    		System.out.println(type.toString());
-		    	else if(type==Float.class || type==Float.TYPE)
-		    		System.out.println(type.toString());
-		    	else if(type==Boolean.class || type==Boolean.TYPE)
-		    		System.out.println(type.toString());
-		    	else if(type==Long.class || type==Long.TYPE)System.out.println(type.toString());
-
-		        
-		        
-		} 
-    	
-    	return null;
-	}
-	
 	public synchronized static <U, T> U ToObject(Object obj,U unknowclass) throws Exception 
 	{	    	 
     	Field[] fields; 
@@ -83,24 +45,20 @@ public class NMTranslate
 			   
 				for(int i=0;i<fields.length;i++)
 				{   
-				        type=fields[i].getType();  
-					    Object value=((SoapObject) obj).getProperty(fields[i].getName()); 
-					    fields[i].setAccessible(true); 
+						type=fields[i].getType();
+				        if(type==android.os.Parcelable.Creator.class)
+					       continue; 
+				        fields[i].setAccessible(true); 
+				        Object value=null;
+				        boolean exists=((SoapObject) obj).hasProperty(fields[i].getName()); 
+				        if(exists)
+					        value=((SoapObject) obj).getProperty(fields[i].getName()); 
+					    
 					    if(value!=null)
 					    {
 							    if(value.getClass()==org.ksoap2.serialization.SoapPrimitive.class)
 							    {
-							    	setValueToField(unknowclass,fields[i],value);
-//							    	if(type==String.class)
-//							    		fields[i].set(unknowclass,value.toString());
-//							    	else if(type==Integer.class || type==Integer.TYPE)
-//								    	fields[i].set(unknowclass,(Integer.valueOf(value.toString())));
-//							    	else if(type==Float.class || type==Float.TYPE)
-//								    	fields[i].set(unknowclass,(Float.valueOf(value.toString())));
-//							    	else if(type==Boolean.class || type==Boolean.TYPE)
-//								    	fields[i].set(unknowclass,(Boolean.valueOf(value.toString())));
-//							    	else if(type==Long.class || type==Long.TYPE)
-//								    	fields[i].set(unknowclass,(Long.valueOf(value.toString()))); 
+							    	setValueToField(unknowclass,fields[i],value); 
 							    }
 							    else if(value.getClass()==org.ksoap2.serialization.SoapObject.class)
 							    {   
@@ -158,11 +116,17 @@ public class NMTranslate
     		fields=(convertedObjects.get(a).getClass().getDeclaredFields().length!=0)?convertedObjects.get(a).getClass().getDeclaredFields():convertedObjects.get(a).getClass().getFields();
     		 
     		for(int i=0;i<fields.length;i++)
-			{  
-    		 
-    			Type type=fields[i].getType();
+			{   
+    			Type type=fields[i].getType(); 
+		        if(type==android.os.Parcelable.Creator.class)
+			       continue;  
+		        
                 fields[i].setAccessible(true); 
-                Object value=obj2.getProperty(fields[i].getName());  
+		        Object value=null;
+		        boolean exists=obj2.hasProperty(fields[i].getName()); 
+		        if(exists)
+			        value= obj2.getProperty(fields[i].getName()); 
+			     
                 if(value!=null)
                 {
 	                

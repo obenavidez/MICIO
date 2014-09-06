@@ -29,34 +29,43 @@
                     android:id="@+id/pddlbl_fecha"
                     android:layout_width="55dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:text="Fecha :"
                     android:textColor="@color/Black"
                     android:textStyle="bold" />
                 
                 <EditText
-				    android:id="@+id/pddetextv_detalle_fecha"
-				    android:layout_width="45dp"
-				    android:layout_height="25dp"
-				    android:layout_alignLeft="@+id/pddtextv_detallecliente"
-				    android:layout_alignParentTop="true"
-				    android:background="@drawable/style_textbox"
-				    android:ems="10" >
+                    android:id="@+id/pddetextv_detalle_fecha"
+                    android:layout_width="120dp"
+                    android:layout_height="25dp"
+                    android:layout_alignLeft="@+id/pddtextv_detallecliente"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignRight="@+id/pddlbl_num"
+                    android:background="@drawable/style_textbox"
+                    android:enabled="false"
+                    android:ems="5" >
+
 				</EditText>
                 
                 <TextView
                     android:id="@+id/pddlbl_numref"
                     android:layout_width="45dp"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/pddetextv_detalle_fecha"
+                    android:layout_below="@+id/pddlbl_fecha"
+                    android:layout_marginTop="20dp" 
                     android:text="No.Ref :"
                     android:textColor="@color/Black"
                     android:textSize="12dp"
                     android:textStyle="bold" />
 
 				<EditText
-			    android:id="@+id/pdddetextv_detalle_numref"
-			    android:layout_width="45dp"
+			    android:id="@+id/pdtv_detalle_numref"
+			    android:layout_width="90dp"
 			    android:layout_height="25dp"
+			    android:layout_below="@+id/pddlbl_fecha" 
+			    android:layout_marginTop="10dp"
+			    android:layout_marginLeft="15dp"
+			    android:enabled="false"
 			    android:layout_toRightOf="@+id/pddlbl_numref"
 			    android:background="@drawable/style_textbox"
 			    android:scrollHorizontally="true" />
@@ -64,9 +73,11 @@
 				
 				<TextView
                     android:id="@+id/pddlbl_num"
-                    android:layout_width="50dp"
+                    android:layout_width="55dp"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/pdddetextv_detalle_numref"
+                    android:layout_below="@+id/pddlbl_fecha" 
+                    android:layout_toRightOf="@+id/pdtv_detalle_numref"
+                    android:layout_marginTop="20dp"
                     android:text="#Recibo :"
                     android:textColor="@color/Black"
                     android:textSize="12dp"
@@ -76,20 +87,24 @@
 			    android:id="@+id/pdddetextv_detalle_num"
 			    android:layout_width="100dp"
 			    android:layout_height="25dp"
+			    android:layout_below="@+id/pddlbl_fecha" 
+			    android:layout_marginTop="10dp"
 			    android:layout_toRightOf="@+id/pddlbl_num"
+			    android:enabled="false"
 			    android:background="@drawable/style_textbox"
 			    android:scrollHorizontally="true" />
 				
 				
-				<TextView     	     
-				android:id="@+id/pddlbl_cliente"
-				android:layout_width="58dp"
-				android:layout_height="wrap_content"
-				android:text="Cliente :"
-				android:layout_below="@+id/pddlbl_fecha"
-				android:layout_marginTop="30dp"
-				android:textStyle="bold"
-			    android:textColor="@color/Black" >
+				<TextView
+				    android:id="@+id/pddlbl_cliente"
+				    android:layout_width="58dp"
+				    android:layout_height="wrap_content"
+				    android:layout_below="@+id/pddlbl_numref"
+				    android:layout_marginTop="30dp"
+				    android:text="Cliente :"
+				    android:textColor="@color/Black"
+				    android:textStyle="bold" >
+
 			    </TextView>
 				
 
@@ -97,10 +112,11 @@
 				    android:id="@+id/pddtextv_detallecliente"
 				    android:layout_width="250dp"
 				    android:layout_height="40dp"
-				    android:layout_below="@+id/pddlbl_fecha"
-				    android:layout_marginTop="10dp"
+				    android:layout_below="@+id/pddlbl_numref"
+				    android:layout_marginTop="5dp"
 				    android:layout_toRightOf="@+id/pddlbl_cliente"
 				    android:background="@drawable/style_textbox"
+				    android:enabled="false"
 				    android:paddingTop="10dp"
 				    android:inputType="text"
 				    android:scrollHorizontally="true" >

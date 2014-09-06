@@ -147,7 +147,11 @@ public class SessionManager
 				if(!SessionManager.SignIn(false))
 					return "";			
 		}        
-        return nameuser + "-" + password + "-" + empresa; 
+		if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
+        		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
+        	return "";
+        else
+        	return nameuser + "-" + password + "-" + empresa; 
 	} 
 	public static String getCredentials()
 	{		
@@ -167,7 +171,11 @@ public class SessionManager
 				if(!SessionManager.SignIn(false))
 					return "";			
 		}          
-        return nameuser + "||" + password + "||" + empresa; 
+        if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
+        		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
+        	return "";
+        else
+        	return nameuser + "||" + password + "||" + empresa;
 	}
 	
 	public static void setErrorAuntentication(String _error){
