@@ -39,6 +39,7 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND; 
 import com.panzyma.nm.view.adapter.GenericAdapter;
@@ -46,6 +47,8 @@ import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
 import com.panzyma.nm.viewdialog.DialogCliente;
+import com.panzyma.nm.viewdialog.DialogFormasPago;
+import com.panzyma.nm.viewdialog.DialogFormasPago.OnFormaPagoButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Seleccionable;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion;
@@ -150,6 +153,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
 	private static final int VER_DETALLE_DOCUMENTO = 2;
 	private static final int ID_CERRAR = 11;
+	private static final int ID_EDITAR_PAGOS = 12;
 	private ViewReciboEdit me;
 	private Cliente cliente;
 	private ReciboColector recibo=null;
@@ -337,6 +341,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				"Agregar Documentos"));
 		quickAction.addActionItem(new ActionItem(ID_AGREGAR_PAGOS,
 				"Agregar Pagos"));
+		quickAction.addActionItem(new ActionItem(ID_EDITAR_PAGOS,
+				"Editar Pagos"));
 		quickAction.addActionItem(null);
 		quickAction.addActionItem(new ActionItem(ID_EDITAR_NOTAS,
 				"Editar Notas"));
@@ -382,6 +388,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 								case ID_AGREGAR_PAGOS:
 									agregarPago();
 									break;
+								case ID_EDITAR_PAGOS:
+									editarPagos();
+									break;
 								case ID_EDITAR_DESCUENTO:
 									editarDescuento();
 									break;
@@ -418,7 +427,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									break;
 								}
 							}
-
 						});
 			}
 
@@ -722,6 +730,24 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			Util.Message.buildToastMessage(this.getContext(), "No es posible editar el descuento", TIME_TO_VIEW_MESSAGE);
 		}		
 		
+	}
+	
+	private void editarPagos() {
+		if(!"REGISTRADO".equals(recibo.getCodEstado()))  return;
+		int posicion = positioncache;
+		if (posicion == -1) return;	
+		final FragmentManager fragmentManager = getSupportFragmentManager();
+		final DialogFormasPago dialog= new DialogFormasPago(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, recibo.getFormasPagoRecibo());
+		dialog.setOnDialogButtonClickListener(new OnFormaPagoButtonClickListener() {			
+			@Override
+			public void onButtonClick(ReciboDetFormaPago formaPago) {
+								
+			}
+		});
+		Window window = dialog.getWindow(); 
+		window.setGravity(Gravity.CENTER);
+		window.setLayout(display.getWidth() - 40, display.getHeight() - 110);
+		dialog.show();
 	}
  
 	private void enviarRecibo()
@@ -1147,13 +1173,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             return;
         }
         
-        FragmentManager fragmentManager = getSupportFragmentManager();        
-        EditFormaPago editarPago = new EditFormaPago();        
-        Bundle parameters = new Bundle();     
-        parameters.putBoolean(FORMA_PAGO_IN_EDITION, false);
-        parameters.putParcelable(OBJECT_TO_EDIT, recibo);
-        editarPago.setArguments(parameters);        
-        editarPago.show(fragmentManager, "");
+        final FragmentManager fragmentManager = getSupportFragmentManager();   
+        runOnUiThread(new Runnable() {			
+			@Override
+			public void run() {
+				EditFormaPago editarPago = EditFormaPago.newInstance(recibo, false);
+		        editarPago.show(fragmentManager, "");				
+			}
+		});        
 
 	} 
 
