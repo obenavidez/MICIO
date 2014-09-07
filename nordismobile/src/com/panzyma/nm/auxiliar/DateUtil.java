@@ -130,7 +130,7 @@ public class DateUtil {
         if (idate == 0) return "";
         
         String strDate = idate + "";
-        return strDate.substring(6, 8) + "/" + strDate.substring(4, 6) + "/" + strDate.substring(0, 4);
+        return strDate.substring(6, 8) + "/" + strDate.substring(4, 6) + "/" + strDate.substring(0,4);
     }
     
     public static String idateToStrYY(int idate) {

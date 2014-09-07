@@ -380,10 +380,9 @@ public class vCliente extends ActionBarActivity implements
 	{
 		/*controller.getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);*/
 		try {
-			nmapp.getController().setEntities(this, new BClienteM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(what);
+			NMApp.getController().setEntities(this, new BClienteM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController().getInboxHandler().sendEmptyMessage(what);
 
 			pDialog = new ProgressDialog(vCliente.this);
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -392,7 +391,6 @@ public class vCliente extends ActionBarActivity implements
 			pDialog.show();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

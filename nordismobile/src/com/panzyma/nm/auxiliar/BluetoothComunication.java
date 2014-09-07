@@ -3,8 +3,15 @@ package com.panzyma.nm.auxiliar;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID; 
+
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.controller.ControllerProtocol;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -13,20 +20,20 @@ import android.os.Handler;
 
 public class BluetoothComunication {
 
-	// android built in classes for bluetooth operations
-	BluetoothAdapter mBluetoothAdapter;
-	BluetoothSocket mmSocket;
-	BluetoothDevice mmDevice;
+	
+	static BluetoothAdapter mBluetoothAdapter;
+	static BluetoothSocket mmSocket;
+	static BluetoothDevice mmDevice;
 
-	OutputStream mmOutputStream;
-	InputStream mmInputStream;
-	Thread workerThread;
+	static OutputStream mmOutputStream;
+	static InputStream mmInputStream;
+	static Thread workerThread;
 
-	byte[] readBuffer;
-	int readBufferPosition;
-	int counter;
-	volatile boolean stopWorker;
-
+	static byte[] readBuffer;
+	static int readBufferPosition;
+	static int counter;
+	static volatile boolean stopWorker; 
+	
 	private static BluetoothComunication cpp = new BluetoothComunication();
 
 	public static BluetoothComunication newInstance() {
@@ -37,7 +44,8 @@ public class BluetoothComunication {
 
 	public BluetoothComunication() {
 
-		try {
+		try 
+		{
 			findBT();
 			openBT();
 		} catch (Exception e) {
@@ -47,17 +55,21 @@ public class BluetoothComunication {
 
 	}
 
+	@SuppressWarnings({ "static-access", "unused" })
 	/*
-	 * This will find a bluetooth printer device
+	 * Buscar el dispositivo bluetooth
 	 */
-	void findBT() 
+	public static void findBT() 
 	{
 
-		try {
+		try 
+		{
 			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
 			if (mBluetoothAdapter == null) {
-				// myLabel.setText("No bluetooth adapter available");
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"Error con el dispositivo Bluetooth",
+						"El Dispositivo no soporta comunicación bluetooth",""));
 			}
 
 			if (!mBluetoothAdapter.isEnabled()) {
@@ -69,26 +81,26 @@ public class BluetoothComunication {
 			if (pairedDevices.size() > 0) 
 			{
 				for (BluetoothDevice device : pairedDevices) {
-
-					// MP300 is the name of the bluetooth printer device
-					if (device.getName().equals("Zebra Ismael")) {
+ 
+					if (device.getAddress().equals(SessionManager.getImpresora().obtenerMac())) {
 						mmDevice = device;
 						break;
 					}
 				}
-			}
-			// myLabel.setText("Bluetooth Device Found");
-		} catch (NullPointerException e) {
-			e.printStackTrace();
+			} 
 		} catch (Exception e) {
-			e.printStackTrace();
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al intentar buscar el dispositivo bluetooth",
+					e.getMessage(),e.getCause().toString())); 
+				closeBT(); 
 		}
 	}
 
 	/*
-	 * Tries to open a connection to the bluetooth printer device
+	 * Abrir conexion con la impresora
 	 */
-	void openBT() throws IOException {
+	public static void openBT() throws IOException 
+	{
 		try {
 			// Standard SerialPortService ID
 			UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
@@ -97,22 +109,21 @@ public class BluetoothComunication {
 			mmOutputStream = mmSocket.getOutputStream();
 			mmInputStream = mmSocket.getInputStream();
 
-			beginListenForData();
-
-
-		} catch (NullPointerException e) 
+//			beginListenForData();
+		
+		} catch (Exception e)
 		{
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
+			closeBT();
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al intentar abrir comunicación con el dispositivo bluetooth",
+					e.getMessage(),e.getCause().toString()));
 		}
 	}
 
 	/*
-	 * After opening a connection to bluetooth printer device, we have to listen
-	 * and check if a data were sent to be printed.
+	 * Despues de abrir la conexion con la impresora, debemos escuchar o verificar si los datos fueron enviados a la impresora
 	 */
-	void beginListenForData() 
+	public static void beginListenForData() 
 	{
 		try 
 		{
@@ -124,95 +135,113 @@ public class BluetoothComunication {
 			stopWorker = false;
 			readBufferPosition = 0;
 			readBuffer = new byte[1024];
-
-			workerThread = new Thread(new Runnable() {
+			NMApp.getThreadPool().execute(new Runnable() 
+			{
 				@Override
-				public void run() {
-					while (!Thread.currentThread().isInterrupted()
-							&& !stopWorker) {
+				public void run() 
+				{
+					while (!Thread.currentThread().isInterrupted() && !stopWorker) {
 
-						try {
+						try 
+						{
 
 							int bytesAvailable = mmInputStream.available();
-							if (bytesAvailable > 0) {
+							if (bytesAvailable > 0) 
+							{
 								byte[] packetBytes = new byte[bytesAvailable];
 								mmInputStream.read(packetBytes);
-								for (int i = 0; i < bytesAvailable; i++) {
+								for (int i = 0; i < bytesAvailable; i++) 
+								{
 									byte b = packetBytes[i];
-									if (b == delimiter) {
+									if (b == delimiter) 
+									{
 										byte[] encodedBytes = new byte[readBufferPosition];
-										System.arraycopy(readBuffer, 0,
-												encodedBytes, 0,
-												encodedBytes.length);
-										final String data = new String(
-												encodedBytes, "US-ASCII");
+										System.arraycopy(readBuffer, 0,encodedBytes, 0,encodedBytes.length);
+										final String data = new String(encodedBytes, "US-ASCII");
 										readBufferPosition = 0;
 
-										handler.post(new Runnable() {
+										handler.post(new Runnable() 
+										{
 											@Override
-											public void run() {
-												// myLabel.setText(data);
+											public void run() 
+											{ 
+													//closeBT(); 
 											}
 										});
-									} else {
+									} else 
+									{
 										readBuffer[readBufferPosition++] = b;
 									}
 								}
 							}
 
-						} catch (IOException ex) {
-							stopWorker = true;
+						} catch (Exception e) {
+							stopWorker = true;  
+								closeBT();
+								NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+										"Error al escuchar comunicación con el dispositivo bluetooth",
+										e.getMessage(),e.getCause().toString())); 
 						}
 
 					}
 				}
-			});
-
-			workerThread.start();
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
+			}); 
+		} catch (Exception e) {  
+				closeBT(); 
 		}
 	}
 
 	/*
-	 * This will send data to be printed by the bluetooth printer
+	 * Enviar a imprimir datos a la impresora
 	 */
-	public void sendData(String _smg) throws IOException {
-		try {
-
-			// the text typed by the user
-			String msg = _smg;// myTextbox.getText().toString();
-			// msg += "\n";
-
-			mmOutputStream.write(msg.getBytes());
-
-			// tell the user data were sent
-			// myLabel.setText("Data Sent");
-
-		} catch (NullPointerException e) {
-			e.printStackTrace();
+	public void sendData(String _smg) throws IOException 
+	{
+		try 
+		{			
+			String msg = _smg; 
+			if(mmOutputStream!=null)
+			{
+				mmOutputStream.write(msg.getBytes()); 
+				closeBT();
+			}
+			else
+			{
+				findBT();
+				openBT();
+				if(mmOutputStream!=null)
+					mmOutputStream.write(msg.getBytes()); 
+				
+			}
+		
 		} catch (Exception e) {
+			closeBT();
 			e.printStackTrace();
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al enviar los datos al dispositivo bluetooth",
+					e.getMessage(),e.getCause().toString()));
 		}
 	}
 
 	/*
-	 * Close the connection to bluetooth printer.
+	 *Cerrar la comunicación con la impresora.
 	 */
-	public void closeBT() throws IOException {
-		try {
+	public static void closeBT() 
+	{
+		try 
+		{
 			stopWorker = true;
-			mmOutputStream.close();
-			mmInputStream.close();
-			mmSocket.close();
-			// myLabel.setText("Bluetooth Closed");
-		} catch (NullPointerException e) {
-			e.printStackTrace();
+			if(mmOutputStream!=null)
+				mmOutputStream.close();
+			if(mmInputStream!=null)
+				mmInputStream.close();
+			if(mmSocket!=null)
+				mmSocket.close(); 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al cerrar la comunicación con dispositivo bluetooth",
+					e.getMessage(),e.getCause().toString()));
+		} 
 	}
 
 }

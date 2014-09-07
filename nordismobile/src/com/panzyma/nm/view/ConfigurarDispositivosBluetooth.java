@@ -2,17 +2,11 @@ package com.panzyma.nm.view;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.auxiliar.AppDialog;
-import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.AppDialog.DialogType;
-import com.panzyma.nm.menu.ActionItem;
-import com.panzyma.nm.menu.QuickAction;
+ 
+import com.panzyma.nm.auxiliar.AppDialog; 
 import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.view.adapter.GenericAdapter;
-import com.panzyma.nm.view.viewholder.BluetoothDeviceHolder;
-import com.panzyma.nm.view.viewholder.ClienteViewHolder;
+import com.panzyma.nm.view.viewholder.BluetoothDeviceHolder; 
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
@@ -25,18 +19,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Color;
+import android.content.IntentFilter; 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.os.Message; 
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView; 
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -44,13 +34,12 @@ import android.widget.ToggleButton;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 @SuppressLint("ShowToast")
-@SuppressWarnings("unused")
+@SuppressWarnings("rawtypes")
 public class ConfigurarDispositivosBluetooth extends Activity implements
-		Handler.Callback {
+		Handler.Callback 
+	{
 
 	private ProgressDialog mProgressDlg;
-
-	private ViewConfiguracion parent;
 
 	private ListView lvdispositivos;
 
@@ -68,23 +57,20 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 
 	public ConfigurarDispositivosBluetooth context;
 
-	private Object lock;
-
+	
 	private GenericAdapter adapter;
 
 	private Intent intent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.bluetooth_dialog);
 		initComponent();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked"})
 	private void initComponent() {
-		parent = (ViewConfiguracion) getParent();
 		context = this;
 		mActivateBtn = (ToggleButton) findViewById(R.id.btn_activatebluetooth);
 		mScanBtn = (Button) findViewById(R.id.btn_scan);
@@ -99,7 +85,6 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				FINISH_ACTIVITY();
 			}
 		});
@@ -110,9 +95,7 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 					public boolean onItemLongClick(AdapterView<?> parent,
 							View view, int position, long id) {
 						device = mDeviceList.get(position);
-						establerComunicacion(
-								"Esta es la Impresora de Trabajo?",
-								"Confirme x favor....", device);
+						establerComunicacion("Esta es la Impresora de Trabajo?","Confirme x favor....", device);
 						return false;
 					}
 				});
@@ -154,6 +137,8 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 
 			if (mBluetoothAdapter.isEnabled()) {
 				showEnabled();
+				mDeviceList.addAll(mBluetoothAdapter.getBondedDevices());
+				adapter.notifyDataSetChanged();
 			} else {
 				showDisabled();
 			}
@@ -196,40 +181,44 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
-		public void onReceive(Context context, Intent intent) {
+		public void onReceive(Context context, Intent intent) 
+		{
 			String action = intent.getAction();
-			if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+			if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) 
+			{
 				final int state = intent.getIntExtra(
 						BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
 
-				if (state == BluetoothAdapter.STATE_ON) {
+				if (state == BluetoothAdapter.STATE_ON) 
+				{
 					showToast("bluetooth habilitado");
 					showEnabled();
-					mBluetoothAdapter.startDiscovery();
+					if(mBluetoothAdapter.getBondedDevices().isEmpty())
+						mBluetoothAdapter.startDiscovery();
+					else
+					{
+						mDeviceList.addAll(mBluetoothAdapter.getBondedDevices());
+						adapter.notifyDataSetChanged();
+					}
 				}
-			} else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+			} else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) 
+			{
 				mDeviceList = new ArrayList<BluetoothDevice>();
 				mProgressDlg.show();
-			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
-					.equals(action)) {
+			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) 
+			{
 				mProgressDlg.dismiss();
 				fillgriddevice();
-			} else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-				final int state = intent
-						.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,
-								BluetoothDevice.ERROR);
-				final int prevState = intent.getIntExtra(
-						BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE,
-						BluetoothDevice.ERROR);
+			} else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) 
+			{
+				final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,BluetoothDevice.ERROR);
+				final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE,BluetoothDevice.ERROR);
 
-				if (state == BluetoothDevice.BOND_BONDED
-						&& prevState == BluetoothDevice.BOND_BONDING) {
+				if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
 					mProgressDlg.dismiss();
 					showToast("Vinculado");
-					informarEnPantalla("Configuracion completada",
-							"Impresora vinculada correctamente.");
-				} else if (state == BluetoothDevice.BOND_NONE
-						&& prevState == BluetoothDevice.BOND_BONDED) {
+					informarEnPantalla("Configuracion completada","Impresora vinculada correctamente.");
+				} else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED) {
 					mProgressDlg.dismiss();
 					showToast("desvinculado");
 				}
@@ -301,7 +290,6 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 
 	@Override
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
-		// TODO Auto-generated method stub
 		super.onActivityResult(requestcode, resultcode, data);
 		try {
 			if (android.app.Activity.RESULT_CANCELED == resultcode)
@@ -315,7 +303,6 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 
 	@Override
 	public void startActivityForResult(Intent intent, int requestCode) {
-		// TODO Auto-generated method stub
 		super.startActivityForResult(intent, requestCode);
 	}
 
@@ -337,8 +324,7 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 									if (!(device != null && device.getBondState() == BluetoothDevice.BOND_BONDED))
 										vincularDispositivo(device);
 									else
-										desvincularDispositivo(device);
-								 
+										FINISH_ACTIVITY(device.getBondState() == BluetoothDevice.BOND_BONDED);
 								}
 					}
 				});
@@ -376,9 +362,7 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 	{
 		int requescode = 1;
 		if (mProgressDlg != null)
-			mProgressDlg.dismiss();
-		if (mBluetoothAdapter.isEnabled()) 
-			mBluetoothAdapter.disable();
+			mProgressDlg.dismiss(); 
 		if (withresult.length > 0 && withresult[0]) 
 		{
 			intent = new Intent();

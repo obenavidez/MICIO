@@ -173,6 +173,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 
 	public void setImpresora(Impresora _impresora) {
 		this.impresora = _impresora;
+		SessionManager.setImpresora(impresora);
 	}
 
 	public Impresora getImpresora() {
@@ -244,13 +245,15 @@ public class ViewConfiguracion extends FragmentActivity implements
 		return false;
 	}
 
-	private void setData(vmConfiguracion setting) {
+	private void setData(vmConfiguracion setting) 
+	{
+		setImpresora(setting.getImpresora());
 		oldata = vmConfiguracion.setConfiguration(setting);
 		txtURL.setText(setting.getAppServerURL());
 		txtEmpresa.setText(setting.getEnterprise());
 		txtUsuario.setText(setting.getNameUser());
 		txtDispositivoID.setText(setting.getDeviceId());
-
+		txtImpresora.setText(setting.getImpresora().obtenerNombre());
 		this.setUrlServer(setting.getAppServerURL());
 		this.setDeviceId(setting.getEnterprise());
 		this.setUserName(setting.getNameUser());
@@ -319,8 +322,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 						final Controller controller = nmapp.getController();
 						ActionItem actionItem = quickAction.getActionItem(pos);
 						
-						if(!validar())
-							return;
+						
 						
 						if (actionId == ID_SALVAR_CONFIGURACION)
 							salvarConfiguracion();
@@ -519,9 +521,11 @@ public class ViewConfiguracion extends FragmentActivity implements
 				nmapp.getThreadPool().execute(new Runnable() {
 					@Override
 					public void run() {
-						try {
+						try 
+						{
 							Controller c = nmapp.getController();
-							if (SessionManager.SignIn(true)) {
+							if (SessionManager.SignIn(true)) 
+							{
 								setEnterprise(txtEmpresa.getText().toString());
 								setUserName(txtUsuario.getText().toString());
 								setUrlServer(txtURL.getText().toString());
@@ -554,7 +558,8 @@ public class ViewConfiguracion extends FragmentActivity implements
 		return false;
 	}
 
-	public boolean validar() {
+	public boolean validar() 
+	{
 
 		if (txtURL.getText().toString().trim().length() == 0) {
 			txtURL.setError("Ingrese el nombre o IP del servidor SIMFAC.");
@@ -565,21 +570,21 @@ public class ViewConfiguracion extends FragmentActivity implements
 			txtEmpresa.requestFocus();
 			return false;
 		}
-		// else if (txtImpresora.getText().toString().trim().length()==0){
-		// txtImpresora.setError("Configure Impresora.");
-		// txtImpresora.requestFocus();
-		// return false;
-		// }
+//		 else if (txtImpresora.getText().toString().trim().length()==0){
+//		 txtImpresora.setError("Configure Impresora.");
+//		 txtImpresora.requestFocus();
+//		 return false;
+//		 }
 		else if (txtUsuario.getText().toString().trim().length() == 0) {
 			txtUsuario.setError("Ingrese el nombre del usuario.");
 			txtUsuario.requestFocus();
 			return false;
 		}
-		// else if (getImpresora()==null || (getImpresora()!=null &&
-		// getImpresora().obtenerNombre().trim()=="")){
-		// txtUsuario.setError("No se ha configurado impresora de trabajo.");
-		// return false;
-		// }
+//		else if (getImpresora()==null || (getImpresora()!=null &&
+//		 getImpresora().obtenerNombre().trim()=="")){
+//		 txtUsuario.setError("No se ha configurado impresora de trabajo.");
+//		 return false;
+//		}
 		return true;
 	}
 

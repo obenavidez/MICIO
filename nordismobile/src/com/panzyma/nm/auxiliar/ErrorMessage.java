@@ -5,6 +5,15 @@ public class ErrorMessage {
 	private String message;
 	private String cause;
 	
+    private static ErrorMessage error;
+	
+	public static ErrorMessage newInstance(String title,String message,String cause) 
+	{
+		if(error==null)
+			error = new ErrorMessage(title, message, cause);
+	    return error;
+	}
+	
 	public ErrorMessage(String title,String message,String cause){
 		this.title=title;this.message=message;this.cause=cause;
 	}

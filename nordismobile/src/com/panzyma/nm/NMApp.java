@@ -7,12 +7,12 @@ import com.panzyma.nm.controller.Controller;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
-@SuppressWarnings({ "unused", "rawtypes"})
+@SuppressWarnings({"rawtypes"})
 public class NMApp extends Application
 { 	 
 	
-	public  Controller controller;
-	private ThreadPool pool;
+	public static  Controller controller;
+	private static ThreadPool pool;
 	
 	public enum Modulo {
 		HOME,
@@ -44,18 +44,21 @@ public class NMApp extends Application
 
 	public static Context getContext()
 	{ 
-		return ctx;
+		if(controller!=null && controller.getView()!=null)
+			return (Context) controller.getView();
+		else
+			return ctx;
 	}
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) { 
 		super.onConfigurationChanged(newConfig);
 	}
 	
-	public Controller getController(){
+	public static Controller getController(){
 		return controller;
 	}
 	
-	public ThreadPool getThreadPool()
+	public static ThreadPool getThreadPool()
 	{
 		return pool;
 	}

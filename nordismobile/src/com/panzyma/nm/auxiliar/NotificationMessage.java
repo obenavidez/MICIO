@@ -20,6 +20,7 @@ public class NotificationMessage {
 		not.setNotificicacion(title, message, cause);
 	    return not;
 	}
+	
 	NotificationMessage(){
 		
 	}; 

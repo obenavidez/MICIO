@@ -60,7 +60,8 @@ public class BPedidoM {
 	ArrayList<Pedido> obj = new ArrayList<Pedido>();
 	private static final String logger = BPedidoM.class.getSimpleName();
 
-	public BPedidoM() {
+	public BPedidoM() 
+	{
 	}
 
 	public BPedidoM(ViewPedido view) {
@@ -537,8 +538,7 @@ public class BPedidoM {
     		header += ";// PAGE 0000000006000460\r\n";
 
     		recibo = header + recibo; 
-			BluetoothComunication b = new BluetoothComunication();
-			b.sendData(recibo);   
+			BluetoothComunication.newInstance().sendData(recibo);   
     		
 			Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION,0,0,NotificationMessage.newInstance("","El Pedido fue enviado al dispositivo",""));
     		
@@ -546,7 +546,7 @@ public class BPedidoM {
 		{ 
 			try {
 				Processor.notifyToView(controller,ControllerProtocol.ERROR,
-						0,0,NotificationMessage.newInstance("Error de comunicación",e.getMessage(),e.getCause().toString()));
+						0,0,ErrorMessage.newInstance("Error de comunicación",e.getMessage(),e.getCause().toString()));
 			} catch (Exception e1) { 
 				e1.printStackTrace();
 			}

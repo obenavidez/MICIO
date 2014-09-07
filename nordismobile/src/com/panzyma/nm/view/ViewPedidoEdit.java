@@ -272,7 +272,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
 			pedido.setNumeroCentral(0);
 			pedido.setNumeroMovil(0);
-			pedido.setObjVendedorID(SessionManager.getLoginUser().getId());
+			//pedido.setObjVendedorID(SessionManager.getLoginUser().getId());
 			pedido.setTipo("CR"); // Crédito
 			pedido.setExento(false);
 			pedido.setAutorizacionDGI("");
@@ -1148,146 +1148,20 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		return handler;
 	}
 
-	private void ImprimirComprobante() throws Exception {
+	@SuppressWarnings("static-access")
+	private void ImprimirComprobante() throws Exception 
+	{
 		if (!isDataValid())
-			return;
-
-		// Salvar pedido si aún no tiene un número de referencia asignado
-		if (pedido.getNumeroMovil() == 0) {
-			try {
-				// Ventas.guardarPedido(pedido, me);
-			} catch (Exception ioEx) {
-				// Dialog.alert("Error: " + ioEx.toString());
-				return;
-			}
-		}
-
-		String recibo = "";
-		recibo += "T 7 1 123 5 Distribuidora Panzyma - DISPAN\r\n";
-		recibo += "T 7 0 189 54 Orden de Pedido\r\n";
-		recibo += "LINE 0 80 576 80 1\r\n";
-		recibo += "T 0 0 0 90 Fecha:\r\n";
-		recibo += "T 0 0 90 90 " + DateUtil.idateToStr(pedido.getFecha())
-				+ "\r\n";
-		recibo += "T 0 0 400 90 Referencia:\r\n";
-		recibo += "RIGHT 576\r\n";
-		recibo += "T 0 0 490 90 "
-				+ NumberUtil.getFormatoNumero(pedido.getNumeroMovil(),
-						me.getApplicationContext()) + "\r\n";
-		recibo += "LEFT\r\n";
-		recibo += "T 0 0 0 118 Cliente:\r\n";
-		recibo += "T 0 0 90 118 " + cliente.getNombreLegalCliente() + "\r\n";
-		recibo += "T 0 0 0 144 Vendedor:\r\n";
-		// recibo += "T 0 0 90 144 " + DataStore.getUsuario().getCodigo() +
-		// " / " + DataStore.getUsuario().getNombre() + "\r\n";
-		recibo += "LINE 0 170 576 170 1\r\n";
-		recibo += "T 0 0 0 180 Producto\r\n";
-		recibo += "RIGHT 382\r\n";
-		recibo += "T 0 0 0 180 Cant\r\n";
-		recibo += "RIGHT 435\r\n";
-		recibo += "T 0 0 0 180 Bonif\r\n";
-		recibo += "RIGHT 482\r\n";
-		recibo += "T 0 0 0 180 Prom\r\n";
-		recibo += "RIGHT 576\r\n";
-		recibo += "T 0 0 0 180 Precio\r\n";
-		recibo += "LEFT\r\n";
-		recibo += "LINE 17 196 591 196 1\r\n";
-
-		int y = 206;
-		for (int curRecord = 0; curRecord < Lvmpproducto.size(); curRecord++) {
-			DetallePedido det = Lvmpproducto.get(curRecord);
-
-			String nombreProd = det.getNombreProducto();
-			if (nombreProd.length() > 40)
-				nombreProd = nombreProd.substring(0, 40) + "...";
-			recibo += "T 0 0 0 " + y + " " + nombreProd + "\r\n";
-			recibo += "RIGHT 382\r\n";
-			recibo += "T 0 0 0 " + y + " "
-					+ StringUtil.formatInt(det.getCantidadOrdenada()) + "\r\n";
-			recibo += "RIGHT 435\r\n";
-			recibo += "T 0 0 0 " + y + " "
-					+ StringUtil.formatInt(det.getCantidadBonificadaEditada())
-					+ "\r\n";
-			recibo += "RIGHT 482\r\n";
-			recibo += "T 0 0 0 " + y + " " + "0" + "\r\n"; // Poner promoción
-			recibo += "RIGHT 576\r\n";
-			recibo += "T 0 0 482 " + y + " "
-					+ StringUtil.formatReal(det.getPrecio()) + "\r\n";
-			recibo += "LEFT\r\n";
-			y += 26;
-		}
-		recibo += "LINE 0 " + y + " 576 " + y + " 1\r\n";
-		y += 10;
-		recibo += "T 0 0 379 " + y + " Subtotal:\r\n";
-		recibo += "RIGHT 576\r\n";
-		recibo += "T 0 0 0 " + y + " "
-				+ StringUtil.formatReal(pedido.getSubtotal()) + "\r\n";
-		recibo += "LEFT\r\n";
-
-		y += 26;
-		recibo += "T 0 0 379 " + y + " Descuento:\r\n";
-		recibo += "RIGHT 576\r\n";
-		recibo += "T 0 0 0 " + y + " "
-				+ StringUtil.formatReal(pedido.getDescuento()) + "\r\n";
-		recibo += "LEFT\r\n";
-
-		y += 26;
-		recibo += "T 0 0 379 "
-				+ y
-				+ " "
-				+ me.getApplicationContext()
-						.getSharedPreferences("SystemParams",
-								android.content.Context.MODE_PRIVATE)
-						.getString("NombreImpuesto", "--") + ":\r\n";
-		recibo += "RIGHT 576\r\n";
-		recibo += "T 0 0 0 " + y + " "
-				+ StringUtil.formatReal(pedido.getImpuesto()) + "\r\n";
-		recibo += "LEFT\r\n";
-
-		y += 26;
-		recibo += "T 0 0 379 "
-				+ y
-				+ " Total "
-				+ me.getApplicationContext()
-						.getSharedPreferences("SystemParams",
-								android.content.Context.MODE_PRIVATE)
-						.getString("MonedaNacional", "--") + ":\r\n";
-		recibo += "RIGHT 576\r\n";
-		recibo += "T 0 0 0 " + y + " "
-				+ StringUtil.formatReal(pedido.getTotal()) + "\r\n";
-		recibo += "LEFT\r\n";
-
-		y += 15;
-		recibo += "LINE 0 " + y + " 576 " + y + " 1\r\n";
-		y += 10;
-		recibo += "T 7 0 169 " + y + " Gracias por su pedido\r\n";
-		y += 30;
-		recibo += "T 7 0 119 " + y + " Panzyma. Al cuidado de la salud\r\n";
-		recibo += "FORM\r\n";
-		recibo += "PRINT\r\n";
-		y += 50;
-
-		String header = "! 0 200 200 " + y + " 1\r\n";
-		header += "LABEL\r\n";
-		header += "CONTRAST 0\r\n";
-		header += "TONE 0\r\n";
-		header += "SPEED 3\r\n";
-		header += "PAGE-WIDTH 600\r\n";
-		header += "BAR-SENSE\r\n";
-		header += ";// PAGE 0000000006000460\r\n";
-
-		recibo = header + recibo;
-		try {
-			BluetoothComunication b = new BluetoothComunication();
-			b.sendData(recibo);
-			// b.closeBT();
-			// ZebraPrint zp = new ZebraPrint();
-			// zp.Print(recibo);
-			// zp = null;
-			// Dialog.alert("El comprobante fue enviado a la impresora.");
-		} catch (Exception ioex) {
-			// Status.show("Error: " + ioex.getMessage());
-		}
+			return; 
+		nmapp.getController().setEntities(this,getBridge() == null ? new BPedidoM() : getBridge());
+		nmapp.getController().addOutboxHandler(getHandler() == null ? new Handler(me) : getHandler());
+		Message msg = new Message();
+		Bundle b = new Bundle();
+		b.putParcelable("pedido", pedido);
+		b.putParcelable("cliente", cliente);
+		msg.setData(b);
+		msg.what = ControllerProtocol.IMPRIMIR;
+		nmapp.getController().getInboxHandler().sendMessage(msg);
 	}
 
 	@Override
@@ -1469,9 +1343,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		pedido.setObjClienteID(cliente.getIdCliente());
 		pedido.setObjSucursalID(cliente.getIdSucursal());
 
-		String[] nomClie = StringUtil.split(cliente.getNombreCliente(), "/");
-		pedido.setNombreCliente(nomClie[1]);
-		pedido.setNombreSucursal(nomClie[0]);
+//		String[] nomClie = StringUtil.split(cliente.getNombreCliente(), "/"); 
+		pedido.setNombreCliente(cliente.getNombreCliente());
+		//pedido.setNombreSucursal(nomClie[1]);
 		pedido.setObjTipoPrecioVentaID(cliente.getObjPrecioVentaID());
 		pedido.setCodTipoPrecio(cliente.getCodTipoPrecio());
 		pedido.setDescTipoPrecio(cliente.getDesTipoPrecio());

@@ -106,8 +106,7 @@ public class BConfiguracionM {
 
 	private void LOAD_DATA() {
 		try {
-			Processor.send_DataSourceToView(
-					ModelConfiguracion.getVMConfiguration(view), controller);
+			Processor.send_DataSourceToView(ModelConfiguracion.getVMConfiguration(view), controller);
 		} catch (Exception e) {
 			try {
 				Processor
