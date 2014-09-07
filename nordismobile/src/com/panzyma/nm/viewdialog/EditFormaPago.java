@@ -3,14 +3,18 @@ package com.panzyma.nm.viewdialog;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BTasaCambioM;
 import com.panzyma.nm.CBridgeM.BValorCatalogoM;
 import com.panzyma.nm.CBridgeM.BVentaM;
+import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.CBridgeM.BValorCatalogoM.Petition;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
@@ -21,7 +25,9 @@ import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.ValorCatalogoUtil;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.custom.model.SpinnerModel;
+import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
@@ -38,12 +44,17 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SyncInfo;
 import android.content.DialogInterface.OnClickListener;
 import android.inputmethodservice.Keyboard.Key;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -51,6 +62,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -61,11 +74,11 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class EditFormaPago extends DialogFragment implements Handler.Callback {
+public class EditFormaPago extends DialogFragment {
 	
 	private static final int TIME_TO_MESSAGE = 3000;
 	private static final String TAG = EditFormaPago.class.getSimpleName();
-	private View view;
+	private View view = null;
 	private EditText numero;
 	private EditText fecha;
 	private EditText tasa;
@@ -89,55 +102,97 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	int iCurrentSelection = 0;
 	float _montoPago = 0.00F;
 
-	private ReciboColector _recibo;
-	private ReciboDetFormaPago pagoRecibo;
+	private ReciboColector _recibo = null;
+	private ReciboDetFormaPago pagoRecibo = null;
 	private boolean editFormaPago = false;
-	private List<ValorCatalogo> monedas;
-	private List<ValorCatalogo> bancos;
-	private List<ValorCatalogo> formasPago;
-	private boolean catalogosReady = false;
-	private NMApp nmapp;
-	private CustomAdapter formaPagoAdapter;
-	private CustomAdapter monedaAdapter;
-	private CustomAdapter bancoAdapter;
-	private String catalogNameToFound = "";
-	private Bundle savedInstanceState = null;
+	private List<ValorCatalogo> monedas = null;
+	private List<ValorCatalogo> bancos = null;
+	private List<ValorCatalogo> formasPago = null;	
+	private CustomAdapter formaPagoAdapter = null;
+	private CustomAdapter monedaAdapter = null;
+	private CustomAdapter bancoAdapter = null;	
 	private float montoPorPagar = 0.00F;
-	private Activity activityMain; 
+	private Activity activityMain = null; 
+	private Dialog dialog = null;		
+	private NMApp nmApp;	
+	
+	public class LoadDataToUI extends AsyncTask<Void, Void, Map<String,List<Object>> > {
 
-	public EditFormaPago() {
-		super();
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+		
+		@Override
+		protected Map<String,List<Object>> doInBackground(Void... params) {			
+			return ModelLogic.getDataFormaPago(getNMApp().getBaseContext(),
+					DateUtil.getToday(),
+					new String[]{"FormaPago","Moneda","EntidadBancaria"});
+		}
+
+		@Override
+		protected void onPostExecute(Map<String,List<Object>> objectResult) {
+			Map<String,List<Object>> result = (Map<String, List<Object>>)objectResult;
+			int cnt = result.get("basic").toArray().length;
+			Catalogo [] catalogos = new Catalogo[cnt];
+			((List<Object>)result.get("basic")).toArray(catalogos);
+			for(Catalogo catalogo : catalogos){
+				establecer(catalogo);
+			}
+			cnt = result.get("tasaCambio").toArray().length;
+			TasaCambio [] tasasCambio = new TasaCambio [cnt];
+			((List<Object>)result.get("tasaCambio")).toArray(tasasCambio);			
+			estableceTasaCambio(Arrays.asList(tasasCambio));	
+			setValuesToView();
+			super.onPostExecute(result);
+		}
+		
+	} 
+	
+	public static EditFormaPago newInstance(ReciboColector recibo, boolean edit) {
+		EditFormaPago editFormaPago = new EditFormaPago();
+		Bundle parametros = new Bundle();
+		parametros.putBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION, edit);
+		parametros.putParcelable(ViewReciboEdit.OBJECT_TO_EDIT, recibo);
+		editFormaPago.setArguments(parametros);
+		return editFormaPago;
 	}
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		this.savedInstanceState = getArguments();
-	}
-
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-
+	@Override 
+	public Dialog onCreateDialog(Bundle savedInstanceState) {		
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-		view = inflater.inflate(R.layout.layout_seleccion_forma_pago, null);
+		LayoutInflater inflater = getActivity().getLayoutInflater();								 
+		view = inflater.inflate(R.layout.layout_seleccion_forma_pago, null);	
 		builder.setView(view);
-		builder.setPositiveButton("AGREGAR", new OnClickListener() {
+		builder.setPositiveButton("AGREGAR", new DialogInterface.OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {				
-			}
+            public void onClick(DialogInterface dialog, int which) {
+                  
+            }
 		});
-		builder.setNegativeButton("CANCELAR", new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		});
-		activityMain = getActivity();
-		initComponents();
-		cargarCatalogoFormasPago();
-		return builder.create();
+		builder.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+			 @Override
+             public void onClick(DialogInterface d, int which) {
+				Fragment prev = getFragmentManager().findFragmentByTag("frgDialogFrmPago");
+			    if (prev != null) {
+			        DialogFragment df = (DialogFragment) prev;
+			        df.dismiss();
+			    }	
+				
+             }
+		});	
+		initComponents();		
+		return (dialog = builder.create());
 	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (dialog != null && dialog.isShowing()) {
+			dialog.dismiss();
+		}
+	}	
 
 	@Override
 	public void onStart()
@@ -151,106 +206,25 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
             {
                 @Override
                 public void onClick(View v)
-                {
-					
+                {					
 					try {
 						if( validarDatos() ){
 							accept();
 							dismiss();
 						}						
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+					} catch (InterruptedException e) {						
 						try {
 							showStatusOnUI(new ErrorMessage(
 									"Error de validación", e.getMessage(), ""));
-						} catch (InterruptedException e1) {
-							// TODO Auto-generated catch block
+						} catch (InterruptedException e1) {							
 							e1.printStackTrace();
 						}
-					}
-					
+					}					
                 }
-            });
+            });    
+	        
 	    }
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void cargarCatalogoFormasPago() {
-		try {
-			nmapp = (NMApp) activityMain.getApplication();
-			nmapp.getController().removeViewByName(
-					EditFormaPago.class.toString()
-					);			
-			nmapp.getController().removeBridgeByName(
-					BValorCatalogoM.class.toString()
-					);			
-			nmapp.getController().setEntities(this, new BValorCatalogoM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(Petition.FORMAS_PAGOS.getActionCode());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void cargarCatalogoMonedas() {
-		try {			
-			nmapp = (NMApp) activityMain.getApplication();
-			nmapp.getController().removeViewByName(
-					EditFormaPago.class.toString()
-					);
-			nmapp.getController().removeBridgeByName(
-					BValorCatalogoM.class.toString()
-					);			
-			nmapp.getController().setEntities(this, new BValorCatalogoM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(Petition.MONEDAS.getActionCode());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void cargarCatalogoBancos() {
-		try {
-			nmapp = (NMApp) activityMain.getApplication();
-			nmapp.getController().removeViewByName(
-					EditFormaPago.class.toString()
-					);
-			nmapp.getController().removeBridgeByName(
-					BValorCatalogoM.class.toString()
-					);			
-			nmapp.getController().setEntities(this, new BValorCatalogoM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler()
-					.sendEmptyMessage(Petition.BANCOS.getActionCode());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void cargarTasaCambio(){
-		try {			
-			nmapp = (NMApp) activityMain.getApplication();
-			nmapp.getController().removeViewByName(
-					EditFormaPago.class.toString()
-					);
-			nmapp.getController().removeBridgeByName(
-					BTasaCambioM.class.toString()
-					);			
-			nmapp.getController().setEntities(this,new BTasaCambioM());			
-			nmapp.getController().addOutboxHandler(new Handler(this));			
-			nmapp.getController().getInboxHandler().sendEmptyMessage(BTasaCambioM.Petition.TASA_CAMBIO.getActionCode());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	}	
 	
 	private void initComponents() {
 		// OBTENIENDO LAS REFERENCIAS DE LAS VIEWS
@@ -272,19 +246,23 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		tblRowMontoPago = (TableRow) view.findViewById(R.id.tblRowMontoPago);
 		tblRowMontoPagoNacional = (TableRow) view
 				.findViewById(R.id.tblRowMontoNacional);
-		tblRowNumeroSerie = (TableRow) view.findViewById(R.id.tblRowNumeroSerie);	
+		tblRowNumeroSerie = (TableRow) view.findViewById(R.id.tblRowNumeroSerie);
 		
+		nmApp =(NMApp) this.getActivity().getApplicationContext();		
+		
+		LoadDataToUI loadData = new LoadDataToUI();
+		loadData.execute();	
+				
 	}
 
-	private void setValuesToView() {
+	private void setValuesToView() {		
 		// INICIANDO MIEMBROS INTERNOS
-		if (savedInstanceState != null) {
+		if (getArguments() != null ) {
 			
-			if( savedInstanceState != null) {
-				editFormaPago = savedInstanceState
-						.getBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION);
-				_recibo = savedInstanceState
-						.getParcelable(ViewReciboEdit.OBJECT_TO_EDIT);
+			if( getArguments() != null) {
+				editFormaPago = getArguments().getBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION);
+				_recibo = getArguments().getParcelable(ViewReciboEdit.OBJECT_TO_EDIT);
+				
 				if (!editFormaPago) {
 					// AGREGANDO UNA FORMA DE PAGO
 					pagoRecibo = new ReciboDetFormaPago();
@@ -328,7 +306,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 				tblRowNumeroSerie.setVisibility(View.GONE);
 			}
 
-			numero.setText(pagoRecibo.getNumero());
+			numero.setText(pagoRecibo.getNumero().toString());
 			tasa.setText(StringUtil.formatReal(pagoRecibo.getTasaCambio()));
 			montoPago.setText(StringUtil.formatReal(pagoRecibo.getMonto()));
 			_montoPago = pagoRecibo.getMonto();
@@ -417,7 +395,8 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 
 			});
 
-		}
+		}		
+		
 	}
 
 	public ReciboDetFormaPago getPagoRecibo() {
@@ -426,29 +405,11 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 
 	public void setPagoRecibo(ReciboDetFormaPago _pagoRecibo) {
 		this.pagoRecibo = _pagoRecibo;
-	}
-
-	@Override
-	public boolean handleMessage(Message msg) {		
-		if( msg.arg1 != 10 ){
-			Petition response = Petition.toInt(msg.what);
-			switch (response) {
-				case BANCOS:
-				case FORMAS_PAGOS:
-				case MONEDAS:
-					establecer((Catalogo) msg.obj);
-					break;
-			}
-		} else {
-			estableceTasaCambio((List<TasaCambio>) msg.obj);
-		}
-		return false;
-	}
+	}	
 
 	private void estableceTasaCambio(List<TasaCambio> obj) {		
 		this._tasaDeCambio.clear();
 		this._tasaDeCambio = obj;
-		setValuesToView();
 	}
 
 	private boolean hasTasaCambio(String codMoneda){
@@ -479,24 +440,24 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		if ("FormaPago".equals(obj.getNombreCatalogo().trim())) {
 			formasPago = obj.getValoresCatalogo();
 			formasPago.add(0, new ValorCatalogo(-1, "", ""));
-			formaPagoAdapter = new CustomAdapter(activityMain,
+			formaPagoAdapter = new CustomAdapter(getActivity(),
 					R.layout.spinner_rows, setListData(formasPago));
 			cmbFormaPago.setAdapter(formaPagoAdapter);
-			cargarCatalogoMonedas();
+			//cargarCatalogoMonedas();
 		} else if ("Moneda".equals(obj.getNombreCatalogo().trim())) {
 			monedas = obj.getValoresCatalogo();
 			monedas.add(0, new ValorCatalogo(-1, "", ""));
-			monedaAdapter = new CustomAdapter(activityMain,
+			monedaAdapter = new CustomAdapter(getActivity(),
 					R.layout.spinner_rows, setListData(monedas));
 			cmbMoneda.setAdapter(monedaAdapter);
-			cargarCatalogoBancos();			
+			//cargarCatalogoBancos();			
 		} else if ("EntidadBancaria".equals(obj.getNombreCatalogo().trim())) {
 			bancos = obj.getValoresCatalogo();
 			bancos.add(0, new ValorCatalogo(-1, "", ""));
-			bancoAdapter = new CustomAdapter(activityMain,
+			bancoAdapter = new CustomAdapter(getActivity(),
 					R.layout.spinner_rows, setListData(bancos));
 			cmbBanco.setAdapter(bancoAdapter);
-			cargarTasaCambio();
+			//cargarTasaCambio();
 		}
 	}
 
@@ -614,8 +575,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 					showStatusOnUI(new ErrorMessage("Error en Tasa Cambio", 
 							"No hay tasa de cambio registrada para el tipo de moneda " , ""));
 					cmbMoneda.setSelection(iCurrentSelection);					
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+				} catch (InterruptedException e) {					
 					e.printStackTrace();
 				}				
 				/*Util.Message.buildToastMessage(this.getActivity(),
@@ -807,7 +767,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 		final String mensaje=""+((ErrorMessage)msg).getMessage();
 		
 		
-		nmapp.getThreadPool().execute(new Runnable()
+		nmApp.getThreadPool().execute(new Runnable()
 		{ 
 			@Override
 			public void run()
@@ -846,6 +806,7 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 					
 				} catch (Exception e) 
 				{ 
+					e.printStackTrace();
 				}
 		    }
 		}); 
@@ -855,4 +816,9 @@ public class EditFormaPago extends DialogFragment implements Handler.Callback {
 	public Activity getContext(){
 		return activityMain;
 	}
+
+	public NMApp getNMApp() {
+		return nmApp;
+	}
+
 }

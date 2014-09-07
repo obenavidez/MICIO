@@ -69,7 +69,8 @@ public class FacturaViewHolder{
         //Si a la factura no se puede aplicar Desc PP ponerla en roja
         int color =  R.color.Black;
         long fechavencePP = DateUtil.getTime(fact.getFechaAppDescPP());
-        int HolgDiasAPp = (Integer) Cobro.getParametro(nofactura.getContext(), "HolguraDiasAplicarDescPP");        
+        String strHolgDiasAPp = Cobro.getParametro(nofactura.getContext(), "HolguraDiasAplicarDescPP").toString(); 
+        int HolgDiasAPp = Integer.parseInt(strHolgDiasAPp);      
         fechavencePP = DateUtil.addDays(fechavencePP, HolgDiasAPp); //Agregar tiempo de holgura
         //Si la fecha ya quedó atrás, pedir descuento ocasional
         if (fechavencePP < DateUtil.getTime()) color = R.color.Red; 

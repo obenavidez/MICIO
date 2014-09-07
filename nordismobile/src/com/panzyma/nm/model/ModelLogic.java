@@ -2,6 +2,9 @@ package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.ksoap2.serialization.PropertyInfo;
 
@@ -23,7 +26,10 @@ import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.CCPedido;
 import com.panzyma.nm.serviceproxy.CCReciboColector;
+import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.serviceproxy.TasaCambio;
+import com.panzyma.nm.serviceproxy.ValorCatalogo;
 
 public class ModelLogic {
 	
@@ -280,6 +286,80 @@ public class ModelLogic {
 			return null;
 		}
 
+	}
+	
+	/***
+	 * Obtiene la informacion de catalogos y tasas de cambio para forma de pago
+	 * @param cnt             Contexto de ejecucion
+	 * @param fechaTasaCambio Fecha de recuperacion de tasas de cambio
+	 * @param catalogsNames   Nombre de catalogos basicos a recuperar
+	 * @return Map<String,List<Object>>
+	 */
+	public synchronized static Map<String,List<Object>> getDataFormaPago(Context cnt,int fechaTasaCambio, String... catalogsNames) {
+
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT id , ");
+		query.append("        codigo , ");
+		query.append("        descripcion ");
+		query.append(" FROM ValorCatalogo vc ");
+		query.append(" WHERE vc.objCatalogoID = (  ");
+		query.append("	 SELECT Id FROM CATALOGO c WHERE c.NombreCatalogo = '%s' ");
+		query.append(" )   ");
+		Map<String,List<Object>> objectResult = new HashMap<String, List<Object>>();
+		
+		StringBuilder query2 = new StringBuilder();
+		query2.append(" SELECT Id , ");
+		query2.append("        CodMoneda , ");
+		query2.append("        Tasa ");
+		query2.append(" FROM TasaCambio tc ");
+		query2.append(String.format(" WHERE tc.Fecha = %d  ", fechaTasaCambio));
+		List<Object> paridaCambiaria = null;
+		SQLiteDatabase db = null;
+		try {
+			db = DatabaseProvider.Helper.getDatabase(cnt);
+			Cursor c = null;
+			List<Object> catalogos = null;
+			for (String catalogName : catalogsNames) {
+				Catalogo catalogo = new Catalogo(catalogName);
+				List<ValorCatalogo> valoresCatalogo = new ArrayList<ValorCatalogo>();
+				c = DatabaseProvider.query(db,
+						String.format(query.toString(), catalogName));
+				if (c.moveToFirst()) {
+					// Recorremos el cursor hasta que no haya más registros
+					do {
+						valoresCatalogo.add(new ValorCatalogo(c.getInt(0), c
+								.getString(1), c.getString(2)));
+					} while (c.moveToNext());
+					catalogo.setValoresCatalogo(valoresCatalogo);
+					if (catalogos == null)
+						catalogos = new ArrayList<Object>();
+					catalogos.add(catalogo);
+				}
+			}
+			
+			c = DatabaseProvider.query( db, query2.toString());
+			paridaCambiaria = new ArrayList<Object>();
+			// Nos aseguramos de que existe al menos un registro
+			if (c.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registros
+				do {
+					paridaCambiaria.add(new TasaCambio(c.getString(1),
+							fechaTasaCambio, c.getFloat(2)));
+					
+				} while (c.moveToNext());
+			}	
+			objectResult.put("basic", catalogos);
+			objectResult.put("tasaCambio", paridaCambiaria);
+			
+		} catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if (db != null) {
+				if (db.isOpen())
+					db.close();
+			}
+		}
+		return objectResult;
 	}
 
 }
