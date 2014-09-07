@@ -1434,6 +1434,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			requescode = getIntent().getIntExtra("requestcode", (onEdit)?1:0);			
 			setResult(requescode,intent);
 		}
+		finish();
 		onEdit=false;
 	}
 

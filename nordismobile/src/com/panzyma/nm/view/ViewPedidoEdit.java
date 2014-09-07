@@ -1,18 +1,19 @@
 package com.panzyma.nm.view;
 
-import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_INVETORY_UPDATED;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.ResourceBundle.Control;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -45,14 +46,19 @@ import android.widget.Toast;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM;
+import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.BluetoothComunication;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
+import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
@@ -78,20 +84,22 @@ import com.panzyma.nm.viewdialog.DialogPromociones;
 import com.panzyma.nm.viewdialog.ExonerarImpuesto;
 import com.panzyma.nordismobile.R;
 
-@SuppressLint("NewApi")
-public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback,
-		Editable {
+@SuppressLint({ "NewApi", "SimpleDateFormat" })
+@SuppressWarnings({ "unchecked", "rawtypes", "unused", "deprecation" })
+public class ViewPedidoEdit extends FragmentActivity implements
+		Handler.Callback, Editable {
+	private static CustomDialog dlg;
 	public EditText tbxFecha;
 	public EditText tbxNumReferencia;
 	public EditText tbxNumPedido;
 	public EditText tbxNombreDelCliente;
-	public TextView tbxPrecio;
 	public Spinner tbxTipoVenta;
 	public TextView tbxTotalFact;
 
 	public View gridDetallePedido;
 	private ListView grid_dp;
 	TextView gridheader;
+
 	private GenericAdapter adapter;
 	private ProgressDialog pd;
 	private Button Menu;
@@ -133,75 +141,74 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 	BPedidoM bpm;
 	private static Object lock = new Object();
 
-	private final Handler handler = new Handler();
+	private Handler handler = new Handler();
 	private boolean salvado;
 	private Bundle extras;
-	private boolean onEdit=false;
+	private boolean onEdit = false;
 	private boolean onNew;
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void onCreate(Bundle savedInstanceState) 
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pedido_edit);
 
-		try 
-		{ 
+		try {
 			SessionManager.setContext(this);
 			aprodselected = new ArrayList<Producto>();
 			me = this;
 			nmapp = (NMApp) this.getApplicationContext();
 			nmapp.getController().setEntities(this, bpm = new BPedidoM());
-			nmapp.getController().addOutboxHandler(new Handler(this));  
-		    pedido=(getIntent().getParcelableExtra("pedido")!=null)?(Pedido)getIntent().getParcelableExtra("pedido"):null;
-		    Lvmpproducto = new ArrayList<DetallePedido>();
-		    if(pedido!=null)
-		    {
-			    DetallePedido[] detPed = pedido.getDetalles();				
+			nmapp.getController().addOutboxHandler(handler = new Handler(this));
+			pedido = (getIntent().getParcelableExtra("pedido") != null) ? (Pedido) getIntent()
+					.getParcelableExtra("pedido") : null;
+			Lvmpproducto = new ArrayList<DetallePedido>();
+			if (pedido != null) {
+				DetallePedido[] detPed = pedido.getDetalles();
 				for (int i = 0; i < detPed.length; i++)
-					Lvmpproducto.add(detPed[i]); 
-				onEdit=true;
-				cliente=Ventas.getClienteBySucursalID(pedido.getObjSucursalID(),me.getContentResolver());
-		    } 
-		    onNew=!onEdit;
-			WindowManager wm = (WindowManager) this.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+					Lvmpproducto.add(detPed[i]);
+				onEdit = true;
+				cliente = Ventas.getClienteBySucursalID(
+						pedido.getObjSucursalID(), me.getContentResolver());
+			}
+			// BUscamos si
+			if (getIntent().hasExtra("cliente")) {
+				long IdCliente = getIntent().getLongExtra("cliente", 0);
+				cliente = Ventas.getClienteBySucursalID(IdCliente,
+						me.getContentResolver());
+			}
+			onNew = !onEdit;
+			WindowManager wm = (WindowManager) this.getApplicationContext()
+					.getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
 			initComponent();
 
-		} catch (Exception e) 
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
-			buildCustomDialog("Error Message",
-					e.getMessage() + "\n Cause:" + e.getCause(), ALERT_DIALOG)
-					.show();
 		}
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void initComponent() 
-	{
-		salvado=false;
+	public void initComponent() {
+		salvado = false;
 		gridDetallePedido = findViewById(R.id.pddgrilla);
-		grid_dp = (ListView) (findViewById(R.id.pddgrilla)).findViewById(R.id.data_items); 
+		grid_dp = (ListView) (findViewById(R.id.pddgrilla))
+				.findViewById(R.id.data_items);
 		// LinearLayout grilla=(LinearLayout) findViewById(R.id.pddgrilla);
 		gridheader = (TextView) gridDetallePedido.findViewById(R.id.header);
 		gridheader.setText("Productos a Facturar(0)");
 		tbxFecha = (EditText) findViewById(R.id.pddetextv_detalle_fecha);
-		tbxNumReferencia = (EditText) findViewById(R.id.pdddetextv_detalle_numref);
+		tbxNumReferencia = (EditText) findViewById(R.id.pdtv_detalle_numref);
 		tbxNumPedido = (EditText) findViewById(R.id.pdddetextv_detalle_num);
 		tbxNombreDelCliente = (EditText) findViewById(R.id.pddtextv_detallecliente);
-		tbxPrecio = (TextView) findViewById(R.id.pddtextv_detalleprecio);
 		tbxTotalFact = (TextView) findViewById(R.id.pddtextv_detalletotales);
 		tbxTipoVenta = (Spinner) findViewById(R.id.pddcombox_detalletipo);
-
+		tbxFecha.setEnabled(false);
 		grid_dp.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				// TODO Auto-generated method stub
+
 				if ((parent.getChildAt(positioncache)) != null)
 					(parent.getChildAt(positioncache))
 							.setBackgroundResource(android.R.color.transparent);
@@ -220,7 +227,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				// TODO Auto-generated method stub
+
 				if ((parent.getChildAt(positioncache)) != null)
 					(parent.getChildAt(positioncache))
 							.setBackgroundResource(android.R.color.transparent);
@@ -250,20 +257,22 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
 
 			}
 		});
 
 		if (pedido == null) {
 			pedido = new Pedido();
-			cliente = null;
+			if (getIntent().hasExtra("cliente")) {
+				setInformacionCliente();
+			} else
+				cliente = null;
 			pedido.setCodEstado("REGISTRADO");
 			pedido.setId(0);
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
 			pedido.setNumeroCentral(0);
-			pedido.setNumeroMovil(0); 
-			pedido.setObjVendedorID(SessionManager.getLoginUser().getId()); 
+			pedido.setNumeroMovil(0);
+			pedido.setObjVendedorID(SessionManager.getLoginUser().getId());
 			pedido.setTipo("CR"); // Crédito
 			pedido.setExento(false);
 			pedido.setAutorizacionDGI("");
@@ -271,9 +280,8 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 		TAG_IMPUESTO = "Exonerar Impuesto";
 		if (pedido.isExento())
-			TAG_IMPUESTO = "Aplicar Impuesto"; 
-		
-		
+			TAG_IMPUESTO = "Aplicar Impuesto";
+
 		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
 		formato.setCalendar(Calendar.getInstance());
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
@@ -293,9 +301,6 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			tbxNombreDelCliente.setText(pedido.getNombreSucursal() + "\\"
 					+ pedido.getNombreCliente());
 
-		if (pedido.getCodTipoPrecio() != null)
-			tbxPrecio.setText(pedido.getDescTipoPrecio());
-
 		if (pedido.getTipo().compareTo("CO") == 0)
 			tbxTipoVenta.setSelection(0);
 		else
@@ -310,12 +315,11 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				Lvmpproducto, R.layout.gridproductosavender);
 		grid_dp.setAdapter(adapter);
 		adapter.setSelectedPosition(0);
-		if(Lvmpproducto.size()>0)
+		if (Lvmpproducto.size() > 0)
 			dpselected = Lvmpproducto.get(0);
 		gridheader.setText("Productos a Facturar(" + adapter.getCount() + ")");
 
 		initMenu();
-
 	}
 
 	public void showMenu(final View view) {
@@ -464,7 +468,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				255, 0, 0));
 
 		// Span to set text color to some RGB value
-          //final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
+		// final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
 
 		// Span to make text bold
 		int start = 0, start2 = 0, end = 0, end2;
@@ -507,7 +511,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
+
 					tbxTotalFact.setText(sb);
 					gridheader.setText("Productos a Facturar("
 							+ adapter.getCount() + ")");
@@ -526,32 +530,42 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 			quickAction.show(Menu, display, true);
 			return true;
 		}
-		if (keyCode == KeyEvent.KEYCODE_BACK) 
-	    {        	
-    	  	FINISH_ACTIVITY();
-            return true;
-	    }
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			FINISH_ACTIVITY();
+			return true;
+		}
 		return super.onKeyUp(keyCode, event);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
-		pd.dismiss();
+
+		ocultarDialogos();
 		switch (msg.what) {
 		case C_DATA:
 
-			setData((ArrayList<Pedido>) ((msg.obj == null) ? new ArrayList<Pedido>(): msg.obj), C_DATA);
+			setData((ArrayList<Pedido>) ((msg.obj == null) ? new ArrayList<Pedido>()
+					: msg.obj), C_DATA);
 			return true;
 		case C_INVETORY_UPDATED:
 			return true;
 
-		case ERROR:
-			pd.dismiss();
-			ErrorMessage error = ((ErrorMessage) msg.obj);
-			buildCustomDialog(error.getTittle(),
-					error.getMessage() + error.getCause(), ALERT_DIALOG).show();
-			return true;
+		case ControllerProtocol.NOTIFICATION:
+			AppDialog.showMessage(me, "",
+					((NotificationMessage) msg.obj).getMessage(),
+					DialogType.DIALOGO_ALERTA);
+			break;
+		case ControllerProtocol.NOTIFICATION_DIALOG2:
+			showStatus(((NotificationMessage) msg.obj));
+			break;
+		case ControllerProtocol.ERROR:
+			AppDialog.showMessage(me, ((ErrorMessage) msg.obj).getTittle(),
+					((ErrorMessage) msg.obj).getMessage(),
+					DialogType.DIALOGO_ALERTA);
+			break;
+		case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
+			resultadoEnvioPedido(msg.obj);
+			break;
 		}
 
 		return false;
@@ -560,28 +574,86 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 	public void setData(ArrayList<Pedido> Lpedido, int what) {
 	}
 
-	public Dialog buildCustomDialog(String tittle, String msg, int type) {
-		return new CustomDialog(this.getApplicationContext(), tittle, msg,
-				false, type);
+	public void resultadoEnvioPedido(Object obj) 
+	{
+		Object pedd = ((ArrayList<Object>) obj).get(0);
+		Object clte = ((ArrayList<Object>) obj).get(1);
+
+		if (pedd != null)
+			pedido = (Pedido) pedd;
+
+		if (clte != null)
+			cliente = (Cliente) clte;
+		
+		
+		String sms=(pedido.getCodEstado().compareTo("FACTURADO") == 0)?"El pedido ha sido enviado y facturado.":"El pedido ha sido enviado.Estado: "
+				+ pedido.getDescEstado() + "\r\nCausa: "
+				+ pedido.getDescCausaEstado();
+		// Informar al usuario 
+			AppDialog.showMessage(getParent(), "Respuesta envio pedido",
+					sms,
+					AppDialog.DialogType.DIALOGO_CONFIRMACION,
+					new AppDialog.OnButtonClickListener() {
+						@Override
+						public void onButtonClick(AlertDialog alert,
+								int actionId) 
+						{
+							
+							alert.dismiss();
+							
+							AppDialog.showMessage(me, "Confirme por favor.!!!",
+									"Desea Imprimir el Pedido?",
+									AppDialog.DialogType.DIALOGO_CONFIRMACION,
+									new AppDialog.OnButtonClickListener() {
+										@Override
+										public void onButtonClick(
+												AlertDialog _dialog, int actionId) {
+											if (actionId == AppDialog.OK_BUTTOM) {
+
+												try 
+												{
+													if (!isDataValid())
+														return;
+													
+													nmapp.getController().setEntities(this,getBridge() == null ? new BPedidoM() : getBridge());
+													nmapp.getController().addOutboxHandler(getHandler() == null ? new Handler(me) : getHandler());
+													Message msg = new Message();
+													Bundle b = new Bundle();
+													b.putParcelable("pedido", pedido);
+													b.putParcelable("cliente", cliente);
+													msg.setData(b);
+													msg.what = ControllerProtocol.IMPRIMIR;
+													nmapp.getController().getInboxHandler().sendMessage(msg);
+													
+												} catch (Exception e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												}
+											}
+										}
+									});  
+							
+						}
+			});
+		 
+
 	}
 
-	private void FINISH_ACTIVITY() 
-	{
-		int requescode=0;
-		nmapp.getController().removeOutboxHandler(TAG); 
+	private void FINISH_ACTIVITY() {
+		int requescode = 0;
+		nmapp.getController().removeOutboxHandler(TAG);
 		nmapp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
-		Intent intent =null;
-		if((pedido!=null && pedido.getDetalles().length!=0))
-		{
+		Intent intent = null;
+		if ((pedido != null && pedido.getDetalles().length != 0)) {
 			intent = new Intent();
 			Bundle b = new Bundle();
-			b.putParcelable("pedido",pedido);
+			b.putParcelable("pedido", pedido);
 			intent.putExtras(b);
 		}
-		if(onEdit)
-			requescode=getIntent().getIntExtra("requestcode", 0);
-		setResult(requescode,intent); 
+		if (onEdit)
+			requescode = getIntent().getIntExtra("requestcode", 0);
+		setResult(requescode, intent);
 		finish();
 	}
 
@@ -639,18 +711,21 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 				// != Dialog.YES) return;
 				// }
 				cliente = _cliente;
-				tbxNombreDelCliente.setText(cliente.getNombreCliente());
-				tbxPrecio.setText(cliente.getDesTipoPrecio());
-				pedido.setObjClienteID(cliente.getIdCliente());
-				pedido.setObjSucursalID(cliente.getIdSucursal());
-
-				String[] nomClie = StringUtil.split(cliente.getNombreCliente(),
-						"/");
-				pedido.setNombreCliente(nomClie[1]);
-				pedido.setNombreSucursal(nomClie[0]);
-				pedido.setObjTipoPrecioVentaID(cliente.getObjPrecioVentaID());
-				pedido.setCodTipoPrecio(cliente.getCodTipoPrecio());
-				pedido.setDescTipoPrecio(cliente.getDesTipoPrecio());
+				/*
+				 * tbxNombreDelCliente.setText(cliente.getNombreCliente());
+				 * pedido.setObjClienteID(cliente.getIdCliente());
+				 * pedido.setObjSucursalID(cliente.getIdSucursal());
+				 * 
+				 * String[] nomClie =
+				 * StringUtil.split(cliente.getNombreCliente(), "/");
+				 * pedido.setNombreCliente(nomClie[1]);
+				 * pedido.setNombreSucursal(nomClie[0]);
+				 * pedido.setObjTipoPrecioVentaID
+				 * (cliente.getObjPrecioVentaID());
+				 * pedido.setCodTipoPrecio(cliente.getCodTipoPrecio());
+				 * pedido.setDescTipoPrecio(cliente.getDesTipoPrecio());
+				 */
+				setInformacionCliente();
 			}
 		});
 		Window window = dc.getWindow();
@@ -682,7 +757,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 			@Override
 			public void onButtonClick(DetallePedido det_p, Producto prod) {
-				// TODO Auto-generated method stub
+
 				det_p.setId(pedido.getId());
 				aprodselected.add(prod);
 				Lvmpproducto.add(det_p);
@@ -761,7 +836,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 					display.getHeight() - 50);
 			dp.show();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -811,38 +886,41 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		}
 		adapter.notifyDataSetChanged();
 	}
-	
-	private void consultarBonificaciones() 
-	{
 
-		if(dpselected==null || cliente==null)
-			return;   		 
-		FragmentTransaction ft =getSupportFragmentManager().beginTransaction(); 
-	    android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-	    if (prev != null) 
-	        ft.remove(prev);
-	    ft.addToBackStack(null); 
-	    ConsultaBonificacionesProducto cbp =ConsultaBonificacionesProducto.newInstance(dpselected.getObjProductoID(),cliente.getObjCategoriaClienteID());
-	    cbp.show(ft, "dialog"); 	
+	private void consultarBonificaciones() {
+
+		if (dpselected == null || cliente == null)
+			return;
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager()
+				.findFragmentByTag("dialog");
+		if (prev != null)
+			ft.remove(prev);
+		ft.addToBackStack(null);
+		ConsultaBonificacionesProducto cbp = ConsultaBonificacionesProducto
+				.newInstance(dpselected.getObjProductoID(),
+						cliente.getObjCategoriaClienteID());
+		cbp.show(ft, "dialog");
 	}
-	
-	private void consultarPrecioProducto()
-	{		
-		if(dpselected==null || cliente==null)
-			return;   
-		FragmentTransaction ft =getSupportFragmentManager().beginTransaction(); 
-	    android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-	    if (prev != null) {
-	        ft.remove(prev);
-	    }
-	    ft.addToBackStack(null); 
-	    ConsultaPrecioProducto newFragment =ConsultaPrecioProducto.newInstance(dpselected.getObjProductoID(),pedido.getObjTipoPrecioVentaID());
-	    newFragment.show(ft, "dialog"); 
+
+	private void consultarPrecioProducto() {
+		if (dpselected == null || cliente == null)
+			return;
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager()
+				.findFragmentByTag("dialog");
+		if (prev != null) {
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		ConsultaPrecioProducto newFragment = ConsultaPrecioProducto
+				.newInstance(dpselected.getObjProductoID(),
+						pedido.getObjTipoPrecioVentaID());
+		newFragment.show(ft, "dialog");
 	}
 
 	public void aplicarPromociones() {
 
-		// TODO Auto-generated method stub
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 				.getCodEstado().compareTo("APROBADO") == 0)))
 			return;
@@ -858,7 +936,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		// Salvar la promoción aplicada
 		try {
 
-			Ventas.guardarPedido(pedido, me);
+			// Ventas.guardarPedido(pedido, me);
 		} catch (Exception ioEx) {
 			// Dialog.alert("Error: " + ioEx.toString());
 			return;
@@ -897,9 +975,9 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 					// Salvar la promoción aplicada
 					try {
-						Ventas.guardarPedido(pedido, me);
+						// Ventas.guardarPedido(pedido, me);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					}
 
@@ -948,9 +1026,9 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 		// Salvar la promoción aplicada
 		try {
-			Ventas.guardarPedido(pedido, me);
+			// Ventas.guardarPedido(pedido, me);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -1030,7 +1108,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 				@Override
 				public void onButtonClick(String exoneracion) {
-					// TODO Auto-generated method stub
+
 					pedido.setExento(true);
 					pedido.setAutorizacionDGI(exoneracion);
 					if (Lvmpproducto == null || Lvmpproducto.size() == 0)
@@ -1066,6 +1144,10 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		return bpm;
 	}
 
+	public Handler getHandler() {
+		return handler;
+	}
+
 	private void ImprimirComprobante() throws Exception {
 		if (!isDataValid())
 			return;
@@ -1073,7 +1155,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		// Salvar pedido si aún no tiene un número de referencia asignado
 		if (pedido.getNumeroMovil() == 0) {
 			try {
-				Ventas.guardarPedido(pedido, me);
+				// Ventas.guardarPedido(pedido, me);
 			} catch (Exception ioEx) {
 				// Dialog.alert("Error: " + ioEx.toString());
 				return;
@@ -1210,7 +1292,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 	@Override
 	public Context getContext() {
-		// TODO Auto-generated method stub
+
 		return this.me;
 	}
 
@@ -1219,7 +1301,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+
 				tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
 						p.getNumeroMovil(), me.getApplicationContext()));
 				salvado = true;
@@ -1232,12 +1314,13 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				tbxNumPedido.setText(NumberUtil.getFormatoNumero(pedido.getNumeroCentral(),me.getContext())); 
+
+				tbxNumPedido.setText(NumberUtil.getFormatoNumero(
+						pedido.getNumeroCentral(), me.getContext()));
 			}
 		});
 	}
-	
+
 	public String getTipoVenta() {
 		return (tbxTipoVenta.getSelectedItemPosition() == 0) ? "CO" : "CR";
 	}
@@ -1248,11 +1331,12 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 
 	public boolean isDataValid() throws Exception {
 		String msg = "";
-		 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        formatter.setCalendar(Calendar.getInstance());
-        Date d = formatter.parse(DateUtil.idateToStrYY(DateUtil.dt2i(Calendar.getInstance().getTime())));
-        Date d2 = formatter.parse(getFechaPedido()); 
+
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		formatter.setCalendar(Calendar.getInstance());
+		Date d = formatter.parse(DateUtil.idateToStrYY(DateUtil.dt2i(Calendar
+				.getInstance().getTime())));
+		Date d2 = formatter.parse(getFechaPedido());
 		if (DateUtil.d2i(d) > DateUtil.d2i(d2)) {
 			// Dialog.alert("La fecha del pedido no debe ser mayor a la fecha actual.");
 			return false;
@@ -1273,6 +1357,7 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 		return comprobarPromociones();
 	}
 
+	@SuppressLint("DefaultLocale")
 	private boolean comprobarPromociones() throws Exception {
 		// Si al pedido no se le ha aplicado promociones
 		// y la aplicación es obligatoria
@@ -1302,139 +1387,113 @@ public class ViewPedidoEdit extends FragmentActivity implements Handler.Callback
 	private void salvarPedido() throws Exception {
 		if (!isDataValid())
 			return;
-
 		try {
-			Ventas.guardarPedido(pedido, me);
-		} catch (Exception ioEx) {
-			Toast.makeText(me, "Error: " + ioEx.toString(), Toast.LENGTH_LONG).show();
+			nmapp.getController().setEntities(this,
+					getBridge() == null ? new BPedidoM() : getBridge());
+			nmapp.getController().addOutboxHandler(
+					getHandler() == null ? new Handler(this) : getHandler());
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putParcelable("pedido", pedido);
+			msg.setData(b);
+			msg.what = SAVE_DATA_FROM_LOCALHOST;
+			nmapp.getController().getInboxHandler().sendMessage(msg);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
 		}
-		Toast.makeText(me,
-				"El pedido ha sido salvado en la memoria del dispositivo.",
-				Toast.LENGTH_LONG).show();
 	}
 
 	@Override
-	protected void onResume() { 
-		SessionManager.setContext(me); 
+	protected void onResume() {
+		SessionManager.setContext(me);
 		super.onResume();
 	}
-	
-	private void enviarPedido() 
-	{        
-        if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0))) return;
-        
-        if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) {        
-            if (pedido.getNumeroCentral() > 0) { 
-                Toast.makeText(me,"El pedido ya fue enviado.",Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
-        
-       // Si se está fuera de covertura, salir
-        if (!SessionManager.isPhoneConnected())
-            return; 
-      
-        try
-        {  
-        	
-        	if (!isDataValid()) return; 
-        	
-        	salvarPedido();  
-            //Enviando pedido 
-        	nmapp.getThreadPool().execute(new Runnable()
-			{ 
-				@Override
-				public void run()
-			    {
-					 
-					try
-					{  
-						    
-						pedido = (Pedido) Ventas.enviarPedido(me,pedido); 
-	            
-						if (pedido == null) return; 
-						//Salvar los cambios en la memoria del dispositivo
-			            salvarPedido();
-			                        
-			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
-			            Ventas.actualizarCliente(me.getContext(),pedido.getObjSucursalID()); 
-			            
-			            //Informar al usuario
-			            if (pedido.getCodEstado().compareTo("FACTURADO") == 0)
-			            	showStatus("El pedido ha sido enviado y facturado.");
-			         
-			            else 
-			            	showStatus("El pedido ha sido enviado.\r\nEstado: " + pedido.getDescEstado() + "\r\nCausa: " + pedido.getDescCausaEstado());
-			        		 
-			            	 
-			    
-			            actualizarOnUINumRec(); 
-			            salvado = true;
-			            
-			            runOnUiThread(new Runnable() 
-			            {
-			    			@Override
-			    			public void run() 
-			    			{ 
-			    				 AppDialog.showMessage(me,"Confirme por favor.!!!","Desea Imprimir el Pedido?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
-			    				 {						
-						    			@Override
-						    			public void onButtonClick(AlertDialog _dialog, int actionId) 
-						    			{
-						    				if(actionId == AppDialog.OK_BUTTOM) {
-						    					
-						    					try 
-						    					{
-													ImprimirComprobante();
-												} catch (Exception e) {
-													// TODO Auto-generated catch block
-													e.printStackTrace();
-												}
-						    				}	
-						    				synchronized(lock)
-						    				{
-						    					lock.notify();
-						    				}
-						    			}
-			    				  }); 
-					          }
-			    		});
-			    		
-			            synchronized(lock)
-			            {
-			                try {
-			                	lock.wait();
-			    			} catch (InterruptedException e) { 
-			    				e.printStackTrace();
-			    			}
-			            }
-			           
-					}catch(Exception e)
-					{
-						e.printStackTrace();
-					    showStatus("Error al enviar el pedido.\r\n" + e.toString());
-					}
-			    }
-				
-			}); 
-           
-        }
-        catch(Exception ex) {           
-            Toast.makeText(me,"Error al enviar el pedido.\r\n" + ex.toString(),Toast.LENGTH_LONG).show();
-        }
-    }
-	
-	public void showStatus(final String msg){
-		
+
+	private void enviarPedido() {
+
+		try {
+
+			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
+					.getCodEstado().compareTo("APROBADO") == 0)))
+				return;
+
+			if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) {
+				if (pedido.getNumeroCentral() > 0) {
+					Toast.makeText(me, "El pedido ya fue enviado.",
+							Toast.LENGTH_LONG).show();
+					return;
+				}
+			}
+
+			// Si se está fuera de covertura, salir
+			if (!SessionManager.isPhoneConnected())
+				return;
+			if (!isDataValid())
+				return;
+
+			nmapp.getController().setEntities(this,
+					getBridge() == null ? new BReciboM() : getBridge());
+			nmapp.getController().addOutboxHandler(
+					getHandler() == null ? new Handler(this) : getHandler());
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putParcelable("pedido", pedido);
+			msg.setData(b);
+			msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
+			nmapp.getController().getInboxHandler().sendMessage(msg);
+
+		} catch (Exception e) {
+
+		}
+
+	}
+
+	 
+	public void showStatus(final String msg) {
+
 		runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				 Toast.makeText(me,msg,Toast.LENGTH_LONG).show();
+
+				Toast.makeText(me, msg, Toast.LENGTH_LONG).show();
 			}
 		});
-		
+
 	}
-	
+
+	private void setInformacionCliente() {
+		tbxNombreDelCliente.setText(cliente.getNombreCliente());
+		pedido.setObjClienteID(cliente.getIdCliente());
+		pedido.setObjSucursalID(cliente.getIdSucursal());
+
+		String[] nomClie = StringUtil.split(cliente.getNombreCliente(), "/");
+		pedido.setNombreCliente(nomClie[1]);
+		pedido.setNombreSucursal(nomClie[0]);
+		pedido.setObjTipoPrecioVentaID(cliente.getObjPrecioVentaID());
+		pedido.setCodTipoPrecio(cliente.getCodTipoPrecio());
+		pedido.setDescTipoPrecio(cliente.getDesTipoPrecio());
+	}
+
+	public void ocultarDialogos() {
+		if (dlg != null)
+			dlg.dismiss();
+		if (pd != null)
+			pd.dismiss();
+	}
+
+	public void showStatus(final NotificationMessage notificacion) {
+		if (dlg != null)
+			dlg.dismiss();
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				dlg = CustomDialog.nuevaInstancia(me, notificacion.getMessage()
+						+ notificacion.getCause(), false, NOTIFICATION_DIALOG);
+				dlg.show();
+			}
+		});
+	}
 }

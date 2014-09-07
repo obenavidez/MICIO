@@ -49,15 +49,16 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 	public static String TAG=ConsultaPrecioProducto.class.getSimpleName();
 	ProgressDialog pd;
 	private ViewPedidoEdit parent;
-	
+	private static ConsultaPrecioProducto cpp=new ConsultaPrecioProducto();
 	public static ConsultaPrecioProducto newInstance(long idProducto,long idTipoPrecio) 
 	{
-		ConsultaPrecioProducto f = new ConsultaPrecioProducto(); 
+		if(cpp==null)
+			cpp = new ConsultaPrecioProducto(); 
 	    Bundle args = new Bundle();
 	    args.putLong("_idProducto", idProducto);
 	    args.putLong("_idTipoPrecio", idTipoPrecio);
-	    f.setArguments(args);
-	    return f;
+	    cpp.setArguments(args);
+	    return cpp;
 	}	 
     
     @SuppressLint("InflateParams") 

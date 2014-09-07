@@ -3,21 +3,21 @@ package com.panzyma.nm.auxiliar;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;  
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;   
 import android.view.View;
 
-import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.model.ModelConfiguracion;
+import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewdialog.DialogLogin; 
 import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;  
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;  
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 @SuppressLint("ParserError")@SuppressWarnings("rawtypes")
@@ -35,7 +35,6 @@ public class SessionManager
     private static final int AUT_USER_NO_EXIST = 2; 
     private static final int AUT_PWD_INVALIDO = 3;  
     
-    private static Parameters params;
     private static String errormessage=""; 
     private static boolean isOK;
     private static boolean _esAdmin; 
@@ -48,44 +47,68 @@ public class SessionManager
 	private static CustomDialog dlg; 
     private static Usuario userinfo;
     public static boolean hasError=false;
+    
 	public SessionManager(){};
+	
+	private static Impresora impresora;
 	
 	public static String getNameUser()
 	{
 		return nameuser;
 	}
+	
 	public static void setNameUser(String _nameuser)
 	{
 		nameuser=_nameuser;
 	}
+	
 	public static String getPassword()
 	{
 		return password;
 	}
+	
 	public static void setPassword(String _password)
 	{
 		password=_password;
 	}
+	
 	public static String getEmpresa()
 	{
 		return empresa;
 	}
+	
+	public static Impresora obtenerImpresora()
+	{
+		return ModelConfiguracion.obtenerImpresora(context);
+	}
+	
 	public static void setEmpresa(String _empresa)
 	{
 		empresa=_empresa;
 	}
+	
 	public static boolean isAdmin() 
 	{
 	       return _esAdmin;
     }	 
 	
+	@SuppressWarnings("static-access")
+	public static Impresora getImpresora(){
+		if(impresora==null || (impresora!=null && impresora.obtenerMac().trim()==""))
+			impresora=Impresora.get(context);
+		return impresora;
+	}
+	
+	public static void setImpresora(Impresora dispositivo){
+		impresora=dispositivo;
+	}
 	public static Usuario getLoginUser()
 	{
 		if(userinfo==null)
-			userinfo=ModelConfiguracion.getUser(context);
+			userinfo=Usuario.get(context);
 		return userinfo;
 	}
-	
+
 	public static void setLoguedUser(Usuario user){
 		userinfo=user;
 	}
@@ -124,7 +147,11 @@ public class SessionManager
 				if(!SessionManager.SignIn(false))
 					return "";			
 		}        
-        return nameuser + "-" + password + "-" + empresa; 
+		if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
+        		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
+        	return "";
+        else
+        	return nameuser + "-" + password + "-" + empresa; 
 	} 
 	public static String getCredentials()
 	{		
@@ -144,7 +171,11 @@ public class SessionManager
 				if(!SessionManager.SignIn(false))
 					return "";			
 		}          
-        return nameuser + "||" + password + "||" + empresa; 
+        if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
+        		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
+        	return "";
+        else
+        	return nameuser + "||" + password + "||" + empresa;
 	}
 	
 	public static void setErrorAuntentication(String _error){

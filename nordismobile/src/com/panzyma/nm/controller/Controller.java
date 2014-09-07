@@ -179,12 +179,13 @@ public class Controller<T, U>
 		try 
 		{
 			int index=buscarObjeto(bridges,_bridge);
-			if(index!=-1)
-				obj=bridges.get(index);
+			obj= (T) _bridge.getClass().getConstructor(view.getClass()).newInstance(view);
+			if(index!=-1){
+				obj=bridges.set(index, obj);
+			}			
 			else{
-					obj= (T) _bridge.getClass().getConstructor(view.getClass()).newInstance(view);
-					bridges.add(obj);
-				}
+				bridges.add(obj);
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -199,7 +200,7 @@ public class Controller<T, U>
 		{
 			int index=buscarObjeto(views,_view);
 			if(index!=-1)
-				obj=views.get(index);
+				obj=views.set(index,_view);
 			else{
 					obj= _view;
 					views.add(obj);
@@ -263,6 +264,11 @@ public class Controller<T, U>
 	public  Map<String, Handler> getoutboxHandlers()
 	{
 		return outboxHandlers;
+	}
+	
+    public Handler getoutboxHandler(String key)
+	{
+		return outboxHandlers.get(key);
 	}
 	
 	public final <T> void notifyOutboxHandlers(int what, int arg1, int arg2, ArrayList<T> obj) {

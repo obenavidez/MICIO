@@ -14,6 +14,7 @@ import android.net.Uri;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
+import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
@@ -85,7 +86,7 @@ public class ModelCliente
 	
 	public synchronized static JSONObject actualizarCliente(String Credentials,long idSucursal) throws Exception
 	{ 
-		return  AppNMComunication.InvokeService(NMConfig.URL2+NMConfig.MethodName.GetCliente+"/"+Credentials+"/"+idSucursal); 
+		return  NMComunicacion.InvokeService(NMConfig.URL2+NMConfig.MethodName.GetCliente+"/"+Credentials+"/"+idSucursal); 
 	}
 	
 	public synchronized static ArrayList<vmCliente> getArrayCustomerFromLocalHost(ContentResolver content)throws Exception

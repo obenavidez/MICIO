@@ -119,7 +119,7 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 6; 
+	private static final int BD_VERSION = 8; 
 	
 	private static final String TABLA_CLIENTE = "Cliente";
 	private static final String TABLA_FACTURA = "Factura";
@@ -1367,114 +1367,133 @@ public class DatabaseProvider extends ContentProvider
 		
 	public static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception{
 		
-		NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	
-		long idpedido=-1;
-		ContentValues values;		
-		SQLiteDatabase bdd = d.getWritableDatabase();		
-		bdd.beginTransaction();
-		
-		values = new ContentValues();		
-		
-		bdd.delete(TABLA_PEDIDO, NMConfig.Pedido.Id+"="+String.valueOf(pedido.getId()),null); 
-		bdd.delete(TABLA_PEDIDODETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(pedido.getId()),null);
-		bdd.delete(TABLA_PEDIDOPROMOCION,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(pedido.getId()),null);
-		bdd.delete(TABLA_PEDIDOPROMOCIONDETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(pedido.getId()),null);
-		
-		values.put(NMConfig.Pedido.Id, pedido.getId());		
-		values.put(NMConfig.Pedido.NumeroMovil, pedido.getNumeroMovil());		
-		values.put(NMConfig.Pedido.NumeroCentral, pedido.getNumeroCentral());		
-		values.put(NMConfig.Pedido.Tipo, pedido.getTipo());		
-		values.put(NMConfig.Pedido.Fecha, pedido.getFecha());		
-		values.put(NMConfig.Pedido.objClienteID, pedido.getObjClienteID());
-		values.put(NMConfig.Pedido.NombreCliente, pedido.getNombreCliente());		
-		values.put(NMConfig.Pedido.objSucursalID, pedido.getObjSucursalID());		
-		values.put(NMConfig.Pedido.NombreSucursal, pedido.getNombreSucursal());
-		values.put(NMConfig.Pedido.objTipoPrecioVentaID, pedido.getObjTipoPrecioVentaID());
-		values.put(NMConfig.Pedido.CodTipoPrecio, pedido.getCodTipoPrecio());
-		values.put(NMConfig.Pedido.DescTipoPrecio, pedido.getDescTipoPrecio());
-		values.put(NMConfig.Pedido.objVendedorID, pedido.getObjVendedorID());
-		values.put(NMConfig.Pedido.BonificacionEspecial, pedido.getBonificacionEspecial());
-		values.put(NMConfig.Pedido.BonificacionSolicitada, pedido.getBonificacionSolicitada());
-		values.put(NMConfig.Pedido.PrecioEspecial, pedido.getPrecioEspecial());
-		values.put(NMConfig.Pedido.PrecioSolicitado, pedido.getPrecioSolicitado());
-		values.put(NMConfig.Pedido.PedidoCondicionado, pedido.getPedidoCondicionado());
-		values.put(NMConfig.Pedido.Condicion, pedido.getCondicion());
-		values.put(NMConfig.Pedido.Subtotal, pedido.getSubtotal());
-		values.put(NMConfig.Pedido.Descuento, pedido.getDescuento());
-		values.put(NMConfig.Pedido.Impuesto, pedido.getImpuesto());
-		values.put(NMConfig.Pedido.Total, pedido.getTotal());
-		values.put(NMConfig.Pedido.objEstadoID, pedido.getObjEstadoID());
-		values.put(NMConfig.Pedido.CodEstado, pedido.getCodEstado());
-		values.put(NMConfig.Pedido.DescEstado, pedido.getDescEstado());
-		values.put(NMConfig.Pedido.objCausaEstadoID, pedido.getObjCausaEstadoID());
-		values.put(NMConfig.Pedido.CodCausaEstado, pedido.getCodCausaEstado());		
-		values.put(NMConfig.Pedido.DescCausaEstado, pedido.getDescCausaEstado());
-		values.put(NMConfig.Pedido.NombreVendedor, pedido.getNombreVendedor());  
-		values.put(NMConfig.Pedido.Nota, pedido.getNota());		
-		values.put(NMConfig.Pedido.Exento, pedido.isExento());
-		values.put(NMConfig.Pedido.AutorizacionDGI, pedido.getAutorizacionDGI()); 
-		
-		idpedido=bdd.insert(TABLA_PEDIDO, null, values);		
-		DetallePedido[] detp=pedido.getDetalles();
-		if(detp!=null && detp.length!=0)
-		for(DetallePedido dp:detp)
+		SQLiteDatabase bdd = null;
+		try 
 		{
-			values = new ContentValues();		 
-			values.put(NMConfig.Pedido.DetallePedido.objPedidoID,pedido.getId());
-			values.put(NMConfig.Pedido.DetallePedido.objProductoID, dp.getObjProductoID());
-			values.put(NMConfig.Pedido.DetallePedido.codProducto, dp.getCodProducto());
-			values.put(NMConfig.Pedido.DetallePedido.nombreProducto, dp.getNombreProducto());
-			values.put(NMConfig.Pedido.DetallePedido.cantidadOrdenada, dp.getCantidadOrdenada());
-			values.put(NMConfig.Pedido.DetallePedido.cantidadBonificada, dp.getCantidadBonificada());
-			values.put(NMConfig.Pedido.DetallePedido.objBonificacionID, dp.getObjBonificacionID());
-			values.put(NMConfig.Pedido.DetallePedido.bonifEditada, dp.getBonifEditada());
-			values.put(NMConfig.Pedido.DetallePedido.cantidadBonificadaEditada, dp.getCantidadBonificadaEditada());
-			values.put(NMConfig.Pedido.DetallePedido.precio, dp.getPrecio());
-			values.put(NMConfig.Pedido.DetallePedido.montoPrecioEditado, dp.getMontoPrecioEditado());
-			values.put(NMConfig.Pedido.DetallePedido.precioEditado, dp.getPrecioEditado());
-			values.put(NMConfig.Pedido.DetallePedido.subtotal, dp.getSubtotal());
-			values.put(NMConfig.Pedido.DetallePedido.descuento, dp.getDescuento());
-			values.put(NMConfig.Pedido.DetallePedido.porcImpuesto, dp.getPorcImpuesto());
-			values.put(NMConfig.Pedido.DetallePedido.impuesto, dp.getImpuesto());
-			values.put(NMConfig.Pedido.DetallePedido.total, dp.getTotal());
-			values.put(NMConfig.Pedido.DetallePedido.cantidadDespachada, dp.getCantidadDespachada());
-			values.put(NMConfig.Pedido.DetallePedido.cantidadADespachar, dp.getCantidadADespachar());
-			values.put(NMConfig.Pedido.DetallePedido.cantidadPromocion, dp.getCantidadPromocion());
 			
-			bdd.insert(TABLA_PEDIDODETALLE, null, values);	
-		}
-		PedidoPromocion[] pedp=pedido.getPromocionesAplicadas();
-		if(pedp!=null && pedp.length!=0)
-		for(PedidoPromocion pp:pedp)
-		{
+		
+			NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	
+			long idpedido=-1;
+			ContentValues values;		
+			bdd = d.getWritableDatabase();		
+			bdd.beginTransaction();
+			
 			values = new ContentValues();		
-			values.put(NMConfig.Pedido.PedidoPromocion.objPromocionID, pp.getObjPromocionID());
-			values.put(NMConfig.Pedido.PedidoPromocion.objPedidoID,pedido.getId());
-			values.put(NMConfig.Pedido.PedidoPromocion.descuento, pp.getDescuento());
-			values.put(NMConfig.Pedido.PedidoPromocion.codigoPromocion,pp.getCodigoPromocion());
-			values.put(NMConfig.Pedido.PedidoPromocion.nombrePromocion,pp.getNombrePromocion());			
-			bdd.insert(TABLA_PEDIDOPROMOCION, null, values);
-			PedidoPromocionDetalle[] ppromd=pp.getDetalles();
-			if(ppromd!=null && ppromd.length!=0)
-			for(PedidoPromocionDetalle ppd:ppromd)
+			long id=0;
+			if(pedido.getNumeroCentral()!=0)
+				id=Long.valueOf(pedido.getNumeroMovil());
+			else
+				id=Long.valueOf(pedido.getId());
+			
+			bdd.delete(TABLA_PEDIDO, NMConfig.Pedido.Id+"="+String.valueOf(id),null); 
+			bdd.delete(TABLA_PEDIDODETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(id),null);
+			bdd.delete(TABLA_PEDIDOPROMOCION,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(id),null);
+			bdd.delete(TABLA_PEDIDOPROMOCIONDETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(id),null);
+			
+			values.put(NMConfig.Pedido.Id, pedido.getId());		
+			values.put(NMConfig.Pedido.NumeroMovil, pedido.getNumeroMovil());		
+			values.put(NMConfig.Pedido.NumeroCentral, pedido.getNumeroCentral());		
+			values.put(NMConfig.Pedido.Tipo, pedido.getTipo());		
+			values.put(NMConfig.Pedido.Fecha, pedido.getFecha());		
+			values.put(NMConfig.Pedido.objClienteID, pedido.getObjClienteID());
+			values.put(NMConfig.Pedido.NombreCliente, pedido.getNombreCliente());		
+			values.put(NMConfig.Pedido.objSucursalID, pedido.getObjSucursalID());		
+			values.put(NMConfig.Pedido.NombreSucursal, pedido.getNombreSucursal());
+			values.put(NMConfig.Pedido.objTipoPrecioVentaID, pedido.getObjTipoPrecioVentaID());
+			values.put(NMConfig.Pedido.CodTipoPrecio, pedido.getCodTipoPrecio());
+			values.put(NMConfig.Pedido.DescTipoPrecio, pedido.getDescTipoPrecio());
+			values.put(NMConfig.Pedido.objVendedorID, pedido.getObjVendedorID());
+			values.put(NMConfig.Pedido.BonificacionEspecial, pedido.getBonificacionEspecial());
+			values.put(NMConfig.Pedido.BonificacionSolicitada, pedido.getBonificacionSolicitada());
+			values.put(NMConfig.Pedido.PrecioEspecial, pedido.getPrecioEspecial());
+			values.put(NMConfig.Pedido.PrecioSolicitado, pedido.getPrecioSolicitado());
+			values.put(NMConfig.Pedido.PedidoCondicionado, pedido.getPedidoCondicionado());
+			values.put(NMConfig.Pedido.Condicion, pedido.getCondicion());
+			values.put(NMConfig.Pedido.Subtotal, pedido.getSubtotal());
+			values.put(NMConfig.Pedido.Descuento, pedido.getDescuento());
+			values.put(NMConfig.Pedido.Impuesto, pedido.getImpuesto());
+			values.put(NMConfig.Pedido.Total, pedido.getTotal());
+			values.put(NMConfig.Pedido.objEstadoID, pedido.getObjEstadoID());
+			values.put(NMConfig.Pedido.CodEstado, pedido.getCodEstado());
+			values.put(NMConfig.Pedido.DescEstado, pedido.getDescEstado());
+			values.put(NMConfig.Pedido.objCausaEstadoID, pedido.getObjCausaEstadoID());
+			values.put(NMConfig.Pedido.CodCausaEstado, pedido.getCodCausaEstado());		
+			values.put(NMConfig.Pedido.DescCausaEstado, pedido.getDescCausaEstado());
+			values.put(NMConfig.Pedido.NombreVendedor, pedido.getNombreVendedor());  
+			values.put(NMConfig.Pedido.Nota, pedido.getNota());		
+			values.put(NMConfig.Pedido.Exento, pedido.isExento());
+			values.put(NMConfig.Pedido.AutorizacionDGI, pedido.getAutorizacionDGI()); 
+			
+			idpedido=bdd.insert(TABLA_PEDIDO, null, values);		
+			DetallePedido[] detp=pedido.getDetalles();
+			if(detp!=null && detp.length!=0)
+			for(DetallePedido dp:detp)
+			{
+				values = new ContentValues();		 
+				values.put(NMConfig.Pedido.DetallePedido.objPedidoID,pedido.getId());
+				values.put(NMConfig.Pedido.DetallePedido.objProductoID, dp.getObjProductoID());
+				values.put(NMConfig.Pedido.DetallePedido.codProducto, dp.getCodProducto());
+				values.put(NMConfig.Pedido.DetallePedido.nombreProducto, dp.getNombreProducto());
+				values.put(NMConfig.Pedido.DetallePedido.cantidadOrdenada, dp.getCantidadOrdenada());
+				values.put(NMConfig.Pedido.DetallePedido.cantidadBonificada, dp.getCantidadBonificada());
+				values.put(NMConfig.Pedido.DetallePedido.objBonificacionID, dp.getObjBonificacionID());
+				values.put(NMConfig.Pedido.DetallePedido.bonifEditada, dp.getBonifEditada());
+				values.put(NMConfig.Pedido.DetallePedido.cantidadBonificadaEditada, dp.getCantidadBonificadaEditada());
+				values.put(NMConfig.Pedido.DetallePedido.precio, dp.getPrecio());
+				values.put(NMConfig.Pedido.DetallePedido.montoPrecioEditado, dp.getMontoPrecioEditado());
+				values.put(NMConfig.Pedido.DetallePedido.precioEditado, dp.getPrecioEditado());
+				values.put(NMConfig.Pedido.DetallePedido.subtotal, dp.getSubtotal());
+				values.put(NMConfig.Pedido.DetallePedido.descuento, dp.getDescuento());
+				values.put(NMConfig.Pedido.DetallePedido.porcImpuesto, dp.getPorcImpuesto());
+				values.put(NMConfig.Pedido.DetallePedido.impuesto, dp.getImpuesto());
+				values.put(NMConfig.Pedido.DetallePedido.total, dp.getTotal());
+				values.put(NMConfig.Pedido.DetallePedido.cantidadDespachada, dp.getCantidadDespachada());
+				values.put(NMConfig.Pedido.DetallePedido.cantidadADespachar, dp.getCantidadADespachar());
+				values.put(NMConfig.Pedido.DetallePedido.cantidadPromocion, dp.getCantidadPromocion());
+				
+				bdd.insert(TABLA_PEDIDODETALLE, null, values);	
+			}
+			PedidoPromocion[] pedp=pedido.getPromocionesAplicadas();
+			if(pedp!=null && pedp.length!=0)
+			for(PedidoPromocion pp:pedp)
 			{
 				values = new ContentValues();		
 				values.put(NMConfig.Pedido.PedidoPromocion.objPromocionID, pp.getObjPromocionID());
 				values.put(NMConfig.Pedido.PedidoPromocion.objPedidoID,pedido.getId());
-				values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.objProductoID, ppd.getObjProductoID());
-				values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.nombreProducto,ppd.getNombreProducto());
-				values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.cantidadEntregada,ppd.getCantidadEntregada());
-				values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.descuento,ppd.getDescuento());
-				bdd.insert(TABLA_PEDIDOPROMOCIONDETALLE, null, values);
+				values.put(NMConfig.Pedido.PedidoPromocion.descuento, pp.getDescuento());
+				values.put(NMConfig.Pedido.PedidoPromocion.codigoPromocion,pp.getCodigoPromocion());
+				values.put(NMConfig.Pedido.PedidoPromocion.nombrePromocion,pp.getNombrePromocion());			
+				bdd.insert(TABLA_PEDIDOPROMOCION, null, values);
+				PedidoPromocionDetalle[] ppromd=pp.getDetalles();
+				if(ppromd!=null && ppromd.length!=0)
+				for(PedidoPromocionDetalle ppd:ppromd)
+				{
+					values = new ContentValues();		
+					values.put(NMConfig.Pedido.PedidoPromocion.objPromocionID, pp.getObjPromocionID());
+					values.put(NMConfig.Pedido.PedidoPromocion.objPedidoID,pedido.getId());
+					values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.objProductoID, ppd.getObjProductoID());
+					values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.nombreProducto,ppd.getNombreProducto());
+					values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.cantidadEntregada,ppd.getCantidadEntregada());
+					values.put(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.descuento,ppd.getDescuento());
+					bdd.insert(TABLA_PEDIDOPROMOCIONDETALLE, null, values);
+				}
 			}
+			
+			
+			bdd.setTransactionSuccessful();
+			if (bdd != null || (bdd.isOpen())) {
+				bdd.endTransaction();
+				bdd.close();
+			}		
+		return idpedido;
+		} catch (Exception e) 
+		{
+			if (bdd != null || (bdd != null  && bdd.isOpen())) {
+				bdd.endTransaction();
+				bdd.close();
+			}
+			throw new Exception(e);
 		}
 		
-		
-		bdd.setTransactionSuccessful();
-		if (bdd != null || (bdd.isOpen())) {
-			bdd.endTransaction();
-			bdd.close();
-		}		
-		return idpedido;
 	}
 }

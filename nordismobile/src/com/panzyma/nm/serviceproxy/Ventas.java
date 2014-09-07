@@ -3,17 +3,21 @@ package com.panzyma.nm.serviceproxy;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
+
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewPedidoEdit;
 
-public class Ventas {
+@SuppressLint("SimpleDateFormat") public class Ventas {
 	Ventas() {
 	}
 
@@ -228,48 +232,48 @@ public class Ventas {
 		cnt.getSharedPreferences("VConfiguracion",
 				android.content.Context.MODE_PRIVATE).edit().putLong("max_idrecibo", value);
 	}
-
-	@SuppressWarnings("deprecation")
-    public static Pedido guardarPedido(Pedido pedido,ViewPedidoEdit vpe) throws Exception
-    { 
-        //Salvando el tipo de pedido (crédito contado)		
-        pedido.setTipo("CR"); 
-    	if (vpe.getTipoVenta() == "CO")
-			pedido.setTipo("CO");
-    	
-    	String f = vpe.getFechaPedido().toString();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date d = formatter.parse(f);
-        
-        pedido.setFecha(DateUtil.d2i(d));
-        Integer intId = 0;
-        //Generar Id del pedido
-        if (pedido.getNumeroMovil() == 0) 
-        {            
-            intId = Ventas.getLastOrderId(vpe.getApplicationContext());
-            if (intId == null) 
-                intId = new Integer(1);
-            else
-                intId = new Integer(intId.intValue() + 1);
-           // DataStore.setLastOrderId(intId);
-            Integer prefix = Ventas.getPrefijoIds(vpe.getApplicationContext());
-            String strIdMovil = prefix.intValue() + "" + intId.intValue();
-            int idMovil = Integer.parseInt(strIdMovil);
-            pedido.setId(intId);
-            pedido.setNumeroMovil(idMovil);
-            pedido.setObjEstadoID(0);
-            pedido.setObjCausaEstadoID(0);
-            pedido.setCodEstado("REGISTRADO");
-            pedido.setDescEstado("Elaboración");
-            pedido.setCodCausaEstado("REGISTRADO");
-            pedido.setDescCausaEstado("Registrado");
-        }  
-        vpe.getBridge().RegistrarPedido(pedido,vpe.getContext());
-        vpe.getBridge().ActualizarSecuenciaPedido((int)pedido.getId(),vpe.getContext());
-        vpe.actualizarOnUINumRef(pedido);
-             
-        return pedido;
-    } 
+ 
+//    public static Pedido guardarPedido(Pedido pedido,ViewPedidoEdit vpe) throws Exception
+//    { 
+//        //Salvando el tipo de pedido (crédito contado)		
+//        pedido.setTipo("CR"); 
+//    	if (vpe.getTipoVenta() == "CO")
+//			pedido.setTipo("CO");
+//    	
+//    	String f = vpe.getFechaPedido().toString();
+//        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+//        Date d = formatter.parse(f);
+//        
+//        pedido.setFecha(DateUtil.d2i(d));
+//
+//        Integer prefijo=Ventas.getPrefijoIds(vpe.getContext());
+//        Integer pedidomax=Ventas.getLastOrderId(vpe.getContext());
+//        //Generar Id del pedido
+//        if (pedido.getNumeroMovil() == 0) 
+//        {                     
+//            if (pedidomax == null) 
+//            	pedidomax = Integer.valueOf(1);
+//            else
+//            	pedidomax =pedidomax+1; 
+//            String strIdMovil = prefijo.intValue() + "" + pedidomax.intValue();
+//            int idMovil = Integer.parseInt(strIdMovil);
+//            
+//            pedido.setId(idMovil);
+//            pedido.setNumeroMovil(idMovil);
+//            pedido.setObjEstadoID(0);
+//            pedido.setObjCausaEstadoID(0);
+//            pedido.setCodEstado("REGISTRADO");
+//            pedido.setDescEstado("Elaboración");
+//            pedido.setCodCausaEstado("REGISTRADO");
+//            pedido.setDescCausaEstado("Registrado");
+//        }  
+//        vpe.getBridge().RegistrarPedido(pedido,vpe.getContext());        
+//       // prefijo =Integer.parseInt(NumberUtil.setFormatPrefijo(prefijo, pedido.getNumeroMovil()));
+//        vpe.getBridge().ActualizarSecuenciaPedido((int) (pedidomax),vpe.getContext());
+//        vpe.actualizarOnUINumRef(pedido);
+//             
+//        return pedido;
+//    } 
 
 	public static Producto getProductoByID(long objProductoID,ViewPedidoEdit vpe) throws Exception
 	{
@@ -277,16 +281,14 @@ public class Ventas {
 		return BPedidoM.getProductoByID(vpe.getContentResolver(), objProductoID);
 	}
 
-    public static Object enviarPedido(ViewPedidoEdit vpe,Pedido pedido) throws Exception
-    {
-    	//final String credenciales=SessionManager.getCredentials();			  
-    	final String credenciales="sa||nordis09||dp";
-		if(credenciales.trim()!="") {
-			vpe.getBridge();
-			return BPedidoM.enviarPedido(credenciales, pedido);
-		}
-		return null;
-    }
+//    public static Object enviarPedido(ViewPedidoEdit vpe,Pedido pedido) throws Exception
+//    {
+//    	final String credenciales=SessionManager.getCredentials(); 
+//		if(credenciales.trim()!="") { 
+//			return BPedidoM.enviarPedido(credenciales, pedido);
+//		}
+//		return null;
+//    }
     
     public static int actualizarCliente(Context cnt,long objSucursalID) throws Exception{
     	final String credentials=SessionManager.getCredenciales();		  

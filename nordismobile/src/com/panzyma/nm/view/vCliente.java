@@ -8,7 +8,6 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -27,6 +26,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +41,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
@@ -84,10 +85,10 @@ public class vCliente extends ActionBarActivity implements
 	private Cliente cliente;
 	static final String TAG = vCliente.class.getSimpleName();
 	private static final int NUEVO_PEDIDO = 0;
-	private static final int NUEVO_NOTA_CREDITO=1;
-	private static final int NUEVO_RECIBO = 2;
-	private static final int NUEVO_DEVOLUCION=3;
+	private static final int NUEVO_RECIBO = 1;
+	private static final int NUEVO_DEVOLUCION=2;
 	//RECIBO
+	public static final String PEDIDO_ID = "pedido_id";
 	public static final String RECIBO_ID = "recibo_id";
 	public static final String CLIENTE = "cliente";
 	
@@ -103,7 +104,7 @@ public class vCliente extends ActionBarActivity implements
 		footerView = (TextView) findViewById(R.id.ctextv_gridheader);
 		
 		CreateMenu();
-		
+		SessionManager.setContext(this); 
 		nmapp = (NMApp) this.getApplicationContext();
 		try 
 		{
@@ -145,7 +146,6 @@ public class vCliente extends ActionBarActivity implements
 			
 		}
 	}
-	
 
 
 	@SuppressWarnings("unchecked")
@@ -193,6 +193,7 @@ public class vCliente extends ActionBarActivity implements
 		cliente_selected = (vmCliente) obj;
 		positioncache = position;
 	}
+	
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub 
@@ -201,6 +202,7 @@ public class vCliente extends ActionBarActivity implements
 		customArrayAdapter.notifyDataSetChanged();
 		super.onPause();
 	} 
+	
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -262,15 +264,19 @@ public class vCliente extends ActionBarActivity implements
 			break;
 			
 			case R.id.consultar_fc:
+				
+				break;
 			case R.id.consultar_cxc:
-				drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-				drawerLayout.closeDrawers();
 				LOAD_FICHACLIENTE_FROMSERVER();
 		
 			break;
-			case R.id.sincronizar_selected:
+			case R.id.sincronizar_selected: 
 				UPDATE_SELECTEDITEM_FROMSERVER();
 				break;
+			case R.id.salir:
+				FINISH_ACTIVITY();
+				break;
+				
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -320,28 +326,23 @@ public class vCliente extends ActionBarActivity implements
 				cliente_selected =(vmCliente) customArrayAdapter.getItem(pos);
 				
 				switch (position) {
+					case NUEVO_PEDIDO:
+						intent = new Intent(vCliente.this,ViewPedidoEdit.class);
+						intent.putExtra(PEDIDO_ID, 0);
+						intent.putExtra(CLIENTE,cliente_selected.IdSucursal);
+						startActivity(intent);
+						drawerLayout.closeDrawers();
+					break;
 					case NUEVO_RECIBO : 
 						intent = new Intent(vCliente.this,ViewReciboEdit.class);
-						//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
-						try {
-							cliente=(Cliente) nmapp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",ContentResolver.class,long.class).invoke(null,vCliente.this.getContentResolver(),cliente_selected.getIdSucursal());
-						} 
-						catch (Exception e) {
-							e.printStackTrace();
-						}
-						
 						intent.putExtra(RECIBO_ID, 0);
-						intent.putExtra(CLIENTE,cliente.getIdCliente());
-						/*Bundle args = new Bundle();
-						args.putInt(RECIBO_ID, 0);
-						args.putParcelable(CLIENTE, cliente);
-						intent.putExtras(args);*/
-						
+						intent.putExtra(CLIENTE,cliente_selected.getIdCliente());
 						startActivity(intent);	
+						drawerLayout.closeDrawers();
 						break;
-				
-				
-				
+					case NUEVO_DEVOLUCION:
+						
+						break;
 				}
 			}
 		});
@@ -396,10 +397,11 @@ public class vCliente extends ActionBarActivity implements
 		}
 	}
 	
-	/*
+	
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) 
     { 
+    	/*
         if (keyCode == KeyEvent.KEYCODE_BACK) 
 	    {  
         	if (getSupportFragmentManager().getBackStackEntryCount() == 0)
@@ -412,12 +414,17 @@ public class vCliente extends ActionBarActivity implements
                 getSupportFragmentManager().popBackStack();
                 return false;
             }
-	    }
+	    }*/
+    	if(keyCode==KeyEvent.KEYCODE_MENU){
+    		 Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+    		  if (fragment instanceof FichaClienteFragment) {
+    			  return true;  
+    		  }
+    	}
+    		
         return super.onKeyUp(keyCode, event); 
     } 
-	*/
-    
-    
+	
     private void FINISH_ACTIVITY()
 	{ 	 		
     	if(pDialog!=null)
@@ -501,7 +508,6 @@ public class vCliente extends ActionBarActivity implements
 			e.printStackTrace();
 		}
 	}
-	
 	
 	private void ShowCustomerDetails ()
 	{
@@ -617,7 +623,11 @@ public class vCliente extends ActionBarActivity implements
 
 	private void UPDATE_SELECTEDITEM_FROMSERVER()
 	{
-		nmapp.getController().getInboxHandler().sendEmptyMessage(UPDATE_ITEM_FROM_SERVER);
+		Message ms = new  Message();
+		ms.what=UPDATE_ITEM_FROM_SERVER; 
+		ms.obj = get_SucursalID();
+		
+		nmapp.getController().getInboxHandler().sendMessage(ms);
 	    Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);  
 	} 	
 
@@ -642,8 +652,11 @@ public class vCliente extends ActionBarActivity implements
 		  transaction.replace(R.id.fragment_container, firstFragment);
 		  transaction.addToBackStack(null);
 		  transaction.commit();
+		  getSupportActionBar().show();
 	  }else{
 		  FINISH_ACTIVITY();
 	   }
 	}
+	
+
 }

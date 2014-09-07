@@ -118,7 +118,7 @@ public final class BClienteM
 				    onLoadALLData_From_Server(); 
 					return true; 						
 			case UPDATE_ITEM_FROM_SERVER:  
-					onUpdateItem_From_Server(); 
+					onUpdateItem_From_Server(Long.parseLong(msg.obj.toString())); 
 					return true;
 			case LOAD_FICHACLIENTE_FROM_SERVER: 
 				    onLoadFichaCliente_From_Server(Long.parseLong(msg.obj.toString())); 
@@ -130,7 +130,29 @@ public final class BClienteM
 		}
 		return false;
 	}
-	
+	public boolean handleMessage(int what) 
+	{
+		switch (what) 
+		{  
+			case LOAD_DATA_FROM_LOCALHOST: 
+					onLoadALLData_From_LocalHost();
+					return true;		
+			case LOAD_DATA_FROM_SERVER:  
+				    onLoadALLData_From_Server(); 
+					return true; 						
+			/*case UPDATE_ITEM_FROM_SERVER:  
+					onUpdateItem_From_Server(); 
+					return true;*/
+			/*case LOAD_FICHACLIENTE_FROM_SERVER: 
+				    onLoadFichaCliente_From_Server(Long.parseLong(msg.obj.toString())); 
+				    return true; */
+			case LOAD_FACTURASCLIENTE_FROM_SERVER: 
+				    onLoadFacturasCliente_From_Server(); 
+			        return true;	    
+					
+		}
+		return false;
+	}
 	private void onLoadALLData_From_LocalHost()
 	{		
 		try 
@@ -254,13 +276,13 @@ public final class BClienteM
 	}
 
 	
-	private void onUpdateItem_From_Server() 
+	private void onUpdateItem_From_Server(final Long sucursalID) 
 	{ 
 		obj.clear();
 		try 
 		{		  
 			final String credentials=SessionManager.getCredenciales();			  
-			if(credentials.trim()!="")
+			if(credentials.trim()=="")
 			   return;
 			this.pool.execute
 			(  
@@ -275,7 +297,7 @@ public final class BClienteM
 							JSONObject modelcliente = null;
 							if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller))
 						    {
-								modelcliente =ModelCliente.actualizarCliente(credentials,view.get_SucursalID());
+								modelcliente =ModelCliente.actualizarCliente(credentials,sucursalID);
 								if(modelcliente!=null)  
 								{
 									ModelCliente.actualizarClienteLocalmente(modelcliente,view.getApplicationContext());	

@@ -38,17 +38,6 @@ public class ModelPedido {
 	{
  		return DatabaseProvider.RegistrarPedido(pedido, cnt);	
 	}
- 
-//	public  static JSONObject enviarPedido(String credenciales,Pedido pedido)throws Exception
-//	{
-////		Parameters params=new Parameters((new String[]{"Credentials","pedido"}),
-////				 (new Object[]{credenciales,pedido}),
-////				 (new Type[]{PropertyInfo.STRING_CLASS,pedido.getClass()}));
-//		
-//		Object d= NMComunicacion.InvokeMethod(credenciales,pedido,NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarPedido);
-//		return new JSONObject((String)d);
-//	
-//	}
 	
 	public  static Pedido enviarPedido(String credenciales,Pedido pedido)throws Exception
 	{

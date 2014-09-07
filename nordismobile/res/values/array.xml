@@ -11,7 +11,6 @@
     </string-array>
     <string-array name="customeroptions">
         <item >Nuevo Pedido</item>
-        <item >Nueva nota de Credito</item>
         <item >Nuevo recibo</item>
         <item >Nueva devolución</item>
     </string-array>

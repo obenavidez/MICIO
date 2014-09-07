@@ -51,6 +51,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
+import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable; 
 import com.panzyma.nm.serviceproxy.Pedido;
@@ -240,6 +241,7 @@ public class ViewPedido extends ActionBarActivity implements
             //CERRAR EL MENU DEL DRAWER
             drawerLayout.closeDrawers();
             break;
+            
             case CUENTAS_POR_COBRAR:
             fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
             if (findViewById(R.id.fragment_container) != null)
@@ -265,7 +267,9 @@ public class ViewPedido extends ActionBarActivity implements
                 cuentasPorCobrar);
                 transaction.addToBackStack(null);
                 transaction.commit();
+                drawerLayout.closeDrawers();
             }
+            drawerLayout.closeDrawers();
             break;
             case CONSULTA_VENTAS:
             fragmentActive = FragmentActive.CONSULTA_VENTAS;
@@ -651,7 +655,8 @@ public class ViewPedido extends ActionBarActivity implements
 		AppDialog.showMessage(vp, title,msg,type,new OnButtonClickListener() {
 			@Override
 			public void onButtonClick(AlertDialog _dialog, int actionId) {
-				if(actionId == AppDialog.OK_BUTTOM) {
+				if(actionId == AppDialog.OK_BUTTOM) 
+				{
 					Message ms = new  Message();
 					ms.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST; 
 					ms.obj = pedido_selected.getId();
@@ -672,4 +677,15 @@ public class ViewPedido extends ActionBarActivity implements
     	}
 	}
 	
+	@Override
+	public void onBackPressed() {
+		  Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		  if (fragment instanceof CuentasPorCobrarFragment) {
+			  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			  transaction.replace(R.id.fragment_container, firstFragment);
+			  transaction.addToBackStack(null);
+			  transaction.commit();
+		  }
+			  
+	}
 } 
