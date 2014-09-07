@@ -26,7 +26,6 @@ public class DialogLogin extends Dialog  implements Handler.Callback
 	private EditText txtenterprise;
 	private EditText txtusername;
 	private EditText txtpassword;
-	private CheckBox chksetting;
 	private Button signin; 
 	private Button cancel;  
 	private Controller controller;
@@ -63,10 +62,7 @@ public class DialogLogin extends Dialog  implements Handler.Callback
 	{
 		txtenterprise.setText("");
 		txtusername.setText("");
-		txtpassword.setText("");
-		chksetting.setChecked(false);
-		if(mycontext.getClass().getSimpleName()==ViewConfiguracion.class.getSimpleName())
-	    	chksetting.setEnabled(false);
+		txtpassword.setText("");  
 	}
 
 	public  String getNameUser()
@@ -89,11 +85,7 @@ public class DialogLogin extends Dialog  implements Handler.Callback
 		setContentView(layout); 
 	 
 	}
-	
-	public boolean isCheckedSettingSession(){
-		
-		return chksetting.isChecked();
-	}
+	 
 	public void initComponents()
 	{	      
 		this.setCancelable(true); 
@@ -103,8 +95,7 @@ public class DialogLogin extends Dialog  implements Handler.Callback
 	    cancel=((Button)findViewById(R.id.btncancel)); 
 	    txtenterprise=((EditText)findViewById(R.id.etenterprise));  
 	    txtusername=((EditText)findViewById(R.id.etusername)); 
-	    txtpassword=((EditText)findViewById(R.id.etpassword));  
-	    chksetting=((CheckBox)findViewById(R.id.chksetting)); 
+	    txtpassword=((EditText)findViewById(R.id.etpassword));   
 	    
 	    if(admin)
 	    {
@@ -113,44 +104,17 @@ public class DialogLogin extends Dialog  implements Handler.Callback
 	    	android.widget.RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
 			params.addRule(RelativeLayout.BELOW,R.id.etpassword);			  
 			buttonsrow.setGravity(Gravity.CENTER_HORIZONTAL);
-			buttonsrow.setLayoutParams(params);
-	    	((RelativeLayout)this.findViewById(R.id.rl_login)).removeView(chksetting);
+			buttonsrow.setLayoutParams(params); 
 	    	if (mycontext.getClass().getSimpleName().toString()=="ViewConfiguracion")
 		    {
-		    	ViewConfiguracion vc=((ViewConfiguracion) this.mycontext);
-		    	chksetting.setEnabled(false);
+		    	ViewConfiguracion vc=((ViewConfiguracion) this.mycontext); 
 		    	txtenterprise.setText(vc.getEnterprise());
 		    	txtenterprise.setEnabled(false); 
 	    	    txtenterprise.setText(vc.getEnterprise());
 	    	    //txtenterprise.setEnabled(false);
 		    }
 	    	//txtpassword.requestFocus();	    	
-	    }	    
-	    else
-	    {
-	    	
-		    chksetting.setOnCheckedChangeListener(new OnCheckedChangeListener()
-		    {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) 
-				{
-
-					if(isChecked)
-					{
-						txtenterprise.setEnabled(false);
-						txtusername.setEnabled(false);
-						txtpassword.setEnabled(false); 
-					}
-					else
-					{
-						txtenterprise.setEnabled(true);
-						txtusername.setEnabled(true);
-						txtpassword.setEnabled(true);
-					}									
-				}
-			});
-		      	
-	    }
+	    }	     
 	    
 	    signin.setOnClickListener(new View.OnClickListener() 
 		{ 
@@ -186,9 +150,7 @@ public class DialogLogin extends Dialog  implements Handler.Callback
 	{
 		String msg = "";
 		
-		 if (chksetting.isChecked())
-			 return true;        	
-		 else if (txtenterprise.getText().toString().trim().length()==0){
+		if (txtenterprise.getText().toString().trim().length()==0){
         		msg = "Ingrese el nombre de la Empresa en la cual labora.";
         		txtenterprise.setError(msg);
         		txtenterprise.requestFocus();

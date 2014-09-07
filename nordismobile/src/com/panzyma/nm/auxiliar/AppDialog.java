@@ -136,13 +136,12 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
         alert.show();
 	}
 	
-	@SuppressWarnings("unused")
 	private static void CreateConfirmDialog(final OnButtonClickListener mylistener)
 	{
-		vDialog =inflater.inflate(R.layout.confirm_dialog, null,false);
-		tvtittle = (TextView)vDialog.findViewById(R.id.tittle_dialog_confirm);
-		tvtittle.setText(Tittle.toString());
-		tvmessage =(TextView)vDialog.findViewById(R.id.bodymessage_dialog_confirm);
+		vDialog =inflater.inflate(R.layout.confirm_dialog2, null,false);
+//		tvtittle = (TextView)vDialog.findViewById(R.id.tittle_dialog_confirm);
+//		tvtittle.setText(Tittle.toString());
+		tvmessage =(TextView)vDialog.findViewById(R.id.message_dialog);
 		tvmessage.setText(Message.toString());
 		btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_confirm);
 		btn_aceptar.setOnClickListener(new Button.OnClickListener()

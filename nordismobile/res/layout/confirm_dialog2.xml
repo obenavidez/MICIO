@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rldialog"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/bgdialog2"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/icon_dialog"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="false"
+        android:baselineAlignBottom="true"
+        android:padding="0dp"
+        android:src="@android:drawable/ic_menu_info_details" />
+
+    <ScrollView
+        android:id="@+id/scroll_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_toRightOf="@+id/icon_dialog" >
+        <TextView
+        android:id="@+id/message_dialog"
+        android:layout_width="210dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/icon_dialog"
+        android:layout_toRightOf="@+id/icon_dialog"
+        android:padding="5dp"
+        android:text="mensaje aviso sdfsdflsdfsdf sfdosif sdfisadifasdiofsadf safasdfasdfasdfasdf"
+        android:textColor="@color/White"
+        android:textSize="14dip" />
+    </ScrollView>
+
+    <TableRow
+        android:id="@+id/layoutbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/scroll_dialog"
+        android:layout_centerHorizontal="true" >
+
+        <Button
+            android:id="@+id/btnaceptar_dialog_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/btn"
+            android:nextFocusDown="@+id/btncancel"
+            android:nextFocusRight="@+id/btncancel"
+            android:text="Entrar"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/White" >
+        </Button>
+
+        <Button
+            android:id="@+id/btncancelar_dialog_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/btn"
+            android:nextFocusLeft="@+id/btnsignin"
+            android:nextFocusUp="@+id/btnsignin"
+            android:text="Cancelar"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/White" >
+        </Button>
+    </TableRow>
+
+    
+
+</RelativeLayout>

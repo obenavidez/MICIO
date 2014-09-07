@@ -2,11 +2,7 @@ package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
-import static com.panzyma.nm.controller.ControllerProtocol.C_FINISH;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_IN_PROGRESS;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION; 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR_CONFIGURACION;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_CATALOGOSBASICOS;
@@ -27,8 +23,7 @@ import android.util.Log;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMNetWork;
-import com.panzyma.nm.auxiliar.NotificationMessage;
+import com.panzyma.nm.auxiliar.NMNetWork; 
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.Controller;
@@ -62,7 +57,7 @@ public class BConfiguracionM {
 
 	public BConfiguracionM(ViewConfiguracion view) {
 
-		this.controller = ((NMApp) view.getApplication()).getController();
+		this.controller =NMApp.getController();
 		this.view = view;
 		view_activated = 1;
 	}
@@ -128,7 +123,7 @@ public class BConfiguracionM {
 	public void GET_DATACONFIGURATION(final String Credentials,
 			final String LoginUsuario, final String PIN, final Impresora dispositivo) {
 		try {
-			((NMApp) view.getApplication()).getThreadPool().execute(
+			NMApp.getThreadPool().execute(
 					new Runnable() {
 						@Override
 						public void run() {
@@ -139,10 +134,8 @@ public class BConfiguracionM {
 								if (res.get_error() == null) 
 								{
 									Processor.notifyToView(controller,
-											ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
-											new NotificationMessage("",
-													"Salvando configuración.",
-													""));
+											ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
+													"Salvando configuración.");
 									vmConfiguracion setting = vmConfiguracion.setConfiguration(
 											view.getUrlServer(),
 											String.valueOf(res
@@ -159,13 +152,9 @@ public class BConfiguracionM {
 									Processor
 											.notifyToView(
 													controller,
-													C_FINISH,
+													ControllerProtocol.NOTIFICATION,
 													res.get_devicePrefix(),
-													1,
-													new NotificationMessage(
-															"",
-															"Configuración registrada con exito.",
-															""));
+													1,"Configuración registrada con exito." );
 								} else
 									Processor
 											.notifyToView(
@@ -201,8 +190,7 @@ public class BConfiguracionM {
 						}
 					});
 			Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
-					new NotificationMessage("",
-							"Validando información con el servidor.", ""));
+							"Validando información con el servidor.");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -223,25 +211,20 @@ public class BConfiguracionM {
 		try {
 			final String credentials = SessionManager.getCredenciales();
 			if (credentials.trim() != "") {
-				((NMApp) view.getApplicationContext()).getThreadPool().execute(
+				NMApp.getThreadPool().execute(
 						new Runnable() {
 							@Override
 							public void run() {
-								try {
-									if (NMNetWork.isPhoneConnected(view,
-											controller)
-											&& NMNetWork
-													.CheckConnection(controller)) {
-										user = GET_DATAUSER(
-												SessionManager.getCredentials(),
-												view.getUserName());
+								try 
+								{
+									if (NMNetWork.isPhoneConnected(view,controller)	&& NMNetWork.CheckConnection(controller)) 
+									{
+										user = GET_DATAUSER(SessionManager.getCredentials(),view.getUserName());
 										ModelConfiguracion.saveUser(view, user);
-										onSave_From_LocalHost(
-												ModelConfiguracion
-														.getSystemPerams(credentials),
-												ID_SINCRONIZE_PARAMETROS, 0);
+										onSave_From_LocalHost(ModelConfiguracion.getSystemPerams(credentials),ID_SINCRONIZE_PARAMETROS, 0);
 									}
-								} catch (Exception e) {
+								} catch (Exception e) 
+								{
 									e.printStackTrace();
 									try {
 										Processor
@@ -255,14 +238,14 @@ public class BConfiguracionM {
 																e.getMessage(),
 																"\n Causa: "
 																		+ e.getCause()));
-									} catch (Exception e1) {
+									} catch (Exception e1) 
+									{
 										e1.printStackTrace();
 									}
 								}
 							}
 						});
-				Processor.notifyToView(controller, C_UPDATE_STARTED, 0, 0,
-						"Sincronizando parametros del sistema");
+				Processor.notifyToView(controller, ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,"Sincronizando parametros del sistema"); 
 			}
 
 		} catch (Exception e) {
@@ -275,7 +258,7 @@ public class BConfiguracionM {
 		try {
 			final String credentials = SessionManager.getCredenciales();
 			if (credentials.trim() != "") {
-				((NMApp) view.getApplicationContext()).getThreadPool().execute(
+				NMApp.getThreadPool().execute(
 						new Runnable() {
 							@Override
 							public void run() {
@@ -287,7 +270,7 @@ public class BConfiguracionM {
 															"FormaPago-Moneda-EntidadBancaria"),
 											ID_SINCRONIZE_CATALOGOSBASICOS, 0);
 									Processor.notifyToView(controller,
-											C_UPDATE_STARTED, 0, 0,
+											ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
 											"Sincronizando Tasas de Cambio");
 									onSave_From_LocalHost(ModelConfiguracion
 											.getTasasDeCambio(credentials),
@@ -313,8 +296,7 @@ public class BConfiguracionM {
 							}
 						});
 
-				Processor.notifyToView(controller, C_UPDATE_STARTED, 0, 0,
-						"Sincronizando FormaPago-Moneda-EntidadBancaria");
+				Processor.notifyToView(controller, ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Sincronizando FormaPago-Moneda-EntidadBancaria");
 			}
 
 		} catch (Exception e) {
@@ -329,7 +311,7 @@ public class BConfiguracionM {
 
 			if (credentials.trim() != "") {
 
-				((NMApp) view.getApplicationContext()).getThreadPool().execute(
+				NMApp.getThreadPool().execute(
 						new Runnable() {
 							@Override
 							public void run() {
@@ -353,12 +335,10 @@ public class BConfiguracionM {
 												Processor
 														.notifyToView(
 																controller,
-																C_UPDATE_IN_PROGRESS,
+																ControllerProtocol.NOTIFICATION_DIALOG2,
 																0,
-																0,
-																"Sincronizando Clientes \npágina:"
-																		+ page.toString()
-																		+ " ...");
+																0,"Sincronizando Clientes \npágina:"
+																		+ page.toString());
 												page++;
 											} else {
 												synchronized (lock) {
@@ -368,13 +348,14 @@ public class BConfiguracionM {
 											}
 
 										}
-										// onSave_From_LocalHost(LCliente,ID_SINCRONIZE_CLIENTES);
+
 										if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
 											Processor
-													.notifyToView(controller,
-															C_UPDATE_FINISHED,
-															0, 1,
-															"Los clientes han sido sincronizados exitosamente");
+											.notifyToView(
+													controller,
+													ControllerProtocol.NOTIFICATION,
+													0,
+													1,"Los clientes han sido sincronizados exitosamente");
 
 									}
 
@@ -398,8 +379,12 @@ public class BConfiguracionM {
 								}
 							}
 						});
-				Processor.notifyToView(controller, C_UPDATE_STARTED, 0, 1,
-						"Sincronizando Clientes");
+				Processor
+				.notifyToView(
+						controller,
+						ControllerProtocol.NOTIFICATION_DIALOG2,
+						0,
+						0,"Sincronizando Clientes"); 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -412,7 +397,7 @@ public class BConfiguracionM {
 
 			final String Credentials = SessionManager.getCredenciales();
 			if (Credentials.trim() != "") {
-				((NMApp) view.getApplicationContext()).getThreadPool().execute(
+				NMApp.getThreadPool().execute(
 						new Runnable() {
 							@Override
 							public void run() {
@@ -429,13 +414,14 @@ public class BConfiguracionM {
 													modelproducto,
 													ID_SINCRONIZE_PRODUCTOS,
 													page);
-											Log.d(TAG,
-													"C_UPDATE_IN_PROGRESS on SINCRONIZE_PRODUCTOS");
-											Processor.notifyToView(controller,
-													C_UPDATE_IN_PROGRESS, 0, 0,
-													"Sincronizando Productos \npágina: "
-															+ page.toString()
-															+ " ...");
+
+											Processor
+											.notifyToView(
+													controller,
+													ControllerProtocol.NOTIFICATION_DIALOG2,
+													0,
+													0,"Sincronizando Productos \npágina:"
+															+ page.toString());
 											page++;
 										} else {
 											synchronized (lock) {
@@ -446,12 +432,11 @@ public class BConfiguracionM {
 									}
 									if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
 										Processor
-												.notifyToView(
-														controller,
-														C_UPDATE_FINISHED,
-														0,
-														1,
-														"La información del Catalogo de Productos fueron sincronizados y salvados con exito...");
+										.notifyToView(
+												controller,
+												ControllerProtocol.NOTIFICATION,
+												0,
+												1,"Los productos han sido sincronizados exitosamente");
 								} catch (Exception e) {
 									e.printStackTrace();
 									try {
@@ -473,8 +458,12 @@ public class BConfiguracionM {
 							}
 
 						});
-				Processor.notifyToView(controller, C_UPDATE_STARTED, 0, 0,
-						"Sincronizando Productos");
+				Processor
+				.notifyToView(
+						controller,
+						ControllerProtocol.NOTIFICATION_DIALOG2,
+						0,
+						0,"Sincronizando Productos"); 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -487,27 +476,31 @@ public class BConfiguracionM {
 
 			final String credentials = SessionManager.getCredenciales();
 			if (credentials.trim() != "") {
-				((NMApp) view.getApplicationContext()).getThreadPool().execute(
+				NMApp.getThreadPool().execute(
 						new Runnable() {
 							@Override
 							public void run() {
 								try {
 									Integer page = 1;
-									while (true) {
+									while (true) 
+									{
 										JSONArray lpromocion = ModelConfiguracion
 												.getPromocionesPaged(
 														credentials,
 														view.getLoginUsuario(),
 														page, 30);
-										if (lpromocion.length() != 0) {
-											Log.d(TAG,
-													"C_UPDATE_IN_PROGRESS on SINCRONIZE_PRODUCTOS");
+										if (lpromocion.length() != 0) 
+										{
 											onSave_From_LocalHost(lpromocion,
 													ID_SINCRONIZE_PROMOCIONES,
 													page);
-											Processor.notifyToView(controller,
-													C_UPDATE_IN_PROGRESS, 0, 0,
-													"Sincronizando Promociones \npágina: #"
+											
+											Processor
+											.notifyToView(
+													controller,
+													ControllerProtocol.NOTIFICATION_DIALOG2,
+													0,
+													0,"Sincronizando Promociones \npágina:"
 															+ page.toString());
 											page++;
 										} else {
@@ -519,7 +512,7 @@ public class BConfiguracionM {
 										if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
 											Processor
 													.notifyToView(controller,
-															C_UPDATE_FINISHED,
+															NOTIFICATION,
 															0, 1,
 															"Promociones fueron sincronizadas con exito.");
 
@@ -531,8 +524,7 @@ public class BConfiguracionM {
 							}
 						});
 
-				Processor.notifyToView(controller, C_UPDATE_STARTED, 0, 0,
-						"Sincronizando Promociones");
+				Processor.notifyToView(controller, ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,"Sincronizando Promociones");
 			}
 
 		} catch (Exception e) {
@@ -543,7 +535,7 @@ public class BConfiguracionM {
 
 	private void SINCRONIZE_TODOS() {
 		try {
-			((NMApp) view.getApplicationContext()).getThreadPool().execute(
+			NMApp.getThreadPool().execute(
 					new Runnable() {
 						@Override
 						public void run() {
@@ -590,10 +582,9 @@ public class BConfiguracionM {
 							}
 							try {
 								Processor.notifyToView(controller,
-										C_UPDATE_FINISHED, 0, 1,
+										ControllerProtocol.NOTIFICATION, 0, 1,
 										"Catalogos sincronizados exitosamente");
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
+							} catch (Exception e) { 
 								e.printStackTrace();
 							}
 						}
@@ -607,25 +598,23 @@ public class BConfiguracionM {
 	}
 
 	private synchronized void onSave_From_LocalHost(final JSONArray objL,
-			final int ID, final int page) {
+			final int ID, final int page) 
+	{
 
 		try {
 
-			((NMApp) view.getApplicationContext()).getThreadPool().execute(
+			NMApp.getThreadPool().execute(
 					new Runnable() {
 						@Override
 						public void run() {
 							try {
 								switch (ID) {
 								case ID_SINCRONIZE_PARAMETROS:
-									ModelConfiguracion.saveSystemParam(view,
-											objL);
+									ModelConfiguracion.saveSystemParam(view,objL);
+									
 									if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
-										Processor
-												.notifyToView(controller,
-														C_UPDATE_FINISHED, 0,
-														0,
-														"Los Parametros del sistema fueron sincronizados con exito.");
+										Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION, 0,0,
+												"Los Parametros del sistema fueron sincronizados con exito.");
 									synchronized (lock) {
 										try {
 											lock.notify();
@@ -635,19 +624,15 @@ public class BConfiguracionM {
 									}
 									break;
 								case ID_SINCRONIZE_CATALOGOSBASICOS:
-									ModelConfiguracion.saveValorCatalogoSystem(
-											view, objL);
+									ModelConfiguracion.saveValorCatalogoSystem(view, objL);
 									break;
 
 								case ID_SINCRONIZE_CATALOGOSBASICOS2:
 									ModelConfiguracion.saveTasasDeCambio(view,
 											objL);
 									if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
-										Processor
-												.notifyToView(controller,
-														C_UPDATE_FINISHED, 0,
-														0,
-														"Los Catalogos Básicos del sistema fueron sincronizados con exito.");
+										Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION, 0,0,
+												"Los Catalogos Básicos del sistema fueron sincronizados con exito.");
 									synchronized (lock) {
 										try {
 											lock.notify();
@@ -669,9 +654,7 @@ public class BConfiguracionM {
 								case ID_SINCRONIZE_PROMOCIONES:
 									ModelConfiguracion.savePromociones(view,
 											objL, page);
-									break;
-
-								/* case ID_SINCRONIZE_TODOS: break; */
+									break; 
 								}
 							} catch (Exception e) {
 								e.printStackTrace();

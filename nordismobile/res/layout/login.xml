@@ -98,25 +98,13 @@
             android:singleLine="true" 
 		    android:nextFocusRight="@+id/btnsignin"
 		    android:nextFocusDown="@+id/btnsignin" />
-
-            <CheckBox 
-            android:id="@+id/chksetting"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="Configurar Sesión"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#005D7A"
-            android:shadowColor="@color/Black"
-            android:layout_below="@+id/etpassword"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp">
-            </CheckBox>
+ 
 
         	<TableRow
         	    android:id="@+id/layoutbutton"
         	    android:layout_width="wrap_content"
         	    android:layout_height="wrap_content"
-        	    android:layout_below="@+id/chksetting"
+        	    android:layout_below="@+id/etpassword"
         	    android:layout_centerHorizontal="true" >
 	    		
 			    <Button

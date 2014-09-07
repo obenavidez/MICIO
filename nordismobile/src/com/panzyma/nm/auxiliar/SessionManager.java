@@ -264,12 +264,12 @@ public class SessionManager
 	
 	public static Boolean isPhoneConnected()
 	{
-		return NMNetWork.isPhoneConnected(context,nmapp.getController());		
+		return NMNetWork.isPhoneConnected(context,NMApp.getController());		
 	}
 	
 	public  static boolean  login(final boolean admin)
 	{
-		final Controller controller=nmapp.getController();
+		final Controller controller=NMApp.getController();
 		final String empresa=dl.getEmpresa();
 		final String nombreusuario=dl.getNameUser();
 		final String password=dl.getPassword();  
@@ -389,6 +389,7 @@ public class SessionManager
 						synchronized(lock2){                            
                         	lock2.notify();
                         }
+						NMApp.getController()._notifyOutboxHandlers(0,0,0,0); 
 					}
 				}); 
 				dlg.show();		

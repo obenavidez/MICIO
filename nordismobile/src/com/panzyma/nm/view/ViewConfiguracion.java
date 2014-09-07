@@ -24,6 +24,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
@@ -53,8 +54,7 @@ import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMNetWork;
-import com.panzyma.nm.auxiliar.NotificationMessage;
+import com.panzyma.nm.auxiliar.NMNetWork; 
 import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.Controller;
@@ -86,7 +86,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 	private String enterprise;
 	private String url_server;
 	private String deviceid;
-	private NMApp nmapp;
+	private NMApp NMApp;
 	private boolean onRestart;
 	private boolean onPause;
 	private DataConfigurationResult settingdata;
@@ -107,11 +107,9 @@ public class ViewConfiguracion extends FragmentActivity implements
 		try {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 			context = this;
-			nmapp = (NMApp) this.getApplicationContext();
-			nmapp.getController()
-					.setEntities(this, bcm = new BConfiguracionM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA);
+			NMApp.getController().setEntities(this, bcm = new BConfiguracionM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA);
 
 			WindowManager wm = (WindowManager) this.getApplicationContext()
 					.getSystemService(Context.WINDOW_SERVICE);
@@ -127,9 +125,6 @@ public class ViewConfiguracion extends FragmentActivity implements
 		}
 	}
 
-	public NMApp getAplication() {
-		return nmapp;
-	}
 
 	public void setUserName(String user) {
 		this.user_name = user;
@@ -188,58 +183,23 @@ public class ViewConfiguracion extends FragmentActivity implements
 			dlg.dismiss();
 		if (pd != null)
 			pd.dismiss();
-		switch (msg.what) { 
-		case C_DATA:
-			setData((vmConfiguracion) msg.obj);
-			break;
-
-		case C_UPDATE_STARTED:
-			NotificationMessage.newInstance("", msg.obj.toString(), "");
-			showStatus(NotificationMessage.newInstance("",
-					msg.obj.toString(), ""));
-			Log.d(TAG, "C_UPDATE_FINISHED: " + msg.obj.toString());
-		case C_UPDATE_IN_PROGRESS:
-			pd = ProgressDialog.show(context, "", msg.obj.toString(), true,
-					false);
-			return true;
-
-		case C_SAVING:
-			pd = ProgressDialog.show(context, "", msg.obj.toString(), true,
-					false);
-			break;
-
-		case C_UPDATE_FINISHED:
-			if (msg.arg2 == 1) {
-				AppDialog.showMessage(context, "", msg.obj.toString(),
+		switch (msg.what) 
+		{ 
+			case C_DATA:
+				setData((vmConfiguracion) msg.obj);
+				break;  
+			case ControllerProtocol.NOTIFICATION:  
+				showStatus(msg.obj.toString(),true);
+				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG2:
+				showStatus(msg.obj.toString());
+				break;
+			case ControllerProtocol.ERROR:
+				AppDialog.showMessage(context,
+						((ErrorMessage) msg.obj).getTittle(),
+						((ErrorMessage) msg.obj).getMessage(),
 						DialogType.DIALOGO_ALERTA);
-			} else {
-				NotificationMessage.newInstance("", msg.obj.toString(), "");
-				showStatus(NotificationMessage.newInstance("",
-						msg.obj.toString(), ""));
-				Log.d(TAG, "C_UPDATE_FINISHED: " + msg.obj.toString());
-			}
-			break;
-		case C_FINISH:
-			if(msg.arg1!=0)
-				actualizarIdDispositivo(""+msg.arg1);
-			AppDialog.showMessage(context, "",
-					((NotificationMessage) msg.obj).getMessage(),
-					DialogType.DIALOGO_ALERTA);
-			break;
-		case ControllerProtocol.NOTIFICATION: 
-			AppDialog.showMessage(context, "",
-					((NotificationMessage) msg.obj).getMessage(),
-					DialogType.DIALOGO_ALERTA);
-			break;
-		case ControllerProtocol.NOTIFICATION_DIALOG2:
-			showStatus(((NotificationMessage) msg.obj));
-			break;
-		case ControllerProtocol.ERROR:
-			AppDialog.showMessage(context,
-					((ErrorMessage) msg.obj).getTittle(),
-					((ErrorMessage) msg.obj).getMessage(),
-					DialogType.DIALOGO_ALERTA);
-			break;
+				break;
 
 		}
 		return false;
@@ -319,7 +279,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 					@Override
 					public void onItemClick(QuickAction source, int pos,
 							int actionId) {
-						final Controller controller = nmapp.getController();
+						final Controller controller = NMApp.getController();
 						ActionItem actionItem = quickAction.getActionItem(pos);
 						
 						
@@ -329,7 +289,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 						else if (actionId == ID_SINCRONIZE_PARAMETROS) {
 							try {
 
-								nmapp.getThreadPool().execute(new Runnable() {
+								NMApp.getThreadPool().execute(new Runnable() {
 									@Override
 									public void run() {
 										try {
@@ -353,7 +313,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 						} else if (actionId == ID_SINCRONIZE_CATALOGOSBASICOS) {
 
 							try {
-								nmapp.getThreadPool().execute(new Runnable() {
+								NMApp.getThreadPool().execute(new Runnable() {
 									@Override
 									public void run() {
 										try {
@@ -375,7 +335,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 							}
 						} else if (actionId == ID_SINCRONIZE_CLIENTES) {
 							try {
-								nmapp.getThreadPool().execute(new Runnable() {
+								NMApp.getThreadPool().execute(new Runnable() {
 									@Override
 									public void run() {
 										try {
@@ -397,7 +357,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 							}
 						} else if (actionId == ID_SINCRONIZE_PRODUCTOS) {
 							try {
-								nmapp.getThreadPool().execute(new Runnable() {
+								NMApp.getThreadPool().execute(new Runnable() {
 									@Override
 									public void run() {
 										try {
@@ -420,7 +380,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 
 						} else if (actionId == ID_SINCRONIZE_PROMOCIONES) {
 							try {
-								nmapp.getThreadPool().execute(new Runnable() {
+								NMApp.getThreadPool().execute(new Runnable() {
 									@Override
 									public void run() {
 										try {
@@ -456,39 +416,25 @@ public class ViewConfiguracion extends FragmentActivity implements
 							if (SessionManager.getLoginUser() == null)
 								salvarConfiguracion();
 
-							try {
+							try 
+							{
 								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-								nmapp.getThreadPool().execute(new Runnable() {
+								NMApp.getThreadPool().execute(new Runnable() 
+								{
 									@Override
-									public void run() {
+									public void run() 
+									{
 										try {
 											setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 											if (SessionManager.getCredenciales().trim() != "")
-												controller.getInboxHandler()
-														.sendEmptyMessage(
-																ID_SINCRONIZE_TODOS);
+												controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS);
 										} catch (Exception e) {
 											e.printStackTrace();
 										}
 
 									}
-								});
-								nmapp.getThreadPool().execute(new Runnable() {
-									@Override
-									public void run() {
-										try {
-											setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-											if (SessionManager.getCredenciales().trim() != "")
-												controller.getInboxHandler()
-														.sendEmptyMessage(
-																ID_SINCRONIZE_TODOS);
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-
-									}
-								});
-							} catch (InterruptedException e) {
+								}); 
+							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
@@ -499,10 +445,6 @@ public class ViewConfiguracion extends FragmentActivity implements
 							startActivityForResult(intento, 0);
 						} else if (actionId == ID_CERRAR)
 							FINISH_ACTIVITY();
-						else
-							Toast.makeText(getApplicationContext(),
-									actionItem.getTitle() + " selected",
-									Toast.LENGTH_SHORT).show();
 
 					}
 				});
@@ -518,12 +460,12 @@ public class ViewConfiguracion extends FragmentActivity implements
 	private boolean salvarConfiguracion() {
 		if (validar()) {
 			try {
-				nmapp.getThreadPool().execute(new Runnable() {
+				NMApp.getThreadPool().execute(new Runnable() {
 					@Override
 					public void run() {
 						try 
 						{
-							Controller c = nmapp.getController();
+							Controller c = NMApp.getController();
 							if (SessionManager.SignIn(true)) 
 							{
 								setEnterprise(txtEmpresa.getText().toString());
@@ -615,13 +557,13 @@ public class ViewConfiguracion extends FragmentActivity implements
 	}
 
 	private void initController() {
-		nmapp = (NMApp) this.getApplicationContext();
-		nmapp.getController().addOutboxHandler(new Handler(this));
+		NMApp = (NMApp) this.getApplicationContext();
+		NMApp.getController().addOutboxHandler(new Handler(this));
 	}
 
 	private void FINISH_ACTIVITY() {
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().disposeEntities();
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		finish();
 	} 
@@ -642,7 +584,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 			if (RESULTADO_IMPRESORA == resultcode && data != null)
 				actualizarImpresoraEnPantalla((Impresora) data
 						.getParcelableExtra("impresora"));
-			nmapp.getController().setEntities(this,
+			NMApp.getController().setEntities(this,
 					(bcm != null) ? getBridge() : new BConfiguracionM());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -678,17 +620,42 @@ public class ViewConfiguracion extends FragmentActivity implements
 		});
 	}
 
-	public void showStatus(final NotificationMessage notificacion) {
+	public void showStatus(final String mensaje,boolean... confirmacion) {
 		if (dlg != null)
-			dlg.dismiss();
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				dlg = new CustomDialog(context, notificacion.getMessage()
-						+ notificacion.getCause(), false, NOTIFICATION_DIALOG);
-				dlg.show();
-			}
-		});
+			dlg.dismiss(); 
+		
+		if(confirmacion.length!=0 && confirmacion[0])
+		{
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(context,"",mensaje,
+							AppDialog.DialogType.DIALOGO_CONFIRMACION,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) 
+								{
+	
+									if (AppDialog.OK_BUTTOM == actionId) 
+									{
+										_dialog.dismiss();
+									}
+						        }
+					});
+				}
+			});
+		}
+		else
+		{
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					dlg = new CustomDialog(context,mensaje, false, NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		}
 	}
 
 	public void actualizarIdDispositivo(final String id) { 

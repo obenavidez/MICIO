@@ -132,7 +132,7 @@ public class CustomDialog extends Dialog implements OnDismissListener
 		cnt = context;
 		this.setMensaje(mensaje);
 		if(mensajetype!=null)
-		this.setMessageType(mensajetype[0]);	
+			this.setMessageType(mensajetype[0]);	
 		this.setCancelable(true);
 	    this.setCanceledOnTouchOutside(true);
 	    imple_interfc=interfac;
