@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true" >
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_forma_pago"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="FormaPago :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_forma_pago"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/White"
+            android:textSize="10dp" />
+        
+        <TextView
+            android:id="@+id/cxclbl_fecha"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Fecha :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_fecha"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+        
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_moneda"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Moneda :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_moneda"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"           
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+        
+        <TextView
+            android:id="@+id/cxclbl_tasa"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Tasa Cambio :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctext_detalle_tasa"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+        
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cxclbl_monto"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Monto :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_monto"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+        
+        <TextView
+            android:id="@+id/cxclbl_monto_nacional"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:text="Monto Nacional :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/cxctextv_detalle_monto_nacional"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+       
+    </TableRow>
+   
+</TableLayout>
