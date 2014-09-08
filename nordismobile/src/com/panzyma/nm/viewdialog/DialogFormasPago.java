@@ -5,6 +5,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
@@ -21,7 +22,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -38,6 +41,7 @@ import android.widget.AdapterView.OnItemClickListener;
 @SuppressWarnings("unused")
 public class DialogFormasPago extends Dialog {
 
+	private static final String TAG = DialogFormasPago.class.getSimpleName();
 	private List<ReciboDetFormaPago> lista = null;
 	private Display display = null;
 	private ProgressDialog pd = null;
@@ -49,11 +53,14 @@ public class DialogFormasPago extends Dialog {
 	private ReciboDetFormaPago formaPagoSelected = null;
 	private Context mcontext; 
 	private OnFormaPagoButtonClickListener mButtonClickListener;
+	private NMApp nmapp;
 
 	public DialogFormasPago(ViewReciboEdit me, int theme,List<ReciboDetFormaPago> lista) {
 		super(me.getContext(), theme);
+		setContentView(R.layout.mainfactura); 
 		this.lista = lista;
 		parent = me;
+		nmapp = (NMApp)me.getApplication();
 		mcontext = this.getContext(); 
 		WindowManager wm = (WindowManager) me.getSystemService(Context.WINDOW_SERVICE);
 		display = wm.getDefaultDisplay();
@@ -120,8 +127,9 @@ public class DialogFormasPago extends Dialog {
 					Util.Message.buildToastMessage(parent, "No existen formas de pago", Toast.LENGTH_SHORT).show();
 					return;
 				}
+				FINISH_ACTIVITY();
 				gridheader.setText("Listado de Formas de Pago (" + formasPago.size() + ")");				
-				adapter = new GenericAdapter<ReciboDetFormaPago, FormaPagoViewHolder>(parent.getContext(),FormaPagoViewHolder.class,formasPago,R.layout.detalle_factura);				 
+				adapter = new GenericAdapter<ReciboDetFormaPago, FormaPagoViewHolder>(parent.getContext(),FormaPagoViewHolder.class,formasPago,R.layout.detalle_forma_pago);				 
 				lvfacturas.setAdapter(adapter);
 				lvfacturas.setOnItemClickListener(new OnItemClickListener() {
 					@Override
@@ -136,6 +144,7 @@ public class DialogFormasPago extends Dialog {
 		            	//FINISH_ACTIVITY();						
 					}					
 				});
+				adapter.notifyDataSetChanged();
 			}
 			
 		} catch (Exception e) {
@@ -144,6 +153,35 @@ public class DialogFormasPago extends Dialog {
 		}
 		if(pd != null)
 			pd.dismiss();	
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+		  	FINISH_ACTIVITY();
+	        return true;
+	    }
+	    return super.onKeyUp(keyCode, event); 
+	}
+	
+	@SuppressWarnings({ "static-access", "unchecked" })
+	private void FINISH_ACTIVITY()
+	{
+		nmapp.getController().removeOutboxHandler(TAG);
+		nmapp.getController().removebridge(nmapp.getController().getBridge());
+		nmapp.getController().disposeEntities();
+		try {
+			nmapp.getController().setEntities(((ViewReciboEdit)parent),((ViewReciboEdit)parent).getBridge());
+		} catch (Exception e) {		
+			e.printStackTrace();
+		}
+		if(pd != null)
+			pd.dismiss();	
+		Log.d(TAG, "Activity quitting"); 
+		pd = null;	
+		this.dismiss();
 	}
 
 }

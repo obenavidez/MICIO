@@ -146,7 +146,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private static final int ID_APLICAR_DESCUENTO_OCASIONAL = 10;
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit"; 
-	public static final String OBJECT_TO_EDIT = "recibo"; 
+	public static final String OBJECT_RECIBO = "recibo"; 
+	public static final String OBJECT_TO_EDIT = "formaPago"; 
 	private boolean salvado=false;
 	// 
 	private static final int ID_EDITAR_DOCUMENTO = 0;
@@ -733,21 +734,32 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 	
 	private void editarPagos() {
-		if(!"REGISTRADO".equals(recibo.getCodEstado()))  return;
-		int posicion = positioncache;
-		if (posicion == -1) return;	
+		if (!"REGISTRADO".equals(recibo.getCodEstado()))
+			return;
 		final FragmentManager fragmentManager = getSupportFragmentManager();
-		final DialogFormasPago dialog= new DialogFormasPago(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen, recibo.getFormasPagoRecibo());
-		dialog.setOnDialogButtonClickListener(new OnFormaPagoButtonClickListener() {			
+		/*runOnUiThread(new Runnable() {
 			@Override
-			public void onButtonClick(ReciboDetFormaPago formaPago) {
-								
-			}
-		});
-		Window window = dialog.getWindow(); 
-		window.setGravity(Gravity.CENTER);
-		window.setLayout(display.getWidth() - 40, display.getHeight() - 110);
-		dialog.show();
+			public void run() {*/
+				final DialogFormasPago dialog = new DialogFormasPago(
+						me,
+						android.R.style.Theme_Translucent_NoTitleBar_Fullscreen,
+						recibo.getFormasPagoRecibo());
+				dialog.setOnDialogButtonClickListener(new OnFormaPagoButtonClickListener() {
+					@Override
+					public void onButtonClick(ReciboDetFormaPago formaPago) {
+						EditFormaPago editarPago = EditFormaPago.newInstance(recibo, formaPago, true);
+				        editarPago.show(fragmentManager, "");
+				        dialog.loadFormasPago(recibo.getFormasPagoRecibo());				       
+					}
+				});
+				Window window = dialog.getWindow();
+				window.setGravity(Gravity.CENTER);
+				window.setLayout(display.getWidth() - 40,
+						display.getHeight() - 110);
+				dialog.show();
+		/*	}
+		});*/
+
 	}
  
 	private void enviarRecibo()
@@ -1177,7 +1189,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         runOnUiThread(new Runnable() {			
 			@Override
 			public void run() {
-				EditFormaPago editarPago = EditFormaPago.newInstance(recibo, false);
+				EditFormaPago editarPago = EditFormaPago.newInstance(recibo, null, false);
 		        editarPago.show(fragmentManager, "");				
 			}
 		});        

@@ -430,4 +430,110 @@ public class ReciboDetFormaPago implements KvmSerializable, Parcelable {
 		ObjReciboID = objReciboID;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((CodEntidad == null) ? 0 : CodEntidad.hashCode());
+		result = prime * result
+				+ ((CodFormaPago == null) ? 0 : CodFormaPago.hashCode());
+		result = prime * result
+				+ ((CodMoneda == null) ? 0 : CodMoneda.hashCode());
+		result = prime * result
+				+ ((DescEntidad == null) ? 0 : DescEntidad.hashCode());
+		result = prime * result
+				+ ((DescFormaPago == null) ? 0 : DescFormaPago.hashCode());
+		result = prime * result
+				+ ((DescMoneda == null) ? 0 : DescMoneda.hashCode());
+		result = prime * result + Fecha;
+		result = prime * result + (int) (Id ^ (Id >>> 32));
+		result = prime * result + Float.floatToIntBits(Monto);
+		result = prime * result + Float.floatToIntBits(MontoNacional);
+		result = prime * result + ((Numero == null) ? 0 : Numero.hashCode());
+		result = prime * result + (int) (ObjEntidadID ^ (ObjEntidadID >>> 32));
+		result = prime * result
+				+ (int) (ObjFormaPagoID ^ (ObjFormaPagoID >>> 32));
+		result = prime * result + (int) (ObjMonedaID ^ (ObjMonedaID >>> 32));
+		result = prime * result + (int) (ObjReciboID ^ (ObjReciboID >>> 32));
+		result = prime * result
+				+ ((SerieBilletes == null) ? 0 : SerieBilletes.hashCode());
+		result = prime * result + Float.floatToIntBits(TasaCambio);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ReciboDetFormaPago other = (ReciboDetFormaPago) obj;
+		if (CodEntidad == null) {
+			if (other.CodEntidad != null)
+				return false;
+		} else if (!CodEntidad.equals(other.CodEntidad))
+			return false;
+		if (CodFormaPago == null) {
+			if (other.CodFormaPago != null)
+				return false;
+		} else if (!CodFormaPago.equals(other.CodFormaPago))
+			return false;
+		if (CodMoneda == null) {
+			if (other.CodMoneda != null)
+				return false;
+		} else if (!CodMoneda.equals(other.CodMoneda))
+			return false;
+		if (DescEntidad == null) {
+			if (other.DescEntidad != null)
+				return false;
+		} else if (!DescEntidad.equals(other.DescEntidad))
+			return false;
+		if (DescFormaPago == null) {
+			if (other.DescFormaPago != null)
+				return false;
+		} else if (!DescFormaPago.equals(other.DescFormaPago))
+			return false;
+		if (DescMoneda == null) {
+			if (other.DescMoneda != null)
+				return false;
+		} else if (!DescMoneda.equals(other.DescMoneda))
+			return false;
+		if (Fecha != other.Fecha)
+			return false;
+		if (Id != other.Id)
+			return false;
+		if (Float.floatToIntBits(Monto) != Float.floatToIntBits(other.Monto))
+			return false;
+		if (Float.floatToIntBits(MontoNacional) != Float
+				.floatToIntBits(other.MontoNacional))
+			return false;
+		if (Numero == null) {
+			if (other.Numero != null)
+				return false;
+		} else if (!Numero.equals(other.Numero))
+			return false;
+		if (ObjEntidadID != other.ObjEntidadID)
+			return false;
+		if (ObjFormaPagoID != other.ObjFormaPagoID)
+			return false;
+		if (ObjMonedaID != other.ObjMonedaID)
+			return false;
+		if (ObjReciboID != other.ObjReciboID)
+			return false;
+		if (SerieBilletes == null) {
+			if (other.SerieBilletes != null)
+				return false;
+		} else if (!SerieBilletes.equals(other.SerieBilletes))
+			return false;
+		if (Float.floatToIntBits(TasaCambio) != Float
+				.floatToIntBits(other.TasaCambio))
+			return false;
+		return true;
+	}
+	
+	
+
 }

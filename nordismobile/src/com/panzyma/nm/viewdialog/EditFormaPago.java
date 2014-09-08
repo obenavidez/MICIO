@@ -150,11 +150,12 @@ public class EditFormaPago extends DialogFragment {
 		
 	} 
 	
-	public static EditFormaPago newInstance(ReciboColector recibo, boolean edit) {
+	public static EditFormaPago newInstance(ReciboColector recibo, ReciboDetFormaPago reciboDetFormaPago, boolean edit) {
 		EditFormaPago editFormaPago = new EditFormaPago();
 		Bundle parametros = new Bundle();
 		parametros.putBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION, edit);
-		parametros.putParcelable(ViewReciboEdit.OBJECT_TO_EDIT, recibo);
+		parametros.putParcelable(ViewReciboEdit.OBJECT_RECIBO, recibo);
+		parametros.putParcelable(ViewReciboEdit.OBJECT_TO_EDIT, reciboDetFormaPago);
 		editFormaPago.setArguments(parametros);
 		return editFormaPago;
 	}
@@ -261,7 +262,7 @@ public class EditFormaPago extends DialogFragment {
 			
 			if( getArguments() != null) {
 				editFormaPago = getArguments().getBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION);
-				_recibo = getArguments().getParcelable(ViewReciboEdit.OBJECT_TO_EDIT);
+				_recibo = getArguments().getParcelable(ViewReciboEdit.OBJECT_RECIBO);
 				
 				if (!editFormaPago) {
 					// AGREGANDO UNA FORMA DE PAGO
@@ -289,6 +290,7 @@ public class EditFormaPago extends DialogFragment {
 					pagoRecibo.setTasaCambio(1.0F);
 				} else {
 					// EDITANDO UNA FORMA DE PAGO
+					pagoRecibo = getArguments().getParcelable(ViewReciboEdit.OBJECT_TO_EDIT);
 				}
 			} 
 			
@@ -520,9 +522,23 @@ public class EditFormaPago extends DialogFragment {
         if ((vcFP.getCodigo().compareTo("EFEC") == 0) && (vcM.getCodigo().compareTo("COR") != 0)) 
             pagoRecibo.setSerieBilletes(numeroSerie.getText().toString().trim());
         
-        _recibo.getFormasPagoRecibo().add(pagoRecibo);
-        //_canceled = false;        
+        if(editFormaPago) {
+        	removeFormaPagoFromRecibo(pagoRecibo);
+        	_recibo.getFormasPagoRecibo().add(pagoRecibo);
+        } else {
+        	_recibo.getFormasPagoRecibo().add(pagoRecibo);
+        }            
     }
+	
+	private void removeFormaPagoFromRecibo(ReciboDetFormaPago fp) {
+		int index = -1;
+		for(int i = 0; i < _recibo.getFormasPagoRecibo().size() ; i++) {
+			if( fp.equals(_recibo.getFormasPagoRecibo().get(i)) ) {
+				index = i;
+			}
+		}
+		_recibo.getFormasPagoRecibo().remove(index);
+	}
 	
 	private void CambiaFormaPago(String codNuevaFormaPago) {
 		if (numero == null)
@@ -560,9 +576,12 @@ public class EditFormaPago extends DialogFragment {
 		numeroSerie.setEnabled((codFormaPago.compareTo("EFEC") == 0)
 				&& (nuevoCodMoneda.compareTo("COR") != 0));
 
-		float montoPorPagar = StringUtil
-				.round(_recibo.getTotalRecibo()
-						- Cobro.getTotalPagoRecibo(_recibo), 2);
+		
+		float montoPorPagar = 0.00F;
+		if(!getArguments().getBoolean(ViewReciboEdit.FORMA_PAGO_IN_EDITION))
+			montoPorPagar = StringUtil.round(_recibo.getTotalRecibo() - Cobro.getTotalPagoRecibo(_recibo), 2);
+		else 
+			montoPorPagar = Float.parseFloat(montoNacional.getText().toString().trim().replace(",", ""));
 		float mtoNac = montoPorPagar;
 		float mto = mtoNac;
 		float tasa = 1;
@@ -577,13 +596,11 @@ public class EditFormaPago extends DialogFragment {
 					cmbMoneda.setSelection(iCurrentSelection);					
 				} catch (InterruptedException e) {					
 					e.printStackTrace();
-				}				
-				/*Util.Message.buildToastMessage(this.getActivity(),
-						, TIME_TO_MESSAGE);*/
+				}			
+				
 				return;
 			}
-			tasa = getTasaCambioByCodigoMoneda(nuevoCodMoneda);
-			// tasa = Cobro.getTasaCambioHoy(nuevoCodMoneda);
+			tasa = getTasaCambioByCodigoMoneda(nuevoCodMoneda);			
 			if (tasa == 0) {
 				mto = 0;
 				Util.Message.buildToastMessage(this.getActivity(),
