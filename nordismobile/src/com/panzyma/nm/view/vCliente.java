@@ -528,7 +528,7 @@ public class vCliente extends ActionBarActivity implements
 				ficha = new FichaClienteFragment();
 				ficha.setArguments(args);
 				transaction.addToBackStack(null);
-				transaction.replace(R.id.fragment_container, ficha);
+				transaction.replace(R.id.fragment_container, ficha,"ficha");
 				gridheader.setVisibility(View.INVISIBLE);
 			}
 		}
@@ -647,6 +647,7 @@ public class vCliente extends ActionBarActivity implements
 	  if (fragment instanceof FichaClienteFragment) {
 		  gridheader.setVisibility(View.VISIBLE);
 		  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		  transaction.detach(fragment);
 		  transaction.replace(R.id.fragment_container, firstFragment);
 		  transaction.addToBackStack(null);
 		  transaction.commit();

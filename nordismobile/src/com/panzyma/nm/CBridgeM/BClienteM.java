@@ -17,6 +17,7 @@ import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.model.ModelCliente;  
 import com.panzyma.nm.serviceproxy.CCCliente;
@@ -99,47 +100,55 @@ public final class BClienteM
 	public BClienteM(FichaClienteFragment view)
 	{
 		this.view5 = view;
-		this.controller=this.controller=((NMApp)view.getActivity().getApplication()).getController();      	
-    	this.pool =((NMApp)view.getActivity().getApplication()).getThreadPool();
+		this.controller=NMApp.getController();     	
+    	this.pool =NMApp.getThreadPool();
 		/*
-    	this.controller=((NMApp)view.getActivity().getApplication()).getController();      	
-    	this.pool =((NMApp)view.getActivity().getApplication()).getThreadPool();
+    	this.controller=NMApp.getController();      	
+    	this.pool =NMApp.getThreadPool();
     	*/
     	view_activated=6;
     }
 	public boolean handleMessage(Message msg) 
 	{
+		Boolean val=false;
 		switch (msg.what) 
 		{  
 			case LOAD_DATA_FROM_LOCALHOST: 
 					onLoadALLData_From_LocalHost();
-					return true;		
+					val=true;	
+					break;
 			case LOAD_DATA_FROM_SERVER:  
 				    onLoadALLData_From_Server(); 
-					return true; 						
+				    val=true;
+				    break;
 			case UPDATE_ITEM_FROM_SERVER:  
 					onUpdateItem_From_Server(Long.parseLong(msg.obj.toString())); 
-					return true;
+					val=true;
+					break;
 			case LOAD_FICHACLIENTE_FROM_SERVER: 
 				    onLoadFichaCliente_From_Server(Long.parseLong(msg.obj.toString())); 
-				    return true; 
+				    val=true;
+				    break;
 			case LOAD_FACTURASCLIENTE_FROM_SERVER: 
 				    onLoadFacturasCliente_From_Server(); 
-			        return true;	    
-					
+				    val=true;	    
+					break;
 		}
-		return false;
+		return val;
 	}
 	public boolean handleMessage(int what) 
 	{
+		Boolean val=false;
 		switch (what) 
 		{  
 			case LOAD_DATA_FROM_LOCALHOST: 
 					onLoadALLData_From_LocalHost();
-					return true;		
+					val=true;
+					break;
 			case LOAD_DATA_FROM_SERVER:  
 				    onLoadALLData_From_Server(); 
-					return true; 						
+				    val=true;
+					break;
 			/*case UPDATE_ITEM_FROM_SERVER:  
 					onUpdateItem_From_Server(); 
 					return true;*/
@@ -148,10 +157,11 @@ public final class BClienteM
 				    return true; */
 			case LOAD_FACTURASCLIENTE_FROM_SERVER: 
 				    onLoadFacturasCliente_From_Server(); 
-			        return true;	    
+				    val=true;
+			        break;
 					
 		}
-		return false;
+		return val;
 	}
 	private void onLoadALLData_From_LocalHost()
 	{		
@@ -356,7 +366,8 @@ public final class BClienteM
 							}
 							if(conected)
 								Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer("sa||nordis09||dp",sucursalID),controller);
-							
+
+							   // Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"Sincronizando Clientes \npágina:"+ page.toString());
 							/*if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller)) 
 									Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer("sa||nordis09||dp",sucursalID),controller);
 									*/
