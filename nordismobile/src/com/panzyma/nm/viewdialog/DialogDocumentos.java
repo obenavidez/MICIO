@@ -97,6 +97,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		mButtonClickListener = listener;
 	}
 	
+	@SuppressWarnings("static-access")
 	public DialogDocumentos(ViewReciboEdit me, int theme, Cliente cliente, Documento document) 
 	{
 		super(me.getContext(), theme);
@@ -121,6 +122,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private void initComponents() {
 		
 		LinearLayout.LayoutParams layoutParams;
@@ -160,8 +162,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	    }); 
 				
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public boolean handleMessage(Message msg) {
 		switch(msg.what){
@@ -202,52 +203,6 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		}
 		return false;
 	}
-	
-	public void loadNotasCredito(CCNotaCredito [] notasCredito, int cData) {
-		try {
-			
-			if( notasCredito.length > 0 ){
-				//SE OBTIENEN LAS NOTAS DE CREDITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
-				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);				
-				if( _notasCredito.size() == 0 ){
-					pd.dismiss();
-					FINISH_ACTIVITY();
-					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
-					return;
-				}
-				gridheader.setText("Listado Notas Crédito Pendientes (" + notasCredito.length + ")");				
-				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,_notasCredito,R.layout.detalle_nota_credito);				 
-				lvnotasd.setAdapter(adapter3);
-				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-						if((parent.getChildAt(positioncache)) != null)						            							            		
-		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
-		            	positioncache=position;				            	
-		            	nota_credito_selected = (CCNotaCredito) adapter3.getItem(position);	
-		            	try {
-		            		//Object d= nmapp.getController().getBridge().getClass().getMethods();
-		            		//factura_selected =(Cliente) nmapp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",ContentResolver.class,long.class).invoke(null,DialogCliente.this.getContext().getContentResolver(),cliente_selected.getIdSucursal());
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-		            	adapter3.setSelectedPosition(position); 
-		            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));					            	 
-		            	mButtonClickListener.onButtonClick(nota_credito_selected);
-		            	FINISH_ACTIVITY();						
-					}					
-				});
-			}
-			
-		} catch (Exception e) {
-			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
-			e.printStackTrace();
-		}
-		if(pd != null)
-			pd.dismiss();	
-		
-	}
 
 	private ArrayList<Object> toList(Object[] array) {
 		ArrayList<Object> list = new ArrayList<Object>();
@@ -262,9 +217,22 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			}
 			break;
 		case NOTA_DEBITO:
-			
+			for(Object obj: array){
+				list.add(obj);
+				for(CCNotaDebito notaDebito: ((ViewReciboEdit)parent).getNotasDebitoRecibo()){
+					if( notaDebito.getNumero().equals(((CCNotaDebito)obj).getNumero()) )
+						list.remove(obj);						
+				}				
+			}
 			break;
 		case NOTA_CREDITO:
+			for(Object obj: array){
+				list.add(obj);
+				for(CCNotaCredito notaCredito: ((ViewReciboEdit)parent).getNotasCreditoRecibo()){
+					if( notaCredito.getNumero().equals(((CCNotaCredito)obj).getNumero()) )
+						list.remove(obj);						
+				}				
+			}
 			break;
 		}
 		
@@ -332,16 +300,9 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 						if((parent.getChildAt(positioncache)) != null)						            							            		
 		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 		            	positioncache=position;				            	
-		            	factura_selected = (Factura) adapter.getItem(position);	
-		            	try {
-		            		//Object d= nmapp.getController().getBridge().getClass().getMethods();
-		            		//factura_selected =(Cliente) nmapp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",ContentResolver.class,long.class).invoke(null,DialogCliente.this.getContext().getContentResolver(),cliente_selected.getIdSucursal());
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+		            	factura_selected = (Factura) adapter.getItem(position);		            	
 		            	adapter.setSelectedPosition(position); 
-		            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));					            	 
+		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);					            	 
 		            	mButtonClickListener.onButtonClick(factura_selected);
 		            	//FINISH_ACTIVITY();						
 					}					
@@ -377,16 +338,9 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 						if((parent.getChildAt(positioncache)) != null)						            							            		
 		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 		            	positioncache=position;				            	
-		            	nota_debito_selected = (CCNotaDebito) adapter2.getItem(position);	
-		            	try {
-		            		//Object d= nmapp.getController().getBridge().getClass().getMethods();
-		            		//factura_selected =(Cliente) nmapp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",ContentResolver.class,long.class).invoke(null,DialogCliente.this.getContext().getContentResolver(),cliente_selected.getIdSucursal());
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+		            	nota_debito_selected = (CCNotaDebito) adapter2.getItem(position);		            	
 		            	adapter2.setSelectedPosition(position); 
-		            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));					            	 
+		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);					            	 
 		            	mButtonClickListener.onButtonClick(nota_debito_selected);
 		            	FINISH_ACTIVITY();						
 					}					
@@ -401,6 +355,45 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			pd.dismiss();	
 	}
 	
+	public void loadNotasCredito(CCNotaCredito [] notasCredito, int cData) {
+		try {
+			
+			if( notasCredito.length > 0 ){
+				//SE OBTIENEN LAS NOTAS DE CREDITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
+				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);				
+				if( _notasCredito.size() == 0 ){
+					pd.dismiss();
+					FINISH_ACTIVITY();
+					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
+					return;
+				}
+				gridheader.setText("Listado Notas Crédito Pendientes (" + notasCredito.length + ")");				
+				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,_notasCredito,R.layout.detalle_nota_credito);				 
+				lvnotasd.setAdapter(adapter3);
+				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+						if((parent.getChildAt(positioncache)) != null)						            							            		
+		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+		            	positioncache=position;				            	
+		            	nota_credito_selected = (CCNotaCredito) adapter3.getItem(position);		            	
+		            	adapter3.setSelectedPosition(position); 
+		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);					            	 
+		            	mButtonClickListener.onButtonClick(nota_credito_selected);
+		            	FINISH_ACTIVITY();						
+					}					
+				});
+			}
+			
+		} catch (Exception e) {
+			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
+			e.printStackTrace();
+		}
+		if(pd != null)
+			pd.dismiss();	
+		
+	}
+	
 	public  Dialog buildCustomDialog(String tittle,String msg,int type)
 	{
 		return new CustomDialog(getContext(),tittle,msg,false,type);	    
@@ -408,7 +401,6 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) 
 	    {        	
 		  	FINISH_ACTIVITY();
@@ -417,6 +409,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	    return super.onKeyUp(keyCode, event); 
 	}
 	
+	@SuppressWarnings("static-access")
 	private void FINISH_ACTIVITY()
 	{
 		nmapp.getController().removeOutboxHandler(TAG);
@@ -434,4 +427,5 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		pd = null;	
 		this.dismiss();
 	}
+	
 }
