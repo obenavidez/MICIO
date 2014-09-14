@@ -138,7 +138,7 @@ public class SessionManager
 				if(!SessionManager.SignIn(false))
 					return "";  
 					
-			}else if (SessionManager.SignIn(true))
+			}else if (!SessionManager.SignIn(true))
 				return "";
 		} 
 		else
@@ -337,9 +337,8 @@ public class SessionManager
 								
 						} catch (InterruptedException e) { 
 							e.printStackTrace();
-						} 
-						 //showStatus(new NotificationMessage("","Validando Credenciales.",""));
-						controller._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, new NotificationMessage("","Validando Credenciales.","")); 
+						}  
+						controller._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, "Validando Credenciales."); 
 							
 					}
 					else
@@ -347,7 +346,7 @@ public class SessionManager
 				 }
 			});	 
 			//showStatus(new NotificationMessage("","Probando Conexión.",""));
-			controller._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, new NotificationMessage("","Probando Conexión.",""));   
+			controller._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0,"Probando Conexión.");   
 
 		}
 	    catch (Exception e) {  
@@ -417,7 +416,7 @@ public class SessionManager
 	//Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
     public static boolean CheckConnection() 
     {
-         return NMNetWork.CheckConnection(nmapp.getController());
+         return NMNetWork.CheckConnection(NMApp.getController());
     }
      
 	

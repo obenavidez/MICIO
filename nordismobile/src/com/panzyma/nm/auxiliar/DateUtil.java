@@ -134,11 +134,12 @@ public class DateUtil {
     }
     
     public static String idateToStrYY(int idate) {
-        if (idate == 0) return "";
-        
+        if (idate == 0) return ""; 
         String strDate = idate + "";
+        if(strDate.length()==6)
+        	strDate="20"+strDate;
         return strDate.substring(6, 8) + "/" + strDate.substring(4, 6) + "/" + strDate.substring(2, 4);
-    }
+    } 
     
     public static String idateToStrYY(long idate) {
         if (idate == 0) return "";

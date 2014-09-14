@@ -2,27 +2,22 @@ package com.panzyma.nm.viewdialog;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BLogicM.Result;
-import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.ActionType;
 import com.panzyma.nm.auxiliar.Ammount;
 import com.panzyma.nm.auxiliar.AmmountType;
-import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.Documento;
-import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -33,12 +28,9 @@ import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -102,7 +94,7 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		return builder.create();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "static-access" })
 	private void initComponents() {
 		// obtención de las views		
 		numero = (EditText) view.findViewById(R.id.txtNoFactura);
@@ -144,17 +136,11 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		monto.addTextChangedListener(new TextWatcher(){
 
 			@Override
-			public void afterTextChanged(Editable arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void afterTextChanged(Editable arg0) {}
 
 			@Override
 			public void beforeTextChanged(CharSequence arg0, int arg1,
-					int arg2, int arg3) {
-				// TODO Auto-generated method stub
-				
-			}
+					int arg2, int arg3) {}
 
 			@Override
 			public void onTextChanged(CharSequence arg0, int arg1, int arg2,
@@ -194,8 +180,14 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 				titulo.setText("Editando descuento");
 				monto.setEnabled(false);
 				retencion.setEnabled(false);
-			}
-			
+			}			
+		} else if( document instanceof ReciboDetND ) {
+			rowRetencion.setVisibility(View.GONE);
+			rowDescuento.setVisibility(View.GONE);
+		} else if ( document instanceof ReciboDetNC ) {
+			monto.setEnabled(false);
+			rowRetencion.setVisibility(View.GONE);
+			rowDescuento.setVisibility(View.GONE);
 		} 
 	}
 	

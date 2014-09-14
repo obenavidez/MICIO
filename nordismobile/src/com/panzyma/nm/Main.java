@@ -41,7 +41,6 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	private CustomDialog cd;
 	public static String TAG = Main.class.getSimpleName();
 	private ThreadPool pool;
-	private NMApp nmapp;
 	private boolean onRestart;
 	private boolean onPause;
 	public int buttonActive;
@@ -55,8 +54,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				.getSystemService(Context.WINDOW_SERVICE);
 		display = wm.getDefaultDisplay();
 		context = this;
-		nmapp = (NMApp) this.getApplicationContext();
-		nmapp.getController().addOutboxHandler(new Handler(this));
+		NMApp.getController().addOutboxHandler(new Handler(this));
 		if ((savedInstanceState != null) ? savedInstanceState
 				.getBoolean("dl_visible") : false)
 			callDialogLogin();
@@ -138,7 +136,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
     {
     	try 
     	{ 
-			nmapp.getThreadPool().execute(new Runnable()
+			NMApp.getThreadPool().execute(new Runnable()
 			{ 
 				@Override
 				public void run()
@@ -250,36 +248,28 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	}
 
 	private void initController() {
-		nmapp = (NMApp) this.getApplicationContext();
-		Handler handler = (Handler) nmapp.getController().getoutboxHandlers()
+		Handler handler = (Handler) NMApp.getController().getoutboxHandlers()
 				.get(TAG);
 		if (handler == null)
-			nmapp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController().addOutboxHandler(new Handler(this));
 	}
 
 	private void FINISH_COMPONENT() {
-		nmapp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().removeOutboxHandler(TAG);
 		if (cd != null && cd.isShowing())
 			cd.dismiss();
 		Log.d(TAG, "Activity quitting");
 	}
 
-	private void FINISH_ACTIVITY() {
-		/*
-		 * Iterator it=
-		 * nmapp.getController().getoutboxHandlers().entrySet().iterator();
-		 * while (it.hasNext()) { String handler= (String)
-		 * ((Map.Entry)it.next()).getKey();
-		 * nmapp.getController().removeOutboxHandler(handler); }
-		 */
-		// for (Handler handler :handlers)
-		// nmapp.getController().removeOutboxHandler(handler);
-		nmapp.getController().clearOutboxHandler();
+	private void FINISH_ACTIVITY() 
+	{
+		NMApp.getController().clearOutboxHandler();
 		if (cd != null && cd.isShowing())
 			cd.dismiss();
-		nmapp.getController().dispose();
+		NMApp.getController().dispose();
 		Log.d(TAG, "Activity quitting");
 		SessionManager.clean();
+		NMApp.killApp(false);
 		finish();
 	}
 

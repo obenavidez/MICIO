@@ -13,6 +13,13 @@ public class StringUtil {
 	public static String formatInt(long number) {
 		return formatInt(String.valueOf(number));
 	}	
+	
+	public static String[] formatClienteSucursal(String cadena) {
+		String[] _cadena = new String[2];
+		_cadena[0]=cadena.substring(0,cadena.indexOf("/"));
+		_cadena[1]=cadena.substring(cadena.indexOf("/"),cadena.length());
+		return _cadena;
+	}	
 
 	private static String formatInt(String str) {
 		if (str.length() < 4)
