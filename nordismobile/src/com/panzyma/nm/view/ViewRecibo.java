@@ -730,7 +730,7 @@ public void showStatusOnUI(Object msg) throws InterruptedException{
 	@Override
 	public void onItemSelected(Object obj, int position) {
 
-		FichaReciboFragment reciboFragment;
+		/*FichaReciboFragment reciboFragment;
 		Bundle args = new Bundle();
 		args.putInt(FichaProductoFragment.ARG_POSITION, position);
 		args.putParcelable(FichaReciboFragment.OBJECT, (vmRecibo) obj);		
@@ -765,7 +765,7 @@ public void showStatusOnUI(Object msg) throws InterruptedException{
 		}
 		// Commit the transaction transaction.commit();
 		transaction.commit();
-
+		*/
 	}
 		
 //	private void initMenu() {
