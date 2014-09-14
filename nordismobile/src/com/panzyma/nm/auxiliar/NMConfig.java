@@ -409,7 +409,7 @@ public class NMConfig
 		
 		public static final class DetalleNotaCredito {
 			public static final java.lang.String ID = "id";
-			public static final java.lang.String NOTACREDITO_ID = "objNotaDebitoID";
+			public static final java.lang.String NOTACREDITO_ID = "objNotaCreditoID";
 			public static final java.lang.String RECIBO_ID = "objReciboID";
 			public static final java.lang.String MONTO = "monto";	
 			public static final java.lang.String NUMERO = "numero";
