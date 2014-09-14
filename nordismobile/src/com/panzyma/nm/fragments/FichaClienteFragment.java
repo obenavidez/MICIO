@@ -64,6 +64,7 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 		outState.putLong(ARG_SUCURSAL, sucursalID);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onStart() {	
 		super.onStart();
@@ -82,10 +83,12 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 					AppDialog.showMessage(getActivity(),"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 	            	return;
 	            }
-				//nmapp.getController().removebridgeByName(BClienteM.class.toString());
-				nmapp.getController().setEntities(this ,new BClienteM());
-				nmapp.getController().addOutboxHandler(new Handler(this));
-				nmapp.getController().getInboxHandler().sendMessage(ms);
+
+				nmapp.controller.removeBridgeByName(BClienteM.class.toString());
+				nmapp.controller.setEntities(this ,new BClienteM());
+				nmapp.controller.addOutboxHandler(new Handler(this));
+				nmapp.controller.getInboxHandler().sendMessage(ms);
+
 				
 				pDialog = new ProgressDialog(getActivity());
 				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -174,10 +177,9 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 	public void onDetach ()
 	{
 		Log.d(TAG, "OnDetach");
-        nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());
-		nmapp.getController().disposeEntities();
-		//nmapp.getController().setEntities(this.bcm);
+		nmapp.controller.removeOutboxHandler(TAG);
+		nmapp.controller.removebridge(nmapp.getController().getBridge());
+		nmapp.controller.disposeEntities();
 		super.onDetach();
 	}
 	

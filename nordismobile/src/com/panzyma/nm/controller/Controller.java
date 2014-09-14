@@ -199,8 +199,10 @@ public class Controller<T, U>
 		try 
 		{
 			int index=buscarObjeto(views,_view);
-			if(index!=-1)
-				obj=views.set(index,_view);
+			if(index!=-1){
+				views.set(index,_view);
+				obj=views.get(index);
+			}
 			else{
 					obj= _view;
 					views.add(obj);
