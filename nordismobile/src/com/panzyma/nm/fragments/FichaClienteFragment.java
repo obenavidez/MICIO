@@ -186,10 +186,7 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 	@Override
     public void onStop() {
         super.onStop();
-        pDialog.dismiss(); // try this
-        /*nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());
-		nmapp.getController().disposeEntities();*/
+        pDialog.dismiss(); 
         Log.d(TAG, "onStop");
     }
 	

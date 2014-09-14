@@ -39,11 +39,15 @@ import android.widget.Toast;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
+import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
@@ -70,7 +74,7 @@ public class vCliente extends ActionBarActivity implements
 	Intent intent;
 	CharSequence tituloSeccion;
 	CharSequence tituloApp;
-
+	vCliente vc;
 	TextView gridheader;
 	TextView footerView;	
 	ListaFragment<vmCliente> firstFragment;
@@ -264,11 +268,21 @@ public class vCliente extends ActionBarActivity implements
 			break;
 			
 			case R.id.consultar_fc:
-				
+				//SI SE ESTÁ FUERA DE LA COBERTURA
+	            if(!NMNetWork.isPhoneConnected(context,nmapp.controller) && !NMNetWork.CheckConnection(nmapp.controller))
+	            {
+	            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+	            	return false;
+	            }
+				LOAD_FICHACLIENTE_FROMSERVER();
 				break;
 			case R.id.consultar_cxc:
-				LOAD_FICHACLIENTE_FROMSERVER();
-		
+				if(!NMNetWork.isPhoneConnected(context,nmapp.controller) && !NMNetWork.CheckConnection(nmapp.controller))
+	            {
+	            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+	            	return false;
+	            }
+				LOAD_CUENTASXPAGAR();
 			break;
 			case R.id.sincronizar_selected: 
 				UPDATE_SELECTEDITEM_FROMSERVER();
@@ -644,7 +658,7 @@ public class vCliente extends ActionBarActivity implements
 	@Override
 	public void onBackPressed() {
 	  Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-	  if (fragment instanceof FichaClienteFragment) {
+	  if (fragment instanceof FichaClienteFragment || fragment instanceof  CuentasPorCobrarFragment) {
 		  gridheader.setVisibility(View.VISIBLE);
 		  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		  transaction.detach(fragment);
@@ -655,6 +669,19 @@ public class vCliente extends ActionBarActivity implements
 	  }else{
 		  FINISH_ACTIVITY();
 	   }
+	}
+	
+	public void LOAD_CUENTASXPAGAR(){
+		 CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
+		 Bundle msg = new Bundle();
+		 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+         msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+         msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,cliente_selected.getIdSucursal());
+         cuentasPorCobrar.setArguments(msg);
+         transaction.replace(R.id.fragment_container,
+         cuentasPorCobrar);
+         transaction.addToBackStack(null);
+         transaction.commit();
 	}
 	
 

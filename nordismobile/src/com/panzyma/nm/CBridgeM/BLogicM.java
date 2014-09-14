@@ -62,10 +62,8 @@ public class BLogicM {
 
 	public BLogicM(CuentasPorCobrarFragment cuentasPorCobrarFragment) {
 		this.fragment = cuentasPorCobrarFragment;
-		this.controller = ((NMApp) cuentasPorCobrarFragment.getActivity()
-				.getApplication()).getController();
-		this.pool = ((NMApp) cuentasPorCobrarFragment.getActivity()
-				.getApplication()).getThreadPool();
+		this.controller = NMApp.controller; //((NMApp) cuentasPorCobrarFragment.getActivity().getApplication()).getController();
+		this.pool = NMApp.getThreadPool(); //((NMApp) cuentasPorCobrarFragment.getActivity().getApplication()).getThreadPool();
 	}
 	
 	public BLogicM(DialogoConfirmacion view) {
