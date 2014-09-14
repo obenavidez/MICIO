@@ -723,21 +723,42 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		
 		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);
 		
-		if ( documentToEdit instanceof ReciboDetFactura) {
+		if ( documentToEdit instanceof ReciboDetFactura || documentToEdit instanceof ReciboDetND ) {
 			
-			final ReciboDetFactura facturaDetalle = (ReciboDetFactura) documentToEdit.getObject();
-			final Factura factura = getFacturaByID(facturaDetalle.getObjFacturaID());
-			
-			final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.EDIT, true);
-			dialogConfirmacion.setActionPago(new Pagable() {					
-				@Override
-				public void onPagarEvent(List<Ammount> montos) {
-					procesaFactura(facturaDetalle, factura, montos, false);
-				}
-			});
 			FragmentManager fragmentManager = getSupportFragmentManager();
 			
-			dialogConfirmacion.show(fragmentManager, "");
+			if( documentToEdit instanceof ReciboDetFactura ) {
+				
+				final ReciboDetFactura facturaDetalle = (ReciboDetFactura) documentToEdit.getObject();
+				final Factura factura = getFacturaByID(facturaDetalle.getObjFacturaID());
+				
+				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.EDIT, true);
+				dialogConfirmacion.setActionPago(new Pagable() {					
+					@Override
+					public void onPagarEvent(List<Ammount> montos) {
+						procesaFactura(facturaDetalle, factura, montos, false);
+					}
+				});				
+				
+				dialogConfirmacion.show(fragmentManager, "");
+				
+			} else {
+				
+				final ReciboDetND notaDebitoDetalle = (ReciboDetND) documentToEdit.getObject();
+				final CCNotaDebito factura = getNotaDebitoByID(notaDebitoDetalle.getObjNotaDebitoID());
+				
+				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaDebitoDetalle, ActionType.EDIT, true);
+				dialogConfirmacion.setActionPago(new Pagable() {					
+					@Override
+					public void onPagarEvent(List<Ammount> montos) {
+						procesaNotaDebito(notaDebitoDetalle, factura, montos, false);
+					}
+				});
+								
+				dialogConfirmacion.show(fragmentManager, "");
+				
+			}
+			
 			
 		} else {
 			Util.Message.buildToastMessage(this.getContext(), "No es posible editar el descuento", TIME_TO_VIEW_MESSAGE);
@@ -1418,10 +1439,26 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());			
 		} else if (documentRemoved instanceof ReciboDetND) {
 			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE DEBITO
-
+			ReciboDetND notaDebitoToRemoved = ((ReciboDetND)documentRemoved.getObject());
+			for(CCNotaDebito notaDebito : getNotasDebitoRecibo() ){
+				if(notaDebito.getId() == notaDebitoToRemoved.getObjNotaDebitoID() ){
+					positionDocument = count;
+				}
+				++count;
+			}
+			notasDebitoRecibo.remove(positionDocument);
+			recibo.setTotalFacturas(recibo.getTotalFacturas() - notaDebitoToRemoved.getMonto());	
 		} else if (documentRemoved instanceof ReciboDetNC) {
 			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE CREDITO
-
+			ReciboDetNC notaCreditoToRemoved = ((ReciboDetNC)documentRemoved.getObject());
+			for(CCNotaCredito notaCredito : getNotasCreditoRecibo() ){
+				if(notaCredito.getId() == notaCreditoToRemoved.getObjNotaCreditoID() ){
+					positionDocument = count;
+				}
+				++count;
+			}
+			notasDebitoRecibo.remove(positionDocument);
+			recibo.setTotalFacturas(recibo.getTotalFacturas() - notaCreditoToRemoved.getMonto());
 		}
 
 	}
@@ -1478,6 +1515,28 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 		return facturaToFound;
 	}
+	
+	private CCNotaDebito getNotaDebitoByID(long id){
+		CCNotaDebito notaDebitoToFound = null;
+		for(CCNotaDebito notaDebito : notasDebitoRecibo ){
+			if( notaDebito.getId() == id ) {
+				notaDebitoToFound = notaDebito;
+				break;
+			}
+		}
+		return notaDebitoToFound;
+	}
+	
+	private CCNotaCredito getNotaCreditoByID(long id){
+		CCNotaCredito notaCreditoToFound = null;
+		for(CCNotaCredito notaCredito : notasCreditoRecibo ){
+			if( notaCredito.getId() == id ) {
+				notaCreditoToFound = notaCredito;
+				break;
+			}
+		}
+		return notaCreditoToFound;
+	}
 
 	private void editarDocumento() {
 		if(!"REGISTRADO".equals(recibo.getCodEstado()))  return;
@@ -1493,20 +1552,37 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			@Override
 			public void onPagarEvent(List<Ammount> montos) {
 
-				if( documentToEdit instanceof ReciboDetFactura ){
+				if( documentToEdit instanceof ReciboDetFactura ) {
 
 					ReciboDetFactura facturaDetalle = (ReciboDetFactura)documentToEdit;
 					Factura factura = getFacturaByID(facturaDetalle.getObjFacturaID());	
-					procesaFactura(facturaDetalle, factura, montos, false);					
+					procesaFactura(facturaDetalle, factura, montos, false);	
 
-				} else if ( documentToEdit instanceof ReciboDetND ){
-
-				}				
+				} else if ( documentToEdit instanceof ReciboDetND ) {
+					
+					ReciboDetND notaDebitoDetalle = (ReciboDetND)documentToEdit;
+					CCNotaDebito notaDebito = getNotaDebitoByID(notaDebitoDetalle.getObjNotaDebitoID());	
+					procesaNotaDebito(notaDebitoDetalle, notaDebito, montos, false);
+					
+				} else if ( documentToEdit instanceof ReciboDetNC ) { 
+					
+					ReciboDetNC notaCreditoDetalle = (ReciboDetNC)documentToEdit;
+					CCNotaCredito notaCredito = getNotaCreditoByID(notaCreditoDetalle.getObjNotaCreditoID());	
+					procesaNotaCredito(notaCreditoDetalle, notaCredito, montos, false);
+					
+				}
 				recibo.setTotalFacturas(0.00f);
+				recibo.setTotalND(0.00f);
+				recibo.setTotalNC(0.00F);
 				for(com.panzyma.nm.serviceproxy.Documento doc : (List<com.panzyma.nm.serviceproxy.Documento>)adapter.getData()){
-					recibo.setTotalFacturas(recibo.getTotalFacturas() +doc.getMonto());
-				}					
-
+					if ( doc instanceof ReciboDetFactura )
+						recibo.setTotalFacturas(recibo.getTotalFacturas() + doc.getMonto());
+					else if ( doc instanceof ReciboDetND )
+						recibo.setTotalND(recibo.getTotalND() + doc.getMonto());
+					else 
+						recibo.setTotalNC(recibo.getTotalNC() + doc.getMonto());
+				}
+				
 				agregarDocumentosAlDetalleDeRecibo();
 				actualizaTotales();
 			}
