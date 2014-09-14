@@ -70,9 +70,9 @@ public class ViewPedido extends ActionBarActivity implements
 		{
 			NMApp.getController().setEntities(this,this.getBridge());
 			request_code = requestcode;
-			if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code)
-					&& data != null)
+			if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code) && data != null)
 				establecer(data.getParcelableExtra("pedido"));
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -266,7 +266,7 @@ public class ViewPedido extends ActionBarActivity implements
                 cuentasPorCobrar);
                 transaction.addToBackStack(null);
                 transaction.commit();
-                drawerLayout.closeDrawers();
+                //drawerLayout.closeDrawers();
             }
             drawerLayout.closeDrawers();
             break;
@@ -371,12 +371,10 @@ public class ViewPedido extends ActionBarActivity implements
 
 		NMApp = (NMApp) this.getApplicationContext();
 		try {
+
 			NMApp.getController().setEntities(this, bpm = new BPedidoM());
 			NMApp.getController().addOutboxHandler(new Handler(this));
-			NMApp.getController()
-					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+			NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -627,9 +625,19 @@ public class ViewPedido extends ActionBarActivity implements
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			FINISH_ACTIVITY();
+			/*Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+			if (fragment instanceof CuentasPorCobrarFragment) {
+				  transaction = getSupportFragmentManager().beginTransaction();
+				  transaction.replace(R.id.fragment_container, firstFragment);
+				  transaction.addToBackStack(null);
+				  transaction.commit();
+			}
+			else*/
+				FINISH_ACTIVITY();
+			
 			return true;
-		} else if( keyCode == KeyEvent.KEYCODE_MENU ){
+		} 
+		else if( keyCode == KeyEvent.KEYCODE_MENU ){
 			switch(fragmentActive){
 			case CUENTAS_POR_COBRAR:
 				cuentasPorCobrar.mostrarMenu();
@@ -641,7 +649,8 @@ public class ViewPedido extends ActionBarActivity implements
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-
+	
+	
 	private void FINISH_ACTIVITY() {
 		NMApp.getController().removeOutboxHandler(TAG);
 		Log.d(TAG, "Activity quitting");
@@ -673,16 +682,18 @@ public class ViewPedido extends ActionBarActivity implements
     		AppDialog.showMessage(vp,"","No existen pedidos registrados.",DialogType.DIALOGO_ALERTA);
     	}
 	}
-	
+	/*
 	@Override
 	public void onBackPressed() {
 		  Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 		  if (fragment instanceof CuentasPorCobrarFragment) {
-			  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-			  transaction.replace(R.id.fragment_container, firstFragment);
-			  transaction.addToBackStack(null);
-			  transaction.commit();
+			  FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
+			  mytransaction.replace(R.id.fragment_container, firstFragment);
+			  mytransaction.addToBackStack(null);
+			  mytransaction.commit();
 		  }
-			  
-	}
+		  else {
+			  FINISH_ACTIVITY(); 
+		  }
+	}*/
 } 
