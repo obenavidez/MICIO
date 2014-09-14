@@ -162,7 +162,7 @@ public class SessionManager
 				if(!SessionManager.SignIn(false))
 					return "";  
 					
-			}else if (SessionManager.SignIn(true))
+			}else if (!SessionManager.SignIn(true))
 				return "";
 		} 
 		else

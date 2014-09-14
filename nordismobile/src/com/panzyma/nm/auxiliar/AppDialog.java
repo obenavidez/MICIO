@@ -135,6 +135,40 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alert.show();
 	}
+	
+	
+	public static AlertDialog _showMessage(Activity mContext,String title,String msg, DialogType type ,final OnButtonClickListener mylistener)
+	{
+		mybuilder = new AlertDialog.Builder(mContext);
+		inflater = mContext.getLayoutInflater();
+		Tittle = title;
+		Message = msg;
+		switch(type)
+		{
+			case DIALOGO_ALERTA :
+				CreateDialog(mylistener);
+			break;
+			case DIALOGO_CONFIRMACION :
+				CreateConfirmDialog(mylistener);
+			break;
+			case DIALOGO_INPUT :
+				CreatePayAmountDialog(mylistener);
+				break;
+			case  DIALOGO_OCADISCOUNT:CreateOcationalDiscountDialog(mylistener);
+			default:
+			break;
+			
+		}
+		//mybuilder.setView(vDialog);
+		alert = mybuilder.create();
+		alert.setCancelable(false);
+		int margen = -2;
+		alert.setView(vDialog, margen, margen, margen, margen);
+		alert.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+		alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		return alert;
+	}
+	
 	public static void showMessage (Activity mContext,String title,String msg, DialogType type ,final OnButtonClickListener mylistener)
 	{
 		mybuilder = new AlertDialog.Builder(mContext);

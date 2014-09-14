@@ -387,13 +387,14 @@ public class BPedidoM {
 			pool.execute(new Runnable()
 			{ 
 				
+				@SuppressWarnings("unchecked")
 				@Override
 				public void run()
 			    {					 
 					try 
 					{ 											
 						//guardar primero el pedido localmente 
-						guardarPedido(pedido);
+						guardar_Pedido(pedido);
 						
 						Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
 								0,0,"Enviando pedido al servidor central");
@@ -403,15 +404,15 @@ public class BPedidoM {
 						if (obj == null) return; 
 						
 					    //guardando de nuevo localmente el pedido ya actualizado  
-						RegistrarPedido(obj,pedidoedit);
+						RegistrarPedido(obj,NMApp.getContext());
 						 
 						Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
 								0,0,"Actualizando el estado de cuentas del Cliente");
 			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
-			            Cliente cliente= BClienteM.actualizarCliente(pedidoedit,SessionManager.getCredenciales(),obj.getObjSucursalID()); 
+			            Cliente cliente= BClienteM.actualizarCliente(NMApp.getContext(),SessionManager.getCredenciales(),obj.getObjSucursalID()); 
 			           
 			            //Notificar al Usuario el resultado del envio del Pedido.
-			            controller.notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_ENVIARPEDIDO, 0, 0, new ArrayList<Object>(Arrays.asList(obj,cliente)));
+			            NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_ENVIARPEDIDO, 0, 0, new ArrayList<Object>(Arrays.asList(obj,cliente)));
  
 					}catch (Exception e) 
 					{ 

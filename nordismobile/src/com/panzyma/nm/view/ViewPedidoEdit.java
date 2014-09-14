@@ -138,7 +138,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	private static String TAG_IMPUESTO = "";
 	BPedidoM bpm;
 	private static Object lock = new Object();
-
+	AlertDialog ad;
 	private Handler handler = new Handler();
 	private boolean salvado;
 	private Bundle extras;
@@ -586,6 +586,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	public void setData(ArrayList<Pedido> Lpedido, int what) {
 	}
 
+	
 	public void resultadoEnvioPedido(Object obj) 
 	{
 		Object pedd = ((ArrayList<Object>) obj).get(0);
@@ -598,101 +599,84 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			cliente = (Cliente) clte;
 		
 		
-	 final String sms=(pedido.getCodEstado().compareTo("FACTURADO") == 0)?"El pedido ha sido enviado y facturado.":"El pedido ha sido enviado.Estado: "
+		final String sms=(pedido.getCodEstado().compareTo("FACTURADO") == 0)?"El pedido ha sido enviado y facturado \n¿Desea imprimir el recibo?":"El pedido ha sido enviado.Estado: "
 				+ pedido.getDescEstado() + "\r\nCausa: "
-				+ pedido.getDescCausaEstado();
-		// Informar al usuario 
-		try 
-		{
-			NMApp.getThreadPool().execute(new Runnable() 
-			{
-				
-				@Override
-				public void run() 
-				{
-					 me.runOnUiThread(new Runnable()
-				     {
-				            @Override
-							public void run()
-				            { 
-				            	AppDialog.showMessage(me,"",sms,
-										AppDialog.DialogType.DIALOGO_ALERTA,
-										new AppDialog.OnButtonClickListener() {
-											@Override
-											public void onButtonClick(AlertDialog _dialog,
-													int actionId) 
-											{ 
-												synchronized(lock){                            
-						                        	lock.notify();
-						                        } 
-												_dialog.dismiss();
-									        }
-								});
-				            	
-				            }
-				     });
-					 
-					 synchronized(lock)
-				     {
-				            try {
-				            	lock.wait();
-							} catch (InterruptedException e) { 
-								e.printStackTrace();
-							}
-				     }
-					 me.runOnUiThread(new Runnable()
-				     {
-				            @Override
-							public void run()
-				            {
-				            	AppDialog.showMessage(me, "Confirme por favor.!!!",
-										"Desea Imprimir el Pedido?",
-										AppDialog.DialogType.DIALOGO_CONFIRMACION,
-										new AppDialog.OnButtonClickListener() {
-											@Override
-											public void onButtonClick(
-													AlertDialog _dialog, int actionId) {
-												if (actionId == AppDialog.OK_BUTTOM) 
-												{
-
-													try 
-													{
-														if (!isDataValid())
-															return;
-														
-														NMApp.getController().setEntities(this,getBridge() == null ? new BPedidoM() : getBridge());
-														NMApp.getController().addOutboxHandler(getHandler() == null ? new Handler(me) : getHandler());
-														Message msg = new Message();
-														Bundle b = new Bundle();
-														b.putParcelable("pedido", pedido);
-														b.putParcelable("cliente", cliente);
-														msg.setData(b);
-														msg.what = ControllerProtocol.IMPRIMIR;
-														NMApp.getController().getInboxHandler().sendMessage(msg);
-														
-													 
-													} catch (Exception e) {
-														AppDialog.showMessage(me,e.getMessage()+"\nCausa: "+ e.getCause(),
-																DialogType.DIALOGO_ALERTA); 
-													}
-												}
-												_dialog.dismiss();
-											}
-										});  
-				            }
-				     });
-					 
-					 
-				}
-			});
-		} catch (InterruptedException e1) 
-		{ 
-			e1.printStackTrace();
-		}
+				+ pedido.getDescCausaEstado(); 
+		// Informar al usuario   
+		AppDialog.showMessage(me,"",sms,
+				AppDialog.DialogType.DIALOGO_ALERTA,
+				new AppDialog.OnButtonClickListener() {
+					@Override
+					public void onButtonClick(AlertDialog _dialog,
+							int actionId) 
+					{   
+						
+						if(pedido.getCodEstado().compareTo("FACTURADO") == 0)
+						{
+						 	Message msg = new Message();
+							Bundle b = new Bundle();
+							b.putParcelable("pedido", pedido);
+							b.putParcelable("cliente", cliente);
+							msg.setData(b);
+							msg.what = ControllerProtocol.IMPRIMIR;
+							NMApp.getController().getInboxHandler().sendMessage(msg);						
+						
+						}
+						_dialog.dismiss();
+			        }
+		});  
 		
 
 	}
 
+	
+	public void mandarImprimir()
+	{
+		
+		runOnUiThread(new Runnable() 
+		{
+			
+			@Override
+			public void run() 
+			{ 
+				AppDialog.showMessage(me, "Confirme por favor.!!!",
+						"Desea Imprimir el Pedido?",
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						new AppDialog.OnButtonClickListener() {
+							@Override
+							public void onButtonClick(
+									AlertDialog _dialog, int actionId) {
+								if (actionId == AppDialog.OK_BUTTOM) 
+								{
+
+									try 
+									{
+										if (!isDataValid())
+											return;
+										
+									 	Message msg = new Message();
+										Bundle b = new Bundle();
+										b.putParcelable("pedido", pedido);
+										b.putParcelable("cliente", cliente);
+										msg.setData(b);
+										msg.what = ControllerProtocol.IMPRIMIR;
+										NMApp.getController().getInboxHandler().sendMessage(msg);
+										
+									 
+									} catch (Exception e) {
+										AppDialog.showMessage(me,e.getMessage()+"\nCausa: "+ e.getCause(),
+												DialogType.DIALOGO_ALERTA); 
+									}
+								}
+								_dialog.dismiss();
+							}
+				 }); 
+			}
+		});
+		
+		
+	
+	}
 	
 	private void FINISH_ACTIVITY() {
 		int requescode = 0;
@@ -1447,6 +1431,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			pd.dismiss();
 	}
  
+	
 	public void showStatus(final String mensaje,boolean... confirmacion) 
 	{
 		if (dlg != null)
@@ -1457,9 +1442,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			runOnUiThread(new Runnable() 
 			{
 				@Override
-				public void run() {
+				public void run() 
+				{
 					AppDialog.showMessage(me,"",mensaje,
-							AppDialog.DialogType.DIALOGO_CONFIRMACION,
+							AppDialog.DialogType.DIALOGO_ALERTA,
 							new AppDialog.OnButtonClickListener() {
 								@Override
 								public void onButtonClick(AlertDialog _dialog,
@@ -1486,6 +1472,5 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			});
 		}
 	}
-	
-	
+		
 }
