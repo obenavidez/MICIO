@@ -74,6 +74,37 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	public void setOnDismissDialogListener(OnDismissDialogListener listener) {  
 		mDismissListener = listener;
 	}
+	
+	public static void showMessage (Activity mContext,String msg, DialogType type)
+	{
+		mybuilder = new AlertDialog.Builder(mContext);
+		inflater = mContext.getLayoutInflater();
+		Message = msg;
+		switch(type)
+		{
+			case DIALOGO_ALERTA :
+				CreateDialog(null);
+			break;
+		case DIALOGO_CONFIRMACION :
+				CreateConfirmDialog(null);
+			break;
+		case  DIALOGO_INPUT:
+			CreatePayAmountDialog(null);
+		case  DIALOGO_OCADISCOUNT:CreateOcationalDiscountDialog(null);
+		break;
+		default:
+			break;
+			
+		}
+		alert = mybuilder.create();
+		alert.setCancelable(false);
+		int margen = -2;
+		alert.setView(vDialog, margen, margen, margen, margen);
+		alert.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+		alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alert.show();
+	}
+	
 	public static void showMessage (Activity mContext,String title,String msg, DialogType type)
 	{
 		mybuilder = new AlertDialog.Builder(mContext);
@@ -139,15 +170,14 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	private static void CreateConfirmDialog(final OnButtonClickListener mylistener)
 	{
 		vDialog =inflater.inflate(R.layout.confirm_dialog2, null,false);
-//		tvtittle = (TextView)vDialog.findViewById(R.id.tittle_dialog_confirm);
-//		tvtittle.setText(Tittle.toString());
 		tvmessage =(TextView)vDialog.findViewById(R.id.message_dialog);
 		tvmessage.setText(Message.toString());
 		btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_confirm);
 		btn_aceptar.setOnClickListener(new Button.OnClickListener()
     	{
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v) 
+			{
 				if(mylistener!=null)
 					mylistener.onButtonClick(alert, OK_BUTTOM); 
 				alert.dismiss();
@@ -164,12 +194,9 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	    });
 		
 	}
-	@SuppressWarnings("unused")
 	private static void CreateDialog(final OnButtonClickListener mylistener)
 	{
-		vDialog =inflater.inflate(R.layout.alert_dialog, null, false);
-		tvtittle = (TextView)vDialog.findViewById(R.id.tittle_dialog_alert);
-		tvtittle.setText(Tittle.toString());
+		vDialog =inflater.inflate(R.layout.alert_dialog2, null, false);
 		tvmessage =(TextView)vDialog.findViewById(R.id.bodymessage_dialog_alert);
 		tvmessage.setText(Message.toString());
 		btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_alert);

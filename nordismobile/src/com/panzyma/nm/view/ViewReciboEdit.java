@@ -166,8 +166,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private boolean onEdit = false;
 	private boolean onNew;	
 	private static Object lock = new Object();
-	private boolean isReimpresion=false;
-	private NMApp nmapp;
+	private boolean isReimpresion=false; 
 	private List<Factura> facturasRecibo;
 	private List<com.panzyma.nm.serviceproxy.Documento> documents;
 
@@ -193,11 +192,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			//OBTENER EL ID DEL RECIBO 
 			reciboId = (Integer)bundle.get(ViewRecibo.RECIBO_ID);
 			SessionManager.setContext(this);
-			me = this;
-			nmapp = (NMApp) this.getApplicationContext();
-			nmapp.getController().removeBridgeByName(BReciboM.class.toString());
-			nmapp.getController().setEntities(this, brm =  new BReciboM());
-			nmapp.getController().addOutboxHandler(handler=new Handler(this));
+			me = this; 
+			NMApp.getController().removeBridgeByName(BReciboM.class.toString());
+			NMApp.getController().setEntities(this, brm =  new BReciboM());
+			NMApp.getController().addOutboxHandler(handler=new Handler(this));
 
 			facturasRecibo = new ArrayList<Factura> ();
 			documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
@@ -211,7 +209,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				b.putInt("idrecibo", reciboId);  
 				msg.setData(b);
 				msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
-				nmapp.getController().getInboxHandler().sendMessage(msg);  
+				NMApp.getController().getInboxHandler().sendMessage(msg);  
 			}  
 
 			contexto = this.getApplicationContext();
@@ -322,8 +320,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		// ESTABLECER LOS VALORES EN LA VISTA DE EDICION DE RECIBO
 		tbxNumRecibo.setText(""+recibo.getNumero());
 		tbxNotas.setText(""+recibo.getNotas());
-		tbxNumReferencia.setText(""+VentasUtil.getNumeroPedido(me,
-				recibo.getReferencia()));
+		tbxNumReferencia.setText(""+VentasUtil.getNumeroPedido(me,recibo.getReferencia()));
 		tbxNombreDelCliente.setText(""+recibo.getNombreCliente());
 		tbxFecha.setText("" + DateUtil.idateToStrYY(recibo.getFecha()));
 		// ESTABLECER LOS TOTALES
@@ -595,15 +592,15 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					try 
 					{
 						String nota =  ((TextView)alert.findViewById(R.id.txtpayamount)).getText().toString();
-						nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-						nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(me):getHandler()); 
+						NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
+						NMApp.getController().addOutboxHandler((getHandler()==null)?new Handler(me):getHandler()); 
 						Message msg = new Message();
 						Bundle b = new Bundle();
 						b.putParcelable("recibo", recibo);
 						b.putString("notas",nota); 
 						msg.setData(b);
 						msg.what=SOLICITAR_DESCUENTO;
-						nmapp.getController().getInboxHandler().sendMessage(msg); 
+						NMApp.getController().getInboxHandler().sendMessage(msg); 
 					} catch (Exception e) 
 					{ 
 						e.printStackTrace();
@@ -676,15 +673,15 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 			try 
 			{				 
-				nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-				nmapp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());			
+				NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
+				NMApp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());			
 				Message msg = new Message();
 				Bundle b = new Bundle();
 				b.putParcelable("recibo", recibo); 
 				b.putParcelableArray("facturasToUpdate", getArrayOfFacturas() );
 				msg.setData(b);
 				msg.what=SAVE_DATA_FROM_LOCALHOST;
-				nmapp.getController().getInboxHandler().sendMessage(msg);  			
+				NMApp.getController().getInboxHandler().sendMessage(msg);  			
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -770,8 +767,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		ProgressDialog.show(this, "Enviando recibo a la central", "Espere por favor", true); 
 		try 
 		{ 
-			nmapp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-			nmapp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());
+			NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
+			NMApp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());
 			Toast.makeText(this, "Enviando recibo a la central", Toast.LENGTH_LONG);  	 
 			Message msg = new Message();
 			Bundle b = new Bundle();
@@ -779,7 +776,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			b.putParcelableArray("facturasToUpdate", getArrayOfFacturas());
 			msg.setData(b);
 			msg.what=SEND_DATA_FROM_SERVER;
-			nmapp.getController().getInboxHandler().sendMessage(msg);  	 
+			NMApp.getController().getInboxHandler().sendMessage(msg);  	 
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -1405,7 +1402,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		final String mensaje=""+((ErrorMessage)msg).getMessage();
 
 
-		nmapp.getThreadPool().execute(new Runnable()
+		NMApp.getThreadPool().execute(new Runnable()
 		{ 
 			@Override
 			public void run()

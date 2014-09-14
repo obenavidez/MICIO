@@ -217,12 +217,9 @@ public class BConfiguracionM {
 							public void run() {
 								try 
 								{
-									if (NMNetWork.isPhoneConnected(view,controller)	&& NMNetWork.CheckConnection(controller)) 
-									{
 										user = GET_DATAUSER(SessionManager.getCredentials(),view.getUserName());
 										ModelConfiguracion.saveUser(view, user);
 										onSave_From_LocalHost(ModelConfiguracion.getSystemPerams(credentials),ID_SINCRONIZE_PARAMETROS, 0);
-									}
 								} catch (Exception e) 
 								{
 									e.printStackTrace();

@@ -3,12 +3,15 @@ import android.util.Log;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_INVENTORY_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,19 +22,22 @@ import org.ksoap2.serialization.SoapObject;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle; 
 import android.os.Message; 
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.auxiliar.BluetoothComunication;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.auxiliar.ThreadPool;
+import com.panzyma.nm.auxiliar.ThreadPool; 
+import com.panzyma.nm.bluetooth.BluetoothConnection;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelConfiguracion;
@@ -45,8 +51,9 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.viewmodel.vmEntity; 
+import com.panzyma.nordismobile.R;
 
-@SuppressLint("SimpleDateFormat") @SuppressWarnings("rawtypes")
+@SuppressLint("SimpleDateFormat") @SuppressWarnings({"rawtypes"})
 public class BPedidoM {
 
 	String credenciales;
@@ -59,21 +66,22 @@ public class BPedidoM {
 	boolean OK = false;
 	ArrayList<Pedido> obj = new ArrayList<Pedido>();
 	private static final String logger = BPedidoM.class.getSimpleName();
-
+	BluetoothConnection bc;
+	Object lock=new Object();
 	public BPedidoM() 
 	{
 	}
 
 	public BPedidoM(ViewPedido view) {
-		this.controller = ((NMApp) view.getApplication()).getController();
+		this.controller = NMApp.getController();
 		this.view = view;
-		this.pool = ((NMApp) view.getApplicationContext()).getThreadPool();
+		this.pool = NMApp.getThreadPool();
 	}
 
 	public BPedidoM(ViewPedidoEdit view) {
-		this.controller = ((NMApp) view.getApplication()).getController();
+		this.controller = NMApp.getController();
 		this.pedidoedit = view;
-		this.pool = ((NMApp) view.getApplicationContext()).getThreadPool();
+		this.pool = NMApp.getThreadPool();
 	}
 
 	public boolean handleMessage(Message msg) {
@@ -102,9 +110,50 @@ public class BPedidoM {
 			case ControllerProtocol.SAVE_DATA_FROM_LOCALHOST:				
 				guardarPedido((Pedido)b.getParcelable("pedido"));
 				break;
+			case ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
+			case ControllerProtocol.APLICARPEDIDOPROMOCIONES:
+			case ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES:
+				try 
+				{
+					String mensaje="";
+					mensaje=(msg.what==ControllerProtocol.NOTIFICATION)?"Las promociones fueron aplicadas exitosamente":
+						msg.what==ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES?"Las promociones fueron desaplicadas exitosamente":"";
+					
+					int what=(msg.what==ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES)?							
+							ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
+							(msg.what==ControllerProtocol.NOTIFICATION)?ControllerProtocol.NOTIFICATION:
+								ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES;
+					
+					
+					guardar_Pedido((Pedido)b.getParcelable("pedido"));
+					Processor.notifyToView(
+								controller,
+								what,
+								0,
+								0,
+								mensaje);
+					
+				} catch (Exception e) {
+					try {
+						Processor
+						.notifyToView(
+								controller,
+								ERROR,
+								0,
+								0,
+								ErrorMessage.newInstance("",
+										e.toString(), "\n Causa: "
+												+ e.getCause()));
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				break;
 			case DELETE_DATA_FROM_LOCALHOST :
 				onDeleteDataFromLocalHost(Long.parseLong(msg.obj.toString()));
 				val= true;
+				break;
 			case ControllerProtocol.SEND_DATA_FROM_SERVER:				
 				enviarPedido((Pedido)b.getParcelable("pedido"));
 				break;
@@ -134,7 +183,7 @@ public class BPedidoM {
 											ERROR,
 											0,
 											0,
-											new ErrorMessage(
+											ErrorMessage.newInstance(
 													"Error interno en la sincronización con la BDD",
 													e.toString(), "\n Causa: "
 															+ e.getCause()));
@@ -169,7 +218,7 @@ public class BPedidoM {
 											ERROR,
 											0,
 											0,
-											new ErrorMessage(
+											ErrorMessage.newInstance(
 													"Error interno en la sincronización con la BDD",
 													e.toString(), "\n Causa: "
 															+ e.getCause()));
@@ -218,7 +267,7 @@ public class BPedidoM {
 											ERROR,
 											0,
 											0,
-											new ErrorMessage(
+											ErrorMessage.newInstance(
 													"Error interno en la sincronización con la BDD",
 													e.toString(), "\n Causa: "
 															+ e.getCause()));
@@ -252,13 +301,13 @@ public class BPedidoM {
 					
 					try 
 					{
-						salvarPedido(pedido); 			        
+						guardar_Pedido(pedido); 			        
 				        Processor.notifyToView(
 								controller,
 								ControllerProtocol.NOTIFICATION,
+								ControllerProtocol.SAVE_DATA_FROM_LOCALHOST,
 								0,
-								0,
-								NotificationMessage.newInstance("","pedido guardado exitosamente",""));
+								"Pedido guardado exitosamente");
 						
 					} catch (Exception e) {
 						Log.e(TAG, "Error in the update thread", e);
@@ -269,7 +318,7 @@ public class BPedidoM {
 											ERROR,
 											0,
 											0,
-											new ErrorMessage(
+											ErrorMessage.newInstance(
 													"Error interno",
 													e.getMessage(), "\n Causa: "
 															+ e.getCause()));
@@ -286,8 +335,7 @@ public class BPedidoM {
 						controller,
 						ControllerProtocol.NOTIFICATION_DIALOG2,
 						0,
-						0,
-						NotificationMessage.newInstance("","guardando pedido localmente",""));
+						0,"Guardando pedido localmente");
 			
 		} catch (Exception e) 
 		{ 
@@ -299,22 +347,11 @@ public class BPedidoM {
 		return ModelPedido.RegistrarPedido(pedido, cnt);
 	}
  
-	public void salvarPedido(Pedido pedido)throws Exception
-	{
-		
-		 //Salvando el tipo de pedido (crédito contado)		
-        pedido.setTipo("CR"); 
-    	if (pedidoedit.getTipoVenta() == "CO")
-			pedido.setTipo("CO");
-    	
-    	String f = pedidoedit.getFechaPedido().toString();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date d = formatter.parse(f);
-        
-        pedido.setFecha(DateUtil.d2i(d));
-
-        Integer prefijo=Ventas.getPrefijoIds(pedidoedit.getContext());
-        Integer pedidomax=Ventas.getLastOrderId(pedidoedit.getContext());
+	public void guardar_Pedido(Pedido pedido)throws Exception
+	{		
+		 //Salvando el tipo de pedido (crédito contado)		 
+        Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
+        Integer pedidomax=Ventas.getLastOrderId(NMApp.getContext());
         //Generar Id del pedido
         if (pedido.getNumeroMovil() == 0) 
         {                     
@@ -334,12 +371,10 @@ public class BPedidoM {
             pedido.setCodCausaEstado("REGISTRADO");
             pedido.setDescCausaEstado("Registrado");
         }  
-        RegistrarPedido(pedido,pedidoedit.getContext());         
-        ModelConfiguracion.ActualizarSecuenciaPedido(pedidoedit,(pedidomax));
-        pedidoedit.actualizarOnUINumRef(pedido);
+        RegistrarPedido(pedido,NMApp.getContext());         
+        ModelConfiguracion.ActualizarSecuenciaPedido(NMApp.getContext(),(pedidomax));
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void enviarPedido(final Pedido pedido)  
 	{
 		try 
@@ -358,10 +393,10 @@ public class BPedidoM {
 					try 
 					{ 											
 						//guardar primero el pedido localmente 
-						salvarPedido(pedido);
+						guardarPedido(pedido);
 						
 						Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
-								0,0,NotificationMessage.newInstance("","enviando pedido al servidor central",""));
+								0,0,"Enviando pedido al servidor central");
 						//enviado pedido al servidor central
 						Pedido obj=ModelPedido.enviarPedido(credenciales, pedido);; 
 			    
@@ -371,7 +406,7 @@ public class BPedidoM {
 						RegistrarPedido(obj,pedidoedit);
 						 
 						Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
-								0,0,NotificationMessage.newInstance("","Trayendo el nuevo estado de cuentas del Cliente",""));
+								0,0,"Actualizando el estado de cuentas del Cliente");
 			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
 			            Cliente cliente= BClienteM.actualizarCliente(pedidoedit,SessionManager.getCredenciales(),obj.getObjSucursalID()); 
 			           
@@ -388,7 +423,7 @@ public class BPedidoM {
 											ERROR,
 											0,
 											0,
-											new ErrorMessage(
+											ErrorMessage.newInstance(
 													"Error en el envio del pedido",
 													e.getMessage(), "\n Causa: "
 															+ e.getCause()));
@@ -400,7 +435,7 @@ public class BPedidoM {
 			    }
 			});
 			Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
-					0,0,NotificationMessage.newInstance("","enviando pedido al servidor central",""));
+					0,0,"enviando pedido al servidor central");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -417,115 +452,119 @@ public class BPedidoM {
 		//final String credentials=SessionManager.getCredenciales();
 		return ModelPedido.anularPedido("sa-nordis09-dp", pedidoid);
 	}
-
-    public void imprimirPedido(Pedido pedido, Cliente cliente)
-    {
-    	try 
-    	{ 
-    		// Salvar pedido si aún no tiene un número de referencia asignado
+ 
+    
+	public void imprimirPedido(final Pedido pedido, final Cliente cliente)
+    { 
+		try 
+		{
+			 // Salvar pedido si aún no tiene un número de referencia asignado
     		if (pedido.getNumeroMovil() == 0) 
-					salvarPedido(pedido); 
-    		String recibo = "";
-    		recibo += "T 7 1 123 5 Distribuidora Panzyma - DISPAN\r\n";
-    		recibo += "T 7 0 189 54 Orden de Pedido\r\n";
-    		recibo += "LINE 0 80 576 80 1\r\n";
-    		recibo += "T 0 0 0 90 Fecha:\r\n";
-    		recibo += "T 0 0 90 90 " + DateUtil.idateToStr(pedido.getFecha())
+					guardarPedido(pedido); 
+    		String _pedido = "";
+//    		_pedido+="PCX 20 0\r\n";
+//    		_pedido+= getImage();
+    		_pedido += "T 7 1 123 5 Distribuidora Panzyma - DISPAN\r\n";
+    		_pedido += "T 7 0 189 54 Orden de Pedido\r\n";
+    		_pedido += "LINE 0 80 576 80 1\r\n";
+    		_pedido += "T 0 0 0 90 Fecha:\r\n";
+    		_pedido += "T 0 0 90 90 " + DateUtil.idateToStr(pedido.getFecha())
     				+ "\r\n";
-    		recibo += "T 0 0 400 90 Referencia:\r\n";
-    		recibo += "RIGHT 576\r\n";
-    		recibo += "T 0 0 490 90 "
-    				+ NumberUtil.getFormatoNumero(pedido.getNumeroMovil(),pedidoedit) + "\r\n";
-    		recibo += "LEFT\r\n";
-    		recibo += "T 0 0 0 118 Cliente:\r\n";
-    		recibo += "T 0 0 90 118 " + cliente.getNombreLegalCliente() + "\r\n";
-    		recibo += "T 0 0 0 144 Vendedor:\r\n";
-    		recibo += "T 0 0 90 144 " +SessionManager.getLoginUser().getCodigo() +
+    		_pedido += "T 0 0 400 90 Referencia:\r\n";
+    		_pedido += "RIGHT 576\r\n";
+    		_pedido += "T 0 0 490 90 "
+    				+ NumberUtil.getFormatoNumero(pedido.getNumeroMovil(),(ViewPedidoEdit)NMApp.getController().getView()) + "\r\n";
+    		_pedido += "LEFT\r\n";
+    		_pedido += "T 0 0 0 118 Cliente:\r\n";
+    		_pedido += "T 0 0 90 118 " + cliente.getNombreLegalCliente() + "\r\n";
+    		_pedido += "T 0 0 0 144 Vendedor:\r\n";
+    		_pedido += "T 0 0 90 144 " +SessionManager.getLoginUser().getCodigo() +
     	    " / " + SessionManager.getLoginUser().getNombre() + "\r\n";
-    		recibo += "LINE 0 170 576 170 1\r\n";
-    		recibo += "T 0 0 0 180 Producto\r\n";
-    		recibo += "RIGHT 382\r\n";
-    		recibo += "T 0 0 0 180 Cant\r\n";
-    		recibo += "RIGHT 435\r\n";
-    		recibo += "T 0 0 0 180 Bonif\r\n";
-    		recibo += "RIGHT 482\r\n";
-    		recibo += "T 0 0 0 180 Prom\r\n";
-    		recibo += "RIGHT 576\r\n";
-    		recibo += "T 0 0 0 180 Precio\r\n";
-    		recibo += "LEFT\r\n";
-    		recibo += "LINE 17 196 591 196 1\r\n";
+    		_pedido += "LINE 0 170 576 170 1\r\n";
+    		_pedido += "T 0 0 0 180 Producto\r\n";
+    		_pedido += "RIGHT 382\r\n";
+    		_pedido += "T 0 0 0 180 Cant\r\n";
+    		_pedido += "RIGHT 435\r\n";
+    		_pedido += "T 0 0 0 180 Bonif\r\n";
+    		_pedido += "RIGHT 482\r\n";
+    		_pedido += "T 0 0 0 180 Prom\r\n";
+    		_pedido += "RIGHT 576\r\n";
+    		_pedido += "T 0 0 0 180 Precio\r\n";
+    		_pedido += "LEFT\r\n";
+    		_pedido += "LINE 17 196 591 196 1\r\n";
 
     		int y = 206;
     		int tamanio=pedido.getDetalles().length;
-    		for (int curRecord = 0; curRecord < tamanio; curRecord++) {
+    		for (int curRecord = 0; curRecord < tamanio; curRecord++) 
+    		{
     			DetallePedido det = pedido.getDetalles()[curRecord];
 
     			String nombreProd = det.getNombreProducto();
     			if (nombreProd.length() > 40)
     				nombreProd = nombreProd.substring(0, 40) + "...";
-    			recibo += "T 0 0 0 " + y + " " + nombreProd + "\r\n";
-    			recibo += "RIGHT 382\r\n";
-    			recibo += "T 0 0 0 " + y + " "
+    			_pedido += "T 0 0 0 " + y + " " + nombreProd + "\r\n";
+    			_pedido += "RIGHT 382\r\n";
+    			_pedido += "T 0 0 0 " + y + " "
     					+ StringUtil.formatInt(det.getCantidadOrdenada()) + "\r\n";
-    			recibo += "RIGHT 435\r\n";
-    			recibo += "T 0 0 0 " + y + " "
+    			_pedido += "RIGHT 435\r\n";
+    			_pedido += "T 0 0 0 " + y + " "
     					+ StringUtil.formatInt(det.getCantidadBonificadaEditada())
     					+ "\r\n";
-    			recibo += "RIGHT 482\r\n";
-    			recibo += "T 0 0 0 " + y + " " + "0" + "\r\n"; // Poner promoción
-    			recibo += "RIGHT 576\r\n";
-    			recibo += "T 0 0 482 " + y + " "
+    			_pedido += "RIGHT 482\r\n";
+    			_pedido += "T 0 0 0 " + y + " " + "0" + "\r\n"; // Poner promoción
+    			_pedido += "RIGHT 576\r\n";
+    			_pedido += "T 0 0 482 " + y + " "
     					+ StringUtil.formatReal(det.getPrecio()) + "\r\n";
-    			recibo += "LEFT\r\n";
+    			_pedido += "LEFT\r\n";
     			y += 26;
     		}
-    		recibo += "LINE 0 " + y + " 576 " + y + " 1\r\n";
+    		_pedido += "LINE 0 " + y + " 576 " + y + " 1\r\n";
     		y += 10;
-    		recibo += "T 0 0 379 " + y + " Subtotal:\r\n";
-    		recibo += "RIGHT 576\r\n";
-    		recibo += "T 0 0 0 " + y + " "
+    		_pedido += "T 0 0 379 " + y + " Subtotal:\r\n";
+    		_pedido += "RIGHT 576\r\n";
+    		_pedido += "T 0 0 0 " + y + " "
     				+ StringUtil.formatReal(pedido.getSubtotal()) + "\r\n";
-    		recibo += "LEFT\r\n";
+    		_pedido += "LEFT\r\n";
 
     		y += 26;
-    		recibo += "T 0 0 379 " + y + " Descuento:\r\n";
-    		recibo += "RIGHT 576\r\n";
-    		recibo += "T 0 0 0 " + y + " "
+    		_pedido += "T 0 0 379 " + y + " Descuento:\r\n";
+    		_pedido += "RIGHT 576\r\n";
+    		_pedido += "T 0 0 0 " + y + " "
     				+ StringUtil.formatReal(pedido.getDescuento()) + "\r\n";
-    		recibo += "LEFT\r\n";
+    		_pedido += "LEFT\r\n";
 
     		y += 26;
-    		recibo += "T 0 0 379 "
+    		_pedido += "T 0 0 379 "
     				+ y
     				+ " "
-    				+ pedidoedit.getSharedPreferences("SystemParams",
+    				+ ((ViewPedidoEdit)NMApp.getController().getView()).getSharedPreferences("SystemParams",
     								android.content.Context.MODE_PRIVATE)
     						.getString("NombreImpuesto", "--") + ":\r\n";
-    		recibo += "RIGHT 576\r\n";
-    		recibo += "T 0 0 0 " + y + " "
+    		_pedido += "RIGHT 576\r\n";
+    		_pedido += "T 0 0 0 " + y + " "
     				+ StringUtil.formatReal(pedido.getImpuesto()) + "\r\n";
-    		recibo += "LEFT\r\n";
+    		_pedido += "LEFT\r\n";
 
     		y += 26;
-    		recibo += "T 0 0 379 "
+    		_pedido += "T 0 0 379 "
     				+ y
     				+ " Total "
-    				+ pedidoedit.getSharedPreferences("SystemParams",
+    				+ ((ViewPedidoEdit)NMApp.getController().getView()).getSharedPreferences("SystemParams",
     								android.content.Context.MODE_PRIVATE)
     						.getString("MonedaNacional", "--") + ":\r\n";
-    		recibo += "RIGHT 576\r\n";
-    		recibo += "T 0 0 0 " + y + " "
+    		_pedido += "RIGHT 576\r\n";
+    		_pedido += "T 0 0 0 " + y + " "
     				+ StringUtil.formatReal(pedido.getTotal()) + "\r\n";
-    		recibo += "LEFT\r\n";
+    		_pedido += "LEFT\r\n";
 
     		y += 15;
-    		recibo += "LINE 0 " + y + " 576 " + y + " 1\r\n";
+    		_pedido += "LINE 0 " + y + " 576 " + y + " 1\r\n";
     		y += 10;
-    		recibo += "T 7 0 169 " + y + " Gracias por su pedido\r\n";
+    		_pedido += "T 7 0 169 " + y + " Gracias por su pedido\r\n";
     		y += 30;
-    		recibo += "T 7 0 119 " + y + " Panzyma. Al cuidado de la salud\r\n";
-    		recibo += "FORM\r\n";
-    		recibo += "PRINT\r\n";
+    		_pedido += "T 7 0 119 " + y + " Panzyma. Al cuidado de la salud\r\n";
+    		_pedido += "FORM\r\n";
+    		_pedido += "PRINT\r\n";
     		y += 50;
 
     		String header = "! 0 200 200 " + y + " 1\r\n";
@@ -537,19 +576,17 @@ public class BPedidoM {
     		header += "BAR-SENSE\r\n";
     		header += ";// PAGE 0000000006000460\r\n";
 
-    		recibo = header + recibo; 
-			BluetoothComunication.newInstance().sendData(recibo);   
+    		_pedido = header + _pedido; 
     		
-			Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION,0,0,NotificationMessage.newInstance("","El Pedido fue enviado al dispositivo",""));
+    		if(_pedido.length() > 0) 
+    			new BluetoothConnection(_pedido); 
     		
-		} catch (Exception e) 
-		{ 
-			try {
-				Processor.notifyToView(controller,ControllerProtocol.ERROR,
-						0,0,ErrorMessage.newInstance("Error de comunicación",e.getMessage(),e.getCause().toString()));
-			} catch (Exception e1) { 
-				e1.printStackTrace();
-			}
-		}    	
+		 } catch (Exception e) 
+		 { 
+			 NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,ErrorMessage.newInstance("",e.getMessage(),(e.getCause()==null)?"":e.getCause().toString()));
+			Log.d(TAG,"ERROR al tratar de envia el pedido", e);
+		}
     }
+	
+	 
 }

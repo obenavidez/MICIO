@@ -51,7 +51,6 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
-import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable; 
 import com.panzyma.nm.serviceproxy.Pedido;
@@ -59,7 +58,7 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({"rawtypes","unchecked","static-access","incomplete-switch"})
 public class ViewPedido extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback 
 { 
@@ -69,7 +68,7 @@ public class ViewPedido extends ActionBarActivity implements
 		super.onActivityResult(requestcode, resultcode, data);
 		try 
 		{
-			nmapp.getController().setEntities(this,this.getBridge());
+			NMApp.getController().setEntities(this,this.getBridge());
 			request_code = requestcode;
 			if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code)
 					&& data != null)
@@ -125,7 +124,7 @@ public class ViewPedido extends ActionBarActivity implements
 	Bundle b;
 	private CharSequence tituloSeccion;
 	private CharSequence tituloApp;
-	private NMApp nmapp;
+	private NMApp NMApp;
 	ProgressDialog pDialog;
 	TextView gridheader;
 	TextView footerView;
@@ -147,7 +146,6 @@ public class ViewPedido extends ActionBarActivity implements
 	
 
 	/** Called when the activity is first created. */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -178,7 +176,8 @@ public class ViewPedido extends ActionBarActivity implements
 
 		drawerList.setOnItemClickListener(new OnItemClickListener() {
     
-	    @Override
+	    
+		@Override
 	    public void onItemClick(AdapterView parent, View view, int position, long id) {
         
         int pos =0;
@@ -309,7 +308,7 @@ public class ViewPedido extends ActionBarActivity implements
 		                return;
 		            }
 	            //SI SE ESTÁ FUERA DE LA COBERTURA
-	            if(!NMNetWork.isPhoneConnected(context,nmapp.getController()) && !NMNetWork.CheckConnection(nmapp.getController()))
+	            if(!NMNetWork.isPhoneConnected(context,NMApp.getController()) && !NMNetWork.CheckConnection(NMApp.getController()))
 	            
 	            {
 	                //Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
@@ -319,7 +318,7 @@ public class ViewPedido extends ActionBarActivity implements
 	            try
 	            {
 	            	//SOLICITAMOS QUE SE ANULE EL PEDIDO
-	            	Pedido pedido=(Pedido)nmapp.getController().getBridge().getClass().getMethod("anularPedido", long.class ).invoke(null,pedido_selected.getId());
+	            	Pedido pedido=(Pedido)NMApp.getController().getBridge().getClass().getMethod("anularPedido", long.class ).invoke(null,pedido_selected.getId());
 	            	if(pedido==null) return;
 	            	
 	            	//Toast.makeText(getApplicationContext(),"El pedido ha sido anulado.", Toast.LENGTH_SHORT).show();
@@ -370,11 +369,11 @@ public class ViewPedido extends ActionBarActivity implements
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 
-		nmapp = (NMApp) this.getApplicationContext();
+		NMApp = (NMApp) this.getApplicationContext();
 		try {
-			nmapp.getController().setEntities(this, bpm = new BPedidoM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController()
+			NMApp.getController().setEntities(this, bpm = new BPedidoM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
 							ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
@@ -407,7 +406,6 @@ public class ViewPedido extends ActionBarActivity implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -549,7 +547,6 @@ public class ViewPedido extends ActionBarActivity implements
 		positioncache = position;		
 	}
 
-	@SuppressWarnings("unchecked")
 	private void establecer(Object _obj) {
 		if (_obj == null)
 			return;
@@ -615,7 +612,7 @@ public class ViewPedido extends ActionBarActivity implements
 	    (
     		 new OnActionButtonClickListener()
     		 {
-				@SuppressWarnings("static-access")
+
 				@Override
 				public void onButtonClick(View _dialog,int actionId) {									 
 					if(actionId==CustomDialog.OK_BUTTOM ){
@@ -626,6 +623,7 @@ public class ViewPedido extends ActionBarActivity implements
 	    );
 	    return dialog;
 	}
+	
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -645,7 +643,7 @@ public class ViewPedido extends ActionBarActivity implements
 	}
 
 	private void FINISH_ACTIVITY() {
-		nmapp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().removeOutboxHandler(TAG);
 		Log.d(TAG, "Activity quitting");
 		finish();
 	}
@@ -660,13 +658,12 @@ public class ViewPedido extends ActionBarActivity implements
 					Message ms = new  Message();
 					ms.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST; 
 					ms.obj = pedido_selected.getId();
-					nmapp.getController().getInboxHandler().sendMessage(ms);
+					NMApp.getController().getInboxHandler().sendMessage(ms);
 				}				
 			}
 		});
 	}
 
-	@SuppressWarnings("unused")
 	private void ShowNoRecords()
 	{
 		if(pedidos.size()>0 && pedido_selected!=null){

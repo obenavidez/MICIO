@@ -424,10 +424,10 @@ public class ViewConfiguracion extends FragmentActivity implements
 									@Override
 									public void run() 
 									{
-										try {
+										try
+										{
 											setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-											if (SessionManager.getCredenciales().trim() != "")
-												controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS);
+											controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS);
 										} catch (Exception e) {
 											e.printStackTrace();
 										}
@@ -651,7 +651,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					dlg = new CustomDialog(context,mensaje, false, NOTIFICATION_DIALOG);
+					dlg =CustomDialog.nuevaInstancia(context,mensaje, false, NOTIFICATION_DIALOG);
 					dlg.show();
 				}
 			});

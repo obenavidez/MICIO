@@ -51,7 +51,7 @@
             android:background="@drawable/btn"
             android:nextFocusDown="@+id/btncancel"
             android:nextFocusRight="@+id/btncancel"
-            android:text="Entrar"
+            android:text="Aceptar"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/White" >
         </Button>

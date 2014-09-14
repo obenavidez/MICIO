@@ -10,6 +10,7 @@ import org.ksoap2.serialization.PropertyInfo;
  
 
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -20,6 +21,7 @@ import android.util.Log;
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 /*import com.panzyma.nm.auxiliar.Parameters;*/
@@ -75,41 +77,6 @@ public class ModelConfiguracion {
 		return config;
 	}
  
-
-	public synchronized static List<TasaCambio> getTasaCambio(Context cnt,
-			int fechaTasaCambio) {
-		StringBuilder query = new StringBuilder();
-		query.append(" SELECT Id , ");
-		query.append("        CodMoneda , ");
-		query.append("        Tasa ");
-		query.append(" FROM TasaCambio tc ");
-		query.append(String.format(" WHERE tc.Fecha = %d  ", fechaTasaCambio));
-		List<TasaCambio> paridaCambiaria = null;
-		SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(cnt);
-		try {
-			Cursor c = DatabaseProvider.query(db, query.toString());
-			paridaCambiaria = new ArrayList<TasaCambio>();
-			// Nos aseguramos de que existe al menos un registro
-			if (c.moveToFirst()) {
-				// Recorremos el cursor hasta que no haya más registros
-				do {
-					paridaCambiaria.add(new TasaCambio(c.getString(1),
-							fechaTasaCambio, c.getFloat(2)));
-
-				} while (c.moveToNext());
-			}
-		} catch (Exception e) {
-			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
-		} finally {
-			if (db != null) {
-				if (db.isOpen())
-					db.close();
-				db = null;
-			}
-		}
-		return paridaCambiaria;
-
-	}
 
 	public synchronized static int getMaxReciboID(Context cnt,
 			SQLiteDatabase... _db) {

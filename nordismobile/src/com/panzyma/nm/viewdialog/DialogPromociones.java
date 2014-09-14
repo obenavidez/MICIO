@@ -78,6 +78,11 @@ public class DialogPromociones extends Dialog
 				mButtonClickListener.onButtonClick(promocionseleccionada);		
 				dismiss();
 			}});
+		((Button)findViewById(R.id.btn_cancel)).setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v) {  	
+				dismiss();
+			}});
 		gridpromociones.setOnItemClickListener(new OnItemClickListener()
 		{
 
