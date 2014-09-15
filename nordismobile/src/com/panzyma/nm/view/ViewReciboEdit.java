@@ -459,7 +459,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		} 
 		else if (keyCode == KeyEvent.KEYCODE_BACK) {        	
 			FINISH_ACTIVITY();
-			finish();	       
 		}
 		return super.onKeyUp(keyCode, event);
 	}
@@ -1671,28 +1670,29 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void FINISH_ACTIVITY()
 	{
 		int requescode=0; 
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().disposeEntities();
 		if(pd!=null)
 			pd.dismiss();	
 		Log.d(TAG, "Activity quitting");
 
 		Intent intent =null;
-		if(salvado)
+		
+		if( recibo !=null 
+				&& ( recibo.getFacturasRecibo().size() > 0 
+						|| recibo.getNotasCreditoRecibo().size() > 0
+						|| recibo.getNotasDebitoRecibo().size() > 0 ) )
 		{
-			if( recibo !=null 
-					&& ( recibo.getFacturasRecibo().size() > 0 
-							|| recibo.getNotasCreditoRecibo().size() > 0
-							|| recibo.getNotasDebitoRecibo().size() > 0 ) )
-			{
-				intent = new Intent();
-				Bundle b = new Bundle();
-				b.putParcelable("recibo", recibo);
-				intent.putExtras(b);
-			} 
-			requescode = getIntent().getIntExtra("requestcode", (onEdit)?1:0);			
-			setResult(requescode,intent);
-		}
+			intent = new Intent();
+			Bundle b = new Bundle();
+			b.putParcelable("recibo", recibo);
+			intent.putExtras(b);
+		} 
+		if (onEdit)
+			requescode = getIntent().getIntExtra("requestcode", 0);
+		//requescode = getIntent().getIntExtra("requestcode", (onEdit)?1:0);			
+		setResult(requescode,intent);	
 		finish();
-		onEdit=false;
 	}
 
 	private void PagarTodo()
