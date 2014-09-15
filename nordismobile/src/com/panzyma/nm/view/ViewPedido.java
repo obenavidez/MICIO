@@ -78,6 +78,7 @@ public class ViewPedido extends ActionBarActivity implements
 			e.printStackTrace();
 		}
 		if(drawerLayout!=null && drawerLayout.isShown())drawerLayout.closeDrawers();
+		finishActivity(request_code);
 	}
 
 	@Override
@@ -189,8 +190,7 @@ public class ViewPedido extends ActionBarActivity implements
             intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
             intent.putExtra("requestcode", NUEVO_PEDIDO);
             startActivityForResult(intent, NUEVO_PEDIDO);// Activity is
-            // started
-            // with requestCode 2
+          
             break;
             case EDITAR_PEDIDO:
            

@@ -62,7 +62,7 @@
         
         <activity
             android:name="com.panzyma.nm.view.ViewPedidoEdit"
-            android:label="@string/app_name" 
+            android:label="@string/app_name" android:noHistory="true"
             android:configChanges="orientation"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>

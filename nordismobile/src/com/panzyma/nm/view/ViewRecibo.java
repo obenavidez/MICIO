@@ -90,7 +90,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		super.onActivityResult(requestcode, resultcode, data);
 		try 
 		{ 
-			nmapp.getController().setEntities(this,this.getBridge());
+			NMApp.getController().setEntities(this,this.getBridge());
 			request_code = requestcode;
 			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)	&& data != null)
 				establecer(data.getParcelableExtra("recibo"));
@@ -206,7 +206,6 @@ public class ViewRecibo extends ActionBarActivity implements
 	private ActionBarDrawerToggle drawerToggle;
 	private CharSequence tituloSeccion;
 	private CharSequence tituloApp;
-	private NMApp nmapp;
 	private QuickAction quickAction;
 	private Button btnMenu;
 	private Display display;
@@ -296,7 +295,7 @@ public class ViewRecibo extends ActionBarActivity implements
 					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
 					if ("REGISTRADO".equals(recibo_selected.getCodEstado())) 
 					{
-						nmapp.getController()
+						NMApp.getController()
 								.getInboxHandler()
 								.sendEmptyMessage(
 										ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
@@ -315,7 +314,7 @@ public class ViewRecibo extends ActionBarActivity implements
 						return;
 					}
 					//SI SE ESTÁ FUERA DE LA COBERTURA
-		            if(!NMNetWork.isPhoneConnected(context,nmapp.getController()) && !NMNetWork.CheckConnection(nmapp.getController()))
+		            if(!NMNetWork.isPhoneConnected(context,NMApp.getController()) && !NMNetWork.CheckConnection(NMApp.getController()))
 		            {
 		            	AppDialog.showMessage(vr,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 		            	return;
@@ -403,13 +402,11 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-
-		nmapp = (NMApp) this.getApplicationContext();
 		try {
-			nmapp.getController().removeBridgeByName(BReciboM.class.toString());
-			nmapp.getController().setEntities(this, bpm = new BReciboM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController()
+			NMApp.getController().removeBridgeByName(BReciboM.class.toString());
+			NMApp.getController().setEntities(this, bpm = new BReciboM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
 							ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
@@ -616,7 +613,7 @@ public void showStatusOnUI(Object msg) throws InterruptedException{
 		final String mensaje=""+((ErrorMessage)msg).getMessage();
 		
 		
-		nmapp.getThreadPool().execute(new Runnable()
+		NMApp.getThreadPool().execute(new Runnable()
 		{ 
 			@Override
 			public void run()
@@ -843,8 +840,8 @@ public void showStatusOnUI(Object msg) throws InterruptedException{
 	}
 	
 	private void FINISH_ACTIVITY()	{
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());			
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().removebridge(NMApp.getController().getBridge());			
 		Log.d(TAG, "Activity quitting"); 
 		finish();
 	}

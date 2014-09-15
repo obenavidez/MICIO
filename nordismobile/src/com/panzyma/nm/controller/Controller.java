@@ -173,19 +173,41 @@ public class Controller<T, U>
 		return obj;
 	}
 	
+//	public final T createObjectT(T _bridge)
+//	{
+//		T obj = null;
+//		try 
+//		{
+//			int index=buscarObjeto(bridges,_bridge);
+//			obj= (T) _bridge.getClass().getConstructor(view.getClass()).newInstance(view);
+//			if(index!=-1){
+//				obj=bridges.set(index, obj);
+//			}			
+//			else{
+//				bridges.add(obj);
+//			}
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return obj;
+//	}
+	
 	public final T createObjectT(T _bridge)
 	{
 		T obj = null;
 		try 
 		{
 			int index=buscarObjeto(bridges,_bridge);
-			obj= (T) _bridge.getClass().getConstructor(view.getClass()).newInstance(view);
-			if(index!=-1){
-				obj=bridges.set(index, obj);
-			}			
+
+			if(index!=-1)
+				obj=bridges.get(index);
+
 			else{
-				bridges.add(obj);
-			}
+					obj= (T) _bridge.getClass().getConstructor(view.getClass()).newInstance(view);
+					bridges.add(obj);
+				}
+
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -200,7 +222,7 @@ public class Controller<T, U>
 		{
 			int index=buscarObjeto(views,_view);
 			if(index!=-1){
-				views.set(index,_view);
+//				views.set(index,_view);
 				obj=views.get(index);
 			}
 			else{

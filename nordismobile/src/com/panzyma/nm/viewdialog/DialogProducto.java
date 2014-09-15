@@ -43,8 +43,7 @@ import com.panzyma.nordismobile.R;
 
 public class DialogProducto extends Dialog  implements Handler.Callback{
 
-	private static Context parent;
-	private NMApp nmapp;
+	private static Context parent; 
 	private Display display;
 	private ProgressDialog pd;
 	private GenericAdapter adapter; 
@@ -91,14 +90,13 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
         {   
 			setContentView(R.layout.mainproducto);   
 			_view=vpe;
-        	parent=vpe.getContext();       	
-        	nmapp=(NMApp) parent.getApplicationContext(); 
-	        nmapp.getController().setEntities(this,new BProductoM()); 
-	        nmapp.getController().addOutboxHandler(new Handler(this));
+        	parent=vpe.getContext();       	 
+	        NMApp.getController().setEntities(this,new BProductoM()); 
+	        NMApp.getController().addOutboxHandler(new Handler(this));
 	        pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false); 
 			WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay(); 
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
+			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
 			initComponents();
 			codTipoPrecio = codTP;
 	        _idsProdsExcluir = (ProdsExclir==null)?new ArrayList<Producto>():ProdsExclir;
@@ -284,11 +282,11 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	
 	private void FINISH_ACTIVITY()
 	{
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());
-		nmapp.getController().disposeEntities();
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().removebridge(NMApp.getController().getBridge());
+		NMApp.getController().disposeEntities();
 		try {
-			nmapp.getController().setEntities(parent,_view.getBridge());
+			NMApp.getController().setEntities(parent,_view.getBridge());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
