@@ -255,6 +255,7 @@ public class ViewPedido extends ActionBarActivity implements
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                transaction = getSupportFragmentManager().beginTransaction();
                 cuentasPorCobrar = new CuentasPorCobrarFragment();
                 Bundle msg = new Bundle();
                 msg.putInt(CuentasPorCobrarFragment.ARG_POSITION,
@@ -624,15 +625,17 @@ public class ViewPedido extends ActionBarActivity implements
 	
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			/*Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+		{
+			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 			if (fragment instanceof CuentasPorCobrarFragment) {
-				  transaction = getSupportFragmentManager().beginTransaction();
-				  transaction.replace(R.id.fragment_container, firstFragment);
-				  transaction.addToBackStack(null);
-				  transaction.commit();
+				transaction=getSupportFragmentManager().beginTransaction();
+				transaction = getSupportFragmentManager().beginTransaction();
+				transaction.replace(R.id.fragment_container, firstFragment);
+				transaction.addToBackStack(null);
+				transaction.commit();
 			}
-			else*/
+			else
 				FINISH_ACTIVITY();
 			
 			return true;
