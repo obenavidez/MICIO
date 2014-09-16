@@ -1,5 +1,7 @@
 package com.panzyma.nm.viewmodel;
 
+import java.util.ArrayList;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -129,10 +131,51 @@ public class vmRecibo implements Item, Parcelable {
 	}
 
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		// TODO Auto-generated method stub
-
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeInt(id);
+		parcel.writeInt(numero);
+		parcel.writeLong(fecha);
+		parcel.writeFloat(totalRecibo);
+		parcel.writeString( nombreCliente );
+		parcel.writeString( descEstado );
+		parcel.writeString( codEstado );
 	}
+	
+	public vmRecibo(Parcel parcel) {
+		super();
+		readFromParcel(parcel);
+	}
+	
+	public static ArrayList<vmRecibo> arrayParcelToArrayRecibo(Parcel[] parcels) {
+		ArrayList<vmRecibo> recibos = new ArrayList<vmRecibo>();
+		for(Parcel p : parcels) {
+			vmRecibo recibe = new vmRecibo(p);
+			recibos.add(recibe);
+		}
+		return recibos;
+	}
+	
+	private void readFromParcel(Parcel parcel) {
+		id = parcel.readInt();
+		numero = parcel.readInt();
+		fecha = parcel.readLong();
+		totalRecibo = parcel.readFloat();
+		nombreCliente = parcel.readString();
+		descEstado = parcel.readString();
+		codEstado = parcel.readString();
+	}
+
+	public static final Parcelable.Creator<vmRecibo> CREATOR = new Parcelable.Creator<vmRecibo>() {
+		@Override
+		public vmRecibo createFromParcel(Parcel in) {
+			return new vmRecibo(in);
+		}
+
+		@Override
+		public vmRecibo[] newArray(int size) {
+			return new vmRecibo[size];
+		}
+	};	
 
 	@Override
 	public String getItemName() {

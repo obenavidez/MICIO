@@ -1,10 +1,13 @@
 package com.panzyma.nm.fragments;
 
+import java.io.Serializable;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.AbsListView;
@@ -15,11 +18,11 @@ import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("unchecked")
 @SuppressLint("NewApi")
-public class ListaFragment<E> extends ListFragment implements Filterable {
-
-	OnItemSelectedListener mCallback;
-	private List<E> items;
-	private CustomArrayAdapter<E> mAdapter = null;
+public class ListaFragment<E> extends ListFragment implements Filterable, Parcelable {
+	
+	transient OnItemSelectedListener mCallback;
+	private transient List<E> items;
+	private transient CustomArrayAdapter<E> mAdapter = null;
 	private int pos = 0;
 	private Activity activity;
 
@@ -101,6 +104,18 @@ public class ListaFragment<E> extends ListFragment implements Filterable {
 	
 	public void setAdapter(CustomArrayAdapter<E> adapter) {
 		this.mAdapter = adapter; 
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

@@ -10,7 +10,10 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.ksoap2.SoapEnvelope;
@@ -32,6 +35,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -81,12 +86,11 @@ import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("rawtypes")
 public class ViewRecibo extends ActionBarActivity implements
-		ListaFragment.OnItemSelectedListener, Handler.Callback {
-	
+		ListaFragment.OnItemSelectedListener, Handler.Callback {	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
-		// TODO Auto-generated method stub
+	protected void onActivityResult(int requestcode, int resultcode, Intent data) {		
 		super.onActivityResult(requestcode, resultcode, data);
 		try 
 		{ 
@@ -94,11 +98,11 @@ public class ViewRecibo extends ActionBarActivity implements
 			request_code = requestcode;
 			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)	&& data != null)
 				establecer(data.getParcelableExtra("recibo"));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {			
 			e.printStackTrace();
 		}
-		if(drawerLayout!=null)drawerLayout.closeDrawers();
+		if(drawerLayout!=null && drawerLayout.isShown())drawerLayout.closeDrawers();
+		finishActivity(request_code);
 	}
 	
 	@Override
@@ -149,7 +153,10 @@ public class ViewRecibo extends ActionBarActivity implements
 				positioncache = recibos.size() - 1;
 			}
 		}
-
+		setList();
+	}
+	
+	private void setList(){
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -169,7 +176,6 @@ public class ViewRecibo extends ActionBarActivity implements
 				}
 			}
 		});
-
 	}
 
 	private BReciboM getBridge() {
@@ -267,7 +273,10 @@ public class ViewRecibo extends ActionBarActivity implements
 				//CERRAR EL MENU DEL DRAWER
 				drawerLayout.closeDrawers();
 				//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-				int pos = customArrayAdapter.getSelectedPosition();
+				customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((customArrayAdapter == null) ? ((Filterable) firstFragment)
+						.getAdapter() : customArrayAdapter);
+				
+				int pos =customArrayAdapter.getSelectedPosition();
 				//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
 				recibo_selected = customArrayAdapter.getItem(pos);
 				
@@ -399,9 +408,78 @@ public class ViewRecibo extends ActionBarActivity implements
 		};
 
 		drawerLayout.setDrawerListener(drawerToggle);
-
+				
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
+		
+		fragmentActive = FragmentActive.LIST;
+
+		// Create an instance of ExampleFragment
+		firstFragment = new ListaFragment<vmRecibo>();
+		firstFragment.setRetainInstance(true);
+		// In case this activity was started with special instructions from
+		// an Intent,
+		// pass the Intent's extras to the fragment as arguments
+		firstFragment.setArguments(getIntent().getExtras());
+		
+		if ( savedInstanceState != null ) {
+			Parcelable[] objects = savedInstanceState.getParcelableArray("recibos");	
+			recibos = new ArrayList<vmRecibo>((Collection<? extends vmRecibo>) Arrays.asList(objects));
+			//recibos = vmRecibo.arrayParcelToArrayRecibo(objects);			
+		} else {
+			recibos = null;
+		} 
+		
+		if(recibos == null) {
+			cargarRecibos();
+		}  
+		
+		// However, if we're being restored from a previous state,
+		// then we don't need to do anything and should return or else
+		// we could end up with overlapping fragments.
+		if (savedInstanceState != null) {
+			return;
+		}		
+
+		// Add the fragment to the 'fragment_container' FrameLayout
+		if (findViewById(R.id.fragment_container) != null) {			
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.fragment_container, firstFragment).commit();
+		} else {
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.item_client_fragment, firstFragment).commit();
+		}
+	}
+		
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	  super.onSaveInstanceState(savedInstanceState);
+	  // Save UI state changes to the savedInstanceState.
+	  // This bundle will be passed to onCreate if the process is
+	  // killed and restarted.
+	  Parcelable [] objects = new Parcelable[recibos.size()];
+	  recibos.toArray(objects);
+	  savedInstanceState.putParcelableArray("recibos", objects);
+	  savedInstanceState.putInt("positioncache", positioncache);
+	  savedInstanceState.putParcelable("fragment", firstFragment);
+	   // etc.
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	  super.onRestoreInstanceState(savedInstanceState);
+	  // Restore UI state from the savedInstanceState.
+	  // This bundle has also been passed to onCreate.
+	  Parcelable [] objects = savedInstanceState.getParcelableArray("recibos");
+	  recibos = new ArrayList<vmRecibo>( (Collection<? extends vmRecibo>) Arrays.asList(objects) ); 
+	  positioncache = savedInstanceState.getInt("positioncache");	  
+	  firstFragment = (ListaFragment<vmRecibo>) savedInstanceState.getParcelable("fragment");
+	  //setList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void cargarRecibos() {
 		try {
 			NMApp.getController().removeBridgeByName(BReciboM.class.toString());
 			NMApp.getController().setEntities(this, bpm = new BReciboM());
@@ -413,33 +491,9 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		// However, if we're being restored from a previous state,
-		// then we don't need to do anything and should return or else
-		// we could end up with overlapping fragments.
-		if (savedInstanceState != null) {
-			return;
-		}
-		
-		fragmentActive = FragmentActive.LIST;
-
-		// Create an instance of ExampleFragment
-		firstFragment = new ListaFragment<vmRecibo>();
-
-		// In case this activity was started with special instructions from
-		// an Intent,
-		// pass the Intent's extras to the fragment as arguments
-		firstFragment.setArguments(getIntent().getExtras());
-
-		// Add the fragment to the 'fragment_container' FrameLayout
-		if (findViewById(R.id.fragment_container) != null) {			
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.fragment_container, firstFragment).commit();
-		} else {
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.item_client_fragment, firstFragment).commit();
-		}
+		}		
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	@SuppressLint("NewApi")
@@ -607,7 +661,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		return false;
 	}
 
-public void showStatusOnUI(Object msg) throws InterruptedException{
+	public void showStatusOnUI(Object msg) throws InterruptedException{
 		
 		final String titulo=""+((ErrorMessage)msg).getTittle();
 		final String mensaje=""+((ErrorMessage)msg).getMessage();
@@ -705,123 +759,13 @@ public void showStatusOnUI(Object msg) throws InterruptedException{
 		}
 
 	}
-
-	/*@SuppressWarnings("unchecked")
-	private void establecer(Message msg) {
-		recibos = (List<vmRecibo>) ((msg.obj == null) ? new ArrayList<vmRecibo>()
-				: msg.obj);
-		gridheader.setVisibility(View.VISIBLE);
-		gridheader.setText(String.format("Listado de Recibos (%s)",
-				recibos.size()));
-		if (recibos.size() == 0) {
-			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
-			txtenty.setVisibility(View.VISIBLE);
-		}
-		firstFragment.setItems(recibos);		
-		firstFragment.getAdapter().setSelectedPosition(0);		
-		positioncache = 0;
-		if(recibos.size() > 0)
-			recibo_selected = firstFragment.getAdapter().getItem(0); //customArrayAdapter.getItem(0);
-	}*/
-
+	
 	@Override
 	public void onItemSelected(Object obj, int position) {
-
-		/*FichaReciboFragment reciboFragment;
-		Bundle args = new Bundle();
-		args.putInt(FichaProductoFragment.ARG_POSITION, position);
-		args.putParcelable(FichaReciboFragment.OBJECT, (vmRecibo) obj);		
-
-		if (findViewById(R.id.dynamic_fragment) != null) {
-
-			reciboFragment = (FichaReciboFragment) getSupportFragmentManager()
-					.findFragmentById(R.id.dynamic_fragment);
-			if (reciboFragment != null) {
-				reciboFragment.updateArticleView((vmRecibo) obj, position);
-			} else {
-				reciboFragment = new FichaReciboFragment();
-				reciboFragment.setArguments(args);
-				transaction.add(R.id.dynamic_fragment, reciboFragment);
-				transaction.addToBackStack(null);
-			}
-
-		} else {
-
-			@SuppressWarnings("unused")
-			Fragment fragment = getSupportFragmentManager().findFragmentById(
-					R.id.fragment_container);
-
-			gridheader.setVisibility(View.INVISIBLE);
-
-			if (fragment instanceof ListaFragment) {
-				reciboFragment = new FichaReciboFragment();
-				reciboFragment.setArguments(args);
-				transaction.replace(R.id.fragment_container, reciboFragment);
-				transaction.addToBackStack(null);
-			}
-		}
-		// Commit the transaction transaction.commit();
-		transaction.commit();
-		*/
+		recibo_selected = firstFragment.getAdapter().getItem(position);
+		positioncache = position;
 	}
 		
-//	private void initMenu() {
-//		quickAction = new QuickAction(this, QuickAction.VERTICAL, 1);
-//		quickAction.addActionItem(new ActionItem(MOSTRAR_FACTURAS,
-//				"Mostrar Facturas"));
-//		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_DEBITO,
-//				"Mostrar Notas Débito"));
-//		quickAction.addActionItem(new ActionItem(MOSTRAR_NOTAS_CREDITO,
-//				"Mostrar Notas Crédito"));
-//		quickAction.addActionItem(null);
-//		quickAction.addActionItem(new ActionItem(MOSTRAR_PEDIDOS,
-//				"Mostrar Pedidos"));
-//		quickAction.addActionItem(new ActionItem(MOSTRAR_RECIBOS,
-//				"Mostrar Recibos"));		
-//
-//		quickAction
-//				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
-//					@Override
-//					public void onItemClick(QuickAction source, final int pos,
-//							int actionId) {
-//
-//						runOnUiThread(new Runnable() {
-//							@Override
-//							public void run() {
-//								ActionItem actionItem = quickAction.getActionItem(pos);
-//								
-//								switch (actionItem.getActionId()) {
-//								case MOSTRAR_FACTURAS:
-//									cuentasPorCobrar.cargarFacturasCliente();
-//									break;
-//								case MOSTRAR_NOTAS_DEBITO:
-//									cuentasPorCobrar.cargarNotasDebito();
-//									break;
-//								case MOSTRAR_NOTAS_CREDITO:
-//									cuentasPorCobrar.cargarNotasCredito();
-//									break;
-//								case MOSTRAR_RECIBOS:
-//									cuentasPorCobrar.cargarRecibosColector();
-//									break;
-//								case MOSTRAR_PEDIDOS:
-//									cuentasPorCobrar.cargarPedidos();
-//									break;								
-//								}
-//							}
-//						});
-//
-//					}
-//
-//				});
-//		quickAction.setOnDismissListener(new QuickAction.OnDismissListener() {
-//			@Override
-//			public void onDismiss() {
-//				quickAction.dismiss();
-//			}
-//		});
-//
-//	}
-	
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {			
@@ -854,6 +798,7 @@ public void showStatusOnUI(Object msg) throws InterruptedException{
 		return new CustomDialog(this.getApplicationContext(), tittle, msg,
 				false, type);
 	}
+
 	@Override
 	public void onBackPressed() {
 		Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
