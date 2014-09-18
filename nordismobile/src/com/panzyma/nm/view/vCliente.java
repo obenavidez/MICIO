@@ -247,16 +247,6 @@ public class vCliente extends ActionBarActivity implements
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		/*
-		boolean menuAbierto = drawerLayout.isDrawerOpen(drawerList);
-
-		if (menuAbierto)
-			menu.findItem(R.id.action_search).setVisible(false);
-		else
-			menu.findItem(R.id.action_search).setVisible(true);
-
-		
-		return super.onPrepareOptionsMenu(menu);*/
 		return false;
 	}
 

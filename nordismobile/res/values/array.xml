@@ -19,6 +19,13 @@
         <item >Sincronizar Todo</item>
         <item >Salir</item>
     </string-array>
+    <string-array name="productoptions">
+        <item >Ficha Detalle</item>
+        <item >Bonificaciones</item>
+        <item >Lista de Precios</item>
+        <item >Sincronizar Productos</item>
+        <item >Cerrar</item>
+    </string-array>    
     <string-array name="tipodocumentos">
         <item >Factura</item>
         <item >Nota de Débito</item>

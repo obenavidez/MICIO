@@ -68,7 +68,7 @@ public class ViewPedido extends ActionBarActivity implements
 		super.onActivityResult(requestcode, resultcode, data);
 		try 
 		{
-			NMApp.getController().setEntities(this,this.getBridge());
+			com.panzyma.nm.NMApp.getController().setEntities(this,this.getBridge());
 			request_code = requestcode;
 			if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code) && data != null)
 				establecer(data.getParcelableExtra("pedido"));
@@ -116,6 +116,7 @@ public class ViewPedido extends ActionBarActivity implements
 	private static final int ANULAR_PEDIDO = 4;
 	private static final int CUENTAS_POR_COBRAR = 5;
 	protected static final int CONSULTA_VENTAS = 6;
+	protected static final int CERRAR = 7;
 	private static int request_code;
 	private String[] opcionesMenu;
 	private DrawerLayout drawerLayout;
@@ -309,7 +310,7 @@ public class ViewPedido extends ActionBarActivity implements
 		                return;
 		            }
 	            //SI SE ESTÁ FUERA DE LA COBERTURA
-	            if(!NMNetWork.isPhoneConnected(context,NMApp.getController()) && !NMNetWork.CheckConnection(NMApp.getController()))
+	            if(!NMNetWork.isPhoneConnected(context,com.panzyma.nm.NMApp.getController()) && !NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController()))
 	            
 	            {
 	                //Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
@@ -319,7 +320,7 @@ public class ViewPedido extends ActionBarActivity implements
 	            try
 	            {
 	            	//SOLICITAMOS QUE SE ANULE EL PEDIDO
-	            	Pedido pedido=(Pedido)NMApp.getController().getBridge().getClass().getMethod("anularPedido", long.class ).invoke(null,pedido_selected.getId());
+	            	Pedido pedido=(Pedido)com.panzyma.nm.NMApp.getController().getBridge().getClass().getMethod("anularPedido", long.class ).invoke(null,pedido_selected.getId());
 	            	if(pedido==null) return;
 	            	
 	            	//Toast.makeText(getApplicationContext(),"El pedido ha sido anulado.", Toast.LENGTH_SHORT).show();
@@ -335,6 +336,10 @@ public class ViewPedido extends ActionBarActivity implements
                 drawerLayout.closeDrawers();
 	            ShowNoRecords();
 	        }
+            break;
+            case CERRAR :
+            	drawerLayout.closeDrawers();
+            	FINISH_ACTIVITY();
             break;
         }
         
@@ -373,9 +378,9 @@ public class ViewPedido extends ActionBarActivity implements
 		NMApp = (NMApp) this.getApplicationContext();
 		try {
 
-			NMApp.getController().setEntities(this, bpm = new BPedidoM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+			com.panzyma.nm.NMApp.getController().setEntities(this, bpm = new BPedidoM());
+			com.panzyma.nm.NMApp.getController().addOutboxHandler(new Handler(this));
+			com.panzyma.nm.NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -467,15 +472,7 @@ public class ViewPedido extends ActionBarActivity implements
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-
-		boolean menuAbierto = drawerLayout.isDrawerOpen(drawerList);
-
-		if (menuAbierto)
-			menu.findItem(R.id.action_search).setVisible(false);
-		else
-			menu.findItem(R.id.action_search).setVisible(true);
-
-		return super.onPrepareOptionsMenu(menu);
+		return false;
 	}
 
 	@Override
@@ -655,7 +652,9 @@ public class ViewPedido extends ActionBarActivity implements
 	
 	
 	private void FINISH_ACTIVITY() {
+		//com.panzyma.nm.NMApp.getController().removeOutboxHandler(TAG);
 		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		finish();
 	}
@@ -670,7 +669,7 @@ public class ViewPedido extends ActionBarActivity implements
 					Message ms = new  Message();
 					ms.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST; 
 					ms.obj = pedido_selected.getId();
-					NMApp.getController().getInboxHandler().sendMessage(ms);
+					com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(ms);
 				}				
 			}
 		});
@@ -685,18 +684,5 @@ public class ViewPedido extends ActionBarActivity implements
     		AppDialog.showMessage(vp,"","No existen pedidos registrados.",DialogType.DIALOGO_ALERTA);
     	}
 	}
-	/*
-	@Override
-	public void onBackPressed() {
-		  Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-		  if (fragment instanceof CuentasPorCobrarFragment) {
-			  FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
-			  mytransaction.replace(R.id.fragment_container, firstFragment);
-			  mytransaction.addToBackStack(null);
-			  mytransaction.commit();
-		  }
-		  else {
-			  FINISH_ACTIVITY(); 
-		  }
-	}*/
+
 } 
