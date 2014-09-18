@@ -475,6 +475,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	  recibos = new ArrayList<vmRecibo>( (Collection<? extends vmRecibo>) Arrays.asList(objects) ); 
 	  positioncache = savedInstanceState.getInt("positioncache");	  
 	  firstFragment = (ListaFragment<vmRecibo>) savedInstanceState.getParcelable("fragment");
+	  gridheader.setText(String.format("Listado de Recibos (%s)",recibos.size()));
 	  //setList();
 	}
 	

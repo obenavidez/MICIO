@@ -7,7 +7,9 @@ import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALH
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER; 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar; 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -30,6 +32,7 @@ import com.panzyma.nm.auxiliar.VentasUtil;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol; 
+import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction; 
@@ -59,6 +62,7 @@ import com.panzyma.nm.viewdialog.DialogDocumentos.OnDocumentoButtonClickListener
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
 import com.panzyma.nm.viewdialog.EditFormaPago; 
+import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 import android.support.v4.app.FragmentActivity; 
@@ -71,6 +75,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Display;
@@ -209,10 +214,17 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			NMApp.getController().setEntities(this, brm =  new BReciboM());
 			NMApp.getController().addOutboxHandler(handler=new Handler(this));
 
-			facturasRecibo = new ArrayList<Factura> ();
-			documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
+			facturasRecibo = new ArrayList<Factura> ();		
+			
+			if( savedInstanceState != null ) {
+				Parcelable [] docs = savedInstanceState.getParcelableArray("documentos");
+				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>( (Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays.asList(docs) );
+				recibo = savedInstanceState.getParcelable("recibo");
+			} else {
+				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
+			}
 
-			if(reciboId != 0)
+			if(reciboId != 0 )
 			{
 				onEdit = true;
 				//OBTENER EL RECIBO DESDE LOCALHOST  	 
@@ -237,6 +249,32 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	  super.onSaveInstanceState(savedInstanceState);
+	  // Save UI state changes to the savedInstanceState.
+	  // This bundle will be passed to onCreate if the process is
+	  // killed and restarted.
+	  Parcelable [] objects = new Parcelable[documents.size()];
+	  documents.toArray(objects);
+	  savedInstanceState.putParcelableArray("documentos", objects);	
+	  savedInstanceState.putParcelable("recibo", recibo);
+	   // etc.
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	  super.onRestoreInstanceState(savedInstanceState);
+	  // Restore UI state from the savedInstanceState.
+	  // This bundle has also been passed to onCreate.
+	  Parcelable [] objects = savedInstanceState.getParcelableArray("documentos");
+	  documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>( (Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays.asList(objects) );	 
+	  gridheader.setText(String.format("Documentos a Pagar (%s)",documents.size()));
+	  recibo = savedInstanceState.getParcelable("recibo");
+	  //setList();
+	}
+	
 	private void initComponent() {
 
 		gridDetalleRecibo = findViewById(R.id.pddgrilla);
@@ -274,6 +312,38 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 		loadData();
 		initMenu();
+	}
+	
+	private void addWithoutRepeating(Object obj){
+		if ( documents == null )
+			return;
+		boolean repetido = false;
+		for(com.panzyma.nm.serviceproxy.Documento doc : documents) {
+			if (obj instanceof ReciboDetFactura) {
+				ReciboDetFactura fac = (ReciboDetFactura) obj;
+				ReciboDetFactura fac2 = (ReciboDetFactura)doc.getObject();
+				if (fac2.getObjFacturaID() == fac.getObjFacturaID()) {
+					repetido = true;
+					break;
+				}									
+			} else if (obj instanceof ReciboDetND) {
+				ReciboDetND nd = (ReciboDetND) obj;
+				ReciboDetND nd2 = (ReciboDetND) doc.getObject();;
+				if (nd.getObjNotaDebitoID() == nd2.getObjNotaDebitoID()){
+					repetido = true;
+					break;
+				}									
+			} else if (obj instanceof ReciboDetNC) {
+				ReciboDetNC nc = (ReciboDetNC) obj;
+				ReciboDetNC nc2 = (ReciboDetNC) doc.getObject();;
+				if (nc.getObjNotaCreditoID() == nc2.getObjNotaCreditoID()){
+					repetido = true;
+					break;
+				}									
+			}
+		}
+		if (!repetido)
+			documents.add((com.panzyma.nm.serviceproxy.Documento) obj);
 	}
  
 	private void loadData() {
@@ -315,17 +385,16 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 						getFacturasRecibo().add(fac);
 					}
 				}
-				documents.add(factura);
+				addWithoutRepeating(factura);
 			}
 			// AGREGAR LAS NOTAS DE DEBITO DEL RECIBO A LA GRILLA
 			for (ReciboDetND nd : recibo.getNotasDebitoRecibo()) {
-				documents.add(nd);
+				addWithoutRepeating(nd);
 			}
 			// AGREGAR LAS NOTAS DE CREDITO DEL RECIBO A LA GRILLA
 			for (ReciboDetNC nc : recibo.getNotasCreditoRecibo()) {
-				documents.add(nc);
+				addWithoutRepeating(nc);
 			}
-
 			adapter = null;
 			agregarDocumentosAlDetalleDeRecibo(); 
 		}
