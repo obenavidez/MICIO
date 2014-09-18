@@ -17,7 +17,6 @@ import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
-import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.model.ModelCliente;  
 import com.panzyma.nm.serviceproxy.CCCliente;
@@ -60,41 +59,41 @@ public final class BClienteM
 	public BClienteM(vCliente view)
 	{
 		this.view = view;
-    	this.controller=((NMApp)view.getApplication()).getController();      	
-    	this.pool =((NMApp)view.getApplication()).getThreadPool();
+    	this.controller=NMApp.getController();      	
+    	this.pool =NMApp.getThreadPool();
     	view_activated=1;
     }
 	
 	public BClienteM(ViewReciboEdit view)
 	{
 		this.view3 = view;
-    	this.controller=((NMApp)view3.getApplication()).getController();      	
-    	this.pool =((NMApp)view3.getApplication()).getThreadPool();
+    	this.controller=NMApp.getController();      	
+    	this.pool =NMApp.getThreadPool();
     	view_activated = 4;
     }
 
 
 	public BClienteM(DialogCuentasPorCobrar view)
 	{
-    	this.controller=((NMApp)view.getContext().getApplicationContext()).getController();;  
+    	this.controller=NMApp.getController();;  
     	this.viewcc=view;
-    	this.pool = ((NMApp)view.getContext().getApplicationContext()).getThreadPool();
+    	this.pool = NMApp.getThreadPool();
     	view_activated=2;
     }
 	
 	public BClienteM(DialogCliente view)
 	{
-    	this.controller=((NMApp)view.getContext().getApplicationContext()).getController();  
+    	this.controller=NMApp.getController();  
     	this.dlogCliente=view;
-    	this.pool = ((NMApp)view.getContext().getApplicationContext()).getThreadPool();
+    	this.pool = NMApp.getThreadPool();
     	view_activated=3;
     }
 
 	public BClienteM(ViewRecibo view)
 	{
 		this.view4 = view;
-    	this.controller=((NMApp)view.getApplication()).getController();      	
-    	this.pool =((NMApp)view.getApplication()).getThreadPool();
+    	this.controller=NMApp.getController();      	
+    	this.pool =NMApp.getThreadPool();
     	view_activated=5;
     }
 	public BClienteM(FichaClienteFragment view)
@@ -216,7 +215,7 @@ public final class BClienteM
 			if(credentials.trim()!="")
 			{	
 				
-				((NMApp)view.getApplicationContext()).getThreadPool().execute(  new Runnable()
+				NMApp.getThreadPool().execute(  new Runnable()
 	            {
 	            	@Override
 					public void run() 

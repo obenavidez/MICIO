@@ -36,8 +36,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.controller.ControllerProtocol;
@@ -147,9 +145,9 @@ public class ProductoView extends ActionBarActivity implements
 			
 			productos=(savedInstanceState!=null)?productos=savedInstanceState.getParcelableArrayList("vmProducto"):null;
 			if(productos==null){
-				nmapp.getController().setEntities(this, new BProductoM());
-				nmapp.getController().addOutboxHandler(new Handler(this));
-				nmapp.getController().getInboxHandler()
+				NMApp.getController().setEntities(this, new BProductoM());
+				NMApp.getController().addOutboxHandler(new Handler(this));
+				NMApp.getController().getInboxHandler()
 						.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 				
 				pDialog = new ProgressDialog(this);
@@ -232,9 +230,9 @@ public class ProductoView extends ActionBarActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		if (drawerToggle.onOptionsItemSelected(item)) {
-			return true;
+			return false;
 		}
-
+/*
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
@@ -246,21 +244,22 @@ public class ProductoView extends ActionBarActivity implements
 		default:
 			return super.onOptionsItemSelected(item);
 		}
-
-		return true;
+*/
+		return false;
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-
+		/*
 		boolean menuAbierto = drawerLayout.isDrawerOpen(drawerList);
 
 		if (menuAbierto)
 			menu.findItem(R.id.action_search).setVisible(false);
 		else
 			menu.findItem(R.id.action_search).setVisible(true);
-
-		return super.onPrepareOptionsMenu(menu);
+		 */
+		//return super.onPrepareOptionsMenu(menu);
+		return false;
 	}
 
 	@Override
@@ -436,8 +435,8 @@ public class ProductoView extends ActionBarActivity implements
 	
 	private void FINISH_ACTIVITY()
 	{ 	 		
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().disposeEntities();
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		finish();		
 	}

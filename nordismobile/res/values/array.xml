@@ -13,6 +13,11 @@
         <item >Nuevo Pedido</item>
         <item >Nuevo recibo</item>
         <item >Nueva devolución</item>
+        <item >Ficha del Cliente</item>
+        <item >Consultar Cuentas por Cobrar</item>
+        <item >Sincronizar Item</item>
+        <item >Sincronizar Todo</item>
+        <item >Salir</item>
     </string-array>
     <string-array name="tipodocumentos">
         <item >Factura</item>

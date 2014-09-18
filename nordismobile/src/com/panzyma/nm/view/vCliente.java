@@ -91,6 +91,11 @@ public class vCliente extends ActionBarActivity implements
 	private static final int NUEVO_PEDIDO = 0;
 	private static final int NUEVO_RECIBO = 1;
 	private static final int NUEVO_DEVOLUCION=2;
+	private static final int FICHA_CLIENTE=3;
+	private static final int CONSULTAR_CUENTA_COBRAR=4;
+	private static final int SINCRONIZAR_ITEM=5;
+	private static final int SINCRONIZAR_TODOS=6;
+	private static final int CERRAR=7;
 	//RECIBO
 	public static final String PEDIDO_ID = "pedido_id";
 	public static final String RECIBO_ID = "recibo_id";
@@ -242,25 +247,27 @@ public class vCliente extends ActionBarActivity implements
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-
+		/*
 		boolean menuAbierto = drawerLayout.isDrawerOpen(drawerList);
 
 		if (menuAbierto)
 			menu.findItem(R.id.action_search).setVisible(false);
-		/*else
-			menu.findItem(R.id.action_search).setVisible(true);*/
+		else
+			menu.findItem(R.id.action_search).setVisible(true);
 
 		
-		return super.onPrepareOptionsMenu(menu);
+		return super.onPrepareOptionsMenu(menu);*/
+		return false;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
+		
 		if (drawerToggle.onOptionsItemSelected(item)) {
 			item.getItemId();
 			return true;
 		}
+		/*
 		switch (item.getItemId()) 
 		{
 			case R.id.sincronizar_all:
@@ -294,8 +301,8 @@ public class vCliente extends ActionBarActivity implements
 			default:
 				return super.onOptionsItemSelected(item);
 		}
-		
-		return true;
+		*/
+		return false;
 	}
 	
 	@Override
@@ -328,7 +335,7 @@ public class vCliente extends ActionBarActivity implements
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				// TODO Auto-generated method stub
+
 				drawerList.setItemChecked(position, true);
 
 				tituloSeccion = opcionesMenu[position];
@@ -341,13 +348,21 @@ public class vCliente extends ActionBarActivity implements
 				
 				switch (position) {
 					case NUEVO_PEDIDO:
+						if(cliente_selected== null){
+							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
 						intent = new Intent(vCliente.this,ViewPedidoEdit.class);
 						intent.putExtra(PEDIDO_ID, 0);
 						intent.putExtra(CLIENTE,cliente_selected.IdSucursal);
 						startActivity(intent);
 						drawerLayout.closeDrawers();
 					break;
-					case NUEVO_RECIBO : 
+					case NUEVO_RECIBO :
+						if(cliente_selected== null){
+							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
 						intent = new Intent(vCliente.this,ViewReciboEdit.class);
 						intent.putExtra(RECIBO_ID, 0);
 						intent.putExtra(CLIENTE,cliente_selected.getIdCliente());
@@ -356,6 +371,58 @@ public class vCliente extends ActionBarActivity implements
 						break;
 					case NUEVO_DEVOLUCION:
 						
+						break;
+					case  FICHA_CLIENTE : 
+						if(cliente_selected== null){
+							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						//SI SE ESTÁ FUERA DE LA COBERTURA
+			            if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
+			            	drawerLayout.closeDrawers();
+			            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+			            	
+			            }
+						LOAD_FICHACLIENTE_FROMSERVER();
+						drawerLayout.closeDrawers();
+						break;
+					case CONSULTAR_CUENTA_COBRAR :
+						if(cliente_selected== null){
+							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							drawerLayout.closeDrawers();
+							return;
+						}
+						if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
+							drawerLayout.closeDrawers();
+			            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+			            }
+						LOAD_CUENTASXPAGAR();
+						drawerLayout.closeDrawers();
+						break;
+					case SINCRONIZAR_ITEM :
+						if(cliente_selected== null){
+							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							drawerLayout.closeDrawers();
+							return;
+						}
+						 if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
+				          	drawerLayout.closeDrawers();
+				          	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+				        }
+						UPDATE_SELECTEDITEM_FROMSERVER();
+						drawerLayout.closeDrawers();
+						break;
+					case SINCRONIZAR_TODOS : 
+						if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
+					          	drawerLayout.closeDrawers();
+					          	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+					    }
+						Load_Data(LOAD_DATA_FROM_SERVER);
+						drawerLayout.closeDrawers();
+						break;
+					case CERRAR : 
+						drawerLayout.closeDrawers();
+						FINISH_ACTIVITY();
 						break;
 				}
 			}
@@ -413,20 +480,6 @@ public class vCliente extends ActionBarActivity implements
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) 
     { 
-    	/*
-        if (keyCode == KeyEvent.KEYCODE_BACK) 
-	    {  
-        	if (getSupportFragmentManager().getBackStackEntryCount() == 0)
-       	    {
-        		FINISH_ACTIVITY();
-        		return false;
-       	    }
-        	else
-            {
-                getSupportFragmentManager().popBackStack();
-                return false;
-            }
-	    }*/
     	if(keyCode==KeyEvent.KEYCODE_MENU){
     		 Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
     		  if (fragment instanceof FichaClienteFragment) {
@@ -441,8 +494,8 @@ public class vCliente extends ActionBarActivity implements
 	{ 	 		
     	if(pDialog!=null)
     		pDialog.dismiss();
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().disposeEntities();
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		finish();		
 	}  
@@ -605,7 +658,7 @@ public class vCliente extends ActionBarActivity implements
 				@Override
 				public void onButtonClick(View _dialog,int actionId) {									 
 					if(actionId==CustomDialog.OK_BUTTOM && idsucursal==1)
-						nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);	
+						NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);	
 					else if(actionId==CustomDialog.OK_BUTTOM)
 						dialog.dismiss();
 				}
@@ -639,7 +692,7 @@ public class vCliente extends ActionBarActivity implements
 		ms.what=UPDATE_ITEM_FROM_SERVER; 
 		ms.obj = get_SucursalID();
 		
-		nmapp.getController().getInboxHandler().sendMessage(ms);
+		NMApp.getController().getInboxHandler().sendMessage(ms);
 	    Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);  
 	} 	
 
@@ -683,6 +736,5 @@ public class vCliente extends ActionBarActivity implements
          transaction.addToBackStack(null);
          transaction.commit();
 	}
-	
 
 }
