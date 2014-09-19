@@ -360,7 +360,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			
 			if( notasCredito.length > 0 ){
 				//SE OBTIENEN LAS NOTAS DE CREDITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
-				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);				
+				//ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);		 
+				ArrayList<CCNotaCredito> _notasCredito = new ArrayList<CCNotaCredito>(Arrays.asList(notasCredito));	
 				if( _notasCredito.size() == 0 ){
 					pd.dismiss();
 					FINISH_ACTIVITY();
@@ -370,7 +371,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				gridheader.setText("Listado Notas Crédito Pendientes (" + notasCredito.length + ")");				
 				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,_notasCredito,R.layout.detalle_nota_credito);				 
 				lvnotasd.setAdapter(adapter3);
-				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
+				lvnotasd.setOnItemClickListener(new OnItemClickListener() 
+				{
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 						if((parent.getChildAt(positioncache)) != null)						            							            		
@@ -391,7 +393,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		}
 		if(pd != null)
 			pd.dismiss();	
-		
+		adapter3.notifyDataSetChanged();
 	}
 	
 	public  Dialog buildCustomDialog(String tittle,String msg,int type)
