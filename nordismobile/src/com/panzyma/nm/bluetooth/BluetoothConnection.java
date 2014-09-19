@@ -35,7 +35,8 @@ public class BluetoothConnection
 	// Unique UUID for this application, you may use different
 	private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-	public BluetoothConnection(Object _datos) throws Exception {
+	public BluetoothConnection(Object _datos) throws Exception 
+	{
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		// Get a BluetoothSocket for a connection with the given BluetoothDevice
 		if (mAdapter == null)
@@ -45,7 +46,7 @@ public class BluetoothConnection
 			throw new Exception("bluetooth deshabilitado");
 		mmDevice = findBT();
 		if (mmDevice == null)
-			throw new Exception("El Dispositivo no soporta comunicación bluetooth");
+			throw new Exception("no se ha configurado la impresora...");
 		if (_datos == null)
 			throw new Exception("No hay datos que enviar al dispositivo bluetooth");
 		

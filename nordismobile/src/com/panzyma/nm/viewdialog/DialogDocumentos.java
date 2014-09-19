@@ -35,6 +35,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Bundle;
+import android.opengl.Visibility;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -113,7 +115,12 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			nmapp.getController().removeBridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this,new BReciboM()); 
 			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 
+			Message msg = new Message();
+			Bundle params = new Bundle();
+			params.putLong("sucursalID", cliente.getIdSucursal());
+			msg.setData(params);
+			msg.what = C_FACTURACLIENTE;
+			nmapp.getController().getInboxHandler().sendMessage(msg); 
 			pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
 			initComponents();
 		} catch (Exception e) {
@@ -308,7 +315,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 					}					
 				});
 			}
-			
+			lvfacturas.setVisibility(View.VISIBLE);
 		} catch (Exception e) {
 			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
 			e.printStackTrace();
@@ -345,6 +352,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		            	FINISH_ACTIVITY();						
 					}					
 				});
+				lvnotasd.setVisibility(View.VISIBLE);
+				lvfacturas.setVisibility(View.GONE);
 			}
 			
 		} catch (Exception e) {
@@ -360,8 +369,10 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			
 			if( notasCredito.length > 0 ){
 				//SE OBTIENEN LAS NOTAS DE CREDITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
-				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);				
-				if( _notasCredito.size() == 0 ){
+				//ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);		 
+				ArrayList<CCNotaCredito> _notasCredito = new ArrayList<CCNotaCredito>(Arrays.asList(notasCredito));	
+				if( _notasCredito.size() == 0 )
+				{
 					pd.dismiss();
 					FINISH_ACTIVITY();
 					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
@@ -370,7 +381,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				gridheader.setText("Listado Notas Crédito Pendientes (" + notasCredito.length + ")");				
 				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,_notasCredito,R.layout.detalle_nota_credito);				 
 				lvnotasd.setAdapter(adapter3);
-				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
+				lvnotasd.setOnItemClickListener(new OnItemClickListener() 
+				{
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 						if((parent.getChildAt(positioncache)) != null)						            							            		
@@ -383,6 +395,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		            	FINISH_ACTIVITY();						
 					}					
 				});
+				lvnotasd.setVisibility(View.VISIBLE);
+				lvfacturas.setVisibility(View.GONE);
 			}
 			
 		} catch (Exception e) {
@@ -391,7 +405,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		}
 		if(pd != null)
 			pd.dismiss();	
-		
+		adapter3.notifyDataSetChanged();
 	}
 	
 	public  Dialog buildCustomDialog(String tittle,String msg,int type)

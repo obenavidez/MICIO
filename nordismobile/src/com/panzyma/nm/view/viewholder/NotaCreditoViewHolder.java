@@ -27,7 +27,8 @@ public class NotaCreditoViewHolder {
 
 	public void mappingData(Object entity) {
 		// PREGUNTAR SI SE TIENE UNA INSTANCIA ADECUADA
-		if (entity instanceof CCNotaCredito) {
+		if (entity instanceof CCNotaCredito) 
+		{
 			int color = R.color.Black;		
 			CCNotaCredito cnota = (CCNotaCredito) entity;
 			if (cnota.getCodEstado().toUpperCase().compareTo("PAGADA") == 0) color = R.color.Blue;

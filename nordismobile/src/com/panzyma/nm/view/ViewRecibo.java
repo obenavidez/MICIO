@@ -434,7 +434,8 @@ public class ViewRecibo extends ActionBarActivity implements
 			recibos = null;
 		} 
 		
-		if(recibos == null) {
+		if(recibos == null) 
+		{
 			cargarRecibos();
 		}  
 		

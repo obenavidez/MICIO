@@ -32,8 +32,6 @@
         <TextView
             android:id="@+id/cxclbl_estado"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentTop="false"
             android:layout_weight="1"
             android:text="Estado :"
             android:textColor="@color/Teal"

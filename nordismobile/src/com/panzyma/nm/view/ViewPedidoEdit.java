@@ -1368,9 +1368,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	private void enviarPedido() {
 
-		try {
+		try 
+		{
 
-			/*if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
+			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 					.getCodEstado().compareTo("APROBADO") == 0)))
 				return;
 
@@ -1380,7 +1381,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 							DialogType.DIALOGO_ALERTA);
 					return;
 				}
-			}*/
+			}
 
 			// Si se está fuera de covertura, salir
 			if (!SessionManager.isPhoneConnected())

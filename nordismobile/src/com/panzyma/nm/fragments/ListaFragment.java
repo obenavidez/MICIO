@@ -14,10 +14,11 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("unchecked")
-@SuppressLint("NewApi")
+@SuppressLint({ "NewApi", "ValidFragment" })
 public class ListaFragment<E> extends ListFragment implements Filterable, Parcelable {
 	
 	transient OnItemSelectedListener mCallback;
@@ -117,5 +118,20 @@ public class ListaFragment<E> extends ListFragment implements Filterable, Parcel
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public ListaFragment(Parcel in) {		
+	}
+	
+	public static final Parcelable.Creator<ListaFragment> CREATOR = new Parcelable.Creator<ListaFragment>() {
+		@Override
+		public ListaFragment createFromParcel(Parcel in) {
+			return new ListaFragment(in);
+		}
+
+		@Override
+		public ListaFragment[] newArray(int size) {
+			return new ListaFragment[size];
+		}
+	};	
 	
 }

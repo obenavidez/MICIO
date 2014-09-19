@@ -65,8 +65,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	ListView lvcliente;	
 	TextView gridheader;
 	private int positioncache=-1; 
-	private OnButtonClickListener mButtonClickListener;
-	private NMApp nmapp;
+	private OnButtonClickListener mButtonClickListener; 
 	public Cliente cliente;
 	private static Context parent;
 	private Editable _view;
@@ -86,15 +85,14 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			_view = vpe;
 			setContentView(R.layout.maincliente);  
         	mcontext=this.getContext();  
-        	parent = vpe.getContext();;       	
-        	nmapp=(NMApp) parent.getApplicationContext(); 
-	        nmapp.getController().setEntities(this,new BClienteM()); 
-	        nmapp.getController().addOutboxHandler(new Handler(this));
+        	parent = vpe.getContext();;       	 
+	        NMApp.getController().setEntities(this,new BClienteM()); 
+	        NMApp.getController().addOutboxHandler(new Handler(this));
 			WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay();
 			pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false); 
 			Toast.makeText(this.getContext(), "TestersterexdsafADFASDF", Toast.LENGTH_LONG);
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
+			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
 	        initComponents();
 	        
         }catch (Exception e) { 
@@ -188,8 +186,8 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			            	positioncache=position;				            	
 			            	cliente_selected=(vmCliente) adapter.getItem(position);	
 			            	try {
-			            		Object d=nmapp.getController().getBridge().getClass().getMethods();
-								cliente=(Cliente) nmapp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",ContentResolver.class,long.class).invoke(null,DialogCliente.this.getContext().getContentResolver(),cliente_selected.getIdSucursal());
+			            		Object d=NMApp.getController().getBridge().getClass().getMethods();
+								cliente=(Cliente) NMApp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",ContentResolver.class,long.class).invoke(null,DialogCliente.this.getContext().getContentResolver(),cliente_selected.getIdSucursal());
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -211,7 +209,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			            	cliente_selected=(vmCliente) adapter.getItem(position);
 			            	try {
 			            		
-								nmapp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",long.class).invoke(cliente,cliente_selected.getIdSucursal());
+								NMApp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",long.class).invoke(cliente,cliente_selected.getIdSucursal());
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -251,11 +249,11 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	
 	private void FINISH_ACTIVITY()
 	{
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());
-		nmapp.getController().disposeEntities();
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().removebridge(NMApp.getController().getBridge());
+		NMApp.getController().disposeEntities();
 		try {
-			nmapp.getController().setEntities(parent,_view.getBridge());
+			NMApp.getController().setEntities(parent,_view.getBridge());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

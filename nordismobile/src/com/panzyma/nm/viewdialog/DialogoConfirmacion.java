@@ -144,7 +144,8 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 
 			@Override
 			public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-					int arg3) {
+					int arg3) 
+			{
 				float nSaldo = 0.00f, 
 						nTotalDocumento = 0.00f;
 				String monto = arg0.toString().trim().equals("") ? "0.00" : arg0.toString();
@@ -152,6 +153,8 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 					nTotalDocumento = ((ReciboDetFactura)document).getTotalfactura();
 				else if (document instanceof ReciboDetND)
 					nTotalDocumento = ((ReciboDetND)document).getMontoND();
+				else if (document instanceof ReciboDetNC)
+					nTotalDocumento = ((ReciboDetNC)document).getMonto();
 				nSaldo = nTotalDocumento - Float.parseFloat(String.valueOf(monto.replace(",", ""))) ;
 				saldo.setText(StringUtil.formatReal(nSaldo));				
 			}

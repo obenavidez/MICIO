@@ -62,7 +62,8 @@
 					    android:dividerHeight="0.3sp"
 					    android:scrollingCache="false" 
 					    android:choiceMode="singleChoice"
-					    android:listSelector="@drawable/statelist"> 
+					    android:listSelector="@drawable/statelist"
+					    android:visibility="gone"> 
 					    
 					</ListView>					
 					
@@ -74,7 +75,8 @@
 					    android:dividerHeight="0.3sp"
 					    android:scrollingCache="false" 
 					    android:choiceMode="singleChoice"
-					    android:listSelector="@drawable/statelist">
+					    android:listSelector="@drawable/statelist"
+					    android:visibility="gone">
 				    </ListView>
 					    
 					<ListView 
@@ -85,7 +87,8 @@
 					    android:dividerHeight="0.3sp"
 					    android:scrollingCache="false" 
 					    android:choiceMode="singleChoice"
-					    android:listSelector="@drawable/statelist"> 
+					    android:listSelector="@drawable/statelist"
+					    android:visibility="gone"> 
 					    
 					</ListView>
 											 
