@@ -234,7 +234,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				msg.setData(b);
 				msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 				NMApp.getController().getInboxHandler().sendMessage(msg);  
-			}  
+			} 
 
 			contexto = this.getApplicationContext();
  
@@ -754,7 +754,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 
 			try 
-			{				 
+			{				
+				NMApp.getController().removeBridgeByName(BReciboM.class.toString());
 				NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
 				NMApp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());			
 				Message msg = new Message();
