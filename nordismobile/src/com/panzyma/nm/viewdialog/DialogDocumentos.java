@@ -35,6 +35,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.opengl.Visibility;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -308,7 +309,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 					}					
 				});
 			}
-			
+			lvfacturas.setVisibility(View.VISIBLE);
 		} catch (Exception e) {
 			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
 			e.printStackTrace();
@@ -345,6 +346,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		            	FINISH_ACTIVITY();						
 					}					
 				});
+				lvnotasd.setVisibility(View.VISIBLE);
+				lvfacturas.setVisibility(View.GONE);
 			}
 			
 		} catch (Exception e) {
@@ -362,7 +365,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				//SE OBTIENEN LAS NOTAS DE CREDITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
 				//ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);		 
 				ArrayList<CCNotaCredito> _notasCredito = new ArrayList<CCNotaCredito>(Arrays.asList(notasCredito));	
-				if( _notasCredito.size() == 0 ){
+				if( _notasCredito.size() == 0 )
+				{
 					pd.dismiss();
 					FINISH_ACTIVITY();
 					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
@@ -385,6 +389,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		            	FINISH_ACTIVITY();						
 					}					
 				});
+				lvnotasd.setVisibility(View.VISIBLE);
+				lvfacturas.setVisibility(View.GONE);
 			}
 			
 		} catch (Exception e) {
