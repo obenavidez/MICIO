@@ -21,6 +21,8 @@ import android.os.Message;
 import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -36,15 +38,21 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BProductoM;
+import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
+import com.panzyma.nm.fragments.FichaClienteFragment;
+import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
 
@@ -70,18 +78,15 @@ public class ProductoView extends ActionBarActivity implements
 	ProgressDialog pDialog;
 	TextView gridheader;
 	TextView footerView;
+	ProductoView pv;
 
 	private List<Producto> productos = new ArrayList<Producto>();
 	Producto product_selected;
 	ListaFragment<Producto> firstFragment;
+	private static final int FICHA_DETALLE=0;
+	private static final int CERRAR=4;
 
-	@SuppressLint("CutPasteId")
-	private void initComponent() {
-		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
-		footerView = (TextView) findViewById(R.id.ctxtview_enty);
-	}
 
-	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,65 +96,29 @@ public class ProductoView extends ActionBarActivity implements
 
 		setContentView(R.layout.layout_client_fragment);
 
-		initComponent();
+		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
+		footerView = (TextView) findViewById(R.id.ctxtview_enty);
+		
+		CreateMenu();
+		SessionManager.setContext(this); 
 		
 		gridheader.setVisibility(View.VISIBLE);
-
-		opcionesMenu = new String[] { "Ficha Detalle", "Bonificaciones",
-				"Lista de Precios", "Sincronizar Productos", "Cerrar" };
-		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		// drawerLayout.openDrawer(Gravity.END);
-		drawerList = (ListView) findViewById(R.id.left_drawer);
-
-		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
-				.getThemedContext(), android.R.layout.simple_list_item_1,
-				opcionesMenu));
-
-		drawerList.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-
-				drawerList.setItemChecked(position, true);
-				tituloSeccion = opcionesMenu[position];
-				getSupportActionBar().setTitle(tituloSeccion);
-
-			}
-		});
-
-		tituloSeccion = getTitle();
-		tituloApp = getTitle();
-
-		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-				R.drawable.ic_navigation_drawer, R.string.drawer_open,
-				R.string.drawer_close) {
-
-			@Override
-			public void onDrawerClosed(View view) {
-				getSupportActionBar().setTitle(tituloSeccion);
-				ActivityCompat.invalidateOptionsMenu(ProductoView.this);
-			}
-
-			@Override
-			public void onDrawerOpened(View drawerView) {
-				getSupportActionBar().setTitle(tituloApp);
-				ActivityCompat.invalidateOptionsMenu(ProductoView.this);
-			}
-		};
-
-		drawerLayout.setDrawerListener(drawerToggle);
-
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setHomeButtonEnabled(true);
-
 		nmapp = (NMApp) this.getApplicationContext();
+		
 		try {
 			
 			productos=(savedInstanceState!=null)?productos=savedInstanceState.getParcelableArrayList("vmProducto"):null;
 			if(productos==null){
-				nmapp.getController().setEntities(this, new BProductoM());
-				nmapp.getController().addOutboxHandler(new Handler(this));
-				nmapp.getController().getInboxHandler()
+				Load_Data(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+			}
+			else{
+				establecer(productos);
+			}
+			/*			
+			if(productos==null){
+				NMApp.getController().setEntities(this, new BProductoM());
+				NMApp.getController().addOutboxHandler(new Handler(this));
+				NMApp.getController().getInboxHandler()
 						.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 				
 				pDialog = new ProgressDialog(this);
@@ -161,7 +130,7 @@ public class ProductoView extends ActionBarActivity implements
 			else{
 				establecer(productos);
 			}
-
+ 		*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -232,35 +201,16 @@ public class ProductoView extends ActionBarActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		if (drawerToggle.onOptionsItemSelected(item)) {
-			return true;
+			return false;
 		}
-
-		switch (item.getItemId()) {
-		case R.id.action_settings:
-			Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-			;
-			break;
-		case R.id.action_search:
-			Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
-			break;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-
-		boolean menuAbierto = drawerLayout.isDrawerOpen(drawerList);
-
-		if (menuAbierto)
-			menu.findItem(R.id.action_search).setVisible(false);
-		else
-			menu.findItem(R.id.action_search).setVisible(true);
-
-		return super.onPrepareOptionsMenu(menu);
+		menu.findItem(R.id.action_search).setVisible(true);
+		super.onPrepareOptionsMenu(menu);
+		return true;
 	}
 
 	@Override
@@ -428,16 +378,28 @@ public class ProductoView extends ActionBarActivity implements
     {
         if (keyCode == KeyEvent.KEYCODE_BACK) 
 	    {        	
-    	  	FINISH_ACTIVITY();
-            return true;
+          Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+      	  if (fragment instanceof FichaProductoFragment) {
+      		  gridheader.setVisibility(View.VISIBLE);
+      		  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+      		  transaction.detach(fragment);
+      		  transaction.replace(R.id.fragment_container, firstFragment);
+      		  transaction.addToBackStack(null);
+      		  transaction.commit();
+      		  getSupportActionBar().show();
+      	  }
+      	  else{
+      		  FINISH_ACTIVITY();
+      	   }
+           return true;
 	    }
         return super.onKeyUp(keyCode, event); 
     } 
 	
 	private void FINISH_ACTIVITY()
 	{ 	 		
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().disposeEntities();
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		finish();		
 	}
@@ -498,6 +460,119 @@ public class ProductoView extends ActionBarActivity implements
 			productos=new ArrayList<Producto>();
 			productos=customArrayAdapter.getItems();
 			bundle.putParcelableArrayList("vmProducto",(ArrayList<? extends Parcelable>) productos);  
+		}
+	}
+	
+	private void CreateMenu(){
+
+	opcionesMenu = getResources().getStringArray(R.array.productoptions);
+	drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+	drawerList = (ListView) findViewById(R.id.left_drawer);
+
+	drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
+		.getThemedContext(), android.R.layout.simple_list_item_1,
+		opcionesMenu));
+
+	drawerList.setOnItemClickListener(new OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+			drawerList.setItemChecked(position, true);
+			tituloSeccion = opcionesMenu[position];
+			getSupportActionBar().setTitle(tituloSeccion);
+			
+				//SELECCIONAR LA POSICION DEL PRODUCTO SELECCIONADO ACTUALMENTE
+			positioncache = customArrayAdapter.getSelectedPosition();
+				//OBTENER EL PRODUCTO DE LA LISTA
+			product_selected =(Producto) customArrayAdapter.getItem(positioncache);
+			switch (position) {
+				case FICHA_DETALLE :
+				if(product_selected== null){
+					AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+					return;
+				}
+				Bundle args = new Bundle();
+				args.putInt(FichaProductoFragment.ARG_POSITION, position);
+				args.putParcelable(FichaProductoFragment.OBJECT, product_selected);
+				FichaProductoFragment productFrag;
+				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();	
+				if (findViewById(R.id.dynamic_fragment) != null) {
+					productFrag = (FichaProductoFragment) getSupportFragmentManager().findFragmentById(R.id.dynamic_fragment);
+					if (productFrag != null) {				
+						productFrag.updateArticleView(product_selected, position);
+					} 
+					else {
+						productFrag = new FichaProductoFragment();
+						productFrag.setArguments(args);
+						transaction.add(R.id.dynamic_fragment, productFrag);
+						transaction.addToBackStack(null);
+					}
+
+				} 
+				else {
+					Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+					gridheader.setVisibility(View.INVISIBLE);
+					if (fragment instanceof ListaFragment) {
+						productFrag = new FichaProductoFragment();
+						productFrag.setArguments(args);
+						transaction.replace(R.id.fragment_container, productFrag);
+						transaction.addToBackStack(null);			
+					}
+				}
+				 //Commit the transaction transaction.commit();
+				transaction.commit();
+				drawerLayout.closeDrawers();
+				break; 
+				case CERRAR : 
+				drawerLayout.closeDrawers();
+				FINISH_ACTIVITY();
+				break;
+				
+			}
+		}
+	});
+
+	tituloSeccion = getTitle();
+	tituloApp = getTitle();
+
+	drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+		R.drawable.ic_navigation_drawer, R.string.drawer_open,
+		R.string.drawer_close) {
+
+		@Override
+		public void onDrawerClosed(View view) {
+			getSupportActionBar().setTitle(tituloSeccion);
+			ActivityCompat.invalidateOptionsMenu(ProductoView.this);
+		}
+
+		@Override
+		public void onDrawerOpened(View drawerView) {
+			getSupportActionBar().setTitle(tituloApp);
+			ActivityCompat.invalidateOptionsMenu(ProductoView.this);
+		}
+	};
+
+	drawerLayout.setDrawerListener(drawerToggle);
+
+	getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	getSupportActionBar().setHomeButtonEnabled(true);
+}
+
+	private void Load_Data(int what)
+	{
+		try {
+				NMApp.getController().setEntities(this, new BProductoM());
+				NMApp.getController().addOutboxHandler(new Handler(this));
+				NMApp.getController().getInboxHandler().sendEmptyMessage(what);
+				
+				pDialog = new ProgressDialog(this);
+				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				pDialog.setMessage("Procesando...");
+				pDialog.setCancelable(true);
+				pDialog.show();
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

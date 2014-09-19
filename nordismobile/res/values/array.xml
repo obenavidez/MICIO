@@ -13,7 +13,19 @@
         <item >Nuevo Pedido</item>
         <item >Nuevo recibo</item>
         <item >Nueva devolución</item>
+        <item >Ficha del Cliente</item>
+        <item >Consultar Cuentas por Cobrar</item>
+        <item >Sincronizar Item</item>
+        <item >Sincronizar Todo</item>
+        <item >Salir</item>
     </string-array>
+    <string-array name="productoptions">
+        <item >Ficha Detalle</item>
+        <item >Bonificaciones</item>
+        <item >Lista de Precios</item>
+        <item >Sincronizar Productos</item>
+        <item >Cerrar</item>
+    </string-array>    
     <string-array name="tipodocumentos">
         <item >Factura</item>
         <item >Nota de Débito</item>

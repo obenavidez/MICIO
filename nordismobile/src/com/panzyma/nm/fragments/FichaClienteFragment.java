@@ -78,16 +78,16 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 			ms.what=LOAD_FICHACLIENTE_FROM_SERVER; 
 			ms.obj = sucursalID;
 			try {
-				if(!NMNetWork.isPhoneConnected(getActivity(),nmapp.getController()) && !NMNetWork.CheckConnection(nmapp.getController()))
+				if(!NMNetWork.isPhoneConnected(getActivity(),NMApp.getController()) && !NMNetWork.CheckConnection(NMApp.getController()))
 	            {
 					AppDialog.showMessage(getActivity(),"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 	            	return;
 	            }
 
-				nmapp.controller.removeBridgeByName(BClienteM.class.toString());
-				nmapp.controller.setEntities(this ,new BClienteM());
-				nmapp.controller.addOutboxHandler(new Handler(this));
-				nmapp.controller.getInboxHandler().sendMessage(ms);
+				NMApp.controller.removeBridgeByName(BClienteM.class.toString());
+				NMApp.controller.setEntities(this ,new BClienteM());
+				NMApp.controller.addOutboxHandler(new Handler(this));
+				NMApp.controller.getInboxHandler().sendMessage(ms);
 
 				
 				pDialog = new ProgressDialog(getActivity());
@@ -177,9 +177,9 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 	public void onDetach ()
 	{
 		Log.d(TAG, "OnDetach");
-		nmapp.controller.removeOutboxHandler(TAG);
-		nmapp.controller.removebridge(nmapp.getController().getBridge());
-		nmapp.controller.disposeEntities();
+		NMApp.controller.removeOutboxHandler(TAG);
+		NMApp.controller.removebridge(NMApp.getController().getBridge());
+		NMApp.controller.disposeEntities();
 		super.onDetach();
 	}
 	

@@ -83,12 +83,12 @@ public class ViewProducto extends DashBoardActivity implements Handler.Callback
 	    {
 	    	mcontext=this;
 	    	nmapp=(NMApp) this.getApplication(); 
-	        nmapp.getController().setEntities(this,new BProductoM());
-	        nmapp.getController().addOutboxHandler(new Handler(this)); 
+	        NMApp.getController().setEntities(this,new BProductoM());
+	        NMApp.getController().addOutboxHandler(new Handler(this)); 
 			WindowManager wm = (WindowManager) this.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay(); 
             //pd = ProgressDialog.show(this, "Espere por favor", "Trayendo Info...", true, false);
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);  
+			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);  
 			initComponents();
 	        
 		}catch (Exception e) { 
@@ -165,7 +165,7 @@ public class ViewProducto extends DashBoardActivity implements Handler.Callback
 			{				
 				ActionItem actionItem = quickAction.getActionItem(pos);   
 				if (actionId == ID_SINCRONIZE_ALL_PRODUCTO)
-					nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER); 
+					NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER); 
 				else if (actionId == ID_CERRAR) 
 					FINISH_ACTIVITY();
 				 				 
@@ -338,8 +338,8 @@ public class ViewProducto extends DashBoardActivity implements Handler.Callback
 	}
     private void FINISH_ACTIVITY()
 	{
-    	nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().disposeEntities();
+    	NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting"); 
 		finish();	
 	}

@@ -197,6 +197,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	protected static final int ENVIAR_RECIBO = 3;
 	private static final int FICHA_CLIENTE = 5;
 	private static final int CUENTAS_POR_COBRAR = 6;
+	private static final int CERRAR = 7;
 	public static final String RECIBO_ID = "recibo_id";
 	private FragmentActive fragmentActive = null;
 	private BReciboM bpm;
@@ -377,6 +378,9 @@ public class ViewRecibo extends ActionBarActivity implements
 					//OCULTAR LA BARRA DE ACCION
 					getSupportActionBar().hide();
 					break;
+				case CERRAR:
+					FINISH_ACTIVITY();
+					break;
 				}
 
 				drawerList.setItemChecked(position, true);
@@ -550,7 +554,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		if (drawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
-
+		/*
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
@@ -561,22 +565,14 @@ public class ViewRecibo extends ActionBarActivity implements
 			break;
 		default:
 			return super.onOptionsItemSelected(item);
-		}
+		}*/
 
 		return true;
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-
-		boolean menuAbierto = drawerLayout.isDrawerOpen(drawerList);
-
-		if (menuAbierto)
-			menu.findItem(R.id.action_search).setVisible(false);
-		else
-			menu.findItem(R.id.action_search).setVisible(true);
-
-		return super.onPrepareOptionsMenu(menu);
+			return true;
 	}
 
 	@Override

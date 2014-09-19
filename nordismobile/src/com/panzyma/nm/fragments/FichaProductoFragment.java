@@ -2,11 +2,13 @@ package com.panzyma.nm.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nordismobile.R;
 
@@ -16,7 +18,8 @@ public class FichaProductoFragment extends Fragment {
 	public final static String OBJECT = "product";
 	private Producto producto;
 	int mCurrentPosition = -1;
-
+	private static final String TAG = FichaProductoFragment.class.getSimpleName();
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -96,5 +99,19 @@ public class FichaProductoFragment extends Fragment {
 		outState.putInt(ARG_POSITION, mCurrentPosition);
 		outState.putParcelable(OBJECT, producto);
 	}
-
+	@Override
+	public void onDetach ()
+	{
+		Log.d(TAG, "OnDetach");
+		NMApp.controller.removeOutboxHandler(TAG);
+		NMApp.controller.removebridge(NMApp.getController().getBridge());
+		NMApp.controller.disposeEntities();
+		super.onDetach();
+	}
+	
+	@Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+    }
 }
