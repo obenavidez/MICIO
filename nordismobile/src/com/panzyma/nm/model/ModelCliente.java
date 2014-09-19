@@ -2,6 +2,7 @@ package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,14 +11,18 @@ import org.ksoap2.serialization.PropertyInfo;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
@@ -132,51 +137,56 @@ public class ModelCliente
 	{
 		Cliente cliente=new Cliente(); 
 		Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_CLIENTE+"/"+String.valueOf(objSucursalID)); 
-		Cursor cur = content.query(uri,
-		        null, //Columnas a devolver
-		        null,       //Condición de la query
-		        null,       //Argumentos variables de la query
-		        null); 
-		if (cur.moveToFirst()) 
-		 {  
-			 
-            do{
-            	
-            	int value; 
-            	cliente.setIdCliente(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.IdCliente))));	            	
-			    cliente.setNombreCliente(cur.getString(cur.getColumnIndex(NMConfig.Cliente.NombreCliente)));
-			    cliente.setIdSucursal(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.IdSucursal))));
-        		cliente.setCodigo(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Codigo)));
-        		cliente.setCodTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Cliente.CodTipoPrecio)));
-        		cliente.setDesTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Cliente.DesTipoPrecio)));
-        		cliente.setObjPrecioVentaID((Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.objPrecioVentaID)))));
-        		cliente.setObjCategoriaClienteID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.objCategoriaClienteID))));
-        		cliente.setObjTipoClienteID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.objTipoClienteID))));            		
-        	    value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.AplicaBonificacion));            		
-        		cliente.setAplicaBonificacion(value==1?true:false);
-                value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PermiteBonifEspecial));
-        		cliente.setPermiteBonifEspecial(value==1?true:false);
-                value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PermitePrecioEspecial));
-        		cliente.setPermitePrecioEspecial(value==1?true:false);            		
-        		cliente.setUG(cur.getString(cur.getColumnIndex(NMConfig.Cliente.UG)));
-        		cliente.setUbicacion(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Ubicacion)));
-        		cliente.setNombreLegalCliente(cur.getString(cur.getColumnIndex(NMConfig.Cliente.NombreLegalCliente)));
-        	    value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.AplicaOtrasDeducciones));            		
-        		cliente.setAplicaOtrasDeducciones(value==1?true:false);
-        		cliente.setMontoMinimoAbono(cur.getFloat(cur.getColumnIndex(NMConfig.Cliente.MontoMinimoAbono)));
-        		cliente.setPlazoDescuento(cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PlazoDescuento)));
-        	    value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PermiteDevolucion));
-        		cliente.setPermiteDevolucion(value==1?true:false);
-        	    
-        		
-        		
-        	 }while (cur.moveToNext());
-            
-            cliente.setFacturasPendientes(getDocumentosPendientes(content,cliente.getIdSucursal())); 
-    		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(content,cliente.getIdSucursal()));
-    		cliente.setNotasDebitoPendientes(getCCNotasDeDebito(content,cliente.getIdSucursal()));
-    		cliente.setDescuentosProveedor(getDescuentosProveedor(content,cliente.getIdSucursal()));
-		 }   
+		try{		
+			Cursor cur = content.query(uri,
+			        null, //Columnas a devolver
+			        null,       //Condición de la query
+			        null,       //Argumentos variables de la query
+			        null); 			
+			
+			if (cur.moveToFirst()) 
+			 {  
+				 
+	            do{
+	            	
+	            	int value; 
+	            	cliente.setIdCliente(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.IdCliente))));	            	
+				    cliente.setNombreCliente(cur.getString(cur.getColumnIndex(NMConfig.Cliente.NombreCliente)));
+				    cliente.setIdSucursal(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.IdSucursal))));
+	        		cliente.setCodigo(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Codigo)));
+	        		cliente.setCodTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Cliente.CodTipoPrecio)));
+	        		cliente.setDesTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Cliente.DesTipoPrecio)));
+	        		cliente.setObjPrecioVentaID((Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.objPrecioVentaID)))));
+	        		cliente.setObjCategoriaClienteID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.objCategoriaClienteID))));
+	        		cliente.setObjTipoClienteID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.objTipoClienteID))));            		
+	        	    value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.AplicaBonificacion));            		
+	        		cliente.setAplicaBonificacion(value==1?true:false);
+	                value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PermiteBonifEspecial));
+	        		cliente.setPermiteBonifEspecial(value==1?true:false);
+	                value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PermitePrecioEspecial));
+	        		cliente.setPermitePrecioEspecial(value==1?true:false);            		
+	        		cliente.setUG(cur.getString(cur.getColumnIndex(NMConfig.Cliente.UG)));
+	        		cliente.setUbicacion(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Ubicacion)));
+	        		cliente.setNombreLegalCliente(cur.getString(cur.getColumnIndex(NMConfig.Cliente.NombreLegalCliente)));
+	        	    value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.AplicaOtrasDeducciones));            		
+	        		cliente.setAplicaOtrasDeducciones(value==1?true:false);
+	        		cliente.setMontoMinimoAbono(cur.getFloat(cur.getColumnIndex(NMConfig.Cliente.MontoMinimoAbono)));
+	        		cliente.setPlazoDescuento(cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PlazoDescuento)));
+	        	    value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PermiteDevolucion));
+	        		cliente.setPermiteDevolucion(value==1?true:false);
+	        	    
+	        		
+	        		
+	        	 }while (cur.moveToNext());
+	            
+	            cliente.setFacturasPendientes(getDocumentosPendientes(content,cliente.getIdSucursal())); 
+	    		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(content,cliente.getIdSucursal()));
+	    		cliente.setNotasDebitoPendientes(getCCNotasDeDebito(content,cliente.getIdSucursal()));
+	    		cliente.setDescuentosProveedor(getDescuentosProveedor(content,cliente.getIdSucursal()));
+			 }  
+		} catch(Exception ex){
+			
+		}
 		return cliente;
 	}
 	
@@ -185,15 +195,55 @@ public class ModelCliente
 	{
 		int cont=0;
 		Cursor cur_fact=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_FACTURA+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
-	    Factura[] afact=new Factura[cur_fact.getCount()]; 
+	     
+	    SQLiteDatabase db = null;
+	    List<Long> facturasGravadas = new ArrayList<Long>();
+	    try{
+	    	
+		    //OBTENIENDO LAS FACTURAS
+		    db = Helper.getDatabase((Context) NMApp.ctx);
+		    StringBuilder sQuery = new StringBuilder();
+			sQuery.append("SELECT rdf.objFacturaID ");
+			sQuery.append(" FROM ReciboDetalleFactura AS rdf ");
+			sQuery.append("      INNER JOIN Recibo r ");
+			sQuery.append("      ON  r.id = rdf.objReciboID ");
+			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);		
+			sQuery.append("       AND r.codEstado <> 'ANULADO' ");
+			Cursor c = DatabaseProvider.query(db, sQuery.toString());
+			
+			if (c.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
+				do {				
+					facturasGravadas.add(c.getLong(0));
+				} while (c.moveToNext());
+			}
+			
+		} catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if( db != null )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		} 
+	    Factura[] afact=new Factura[cur_fact.getCount() - facturasGravadas.size()];
 	       //Recorremos el cursor
  	    if (cur_fact.moveToFirst()) 
 		{   	    	   			 
             do
             {
         	    int value;
+        	    boolean agregar = true;
             	Factura fact=new Factura();		       	            	
-            	fact.setId(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Id))));       	            	
+            	fact.setId(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Id))));   
+            	
+            	for(Long facturaID : facturasGravadas) {
+            		if(fact.getId() == facturaID)
+            			agregar = false;
+            	}
+            	
             	fact.setNombreSucursal(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NombreSucursal)));
             	fact.setNoFactura(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NoFactura)));
             	fact.setTipo(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Tipo)));
@@ -221,11 +271,15 @@ public class ModelCliente
         		fact.setDetallePromocionCobro(getPromocionesCobro(content,fact.getId()));
         		fact.setDetalleMontoProveedor(getMontosProveedor(content,fact.getId()));
         	
-            	afact[cont]=fact; 
-            	cont++;
+        		if(agregar) {
+        			afact[cont]=fact; 
+                	cont++;
+        		}        		
+            	
 	            	
 	         }while (cur_fact.moveToNext());
-	      }
+	      } 	    
+ 	    
 		return afact.length==0?null:afact;
 	}
 	
@@ -276,13 +330,51 @@ public class ModelCliente
 	{
 		int cont=0;
 		Cursor cur_nc=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_CCNOTACREDITO+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
-		CCNotaCredito[] anc=new CCNotaCredito[cur_nc.getCount()]; 
+		SQLiteDatabase db = null;
+	    List<Long> notasCreditoGravadas = new ArrayList<Long>();
+	    try{
+	    	
+		    //OBTENIENDO LAS FACTURAS
+		    db = Helper.getDatabase((Context) NMApp.ctx);
+		    StringBuilder sQuery = new StringBuilder();
+			sQuery.append("SELECT rdf.objNotaDebitoID ");
+			sQuery.append(" FROM ReciboDetalleNotaDebito AS rdf ");
+			sQuery.append("      INNER JOIN Recibo r ");
+			sQuery.append("      ON  r.id = rdf.objReciboID ");
+			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);		
+			sQuery.append("       AND r.codEstado <> 'ANULADO' ");
+			Cursor c = DatabaseProvider.query(db, sQuery.toString());
+			
+			if (c.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
+				do {				
+					notasCreditoGravadas.add(c.getLong(0));
+				} while (c.moveToNext());
+			}
+			
+		} catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if( db != null )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		} 
+		CCNotaCredito[] anc=new CCNotaCredito[cur_nc.getCount()-notasCreditoGravadas.size()]; 
  	    if (cur_nc.moveToFirst()) 
 		{   	    	   			 
             do
             {
+            	boolean agregar = true;
         	    CCNotaCredito nc=new CCNotaCredito();        	    
-        	    nc.setId(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Id))));        	    
+        	    nc.setId(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Id))));
+        	    for(Long id : notasCreditoGravadas) {
+        	    	if(id == nc.getId()) {
+        	    		agregar = false;
+        	    	}
+        	    }
         	    nc.setNombreSucursal(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.NombreSucursal)));
         	    nc.setEstado(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Estado)));
         	    nc.setNumero(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Numero)));        	    
@@ -295,8 +387,11 @@ public class ModelCliente
         	    nc.setDescripcion(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Descripcion)));
         	    nc.setReferencia(cur_nc.getInt(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Referencia)));
         	    nc.setCodConcepto(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.CodConcepto)));
-        	    anc[cont]=nc;
-        	    cont++;
+        	    
+        	    if(agregar) {
+        	    	anc[cont]=nc;
+            	    cont++;
+        	    }        	    
 
             }while (cur_nc.moveToNext());
 		}
@@ -307,13 +402,51 @@ public class ModelCliente
 	{
 		int cont=0;
 		Cursor cur_nd=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_CCNOTADEBITO+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
-		CCNotaDebito[] and=new CCNotaDebito[cur_nd.getCount()]; 
+		SQLiteDatabase db = null;
+	    List<Long> notasDebitoGravadas = new ArrayList<Long>();
+	    try{
+	    	
+		    //OBTENIENDO LAS FACTURAS
+		    db = Helper.getDatabase((Context) NMApp.ctx);
+		    StringBuilder sQuery = new StringBuilder();
+			sQuery.append("SELECT rdf.objNotaDebitoID ");
+			sQuery.append(" FROM ReciboDetalleNotaDebito AS rdf ");
+			sQuery.append("      INNER JOIN Recibo r ");
+			sQuery.append("      ON  r.id = rdf.objReciboID ");
+			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);		
+			sQuery.append("       AND r.codEstado <> 'ANULADO' ");
+			Cursor c = DatabaseProvider.query(db, sQuery.toString());
+			
+			if (c.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
+				do {				
+					notasDebitoGravadas.add(c.getLong(0));
+				} while (c.moveToNext());
+			}
+			
+		} catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if( db != null )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		} 
+		CCNotaDebito[] and=new CCNotaDebito[cur_nd.getCount()-notasDebitoGravadas.size()]; 
  	    if (cur_nd.moveToFirst()) 
 		{   	    	   			 
             do
             {
+            	boolean agregar = true;
             	CCNotaDebito nd=new CCNotaDebito();        	    
-        	    nd.setId(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Id))));        	    
+        	    nd.setId(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Id))));   
+        	    for(Long id : notasDebitoGravadas) {
+        	    	if(id == nd.getId()) {
+        	    		agregar = false;
+        	    	}
+        	    }
         	    nd.setNombreSucursal(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.NombreSucursal)));
         	    nd.setEstado(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Estado)));
         	    nd.setNumero(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Numero)));        	    
@@ -327,8 +460,11 @@ public class ModelCliente
         	    nd.setCodEstado(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.CodEstado)));
         	    nd.setDescripcion(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Descripcion)));
         	    
-        	    and[cont]=nd;
-        	    cont++;
+        	    if(agregar) {
+        	    	and[cont]=nd;
+            	    cont++;
+        	    }
+        	    
 
             }while (cur_nd.moveToNext());
 		}
