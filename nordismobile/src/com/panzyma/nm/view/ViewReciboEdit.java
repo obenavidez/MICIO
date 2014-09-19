@@ -25,6 +25,7 @@ import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage; 
 import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
+import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
@@ -197,7 +198,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return reciboId;
 	}
  
-	@SuppressWarnings("static-access")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -542,19 +542,29 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			case C_DATA:
 				recibo = (ReciboColector)msg.obj;
 				loadData();
+				break; 
+			case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
+				if(msg.obj!=null)
+				{
+					recibo=((ReciboColector)msg.obj);
+					cliente=recibo.getCliente();
+					actualizarOnUINumRef(recibo); 
+					enviarImprimirRecibo(recibo);
+				}
 				break;
-			case ControllerProtocol.ID_REQUEST_SALVARPEDIDO:
-				recibo = (ReciboColector)msg.obj;
-				actualizarOnUINumRef(recibo);
-				Util.Message.buildToastMessage(contexto,
-						"Recibo Guardado!!", 1000).show();				
-				salvado=true;
-				break;
-			case ControllerProtocol.NOTIFICATION: 
-				AppDialog.showMessage(me,"",((NotificationMessage)msg.obj).getMessage(),DialogType.DIALOGO_ALERTA);
+			case ControllerProtocol.NOTIFICATION:
+				if (ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1)
+				{	
+					recibo = (ReciboColector)msg.obj;
+					actualizarOnUINumRef(recibo); 				
+					salvado=true;
+					showStatus("El Recibo fue registrado con exito", true);
+				}
+				else
+					showStatus(msg.obj.toString(), true);
 				break;
 			case ControllerProtocol.NOTIFICATION_DIALOG2:
-				showStatus(((NotificationMessage)msg.obj));
+				showStatus(msg.obj.toString());
 				break;
 			case ControllerProtocol.ERROR: 
 				AppDialog.showMessage(me,((ErrorMessage)msg.obj).getTittle(),((ErrorMessage)msg.obj).getMessage(),DialogType.DIALOGO_ALERTA);
@@ -562,6 +572,45 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 		return false;
 	}
+	
+	
+	private void enviarImprimirRecibo(final ReciboColector recibo)
+	{		
+		runOnUiThread(new Runnable() 
+        {
+			@Override
+			public void run() 
+			{ 
+				 AppDialog.showMessage(me,"Confirme por favor.!!!","Desea Imprimir el Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+				 {						 
+						@Override
+		    			public void onButtonClick(AlertDialog _dialog, int actionId) 
+		    			{
+		    				if(actionId == AppDialog.OK_BUTTOM) 
+		    				{		    					
+		    					try 
+		    					{  		    						 
+	    							Message msg = new Message();
+	    							Bundle b = new Bundle();
+	    							b.putParcelable("recibo", recibo); 
+	    							msg.setData(b);
+	    							msg.what = ControllerProtocol.IMPRIMIR;
+	    							NMApp.getController().getInboxHandler().sendMessage(msg); 
+		    						_dialog.dismiss();
+		    						
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+		    				}	 
+		    			}
+				  }); 
+	          }
+		});
+		 
+		
+	}
+	
 
 	public void actualizarOnUINumRef(final ReciboColector r) {
 		runOnUiThread(new Runnable() {
@@ -570,7 +619,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			public void run() {
 				
 				tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
-						r.getReferencia(), me.getApplicationContext()));
+						r.getReferencia(), me));
+				tbxNumRecibo.setText(NumberUtil.getFormatoNumero(
+						r.getNumero(), me));
 				salvado = true;
 			}
 		});
@@ -664,7 +715,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		} 
 		AppDialog.showMessage(me,"Solicitar descuento Ocosional","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener()
 		{ 
-			@SuppressWarnings("static-access")
 			@Override
 			public void onButtonClick(AlertDialog alert, int actionId) 
 			{
@@ -691,8 +741,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		});   
 	}  
   
-	@SuppressWarnings("static-access")
-	private void guardarRecibo() {
+	private void guardarRecibo() 
+	{
 
 		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
 				.trim().equals("") ? "0" : tbxNumRecibo.getText().toString())));
@@ -754,9 +804,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 
 			try 
-			{				 
-				NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-				NMApp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());			
+			{				  		
 				Message msg = new Message();
 				Bundle b = new Bundle();
 				b.putParcelable("recibo", recibo); 
@@ -860,18 +908,26 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	}
  
-	@SuppressWarnings("static-access")
 	private void enviarRecibo()
 	{   
 
 		if(!valido()) return;  
-		showStatus(NotificationMessage.newInstance("Espere por favor","Enviando recibo a la central",""));  
-		ProgressDialog.show(this, "Enviando recibo a la central", "Espere por favor", true); 
+		
+		if (recibo.getCodEstado().compareTo("PAGADO") == 0) 
+		{
+			showStatus("No se puede enviar un recibo que tiene estado PAGADO",true);  
+			return;
+		}
+        
+        if (recibo.getNumero() > 0) 
+        {
+        	showStatus("El recibo ya fue enviado anteriormente",true);  
+			return; 
+        } 
+		showStatus("Enviando recibo a la central");  
 		try 
 		{ 
-			NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-			NMApp.getController().addOutboxHandler((getHandler()==null)?new Handler(this):getHandler());
-			Toast.makeText(this, "Enviando recibo a la central", Toast.LENGTH_LONG);  	 
+			
 			Message msg = new Message();
 			Bundle b = new Bundle();
 			b.putParcelable("recibo", recibo); 
@@ -1684,7 +1740,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return pagarOnLine;
 	}
 
-	@SuppressWarnings("static-access")
 	public void showStatusOnUI(Object msg) throws InterruptedException{
 
 		final String titulo=""+((ErrorMessage)msg).getTittle();
@@ -1775,8 +1830,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		//Traer las facturas del cliente
 		Factura[] facturaspendientes = cliente.getFacturasPendientes();
 		if(facturaspendientes!=null){
-			if (facturaspendientes.length > 0){   
-
+			if (facturaspendientes.length > 0)
+			{
 				for(int i=0; i< facturaspendientes.length; i++) {
 					Factura fac = facturaspendientes[i];
 					//Si la factura no está en otro recibo
@@ -2182,4 +2237,41 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
             }
         });		
 	} 
+	
+	public void showStatus(final String mensaje, boolean... confirmacion) {
+		 
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(me, "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(
+										AlertDialog _dialog, int actionId) 
+								{
+									if (AppDialog.OK_BUTTOM == actionId) 
+									{
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else 
+		{
+			runOnUiThread(new Runnable() 
+			{
+				@Override
+				public void run() {
+					dlg =  new CustomDialog(me, mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		} 
+}
+	
+	
 }
