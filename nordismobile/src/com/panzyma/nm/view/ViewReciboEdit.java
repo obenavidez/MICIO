@@ -814,6 +814,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				Bundle b = new Bundle();
 				b.putParcelable("recibo", recibo); 
 				b.putParcelableArray("facturasToUpdate", getArrayOfFacturas() );
+				b.putParcelableArray("notasDebitoToUpdate", getArrayOfNotasDebito() );
+				b.putParcelableArray("notasCreditoToUpdate", getArrayOfNotasCredito() );
 				msg.setData(b);
 				msg.what=SAVE_DATA_FROM_LOCALHOST;
 				NMApp.getController().getInboxHandler().sendMessage(msg);  	   			
@@ -830,6 +832,22 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			facturas[i] = facturasRecibo.get(i);
 		}
 		return facturas;
+	}
+	
+	private CCNotaDebito [] getArrayOfNotasDebito(){
+		CCNotaDebito [] notasDebito = new CCNotaDebito [ notasDebitoRecibo.size() ];
+		for(int i = 0; (notasDebitoRecibo != null && i < notasDebitoRecibo.size() ) ; i++ ) {
+			notasDebito[i] = notasDebitoRecibo.get(i);
+		}
+		return notasDebito;
+	}
+	
+	private CCNotaCredito [] getArrayOfNotasCredito(){
+		CCNotaCredito [] notasCredito = new CCNotaCredito [ notasCreditoRecibo.size() ];
+		for(int i = 0; (notasCreditoRecibo != null && i < notasCreditoRecibo.size() ) ; i++ ) {
+			notasCredito[i] = notasCreditoRecibo.get(i);
+		}
+		return notasCredito;
 	}
 
 	private void editarDescuento() {
@@ -937,6 +955,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			Bundle b = new Bundle();
 			b.putParcelable("recibo", recibo); 
 			b.putParcelableArray("facturasToUpdate", getArrayOfFacturas());
+			b.putParcelableArray("notasDebitoToUpdate", getArrayOfNotasDebito() );
+			b.putParcelableArray("notasCreditoToUpdate", getArrayOfNotasCredito() );
 			msg.setData(b);
 			msg.what=SEND_DATA_FROM_SERVER;
 			NMApp.getController().getInboxHandler().sendMessage(msg);  	 
