@@ -3,6 +3,7 @@ package com.panzyma.nm.view;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -299,39 +300,45 @@ public class ViewPedido extends ActionBarActivity implements
 	            if(pedido_selected!=null)
 		        {
 		            //OBTENER EL ESTADO DEL REGISTRO
-		            state = pedido_selected.getDescEstado();
+		            state = pedido_selected.getCodEstado();
 		            //VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
-		            if ("APROBADO".compareTo(state) != 0)
+			         if ("APROBADO".compareTo(state) != 0)
+			         {
+			        	 AppDialog.showMessage(vp,"Información","Solo se pueden anular pedidos en estado de APROBADO.",DialogType.DIALOGO_ALERTA);
+			             //CERRAR EL MENU DEL DRAWER
+			             drawerLayout.closeDrawers();
+			             return;
+			         }
+		            //SI SE ESTÁ FUERA DE LA COBERTURA
+		            if(!NMNetWork.isPhoneConnected(context,com.panzyma.nm.NMApp.getController()) && !NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController()))
 		            {
-		                //Toast.makeText(getApplicationContext(),"Solo se pueden anular pedidos en estado de APROBADO.", Toast.LENGTH_SHORT).show();
-		            	AppDialog.showMessage(vp,"Información","Solo se pueden anular pedidos en estado de APROBADO.",DialogType.DIALOGO_ALERTA);
-		              //CERRAR EL MENU DEL DRAWER
-		                drawerLayout.closeDrawers();
+		                //Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
+		            	AppDialog.showMessage(vp,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 		                return;
 		            }
-	            //SI SE ESTÁ FUERA DE LA COBERTURA
-	            if(!NMNetWork.isPhoneConnected(context,com.panzyma.nm.NMApp.getController()) && !NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController()))
-	            
-	            {
-	                //Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
-	            	AppDialog.showMessage(vp,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-	                return;
-	            }
-	            try
-	            {
-	            	//SOLICITAMOS QUE SE ANULE EL PEDIDO
-	            	Pedido pedido=(Pedido)com.panzyma.nm.NMApp.getController().getBridge().getClass().getMethod("anularPedido", long.class ).invoke(null,pedido_selected.getId());
-	            	if(pedido==null) return;
-	            	
-	            	//Toast.makeText(getApplicationContext(),"El pedido ha sido anulado.", Toast.LENGTH_SHORT).show();
-	            	AppDialog.showMessage(vp,"Información","El pedido ha sido anulado.",DialogType.DIALOGO_ALERTA);
-	            }
-	            catch(Exception ex)
-	            {
-	                ex.printStackTrace();
-	            }
+		            try
+		            {
+		            	//SOLICITAMOS QUE SE ANULE EL PEDIDO
+		            	Message msg = new Message();
+		    			msg.obj=pedido_selected.getId();
+		    			msg.what =  ControllerProtocol.ANULAR_PEDIDO;
+		    			/*
+		    			NMApp.controller.removeBridgeByName(ViewPedido.class.toString());
+		    			com.panzyma.nm.NMApp.getController().setEntities(this, bpm = new BPedidoM());
+		    			com.panzyma.nm.NMApp.getController().addOutboxHandler(new Handler(vp));
+		    			*/
+		    			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+		    			//CERRAR EL MENU DEL DRAWER
+		                drawerLayout.closeDrawers();
+		            }
+		            catch(Exception ex)
+		            {
+		                ex.printStackTrace();
+		                drawerLayout.closeDrawers();
+		            }
 		    }
-	        else{
+	        else
+	        {
 	            //CERRAR EL MENU DEL DRAWER
                 drawerLayout.closeDrawers();
 	            ShowNoRecords();
@@ -522,7 +529,6 @@ public class ViewPedido extends ActionBarActivity implements
 				break;
 			case ERROR:
 				ErrorMessage error=((ErrorMessage)msg.obj);
-				//buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();
 				Toast.makeText(getApplicationContext(),error.getTittle(), Toast.LENGTH_SHORT).show();
 				AppDialog.showMessage(vp,error.getTittle(),error.getMessage()+error.getCause(),DialogType.DIALOGO_ALERTA,new OnButtonClickListener() {
 					@Override
@@ -530,6 +536,10 @@ public class ViewPedido extends ActionBarActivity implements
 					}
         		});
 				val=true;
+				break;
+			case ControllerProtocol.ID_REQUEST_ANULARPEDIDO:
+				Object o = msg.obj;
+				AppDialog.showMessage(vp,"Información","El pedido ha sido anulado.",DialogType.DIALOGO_ALERTA);
 				break;
 		}
 		return val;

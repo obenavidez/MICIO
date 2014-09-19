@@ -3,29 +3,20 @@ import android.util.Log;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_INVENTORY_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date; 
 
 import org.ksoap2.serialization.SoapObject;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle; 
 import android.os.Message; 
 
@@ -50,8 +41,7 @@ import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.viewmodel.vmEntity; 
-import com.panzyma.nordismobile.R;
+import com.panzyma.nm.viewmodel.vmEntity;
 
 @SuppressLint("SimpleDateFormat") @SuppressWarnings({"rawtypes"})
 public class BPedidoM {
@@ -159,6 +149,17 @@ public class BPedidoM {
 				break;
 			case ControllerProtocol.IMPRIMIR:
 				imprimirPedido((Pedido)b.getParcelable("pedido"),(Cliente)b.getParcelable("cliente"));
+				break;
+			case ControllerProtocol.ANULAR_PEDIDO : 
+				try {
+					anularPedido(Long.parseLong(msg.obj.toString()));
+				} 
+				catch (NumberFormatException e) {
+					e.printStackTrace();
+				} 
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 				break;
 		}
 		return val;
@@ -448,10 +449,56 @@ public class BPedidoM {
 		return ModelPedido.obtenerPedidoByID(idpedido, content);
 	}
 	
-	public static Pedido anularPedido(long pedidoid) throws Exception
+	public void anularPedido(final long pedidoid) throws Exception
 	{
-		//final String credentials=SessionManager.getCredenciales();
-		return ModelPedido.anularPedido("sa-nordis09-dp", pedidoid);
+		try 
+		{
+			credenciales="";
+			credenciales=SessionManager.getCredentials(); 
+			if(credenciales=="")
+				return;
+		
+			pool.execute(new Runnable()
+			{ 
+				@SuppressWarnings("unchecked")
+				@Override
+				public void run()
+			    {					 
+					try 
+					{
+						Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"Conectando con el servidor central.");
+						
+						Pedido pedido= ModelPedido.anularPedido(credenciales, pedidoid);
+						
+						//Notificar al Usuario que se Anulado.
+			            NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_ANULARPEDIDO, 0, 0, pedido);
+						
+					}
+					catch (Exception e) {
+						Log.e(TAG, "Error in the update thread", e);
+						try {
+							Processor
+									.notifyToView(
+											controller,
+											ERROR,
+											0,
+											0,
+											ErrorMessage.newInstance(
+													"Error en Anular el pedido",
+													e.getMessage(), "\n Causa: "
+															+ e.getCause()));
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					}
+			    }
+			});
+		
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		//return ModelPedido.anularPedido("sa-nordis09-dp", pedidoid);
 	}
  
     
@@ -589,5 +636,6 @@ public class BPedidoM {
 		}
     }
 	
+
 	 
 }
