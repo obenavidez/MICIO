@@ -214,8 +214,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			NMApp.getController().setEntities(this, brm =  new BReciboM());
 			NMApp.getController().addOutboxHandler(handler=new Handler(this));
 
-			facturasRecibo = new ArrayList<Factura> ();		
-			
+			facturasRecibo = new ArrayList<Factura>();		
+			notasDebitoRecibo= new ArrayList<CCNotaDebito>();
+			notasCreditoRecibo=new ArrayList<CCNotaCredito>();
 			if( savedInstanceState != null ) {
 				Parcelable [] docs = savedInstanceState.getParcelableArray("documentos");
 				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>( (Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays.asList(docs) );
@@ -1403,9 +1404,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
 									procesaNotaDebito(notaDebitoDetalle, notaDebito, montos, true);
-									dialog.loadFacturas(cliente.getFacturasPendientes(), 0);
+									dialog.loadNotasDebito(cliente.getNotasDebitoPendientes(), 0);
 								}															
 							});
+							FragmentManager fragmentManager = getSupportFragmentManager();
+
+							dialogConfirmacion.show(fragmentManager, "");
 							
 							
 						} else if( documento instanceof CCNotaCredito ) {
@@ -1425,9 +1429,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
 									procesaNotaCredito(notaCreditoDetalle, notaCredito, montos, true);
-									dialog.loadFacturas(cliente.getFacturasPendientes(), 0);
+									dialog.loadNotasCredito(cliente.getNotasCreditoPendientes(), 0);
 								}								
 							});
+							FragmentManager fragmentManager = getSupportFragmentManager();
+							dialogConfirmacion.show(fragmentManager, "");
 						}	 			
 					}
 				});			
