@@ -1319,7 +1319,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}	
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
-
+		
 		DialogSeleccionTipoDocumento dtp = new DialogSeleccionTipoDocumento();
 		dtp.setEventSeleccionable(new Seleccionable() {			
 			@Override

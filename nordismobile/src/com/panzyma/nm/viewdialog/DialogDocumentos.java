@@ -35,6 +35,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -113,7 +114,12 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			nmapp.getController().removeBridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this,new BReciboM()); 
 			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler().sendEmptyMessage(C_FACTURACLIENTE); 
+			Message msg = new Message();
+			Bundle params = new Bundle();
+			params.putLong("sucursalID", cliente.getIdSucursal());
+			msg.setData(params);
+			msg.what = C_FACTURACLIENTE;
+			nmapp.getController().getInboxHandler().sendMessage(msg); 
 			pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
 			initComponents();
 		} catch (Exception e) {

@@ -123,7 +123,8 @@ public final class BReciboM {
 				onDeleteDataFromLocalHost();
 				break;
 			case C_FACTURACLIENTE:
-				onLoadDocumentosClienteFromLocalhost();
+				bdl = msg.getData();				
+				onLoadDocumentosClienteFromLocalhost(bdl.getLong("sucursalID"));
 				break; 
 			case LOAD_DATA_FROM_SERVER:
 				// onLoadALLData_From_LocalHost();
@@ -411,7 +412,7 @@ public final class BReciboM {
 
 	}
 
-	private void onLoadDocumentosClienteFromLocalhost() {
+	private void onLoadDocumentosClienteFromLocalhost(final Long sucursalID) {
 		try {
 			this.pool.execute(new Runnable() {
 				@Override
@@ -420,8 +421,7 @@ public final class BReciboM {
 						// Parameters params = viewcc.get_FacturaParameters();
 						Processor.send_ViewReciboEditToView(
 								ModelCliente.getClienteBySucursalID(view1.getContext()
-										.getContentResolver(), view1
-										.getObjSucursalId()), controller);
+										.getContentResolver(), sucursalID), controller);
 
 					} catch (Exception e) {
 						e.printStackTrace();
