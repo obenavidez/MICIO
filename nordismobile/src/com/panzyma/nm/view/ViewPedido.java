@@ -232,7 +232,7 @@ public class ViewPedido extends ActionBarActivity implements
 		        	AppDialog.showMessage(vp,"Información","No puede borrar pedidos por validar o aprobados.",DialogType.DIALOGO_ALERTA);
 		            return;
 		        }
-		        AllowRemove("Confirmación","¿Está seguro que desea eliminar el Pedido"+ pedido_selected.getId()+" seleccionado?",DialogType.DIALOGO_CONFIRMACION);
+		        AllowRemove("Confirmación","¿Está seguro que desea eliminar el pedido?",DialogType.DIALOGO_CONFIRMACION);
 	        }
 	        else
 	        { 
@@ -455,24 +455,24 @@ public class ViewPedido extends ActionBarActivity implements
 			return true;
 		}
 
-		switch (item.getItemId()) {
-		case R.id.action_settings:
-			Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-			;
-			break;
-		case R.id.action_search:
-			Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
-			break;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
+//		switch (item.getItemId()) {
+//		case R.id.action_settings:
+//			Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+//			;
+//			break;
+//		case R.id.action_search:
+//			Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
+//			break;
+//		default:
+//			return super.onOptionsItemSelected(item);
+//		}
 
 		return true;
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		return false;
+		return true;
 	}
 
 	@Override

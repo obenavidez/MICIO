@@ -554,7 +554,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		if (drawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
-
+		/*
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
@@ -565,14 +565,14 @@ public class ViewRecibo extends ActionBarActivity implements
 			break;
 		default:
 			return super.onOptionsItemSelected(item);
-		}
+		}*/
 
 		return true;
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-			return false;
+			return true;
 	}
 
 	@Override

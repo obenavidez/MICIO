@@ -208,7 +208,9 @@ public class ProductoView extends ActionBarActivity implements
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		return false;
+		menu.findItem(R.id.action_search).setVisible(true);
+		super.onPrepareOptionsMenu(menu);
+		return true;
 	}
 
 	@Override

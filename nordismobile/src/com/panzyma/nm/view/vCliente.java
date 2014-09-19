@@ -247,7 +247,9 @@ public class vCliente extends ActionBarActivity implements
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		return false;
+		menu.findItem(R.id.action_search).setVisible(true);
+		super.onPrepareOptionsMenu(menu);
+		return true;
 	}
 
 	@Override
@@ -292,7 +294,7 @@ public class vCliente extends ActionBarActivity implements
 				return super.onOptionsItemSelected(item);
 		}
 		*/
-		return false;
+		return true;
 	}
 	
 	@Override
@@ -443,7 +445,6 @@ public class vCliente extends ActionBarActivity implements
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -476,7 +477,9 @@ public class vCliente extends ActionBarActivity implements
     			  return true;  
     		  }
     	}
-    		
+    	if (keyCode == KeyEvent.KEYCODE_SETTINGS) {
+    		return false;
+    	}
         return super.onKeyUp(keyCode, event); 
     } 
 	
