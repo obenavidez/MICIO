@@ -111,7 +111,7 @@ public class vCliente extends ActionBarActivity implements
 		
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
 		footerView = (TextView) findViewById(R.id.ctextv_gridheader);
-		
+		vc =this;
 		CreateMenu();
 		SessionManager.setContext(this); 
 		nmapp = (NMApp) this.getApplicationContext();
@@ -341,6 +341,7 @@ public class vCliente extends ActionBarActivity implements
 				switch (position) {
 					case NUEVO_PEDIDO:
 						if(cliente_selected== null){
+							drawerLayout.closeDrawers();
 							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
@@ -352,6 +353,7 @@ public class vCliente extends ActionBarActivity implements
 					break;
 					case NUEVO_RECIBO :
 						if(cliente_selected== null){
+							drawerLayout.closeDrawers();
 							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
@@ -366,6 +368,7 @@ public class vCliente extends ActionBarActivity implements
 						break;
 					case  FICHA_CLIENTE : 
 						if(cliente_selected== null){
+							drawerLayout.closeDrawers();
 							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
@@ -380,8 +383,8 @@ public class vCliente extends ActionBarActivity implements
 						break;
 					case CONSULTAR_CUENTA_COBRAR :
 						if(cliente_selected== null){
-							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							drawerLayout.closeDrawers();
+							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
 						if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
@@ -393,8 +396,8 @@ public class vCliente extends ActionBarActivity implements
 						break;
 					case SINCRONIZAR_ITEM :
 						if(cliente_selected== null){
-							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							drawerLayout.closeDrawers();
+							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
 						 if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
@@ -529,37 +532,42 @@ public class vCliente extends ActionBarActivity implements
 		try {
 			if (data.size() != 0) {
 				
-				this.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() 
-					{
-						try 
-						{
-							if (what == C_SETTING_DATA && customArrayAdapter != null && customArrayAdapter.getCount() >= 0) {
-								customArrayAdapter.AddAllToListViewDataSource(data);
-								firstFragment.setItems(data);
-								gridheader.setText("Listado de Clientes("+ customArrayAdapter.getCount() + ")");
-								footerView.setVisibility(View.VISIBLE);
-								ShowEmptyMessage(false);
+				NMApp.getThreadPool().execute(
+						new Runnable() {
+							@Override
+							public void run() {
+								runOnUiThread(new Runnable() {
+									@Override
+									public void run() 
+									{
+										try 
+										{
+											if (what == C_SETTING_DATA && customArrayAdapter != null && customArrayAdapter.getCount() >= 0) {
+												customArrayAdapter.AddAllToListViewDataSource(data);
+												firstFragment.setItems(data);
+												gridheader.setText("Listado de Clientes("+ customArrayAdapter.getCount() + ")");
+												footerView.setVisibility(View.VISIBLE);
+												ShowEmptyMessage(false);
+											}
+											else {
+												if (what == C_SETTING_DATA)
+													footerView.setVisibility(View.VISIBLE);
+												
+												gridheader.setText("Listado de Clientes("+ data.size() + ")");
+												firstFragment.setItems(data);
+												customArrayAdapter.setSelectedPosition(0);
+												positioncache = 0;
+												/*product_selected = customArrayAdapter.getItem(0);*/
+											}
+											
+										}
+										catch (Exception e) {
+											e.printStackTrace();
+										}
+									}
+								});
 							}
-							else {
-								if (what == C_SETTING_DATA)
-									footerView.setVisibility(View.VISIBLE);
-								
-								gridheader.setText("Listado de Clientes("+ data.size() + ")");
-								firstFragment.setItems(data);
-								customArrayAdapter.setSelectedPosition(0);
-								positioncache = 0;
-								/*product_selected = customArrayAdapter.getItem(0);*/
-							}
-							
-						}
-						catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				});
+						});
 			}
 		}
 		catch (Exception e) {

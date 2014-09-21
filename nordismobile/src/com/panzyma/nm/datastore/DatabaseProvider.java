@@ -13,6 +13,8 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.model.ModelConfiguracion;
+import com.panzyma.nm.serviceproxy.CCNotaCredito;
+import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Factura; 
@@ -1166,7 +1168,7 @@ public class DatabaseProvider extends ContentProvider
 	}
 	 
 	@SuppressWarnings("null")
-	public static ReciboColector registrarRecibo(ReciboColector recibo, Context cnt, ArrayList<Factura> facturasToUpdate) throws Exception 
+	public static ReciboColector registrarRecibo(ReciboColector recibo, Context cnt, ArrayList<Factura> facturasToUpdate, ArrayList<CCNotaDebito> notasDebitoToUpdate, ArrayList<CCNotaCredito> notasCreditoToUpdate) throws Exception 
 	{
 		SQLiteDatabase bdd = null;
 		Integer recibomax=0,recibomax2=0; 
@@ -1361,6 +1363,27 @@ public class DatabaseProvider extends ContentProvider
 				sQuery.append(String.format("	    Otro       =  %s , ", facturasToUpdate.get(f).getOtro()));
 				sQuery.append(String.format("	    Saldo      =  %s  ", facturasToUpdate.get(f).getSaldo()));
 				sQuery.append(String.format("	WHERE Id       =  %d  ", facturasToUpdate.get(f).getId()));			
+				bdd.execSQL(sQuery.toString());			
+			}
+			
+			for(int f = 0; ( notasDebitoToUpdate != null && f < notasDebitoToUpdate.size() ); f++ ){
+				StringBuilder sQuery = new StringBuilder();
+				sQuery.append("UPDATE CCNotaDebito ");
+				sQuery.append(String.format("	SET Estado     = '%s', ", notasDebitoToUpdate.get(f).getEstado()));
+				sQuery.append(String.format("	    CodEstado  = '%s', ", notasDebitoToUpdate.get(f).getCodEstado()));
+				sQuery.append(String.format("	    MontoAbonado    =  %s , ", notasDebitoToUpdate.get(f).getMontoAbonado()));				
+				sQuery.append(String.format("	    Saldo      =  %s  ", notasDebitoToUpdate.get(f).getSaldo()));
+				sQuery.append(String.format("	WHERE Id       =  %d  ", notasDebitoToUpdate.get(f).getId()));			
+				bdd.execSQL(sQuery.toString());			
+			}
+			
+			for(int f = 0; ( notasCreditoToUpdate != null && f < notasCreditoToUpdate.size() ); f++ ){
+				StringBuilder sQuery = new StringBuilder();
+				sQuery.append("UPDATE CCNotaCredito ");
+				sQuery.append(String.format("	SET Estado     = '%s', ", notasCreditoToUpdate.get(f).getEstado()));
+				sQuery.append(String.format("	    CodEstado  = '%s', ", notasCreditoToUpdate.get(f).getCodEstado()));
+				sQuery.append(String.format("	    Monto    =  %s  ", notasCreditoToUpdate.get(f).getMonto()));
+				sQuery.append(String.format("	WHERE Id       =  %d  ", notasCreditoToUpdate.get(f).getId()));			
 				bdd.execSQL(sQuery.toString());			
 			}
 			

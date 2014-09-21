@@ -43,6 +43,8 @@ import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelRecibo;
+import com.panzyma.nm.serviceproxy.CCNotaCredito;
+import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Producto;
@@ -105,12 +107,24 @@ public final class BReciboM {
 			case SAVE_DATA_FROM_LOCALHOST:
 			    bdl=msg.getData();
 				Parcelable [] arrayParcelable = bdl.getParcelableArray("facturasToUpdate");			
-				ArrayList<Factura> facturasToUpdate = new ArrayList<Factura>();
+				ArrayList<Factura> facturasToUpdate = new ArrayList<Factura>();				
 				Object [] list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , Factura[].class);
 				for(Object obj: list){
 					facturasToUpdate.add((Factura)obj);
-				}			
-				onSaveDataToLocalHost((ReciboColector)bdl.getParcelable("recibo"), facturasToUpdate);
+				}	
+				arrayParcelable = bdl.getParcelableArray("notasDebitoToUpdate");	
+				ArrayList<CCNotaDebito> notasDebitoToUpdate = new ArrayList<CCNotaDebito>();
+				list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , CCNotaDebito[].class);
+				for(Object obj: list){
+					notasDebitoToUpdate.add((CCNotaDebito)obj);
+				}
+				arrayParcelable = bdl.getParcelableArray("notasCreditoToUpdate");	
+				ArrayList<CCNotaCredito> notasCreditoToUpdate = new ArrayList<CCNotaCredito>();
+				list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , CCNotaCredito[].class);
+				for(Object obj: list){
+					notasCreditoToUpdate.add((CCNotaCredito)obj);
+				}
+				onSaveDataToLocalHost((ReciboColector)bdl.getParcelable("recibo"), facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);
 				break;
 			case LOAD_DATA_FROM_LOCALHOST:
 				onLoadALLDataFromLocalHost();
@@ -148,8 +162,20 @@ public final class BReciboM {
 				Object [] list2 = Arrays.copyOf(arrayParcelable2, arrayParcelable2.length , Factura[].class);
 				for(Object obj: list2){
 					facturasToUpdate2.add((Factura)obj);
-				}			 
-				enviarRecibo((ReciboColector)rec3.getParcelable("recibo"), facturasToUpdate2);
+				}	
+				arrayParcelable = bdl.getParcelableArray("notasDebitoToUpdate");	
+				ArrayList<CCNotaDebito> notasDebitoToUpdate2 = new ArrayList<CCNotaDebito>();
+				list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , CCNotaDebito[].class);
+				for(Object obj: list){
+					notasDebitoToUpdate2.add((CCNotaDebito)obj);
+				}
+				arrayParcelable = bdl.getParcelableArray("notasCreditoToUpdate");	
+				ArrayList<CCNotaCredito> notasCreditoToUpdate2 = new ArrayList<CCNotaCredito>();
+				list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , CCNotaCredito[].class);
+				for(Object obj: list){
+					notasCreditoToUpdate2.add((CCNotaCredito)obj);
+				}
+				enviarRecibo((ReciboColector)rec3.getParcelable("recibo"), facturasToUpdate2, notasDebitoToUpdate2, notasCreditoToUpdate2 );
 				break; 
 			case ControllerProtocol.IMPRIMIR:
 				bdl=msg.getData();
@@ -242,12 +268,12 @@ public final class BReciboM {
 		 
 	}
 
-	private void saveRecibo( ReciboColector recibo,ArrayList<Factura> facturasToUpdate) throws Exception
+	private void saveRecibo( ReciboColector recibo,ArrayList<Factura> facturasToUpdate, ArrayList<CCNotaDebito> notasDebitoToUpdate, ArrayList<CCNotaCredito> notasCreditoToUpdate) throws Exception
 	{ 		//Guardando localmente el recibo
-		DatabaseProvider.registrarRecibo(recibo, NMApp.getContext(), facturasToUpdate);
+		DatabaseProvider.registrarRecibo(recibo, NMApp.getContext(), facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);
 	}
 
-	private void onSaveDataToLocalHost(final ReciboColector recibo, final ArrayList<Factura> facturasToUpdate) 
+	private void onSaveDataToLocalHost(final ReciboColector recibo, final ArrayList<Factura> facturasToUpdate, final ArrayList<CCNotaDebito> notasDebitoToUpdate, final ArrayList<CCNotaCredito> notasCreditoToUpdate) 
 	{
 		try 
 		{
@@ -257,7 +283,7 @@ public final class BReciboM {
 					
 					try 
 					{ 
-						saveRecibo(recibo,facturasToUpdate);	 
+						saveRecibo(recibo, facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);	 
 						Processor.notifyToView(
 											controller,
 											ControllerProtocol.NOTIFICATION,
@@ -449,7 +475,7 @@ public final class BReciboM {
 
 	}
 	
-	private void enviarRecibo(final ReciboColector recibo, final ArrayList<Factura> facturasToUpdate)
+	private void enviarRecibo(final ReciboColector recibo, final ArrayList<Factura> facturasToUpdate, final ArrayList<CCNotaDebito> notasDebitoToUpdate, final ArrayList<CCNotaCredito> notasCreditoToUpdate)
 	{
 		try 
 		{
@@ -500,7 +526,7 @@ public final class BReciboM {
 					        } 
 					       
 							//Guardando cambios en el Dispositivo 
-					        saveRecibo(recibo,facturasToUpdate);  
+					        saveRecibo(recibo,facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);  
 					        if (pagarOnLine) 
 							{
 								
@@ -535,7 +561,7 @@ public final class BReciboM {
 				                recibo.setNumero(rs.getNumeroCentral()); 
 				                
 				                //Guardando cambios en el Dispositivo 
-				                saveRecibo(recibo,facturasToUpdate); 
+				                saveRecibo(recibo,facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate); 
 				                
 				                Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
 										0,0,"Actualindo estado de cuenta del cliente");
@@ -554,7 +580,7 @@ public final class BReciboM {
 								recibo.setCodEstado("PAGADO_OFFLINE");
 								recibo.setDescEstado("Registrado"); 	
 				               //Guardando cambios en el Dispositivo 
-				                saveRecibo(recibo,facturasToUpdate); 
+				                saveRecibo(recibo,facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate); 
 				                //enviar los cambios en el hilo pricipal
 				                Processor.notifyToView(controller,ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,
 				                		imprimir?1:0,0,recibo);
@@ -614,7 +640,7 @@ public final class BReciboM {
 	    							if(credenciales!="")
 	    							{ 
 	    								if(recibo.getReferencia()==0)							
-	    					                onSaveDataToLocalHost(recibo, null);//GUARDANDO LOCALMENTE EL RECIBO QUE SE VA ENVIAR AL SERVIDOR CENTRAL
+	    					                onSaveDataToLocalHost(recibo, null, null, null);//GUARDANDO LOCALMENTE EL RECIBO QUE SE VA ENVIAR AL SERVIDOR CENTRAL
 	    								ImprimirReciboColector(recibo, false);
 	    							}
 								} catch (Exception e) {
