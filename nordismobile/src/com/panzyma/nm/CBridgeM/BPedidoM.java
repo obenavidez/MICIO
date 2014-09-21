@@ -349,7 +349,7 @@ public class BPedidoM {
  
 	public void guardar_Pedido(Pedido pedido)throws Exception
 	{		
-		 //Salvando el tipo de pedido (crédito contado)		 
+		//Salvando el tipo de pedido (crédito contado)		 
         Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
         Integer pedidomax=Ventas.getLastOrderId(NMApp.getContext());
         //Generar Id del pedido
@@ -474,7 +474,7 @@ public class BPedidoM {
     		_pedido += "T 0 0 400 90 Referencia:\r\n";
     		_pedido += "RIGHT 576\r\n";
     		_pedido += "T 0 0 490 90 "
-    				+ NumberUtil.getFormatoNumero(pedido.getNumeroMovil(),(ViewPedidoEdit)NMApp.getController().getView()) + "\r\n";
+    				+ NumberUtil.getFormatoNumero(pedido.getNumeroMovil(),NMApp.getContext()) + "\r\n";
     		_pedido += "LEFT\r\n";
     		_pedido += "T 0 0 0 118 Cliente:\r\n";
     		_pedido += "T 0 0 90 118 " + cliente.getNombreLegalCliente() + "\r\n";
@@ -538,7 +538,7 @@ public class BPedidoM {
     		_pedido += "T 0 0 379 "
     				+ y
     				+ " "
-    				+ ((ViewPedidoEdit)NMApp.getController().getView()).getSharedPreferences("SystemParams",
+    				+ NMApp.getContext().getSharedPreferences("SystemParams",
     								android.content.Context.MODE_PRIVATE)
     						.getString("NombreImpuesto", "--") + ":\r\n";
     		_pedido += "RIGHT 576\r\n";
@@ -550,7 +550,7 @@ public class BPedidoM {
     		_pedido += "T 0 0 379 "
     				+ y
     				+ " Total "
-    				+ ((ViewPedidoEdit)NMApp.getController().getView()).getSharedPreferences("SystemParams",
+    				+ NMApp.getContext().getSharedPreferences("SystemParams",
     								android.content.Context.MODE_PRIVATE)
     						.getString("MonedaNacional", "--") + ":\r\n";
     		_pedido += "RIGHT 576\r\n";

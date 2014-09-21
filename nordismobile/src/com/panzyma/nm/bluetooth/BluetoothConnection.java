@@ -43,10 +43,10 @@ public class BluetoothConnection
 			throw new Exception(
 					"El Dispositivo no soporta comunicación bluetooth");
 		if (!mAdapter.isEnabled())
-			throw new Exception("bluetooth deshabilitado");
+			throw new Exception("Bluetooth deshabilitado");
 		mmDevice = findBT();
 		if (mmDevice == null)
-			throw new Exception("no se ha configurado la impresora...");
+			throw new Exception("No se ha configurado la impresora...");
 		if (_datos == null)
 			throw new Exception("No hay datos que enviar al dispositivo bluetooth");
 		
@@ -62,7 +62,8 @@ public class BluetoothConnection
 		// Comprobamos si existia un intento de conexion en curso.
 		// Si es el caso, se cancela y se vuelve a iniciar el proceso
 		if (estado_bluetooth == ESTADO_BLUETOOTH.REALIZANDO_CONEXION) {
-			if (hiloCliente != null) {
+			if (hiloCliente != null) 
+			{
 				hiloCliente.cancelarConexion();
 				hiloCliente = null;
 			}

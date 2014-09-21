@@ -3,13 +3,16 @@ package com.panzyma.nm.view;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.AlertDialog; 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -42,39 +45,42 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BPedidoM; 
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
-import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener;
+import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener; 
 import com.panzyma.nm.auxiliar.CustomDialog;
-import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork; 
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable; 
+import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.PedidoPromocion;
+import com.panzyma.nm.serviceproxy.Promociones;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
-@SuppressWarnings({"rawtypes","unchecked","static-access","incomplete-switch"})
+@SuppressLint("SimpleDateFormat") @SuppressWarnings({"rawtypes","unchecked","static-access","incomplete-switch"})
 public class ViewPedido extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback 
 { 
 	@Override
-	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
-		// TODO Auto-generated method stub
+	protected void onActivityResult(int requestcode, int resultcode, Intent data) { 
 		super.onActivityResult(requestcode, resultcode, data);
 		try 
 		{
+			SessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setEntities(this,this.getBridge());
 			request_code = requestcode;
 			if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code) && data != null)
 				establecer(data.getParcelableExtra("pedido"));
 			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) { 
 			e.printStackTrace();
 		}
 		if(drawerLayout!=null && drawerLayout.isShown())drawerLayout.closeDrawers();
@@ -82,15 +88,13 @@ public class ViewPedido extends ActionBarActivity implements
 	}
 
 	@Override
-	public void startActivityForResult(Intent intent, int requestCode) {
-		// TODO Auto-generated method stub
+	public void startActivityForResult(Intent intent, int requestCode) { 
 		super.startActivityForResult(intent, requestCode);
 	}
 
 	@Override
 	public void startActivityFromFragment(Fragment fragment, Intent intent,
-			int requestCode) {
-		// TODO Auto-generated method stub
+			int requestCode) { 
 		super.startActivityFromFragment(fragment, intent, requestCode);
 	}
 	
@@ -112,6 +116,7 @@ public class ViewPedido extends ActionBarActivity implements
 	private Context context;
 	private static final int NUEVO_PEDIDO = 0;
 	private static final int EDITAR_PEDIDO = 1;
+	private static final int ENVIAR_PEDIDO = 2;
 	private static final int BORRAR_PEDIDO=3;
 	private static final int ANULAR_PEDIDO = 4;
 	private static final int CUENTAS_POR_COBRAR = 5;
@@ -127,15 +132,16 @@ public class ViewPedido extends ActionBarActivity implements
 	private CharSequence tituloSeccion;
 	private CharSequence tituloApp;
 	private NMApp NMApp;
-	ProgressDialog pDialog;
 	TextView gridheader;
 	TextView footerView;
-
+	private static CustomDialog dlg;
 	private List<vmEntity> pedidos = new ArrayList<vmEntity>();
 	vmEntity pedido_selected =null;
 	ListaFragment<vmEntity> firstFragment;
 	private ViewPedido vp;
 	private BPedidoM bpm;
+	private Pedido pedido;
+	private Cliente cliente;
 
 	@SuppressLint("CutPasteId")
 	private void initComponent() {
@@ -153,6 +159,7 @@ public class ViewPedido extends ActionBarActivity implements
 	{
 		super.onCreate(savedInstanceState);
 
+		SessionManager.setContext(this);
 		context = getApplicationContext();
 
 		setContentView(R.layout.layout_client_fragment);
@@ -193,8 +200,7 @@ public class ViewPedido extends ActionBarActivity implements
             startActivityForResult(intent, NUEVO_PEDIDO);// Activity is
           
             break;
-            case EDITAR_PEDIDO:
-           
+            case EDITAR_PEDIDO:           
             try
             {
               drawerLayout.closeDrawers();           
@@ -210,11 +216,16 @@ public class ViewPedido extends ActionBarActivity implements
                 
             } catch (Exception e)
             { 
-            	e.printStackTrace();
-            	//AppDialog.showMessage(vp, "Primer Mensaje",e.getMessage(),DialogType.DIALOGO_ALERTA, null);
+            	e.printStackTrace(); 
             	AppDialog.showMessage(vp,"Información",e.getMessage(),DialogType.DIALOGO_ALERTA);
             }  
             // with requestCode 2
+            break;
+            
+            case ENVIAR_PEDIDO:
+            	 //CERRAR EL MENU DEL DRAWER
+                drawerLayout.closeDrawers();
+            	enviarPedido();
             break;
             
             case BORRAR_PEDIDO:
@@ -243,6 +254,8 @@ public class ViewPedido extends ActionBarActivity implements
             break;
             
             case CUENTAS_POR_COBRAR:
+            
+            drawerLayout.closeDrawers();
             fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
             if (findViewById(R.id.fragment_container) != null)
             {
@@ -252,8 +265,7 @@ public class ViewPedido extends ActionBarActivity implements
                     p1 = Ventas.obtenerPedidoByID(pedido_selected.getId(),
                     vp);
                 } catch (Exception e)
-                {
-                    // TODO Auto-generated catch block
+                { 
                     e.printStackTrace();
                 }
                 transaction = getSupportFragmentManager().beginTransaction();
@@ -268,12 +280,15 @@ public class ViewPedido extends ActionBarActivity implements
                 cuentasPorCobrar);
                 transaction.addToBackStack(null);
                 transaction.commit();
-                //drawerLayout.closeDrawers();
+                
             }
-            drawerLayout.closeDrawers();
             break;
             case CONSULTA_VENTAS:
-            fragmentActive = FragmentActive.CONSULTA_VENTAS;
+            fragmentActive = FragmentActive.CONSULTA_VENTAS; 
+            // CERRAR EL MENU DEL DRAWER
+            drawerLayout.closeDrawers();
+            // OCULTAR LA BARRA DE ACCION
+            getSupportActionBar().hide();
             if (findViewById(R.id.fragment_container) != null)
             {
                 consultasVentas = new ConsultaVentasFragment();
@@ -286,10 +301,7 @@ public class ViewPedido extends ActionBarActivity implements
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
-            // CERRAR EL MENU DEL DRAWER
-            drawerLayout.closeDrawers();
-            // OCULTAR LA BARRA DE ACCION
-            getSupportActionBar().hide();
+           
             break;
             case ANULAR_PEDIDO :
 	            //SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
@@ -310,10 +322,8 @@ public class ViewPedido extends ActionBarActivity implements
 		                return;
 		            }
 	            //SI SE ESTÁ FUERA DE LA COBERTURA
-	            if(!NMNetWork.isPhoneConnected(context,com.panzyma.nm.NMApp.getController()) && !NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController()))
-	            
+	            if(!NMNetWork.isPhoneConnected(context,com.panzyma.nm.NMApp.getController()) && !NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController()))	            
 	            {
-	                //Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.", Toast.LENGTH_SHORT).show();
 	            	AppDialog.showMessage(vp,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 	                return;
 	            }
@@ -331,7 +341,8 @@ public class ViewPedido extends ActionBarActivity implements
 	                ex.printStackTrace();
 	            }
 		    }
-	        else{
+	        else
+	        {
 	            //CERRAR EL MENU DEL DRAWER
                 drawerLayout.closeDrawers();
 	            ShowNoRecords();
@@ -453,19 +464,7 @@ public class ViewPedido extends ActionBarActivity implements
 
 		if (drawerToggle.onOptionsItemSelected(item)) {
 			return true;
-		}
-
-//		switch (item.getItemId()) {
-//		case R.id.action_settings:
-//			Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-//			;
-//			break;
-//		case R.id.action_search:
-//			Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
-//			break;
-//		default:
-//			return super.onOptionsItemSelected(item);
-//		}
+		} 
 
 		return true;
 	}
@@ -486,20 +485,74 @@ public class ViewPedido extends ActionBarActivity implements
 		super.onConfigurationChanged(newConfig);
 		drawerToggle.onConfigurationChanged(newConfig);
 	}
+	
+	public void ocultarDialogos() {
+		if (dlg != null && dlg.isShowing())
+			dlg.dismiss(); 
+	}
+
+	
+	public void showStatus(final String mensaje, boolean... confirmacion) {
+		 
+		ocultarDialogos();
+		if (confirmacion.length != 0 && confirmacion[0]) 
+		{
+			runOnUiThread(new Runnable() 
+			{
+				@Override
+				public void run() {
+					AppDialog.showMessage(vp, "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(
+										AlertDialog _dialog, int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else 
+		{
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					dlg =  new CustomDialog(vp, mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		} 
+	}
 
 	@Override
 	public boolean handleMessage(Message msg) 
 	{
 		Boolean val = false;
 		final Object item= msg.obj;
+		ocultarDialogos();
 		switch (msg.what) 
 		{
 			case C_DATA:
 				establecer(msg);
 				val= true;
 				break;
+			case ControllerProtocol.NOTIFICATION:				 
+				showStatus(msg.obj.toString(), true);
+				break;				
+			case ControllerProtocol.NOTIFICATION_DIALOG2:
+				showStatus(msg.obj.toString());
+				break; 
+			case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO: 
+				request_code=EDITAR_PEDIDO;
+				resultadoEnvioPedido(msg.obj); 
+				break;
 			case DELETE_ITEM_FINISHED:
-				runOnUiThread(new Runnable() {
+				runOnUiThread(new Runnable() 
+				{
 			        @Override
 					public void run() {
 			        	if(Integer.parseInt(item.toString())==1){
@@ -534,16 +587,55 @@ public class ViewPedido extends ActionBarActivity implements
 		}
 		return val;
 	}
+	
+	public void resultadoEnvioPedido(Object obj) 
+	{
+		Object pedd = ((ArrayList<Object>) obj).get(0);
+		Object clte = ((ArrayList<Object>) obj).get(1);
+
+		if (pedd != null)
+			pedido = (Pedido) pedd;
+
+		if (clte != null)
+			cliente = (Cliente) clte;
+
+		establecer(pedd);
+		
+		final String sms = (pedido.getCodEstado().compareTo("FACTURADO") == 0) ? "El pedido ha sido enviado y facturado \n¿Desea imprimir el recibo?"
+				: "El pedido ha sido enviado.Estado: " + pedido.getDescEstado()
+						+ "\r\nCausa: " + pedido.getDescCausaEstado();
+		// Informar al usuario
+		AppDialog.showMessage(this, "", sms, AppDialog.DialogType.DIALOGO_CONFIRMACION,
+				new AppDialog.OnButtonClickListener() {
+					@Override
+					public void onButtonClick(AlertDialog _dialog, int actionId) {
+
+						if (pedido.getCodEstado().compareTo("FACTURADO") == 0) {
+							Message msg = new Message();
+							Bundle b = new Bundle();
+							b.putParcelable("pedido", pedido);
+							b.putParcelable("cliente", cliente);
+							msg.setData(b);
+							msg.what = ControllerProtocol.IMPRIMIR;
+							NMApp.getController().getInboxHandler()
+									.sendMessage(msg);
+
+						}
+						_dialog.dismiss();
+					}
+				});
+
+	}
 
 	@Override
 	public void onItemSelected(Object obj, int position) 
-	{
-		// TODO Auto-generated method stub
+	{ 
 		pedido_selected = firstFragment.getAdapter().getItem(position);
 		positioncache = position;		
 	}
 
-	private void establecer(Object _obj) {
+	private void establecer(Object _obj) 
+	{
 		if (_obj == null)
 			return;
 
@@ -551,16 +643,22 @@ public class ViewPedido extends ActionBarActivity implements
 		{
 			Message msg = (Message) _obj;
 			pedidos = (ArrayList<vmEntity>) ((msg.obj == null) ? new ArrayList<vmEntity>(): msg.obj); 
+			positioncache=0;
 		}
-		if (_obj instanceof Pedido) {
+		else if (_obj instanceof Pedido) 
+		{
 			Pedido p = (Pedido) _obj;
 			if (EDITAR_PEDIDO == request_code)
-				pedidos.set(
-						positioncache,
-						new vmEntity(p.getId(), p.getNumeroMovil(), p
-								.getFecha(), p.getTotal(),
-								p.getNombreCliente(), p.getDescEstado(),p.getCodEstado()));
-			else if (NUEVO_PEDIDO == request_code) {
+			{
+				pedidos.set
+						(
+							positioncache,
+							new vmEntity(p.getId(), p.getNumeroMovil(), p.getFecha(), p.getTotal(),p.getNombreCliente(), p.getDescEstado(),p.getCodEstado())
+						);
+				
+			}
+			else if (NUEVO_PEDIDO == request_code) 
+			{
 				pedidos.add(new vmEntity(p.getId(), p.getNumeroMovil(), p
 						.getFecha(), p.getTotal(), p.getNombreCliente(), p
 						.getDescEstado(),p.getCodEstado()));
@@ -568,9 +666,11 @@ public class ViewPedido extends ActionBarActivity implements
 			}
 		}
 
-		runOnUiThread(new Runnable() {
+		runOnUiThread(new Runnable() 
+		{
 			@Override
-			public void run() {
+			public void run() 
+			{
 				gridheader.setVisibility(View.VISIBLE);
 				gridheader.setText(String.format("Listado de Pedidos (%s)",pedidos.size()));
 				if (pedidos.size() == 0) {
@@ -578,8 +678,7 @@ public class ViewPedido extends ActionBarActivity implements
 					txtenty.setVisibility(View.VISIBLE);
 				} 
 				else
-				{
-					positioncache = 0;
+				{ 
 					firstFragment.setItems(pedidos);
 					firstFragment.getAdapter().setSelectedPosition(positioncache);
 					pedido_selected = firstFragment.getAdapter().getItem(positioncache);
@@ -588,37 +687,15 @@ public class ViewPedido extends ActionBarActivity implements
 		});
 
 	}
+	
 	public vmEntity getPedidoSelected() {
 		return pedido_selected;
 	}	
-	public BPedidoM getBridge() {
-		return bpm;
-	}
-
-
-	public  Dialog buildCustomDialog(String tittle,String msg,int type)
+	
+	public BPedidoM getBridge() 
 	{
-		final CustomDialog dialog=new CustomDialog(this);
-		dialog.setCancelable(true);
-	    dialog.setCanceledOnTouchOutside(true);
-	    dialog.setMessageType(type);
-	    dialog.setTitulo(tittle);
-	    dialog.setMensaje(msg);    
-	    dialog.setOnActionDialogButtonClickListener
-	    (
-    		 new OnActionButtonClickListener()
-    		 {
-
-				@Override
-				public void onButtonClick(View _dialog,int actionId) {									 
-					if(actionId==CustomDialog.OK_BUTTOM ){
-						dialog.dismiss();	
-				}
-			 }
-			} 
-	    );
-	    return dialog;
-	}
+		return bpm;
+	} 
 	
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
@@ -651,8 +728,7 @@ public class ViewPedido extends ActionBarActivity implements
 	}
 	
 	
-	private void FINISH_ACTIVITY() {
-		//com.panzyma.nm.NMApp.getController().removeOutboxHandler(TAG);
+	private void FINISH_ACTIVITY() { 
 		NMApp.getController().removeOutboxHandler(TAG);
 		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
@@ -685,4 +761,97 @@ public class ViewPedido extends ActionBarActivity implements
     	}
 	}
 
+	private void enviarPedido() 
+	{
+		try 
+		{
+			if(pedido_selected==null)
+				return;
+			pedido = Ventas.obtenerPedidoByID(pedido_selected.getId(),vp);
+            
+			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
+					.getCodEstado().compareTo("APROBADO") == 0)))
+				return;
+
+			if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) 
+			{
+				if (pedido.getNumeroCentral() > 0) {
+					AppDialog.showMessage(this, "El pedido ya fue enviado.",
+							DialogType.DIALOGO_ALERTA);
+					return;
+				}
+			}
+			// Si se está fuera de covertura, salir
+			if (!SessionManager.isPhoneConnected())
+				return;
+			if (!isDataValid(pedido))
+				return; 
+			
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putParcelable("pedido", pedido);
+			msg.setData(b);
+			msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
+			NMApp.getController().getInboxHandler().sendMessage(msg);
+
+		} catch (Exception e) 
+		{
+			AppDialog.showMessage(this,
+					e.getMessage() + "\nCausa: " + e.getCause(),
+					DialogType.DIALOGO_ALERTA);
+		}
+
+	}
+	public boolean isDataValid(Pedido pedido) throws Exception {
+		
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		formatter.setCalendar(Calendar.getInstance());
+		Date d = formatter.parse(DateUtil.idateToStrYY(DateUtil.dt2i(Calendar
+				.getInstance().getTime())));
+		Date d2 = formatter.parse(DateUtil.idateToStrYY(pedido.getFecha()));
+		if (DateUtil.d2i(d2) > DateUtil.d2i(d)) 
+		{
+			AppDialog.showMessage(this,
+					"La fecha del pedido no debe ser mayor a la fecha actual.",
+					DialogType.DIALOGO_ALERTA);
+			return false; 
+		}
+			if ((pedido.getDetalles() == null) || ( pedido.getDetalles() != null && pedido.getDetalles().length == 0))
+				AppDialog.showMessage(this,
+						"El pedido no tiene detalle de productos.",
+						DialogType.DIALOGO_ALERTA); 
+
+		return comprobarPromociones(pedido);
+	}
+	
+	@SuppressLint("DefaultLocale")
+	private boolean comprobarPromociones(Pedido pedido) throws Exception {
+		// Si al pedido no se le ha aplicado promociones
+		// y la aplicación es obligatoria
+		// y si hay al menos una promoción aplicable
+		// no permitir enviar pedido
+		PedidoPromocion[] pproms = pedido.getPromocionesAplicadas();
+		if ((pproms == null) || (pproms.length == 0)) 
+		{
+
+			String apo = this
+					.getApplicationContext()
+					.getSharedPreferences("SystemParams",
+							android.content.Context.MODE_PRIVATE)
+					.getString("AplicacionPromocionesOpcional", "FALSE");
+
+			if (apo.toUpperCase().compareTo("FALSE") == 0) {
+				if (Promociones.getPromocionesAplican(pedido,
+						this.getContentResolver()).size() > 0) 
+				{
+					AppDialog.showMessage(this,
+							"Debe aplicarse al menos una promoción al pedido.",
+							DialogType.DIALOGO_ALERTA);
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
 } 

@@ -49,6 +49,8 @@ public class DialogPromociones extends Dialog
 	private static final int ID_APLICARPROMOCIONES = 1;
 	private static final int ID_CERRAR = 2;
 	
+	ArrayList<Promocion> promociones;
+	
 	public interface OnButtonClickHandler {
 		public abstract void onButtonClick(Promocion promocion);
 	}
@@ -57,12 +59,14 @@ public class DialogPromociones extends Dialog
 		mButtonClickListener = listener;
 	} 
 
-	public DialogPromociones(ViewPedidoEdit vpe,Pedido p, int theme) {
+	public DialogPromociones(ViewPedidoEdit vpe,Pedido p,ArrayList<Promocion> _promociones, int theme) {
 		super(vpe,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         setContentView(R.layout.promociones); 
         pedido=p; 
         context=vpe;
-        initComponent();        
+        promociones=_promociones;
+        initComponent();
+        
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -111,12 +115,7 @@ public class DialogPromociones extends Dialog
 			}
 		 }); 
 		 
-		try {
-			Lpromociones=Promociones.getPromocionesAplican(pedido, context.getContentResolver());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+		Lpromociones=promociones;  
 		adapter=new GenericAdapter(context,PromocionesViewHolder.class,Lpromociones,R.layout.aplicarpromociones);				 
 		gridpromociones.setAdapter(adapter);   
 		

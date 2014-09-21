@@ -67,6 +67,14 @@ public class DialogCondicionesNotas extends Dialog
         	((TextView)findViewById(R.id.tv_pespecial)).setVisibility(View.INVISIBLE); 
         } 
         etpespecial.setEnabled(pedido.getCodEstado() == "REGISTRADO");
+        btncancel.setOnClickListener(new View.OnClickListener() 
+		{ 
+    	    @Override
+			public void onClick(View v) 
+			{ 
+    	    	dismiss();
+			}
+		});
         btnok.setOnClickListener(new View.OnClickListener() 
 		{ 
     	    @Override

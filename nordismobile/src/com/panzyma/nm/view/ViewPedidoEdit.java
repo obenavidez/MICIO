@@ -395,9 +395,11 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 						runOnUiThread(new Runnable() {
 							@Override
-							public void run() {
+							public void run() 
+							{
 
-								try {
+								try 
+								{
 
 									ActionItem actionItem = quickAction
 											.getActionItem(pos);
@@ -607,7 +609,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				: "El pedido ha sido enviado.Estado: " + pedido.getDescEstado()
 						+ "\r\nCausa: " + pedido.getDescCausaEstado();
 		// Informar al usuario
-		AppDialog.showMessage(me, "", sms, AppDialog.DialogType.DIALOGO_ALERTA,
+		AppDialog.showMessage(me, "", sms, AppDialog.DialogType.DIALOGO_CONFIRMACION,
 				new AppDialog.OnButtonClickListener() {
 					@Override
 					public void onButtonClick(AlertDialog _dialog, int actionId) {
@@ -982,75 +984,101 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		newFragment.show(ft, "dialog");
 	}
 
-	public void aplicarPromociones(boolean... salvar) {
+	public void aplicarPromociones(boolean... salvar) 
+	{
 
-		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
-				.getCodEstado().compareTo("APROBADO") == 0)))
-			return;
+		try 
+		{
+			
+			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
+					.getCodEstado().compareTo("APROBADO") == 0)))
+				return;
 
-		if (cliente == null) {
-			showStatus("Seleccione primero el cliente del pedido.", true);
-			return;
-		}
-		if ((Lvmpproducto == null) || (Lvmpproducto.size() == 0)) {
-			AppDialog.showMessage(me,
-					"El pedido no tiene detalle de productos.",
-					DialogType.DIALOGO_ALERTA);
-			return;
-		}
-
-		if (salvar.length != 0 && salvar[0]) {
-			salvarPedido(ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES);
-			showStatus("Guardando 1mero el pedido");
-			return;
-		}
-		DialogPromociones dprom = new DialogPromociones(ViewPedidoEdit.this,
-				pedido, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-
-		dprom.setOnDialogPromocionesButtonClickListener(new com.panzyma.nm.viewdialog.DialogPromociones.OnButtonClickHandler() {
-
-			@Override
-			public void onButtonClick(Promocion promocion) {
-				if (promocion != null) {
-					// Validar que no se haya alcanzado el máximo de promociones
-					// a aplicar
-					PedidoPromocion[] pproms = pedido.getPromocionesAplicadas();
-					if (pproms != null) {
-						int maxPromos = Integer
-								.parseInt(me
-										.getApplicationContext()
-										.getSharedPreferences(
-												"SystemParams",
-												android.content.Context.MODE_PRIVATE)
-										.getString(
-												"CantMaximaPromocionesAplicar",
-												"0"));
-						if (pproms.length >= maxPromos) {
-							showStatus(
-									"La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.",
-									true);
-							return;
-						}
-					}
-
-					Promociones.aplicarPromocion(pedido, promocion,
-							me.getContentResolver());
-					Promociones.ActualizaPedidoDePromociones(pedido);
-					if (pedido.getPromocionesAplicadas().length == 0)
-						return;
-					showStatus("aplicando promociones...");
-					// Salvar la promoción aplicada
-					salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES);
-				}
-
+			if (cliente == null) {
+				showStatus("Seleccione primero el cliente del pedido.", true);
+				return;
 			}
-		});
+			if ((Lvmpproducto == null) || (Lvmpproducto.size() == 0)) {
+				AppDialog.showMessage(me,
+						"El pedido no tiene detalle de productos.",
+						DialogType.DIALOGO_ALERTA);
+				return;
+			}
 
-		Window window = dprom.getWindow();
-		window.setGravity(Gravity.CENTER);
-		window.setLayout(display.getWidth() - 5, display.getHeight() - 10);
-		dprom.show();
-
+			if (salvar.length != 0 && salvar[0]) {
+				salvarPedido(ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES);
+				showStatus("Guardando 1mero el pedido");
+				return;
+			}
+			
+			ArrayList<Promocion> promociones=Promociones.getPromocionesAplican(pedido,getContentResolver());
+			
+			if(promociones!=null && promociones.size()!=0)
+			{
+			
+					DialogPromociones dprom = new DialogPromociones(ViewPedidoEdit.this,
+							pedido,promociones, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+		
+					dprom.setOnDialogPromocionesButtonClickListener(new com.panzyma.nm.viewdialog.DialogPromociones.OnButtonClickHandler() {
+		
+						@Override
+						public void onButtonClick(Promocion promocion) {
+							if (promocion != null) 
+							{
+								// Validar que no se haya alcanzado el máximo de promociones
+								// a aplicar
+								PedidoPromocion[] pproms = pedido.getPromocionesAplicadas();
+								if (pproms != null) {
+									int maxPromos = Integer
+											.parseInt(me
+													.getApplicationContext()
+													.getSharedPreferences(
+															"SystemParams",
+															android.content.Context.MODE_PRIVATE)
+													.getString(
+															"CantMaximaPromocionesAplicar",
+															"0"));
+									if (pproms.length >= maxPromos) {
+										showStatus(
+												"La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.",
+												true);
+										return;
+									}
+								}
+		
+								Promociones.aplicarPromocion(pedido, promocion,
+										me.getContentResolver());
+								Promociones.ActualizaPedidoDePromociones(pedido);
+								if (pedido.getPromocionesAplicadas().length == 0)
+									return;
+								showStatus("aplicando promociones...");
+								// Salvar la promoción aplicada
+								salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES);
+							}
+							else
+								AppDialog.showMessage(me,"No hay Promomociones pendientes que aplicar...",
+										DialogType.DIALOGO_ALERTA);
+		
+						}
+					});
+		
+					Window window = dprom.getWindow();
+					window.setGravity(Gravity.CENTER);
+					window.setLayout(display.getWidth() - 5, display.getHeight() - 10);
+					dprom.show();
+			}
+			else
+				AppDialog.showMessage(me,"No hay Promomociones pendientes que aplicar...",
+						DialogType.DIALOGO_ALERTA);
+			
+		} catch (Exception e) 
+		{ 
+			AppDialog.showMessage(me,
+					e.getMessage() + "\nCausa: " + e.getCause(),
+					DialogType.DIALOGO_ALERTA);
+		}
+		
+		
 	}
 
 	public void actualizarDetallePedido() {
@@ -1128,7 +1156,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					.getCodEstado().compareTo("APROBADO") == 0)))
 				return;
 
-			if (pedido.isExento()) {
+			if (pedido.isExento()) 
+			{
 				pedido.setExento(false);
 				pedido.setAutorizacionDGI("");
 
@@ -1140,19 +1169,19 @@ public class ViewPedidoEdit extends FragmentActivity implements
 						.getSharedPreferences("SystemParams",
 								android.content.Context.MODE_PRIVATE)
 						.getString("PorcentajeImpuesto", "0.0"));
-				for (int i = 0; i < Lvmpproducto.size(); i++) {
+				
+				for (int i = 0; i < Lvmpproducto.size(); i++) 
+				{
 					DetallePedido dp = Lvmpproducto.get(i);
-					Producto prod = Ventas.getProductoByID(
-							dp.getObjProductoID(), me);
+					Producto prod = Ventas.getProductoByID(dp.getObjProductoID(), me);
 					dp.setPorcImpuesto(0);
 					dp.setImpuesto(0);
-					if (prod.isEsGravable()) {
+					if (prod.isEsGravable()) 
+					{
 						dp.setPorcImpuesto(prcImp);
-						dp.setImpuesto(dp.getSubtotal() * dp.getPorcImpuesto()
-								/ 100);
+						dp.setImpuesto(dp.getSubtotal() * dp.getPorcImpuesto()/ 100);
 					}
-					dp.setTotal(dp.getSubtotal() + dp.getImpuesto()
-							- dp.getDescuento());
+					dp.setTotal(dp.getSubtotal() + dp.getImpuesto()- dp.getDescuento());
 					Lvmpproducto.set(i, dp);
 				}
 				TAG_IMPUESTO = "Exonerar Impuesto";
@@ -1173,12 +1202,12 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					pedido.setAutorizacionDGI(exoneracion);
 					if (Lvmpproducto == null || Lvmpproducto.size() == 0)
 						return;
-					for (int i = 0; i < Lvmpproducto.size(); i++) {
+					for (int i = 0; i < Lvmpproducto.size(); i++) 
+					{
 						DetallePedido dp = Lvmpproducto.get(i);
 						dp.setImpuesto(0);
 						dp.setPorcImpuesto(0);
-						dp.setTotal(dp.getSubtotal() + dp.getImpuesto()
-								- dp.getDescuento());
+						dp.setTotal(dp.getSubtotal() + dp.getImpuesto() - dp.getDescuento());
 						Lvmpproducto.set(i, dp);
 					}
 					TAG_IMPUESTO = "Aplicar Impuesto";
@@ -1431,34 +1460,38 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	public void showStatus(final String mensaje, boolean... confirmacion) {
 		 
-			if (confirmacion.length != 0 && confirmacion[0]) {
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						AppDialog.showMessage(me, "", mensaje,
-								AppDialog.DialogType.DIALOGO_ALERTA,
-								new AppDialog.OnButtonClickListener() {
-									@Override
-									public void onButtonClick(
-											AlertDialog _dialog, int actionId) {
+		ocultarDialogos();
+		if (confirmacion.length != 0 && confirmacion[0]) 
+		{
+			runOnUiThread(new Runnable() 
+			{
+				@Override
+				public void run() {
+					AppDialog.showMessage(me, "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(
+										AlertDialog _dialog, int actionId) {
 
-										if (AppDialog.OK_BUTTOM == actionId) {
-											_dialog.dismiss();
-										}
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
 									}
-								});
-					}
-				});
-			} else {
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						dlg =  new CustomDialog(me, mensaje, false,
-								NOTIFICATION_DIALOG);
-						dlg.show();
-					}
-				});
-			} 
+								}
+							});
+				}
+			});
+		} else 
+		{
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					dlg =  new CustomDialog(me, mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		} 
 	}
 
 }
