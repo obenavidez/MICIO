@@ -28,6 +28,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.text.Editable;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -40,21 +42,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
-import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.viewmodel.vmCliente;
+import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
+
 
 public class ProductoView extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {
@@ -79,11 +81,12 @@ public class ProductoView extends ActionBarActivity implements
 	TextView gridheader;
 	TextView footerView;
 	ProductoView pv;
-
+	BProductoM bpm;
 	private List<Producto> productos = new ArrayList<Producto>();
 	Producto product_selected;
 	ListaFragment<Producto> firstFragment;
 	private static final int FICHA_DETALLE=0;
+	private static final int BONIFICACIONES=1;
 	private static final int CERRAR=4;
 
 
@@ -484,7 +487,7 @@ public class ProductoView extends ActionBarActivity implements
 				//SELECCIONAR LA POSICION DEL PRODUCTO SELECCIONADO ACTUALMENTE
 			positioncache = customArrayAdapter.getSelectedPosition();
 				//OBTENER EL PRODUCTO DE LA LISTA
-			product_selected =(Producto) customArrayAdapter.getItem(positioncache);
+			product_selected =customArrayAdapter.getItem(positioncache);
 			switch (position) {
 				case FICHA_DETALLE :
 				if(product_selected== null){
@@ -523,6 +526,22 @@ public class ProductoView extends ActionBarActivity implements
 				transaction.commit();
 				drawerLayout.closeDrawers();
 				break; 
+				case BONIFICACIONES:
+					if(product_selected== null){
+						AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					
+					FragmentTransaction Fragtransaction = getSupportFragmentManager().beginTransaction();
+					android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+					if (prev != null){
+						Fragtransaction.remove(prev);
+					}
+					Fragtransaction.addToBackStack(null);
+					ConsultaBonificacionesProducto bonificaciones = ConsultaBonificacionesProducto.newInstance( product_selected.getId(), 0);
+					bonificaciones.show(Fragtransaction, "dialog");
+					drawerLayout.closeDrawers();
+					break;
 				case CERRAR : 
 				drawerLayout.closeDrawers();
 				FINISH_ACTIVITY();
@@ -561,7 +580,7 @@ public class ProductoView extends ActionBarActivity implements
 	private void Load_Data(int what)
 	{
 		try {
-				NMApp.getController().setEntities(this, new BProductoM());
+				NMApp.getController().setEntities(this, bpm= new BProductoM());
 				NMApp.getController().addOutboxHandler(new Handler(this));
 				NMApp.getController().getInboxHandler().sendEmptyMessage(what);
 				
@@ -574,5 +593,8 @@ public class ProductoView extends ActionBarActivity implements
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	public BProductoM getBridge() {
+		return bpm;
 	}
 }

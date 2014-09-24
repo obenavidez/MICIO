@@ -47,9 +47,8 @@ public class BVentaM {
 
 	public BVentaM(ConsultaVentasFragment consultaVentas) {
 		this.fragment = consultaVentas;
-		this.controller = ((NMApp) consultaVentas.getActivity()
-				.getApplication()).getController();
-		this.pool = ((NMApp) consultaVentas.getActivity().getApplication())
+		this.controller = NMApp.getController();
+		this.pool = NMApp
 				.getThreadPool();
 	}
 

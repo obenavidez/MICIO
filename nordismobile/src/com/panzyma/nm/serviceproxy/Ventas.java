@@ -1,6 +1,5 @@
 package com.panzyma.nm.serviceproxy;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import android.annotation.SuppressLint;
@@ -9,11 +8,8 @@ import android.content.Context;
 
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BPedidoM;
-import com.panzyma.nm.auxiliar.DateUtil;
-import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewPedidoEdit;
 

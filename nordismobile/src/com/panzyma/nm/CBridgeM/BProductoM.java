@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
+import android.content.ContentResolver;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -40,6 +41,7 @@ public class BProductoM {
 	private ViewProducto view2;
 	private ConsultaPrecioProducto view3;
 	private ConsultaBonificacionesProducto view4;
+	int view_activated;	
 
 	String TAG = BClienteM.class.getSimpleName();
 	boolean OK = false;
@@ -50,32 +52,36 @@ public class BProductoM {
 	}
 
 	public BProductoM(ProductoView view) {
-		this.controller = ((NMApp) view.getApplicationContext())
+		this.controller = NMApp
 				.getController();
 		this.view = view;
-		this.pool = ((NMApp) view.getApplicationContext()).getThreadPool();
+		this.pool = NMApp.getThreadPool();
+		view_activated=1;
 	}
 
 	public BProductoM(DialogProducto view) {
-		this.controller = ((NMApp) view.getContext().getApplicationContext())
+		this.controller = NMApp
 				.getController();
 		this.view1 = view;
-		this.pool = ((NMApp) view.getContext().getApplicationContext())
+		this.pool = NMApp
 				.getThreadPool();
+		view_activated=2;
 	}
 
 	public BProductoM(ConsultaPrecioProducto view) {
-		this.controller = ((NMApp) view.getParent().getApplicationContext())
+		this.controller = NMApp
 				.getController();
 		this.view3 = view;
-		this.pool = ((NMApp) view.getParent().getApplicationContext())
+		this.pool = NMApp
 				.getThreadPool();
+		view_activated=3;
 	}
 	
 	public BProductoM(ConsultaBonificacionesProducto view) {
-		this.controller = ((NMApp) view.getParent().getApplicationContext()).getController();
+		this.controller =NMApp.getController();   //((NMApp) view.getParent().getApplicationContext()).getController();
 		this.view4 = view;
-		this.pool = ((NMApp) view.getParent().getApplicationContext()).getThreadPool();
+		this.pool = NMApp.getThreadPool();  //((NMApp) view.getParent().getApplicationContext()).getThreadPool();
+		view_activated=4;
 	}
 
 	public boolean handleMessage(Message msg) throws Exception {
@@ -287,13 +293,26 @@ public class BProductoM {
 	public void getProductoByID(final long idProducto) throws Exception 
 	{		 
 		try 
-		{  			
+		{  	
+			ContentResolver content=null;
+
+			switch (view_activated) {
+			case 1:
+				content=view3.getParent().getContentResolver();
+				break;
+			case 4:
+				content=view4.getListParent().getContentResolver();
+				break;
+			default:
+				break;
+			}
+			
 			Processor.notifyToView(
 					controller,
 					ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST,
 					0,
 					0,
-					ModelProducto.getProductoByID(((view3!=null)?view3.getParent().getContentResolver():view4.getParent().getContentResolver()),idProducto));
+					ModelProducto.getProductoByID(content,idProducto));
 		} catch (Exception e) 
 		{ 
 			e.printStackTrace();

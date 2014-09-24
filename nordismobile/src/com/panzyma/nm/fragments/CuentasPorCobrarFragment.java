@@ -2,10 +2,7 @@ package com.panzyma.nm.fragments;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BLogicM.Result;
@@ -24,18 +21,13 @@ import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.CCPedido;
 import com.panzyma.nm.serviceproxy.CCReciboColector;
-import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
-import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
 import com.panzyma.nm.view.viewholder.PedidoViewHolder;
 import com.panzyma.nm.view.viewholder.ReciboViewHolder;
-import com.panzyma.nm.viewmodel.vmCliente;
-import com.panzyma.nm.viewmodel.vmFicha;
-import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 import android.app.Activity;
@@ -44,14 +36,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +49,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class CuentasPorCobrarFragment extends Fragment implements
@@ -210,11 +199,11 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 
 			//nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
-			nmapp.getController().setEntities(this, new BLogicM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
+			NMApp.getController().setEntities(this, new BLogicM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
 			//waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Info Cliente...", true, false);
-			nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_SERVER);
+			NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_SERVER);
 
 			
 			waiting = new ProgressDialog(getActivity());
@@ -239,10 +228,10 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			
 			
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
-			nmapp.getController().setEntities(this, new BLogicM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER);
+			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
+			NMApp.getController().setEntities(this, new BLogicM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER);
 			
 			
 			waiting = new ProgressDialog(getActivity());
@@ -261,10 +250,10 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Débito...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
-			nmapp.getController().setEntities(this, new BLogicM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController()
+			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
+			NMApp.getController().setEntities(this, new BLogicM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
 							ControllerProtocol.LOAD_NOTAS_DEBITO_FROM_SERVER);
@@ -280,10 +269,10 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Crédito...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
-			nmapp.getController().setEntities(this, new BLogicM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController()
+			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
+			NMApp.getController().setEntities(this, new BLogicM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
 							ControllerProtocol.LOAD_NOTAS_CREDITO_FROM_SERVER);
@@ -299,10 +288,10 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Pedidos...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
-			nmapp.getController().setEntities(this, new BLogicM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController()
+			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
+			NMApp.getController().setEntities(this, new BLogicM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
 							ControllerProtocol.LOAD_PEDIDOS_FROM_SERVER);
@@ -318,10 +307,10 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Recibos...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removeBridgeByName(BLogicM.class.toString());
-			nmapp.getController().setEntities(this, new BLogicM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController()
+			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
+			NMApp.getController().setEntities(this, new BLogicM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
 							ControllerProtocol.LOAD_RECIBOS_FROM_SERVER);
@@ -782,9 +771,9 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public void onDetach ()
 	{
 		Log.d(TAG, "OnDetach");
-		nmapp.controller.removeOutboxHandler(TAG);
-		nmapp.controller.removebridge(nmapp.getController().getBridge());
-		nmapp.controller.disposeEntities();
+		NMApp.controller.removeOutboxHandler(TAG);
+		NMApp.controller.removebridge(NMApp.getController().getBridge());
+		NMApp.controller.disposeEntities();
 		super.onDetach();
 	}
 	
@@ -813,7 +802,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			
 			cuentaporcobrar resultado = new cuentaporcobrar();
 			final String credentials = SessionManager.getCredentials();
-			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(nmapp.controller) ) {
+			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(NMApp.controller) ) {
 				CCCliente cliente = new CCCliente();
 				cliente= ModelLogic.getCuentasPorCobrarDelCliente(credentials,getSucursalId());
 				 ArrayList<Factura> facturas=ModelLogic.getFacturasCliente(credentials,

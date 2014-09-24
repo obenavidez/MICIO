@@ -1,10 +1,7 @@
 package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
-import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -19,7 +16,6 @@ import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.model.ModelLogic;
-import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion;
 
 public class BLogicM {
@@ -68,10 +64,8 @@ public class BLogicM {
 	
 	public BLogicM(DialogoConfirmacion view) {
 		this.view = view;
-		this.controller = ((NMApp) this.view.getActivity()
-				.getApplication()).getController();
-		this.pool = ((NMApp) this.view.getActivity()
-				.getApplication()).getThreadPool();
+		this.controller = NMApp.getController();
+		this.pool = NMApp.getThreadPool();
 	}
 
 	public boolean handleMessage(Message msg) throws Exception {
