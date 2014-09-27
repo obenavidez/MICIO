@@ -211,7 +211,8 @@ public class SessionManager
 		{
 			while( ((!SessionManager.isLogged()) && isOK) || (admin && !SessionManager.isAdmin() && isOK) )
 			{
-				if(hasError)break;
+				if(hasError)
+					break;
 				isOK=false;
 				SessionManager.bloque1(admin);
 				SessionManager.bloque2(admin);  			
