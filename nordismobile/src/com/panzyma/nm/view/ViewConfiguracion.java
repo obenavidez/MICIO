@@ -78,6 +78,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 	ViewConfiguracion context;
 	boolean isEditActive;
 	private EditText txtURL;
+	private EditText txtURL2;
 	private EditText txtEmpresa;
 	private EditText txtUsuario;
 	private EditText txtDispositivoID;
@@ -85,6 +86,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 	private String passwd;
 	private String enterprise;
 	private String url_server;
+	private String url_server2;
 	private String deviceid;
 	private NMApp NMApp;
 	private boolean onRestart;
@@ -104,7 +106,8 @@ public class ViewConfiguracion extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_configuracion); 
 		isEditActive = getIntent().getExtras().getBoolean("isEditActive");
-		try {
+		try 
+		{			
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 			context = this;
 			NMApp.getController().setEntities(this, bcm = new BConfiguracionM());
@@ -125,7 +128,10 @@ public class ViewConfiguracion extends FragmentActivity implements
 		}
 	}
 
-
+	public String getTBoxUserName() {
+		return this.txtUsuario.getText().toString();
+	}
+	
 	public void setUserName(String user) {
 		this.user_name = user;
 	}
@@ -142,6 +148,10 @@ public class ViewConfiguracion extends FragmentActivity implements
 		return this.passwd;
 	}
 
+	public String getTBoxEnterprise() {
+		return this.txtEmpresa.getText().toString();
+	}
+	
 	public String getEnterprise() {
 		return this.enterprise;
 	}
@@ -150,12 +160,28 @@ public class ViewConfiguracion extends FragmentActivity implements
 		this.enterprise = enterprise;
 	}
 
+	public String getTBoxUrlServer() {
+		return this.txtURL.getText().toString();
+	}
+	
 	public String getUrlServer() {
 		return this.url_server;
 	}
 
 	public void setUrlServer(String url_server) {
 		this.url_server = url_server;
+	}
+	
+	public String getTBoxUrlServer2() {
+		return this.txtURL2.getText().toString();
+	}
+	
+	public String getUrlServer2() {
+		return this.url_server2;
+	}
+
+	public void setUrlServer2(String url_server) {
+		this.url_server2 = url_server;
 	}
 
 	public void setDeviceId(String deviceid) {
@@ -207,9 +233,11 @@ public class ViewConfiguracion extends FragmentActivity implements
 
 	private void setData(vmConfiguracion setting) 
 	{
+		
 		setImpresora(setting.getImpresora());
 		oldata = vmConfiguracion.setConfiguration(setting);
 		txtURL.setText(setting.getAppServerURL());
+		txtURL2.setText(setting.getAppServerURL2());
 		txtEmpresa.setText(setting.getEnterprise());
 		txtUsuario.setText(setting.getNameUser());
 		txtDispositivoID.setText(setting.getDeviceId());
@@ -217,6 +245,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 		this.setUrlServer(setting.getAppServerURL());
 		this.setDeviceId(setting.getEnterprise());
 		this.setUserName(setting.getNameUser());
+		SessionManager.setContext(context);
 
 	}
 
@@ -237,11 +266,13 @@ public class ViewConfiguracion extends FragmentActivity implements
 	private void initComponents() {
 		initMenu();
 		txtURL = (EditText) findViewById(R.id.cfgtextv_detalleurlws);
+		txtURL2 = (EditText) findViewById(R.id.cfgtextv_detalleurlws2);
 		txtEmpresa = (EditText) findViewById(R.id.cfgtextv_detallecodempresa);
 		txtUsuario = (EditText) findViewById(R.id.cfgtextv_detalleuser);
 		txtDispositivoID = (EditText) findViewById(R.id.cfgtextv_detalledeviceid);
 		txtImpresora = (EditText) findViewById(R.id.cf_bluetoothprinter);
 		txtURL.setEnabled(isEditActive);
+		txtURL2.setEnabled(isEditActive);
 		txtEmpresa.setEnabled(isEditActive);
 		txtUsuario.setEnabled(isEditActive);
 
@@ -281,8 +312,9 @@ public class ViewConfiguracion extends FragmentActivity implements
 							int actionId) {
 						final Controller controller = NMApp.getController();
 						ActionItem actionItem = quickAction.getActionItem(pos);
-						
-						
+						if (actionId != ID_SETTING_BLUETOOTHDEVICE) 
+							if(!validar())
+								return;
 						
 						if (actionId == ID_SALVAR_CONFIGURACION)
 							salvarConfiguracion();
@@ -291,10 +323,10 @@ public class ViewConfiguracion extends FragmentActivity implements
 
 								NMApp.getThreadPool().execute(new Runnable() {
 									@Override
-									public void run() {
+									public void run() 
+									{
 										try {
-											if (SessionManager
-													.getCredenciales().trim() != "")
+											if (SessionManager.getCredenciales().trim() != "")
 												controller
 														.getInboxHandler()
 														.sendEmptyMessage(
@@ -317,8 +349,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 									@Override
 									public void run() {
 										try {
-											if (SessionManager
-													.getCredenciales().trim() != "")
+											if (SessionManager.getCredenciales().trim() != "")
 												controller
 														.getInboxHandler()
 														.sendEmptyMessage(
@@ -339,8 +370,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 									@Override
 									public void run() {
 										try {
-											if (SessionManager
-													.getCredenciales().trim() != "")
+											if (SessionManager.getCredenciales().trim() != "")
 												controller
 														.getInboxHandler()
 														.sendEmptyMessage(
@@ -361,8 +391,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 									@Override
 									public void run() {
 										try {
-											if (SessionManager
-													.getCredenciales().trim() != "")
+											if (SessionManager.getCredenciales().trim() != "")
 												controller
 														.getInboxHandler()
 														.sendEmptyMessage(
@@ -413,9 +442,6 @@ public class ViewConfiguracion extends FragmentActivity implements
 
 						} else if (actionId == ID_SINCRONIZE_TODOS) 
 						{
-							if (SessionManager.getLoginUser() == null)
-								salvarConfiguracion();
-
 							try 
 							{
 								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
@@ -428,7 +454,8 @@ public class ViewConfiguracion extends FragmentActivity implements
 										{
 											setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 											controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS);
-										} catch (Exception e) {
+										} catch (Exception e) 
+										{
 											e.printStackTrace();
 										}
 
@@ -439,9 +466,9 @@ public class ViewConfiguracion extends FragmentActivity implements
 								e.printStackTrace();
 							}
 
-						} else if (actionId == ID_SETTING_BLUETOOTHDEVICE) {
-							intento = new Intent(ViewConfiguracion.this,
-									ConfigurarDispositivosBluetooth.class);
+						} else if (actionId == ID_SETTING_BLUETOOTHDEVICE) 
+						{
+							intento = new Intent(ViewConfiguracion.this,ConfigurarDispositivosBluetooth.class);
 							startActivityForResult(intento, 0);
 						} else if (actionId == ID_CERRAR)
 							FINISH_ACTIVITY();
@@ -458,7 +485,8 @@ public class ViewConfiguracion extends FragmentActivity implements
 	}
 
 	private boolean salvarConfiguracion() {
-		if (validar()) {
+		if (validar()) 
+		{
 			try {
 				NMApp.getThreadPool().execute(new Runnable() {
 					@Override
@@ -471,8 +499,9 @@ public class ViewConfiguracion extends FragmentActivity implements
 								setEnterprise(txtEmpresa.getText().toString());
 								setUserName(txtUsuario.getText().toString());
 								setUrlServer(txtURL.getText().toString());
+								setUrlServer2(txtURL2.getText().toString());
 								setDeviceId(txtDispositivoID.getText().toString());
-
+								
 								Message msg = new Message();
 								Bundle b = new Bundle();
 								b.putString("Credentials",SessionManager.getCredenciales()); 
@@ -507,25 +536,30 @@ public class ViewConfiguracion extends FragmentActivity implements
 			txtURL.setError("Ingrese el nombre o IP del servidor SIMFAC.");
 			txtURL.requestFocus();
 			return false;
+		}
+		else if (txtURL2.getText().toString().trim().length() == 0) {
+			txtURL2.setError("Ingrese el nombre o IP del servidor SIMFAC.");
+			txtURL2.requestFocus();
+			return false;
 		} else if (txtEmpresa.getText().toString().trim().length() == 0) {
 			txtEmpresa.setError("Ingrese el código de la empresa.");
 			txtEmpresa.requestFocus();
 			return false;
 		}
-//		 else if (txtImpresora.getText().toString().trim().length()==0){
-//		 txtImpresora.setError("Configure Impresora.");
-//		 txtImpresora.requestFocus();
-//		 return false;
-//		 }
+//		else if (txtImpresora.getText().toString().trim().length()==0){
+//			 txtImpresora.setError("Configure Impresora.");
+//			 txtImpresora.requestFocus();
+//			 return false;
+//		}
 		else if (txtUsuario.getText().toString().trim().length() == 0) {
 			txtUsuario.setError("Ingrese el nombre del usuario.");
 			txtUsuario.requestFocus();
 			return false;
 		}
 //		else if (getImpresora()==null || (getImpresora()!=null &&
-//		 getImpresora().obtenerNombre().trim()=="")){
-//		 txtUsuario.setError("No se ha configurado impresora de trabajo.");
-//		 return false;
+//			 getImpresora().obtenerNombre().trim()=="")){
+//			 txtUsuario.setError("No se ha configurado impresora de trabajo.");
+//			 return false;
 //		}
 		return true;
 	}
@@ -551,7 +585,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 		if (onPause && !onRestart)
 			initController();
 		onRestart = false;
-		SessionManager.setContext(ViewConfiguracion.this);
+		SessionManager.setContext(this);
 		onPause = false;
 		super.onResume();
 	}

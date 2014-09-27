@@ -16,7 +16,9 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nordismobile.R;
 
@@ -104,18 +106,18 @@ public class DialogLogin extends Dialog  implements Handler.Callback
 	    	android.widget.RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
 			params.addRule(RelativeLayout.BELOW,R.id.etpassword);			  
 			buttonsrow.setGravity(Gravity.CENTER_HORIZONTAL);
-			buttonsrow.setLayoutParams(params); 
-	    	if (mycontext.getClass().getSimpleName().toString()=="ViewConfiguracion")
-		    {
-		    	ViewConfiguracion vc=((ViewConfiguracion) this.mycontext); 
-		    	txtenterprise.setText(vc.getEnterprise());
-		    	txtenterprise.setEnabled(false); 
-	    	    txtenterprise.setText(vc.getEnterprise());
-	    	    //txtenterprise.setEnabled(false);
-		    }
-	    	//txtpassword.requestFocus();	    	
+			buttonsrow.setLayoutParams(params);   
 	    }	     
 	    
+	    String[] session=SessionManager.getSession();
+		if(session!=null || (session!=null && session.length!=0)) 
+	    { 
+	    	txtenterprise.setText(session[0]);
+	    	txtenterprise.setEnabled(false);  
+	    	txtusername.setText(session[1]);
+	    	txtusername.setEnabled(false); 
+	    	txtpassword.requestFocus();
+	    }
 	    signin.setOnClickListener(new View.OnClickListener() 
 		{ 
     	    @Override

@@ -2,22 +2,29 @@ package com.panzyma.nm.auxiliar;
  
 
 import android.annotation.SuppressLint;
-import android.app.Activity;  
-import android.bluetooth.BluetoothDevice;
+import android.app.Activity;   
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;   
+import android.os.Bundle;
+import android.os.Message;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BConfiguracionM;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.model.ModelConfiguracion;
+import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
+import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.viewdialog.DialogLogin; 
 import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;  
 
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 @SuppressLint("ParserError")@SuppressWarnings("rawtypes")
@@ -38,7 +45,6 @@ public class SessionManager
     private static String errormessage=""; 
     private static boolean isOK;
     private static boolean _esAdmin; 
-    private static NMApp nmapp;
     static Object lock=new Object();
     static Object lock2=new Object(); 
     
@@ -47,7 +53,7 @@ public class SessionManager
 	private static CustomDialog dlg; 
     private static Usuario userinfo;
     public static boolean hasError=false;
-    
+    static String nombreusuario="";
 	public SessionManager(){};
 	
 	private static Impresora impresora;
@@ -92,6 +98,10 @@ public class SessionManager
 	       return _esAdmin;
     }	 
 	
+	public static Context getContext(){
+		return context;
+	}
+	
 	@SuppressWarnings("static-access")
 	public static Impresora getImpresora(){
 		if(impresora==null || (impresora!=null && impresora.obtenerMac().trim()==""))
@@ -108,6 +118,15 @@ public class SessionManager
 			userinfo=Usuario.get(context);
 		return userinfo;
 	}
+	
+	public static String[] getSession()
+	{
+		if(getEmpresa()==null || getNameUser()==null || (getEmpresa()!=null && getEmpresa()=="") || (getNameUser()!=null && getNameUser()==""))
+			return ModelConfiguracion.getVariablesSession(context);
+		else		
+			return new String[]{getEmpresa(),getNameUser()};
+			
+	}
 
 	public static void setLoguedUser(Usuario user){
 		userinfo=user;
@@ -115,10 +134,9 @@ public class SessionManager
 	
 	public static void setContext(Activity _context)
 	{
-		context=_context;
-		nmapp=((NMApp)_context.getApplicationContext());
+		context=_context; 
 		if(pool==null)
-			pool =nmapp.getThreadPool();
+			pool =NMApp.getThreadPool();
 	} 
 	
 	public  static void setLogged(boolean value){
@@ -189,13 +207,18 @@ public class SessionManager
 	public synchronized static boolean SignIn(final boolean admin)
     {
 		isOK=true; 
-		while( ((!SessionManager.isLogged()) && isOK) || (admin && !SessionManager.isAdmin() && isOK) )
+		if(SessionManager.getLoginUser()!=null || NMApp.modulo == NMApp.Modulo.CONFIGURACION)
 		{
-			if(hasError)break;
-			isOK=false;
-			SessionManager.bloque1(admin);
-			SessionManager.bloque2(admin);  			
+			while( ((!SessionManager.isLogged()) && isOK) || (admin && !SessionManager.isAdmin() && isOK) )
+			{
+				if(hasError)break;
+				isOK=false;
+				SessionManager.bloque1(admin);
+				SessionManager.bloque2(admin);  			
+			}
 		}
+		else
+			sendErrorMessage(new ErrorMessage("Error en inicio de Session","El no hay usuario configurado para este dispositivo, favor asigne un usuario en el modulo de Configuración",""));
 		SessionManager.hasError=false;
         return SessionManager.isLogged();
     } 
@@ -271,10 +294,12 @@ public class SessionManager
 	{
 		final Controller controller=NMApp.getController();
 		final String empresa=dl.getEmpresa();
-		final String nombreusuario=dl.getNameUser();
+		nombreusuario=dl.getNameUser();
 		final String password=dl.getPassword();  
 		SessionManager.setLogged(false); 
 		SessionManager.setErrorAuntentication("");		
+		final String url= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer():NMConfig.URL; 
+		final String url2= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer2():NMConfig.URL2; 
 		hasError=false;
 		try 
 		{ 							
@@ -283,7 +308,7 @@ public class SessionManager
 				@Override
 				public void run() 
 				{ 
-					if(NMNetWork.isPhoneConnected(context,controller) && NMNetWork.CheckConnection(controller))					
+					if(NMNetWork.isPhoneConnected(context,controller) && NMNetWork.CheckConnection(url))			
 					{
 						try 
 						{
@@ -296,21 +321,41 @@ public class SessionManager
 										
 										try 
 										{
-											res =ModelConfiguracion.verifyLogin((nombreusuario+"-"+password+"-"+empresa),"ADMIN");
+											res =ModelConfiguracion.verifyLogin(url2,(nombreusuario+"-"+password+"-"+empresa),"ADMIN");
 											
 											if (res.getAuntenticateRS() == AUT_EXITOSA )
 											{				
 												if(NMApp.modulo != NMApp.Modulo.CONFIGURACION && res.IsAdmin())
-												     sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario no es valido para realizar esta operación",""));
+												{
+													sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario no es valido para realizar esta operación",""));
+													return;
+												}
+												
 												if(NMApp.modulo == NMApp.Modulo.CONFIGURACION && admin && (res.IsAdmin()!=admin))
+												{
 													sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario "+nombreusuario+" no es Administrador",""));
+													return;
+												}
 												else
 												{
-													 _esAdmin=res.IsAdmin();
-													SessionManager.setEmpresa(empresa);
-													SessionManager.setNameUser(nombreusuario);
-													SessionManager.setPassword(password);
-													SessionManager.setLogged(true);
+													Usuario user=SessionManager.getLoginUser();
+													if (user!=null && (!user.getLogin().trim().toString().equals(nombreusuario.trim().toString())) && NMApp.modulo != NMApp.Modulo.CONFIGURACION)
+													{
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario "+nombreusuario+" no esta configurado localmente, asigne este usuario en el modulo de Configuración",""));
+														return;
+													}
+													else
+													{ 
+														if(user==null && NMApp.modulo== NMApp.Modulo.CONFIGURACION)
+														{
+															BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, nombreusuario+"-"+password+"-"+empresa, ((ViewConfiguracion)SessionManager.getContext()).getTBoxUserName(), NMNetWork.getDeviceId(context),getImpresora());
+														}														
+														_esAdmin=res.IsAdmin();
+														SessionManager.setEmpresa(empresa);
+														SessionManager.setNameUser(nombreusuario);
+														SessionManager.setPassword(password);
+														SessionManager.setLogged(true);
+													}
 												}
 												unlock();
 											}
@@ -402,7 +447,8 @@ public class SessionManager
 				e.printStackTrace();
 			}
         }
-		
+	    unlock();
+		SessionManager.setLogged(false);
 	}
      
 	public static void clean(){

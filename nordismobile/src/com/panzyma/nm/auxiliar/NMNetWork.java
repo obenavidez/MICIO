@@ -1,9 +1,13 @@
 package com.panzyma.nm.auxiliar;
 import com.comunicator.*;
+
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
+
 import java.util.ArrayList;
 
 import org.ksoap2.serialization.SoapPrimitive; 
+
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.Controller;
 
 import android.content.Context;
@@ -101,6 +105,27 @@ public class NMNetWork {
 			} catch (Exception e) { 
 				e.printStackTrace();
 			}
+        	
+            return false;
+        }  
+    }    
+    
+  //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
+    public static boolean CheckConnection(String url) 
+    {
+    	error=null;    	
+        try { 
+        		return Boolean.parseBoolean(((SoapPrimitive)AppNMComunication.InvokeMethod(new ArrayList<Parameters>(),url,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());              
+        } 
+        catch(Exception ex) 
+        {         	 
+        	SessionManager.hasError=true;
+        	error=new ErrorMessage("Error de conexión","error en la comunicación con el servidor de aplicaciones.\n",ex.toString());        	 
+			try {
+				Processor.notifyToView(NMApp.getController(),ERROR,0,0,error);
+			} catch (Exception e) { 
+				e.printStackTrace();
+			}				  
         	
             return false;
         }  

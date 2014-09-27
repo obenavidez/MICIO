@@ -7,6 +7,7 @@ public class vmConfiguracion implements Comparable<vmConfiguracion> {
 	
 
 	private java.lang.String URL_SERVER;
+	private java.lang.String URL_SERVER2;
 	private java.lang.String DEVICE_ID;
 	private java.lang.String ENTERPRISE;
 	private java.lang.String NAME_USER;
@@ -14,11 +15,12 @@ public class vmConfiguracion implements Comparable<vmConfiguracion> {
 	private int MAX_IDRECIBO;
 	private Impresora impresora;
 
-	public static vmConfiguracion setConfiguration(java.lang.String url_server,
+	public static vmConfiguracion setConfiguration(java.lang.String url_server,java.lang.String url_server2,
 			java.lang.String device_prefix, java.lang.String enterprise,
 			java.lang.String name_user, int max_idpedido, int max_idrecibo,Impresora _impresora) {
 		vmConfiguracion vmonfig = new vmConfiguracion();
 		vmonfig.setAppServerURL(url_server);
+		vmonfig.setAppServerURL2(url_server2);
 		vmonfig.setDeviceId(device_prefix);
 		vmonfig.setEnterprise(enterprise);
 		vmonfig.setNameUser(name_user);
@@ -30,7 +32,7 @@ public class vmConfiguracion implements Comparable<vmConfiguracion> {
 
 	public static vmConfiguracion setConfiguration(vmConfiguracion obj) 
 	{
-		return vmConfiguracion.setConfiguration(obj.getAppServerURL(),
+		return vmConfiguracion.setConfiguration(obj.getAppServerURL(),obj.getAppServerURL2(),
 				obj.getDeviceId(), obj.getEnterprise(), obj.getNameUser(),
 				obj.getMax_IdPedido(), obj.getMax_Idrecibo(),obj.getImpresora());
 	}
@@ -42,6 +44,14 @@ public class vmConfiguracion implements Comparable<vmConfiguracion> {
 	public String getAppServerURL() {
 		return this.URL_SERVER;
 	}
+	
+	public String setAppServerURL2(String uri) {
+		return this.URL_SERVER2=uri;
+	}
+	
+	public String getAppServerURL2() {
+		return this.URL_SERVER2;
+	}	
 
 	public String setDeviceId(String id_celular) {
 		return this.DEVICE_ID=id_celular;

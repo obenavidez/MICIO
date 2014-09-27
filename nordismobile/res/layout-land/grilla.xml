@@ -13,8 +13,7 @@
 			android:text="Encabezado de la Lista"
 			android:gravity="center"
 			android:textColor="@color/White"
-			android:background="@color/Gray"	             
-      	    />
+			android:background="@color/Gray"/>
     	           
 			<ListView
 			    android:id="@+id/data_items"

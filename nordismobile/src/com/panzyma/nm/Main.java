@@ -48,6 +48,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		SessionManager.setContext(this);
 		setContentView(R.layout.home);
 		setHeader(getString(R.string.HomeActivityTitle), false, true);
 		WindowManager wm = (WindowManager) this
@@ -58,7 +59,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		if ((savedInstanceState != null) ? savedInstanceState
 				.getBoolean("dl_visible") : false)
 			callDialogLogin();
-
+		NMApp.modulo = NMApp.Modulo.HOME;
 	}
 
 	@Override
@@ -101,34 +102,47 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	 */
 	public void onButtonClicker(View v) {
 		final Intent intent;
+		NMApp.modulo = NMApp.Modulo.HOME;
 		buttonActive = v.getId();
-		switch (v.getId()) {
-
-		case R.id.hbtnpedido:
-			intent = new Intent(this, ViewPedido.class);
-			startActivity(intent);
-			break;
-		case R.id.hbtnrecibocollector:
-			intent = new Intent(this, ViewRecibo.class);
-			startActivity(intent);
-			break;
-		case R.id.hbtndevolucion:
-			break;
-		case R.id.hbtncliente: 
-			intent = new Intent(this, vCliente.class);
-			startActivity(intent);
-			break;
-		case R.id.hbtnproducto:
-			intent = new Intent(this, ProductoView.class);
-			startActivity(intent);
-			break;
-
-		case R.id.hbtnconfiguracion:
-			callDialogLogin();
-			break;
-		default:
-			break;
+		Usuario user = SessionManager.getLoginUser();
+		if(user!=null)
+		{
+				switch (v.getId())  
+				{
+		
+					case R.id.hbtnpedido:
+						NMApp.modulo = NMApp.Modulo.PEDIDO;
+						intent = new Intent(this, ViewPedido.class);
+						startActivity(intent);
+						break;
+					case R.id.hbtnrecibocollector:
+						NMApp.modulo = NMApp.Modulo.RECIBO;
+						intent = new Intent(this, ViewRecibo.class);
+						startActivity(intent);
+						break;
+					case R.id.hbtndevolucion:
+						NMApp.modulo = NMApp.Modulo.DEVOLUCION;
+						break;
+					case R.id.hbtncliente: 
+						NMApp.modulo = NMApp.Modulo.CLIENTE;
+						intent = new Intent(this, vCliente.class);
+						startActivity(intent);
+						break;
+					case R.id.hbtnproducto:
+						NMApp.modulo = NMApp.Modulo.PRODUCTO;
+						intent = new Intent(this, ProductoView.class);
+						startActivity(intent);
+						break;
+			
+					case R.id.hbtnconfiguracion:
+						callDialogLogin();
+						break;
+					default:
+						break;
+				}
 		}
+		else
+			callDialogLogin();
 	}
 
 	@SuppressLint("ParserError")
@@ -143,10 +157,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			    {
 					try
 			        { 						 
-						Usuario user = SessionManager.getLoginUser();
-						NMApp.modulo = NMApp.Modulo.CONFIGURACION;
-						//if(user==null || SessionManager.SignIn(false) )
-						if(true)  
+						Usuario user = SessionManager.getLoginUser(); 
+						if(user==null || (user!=null && SessionManager.SignIn(false)))
 						{  
 							NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 							Intent intent = new Intent(context, ViewConfiguracion.class);

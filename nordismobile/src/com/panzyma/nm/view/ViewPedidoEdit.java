@@ -608,8 +608,13 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		final String sms = (pedido.getCodEstado().compareTo("FACTURADO") == 0) ? "El pedido ha sido enviado y facturado \n¿Desea imprimir el recibo?"
 				: "El pedido ha sido enviado.Estado: " + pedido.getDescEstado()
 						+ "\r\nCausa: " + pedido.getDescCausaEstado();
-		// Informar al usuario
-		AppDialog.showMessage(me, "", sms, AppDialog.DialogType.DIALOGO_CONFIRMACION,
+		runOnUiThread(new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				// Informar al usuario
+				AppDialog.showMessage(me, "", sms, AppDialog.DialogType.DIALOGO_CONFIRMACION,
 				new AppDialog.OnButtonClickListener() {
 					@Override
 					public void onButtonClick(AlertDialog _dialog, int actionId) {
@@ -628,51 +633,13 @@ public class ViewPedidoEdit extends FragmentActivity implements
 						_dialog.dismiss();
 					}
 				});
-
-	}
-
-	public void mandarImprimir() {
-
-		runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				AppDialog.showMessage(me, "Confirme por favor.!!!",
-						"Desea Imprimir el Pedido?",
-						AppDialog.DialogType.DIALOGO_CONFIRMACION,
-						new AppDialog.OnButtonClickListener() {
-							@Override
-							public void onButtonClick(AlertDialog _dialog,
-									int actionId) {
-								if (actionId == AppDialog.OK_BUTTOM) {
-
-									try {
-										if (!isDataValid())
-											return;
-
-										Message msg = new Message();
-										Bundle b = new Bundle();
-										b.putParcelable("pedido", pedido);
-										b.putParcelable("cliente", cliente);
-										msg.setData(b);
-										msg.what = ControllerProtocol.IMPRIMIR;
-										NMApp.getController().getInboxHandler()
-												.sendMessage(msg);
-
-									} catch (Exception e) {
-										AppDialog.showMessage(me,
-												e.getMessage() + "\nCausa: "
-														+ e.getCause(),
-												DialogType.DIALOGO_ALERTA);
-									}
-								}
-								_dialog.dismiss();
-							}
-						});
 			}
 		});
+				
 
 	}
+
+
 
 	private void FINISH_ACTIVITY() {
 		int requescode = 0;
@@ -1239,7 +1206,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		return handler;
 	}
 
-	private void ImprimirComprobante() throws Exception {
+	private void ImprimirComprobante() throws Exception 
+	{
 		if (!isDataValid())
 			return;
 		Message msg = new Message();

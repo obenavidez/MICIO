@@ -5,14 +5,16 @@ import com.panzyma.nm.model.ModelConfiguracion;
  
  
 public class NMConfig
-{    
-	public static String d=ModelConfiguracion.getURL_SERVER(NMApp.getContext());
-	public static String URL_SERVER="http://www.panzyma.com/nordisserverprod";
+{     
+	//public static String URL_SERVER="http://www.panzyma.com/nordisserverprod";
+	//public static String URL_SERVER2="http://www.panzyma.com/SimfacProd/SimfacService.svc";
 	//public static String URL = "http://www.panzyma.com/nordisservertest/mobileservice.asmx";
-    //public static String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/";
-	public static final String NAME_SPACE = "http://www.panzyma.com/";     
-	public static String URL = "http://192.168.1.100/NordisServer/mobileservice.asmx";
-    public static String URL2 ="http://192.168.1.110:8080/Servicios/SimfacService.svc/"; 
+    //public static String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/";	     
+	//public static String URL = "http://192.168.1.100/NordisServer/mobileservice.asmx";
+    //public static String URL2 ="http://192.168.1.110:8080/Servicios/SimfacService.svc/";
+	public static final String NAME_SPACE = "http://www.panzyma.com/";
+	public static String URL = ModelConfiguracion.getURL_SERVER(NMApp.getContext());
+    public static String URL2 =ModelConfiguracion.getURL_SERVER2(NMApp.getContext());
     
     public static class MethodName
     { 	
@@ -43,7 +45,8 @@ public class NMConfig
 		public static final String SolicitarDescuento="SolicitarDescuento";
 		public static final String VerificarAutorizacionDescuento="VerificarAutorizacionDescuento";
 	}
-	public static final class Cliente
+	
+    public static final class Cliente
 	{  		
 		public static final String Credentials="Credentials";
 		public static final String UsuarioVendedor="Credentials";
@@ -149,6 +152,7 @@ public class NMConfig
 		} 
 		
 	}
+
 	public static final class Pedido
 	{
 		public static final java.lang.String Id="Id";
@@ -227,6 +231,7 @@ public class NMConfig
 		public static final java.lang.String Exento="Exento";
 		public static final java.lang.String AutorizacionDGI="AutorizacionDGI";
 	}
+	
 	public static final class Producto
 	{
 		 public static final java.lang.String Id="Id";

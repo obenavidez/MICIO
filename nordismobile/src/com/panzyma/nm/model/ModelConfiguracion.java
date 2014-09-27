@@ -1,16 +1,10 @@
 package com.panzyma.nm.model;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Type; 
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.ksoap2.serialization.PropertyInfo;
- 
-
-
-
+import org.ksoap2.serialization.PropertyInfo; 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -19,17 +13,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.comunicator.AppNMComunication;
-import com.comunicator.Parameters;
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.auxiliar.NMComunicacion;
+import com.comunicator.Parameters; 
 import com.panzyma.nm.auxiliar.NMConfig;
-import com.panzyma.nm.auxiliar.NMTranslate;
-/*import com.panzyma.nm.auxiliar.Parameters;*/
+import com.panzyma.nm.auxiliar.NMTranslate; 
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
-import com.panzyma.nm.serviceproxy.LoginUserResult;
-import com.panzyma.nm.serviceproxy.TasaCambio;
+import com.panzyma.nm.serviceproxy.LoginUserResult; 
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 
@@ -64,22 +54,30 @@ public class ModelConfiguracion {
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		return pref.getString("url_server", "http://www.panzyma.com/nordisserverprod");		
 	}
-
-	public static vmConfiguracion getVMConfiguration(Context cnt) {
+	
+	public static String getURL_SERVER2(Context cnt)
+	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
-		vmConfiguracion config=vmConfiguracion.setConfiguration(
-				pref.getString("url_server", NMConfig.URL_SERVER),
+		return pref.getString("url_server2", "http://www.panzyma.com/SimfacProd/SimfacService.svc");		
+	}
+
+	public static vmConfiguracion getVMConfiguration(Context cnt) 
+	{
+		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
+		vmConfiguracion config=vmConfiguracion.setConfiguration( 
+				pref.getString("url_server", "http://www.panzyma.com/nordisservertest/mobileservice.asmx"), 
+				pref.getString("url_server2", "http://www.panzyma.com/SimfacProd/SimfacService.svc/"),
 				pref.getString("device_id", ""),
 				pref.getString("enterprise", "dp"),
 				pref.getString("name_user", ""),
 				pref.getInt("max_idpedido", 0), pref.getInt("max_idrecibo", 0),null);
 		config.setImpresora(Impresora.get(cnt));
 		return config;
-	}
- 
-
+	} 
+	 
 	public synchronized static int getMaxReciboID(Context cnt,
-			SQLiteDatabase... _db) {
+			SQLiteDatabase... _db) 
+	{
 		int maxreciboid_local = 0;
 		int maxreciboid_server = 0;
 		StringBuilder query = new StringBuilder();
@@ -87,7 +85,8 @@ public class ModelConfiguracion {
 
 		SQLiteDatabase db = (_db.length == 0) ? DatabaseProvider.Helper
 				.getDatabase(cnt) : _db[0];
-		try {
+		try 
+		{
 			Cursor c = DatabaseProvider.query(db, query.toString());
 			// Nos aseguramos de que existe al menos un registro
 			if (c.moveToFirst()) {
@@ -130,31 +129,50 @@ public class ModelConfiguracion {
 		e.commit();
 	}
 
-	public static LoginUserResult verifyLogin(String Credentials, String Roll)
+	public static LoginUserResult verifyLogin(String Uri2,String Credentials, String Roll)
 			throws Exception {
 		return NMTranslate.ToObject(
-				AppNMComunication.InvokeService(NMConfig.URL2
+				AppNMComunication.InvokeService(Uri2
 						+ NMConfig.MethodName.LoginUser + "/" + Credentials
 						+ "/" + Roll), new LoginUserResult());
 	}
-
-	public static DataConfigurationResult getDataConfiguration(
-			String Credentials, String LoginUsuario, String PIN)
-			throws Exception {
+	
+	public static DataConfigurationResult getDataConfiguration(String Credentials, String LoginUsuario, String PIN)	throws Exception 
+	{
 		PIN = "21C5D535";
-		return NMTranslate.ToObject(
-				AppNMComunication.InvokeService(NMConfig.URL2
-						+ NMConfig.MethodName.getDataConfiguration + "/"
-						+ Credentials + "/" + LoginUsuario + "/" + PIN),
-				new DataConfigurationResult());
+		return NMTranslate.ToObject
+				(
+					AppNMComunication.InvokeService
+					(
+							NMConfig.URL2
+							+ NMConfig.MethodName.getDataConfiguration + "/"
+							+ Credentials + "/" + LoginUsuario + "/" + PIN
+					),
+					new DataConfigurationResult()
+				);
 	}
 
-	public static void saveConfiguration(Context view, vmConfiguracion setting)
-			throws Exception {
-		pref = view
-				.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
+	public static DataConfigurationResult getDataConfiguration(String URL2,String Credentials, String LoginUsuario, String PIN)	throws Exception 
+	{
+		PIN = "21C5D535";
+		return NMTranslate.ToObject
+				(
+					AppNMComunication.InvokeService
+					(
+							URL2
+							+ NMConfig.MethodName.getDataConfiguration + "/"
+							+ Credentials + "/" + LoginUsuario + "/" + PIN
+					),
+					new DataConfigurationResult()
+				);
+	}
+
+	public static void saveConfiguration(Context view, vmConfiguracion setting)throws Exception 
+	{
+		pref = view.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		edit = pref.edit();
 		edit.putString("url_server", setting.getAppServerURL());
+		edit.putString("url_server2", setting.getAppServerURL2());
 		edit.putString("device_id", setting.getDeviceId());
 		edit.putString("enterprise", setting.getEnterprise());
 		edit.putString("name_user", setting.getNameUser());
@@ -164,6 +182,15 @@ public class ModelConfiguracion {
 		ModelConfiguracion.guardarImpresora(view, setting.getImpresora());
 	}
 
+	public static String[] getVariablesSession(Context cnt)
+	{
+		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);	
+		if(pref.getString("enterprise", "dp")!="" && pref.getString("name_user", "")!="")
+			return new String[]{ pref.getString("enterprise", "dp"),pref.getString("name_user", "")};
+		else
+			return null;
+	}
+	
 	public static Impresora obtenerImpresora(Context cnt) 
 	{
 		pref = cnt.getSharedPreferences("Impresora", Context.MODE_PRIVATE);
@@ -194,7 +221,8 @@ public class ModelConfiguracion {
 		return 1;
 	}
 
-	public static Usuario getUser(Context view) {
+	public static Usuario getUser(Context view) 
+	{
 		pref = view.getSharedPreferences("LoginUser", Context.MODE_PRIVATE);
 		if (pref.getLong("id", 0) == 0)
 			return null;

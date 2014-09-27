@@ -35,7 +35,7 @@ import android.content.Context;
 import android.os.Message;
 import android.util.Log;
  
-@SuppressLint("ParserError")@SuppressWarnings({"rawtypes","unused"})
+@SuppressLint("ParserError")@SuppressWarnings({"rawtypes"})
 public final class BClienteM 
 { 
     ArrayList<vmCliente> a_vaC; 

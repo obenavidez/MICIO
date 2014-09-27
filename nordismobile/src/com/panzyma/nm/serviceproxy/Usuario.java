@@ -60,6 +60,7 @@ public class Usuario implements KvmSerializable
     {
     	return ModelConfiguracion.getUser(cnt);
     }
+    
     public Usuario(long id, java.lang.String login, java.lang.String nombre, java.lang.String sexo, boolean accedeModuloPedidos, boolean puedeEditarPrecioAbajo, boolean puedeEditarPrecioArriba, boolean puedeEditarBonifAbajo, boolean puedeEditarBonifArriba, boolean isAdmin, boolean puedeCrearPedido, boolean puedeConsultarPedido, java.lang.String codigo, boolean puedeEditarDescPP) {
         this.Id = id;
         this.Login = login;
