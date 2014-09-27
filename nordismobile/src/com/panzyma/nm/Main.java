@@ -5,6 +5,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,11 +19,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewConfiguracion;
@@ -44,7 +48,9 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	private boolean onRestart;
 	private boolean onPause;
 	public int buttonActive;
-
+	Main ma;
+	private static CustomDialog dlg;
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,10 +61,18 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				.getSystemService(Context.WINDOW_SERVICE);
 		display = wm.getDefaultDisplay();
 		context = this;
+		try 
+		{
+			NMApp.getController().setEntities(this,null);
+		} catch (Exception e) 
+		{ 
+			e.printStackTrace();
+		}
 		NMApp.getController().addOutboxHandler(new Handler(this));
 		if ((savedInstanceState != null) ? savedInstanceState
 				.getBoolean("dl_visible") : false)
 			callDialogLogin();
+		ma=this;
 		NMApp.modulo = NMApp.Modulo.HOME;
 	}
 
@@ -207,23 +221,65 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 
 		if (cd != null && cd.isShowing())
 			cd.dismiss();
-		switch (msg.what) {
-		case NOTIFICATION:
-			NotificationMessage message = ((NotificationMessage) msg.obj);
-			(cd = dialog(message.getMessage() + message.getCause(),
-					NOTIFICATION_DIALOG)).show();
-			return true;
-		case ERROR:
-			ErrorMessage error = ((ErrorMessage) msg.obj);
-			(cd = dialog(error.getTittle(),
-					error.getMessage() + error.getCause(), ALERT_DIALOG))
-					.show();
-			return true;
-
+		if (dlg != null && dlg.isShowing())
+			dlg.dismiss();
+		switch (msg.what) 
+		{
+		
+		case ControllerProtocol.NOTIFICATION:				 
+			showStatus(msg.obj.toString(), true);
+			break;				
+		case ControllerProtocol.NOTIFICATION_DIALOG2:
+			showStatus(msg.obj.toString());
+			break;  
+		case ERROR:			 
+			AppDialog.showMessage(ma, ((ErrorMessage) msg.obj).getTittle(),
+					((ErrorMessage) msg.obj).getMessage(),
+					DialogType.DIALOGO_ALERTA);
+			break;
 		}
 		return false;
 	}
 
+	public void showStatus(final String mensaje, boolean... confirmacion) {
+		if (cd != null && cd.isShowing())
+			cd.dismiss();
+		if (dlg != null && dlg.isShowing())
+			dlg.dismiss();
+		if (confirmacion.length != 0 && confirmacion[0]) 
+		{
+			runOnUiThread(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					AppDialog.showMessage(ma, "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(
+										AlertDialog _dialog, int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else 
+		{
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					dlg =  new CustomDialog(ma, mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		} 
+	}
+	
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub

@@ -218,7 +218,7 @@ public class SessionManager
 			}
 		}
 		else
-			sendErrorMessage(new ErrorMessage("Error en inicio de Session","El no hay usuario configurado para este dispositivo, favor asigne un usuario en el modulo de Configuración",""));
+			sendErrorMessage(ErrorMessage.newInstance("Error en inicio de Session","El no hay usuario configurado para este dispositivo, favor asigne un usuario en el modulo de Configuración",""));
 		SessionManager.hasError=false;
         return SessionManager.isLogged();
     } 
@@ -233,7 +233,8 @@ public class SessionManager
         		dl=new DialogLogin(context,admin);
         		dl.setOnDialogLoginButtonClickListener(new OnButtonClickListener(){
 				@Override
-				public void onButtonClick(boolean btn) { 
+				public void onButtonClick(boolean btn) 
+				{ 
 					isOK=btn;  
 					dl.dismiss();   
 				}}); 
@@ -283,6 +284,8 @@ public class SessionManager
 				}
 	        }
         } 
+        else
+        	NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
 	}
 	
 	public static Boolean isPhoneConnected()
@@ -389,8 +392,7 @@ public class SessionManager
 					else
 						unlock();
 				 }
-			});	 
-			//showStatus(new NotificationMessage("","Probando Conexión.",""));
+			});	  
 			controller._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0,"Probando Conexión.");   
 
 		}
@@ -409,16 +411,18 @@ public class SessionManager
 	            @Override
 				public void run()
 	            {
-	            	synchronized(lock){                             
+	            	synchronized(lock)
+	            	{                             
 	            			lock.notify();
                     }
 	            }
-	      });
+	      }); 
 	} 
 	
 	public static void sendErrorMessage(final ErrorMessage error)
 	{
 		hasError=true;
+		NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
 		context.runOnUiThread(new Runnable()
         {
             @Override
@@ -433,7 +437,7 @@ public class SessionManager
 						synchronized(lock2){                            
                         	lock2.notify();
                         }
-						NMApp.getController()._notifyOutboxHandlers(0,0,0,0); 
+						 
 					}
 				}); 
 				dlg.show();		

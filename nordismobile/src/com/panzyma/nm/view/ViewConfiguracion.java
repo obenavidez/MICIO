@@ -654,9 +654,12 @@ public class ViewConfiguracion extends FragmentActivity implements
 		});
 	}
 
-	public void showStatus(final String mensaje,boolean... confirmacion) {
+	public void showStatus(final String mensaje,boolean... confirmacion) 
+	{
 		if (dlg != null)
-			dlg.dismiss(); 
+			dlg.dismiss();
+		if (pd != null)
+			pd.dismiss();
 		
 		if(confirmacion.length!=0 && confirmacion[0])
 		{
@@ -664,7 +667,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 				@Override
 				public void run() {
 					AppDialog.showMessage(context,"",mensaje,
-							AppDialog.DialogType.DIALOGO_CONFIRMACION,
+							AppDialog.DialogType.DIALOGO_ALERTA,
 							new AppDialog.OnButtonClickListener() {
 								@Override
 								public void onButtonClick(AlertDialog _dialog,
@@ -684,8 +687,9 @@ public class ViewConfiguracion extends FragmentActivity implements
 		{
 			runOnUiThread(new Runnable() {
 				@Override
-				public void run() {
-					dlg =CustomDialog.nuevaInstancia(context,mensaje, false, NOTIFICATION_DIALOG);
+				public void run() 
+				{
+					dlg =new CustomDialog(context,mensaje, false, NOTIFICATION_DIALOG);
 					dlg.show();
 				}
 			});

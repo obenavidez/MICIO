@@ -44,8 +44,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	private long idCatCliente;
 	private GenericAdapter adapter;
 	ArrayList<Bonificacion> lBonificacion;	
-	private int positioncache;
-	private NMApp nmapp;
+	private int positioncache; 
 	public static String TAG= ConsultaBonificacionesProducto.class.getSimpleName();
 	private ProgressDialog pd;
 	private ViewPedidoEdit parent;
@@ -114,22 +113,20 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
     public void  mandar_A_TraerDatos() 
     {
     	idProducto = getArguments().getLong("_idProducto"); 
-        idCatCliente = getArguments().getLong("_idCatCliente"); 
-        
-    	nmapp=(NMApp)parent.getApplicationContext();
+        idCatCliente = getArguments().getLong("_idCatCliente");  
 		try {
-			nmapp.getController().setEntities(this,new BProductoM());
+			NMApp.getController().setEntities(this,new BProductoM());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		nmapp.getController().addOutboxHandler(new Handler(this));
+		NMApp.getController().addOutboxHandler(new Handler(this));
 		Message msg = new Message();
 		Bundle b = new Bundle();
 		b.putLong("_idProducto",idProducto); 
 		msg.setData(b);
 		msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
-		nmapp.getController().getInboxHandler().sendMessage(msg);  
+		NMApp.getController().getInboxHandler().sendMessage(msg);  
 		pd = ProgressDialog.show(parent, "Espere por favor", "Cargando Información", true, false);
     }
 
@@ -163,10 +160,10 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	{
 		try 
 		{
-			nmapp.getController().removeOutboxHandler(TAG);
-		    nmapp.getController().removebridge(nmapp.getController().getBridge());
-		    nmapp.getController().disposeEntities();		
-		    nmapp.getController().setEntities((parent),parent.getBridge());
+			NMApp.getController().removeOutboxHandler(TAG);
+		    NMApp.getController().removebridge(NMApp.getController().getBridge());
+		    NMApp.getController().disposeEntities();		
+		    NMApp.getController().setEntities((parent),parent.getBridge());
 		    
 		} catch (Exception e) 
 		{ 

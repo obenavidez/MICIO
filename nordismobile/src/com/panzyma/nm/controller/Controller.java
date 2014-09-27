@@ -93,8 +93,10 @@ public class Controller<T, U>
 	
 	public  void setEntities(U _view,String _bridge) throws Exception
 	{
-		view=this.createObjectU(_view);		
-		bridge=this.createObjectT(_bridge);
+		if(_view!=null)
+			view=this.createObjectU(_view);		
+		if(_bridge!=null)
+			bridge=this.createObjectT(_bridge);
 	}
 	
 	public U getView()
