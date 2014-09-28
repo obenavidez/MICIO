@@ -8,6 +8,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.Bonificacion;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.DetallePromocionesViewHolder;
@@ -49,6 +50,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	public static String TAG= ConsultaBonificacionesProducto.class.getSimpleName();
 	private ProgressDialog pd;
 	private ViewPedidoEdit parent;
+	private ProductoView parent2;
 	
 	public static ConsultaBonificacionesProducto newInstance(long idProducto,long _idCatCliente) {
 		ConsultaBonificacionesProducto frag = new ConsultaBonificacionesProducto();
@@ -61,10 +63,24 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-		parent=(ViewPedidoEdit) this.getActivity();
-    	AlertDialog.Builder builder = new AlertDialog.Builder(parent); 
-    	LayoutInflater inflater = parent.getLayoutInflater();
+		AlertDialog.Builder builder=null;
+		LayoutInflater inflater =null;
+		
+		if(this.getActivity() instanceof ViewPedidoEdit){
+			parent=(ViewPedidoEdit) this.getActivity();
+			builder = new AlertDialog.Builder(parent); 
+			inflater = parent.getLayoutInflater();
+		}
+		
+		if(this.getActivity() instanceof ProductoView){
+			parent2=(ProductoView) this.getActivity();
+			builder = new AlertDialog.Builder(parent2); 
+			inflater = parent2.getLayoutInflater();
+		}
+		
+		//parent=(ViewPedidoEdit) this.getActivity();
+    	//AlertDialog.Builder builder = new AlertDialog.Builder(parent); 
+    	//LayoutInflater inflater = parent.getLayoutInflater();
 		view = inflater.inflate(R.layout.layout_consultabonificacionesprod, null);
 		builder.setTitle("Consulta de Bonificaciones");
 		builder.setView(view);
@@ -115,22 +131,26 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
     {
     	idProducto = getArguments().getLong("_idProducto"); 
         idCatCliente = getArguments().getLong("_idCatCliente"); 
-        
-    	nmapp=(NMApp)parent.getApplicationContext();
-		try {
-			nmapp.getController().setEntities(this,new BProductoM());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		nmapp.getController().addOutboxHandler(new Handler(this));
-		Message msg = new Message();
+        Message msg = new Message();
 		Bundle b = new Bundle();
 		b.putLong("_idProducto",idProducto); 
 		msg.setData(b);
 		msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
-		nmapp.getController().getInboxHandler().sendMessage(msg);  
-		pd = ProgressDialog.show(parent, "Espere por favor", "Cargando Información", true, false);
+    	//nmapp= parent!=null ? (NMApp) parent.getApplicationContext() : (NMApp) parent2.getApplicationContext();
+		try {
+			NMApp.controller.removeBridgeByName(BProductoM.class.toString());
+			NMApp.controller.setEntities(this,new BProductoM());
+			NMApp.controller.addOutboxHandler(new Handler(this));
+			NMApp.controller.getInboxHandler().sendMessage(msg);  
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		
+		pd = ProgressDialog.show(parent!=null ? parent : parent2  , "Espere por favor", "Cargando Información", true, false);
     }
 
     public void establecerBonificacionesProducto(Producto producto)
@@ -163,10 +183,16 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	{
 		try 
 		{
-			nmapp.getController().removeOutboxHandler(TAG);
-		    nmapp.getController().removebridge(nmapp.getController().getBridge());
-		    nmapp.getController().disposeEntities();		
-		    nmapp.getController().setEntities((parent),parent.getBridge());
+			NMApp.getController().removeOutboxHandler(TAG);
+		    NMApp.getController().removebridge(NMApp.getController().getBridge());
+		    NMApp.getController().disposeEntities();
+		    if(this.getActivity() instanceof ViewPedidoEdit){
+		    	NMApp.getController().setEntities((parent),parent.getBridge());	
+		    }
+		    if(this.getActivity() instanceof ProductoView){
+		    	NMApp.getController().setEntities((parent2),parent2.getBridge());	
+		    }
+		    
 		    
 		} catch (Exception e) 
 		{ 
@@ -181,4 +207,8 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	public ViewPedidoEdit getParent(){
 		return parent;
 	}
+	public ProductoView getListParent(){
+		return parent2;
+	}
+	
 }

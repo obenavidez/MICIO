@@ -298,7 +298,10 @@ public class BProductoM {
 
 			switch (view_activated) {
 			case 1:
-				content=view3.getParent().getContentResolver();
+				content=view.getParent().getContentResolver();
+				break;
+			case 3 :
+				content=view3.getListParent().getContentResolver();
 				break;
 			case 4:
 				content=view4.getListParent().getContentResolver();
