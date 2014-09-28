@@ -45,8 +45,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	private long idCatCliente;
 	private GenericAdapter adapter;
 	ArrayList<Bonificacion> lBonificacion;	
-	private int positioncache;
-	private NMApp nmapp;
+	private int positioncache; 
 	public static String TAG= ConsultaBonificacionesProducto.class.getSimpleName();
 	private ProgressDialog pd;
 	private ViewPedidoEdit parent;
@@ -147,9 +146,6 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		
-		
 		pd = ProgressDialog.show(parent!=null ? parent : parent2  , "Espere por favor", "Cargando Información", true, false);
     }
 
@@ -192,8 +188,6 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 		    if(this.getActivity() instanceof ProductoView){
 		    	NMApp.getController().setEntities((parent2),parent2.getBridge());	
 		    }
-		    
-		    
 		} catch (Exception e) 
 		{ 
 			e.printStackTrace();

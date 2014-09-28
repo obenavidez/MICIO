@@ -16,6 +16,8 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.panzyma.nm.Main;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.serviceproxy.Usuario;
@@ -111,12 +113,23 @@ public class DialogLogin extends Dialog  implements Handler.Callback
 	    
 	    String[] session=SessionManager.getSession();
 		if(session!=null || (session!=null && session.length!=0)) 
-	    { 
-	    	txtenterprise.setText(session[0]);
-	    	txtenterprise.setEnabled(false);  
-	    	txtusername.setText(session[1]);
-	    	txtusername.setEnabled(false); 
-	    	txtpassword.requestFocus();
+	    { 			
+			if(NMApp.getContext() instanceof Main)
+			{
+				txtenterprise.setText(session[0]);
+		    	txtenterprise.setEnabled(true);  
+		    	txtusername.setText(session[1]);
+		    	txtusername.setEnabled(true); 
+		    	txtpassword.requestFocus();
+			}
+			else
+			{
+		    	txtenterprise.setText(session[0]);
+		    	txtenterprise.setEnabled(false);  
+		    	txtusername.setText(session[1]);
+		    	txtusername.setEnabled(false); 
+		    	txtpassword.requestFocus();
+	    	}
 	    }
 	    signin.setOnClickListener(new View.OnClickListener() 
 		{ 

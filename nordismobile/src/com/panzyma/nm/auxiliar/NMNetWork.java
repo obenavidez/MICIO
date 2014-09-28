@@ -2,6 +2,7 @@ package com.panzyma.nm.auxiliar;
 import com.comunicator.*;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 import java.util.ArrayList;
 
@@ -119,10 +120,10 @@ public class NMNetWork {
         } 
         catch(Exception ex) 
         {         	 
-        	SessionManager.hasError=true;
-        	error=new ErrorMessage("Error de conexión","error en la comunicación con el servidor de aplicaciones.\n",ex.toString());        	 
-			try {
-				Processor.notifyToView(NMApp.getController(),ERROR,0,0,error);
+        	SessionManager.hasError=true; 
+        	try 
+			{				
+				NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,ErrorMessage.newInstance("","error en la comunicación con el servidor de aplicaciones.\n"+ex.toString(),"")); 
 			} catch (Exception e) { 
 				e.printStackTrace();
 			}				  

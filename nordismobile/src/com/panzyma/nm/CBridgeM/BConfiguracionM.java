@@ -590,8 +590,7 @@ public class BConfiguracionM {
 
 	private void SINCRONIZE_TODOS() {
 		try 
-		{
-			final String credentials = SessionManager.getCredenciales();
+		{ 
 			
 			NMApp.getThreadPool().execute(
 					new Runnable() {

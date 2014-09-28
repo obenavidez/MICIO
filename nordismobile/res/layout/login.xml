@@ -135,14 +135,18 @@
 		            android:textColor="@color/White" 
 		            android:nextFocusUp="@+id/btnsignin"
 		    		android:nextFocusLeft="@+id/btnsignin">
-		        </Button>
-			    
-			</TableRow> 
- 
+		        </Button> 
+			</TableRow>  
+	 		<TextView
+	        android:id="@+id/txtnotificacion"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"  
+	        android:layout_below="@+id/layoutbutton"  
+	        android:textAppearance="?android:attr/textAppearanceSmall"
+	        android:textColor="@color/Red"
+	        android:visibility="gone"/>
     </RelativeLayout>
+
     
-    
-    
-   
  
 </RelativeLayout>

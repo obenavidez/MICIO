@@ -224,8 +224,10 @@ public class BProductoM {
 
 	}
 
+	@SuppressWarnings("unused")
 	private void onSave_From_LocalHost(final ArrayList<Producto> objL) {
-		try {
+		try 
+		{
 			this.pool.execute(new Runnable() {
 				@Override
 				public void run() {
@@ -257,6 +259,7 @@ public class BProductoM {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void onSave_From_LocalHost(final JSONArray objL) {
 		try {
 			this.pool.execute(new Runnable() {
@@ -295,7 +298,6 @@ public class BProductoM {
 		try 
 		{  	
 			ContentResolver content=null;
-
 			switch (view_activated) {
 			case 1:
 				content=view.getParent().getContentResolver();
@@ -308,6 +310,7 @@ public class BProductoM {
 				break;
 			default:
 				break;
+
 			}
 			
 			Processor.notifyToView(
