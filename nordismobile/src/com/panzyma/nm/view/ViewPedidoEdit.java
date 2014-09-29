@@ -702,7 +702,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		dc.setOnDialogClientButtonClickListener(new OnButtonClickListener() {
 
 			@Override
-			public void onButtonClick(Cliente _cliente) {
+			public void onButtonClick(Cliente _cliente) 
+			{
 				if (pedido.getCodEstado().compareTo("REGISTRADO") != 0)
 					return;
 
