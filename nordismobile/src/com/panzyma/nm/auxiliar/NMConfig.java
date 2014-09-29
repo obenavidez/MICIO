@@ -1,4 +1,7 @@
 package com.panzyma.nm.auxiliar; 
+
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.model.ModelConfiguracion;
  
 public class NMConfig
 {     
@@ -6,11 +9,11 @@ public class NMConfig
 	//public static String URL_SERVER2="http://www.panzyma.com/SimfacProd/SimfacService.svc";
 	//public static String URL = "http://www.panzyma.com/nordisservertest/mobileservice.asmx";
     //public static String URL2 ="http://www.panzyma.com/SimfacService/SimfacService.svc/";	     
-	public static String URL = "http://192.168.1.100/NordisServer/mobileservice.asmx";
-    public static String URL2 ="http://192.168.1.10:8080/Servicios/SimfacService.svc/";
+	//public static String URL = "http://192.168.1.100/NordisServer/mobileservice.asmx";
+	//public static String URL2 ="http://192.168.1.10:8080/Servicios/SimfacService.svc/";
 	public static final String NAME_SPACE = "http://www.panzyma.com/";
-	//public static String URL = ModelConfiguracion.getURL_SERVER(NMApp.getContext());
-    //public static String URL2 =ModelConfiguracion.getURL_SERVER2(NMApp.getContext());
+	public static String URL = ModelConfiguracion.getURL_SERVER(NMApp.getContext());
+    public static String URL2 =ModelConfiguracion.getURL_SERVER2(NMApp.getContext());
     
     public static class MethodName
     { 	

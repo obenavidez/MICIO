@@ -45,20 +45,27 @@ public class NMNetWork {
 		try 
 		{	
     		error=null;
-	        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	        ConnectivityManager cm = (ConnectivityManager) NMApp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 	        NetworkInfo info = cm.getActiveNetworkInfo(); 
 			 if(info== null)
+			 {
 				 error=new ErrorMessage("Error de conexión"," Dispositivo Fuera de linea","\n Causa: No hay ninguna conexion activa");
+			 }
 	        else if(!info.isConnected()) 
-	        	error=new ErrorMessage("Error de conexión"," Dispositivo Fuera de linea","\n Causa: El dispositivo no esta conectado a ninguna conexión activa");      	 
-	        if(error!=null && controller!=null)
+        	{
+        		error=new ErrorMessage("Error de conexión"," Dispositivo Fuera de linea","\n Causa: El dispositivo no esta conectado a ninguna conexión activa");      	 
+        	}
+	        if(error!=null)
 	        {
 				try { 
-						Processor.notifyToView(controller,ERROR,0,0,error);
+						SessionManager.hasError=true;
+						NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,error); 
+						return false;
 				} catch (Exception e) { 
 					e.printStackTrace();
 				}
 	        }
+	        
 	        return (info != null && info.isConnected());
 		}catch (Exception e) { 
 			e.printStackTrace();
@@ -101,7 +108,6 @@ public class NMNetWork {
         	SessionManager.hasError=true;
         	error=new ErrorMessage("Error de conexión","error en la comunicación con el servidor de aplicaciones.\n",ex.toString());
         	try {
-        		if(controller!=null)
         			Processor.notifyToView(controller,ERROR,0,0,error);				 
 			} catch (Exception e) { 
 				e.printStackTrace();

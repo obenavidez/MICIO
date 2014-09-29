@@ -268,6 +268,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			pedido.setCodEstado("REGISTRADO");
 			pedido.setId(0);
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
+			
+			
 			pedido.setNumeroCentral(0);
 			pedido.setNumeroMovil(0);
 			// pedido.setObjVendedorID(SessionManager.getLoginUser().getId());
@@ -286,14 +288,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 		if (pedido.getFecha() == 0)
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
+ 
+		tbxNumReferencia.setText(NumberUtil.getFormatoNumero((pedido.getNumeroMovil() > 0)?pedido.getNumeroMovil():0, me.getContext()));
 
-		if (pedido.getNumeroMovil() > 0)
-			tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
-					pedido.getNumeroMovil(), me.getContext()));
-
-		if (pedido.getNumeroCentral() > 0)
-			tbxNumPedido.setText(NumberUtil.getFormatoNumero(
-					pedido.getNumeroCentral(), me.getContext()));
+		tbxNumPedido.setText(NumberUtil.getFormatoNumero((pedido.getNumeroCentral() > 0)?pedido.getNumeroCentral():0, me.getContext()));
 
 		if (pedido.getNombreCliente() != null)
 			tbxNombreDelCliente.setText(pedido.getNombreCliente());
@@ -511,8 +509,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			handler.post(new Runnable() {
 
 				@Override
-				public void run() {
-
+				public void run() 
+				{
 					tbxTotalFact.setText(sb);
 					gridheader.setText("Productos a Facturar("
 							+ adapter.getCount() + ")");
@@ -565,8 +563,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					DialogType.DIALOGO_ALERTA);
 			break;
 		case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
-			actualizarOnUINumRef();
+			
 			resultadoEnvioPedido(msg.obj);
+			
 			salvado=true;
 			break;
 		case ControllerProtocol.ID_REQUEST_PROMOCIONES:
@@ -605,6 +604,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		if (clte != null)
 			cliente = (Cliente) clte;
 
+		actualizarOnUINumRef(pedido);
+		
 		final String sms = (pedido.getCodEstado().compareTo("FACTURADO") == 0) ? "El pedido ha sido enviado y facturado \n¿Desea imprimir el recibo?"
 				: "El pedido ha sido enviado.Estado: " + pedido.getDescEstado()
 						+ "\r\nCausa: " + pedido.getDescCausaEstado();
@@ -1233,6 +1234,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 				tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
 						pedido.getNumeroMovil(), me.getApplicationContext()));
+				tbxNumPedido.setText(NumberUtil.getFormatoNumero(
+						pedido.getNumeroCentral(), me.getApplicationContext()));
 				salvado = true;
 			}
 		});
@@ -1246,23 +1249,13 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 				tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
 						p.getNumeroMovil(), me.getApplicationContext()));
+				tbxNumPedido.setText(NumberUtil.getFormatoNumero(
+						p.getNumeroCentral(), me.getApplicationContext()));
 				salvado = true;
 			}
 		});
 	}
-
-	public void actualizarOnUINumRec() {
-		runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-
-				tbxNumPedido.setText(NumberUtil.getFormatoNumero(
-						pedido.getNumeroCentral(), me.getContext()));
-			}
-		});
-	}
-
+ 
 	public String getTipoVenta() {
 		return (tbxTipoVenta.getSelectedItemPosition() == 0) ? "CO" : "CR";
 	}
@@ -1359,7 +1352,17 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	@Override
 	protected void onResume() {
-		SessionManager.setContext(me);
+		
+		try 
+		{
+			SessionManager.setContext(me);
+			NMApp.getController().setEntities(this,(bpm==null)? bpm = new BPedidoM():bpm);
+			NMApp.getController().addOutboxHandler((handler==null)?handler = new Handler(this):handler);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		super.onResume();
 	}
 
@@ -1372,10 +1375,11 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					.getCodEstado().compareTo("APROBADO") == 0)))
 				return;
 
-			if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) {
-				if (pedido.getNumeroCentral() > 0) {
-					AppDialog.showMessage(me, "El pedido ya fue enviado.",
-							DialogType.DIALOGO_ALERTA);
+			if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) 
+			{
+				if (pedido.getNumeroCentral() > 0) 
+				{
+					AppDialog.showMessage(me, "El pedido ya fue enviado.",DialogType.DIALOGO_ALERTA);
 					return;
 				}
 			}
@@ -1385,11 +1389,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				return;
 			if (!isDataValid())
 				return;
-
-//			NMApp.getController().setEntities(this,
-//					getBridge() == null ? new BPedidoM() : getBridge());
-//			NMApp.getController().addOutboxHandler(
-//					getHandler() == null ? new Handler(this) : getHandler());
+ 
 			Message msg = new Message();
 			Bundle b = new Bundle();
 			b.putParcelable("pedido", pedido);
@@ -1397,7 +1397,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
 			NMApp.getController().getInboxHandler().sendMessage(msg);
 
-		} catch (Exception e) {
+		} 
+		catch (Exception e) 
+		{
 			AppDialog.showMessage(me,
 					e.getMessage() + "\nCausa: " + e.getCause(),
 					DialogType.DIALOGO_ALERTA);
@@ -1405,7 +1407,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	}
 
-	private void setInformacionCliente() {
+	private void setInformacionCliente() 
+	{
 		tbxNombreDelCliente.setText(cliente.getNombreCliente());
 		pedido.setObjClienteID(cliente.getIdCliente());
 		pedido.setObjSucursalID(cliente.getIdSucursal());

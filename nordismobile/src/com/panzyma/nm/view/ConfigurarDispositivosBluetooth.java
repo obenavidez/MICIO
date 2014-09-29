@@ -95,7 +95,7 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 					public boolean onItemLongClick(AdapterView<?> parent,
 							View view, int position, long id) {
 						device = mDeviceList.get(position);
-						establerComunicacion("Esta es la Impresora de Trabajo?","Confirme x favor....", device);
+						establerComunicacion("Esta es la Impresora de Trabajo?", device);
 						return false;
 					}
 				});
@@ -296,7 +296,8 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 				mActivateBtn.setChecked(false);
 			else
 				mActivateBtn.setChecked(true);
-		} catch (Exception e) {
+		} catch (Exception e) 
+		{
 			e.printStackTrace();
 		}
 	}
@@ -306,13 +307,15 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 		super.startActivityForResult(intent, requestCode);
 	}
 
-	public void establerComunicacion(final String titulo, final String mensaje,
-			BluetoothDevice... _device) {
+	public void establerComunicacion(final String mensaje,
+			BluetoothDevice... _device) 
+	{
 
-		runOnUiThread(new Runnable() {
+		runOnUiThread(new Runnable() 
+		{
 			@Override
 			public void run() {
-				AppDialog.showMessage(context, titulo, mensaje,
+				AppDialog.showMessage(context, "", mensaje,
 						AppDialog.DialogType.DIALOGO_CONFIRMACION,
 						new AppDialog.OnButtonClickListener() {
 							@Override

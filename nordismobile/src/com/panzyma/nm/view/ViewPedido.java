@@ -5,6 +5,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG; 
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST; 
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -98,6 +99,22 @@ public class ViewPedido extends ActionBarActivity implements
 		super.startActivityFromFragment(fragment, intent, requestCode);
 	}
 	
+	@Override 
+	protected void onResume() 
+	{  
+		try 
+		{ 
+			SessionManager.setContext(this);
+			NMApp.getController().setEntities(this,(bpm==null)? bpm = new BPedidoM():bpm);
+			NMApp.getController().addOutboxHandler((handler==null)?handler = new Handler(this):handler);
+		} catch (Exception e) { 
+			e.printStackTrace();
+		} 
+		super.onResume();  
+	
+	} 
+
+	
 	public enum FragmentActive {
 		LIST,
 		ITEM,
@@ -131,7 +148,6 @@ public class ViewPedido extends ActionBarActivity implements
 	Bundle b;
 	private CharSequence tituloSeccion;
 	private CharSequence tituloApp;
-	private NMApp NMApp;
 	TextView gridheader;
 	TextView footerView;
 	private static CustomDialog dlg;
@@ -140,6 +156,7 @@ public class ViewPedido extends ActionBarActivity implements
 	ListaFragment<vmEntity> firstFragment;
 	private ViewPedido vp;
 	private BPedidoM bpm;
+	Handler handler;
 	private Pedido pedido;
 	private Cliente cliente;
 
@@ -412,11 +429,10 @@ public class ViewPedido extends ActionBarActivity implements
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 
-		NMApp = (NMApp) this.getApplicationContext();
 		try {
 
 			com.panzyma.nm.NMApp.getController().setEntities(this, bpm = new BPedidoM());
-			com.panzyma.nm.NMApp.getController().addOutboxHandler(new Handler(this));
+			com.panzyma.nm.NMApp.getController().addOutboxHandler(handler=new Handler(this));
 			com.panzyma.nm.NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 
 		} catch (Exception e) {

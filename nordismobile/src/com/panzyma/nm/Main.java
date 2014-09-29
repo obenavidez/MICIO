@@ -52,7 +52,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	private static CustomDialog dlg;
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		SessionManager.setContext(this);
 		setContentView(R.layout.home);
@@ -219,33 +220,27 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	@Override
 	public boolean handleMessage(Message msg) {
 
-		if (cd != null && cd.isShowing())
-			cd.dismiss();
-		if (dlg != null && dlg.isShowing())
-			dlg.dismiss();
+		ocultarDialogos();
 		switch (msg.what) 
 		{
 		
-		case ControllerProtocol.NOTIFICATION:				 
-			showStatus(msg.obj.toString(), true);
-			break;				
-		case ControllerProtocol.NOTIFICATION_DIALOG2:
-			showStatus(msg.obj.toString());
-			break;  
-		case ERROR:			 
-			AppDialog.showMessage(ma, ((ErrorMessage) msg.obj).getTittle(),
-					((ErrorMessage) msg.obj).getMessage(),
-					DialogType.DIALOGO_ALERTA);
-			break;
+			case ControllerProtocol.NOTIFICATION:				 
+				showStatus(msg.obj.toString(), true);
+				break;				
+			case ControllerProtocol.NOTIFICATION_DIALOG2:
+				showStatus(msg.obj.toString());
+				break;  
+			case ERROR:			 
+				AppDialog.showMessage(ma, ((ErrorMessage) msg.obj).getTittle(),
+						((ErrorMessage) msg.obj).getMessage(),
+						DialogType.DIALOGO_ALERTA);
+				break;
 		}
 		return false;
 	}
 
 	public void showStatus(final String mensaje, boolean... confirmacion) {
-		if (cd != null && cd.isShowing())
-			cd.dismiss();
-		if (dlg != null && dlg.isShowing())
-			dlg.dismiss();
+		ocultarDialogos();
 		if (confirmacion.length != 0 && confirmacion[0]) 
 		{
 			runOnUiThread(new Runnable() 
@@ -280,6 +275,14 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		} 
 	}
 	
+	public void ocultarDialogos()
+	{
+		if (cd != null && cd.isShowing())
+			cd.dismiss();
+		if (dlg != null && dlg.isShowing())
+			dlg.dismiss();
+	}
+	
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -304,18 +307,28 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		super.onRestart();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		ocultarDialogos();
 		if (onPause && !onRestart)
 			initController();
-		SessionManager.setContext(Main.this);
+		try 
+		{
+			NMApp.getController().setEntities(this,null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		SessionManager.setContext(this);
+		NMApp.modulo=NMApp.Modulo.HOME;
 		onRestart = false;
 		onPause = false;
 		super.onResume();
 	}
 
-	private void initController() {
+	private void initController() 
+	{
 		Handler handler = (Handler) NMApp.getController().getoutboxHandlers()
 				.get(TAG);
 		if (handler == null)

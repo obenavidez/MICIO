@@ -23,7 +23,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 
 	private Context mcontext;
 	private NMApp nmapp;
-
+	EditText tboxdisponible;
 	EditText tboxcantidad;
 	EditText tboxproducto;
 	private CheckBox chkvprecio;
@@ -90,7 +90,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 		tboxPrecio = ((EditText) findViewById(R.id.et_precio));
 		tboxCantBonificada = ((EditText) findViewById(R.id.etbonif));
 		tboxproducto.setText(_producto.getNombre());
-
+		tboxdisponible.setText(""+_producto.Disponible);
 		btnaceptar = ((Button) findViewById(R.id.btn_ok));
 		btnaceptar.setOnClickListener(new android.view.View.OnClickListener() {
 

@@ -40,8 +40,8 @@ public class NMApp extends Application
 	public static Context setContext(NMApp app)
 	{ 
 		return ctx=app.getApplicationContext();
-	}
-
+	} 
+	
 	public static Context getContext()
 	{ 
 		if(controller!=null && controller.getView()!=null)

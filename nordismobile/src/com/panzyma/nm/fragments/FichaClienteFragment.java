@@ -28,6 +28,7 @@ import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.CNotaViewHolder;
 import com.panzyma.nm.viewmodel.vmFicha;
@@ -78,7 +79,7 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 			ms.what=LOAD_FICHACLIENTE_FROM_SERVER; 
 			ms.obj = sucursalID;
 			try {
-				if(!NMNetWork.isPhoneConnected(getActivity(),NMApp.getController()) && !NMNetWork.CheckConnection(NMApp.getController()))
+				if(!NMNetWork.isPhoneConnected(fcontext,NMApp.getController()) && !NMNetWork.CheckConnection(NMApp.getController()))
 	            {
 					AppDialog.showMessage(getActivity(),"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 	            	return;

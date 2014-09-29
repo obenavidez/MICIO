@@ -11,6 +11,7 @@ import android.os.Message;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import com.panzyma.nm.Main;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
@@ -286,17 +287,19 @@ public class SessionManager
 	        }
         } 
         else
+        {
+        	SessionManager.setLogged(false);
         	NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
+        }
 	}
 	
 	public static Boolean isPhoneConnected()
 	{
-		return NMNetWork.isPhoneConnected(context,NMApp.getController());		
+		return NMNetWork.isPhoneConnected(context);		
 	}
 	
 	public  static boolean  login(final boolean admin)
 	{
-		final Controller controller=NMApp.getController();
 		final String empresa=dl.getEmpresa();
 		nombreusuario=dl.getNameUser();
 		final String password=dl.getPassword();  
@@ -312,7 +315,7 @@ public class SessionManager
 				@Override
 				public void run() 
 				{ 
-					if(NMNetWork.isPhoneConnected(context,controller) && NMNetWork.CheckConnection(url))			
+					if(NMNetWork.isPhoneConnected(context) && NMNetWork.CheckConnection(url))			
 					{
 						try 
 						{
@@ -329,13 +332,13 @@ public class SessionManager
 											
 											if (res.getAuntenticateRS() == AUT_EXITOSA )
 											{				
-												if(NMApp.modulo != NMApp.Modulo.CONFIGURACION && res.IsAdmin())
+												if(!(NMApp.getContext() instanceof Main) && NMApp.modulo != NMApp.Modulo.CONFIGURACION &&  res.IsAdmin())
 												{
 													sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario no es valido para realizar esta operación",""));
 													return;
 												}
 												
-												if(NMApp.modulo == NMApp.Modulo.CONFIGURACION && admin && (res.IsAdmin()!=admin))
+												if(NMApp.modulo == NMApp.Modulo.CONFIGURACION &&  (res.IsAdmin()!=admin))
 												{
 													sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario "+nombreusuario+" no es Administrador",""));
 													return;
@@ -343,7 +346,7 @@ public class SessionManager
 												else
 												{
 													Usuario user=SessionManager.getLoginUser();
-													if (user!=null && (!user.getLogin().trim().toString().equals(nombreusuario.trim().toString())) && NMApp.modulo != NMApp.Modulo.CONFIGURACION)
+													if (user!=null && (!user.getLogin().trim().toString().equals(nombreusuario.trim().toString())) && (NMApp.modulo != NMApp.Modulo.CONFIGURACION) && !(NMApp.getContext() instanceof Main))
 													{
 														sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario "+nombreusuario+" no esta configurado localmente, asigne este usuario en el modulo de Configuración",""));
 														return;
@@ -387,14 +390,14 @@ public class SessionManager
 						} catch (InterruptedException e) { 
 							e.printStackTrace();
 						}  
-						controller._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, "Validando Credenciales."); 
+						NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, "Validando Credenciales."); 
 							
 					}
 					else
 						unlock();
 				 }
 			});	  
-			controller._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0,"Probando Conexión.");   
+			NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0,"Probando Conexión.");   
 
 		}
 	    catch (Exception e) {  

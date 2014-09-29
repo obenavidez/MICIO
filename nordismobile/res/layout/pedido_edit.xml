@@ -78,7 +78,7 @@
                     android:layout_below="@+id/pddlbl_fecha" 
                     android:layout_toRightOf="@+id/pdtv_detalle_numref"
                     android:layout_marginTop="20dp"
-                    android:text="#Recibo :"
+                    android:text="#Pedido :"
                     android:textColor="@color/Black"
                     android:textSize="12dp"
                     android:textStyle="bold" />
