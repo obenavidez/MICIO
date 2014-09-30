@@ -8,22 +8,11 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHE
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
-import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.Marshal;
-import org.ksoap2.serialization.MarshalBase64;
-import org.ksoap2.serialization.MarshalFloat;
-import org.ksoap2.serialization.PropertyInfo;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -35,7 +24,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
@@ -48,6 +36,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -73,13 +62,9 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
-import com.panzyma.nm.fragments.FichaProductoFragment;
-import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.QuickAction;
-import com.panzyma.nm.model.ModelPedido;
-import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
@@ -766,6 +751,9 @@ public class ViewRecibo extends ActionBarActivity implements
 		
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU  && fragmentActive != FragmentActive.CUENTAS_POR_COBRAR) {
+			 drawerLayout.openDrawer(Gravity.LEFT);
+		}
 		if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {			
 			cuentasPorCobrar.mostrarMenu();
 			return true;
