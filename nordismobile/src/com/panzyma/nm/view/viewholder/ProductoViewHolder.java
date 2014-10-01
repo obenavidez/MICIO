@@ -27,15 +27,5 @@ public class ProductoViewHolder {
 		else
 			disponibilidad.setTextColor(android.graphics.Color.BLUE);
 	}
-	/*public void setListItemEventHandler(vmProducto prod)
-	{
-		checkBox.setTag(prod); 
-		checkBox.setChecked(prod.isChecked());
-		checkBox.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) { 
-				
-				((vmProducto) ((CheckBox) v).getTag()).setChecked(((CheckBox) v).isChecked());
-			}
-		});
-	}*/
+	 
 }

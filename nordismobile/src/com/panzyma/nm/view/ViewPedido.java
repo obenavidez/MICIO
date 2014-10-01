@@ -72,7 +72,8 @@ public class ViewPedido extends ActionBarActivity implements
 	@Override
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		super.onActivityResult(requestcode, resultcode, data);
-		try {
+		try 
+		{
 			SessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setEntities(this,
 					this.getBridge());
@@ -183,7 +184,7 @@ public class ViewPedido extends ActionBarActivity implements
 		vp = this;
 		transaction = getSupportFragmentManager().beginTransaction();
 		gridheader.setVisibility(View.VISIBLE);
-		opcionesMenu = new String[] { "Nuevo Pedido", "Editar Pedido",
+		opcionesMenu = new String[] { "Nuevo Pedido", "Abrir Pedido",
 				"Enviar Pedido", "Borrar Pedido", "Anular Pedido",
 				"Consultar Cuentas X Cobrar", "Consultas de Ventas", "Cerrar" };
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -202,30 +203,36 @@ public class ViewPedido extends ActionBarActivity implements
 
 				int pos = 0;
 				String state = "";
+				// SELECCIONAR LA POSICION DEL PEDIDO SELECCIONADO
+				// ACTUALMENTE
+				positioncache = customArrayAdapter.getSelectedPosition();
+				// CERRAR EL MENU DEL DRAWER
+				drawerLayout.closeDrawers();
+				
 				switch (position) {
-				case NUEVO_PEDIDO:
-					drawerLayout.closeDrawers();
+				case NUEVO_PEDIDO: 
 					intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
 					intent.putExtra("requestcode", NUEVO_PEDIDO);
 					startActivityForResult(intent, NUEVO_PEDIDO);// Activity is
 
 					break;
 				case EDITAR_PEDIDO:
-					try {
-						drawerLayout.closeDrawers();
-						positioncache = customArrayAdapter
-								.getSelectedPosition();
-						Pedido p = null;
-						p = Ventas.obtenerPedidoByID(pedido_selected.getId(),
-								vp);
-						intent = new Intent(ViewPedido.this,
-								ViewPedidoEdit.class);
-						b = new Bundle();
-						b.putParcelable("pedido", p);
-						intent.putExtras(b);
-						intent.putExtra("requestcode", EDITAR_PEDIDO);
-						startActivityForResult(intent, EDITAR_PEDIDO);// Activity
-																		// is
+					try 
+					{
+						if(pedido_selected!=null)
+						{
+							drawerLayout.closeDrawers();
+							positioncache = customArrayAdapter.getSelectedPosition();
+							Pedido p = null;
+							p = Ventas.obtenerPedidoByID(pedido_selected.getId(), vp);
+							intent = new Intent(ViewPedido.this,
+									ViewPedidoEdit.class);
+							b = new Bundle();
+							b.putParcelable("pedido", p);
+							intent.putExtras(b);
+							intent.putExtra("requestcode", EDITAR_PEDIDO);
+							startActivityForResult(intent, EDITAR_PEDIDO);// Activity
+						}												// is
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -235,20 +242,16 @@ public class ViewPedido extends ActionBarActivity implements
 					// with requestCode 2
 					break;
 
-				case ENVIAR_PEDIDO:
-					// CERRAR EL MENU DEL DRAWER
-					drawerLayout.closeDrawers();
+				case ENVIAR_PEDIDO: 
 					enviarPedido();
 					break;
 
 				case BORRAR_PEDIDO:
-					// SELECCIONAR LA POSICION DEL PEDIDO SELECCIONADO
-					// ACTUALMENTE
-					positioncache = customArrayAdapter.getSelectedPosition();
-
+					
 					// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
 					pedido_selected = customArrayAdapter.getItem(positioncache);
-					if (pedido_selected != null) {
+					if (pedido_selected != null) 
+					{
 						// OBTENER EL ESTADO DEL REGISTRO
 						state = pedido_selected.getDescEstado();
 						if ("PORVALIDAR".equals(state)
@@ -267,56 +270,64 @@ public class ViewPedido extends ActionBarActivity implements
 					} else {
 						ShowNoRecords();
 					}
-					// CERRAR EL MENU DEL DRAWER
-					drawerLayout.closeDrawers();
+					// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+					if(customArrayAdapter.getCount()!=0)
+						pedido_selected = customArrayAdapter.getItem(0);
+					else 
+						pedido_selected=null;
+					
 					break;
 
-				case CUENTAS_POR_COBRAR:
-
-					drawerLayout.closeDrawers();
-					fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
-					if (findViewById(R.id.fragment_container) != null) {
-						Pedido p1 = null;
-						try {
-							p1 = Ventas.obtenerPedidoByID(
-									pedido_selected.getId(), vp);
-						} catch (Exception e) {
-							e.printStackTrace();
+				case CUENTAS_POR_COBRAR: 
+					pedido_selected = customArrayAdapter.getItem(positioncache);
+					if (pedido_selected != null) 
+					{
+						fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
+						if (findViewById(R.id.fragment_container) != null) 
+						{
+							Pedido p1 = null;
+							try {
+								p1 = Ventas.obtenerPedidoByID(
+										pedido_selected.getId(), vp);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							transaction = getSupportFragmentManager()
+									.beginTransaction();
+							cuentasPorCobrar = new CuentasPorCobrarFragment();
+							Bundle msg = new Bundle();
+							msg.putInt(CuentasPorCobrarFragment.ARG_POSITION,
+									positioncache);
+							msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
+									p1.getObjSucursalID());
+							cuentasPorCobrar.setArguments(msg);
+							transaction.replace(R.id.fragment_container,
+									cuentasPorCobrar);
+							transaction.addToBackStack(null);
+							transaction.commit();
 						}
-						transaction = getSupportFragmentManager()
-								.beginTransaction();
-						cuentasPorCobrar = new CuentasPorCobrarFragment();
-						Bundle msg = new Bundle();
-						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION,
-								positioncache);
-						msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
-								p1.getObjSucursalID());
-						cuentasPorCobrar.setArguments(msg);
-						transaction.replace(R.id.fragment_container,
-								cuentasPorCobrar);
-						transaction.addToBackStack(null);
-						transaction.commit();
-
 					}
 					break;
 				case CONSULTA_VENTAS:
-					fragmentActive = FragmentActive.CONSULTA_VENTAS;
-					// CERRAR EL MENU DEL DRAWER
-					drawerLayout.closeDrawers();
+					fragmentActive = FragmentActive.CONSULTA_VENTAS; 
 					// OCULTAR LA BARRA DE ACCION
-					getSupportActionBar().hide();
-					if (findViewById(R.id.fragment_container) != null) {
-						consultasVentas = new ConsultaVentasFragment();
-						Bundle msg = new Bundle();
-						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION,
-								positioncache);
-						consultasVentas.setArguments(msg);
-						transaction.replace(R.id.fragment_container,
-								consultasVentas);
-						transaction.addToBackStack(null);
-						transaction.commit();
+					pedido_selected = customArrayAdapter.getItem(positioncache);
+					if (pedido_selected != null) 
+					{
+						getSupportActionBar().hide();
+						if (findViewById(R.id.fragment_container) != null) 
+						{
+							consultasVentas = new ConsultaVentasFragment();
+							Bundle msg = new Bundle();
+							msg.putInt(CuentasPorCobrarFragment.ARG_POSITION,
+									positioncache);
+							consultasVentas.setArguments(msg);
+							transaction.replace(R.id.fragment_container,
+									consultasVentas);
+							transaction.addToBackStack(null);
+							transaction.commit();
+						}
 					}
-
 					break;
 				case ANULAR_PEDIDO:
 					// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO
@@ -451,7 +462,7 @@ public class ViewPedido extends ActionBarActivity implements
 
 		// Create an instance of ExampleFragment
 		firstFragment = new ListaFragment<vmEntity>();
-
+		 
 		// In case this activity was started with special instructions from
 		// an Intent,
 		// pass the Intent's extras to the fragment as arguments
@@ -575,7 +586,8 @@ public class ViewPedido extends ActionBarActivity implements
 		Boolean val = false;
 		final Object item = msg.obj;
 		ocultarDialogos();
-		switch (msg.what) {
+		switch (msg.what) 
+		{
 		case C_DATA:
 			establecer(msg);
 			val = true;

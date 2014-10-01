@@ -99,8 +99,7 @@ public class DialogLogin extends Dialog  implements Handler.Callback
 	    cancel=((Button)findViewById(R.id.btncancel)); 
 	    txtenterprise=((EditText)findViewById(R.id.etenterprise));  
 	    txtusername=((EditText)findViewById(R.id.etusername)); 
-	    txtpassword=((EditText)findViewById(R.id.etpassword));   
-	    
+	    txtpassword=((EditText)findViewById(R.id.etpassword));  
 	    if(admin)
 	    {
 	    	((TextView)findViewById(R.id.tvsign)).setText("Admin Login"); 

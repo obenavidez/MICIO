@@ -30,12 +30,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView; 
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.ProductoViewHolder;
 import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
@@ -245,7 +247,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));				
 							
 			            	//EditDetPedido editForm = new EditDetPedido(prod, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
-							DetalleProducto dp=new DetalleProducto(DialogProducto.this.getContext(),product_selected, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
+							DetalleProducto dp=new DetalleProducto((ViewPedidoEdit)_view.getContext(),product_selected, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
 							
 							dp.setOnDialogDetalleProductButtonClickListener(new OnButtonClickHandler(){
 
@@ -280,6 +282,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 
 	} 
 	
+	@SuppressWarnings("unchecked")
 	private void FINISH_ACTIVITY()
 	{
 		NMApp.getController().removeOutboxHandler(TAG);

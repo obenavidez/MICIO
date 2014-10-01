@@ -147,11 +147,13 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	private boolean onNew;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pedido_edit);
 
-		try {
+		try 
+		{
 			SessionManager.setContext(this);
 			aprodselected = new ArrayList<Producto>();
 			me = this;
@@ -215,7 +217,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				adapter.setSelectedPosition(position);
 				view.setBackgroundDrawable(parent.getResources().getDrawable(
 						R.drawable.action_item_selected));
-
+				
 			}
 
 		});
@@ -230,6 +232,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					(parent.getChildAt(positioncache))
 							.setBackgroundResource(android.R.color.transparent);
 				positioncache = position;
+				grid_dp.setItemChecked(position, true); 
 				dpselected = (DetallePedido) adapter.getItem(position);
 				adapter.setSelectedPosition(position);
 				view.setBackgroundDrawable(parent.getResources().getDrawable(
@@ -268,8 +271,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			pedido.setCodEstado("REGISTRADO");
 			pedido.setId(0);
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
-			
-			
+
 			pedido.setNumeroCentral(0);
 			pedido.setNumeroMovil(0);
 			// pedido.setObjVendedorID(SessionManager.getLoginUser().getId());
@@ -288,10 +290,15 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 		if (pedido.getFecha() == 0)
 			pedido.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
- 
-		tbxNumReferencia.setText(NumberUtil.getFormatoNumero((pedido.getNumeroMovil() > 0)?pedido.getNumeroMovil():0, me.getContext()));
 
-		tbxNumPedido.setText(NumberUtil.getFormatoNumero((pedido.getNumeroCentral() > 0)?pedido.getNumeroCentral():0, me.getContext()));
+		tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
+				(pedido.getNumeroMovil() > 0) ? pedido.getNumeroMovil() : 0,
+				me.getContext()));
+
+		tbxNumPedido
+				.setText(NumberUtil.getFormatoNumero(
+						(pedido.getNumeroCentral() > 0) ? pedido
+								.getNumeroCentral() : 0, me.getContext()));
 
 		if (pedido.getNombreCliente() != null)
 			tbxNombreDelCliente.setText(pedido.getNombreCliente());
@@ -310,88 +317,115 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				Lvmpproducto, R.layout.gridproductosavender);
 		grid_dp.setAdapter(adapter);
 		adapter.setSelectedPosition(0);
+		
 		if (Lvmpproducto.size() > 0)
 			dpselected = Lvmpproducto.get(0);
 		gridheader.setText("Productos a Facturar(" + adapter.getCount() + ")");
 
+		if (pedido != null && pedido.getCodEstado() != "REGISTRADO" && pedido.getCodEstado() != "APROBADO") 
+		{
+			grid_dp.setEnabled(false);
+			tbxFecha.setEnabled(false);
+			tbxNumReferencia.setEnabled(false);
+			tbxNumPedido.setEnabled(false); 
+			tbxNombreDelCliente.setEnabled(false);
+			tbxTipoVenta.setEnabled(false);
+			tbxTotalFact.setEnabled(false);			
+		}
+		
 		initMenu();
 	}
 
-	public void showMenu(final View view) {
+	public void showMenu(final View view) 
+	{
 
-		runOnUiThread(new Runnable() {
+		runOnUiThread(new Runnable() 
+		{
 			@Override
-			public void run() {
-				quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1);
-				quickAction2.addActionItem(new ActionItem(ID_EDITAR_PRODUCTO,
-						"Editar Producto"));
-				quickAction2.addActionItem(new ActionItem(ID_ELIMINAR_PRODUCTO,
-						"Eliminar Productos"));
-				quickAction2
-						.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
-
-							@Override
-							public void onItemClick(QuickAction source,
-									final int pos, final int actionId) {
-								ActionItem actionItem = quickAction2
-										.getActionItem(pos);
-								if (actionId == ID_EDITAR_PRODUCTO)
-									editarProducto();
-								else if (actionId == ID_ELIMINAR_PRODUCTO)
-									eliminarProducto();
-
-							}
-						});
-				quickAction2.show(view, display, false);
+			public void run() 
+			{
+				if (pedido != null && pedido.getCodEstado() == "REGISTRADO") 
+				{
+					quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1);
+					quickAction2.addActionItem(new ActionItem(ID_EDITAR_PRODUCTO,"Editar Producto"));
+					quickAction2.addActionItem(new ActionItem(ID_ELIMINAR_PRODUCTO,
+							"Eliminar Productos"));
+					quickAction2
+							.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+	
+								@Override
+								public void onItemClick(QuickAction source,
+										final int pos, final int actionId) {
+									ActionItem actionItem = quickAction2
+											.getActionItem(pos);
+									if (actionId == ID_EDITAR_PRODUCTO)
+										editarProducto();
+									else if (actionId == ID_ELIMINAR_PRODUCTO)
+										eliminarProducto();
+	
+								}
+							});
+					quickAction2.show(view, display, false);
+				}
 			}
 		});
 	}
 
-	public void initMenu() {
-
+	public void initMenu() 
+	{
 		quickAction = new QuickAction(me, QuickAction.VERTICAL, 1);
-		quickAction.addActionItem(new ActionItem(ID_SELECCIONAR_CLIENTE,
-				"Seleccionar Cliente"));
-		quickAction.addActionItem(new ActionItem(ID_AGREGAR_PRODUCTOS,
-				"Agregar Productos"));
-		quickAction.addActionItem(new ActionItem(ID_CONDICIONES_Y_NOTAS,
-				"Agregar Condición Y Nota"));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(ID_EDITAR_PRODUCTO,
-				"Editar Producto"));
-		quickAction.addActionItem(new ActionItem(ID_ELIMINAR_PRODUCTO,
-				"Eliminar Productos"));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(ID_CONSULTAR_CUENTAS_X_COBRAR,
-				"Consultar Cuentas X Cobrar"));
-		quickAction.addActionItem(new ActionItem(ID_CONSULTAR_BONIFICACIONES,
-				"Consultar Bonificaciones"));
-		quickAction.addActionItem(new ActionItem(ID_CONSULTAR_LISTA_PRECIOS,
-				"Consultar Lista de Precios"));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(ID_APLICAR_PROMOCIONES,
-				"Aplicar Promociones"));
-		quickAction.addActionItem(new ActionItem(ID_DESAPLICAR_PROMOCIONES,
-				"Des Aplicar Promociones"));
-		quickAction.addActionItem(new ActionItem(ID_EXONERAR_IMPUESTO,
-				TAG_IMPUESTO));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(ID_GUARDAR, "Guardar"));
-		quickAction.addActionItem(new ActionItem(ID_ENVIAR, "Enviar"));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(ID_IMPRIMIR_COMPROBANTE,
-				"Imprimir Comprobante"));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
-
-		quickAction
-				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
-
+		if (pedido != null && pedido.getCodEstado() != "REGISTRADO" && pedido.getCodEstado() != "APROBADO") 
+		{
+			quickAction.addActionItem(new ActionItem(ID_IMPRIMIR_COMPROBANTE,
+					"Imprimir Comprobante"));
+			quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
+		} 
+		else 
+		{
+			quickAction.addActionItem(new ActionItem(ID_SELECCIONAR_CLIENTE,
+					"Seleccionar Cliente"));
+			quickAction.addActionItem(new ActionItem(ID_AGREGAR_PRODUCTOS,
+					"Agregar Productos"));
+			quickAction.addActionItem(new ActionItem(ID_CONDICIONES_Y_NOTAS,
+					"Agregar Condición Y Nota"));
+			quickAction.addActionItem(null);
+			quickAction.addActionItem(new ActionItem(ID_EDITAR_PRODUCTO,
+					"Editar Producto"));
+			quickAction.addActionItem(new ActionItem(ID_ELIMINAR_PRODUCTO,
+					"Eliminar Productos"));
+			quickAction.addActionItem(null);
+			quickAction
+					.addActionItem(new ActionItem(
+							ID_CONSULTAR_CUENTAS_X_COBRAR,
+							"Consultar Cuentas X Cobrar"));
+			quickAction.addActionItem(new ActionItem(
+					ID_CONSULTAR_BONIFICACIONES, "Consultar Bonificaciones"));
+			quickAction.addActionItem(new ActionItem(
+					ID_CONSULTAR_LISTA_PRECIOS, "Consultar Lista de Precios"));
+			quickAction.addActionItem(null);
+			quickAction.addActionItem(new ActionItem(ID_APLICAR_PROMOCIONES,
+					"Aplicar Promociones"));
+			quickAction.addActionItem(new ActionItem(ID_DESAPLICAR_PROMOCIONES,
+					"Des Aplicar Promociones"));
+			quickAction.addActionItem(new ActionItem(ID_EXONERAR_IMPUESTO,
+					TAG_IMPUESTO));
+			quickAction.addActionItem(null);
+			quickAction.addActionItem(new ActionItem(ID_GUARDAR, "Guardar"));
+			quickAction.addActionItem(new ActionItem(ID_ENVIAR, "Enviar"));
+			quickAction.addActionItem(null);
+			quickAction.addActionItem(new ActionItem(ID_IMPRIMIR_COMPROBANTE,
+					"Imprimir Comprobante"));
+			quickAction.addActionItem(null);
+			quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
+		}
+		quickAction.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() 
+				{
 					@Override
 					public void onItemClick(QuickAction source, final int pos,
 							final int actionId) {
 
-						runOnUiThread(new Runnable() {
+						runOnUiThread(new Runnable() 
+						{
 							@Override
 							public void run() 
 							{
@@ -509,8 +543,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			handler.post(new Runnable() {
 
 				@Override
-				public void run() 
-				{
+				public void run() {
 					tbxTotalFact.setText(sb);
 					gridheader.setText("Productos a Facturar("
 							+ adapter.getCount() + ")");
@@ -550,8 +583,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			return true;
 
 		case ControllerProtocol.NOTIFICATION:
-			if (ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1)
-			{	actualizarOnUINumRef();salvado=true;}
+			if (ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1) {
+				actualizarOnUINumRef();
+				salvado = true;
+			}
 			showStatus(msg.obj.toString(), true);
 			break;
 		case ControllerProtocol.NOTIFICATION_DIALOG2:
@@ -563,10 +598,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					DialogType.DIALOGO_ALERTA);
 			break;
 		case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
-			
+
 			resultadoEnvioPedido(msg.obj);
-			
-			salvado=true;
+
+			salvado = true;
 			break;
 		case ControllerProtocol.ID_REQUEST_PROMOCIONES:
 			actualizarDetallePedido();
@@ -605,51 +640,51 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			cliente = (Cliente) clte;
 
 		actualizarOnUINumRef(pedido);
-		
+
 		final String sms = (pedido.getCodEstado().compareTo("FACTURADO") == 0) ? "El pedido ha sido enviado y facturado \n¿Desea imprimir el recibo?"
 				: "El pedido ha sido enviado.Estado: " + pedido.getDescEstado()
 						+ "\r\nCausa: " + pedido.getDescCausaEstado();
-		runOnUiThread(new Runnable() 
-		{
+		runOnUiThread(new Runnable() {
 			@Override
-			public void run() 
-			{
+			public void run() {
 				// Informar al usuario
-				AppDialog.showMessage(me, "", sms, AppDialog.DialogType.DIALOGO_CONFIRMACION,
-				new AppDialog.OnButtonClickListener() {
-					@Override
-					public void onButtonClick(AlertDialog _dialog, int actionId) {
+				AppDialog.showMessage(me, "", sms,
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						new AppDialog.OnButtonClickListener() {
+							@Override
+							public void onButtonClick(AlertDialog _dialog,
+									int actionId) {
 
-						if (pedido.getCodEstado().compareTo("FACTURADO") == 0) {
-							Message msg = new Message();
-							Bundle b = new Bundle();
-							b.putParcelable("pedido", pedido);
-							b.putParcelable("cliente", cliente);
-							msg.setData(b);
-							msg.what = ControllerProtocol.IMPRIMIR;
-							NMApp.getController().getInboxHandler()
-									.sendMessage(msg);
+								if (pedido.getCodEstado()
+										.compareTo("FACTURADO") == 0) {
+									Message msg = new Message();
+									Bundle b = new Bundle();
+									b.putParcelable("pedido", pedido);
+									b.putParcelable("cliente", cliente);
+									msg.setData(b);
+									msg.what = ControllerProtocol.IMPRIMIR;
+									NMApp.getController().getInboxHandler()
+											.sendMessage(msg);
 
-						}
-						_dialog.dismiss();
-					}
-				});
+								}
+								_dialog.dismiss();
+							}
+						});
 			}
 		});
-				
 
 	}
 
-
-
-	private void FINISH_ACTIVITY() {
+	private void FINISH_ACTIVITY() 
+	{
 		int requescode = 0;
-		 NMApp.getController().removeOutboxHandler(TAG);
-		 NMApp.getController().disposeEntities();
+		ocultarDialogos();
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		Intent intent = null;
 		if (pedido != null && pedido.getDetalles().length != 0
-				&& pedido.getNumeroMovil() != 0 && salvado)  {
+				&& pedido.getNumeroMovil() != 0 && salvado) {
 			intent = new Intent();
 			Bundle b = new Bundle();
 			b.putParcelable("pedido", pedido);
@@ -702,8 +737,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		dc.setOnDialogClientButtonClickListener(new OnButtonClickListener() {
 
 			@Override
-			public void onButtonClick(Cliente _cliente) 
-			{
+			public void onButtonClick(Cliente _cliente) {
 				if (pedido.getCodEstado().compareTo("REGISTRADO") != 0)
 					return;
 
@@ -797,7 +831,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				return;
 
 			int idx = grid_dp.getCheckedItemPosition();
-			;
+			
 			if (idx == -1)
 				return;
 
@@ -805,9 +839,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			if (det.getCantidadOrdenada() == 0)
 				return; // No editar: es producto dado en promoción
 
-			producto = Ventas
-					.getProductoByID(dpselected.getObjProductoID(), me);
-			DetalleProducto dp = new DetalleProducto(me, producto,
+			producto = Ventas.getProductoByID(dpselected.getObjProductoID(), me);
+			DetalleProducto dp = new DetalleProducto(me, producto,det,
 					cliente.getObjCategoriaClienteID(),
 					pedido.getObjTipoPrecioVentaID(),
 					cliente.getObjTipoClienteID(), pedido.isExento());
@@ -821,12 +854,11 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					Lvmpproducto.set(positioncache, det_p);
 
 					PedidoPromocion[] pproms = pedido.getPromocionesAplicadas();
-					if ((pproms != null) && (pproms.length > 0)) {
+					if ((pproms != null) && (pproms.length > 0)) 
+					{
 						Promociones.DesaplicarPromociones(pedido);
 						Promociones.ActualizaPedidoDePromociones(pedido);
-						Toast.makeText(me,
-								"Las promociones han sido desaplicadas.",
-								Toast.LENGTH_LONG).show();
+						Toast.makeText(me, "Las promociones han sido desaplicadas.",Toast.LENGTH_LONG).show();
 					}
 
 					CalculaTotales();
@@ -838,8 +870,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			});
 			dp.getWindow().setGravity(Gravity.CENTER);
 			dp.getWindow().setGravity(Gravity.CENTER);
-			dp.getWindow().setLayout(display.getWidth() - 30,
-					display.getHeight() - 50);
+			dp.getWindow().setLayout(display.getWidth() - 30,display.getHeight() - 50);
 			dp.show();
 		} catch (Exception e) {
 			showStatus(e.getMessage() + "\nCausa: " + e.getCause(), true);
@@ -871,22 +902,19 @@ public class ViewPedidoEdit extends FragmentActivity implements
 							public void onButtonClick(AlertDialog _dialog,
 									int actionId) {
 
-								if (AppDialog.OK_BUTTOM == actionId) {
+								if (AppDialog.OK_BUTTOM == actionId) 
+								{
 									// return;
 									Lvmpproducto.remove(idx);
 
 									// Si habían promociones aplicadas,
 									// desaplicarlas
-									PedidoPromocion[] pproms = pedido
-											.getPromocionesAplicadas();
-									if ((pproms != null) && (pproms.length > 0)) {
-										Promociones
-												.DesaplicarPromociones(pedido);
-										Promociones
-												.ActualizaPedidoDePromociones(pedido);
-										showStatus(
-												"Las promociones han sido desaplicadas.",
-												true);
+									PedidoPromocion[] pproms = pedido.getPromocionesAplicadas();
+									if ((pproms != null) && (pproms.length > 0)) 
+									{
+										Promociones.DesaplicarPromociones(pedido);
+										Promociones.ActualizaPedidoDePromociones(pedido);
+										showStatus("Las promociones han sido desaplicadas.",true);
 									}
 
 									CalculaTotales();
@@ -898,7 +926,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 											dpselected = (DetallePedido) adapter
 													.getItem(0);
 											adapter.setSelectedPosition(0);
-										} else {
+										} 
+										else 
+										{
 											if (idx == Lvmpproducto.size()) {
 												positioncache = idx - 1;
 												dpselected = (DetallePedido) adapter
@@ -953,12 +983,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		newFragment.show(ft, "dialog");
 	}
 
-	public void aplicarPromociones(boolean... salvar) 
-	{
+	public void aplicarPromociones(boolean... salvar) {
 
-		try 
-		{
-			
+		try {
+
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 					.getCodEstado().compareTo("APROBADO") == 0)))
 				return;
@@ -979,75 +1007,78 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				showStatus("Guardando 1mero el pedido");
 				return;
 			}
-			
-			ArrayList<Promocion> promociones=Promociones.getPromocionesAplican(pedido,getContentResolver());
-			
-			if(promociones!=null && promociones.size()!=0)
-			{
-			
-					DialogPromociones dprom = new DialogPromociones(ViewPedidoEdit.this,
-							pedido,promociones, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-		
-					dprom.setOnDialogPromocionesButtonClickListener(new com.panzyma.nm.viewdialog.DialogPromociones.OnButtonClickHandler() {
-		
-						@Override
-						public void onButtonClick(Promocion promocion) {
-							if (promocion != null) 
-							{
-								// Validar que no se haya alcanzado el máximo de promociones
-								// a aplicar
-								PedidoPromocion[] pproms = pedido.getPromocionesAplicadas();
-								if (pproms != null) {
-									int maxPromos = Integer
-											.parseInt(me
-													.getApplicationContext()
-													.getSharedPreferences(
-															"SystemParams",
-															android.content.Context.MODE_PRIVATE)
-													.getString(
-															"CantMaximaPromocionesAplicar",
-															"0"));
-									if (pproms.length >= maxPromos) {
-										showStatus(
-												"La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.",
-												true);
-										return;
-									}
-								}
-		
-								Promociones.aplicarPromocion(pedido, promocion,
-										me.getContentResolver());
-								Promociones.ActualizaPedidoDePromociones(pedido);
-								if (pedido.getPromocionesAplicadas().length == 0)
+
+			ArrayList<Promocion> promociones = Promociones
+					.getPromocionesAplican(pedido, getContentResolver());
+
+			if (promociones != null && promociones.size() != 0) {
+
+				DialogPromociones dprom = new DialogPromociones(
+						ViewPedidoEdit.this, pedido, promociones,
+						android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+
+				dprom.setOnDialogPromocionesButtonClickListener(new com.panzyma.nm.viewdialog.DialogPromociones.OnButtonClickHandler() {
+
+					@Override
+					public void onButtonClick(Promocion promocion) {
+						if (promocion != null) {
+							// Validar que no se haya alcanzado el máximo de
+							// promociones
+							// a aplicar
+							PedidoPromocion[] pproms = pedido
+									.getPromocionesAplicadas();
+							if (pproms != null) {
+								int maxPromos = Integer
+										.parseInt(me
+												.getApplicationContext()
+												.getSharedPreferences(
+														"SystemParams",
+														android.content.Context.MODE_PRIVATE)
+												.getString(
+														"CantMaximaPromocionesAplicar",
+														"0"));
+								if (pproms.length >= maxPromos) {
+									showStatus(
+											"La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.",
+											true);
 									return;
-								showStatus("aplicando promociones...");
-								// Salvar la promoción aplicada
-								salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES);
+								}
 							}
-							else
-								AppDialog.showMessage(me,"No hay Promomociones pendientes que aplicar...",
-										DialogType.DIALOGO_ALERTA);
-		
-						}
-					});
-		
-					Window window = dprom.getWindow();
-					window.setGravity(Gravity.CENTER);
-					window.setLayout(display.getWidth() - 5, display.getHeight() - 10);
-					dprom.show();
-			}
-			else
-				AppDialog.showMessage(me,"No hay Promomociones pendientes que aplicar...",
+
+							Promociones.aplicarPromocion(pedido, promocion,
+									me.getContentResolver());
+							Promociones.ActualizaPedidoDePromociones(pedido);
+							if (pedido.getPromocionesAplicadas().length == 0)
+								return;
+							showStatus("aplicando promociones...");
+							// Salvar la promoción aplicada
+							salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES);
+						} else
+							AppDialog
+									.showMessage(
+											me,
+											"No hay Promomociones pendientes que aplicar...",
+											DialogType.DIALOGO_ALERTA);
+
+					}
+				});
+
+				Window window = dprom.getWindow();
+				window.setGravity(Gravity.CENTER);
+				window.setLayout(display.getWidth() - 5,
+						display.getHeight() - 10);
+				dprom.show();
+			} else
+				AppDialog.showMessage(me,
+						"No hay Promomociones pendientes que aplicar...",
 						DialogType.DIALOGO_ALERTA);
-			
-		} catch (Exception e) 
-		{ 
+
+		} catch (Exception e) {
 			AppDialog.showMessage(me,
 					e.getMessage() + "\nCausa: " + e.getCause(),
 					DialogType.DIALOGO_ALERTA);
 		}
-		
-		
+
 	}
 
 	public void actualizarDetallePedido() {
@@ -1125,8 +1156,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					.getCodEstado().compareTo("APROBADO") == 0)))
 				return;
 
-			if (pedido.isExento()) 
-			{
+			if (pedido.isExento()) {
 				pedido.setExento(false);
 				pedido.setAutorizacionDGI("");
 
@@ -1138,19 +1168,20 @@ public class ViewPedidoEdit extends FragmentActivity implements
 						.getSharedPreferences("SystemParams",
 								android.content.Context.MODE_PRIVATE)
 						.getString("PorcentajeImpuesto", "0.0"));
-				
-				for (int i = 0; i < Lvmpproducto.size(); i++) 
-				{
+
+				for (int i = 0; i < Lvmpproducto.size(); i++) {
 					DetallePedido dp = Lvmpproducto.get(i);
-					Producto prod = Ventas.getProductoByID(dp.getObjProductoID(), me);
+					Producto prod = Ventas.getProductoByID(
+							dp.getObjProductoID(), me);
 					dp.setPorcImpuesto(0);
 					dp.setImpuesto(0);
-					if (prod.isEsGravable()) 
-					{
+					if (prod.isEsGravable()) {
 						dp.setPorcImpuesto(prcImp);
-						dp.setImpuesto(dp.getSubtotal() * dp.getPorcImpuesto()/ 100);
+						dp.setImpuesto(dp.getSubtotal() * dp.getPorcImpuesto()
+								/ 100);
 					}
-					dp.setTotal(dp.getSubtotal() + dp.getImpuesto()- dp.getDescuento());
+					dp.setTotal(dp.getSubtotal() + dp.getImpuesto()
+							- dp.getDescuento());
 					Lvmpproducto.set(i, dp);
 				}
 				TAG_IMPUESTO = "Exonerar Impuesto";
@@ -1171,12 +1202,12 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					pedido.setAutorizacionDGI(exoneracion);
 					if (Lvmpproducto == null || Lvmpproducto.size() == 0)
 						return;
-					for (int i = 0; i < Lvmpproducto.size(); i++) 
-					{
+					for (int i = 0; i < Lvmpproducto.size(); i++) {
 						DetallePedido dp = Lvmpproducto.get(i);
 						dp.setImpuesto(0);
 						dp.setPorcImpuesto(0);
-						dp.setTotal(dp.getSubtotal() + dp.getImpuesto() - dp.getDescuento());
+						dp.setTotal(dp.getSubtotal() + dp.getImpuesto()
+								- dp.getDescuento());
 						Lvmpproducto.set(i, dp);
 					}
 					TAG_IMPUESTO = "Aplicar Impuesto";
@@ -1208,8 +1239,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		return handler;
 	}
 
-	private void ImprimirComprobante() throws Exception 
-	{
+	private void ImprimirComprobante() throws Exception {
 		if (!isDataValid())
 			return;
 		Message msg = new Message();
@@ -1256,7 +1286,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			}
 		});
 	}
- 
+
 	public String getTipoVenta() {
 		return (tbxTipoVenta.getSelectedItemPosition() == 0) ? "CO" : "CR";
 	}
@@ -1353,34 +1383,33 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	@Override
 	protected void onResume() {
-		
-		try 
-		{
+
+		try {
 			SessionManager.setContext(me);
-			NMApp.getController().setEntities(this,(bpm==null)? bpm = new BPedidoM():bpm);
-			NMApp.getController().addOutboxHandler((handler==null)?handler = new Handler(this):handler);
+			NMApp.getController().setEntities(this,
+					(bpm == null) ? bpm = new BPedidoM() : bpm);
+			NMApp.getController().addOutboxHandler(
+					(handler == null) ? handler = new Handler(this) : handler);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		super.onResume();
 	}
 
 	private void enviarPedido() {
 
-		try 
-		{
+		try {
 
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 					.getCodEstado().compareTo("APROBADO") == 0)))
 				return;
 
-			if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) 
-			{
-				if (pedido.getNumeroCentral() > 0) 
-				{
-					AppDialog.showMessage(me, "El pedido ya fue enviado.",DialogType.DIALOGO_ALERTA);
+			if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) {
+				if (pedido.getNumeroCentral() > 0) {
+					AppDialog.showMessage(me, "El pedido ya fue enviado.",
+							DialogType.DIALOGO_ALERTA);
 					return;
 				}
 			}
@@ -1390,7 +1419,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				return;
 			if (!isDataValid())
 				return;
- 
+
 			Message msg = new Message();
 			Bundle b = new Bundle();
 			b.putParcelable("pedido", pedido);
@@ -1398,9 +1427,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
 			NMApp.getController().getInboxHandler().sendMessage(msg);
 
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			AppDialog.showMessage(me,
 					e.getMessage() + "\nCausa: " + e.getCause(),
 					DialogType.DIALOGO_ALERTA);
@@ -1408,8 +1435,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	}
 
-	private void setInformacionCliente() 
-	{
+	private void setInformacionCliente() {
 		tbxNombreDelCliente.setText(cliente.getNombreCliente());
 		pedido.setObjClienteID(cliente.getIdCliente());
 		pedido.setObjSucursalID(cliente.getIdSucursal());
@@ -1431,20 +1457,18 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	}
 
 	public void showStatus(final String mensaje, boolean... confirmacion) {
-		 
+
 		ocultarDialogos();
-		if (confirmacion.length != 0 && confirmacion[0]) 
-		{
-			runOnUiThread(new Runnable() 
-			{
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
 					AppDialog.showMessage(me, "", mensaje,
 							AppDialog.DialogType.DIALOGO_ALERTA,
 							new AppDialog.OnButtonClickListener() {
 								@Override
-								public void onButtonClick(
-										AlertDialog _dialog, int actionId) {
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) {
 
 									if (AppDialog.OK_BUTTOM == actionId) {
 										_dialog.dismiss();
@@ -1453,17 +1477,16 @@ public class ViewPedidoEdit extends FragmentActivity implements
 							});
 				}
 			});
-		} else 
-		{
+		} else {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					dlg =  new CustomDialog(me, mensaje, false,
+					dlg = new CustomDialog(me, mensaje, false,
 							NOTIFICATION_DIALOG);
 					dlg.show();
 				}
 			});
-		} 
+		}
 	}
 
 }

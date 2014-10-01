@@ -1,7 +1,10 @@
 package com.panzyma.nm.viewdialog;
 
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
@@ -10,26 +13,33 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.serviceproxy.Bonificacion;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.PrecioProducto;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.serviceproxy.Usuario;
+import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nordismobile.R;
 
 public class DetalleProducto extends Dialog implements Handler.Callback {
 
-	private Context mcontext;
-	private NMApp nmapp;
+	private ViewPedidoEdit mcontext; 
 	EditText tboxdisponible;
 	EditText tboxcantidad;
 	EditText tboxproducto;
 	private CheckBox chkvprecio;
 	private Button btnaceptar;
 	private Button btncancelar;
-
+ 
+	private CustomDialog dlg;
+	
 	private OnButtonClickHandler mButtonClickListener;
 	private Producto _producto;
 	private long _idCategCliente;
@@ -44,7 +54,8 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 	private EditText txtCantBonificada;
 	private EditText tboxCantBonificada;
 	private boolean _cambioCantidad;
-
+	private Usuario usuario;
+	
 	public interface OnButtonClickHandler {
 		public abstract void onButtonClick(DetallePedido det_p, boolean btn);
 	}
@@ -54,7 +65,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 		mButtonClickListener = listener;
 	}
 
-	public DetalleProducto(Context cnt, Producto prod, long idCategCliente,
+	public DetalleProducto(ViewPedidoEdit cnt, Producto prod, long idCategCliente,
 			long idTipoPrecio, long idTipoCliente, boolean exonerado) {
 		super(cnt, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 		setContentView(R.layout.detalle_prod_seleccionado);
@@ -64,284 +75,70 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 		_nuevo = true;
 		_exonerado = exonerado;
 		_idTipoCliente = idTipoCliente;
-		mcontext = this.getContext();
-		initComponents();
-
+		mcontext =cnt;
+		usuario=SessionManager.getLoginUser();
+		initComponents();		
 	}
 
+	public DetalleProducto(ViewPedidoEdit cnt, Producto prod,DetallePedido det, long idCategCliente,
+			long idTipoPrecio, long idTipoCliente, boolean exonerado) {
+		super(cnt, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+		setContentView(R.layout.detalle_prod_seleccionado);
+		_producto = prod;
+		_idCategCliente = idCategCliente;
+		_idTipoPrecio = idTipoPrecio; 
+		_exonerado = exonerado;
+		_idTipoCliente = idTipoCliente;
+		mcontext = cnt;
+		_det=det;
+		usuario=SessionManager.getLoginUser();
+		initComponents();
+		
+	} 
+	
 	public boolean getCambioCantidad() {
 		return _cambioCantidad;
 	}
 
 	//
-	private void initComponents() {
+	private void initComponents()
+	{
+		this.setCancelable(true);
+		
 		// Via precio se habilita si codigo de tipo de cliente al que se está
 		// facturando es igual
 		// al parámetro CodTipoClienteMayorista
-		if (_idTipoCliente == Long.valueOf(mcontext.getSharedPreferences(
-				"SystemParams", android.content.Context.MODE_PRIVATE)
-				.getString("IdTipoClienteMayorista", "0"))) {
+		if (_idTipoCliente == Long.valueOf(mcontext.getSharedPreferences("SystemParams", android.content.Context.MODE_PRIVATE).getString("IdTipoClienteMayorista", "0"))) 
+		{
 			chkViaPrecio = ((CheckBox) findViewById(R.id.chkviaprecio));
 			chkViaPrecio.setVisibility(android.view.View.VISIBLE);
-		}
-		this.setCancelable(true);
-		tboxcantidad = ((EditText) findViewById(R.id.etcantidad));
+		}		
+		
 		tboxproducto = ((EditText) findViewById(R.id.et_producto));
-		tboxPrecio = ((EditText) findViewById(R.id.et_precio));
-		tboxCantBonificada = ((EditText) findViewById(R.id.etbonif));
 		tboxproducto.setText(_producto.getNombre());
+		
+		tboxcantidad = ((EditText) findViewById(R.id.etcantidad));
+		tboxCantBonificada = ((EditText) findViewById(R.id.etbonif));
+		((TextView) findViewById(R.id.tv_precio)).setVisibility(View.VISIBLE);
+		tboxPrecio = ((EditText) findViewById(R.id.et_precio));
+		
+		if(_det!=null)
+		{
+			tboxcantidad.setText(""+_det.getCantidadOrdenada());
+			tboxCantBonificada.setText(""+_det.getCantidadBonificadaEditada());
+			tboxPrecio.setText(""+_det.getMontoPrecioEditado());
+			tboxPrecio.setVisibility(View.VISIBLE);
+			((TextView) findViewById(R.id.tvbonif)).setVisibility(View.VISIBLE);
+			tboxCantBonificada.setVisibility(View.VISIBLE);
+			tboxCantBonificada.setEnabled(usuario.isPuedeEditarBonifAbajo()|| usuario.isPuedeEditarBonifArriba());
+			tboxPrecio.setEnabled(usuario.isPuedeEditarPrecioAbajo() || usuario.isPuedeEditarPrecioArriba());
+		}
+		 
+		tboxdisponible = ((EditText) findViewById(R.id.etdisponible));
 		tboxdisponible.setText(""+_producto.Disponible);
+		
 		btnaceptar = ((Button) findViewById(R.id.btn_ok));
-		btnaceptar.setOnClickListener(new android.view.View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) 
-			{
-
-				if (isValidInformation()) 
-				{
-
-					int nuevaCantidadOrdenada = Integer.parseInt(tboxcantidad
-							.getText().toString());
-					if (_nuevo) {
-						_det = new DetallePedido();
-						_det.setObjProductoID(_producto.getId());
-						_det.setCodProducto(_producto.getCodigo());
-						_det.setNombreProducto(_producto.getNombre());
-					}
-					if (!_nuevo) {
-
-						if (nuevaCantidadOrdenada != _det.getCantidadOrdenada()) {
-							_cambioCantidad = true;
-
-							// Recalcular la bonificación
-							_det.setCantidadBonificada(0);
-							_det.setCantidadBonificadaEditada(0);
-							_det.setObjBonificacionID(0);
-							_det.setBonifEditada(false);
-
-							if ((chkViaPrecio == null) || (!chkViaPrecio.isChecked())) {
-								Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
-								if (b != null) {
-									_det.setCantidadBonificada(b
-											.getCantBonificacion());
-									_det.setCantidadBonificadaEditada(b
-											.getCantBonificacion());
-									_det.setObjBonificacionID(b
-											.getObjBonificacionID());
-									_det.setBonifEditada(false);
-								}
-							}
-
-							// Recalcular precio
-							long idTP = _idTipoPrecio;
-							if ((chkViaPrecio != null)
-									&& (!chkViaPrecio.isChecked()))
-								idTP = mcontext.getSharedPreferences(
-										"SystemParams",
-										android.content.Context.MODE_PRIVATE)
-										.getLong("IdTipoPrecioGeneral", 0);
-
-							float precio = getPrecioProducto(_producto, idTP,
-									nuevaCantidadOrdenada);
-							_det.setPrecio(precio);
-							_det.setMontoPrecioEditado(precio);
-							_det.setPrecioEditado(false);
-						} else {
-							float precio = Float.valueOf(tboxPrecio.getText()
-									.toString());
-							if (precio == 0F) {
-								// Dialog.alert("El precio debe ser mayor que cero.");
-								return;
-							}
-
-							// Validar que la edición de la cantidad bonificada
-							// sea válida
-							int nuevaBonif = Integer
-									.parseInt(tboxCantBonificada.getText()
-											.toString());
-
-							if (!mcontext.getSharedPreferences("LoginUser",
-									android.content.Context.MODE_PRIVATE)
-									.getBoolean("isPuedeEditarBonifAbajo",
-											false)) {
-								int bonifProd = 0;
-								if ((chkViaPrecio == null)
-										|| (!chkViaPrecio.isChecked())) {
-									Bonificacion b = getBonificacion(_producto,
-											_idCategCliente,
-											nuevaCantidadOrdenada);
-									if (b != null)
-										bonifProd = b.getCantBonificacion();
-								}
-
-								if (nuevaBonif < bonifProd) {
-									tboxCantBonificada.setText(_det
-											.getCantidadBonificadaEditada()
-											+ "");
-									// Dialog.alert("Permisos insuficientes para bajar la cantidad bonificada.");
-									return;
-								}
-							}
-
-							if (!mcontext.getSharedPreferences("LoginUser",
-									android.content.Context.MODE_PRIVATE)
-									.getBoolean("isPuedeEditarBonifArriba",
-											false)) {
-								int bonifProd = 0;
-								if ((chkViaPrecio == null)
-										|| (!chkViaPrecio.isChecked())) {
-									Bonificacion b = getBonificacion(_producto,
-											_idCategCliente,
-											nuevaCantidadOrdenada);
-									if (b != null)
-										bonifProd = b.getCantBonificacion();
-								}
-
-								if (nuevaBonif > bonifProd) {
-									tboxCantBonificada.setText(_det
-											.getCantidadBonificadaEditada()
-											+ "");
-									// Dialog.alert("Permisos insuficientes para subir la cantidad bonificada.");
-									return;
-								}
-							}
-
-							// Validar que la edición del precio sea válida
-							if (!mcontext.getSharedPreferences("LoginUser",
-									android.content.Context.MODE_PRIVATE)
-									.getBoolean("isPuedeEditarPrecioAbajo",
-											false)) {
-								// Calcular precio
-								long idTP = _idTipoPrecio;
-								if ((chkViaPrecio != null)
-										&& (!chkViaPrecio.isChecked()))
-									idTP = Long
-											.parseLong(mcontext
-													.getSharedPreferences(
-															"SystemParams",
-															android.content.Context.MODE_PRIVATE)
-													.getString(
-															"IdTipoPrecioGeneral",
-															"0"));
-								float precioProd = getPrecioProducto(_producto,
-										idTP, nuevaCantidadOrdenada);
-
-								if (precio < precioProd) {
-									tboxPrecio.setText(_det
-											.getMontoPrecioEditado() + "");
-									// Dialog.alert("Permisos insuficientes para bajar el precio.");
-									return;
-								}
-							}
-
-							if (!mcontext.getSharedPreferences("LoginUser",
-									android.content.Context.MODE_PRIVATE)
-									.getBoolean("isPuedeEditarPrecioArriba",
-											false)) {
-								// Calcular precio
-								long idTP = _idTipoPrecio;
-								if ((chkViaPrecio != null)
-										&& (!chkViaPrecio.isChecked()))
-									idTP = Long
-											.parseLong(mcontext
-													.getSharedPreferences(
-															"SystemParams",
-															android.content.Context.MODE_PRIVATE)
-													.getString(
-															"IdTipoPrecioGeneral",
-															"0"));
-								float precioProd = getPrecioProducto(_producto,
-										idTP, nuevaCantidadOrdenada);
-
-								if (precio > precioProd) {
-									tboxPrecio.setText(_det
-											.getMontoPrecioEditado() + "");
-									// Dialog.alert("Permisos insuficientes para subir el precio.");
-									return;
-								}
-							}
-
-							_det.setCantidadBonificada(nuevaBonif);
-							_det.setCantidadBonificadaEditada(Integer
-									.parseInt(tboxCantBonificada.getText()
-											.toString()));
-							_det.setPrecio(precio);
-							_det.setMontoPrecioEditado(precio);
-						}
-
-					} else {
-						// Calcular la bonificación
-						_det.setCantidadBonificada(0);
-						_det.setCantidadBonificadaEditada(0);
-						_det.setObjBonificacionID(0);
-						_det.setBonifEditada(false);
-
-						if ((chkViaPrecio == null)|| (!chkViaPrecio.isChecked())) {
-							Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
-							if (b != null) {
-								_det.setCantidadBonificada(b
-										.getCantBonificacion());
-								_det.setCantidadBonificadaEditada(b
-										.getCantBonificacion());
-								_det.setObjBonificacionID(b
-										.getObjBonificacionID());
-								_det.setBonifEditada(false);
-							}
-						}
-
-						// Calcular precio
-						long idTP = _idTipoPrecio;
-						if ((chkViaPrecio != null)
-								&& (!chkViaPrecio.isChecked()))
-							idTP = Long
-									.parseLong(mcontext
-											.getSharedPreferences(
-													"SystemParams",
-													android.content.Context.MODE_PRIVATE)
-											.getString("IdTipoPrecioGeneral",
-													"0"));
-
-						float precio = getPrecioProducto(_producto, idTP,
-								nuevaCantidadOrdenada);
-						_det.setPrecio(precio);
-						_det.setMontoPrecioEditado(precio);
-						_det.setPrecioEditado(false);
-					}
-
-					_det.setCantidadOrdenada(nuevaCantidadOrdenada);
-
-					_det.setBonifEditada(false);
-					_det.setPrecioEditado(false);
-					if (_det.getCantidadBonificada() != _det
-							.getCantidadBonificadaEditada())
-						_det.setBonifEditada(true);
-					if (_det.getPrecio() != _det.getMontoPrecioEditado())
-						_det.setPrecioEditado(true);
-
-					_det.setDescuento(0F);
-					_det.setImpuesto(0F);
-					_det.setPorcImpuesto(0F);
-					_det.setSubtotal(_det.getCantidadOrdenada()
-							* _det.getPrecio());
-					if (_producto.isEsGravable() && !_exonerado) {
-
-						float prcImp = Float.valueOf((mcontext
-								.getSharedPreferences("SystemParams",
-										android.content.Context.MODE_PRIVATE)
-								.getString("PorcentajeImpuesto", "0")));
-						_det.setImpuesto(_det.getSubtotal() * prcImp / 100);
-						_det.setPorcImpuesto(prcImp);
-					}
-					_det.setTotal(_det.getSubtotal() + _det.getImpuesto()
-							- _det.getDescuento());
-					if(((!_nuevo) &&_cambioCantidad) || _nuevo)
-						mButtonClickListener.onButtonClick(_det, true);
-					dismiss();
-				}
-			}
-
-		});
+		btnaceptar.setOnClickListener(clicklistener);
 		btncancelar = ((Button) findViewById(R.id.btn_cancel));
 		btncancelar.setOnClickListener(new android.view.View.OnClickListener() {
 
@@ -355,6 +152,243 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 
 	}
 
+	android.view.View.OnClickListener clicklistener=new android.view.View.OnClickListener()
+	{
+		@Override
+		public void onClick(View v) 
+		{
+
+			if (isValidInformation()) 
+			{
+
+				int nuevaCantidadOrdenada = Integer.parseInt(tboxcantidad.getText().toString());
+				if (_nuevo) 
+				{
+					_det = new DetallePedido();
+					_det.setObjProductoID(_producto.getId());
+					_det.setCodProducto(_producto.getCodigo());
+					_det.setNombreProducto(_producto.getNombre());
+				}
+				if (!_nuevo) {
+
+					if (nuevaCantidadOrdenada != _det.getCantidadOrdenada())
+					{
+						_cambioCantidad = true;
+
+						// Recalcular la bonificación
+						_det.setCantidadBonificada(0);
+						_det.setCantidadBonificadaEditada(0);
+						_det.setObjBonificacionID(0);
+						_det.setBonifEditada(false);
+
+						if ((chkViaPrecio == null) || (!chkViaPrecio.isChecked())) 
+						{
+							Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
+							if (b != null) 
+							{
+								_det.setCantidadBonificada(b.getCantBonificacion());
+								_det.setCantidadBonificadaEditada(b.getCantBonificacion());
+								_det.setObjBonificacionID(b.getObjBonificacionID());
+								_det.setBonifEditada(false);
+							}
+						}
+
+						// Recalcular precio
+						long idTP = _idTipoPrecio;
+						if ((chkViaPrecio != null) && (!chkViaPrecio.isChecked()))
+							idTP = mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getLong("IdTipoPrecioGeneral", 0);
+
+						float precio = getPrecioProducto(_producto, idTP,nuevaCantidadOrdenada);
+						_det.setPrecio(precio);
+						_det.setMontoPrecioEditado(precio);
+						_det.setPrecioEditado(false);
+					} else 
+					{
+						float precio = Float.valueOf(tboxPrecio.getText().toString());
+						if (precio == 0F) {
+							showStatus("El precio debe ser mayor que cero.", true); 
+							return;
+						}
+
+						// Validar que la edición de la cantidad bonificada
+						// sea válida
+						int nuevaBonif = Integer.parseInt(tboxCantBonificada.getText().toString());
+
+						if (!mcontext.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarBonifAbajo",false)) 
+						{
+							int bonifProd = 0;
+							if ((chkViaPrecio == null)|| (!chkViaPrecio.isChecked())) 
+							{
+								Bonificacion b = getBonificacion(_producto,_idCategCliente,nuevaCantidadOrdenada);
+								if (b != null)
+									bonifProd = b.getCantBonificacion();
+							}
+
+							if (nuevaBonif < bonifProd) 
+							{
+								tboxCantBonificada.setText(_det.getCantidadBonificadaEditada()+ "");
+								showStatus("Permisos insuficientes para bajar la cantidad bonificada.", true); 
+								return;
+							}
+						}
+
+						if (!mcontext.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarBonifArriba",false)) 
+						{
+							int bonifProd = 0;
+							if ((chkViaPrecio == null) || (!chkViaPrecio.isChecked())) 
+							{
+								Bonificacion b = getBonificacion(_producto,_idCategCliente,nuevaCantidadOrdenada);
+								if (b != null)
+									bonifProd = b.getCantBonificacion();
+							}
+
+							if (nuevaBonif > bonifProd) 
+							{
+								tboxCantBonificada.setText(_det.getCantidadBonificadaEditada()+ "");
+								showStatus("Permisos insuficientes para subir la cantidad bonificada.", true); 
+								return;
+							}
+						}
+
+						// Validar que la edición del precio sea válida
+						if (!mcontext.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarPrecioAbajo",false)) 
+						{
+							// Calcular precio
+							long idTP = _idTipoPrecio;
+							if ((chkViaPrecio != null) && (!chkViaPrecio.isChecked()))
+								idTP = Long.parseLong(mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
+							float precioProd = getPrecioProducto(_producto,idTP, nuevaCantidadOrdenada);
+
+							if (precio < precioProd) 
+							{
+								tboxPrecio.setText(_det.getMontoPrecioEditado() + "");
+								showStatus("Permisos insuficientes para bajar el precio.", true);  
+								return;
+							}
+						}
+
+						if (!mcontext.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarPrecioArriba",false)) 
+						{
+							// Calcular precio
+							long idTP = _idTipoPrecio;
+							if ((chkViaPrecio != null) && (!chkViaPrecio.isChecked()))
+								idTP = Long.parseLong(mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
+							float precioProd = getPrecioProducto(_producto,idTP, nuevaCantidadOrdenada);
+
+							if (precio > precioProd) 
+							{
+								tboxPrecio.setText(_det.getMontoPrecioEditado() + "");
+								showStatus("Permisos insuficientes para subir el precio.", true);  
+								return;
+							}
+						}
+
+						_det.setCantidadBonificada(nuevaBonif);
+						_det.setCantidadBonificadaEditada(Integer.parseInt(tboxCantBonificada.getText().toString()));
+						_det.setPrecio(precio);
+						_det.setMontoPrecioEditado(precio);
+					}
+
+				} 
+				else 
+				{
+					// Calcular la bonificación
+					_det.setCantidadBonificada(0);
+					_det.setCantidadBonificadaEditada(0);
+					_det.setObjBonificacionID(0);
+					_det.setBonifEditada(false);
+
+					if ((chkViaPrecio == null)|| (!chkViaPrecio.isChecked())) 
+					{
+						Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
+						if (b != null) 
+						{
+							_det.setCantidadBonificada(b.getCantBonificacion());
+							_det.setCantidadBonificadaEditada(b.getCantBonificacion());
+							_det.setObjBonificacionID(b.getObjBonificacionID());
+							_det.setBonifEditada(false);
+						}
+					}
+
+					// Calcular precio
+					long idTP = _idTipoPrecio;
+					if ((chkViaPrecio != null) && (!chkViaPrecio.isChecked()))
+						idTP = Long.parseLong(mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
+
+					float precio = getPrecioProducto(_producto, idTP,nuevaCantidadOrdenada);
+					_det.setPrecio(precio);
+					_det.setMontoPrecioEditado(precio);
+					_det.setPrecioEditado(false);
+				}
+
+				_det.setCantidadOrdenada(nuevaCantidadOrdenada);
+
+				_det.setBonifEditada(false);
+				_det.setPrecioEditado(false);
+				if (_det.getCantidadBonificada() != _det.getCantidadBonificadaEditada())
+						_det.setBonifEditada(true);
+				if (_det.getPrecio() != _det.getMontoPrecioEditado())
+						_det.setPrecioEditado(true);
+
+				_det.setDescuento(0F);
+				_det.setImpuesto(0F);
+				_det.setPorcImpuesto(0F);
+				_det.setSubtotal(_det.getCantidadOrdenada() * _det.getPrecio());
+				if (_producto.isEsGravable() && !_exonerado) 
+				{
+
+					float prcImp = Float.valueOf((mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeImpuesto", "0")));
+					_det.setImpuesto(_det.getSubtotal() * prcImp / 100);
+					_det.setPorcImpuesto(prcImp);
+				}
+				_det.setTotal(_det.getSubtotal() + _det.getImpuesto() - _det.getDescuento());
+				if(((!_nuevo) && _cambioCantidad) ||  _nuevo)
+					mButtonClickListener.onButtonClick(_det, true);
+				dismiss();
+			}
+		}
+	};
+	
+	public void ocultarDialogos() {
+		if (dlg != null && dlg.isShowing())
+			dlg.dismiss(); 
+	}
+	
+	public void showStatus(final String mensaje, boolean... confirmacion) {
+
+		ocultarDialogos();
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			mcontext.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(mcontext, "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else {
+			mcontext.runOnUiThread(new Runnable() {
+				
+
+				@Override
+				public void run() {
+					dlg = new CustomDialog(mcontext, mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		}
+	}
+	
 	@Override
 	public boolean handleMessage(Message msg) {
 		// TODO Auto-generated method stub

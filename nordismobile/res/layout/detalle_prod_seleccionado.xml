@@ -1,225 +1,211 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"    
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@drawable/bgdialog2" 
-    android:orientation="vertical"
-    > 
-    
-    <RelativeLayout
-        android:id="@+id/rl_detlle_prod_select"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/White" 
-        android:layout_margin="2dp">
-         
-			<TextView
-            android:id="@+id/tv_detlle_header"
+    android:background="@drawable/bgdialog2"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/rl_detlle_prod_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_margin="10dp"
-            android:text="Detalle Producto"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#005D7A"
-            android:shadowColor="@color/Black" /> 
-			
-			<TextView
-            android:id="@+id/tv_prod"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/tv_detlle_header" 
-            android:layout_marginLeft="10dp"
-            android:text="Producto :"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#005D7A"
-            android:enabled="false"
-            android:shadowColor="@color/Black"   />
+            android:layout_margin="2dp"
+            android:background="@color/White" >
 
-       		<EditText
-            android:id="@+id/et_producto"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:layout_below="@+id/tv_prod"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" 
-            android:enabled="false"
-           	android:singleLine="true" 
-		    android:nextFocusRight="@+id/etusername"
-		    android:nextFocusDown="@+id/etusername"
-            />
-			 
-			<TextView
-            android:id="@+id/tv_precio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/et_producto" 
-            android:layout_marginLeft="10dp"
-            android:text="Precio :"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#005D7A" 
-            android:shadowColor="@color/Black" 
-            android:visibility="gone"
-              />
+            <TextView
+                android:id="@+id/tv_detlle_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="10dp"
+                android:shadowColor="@color/Black"
+                android:text="Detalle Producto"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#005D7A" />
 
-       		<EditText
-            android:id="@+id/et_precio"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:layout_below="@+id/tv_precio"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" 
-            android:enabled="false"
-           	android:singleLine="true" 
-		    android:nextFocusRight="@+id/tvcantidad"
-		    android:nextFocusDown="@+id/tvcantidad"
-		    android:visibility="gone"
-            />
-       		
-       		
-       		
-       		
-       		
-       		
-       		<TextView
-            android:id="@+id/tvdisponibible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/et_producto" 
-            android:layout_marginLeft="10dp"
-            android:text="Disponible :"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#005D7A"
-            android:shadowColor="@color/Black"  
-            />
+            <TextView
+                android:id="@+id/tv_prod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/tv_detlle_header"
+                android:layout_marginLeft="10dp"
+                android:enabled="false"
+                android:shadowColor="@color/Black"
+                android:text="Producto :"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#005D7A" />
 
-       		<EditText
-            android:id="@+id/etdisponible"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:layout_below="@+id/tvdisponibible"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:enabled="false"
-            android:inputType="number"
-            android:singleLine="true"  
-            android:hint="0"> 
-       		    
-       		</EditText> 
-       		 
-       		
-			<TextView
-            android:id="@+id/tvcantidad"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/etdisponible" 
-            android:layout_marginLeft="10dp"
-            android:text="Cantidad :"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#005D7A"
-            android:shadowColor="@color/Black"  
-            />
+            <EditText
+                android:id="@+id/et_producto"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/tv_prod"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:enabled="false"
+                android:nextFocusDown="@+id/etusername"
+                android:nextFocusRight="@+id/etusername"
+                android:singleLine="true" />
 
-       		<EditText
-            android:id="@+id/etcantidad"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:layout_below="@+id/tvcantidad"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:inputType="number"
-            android:singleLine="true"  
-            android:hint="0"
-            >
-       		    <requestFocus />
-       		    
-       		</EditText> 
-       		
-       		<TextView
-            android:id="@+id/tvbonif"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/etcantidad" 
-            android:layout_marginLeft="10dp"
-            android:text="Bonificación :"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#005D7A" 
-            android:shadowColor="@color/Black" 
-            android:visibility="gone"
-              />
+            <TextView
+                android:id="@+id/tv_precio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/et_producto"
+                android:layout_marginLeft="10dp"
+                android:shadowColor="@color/Black"
+                android:text="Precio :"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#005D7A"
+                android:visibility="gone" />
 
-       		<EditText
-            android:id="@+id/etbonif"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:layout_below="@+id/tvbonif"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" 
-            android:enabled="false"
-           	android:singleLine="true" 
-		    android:nextFocusRight="@+id/tvcantidad"
-		    android:nextFocusDown="@+id/tvcantidad"
-		    android:visibility="gone"
-            />
+            <EditText
+                android:id="@+id/et_precio"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/tv_precio"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:enabled="false"
+                android:nextFocusDown="@+id/tvcantidad"
+                android:nextFocusRight="@+id/tvcantidad"
+                android:singleLine="true"
+                android:visibility="gone" />
 
-            <CheckBox 
-            android:id="@+id/chkviaprecio"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="Via Precio"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#005D7A"
-            android:shadowColor="@color/Black"
-            android:layout_below="@+id/etbonif"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:visibility="gone"
-            />
+            <TextView
+                android:id="@+id/tvdisponibible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/et_precio"
+                android:layout_marginLeft="10dp"
+                android:shadowColor="@color/Black"
+                android:text="Disponible :"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#005D7A" />
 
-        	<TableRow
-        	    android:id="@+id/layoutbutton"
-        	    android:layout_width="wrap_content"
-        	    android:layout_height="wrap_content"
-        	    android:layout_below="@+id/chkviaprecio"
-        	    android:layout_centerHorizontal="true" >
-	    		
-			    <Button
-		            android:id="@+id/btn_ok"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		            android:layout_marginLeft="10dp"
-		            android:layout_marginTop="10dp"
-		            android:layout_marginBottom="10dp"
-		            android:background="@drawable/btn"
-		            android:text="Aceptar"
-		            android:textAppearance="?android:attr/textAppearanceMedium"
-		            android:textColor="@color/White" 
-				    android:nextFocusRight="@+id/btncancel"
-				    android:nextFocusDown="@+id/btncancel">
-		        </Button>
+            <EditText
+                android:id="@+id/etdisponible"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/tvdisponibible"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:enabled="false"
+                android:hint="0"
+                android:inputType="number"
+                android:singleLine="true" >
+            </EditText>
 
-		        <Button
-		            android:id="@+id/btn_cancel"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		            android:layout_marginLeft="10dp"
-		            android:layout_marginTop="10dp" 
-		            android:layout_marginBottom="10dp"
-		            android:background="@drawable/btn"
-		            android:text="Cancelar"
-		            android:textAppearance="?android:attr/textAppearanceMedium"
-		            android:textColor="@color/White"  >
-		        </Button>
-			    
-			</TableRow> 
- 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/tvcantidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/etdisponible"
+                android:layout_marginLeft="10dp"
+                android:shadowColor="@color/Black"
+                android:text="Cantidad :"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#005D7A" />
+
+            <EditText
+                android:id="@+id/etcantidad"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/tvcantidad"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:hint="0"
+                android:inputType="number"
+                android:singleLine="true" >
+
+                <requestFocus />
+            </EditText>
+
+            <TextView
+                android:id="@+id/tvbonif"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/etcantidad"
+                android:layout_marginLeft="10dp"
+                android:shadowColor="@color/Black"
+                android:text="Bonificación :"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#005D7A"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/etbonif"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/tvbonif"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:enabled="false"
+                android:nextFocusDown="@+id/tvcantidad"
+                android:nextFocusRight="@+id/tvcantidad"
+                android:singleLine="true"
+                android:visibility="gone" />
+
+            <CheckBox
+                android:id="@+id/chkviaprecio"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_below="@+id/etbonif"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:shadowColor="@color/Black"
+                android:text="Via Precio"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#005D7A"
+                android:visibility="gone" />
+
+            <TableRow
+                android:id="@+id/layoutbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/chkviaprecio"
+                android:layout_centerHorizontal="true" >
+
+                <Button
+                    android:id="@+id/btn_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/btn"
+                    android:nextFocusDown="@+id/btncancel"
+                    android:nextFocusRight="@+id/btncancel"
+                    android:text="Aceptar"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/White" >
+                </Button>
+
+                <Button
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/btn"
+                    android:text="Cancelar"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/White" >
+                </Button>
+            </TableRow>
+        </RelativeLayout>
+    </ScrollView>
 
 </LinearLayout>

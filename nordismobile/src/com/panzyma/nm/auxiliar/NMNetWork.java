@@ -41,6 +41,44 @@ public class NMNetWork {
      * @return
      * @throws Exception 
      */
+    
+    public static boolean isPhoneConnected()
+    {
+		try 
+		{	
+    		error=null;
+	        ConnectivityManager cm = (ConnectivityManager) NMApp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+	        NetworkInfo info = cm.getActiveNetworkInfo(); 
+			 if(info== null)
+			 {
+				 error=new ErrorMessage("Error de conexión"," Dispositivo Fuera de linea","\n Causa: No hay ninguna conexion activa");
+			 }
+	        else if(!info.isConnected()) 
+        	{
+        		error=new ErrorMessage("Error de conexión"," Dispositivo Fuera de linea","\n Causa: El dispositivo no esta conectado a ninguna conexión activa");      	 
+        	}
+	        if(error!=null)
+	        {
+				try 
+				{ 
+						SessionManager.hasError=true;
+						SessionManager.setErrorAuntentication(error.getTittle()+"\n"+error.getMessage());
+						NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,error); 
+						return false;
+				} catch (Exception e) { 
+					e.printStackTrace();
+				}
+	        }
+	        
+	        return (info != null && info.isConnected());
+		}catch (Exception e) { 
+			e.printStackTrace();
+		}
+       
+        
+        return false;
+    }  
+    
     public static boolean isPhoneConnected(Context context,Controller controller){
 		try 
 		{	
@@ -57,8 +95,10 @@ public class NMNetWork {
         	}
 	        if(error!=null)
 	        {
-				try { 
+				try 
+				{ 
 						SessionManager.hasError=true;
+						SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());
 						NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,error); 
 						return false;
 				} catch (Exception e) { 
@@ -107,8 +147,10 @@ public class NMNetWork {
         {         	 
         	SessionManager.hasError=true;
         	error=new ErrorMessage("Error de conexión","error en la comunicación con el servidor de aplicaciones.\n",ex.toString());
-        	try {
-        			Processor.notifyToView(controller,ERROR,0,0,error);				 
+        	try 
+        	{
+        		SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());
+        		Processor.notifyToView(controller,ERROR,0,0,error);				 
 			} catch (Exception e) { 
 				e.printStackTrace();
 			}

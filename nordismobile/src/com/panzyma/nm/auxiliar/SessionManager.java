@@ -301,6 +301,7 @@ public class SessionManager
 	public  static boolean  login(final boolean admin)
 	{
 		final String empresa=dl.getEmpresa();
+		errormessage="";
 		nombreusuario=dl.getNameUser();
 		final String password=dl.getPassword();  
 		SessionManager.setLogged(false); 
@@ -315,7 +316,7 @@ public class SessionManager
 				@Override
 				public void run() 
 				{ 
-					if(NMNetWork.isPhoneConnected(context) && NMNetWork.CheckConnection(url))			
+					if(NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url))			
 					{
 						try 
 						{
@@ -426,6 +427,7 @@ public class SessionManager
 	public static void sendErrorMessage(final ErrorMessage error)
 	{
 		hasError=true;
+		errormessage=error.getTittle()+"\n\t\t"+error.getMessage();
 		NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
 		context.runOnUiThread(new Runnable()
         {
