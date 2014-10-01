@@ -8,22 +8,10 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHE
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
-import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.Marshal;
-import org.ksoap2.serialization.MarshalBase64;
-import org.ksoap2.serialization.MarshalFloat;
-import org.ksoap2.serialization.PropertyInfo;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -35,7 +23,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
@@ -73,13 +60,9 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
-import com.panzyma.nm.fragments.FichaProductoFragment;
-import com.panzyma.nm.fragments.FichaReciboFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.QuickAction;
-import com.panzyma.nm.model.ModelPedido;
-import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
@@ -305,10 +288,16 @@ public class ViewRecibo extends ActionBarActivity implements
 					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
 					if ("REGISTRADO".equals(recibo_selected.getCodEstado())) 
 					{
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("idrecibo", recibo_selected.getId());  
+						msg.setData(b);
+						msg.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
+						
 						NMApp.getController()
 								.getInboxHandler()
-								.sendEmptyMessage(
-										ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+								.sendMessage(msg);
+						
 					} else {
 						Toast.makeText(getApplicationContext(), String.format("Los recibos con estado '%s'.\n No se pueden eliminar.", recibo_selected.getDescEstado()), Toast.LENGTH_SHORT).show();
 						return;

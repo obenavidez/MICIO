@@ -4,18 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BVentaM;
 import com.panzyma.nm.CBridgeM.BVentaM.Petition;
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CVenta;
-import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
-import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.VentaViewHolder;
 import com.panzyma.nordismobile.R;
 
@@ -170,10 +165,10 @@ public class ConsultaVentasFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removeBridgeByName(BVentaM.class.toString());
-			nmapp.getController().setEntities(this, new BVentaM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController().getInboxHandler()
+			NMApp.getController().removeBridgeByName(BVentaM.class.toString());
+			NMApp.getController().setEntities(this, new BVentaM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController().getInboxHandler()
 					.sendEmptyMessage(Petition.VENTAS_DEL_DIA.getActionCode());
 
 		} catch (Exception e) {
@@ -186,10 +181,10 @@ public class ConsultaVentasFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removeBridgeByName(BVentaM.class.toString());
-			nmapp.getController().setEntities(this, new BVentaM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController()
+			NMApp.getController().removeBridgeByName(BVentaM.class.toString());
+			NMApp.getController().setEntities(this, new BVentaM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
 							Petition.VENTAS_DEL_SEMANA.getActionCode());
@@ -204,10 +199,10 @@ public class ConsultaVentasFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			nmapp.getController().removeBridgeByName(BVentaM.class.toString());
-			nmapp.getController().setEntities(this, new BVentaM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
-			nmapp.getController()
+			NMApp.getController().removeBridgeByName(BVentaM.class.toString());
+			NMApp.getController().setEntities(this, new BVentaM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
 							Petition.VENTAS_DEL_MES.getActionCode());

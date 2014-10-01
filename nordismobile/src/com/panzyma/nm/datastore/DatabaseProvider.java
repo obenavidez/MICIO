@@ -11,7 +11,6 @@ import org.json.JSONObject;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
-import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
@@ -46,6 +45,7 @@ public class DatabaseProvider extends ContentProvider
 	
 	public static final Uri CONTENT_URI_CLIENTE = Uri.parse(CONTENT_URI+"/cliente");
 	public static final Uri CONTENT_URI_FACTURA = Uri.parse(CONTENT_URI+"/factura");
+	public static final Uri CONTENT_URI_FACTURA_BY_ID = Uri.parse(CONTENT_URI+"/facturabyid");
 	public static final Uri CONTENT_URI_PROMOCIONCOBRO = Uri.parse(CONTENT_URI+"/promocioncobro");
 	public static final Uri CONTENT_URI_MONTOPROVEEDOR = Uri.parse(CONTENT_URI+"/montoproveedor");
 	public static final Uri CONTENT_URI_CCNOTACREDITO = Uri.parse(CONTENT_URI+"/ccnotacredito");
@@ -159,6 +159,7 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "factura", FACTURA);
 		uriMatcher.addURI(AUTHORITY, "factura/#", FACTURA_ID);
+		uriMatcher.addURI(AUTHORITY, "facturabyid/#", FACTURA_ID);
 		
 		uriMatcher.addURI(AUTHORITY, "promocioncobro", PROMOCIONCOBRO );
 		uriMatcher.addURI(AUTHORITY, "promocioncobro/#", PROMOCIONCOBRO_ID);
@@ -976,8 +977,13 @@ public class DatabaseProvider extends ContentProvider
 										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_FACTURA.toString());
 										break;
 									
-			case FACTURA_ID:        	dictionary.put(FACTURA, TABLA_FACTURA);
-										dictionary.put(FACTURA+1,"objSucursalID=" + uri.getLastPathSegment());  
+			case FACTURA_ID:        	if( uri.toString().indexOf("byid") != -1){
+											dictionary.put(FACTURA, TABLA_FACTURA);
+											dictionary.put(FACTURA+1,"Id=" + uri.getLastPathSegment());
+										} else {
+											dictionary.put(FACTURA, TABLA_FACTURA);
+											dictionary.put(FACTURA+1,"objSucursalID=" + uri.getLastPathSegment());
+										}										  
 										break; 
 									
 			case PROMOCIONCOBRO: 		dictionary.put(PROMOCIONCOBRO, TABLA_PROMOCIONCOBRO);

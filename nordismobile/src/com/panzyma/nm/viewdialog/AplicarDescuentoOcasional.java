@@ -1,19 +1,15 @@
 package com.panzyma.nm.viewdialog;
  
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.auxiliar.Cobro;
-import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.ReciboColector;
-import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -99,7 +95,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	    AlertDialog d = (AlertDialog)getDialog();
 	    if(d != null)
 	    {
-	        Button positiveButton = (Button) d.getButton(Dialog.BUTTON_POSITIVE);
+	        Button positiveButton = d.getButton(DialogInterface.BUTTON_POSITIVE);
 	        positiveButton.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -153,7 +149,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		   			b.putParcelable("recibo",recibo); 
 		   			msg.setData(b);
 		   			msg.what=ControllerProtocol.APLICAR_DESCUENTO;
-		   			nmapp.getController().getInboxHandler().sendMessage(msg);     		
+		   			NMApp.getController().getInboxHandler().sendMessage(msg);     		
 	           }
 	            
 	           //Validar que clave sea válida

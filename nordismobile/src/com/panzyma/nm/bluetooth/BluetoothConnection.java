@@ -161,6 +161,7 @@ public class BluetoothConnection
 			socket = tmpSocket;
 		}
 
+		@Override
 		public void run() {
 			setName("HiloCliente");
 			if (mAdapter.isDiscovering())
@@ -240,6 +241,7 @@ public class BluetoothConnection
 		}
 
 		// Metodo principal del hilo, encargado de realizar las lecturas
+		@Override
 		public void run() 
 		{
 			

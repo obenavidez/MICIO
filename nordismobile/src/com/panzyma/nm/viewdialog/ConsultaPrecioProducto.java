@@ -125,14 +125,14 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			idProducto = getArguments().getLong("_idProducto"); 
 	    	idTipoPrecio = getArguments().getLong("_idTipoPrecio");
 	    	nmapp=(NMApp)this.getActivity().getApplicationContext();
-			nmapp.getController().setEntities(this,new BProductoM());
-			nmapp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController().setEntities(this,new BProductoM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
 			Message msg = new Message();
 			Bundle b = new Bundle();
 			b.putLong("_idProducto",idProducto); 
 			msg.setData(b);
 			msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
-			nmapp.getController().getInboxHandler().sendMessage(msg);    
+			NMApp.getController().getInboxHandler().sendMessage(msg);    
 			pd = ProgressDialog.show(this.getActivity(), "Espere por favor", "Cargando Información", true, false);			
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -168,10 +168,10 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 	{
 		try 
 		{
-			nmapp.getController().removeOutboxHandler(TAG);
-		    nmapp.getController().removebridge(nmapp.getController().getBridge());
-		    nmapp.getController().disposeEntities();		
-		    nmapp.getController().setEntities((parent),parent.getBridge());
+			NMApp.getController().removeOutboxHandler(TAG);
+		    NMApp.getController().removebridge(NMApp.getController().getBridge());
+		    NMApp.getController().disposeEntities();		
+		    NMApp.getController().setEntities((parent),parent.getBridge());
 		    
 		} catch (Exception e) 
 		{ 

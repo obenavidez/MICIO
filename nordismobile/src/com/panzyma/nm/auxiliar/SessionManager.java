@@ -6,17 +6,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;   
-import android.os.Bundle;
-import android.os.Message;
 import android.view.View;
-import android.view.ViewConfiguration;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.model.ModelConfiguracion;
-import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
@@ -24,7 +19,6 @@ import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.viewdialog.DialogLogin; 
 import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;  
 
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 @SuppressLint("ParserError")@SuppressWarnings("rawtypes")

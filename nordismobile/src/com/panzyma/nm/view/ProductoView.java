@@ -28,8 +28,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.text.Editable;
-import android.text.InputFilter;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -42,7 +40,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.SessionManager;

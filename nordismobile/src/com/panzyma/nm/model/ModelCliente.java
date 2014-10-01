@@ -201,7 +201,7 @@ public class ModelCliente
 	    try{
 	    	
 		    //OBTENIENDO LAS FACTURAS
-		    db = Helper.getDatabase((Context) NMApp.ctx);
+		    db = Helper.getDatabase(NMApp.ctx);
 		    StringBuilder sQuery = new StringBuilder();
 			sQuery.append("SELECT rdf.objFacturaID ");
 			sQuery.append(" FROM ReciboDetalleFactura AS rdf ");
@@ -335,7 +335,7 @@ public class ModelCliente
 	    try{
 	    	
 		    //OBTENIENDO LAS FACTURAS
-		    db = Helper.getDatabase((Context) NMApp.ctx);
+		    db = Helper.getDatabase(NMApp.ctx);
 		    StringBuilder sQuery = new StringBuilder();
 			sQuery.append("SELECT rdf.objNotaDebitoID ");
 			sQuery.append(" FROM ReciboDetalleNotaDebito AS rdf ");
@@ -407,7 +407,7 @@ public class ModelCliente
 	    try{
 	    	
 		    //OBTENIENDO LAS FACTURAS
-		    db = Helper.getDatabase((Context) NMApp.ctx);
+		    db = Helper.getDatabase(NMApp.ctx);
 		    StringBuilder sQuery = new StringBuilder();
 			sQuery.append("SELECT rdf.objNotaDebitoID ");
 			sQuery.append(" FROM ReciboDetalleNotaDebito AS rdf ");

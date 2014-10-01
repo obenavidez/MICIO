@@ -99,15 +99,15 @@ public class ViewCliente extends DashBoardActivity implements Handler.Callback
 	    	mcontext=this; 
 	    	
 		 	nmapp=(NMApp) this.getApplicationContext(); 
-	        nmapp.getController().setEntities(this,new BClienteM());
-	        nmapp.getController().addOutboxHandler(new Handler(this));  			
+	        NMApp.getController().setEntities(this,new BClienteM());
+	        NMApp.getController().addOutboxHandler(new Handler(this));  			
 			WindowManager wm = (WindowManager) this.getApplication().getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay(); 
 			_vmCliente=(savedInstanceState!=null)?_vmCliente=savedInstanceState.getParcelableArrayList("vmCliente"):null;
 			
 			initComponents(); 
 			if(_vmCliente==null) 
-				nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);  
+				NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);  
 			else
 				setData(_vmCliente,C_DATA);  
 	        
@@ -193,7 +193,7 @@ public class ViewCliente extends DashBoardActivity implements Handler.Callback
 			@Override
 			public void onItemClick(QuickAction source, int pos, int actionId) 
 			{				
-				Controller controller=nmapp.getController();
+				Controller controller=NMApp.getController();
 				ActionItem actionItem = quickAction.getActionItem(pos);    
 				
 				if (actionId == ID_CONSULTAR_FICHA_CLIENT || actionId == ID_CONSULTAR_CUENTA_X_COBRAR) 
@@ -355,7 +355,7 @@ public class ViewCliente extends DashBoardActivity implements Handler.Callback
 	
 	private void UPDATE_SELECTEDITEM_FROMSERVER()
 	{
-		nmapp.getController().getInboxHandler().sendEmptyMessage(UPDATE_ITEM_FROM_SERVER);
+		NMApp.getController().getInboxHandler().sendEmptyMessage(UPDATE_ITEM_FROM_SERVER);
 	    Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);  
 	} 	
 	
@@ -364,7 +364,7 @@ public class ViewCliente extends DashBoardActivity implements Handler.Callback
 		idsucursal=get_SucursalID();
 		if(idsucursal != 0 && idsucursal != 1)
 		{			
-			nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_FICHACLIENTE_FROM_SERVER);
+			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_FICHACLIENTE_FROM_SERVER);
 		    Toast.makeText(this, "Trayendo Ficha Cliente...",Toast.LENGTH_LONG); 			
     	}
 		else 
@@ -380,8 +380,8 @@ public class ViewCliente extends DashBoardActivity implements Handler.Callback
 	
 	private void FINISH_ACTIVITY()
 	{ 	 		
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().disposeEntities();
+		NMApp.getController().removeOutboxHandler(TAG);
+		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		finish();		
 	}  

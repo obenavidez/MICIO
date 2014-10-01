@@ -2,8 +2,6 @@ package com.panzyma.nm.auxiliar;
 import com.comunicator.*;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
-
 import java.util.ArrayList;
 
 import org.ksoap2.serialization.SoapPrimitive; 

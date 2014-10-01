@@ -173,7 +173,7 @@ public class DialogFormasPago extends Dialog {
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
 		try {
-			nmapp.getController().setEntities(((ViewReciboEdit)parent),((ViewReciboEdit)parent).getBridge());
+			nmapp.getController().setEntities((parent),parent.getBridge());
 		} catch (Exception e) {		
 			e.printStackTrace();
 		}

@@ -1,31 +1,19 @@
 package com.panzyma.nm.viewdialog;
 
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BLogicM;
-import com.panzyma.nm.CBridgeM.BTasaCambioM;
-import com.panzyma.nm.CBridgeM.BValorCatalogoM;
-import com.panzyma.nm.CBridgeM.BVentaM;
-import com.panzyma.nm.CBridgeM.BLogicM.Result;
-import com.panzyma.nm.CBridgeM.BValorCatalogoM.Petition;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMNetWork;
-import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.ValorCatalogoUtil;
-import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.serviceproxy.Catalogo;
@@ -37,42 +25,24 @@ import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nordismobile.R;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SyncInfo;
-import android.content.DialogInterface.OnClickListener;
-import android.inputmethodservice.Keyboard.Key;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Parcelable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnKeyListener;
-import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.TextView;
 
 public class EditFormaPago extends DialogFragment {
 	
@@ -133,16 +103,16 @@ public class EditFormaPago extends DialogFragment {
 
 		@Override
 		protected void onPostExecute(Map<String,List<Object>> objectResult) {
-			Map<String,List<Object>> result = (Map<String, List<Object>>)objectResult;
+			Map<String,List<Object>> result = objectResult;
 			int cnt = result.get("basic").toArray().length;
 			Catalogo [] catalogos = new Catalogo[cnt];
-			((List<Object>)result.get("basic")).toArray(catalogos);
+			result.get("basic").toArray(catalogos);
 			for(Catalogo catalogo : catalogos){
 				establecer(catalogo);
 			}
 			cnt = result.get("tasaCambio").toArray().length;
 			TasaCambio [] tasasCambio = new TasaCambio [cnt];
-			((List<Object>)result.get("tasaCambio")).toArray(tasasCambio);			
+			result.get("tasaCambio").toArray(tasasCambio);			
 			estableceTasaCambio(Arrays.asList(tasasCambio));	
 			setValuesToView();
 			super.onPostExecute(result);
@@ -202,7 +172,7 @@ public class EditFormaPago extends DialogFragment {
 	    AlertDialog d = (AlertDialog)getDialog();
 	    if(d != null)
 	    {
-	        Button positiveButton = (Button) d.getButton(Dialog.BUTTON_POSITIVE);
+	        Button positiveButton = d.getButton(DialogInterface.BUTTON_POSITIVE);
 	        positiveButton.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -357,8 +327,8 @@ public class EditFormaPago extends DialogFragment {
 						View selectedItemView, int position, long id) {
 					if (position == 0)
 						return;
-					ValorCatalogo _formaPago = (ValorCatalogo) ((SpinnerModel) formaPagoAdapter
-							.getItem(position)).getObj();
+					ValorCatalogo _formaPago = (ValorCatalogo) formaPagoAdapter
+							.getItem(position).getObj();
 					CambiaFormaPago(_formaPago.getCodigo());
 				}
 
@@ -370,12 +340,15 @@ public class EditFormaPago extends DialogFragment {
 			});
 			
 			montoPago.addTextChangedListener(new TextWatcher() {
+				@Override
 				public void afterTextChanged(Editable s) {
 				}
 
+				@Override
 				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 				}
 
+				@Override
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
 					RecalcularMontoNacional();
 				}
@@ -385,7 +358,7 @@ public class EditFormaPago extends DialogFragment {
 				@Override
 				public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 					if (position == 0)	return;
-					ValorCatalogo _moneda = (ValorCatalogo) ((SpinnerModel) monedaAdapter.getItem(position)).getObj();
+					ValorCatalogo _moneda = (ValorCatalogo) monedaAdapter.getItem(position).getObj();
 					CambioMoneda(_moneda.getCodigo());
 					iCurrentSelection = position;
 				}
@@ -486,7 +459,7 @@ public class EditFormaPago extends DialogFragment {
 
 	public void accept() {
         //Salvando monto que se va a pagar
-        ValorCatalogo vcFP = (ValorCatalogo)((SpinnerModel)formaPagoAdapter.getItem(cmbFormaPago.getSelectedItemPosition())).getObj();
+        ValorCatalogo vcFP = (ValorCatalogo)formaPagoAdapter.getItem(cmbFormaPago.getSelectedItemPosition()).getObj();
         pagoRecibo.setObjFormaPagoID(vcFP.getId());
         pagoRecibo.setCodFormaPago(vcFP.getCodigo());
         pagoRecibo.setDescFormaPago(vcFP.getDescripcion());
@@ -499,13 +472,13 @@ public class EditFormaPago extends DialogFragment {
         if (vcFP.getCodigo().compareTo("EFEC") != 0) {
             pagoRecibo.setNumero(numero.getText().toString().trim());            
             pagoRecibo.setFecha(DateUtil.strTimeToInt(fecha.getText().toString()));            
-            ValorCatalogo vcBco = (ValorCatalogo)((SpinnerModel)bancoAdapter.getItem(cmbBanco.getSelectedItemPosition())).getObj();
+            ValorCatalogo vcBco = (ValorCatalogo)bancoAdapter.getItem(cmbBanco.getSelectedItemPosition()).getObj();
             pagoRecibo.setObjEntidadID(vcBco.getId());
             pagoRecibo.setCodEntidad(vcBco.getCodigo());
             pagoRecibo.setDescEntidad(vcBco.getDescripcion());
         }
         
-        ValorCatalogo vcM = (ValorCatalogo)((SpinnerModel)monedaAdapter.getItem(cmbMoneda.getSelectedItemPosition())).getObj();
+        ValorCatalogo vcM = (ValorCatalogo)monedaAdapter.getItem(cmbMoneda.getSelectedItemPosition()).getObj();
         pagoRecibo.setObjMonedaID(vcM.getId());
         pagoRecibo.setCodMoneda(vcM.getCodigo());
         pagoRecibo.setDescMoneda(vcM.getDescripcion());
@@ -563,8 +536,8 @@ public class EditFormaPago extends DialogFragment {
 		tasa.setEnabled(!pagoEnCordoba);
 		tblRowTasa.setVisibility(pagoEnCordoba ? View.GONE : View.VISIBLE);
 
-		ValorCatalogo vc = (ValorCatalogo) ((SpinnerModel) formaPagoAdapter
-				.getItem(cmbFormaPago.getSelectedItemPosition())).getObj();
+		ValorCatalogo vc = (ValorCatalogo) formaPagoAdapter
+				.getItem(cmbFormaPago.getSelectedItemPosition()).getObj();
 		String codFormaPago = vc.getCodigo();
 
 		if (pagoEnCordoba && (codFormaPago.compareTo("EFEC") == 0)) {
@@ -632,8 +605,8 @@ public class EditFormaPago extends DialogFragment {
 			return false;
 		}
 
-		ValorCatalogo vcM = (ValorCatalogo) ((SpinnerModel) monedaAdapter
-				.getItem(cmbMoneda.getSelectedItemPosition())).getObj();
+		ValorCatalogo vcM = (ValorCatalogo) monedaAdapter
+				.getItem(cmbMoneda.getSelectedItemPosition()).getObj();
 		
 		if (!editFormaPago) {
 			if (vcM.getCodigo().compareTo("COR") == 0)
@@ -654,8 +627,8 @@ public class EditFormaPago extends DialogFragment {
 		// Si el pago no es en efectivo validar que se haya ingresado el número
 		// del documento
 		// y que la fecha del cheque si es el caso sea válida
-		ValorCatalogo vcFP = (ValorCatalogo) ((SpinnerModel) formaPagoAdapter
-				.getItem(cmbFormaPago.getSelectedItemPosition())).getObj();
+		ValorCatalogo vcFP = (ValorCatalogo) formaPagoAdapter
+				.getItem(cmbFormaPago.getSelectedItemPosition()).getObj();
 		;
 
 		if (vcFP.getCodigo().compareTo("EFEC") != 0) {
@@ -784,7 +757,7 @@ public class EditFormaPago extends DialogFragment {
 		final String mensaje=""+((ErrorMessage)msg).getMessage();
 		
 		
-		nmApp.getThreadPool().execute(new Runnable()
+		NMApp.getThreadPool().execute(new Runnable()
 		{ 
 			@Override
 			public void run()

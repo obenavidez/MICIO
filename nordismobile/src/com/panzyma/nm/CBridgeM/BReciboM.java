@@ -54,7 +54,6 @@ import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.RespuestaEnviarRecibo;
-import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.viewdialog.DialogDocumentos;
@@ -134,7 +133,8 @@ public final class BReciboM {
 				onLoadItemFromLocalHost(bdl.getInt("idrecibo"));
 				return true;
 			case DELETE_DATA_FROM_LOCALHOST:
-				onDeleteDataFromLocalHost();
+				bdl=msg.getData();			
+				onDeleteDataFromLocalHost(bdl.getInt("idrecibo"));
 				break;
 			case C_FACTURACLIENTE:
 				bdl = msg.getData();				
@@ -345,7 +345,7 @@ public final class BReciboM {
 		
 	}
 
-	private void onDeleteDataFromLocalHost() {
+	private void onDeleteDataFromLocalHost(final int reciboID) {
 		try {
 			pool.execute(new Runnable() {
 
@@ -354,7 +354,7 @@ public final class BReciboM {
 
 					try 
 					{						
-						int idrecibo=view.getReciboSelected().getId();
+						int idrecibo = reciboID;
 						ModelRecibo.borraReciboByID(view.getContentResolver(), idrecibo);
 						//Obtener el reciboid max generado
 						int maxid=ModelConfiguracion.getMaxReciboID(view.getContext());

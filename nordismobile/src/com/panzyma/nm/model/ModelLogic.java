@@ -15,7 +15,6 @@ import android.util.Log;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
-import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
@@ -82,7 +81,7 @@ public class ModelLogic {
 			if (c.moveToFirst()) {
 				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
 				do {				
-					montoAbonado = (float)c.getInt(0);
+					montoAbonado = c.getInt(0);
 				} while (c.moveToNext());
 			}			
 		} catch (Exception e) {

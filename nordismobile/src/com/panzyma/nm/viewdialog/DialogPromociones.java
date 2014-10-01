@@ -16,7 +16,6 @@ import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Promocion;
-import com.panzyma.nm.serviceproxy.Promociones;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.PromocionesViewHolder;

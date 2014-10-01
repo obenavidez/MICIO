@@ -4,7 +4,6 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG; 
-import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST; 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,7 +12,6 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog; 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;

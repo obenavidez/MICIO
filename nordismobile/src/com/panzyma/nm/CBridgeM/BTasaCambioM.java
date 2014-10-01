@@ -47,10 +47,10 @@ public class BTasaCambioM {
 	}
 
 	public BTasaCambioM(EditFormaPago view) {
-		this.controller = ((NMApp) view.getContext().getApplicationContext())
+		this.controller = NMApp
 				.getController();
 		this.view = view;
-		this.pool = ((NMApp) view.getContext().getApplicationContext())
+		this.pool = NMApp
 				.getThreadPool();
 	}	
 
