@@ -28,6 +28,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.PrecioProducto;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.DetallePrecioProductoViewHolder;
@@ -49,6 +50,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 	public static String TAG=ConsultaPrecioProducto.class.getSimpleName();
 	ProgressDialog pd;
 	private ViewPedidoEdit parent;
+	private ProductoView parent2;
 	private static ConsultaPrecioProducto cpp=new ConsultaPrecioProducto();
 	public static ConsultaPrecioProducto newInstance(long idProducto,long idTipoPrecio) 
 	{
@@ -65,6 +67,34 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
     @Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) 
     {
+    	AlertDialog.Builder builder=null;
+		LayoutInflater inflater =null;
+		if(this.getActivity() instanceof ViewPedidoEdit){
+			parent=(ViewPedidoEdit) this.getActivity();
+			builder = new AlertDialog.Builder(parent); 
+			inflater = parent.getLayoutInflater();
+		}
+		
+		if(this.getActivity() instanceof ProductoView){
+			parent2=(ProductoView) this.getActivity();
+			builder = new AlertDialog.Builder(parent2); 
+			inflater = parent2.getLayoutInflater();
+		}
+		view = inflater.inflate(R.layout.layout_consultapreciosprod, null);
+		lvprecios=(ListView) view.findViewById(R.id.bnflv_detalleprecios);
+		nombre_prod=(EditText) view.findViewById(R.id.etProducto);
+		builder.setTitle("Consulta Precios Producto");
+		builder.setView(view);
+		builder.setPositiveButton("ACEPTAR", new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dismiss();
+			}
+		});
+		builder.setOnKeyListener(keyListener);
+		mandar_A_TraerDatos();
+        return builder.create();
+    	/*
     	parent=(ViewPedidoEdit) this.getActivity();
     	AlertDialog.Builder builder = new AlertDialog.Builder(parent); 
     	LayoutInflater inflater = parent.getLayoutInflater();
@@ -83,7 +113,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 		
 		builder.setOnKeyListener(keyListener);
 		mandar_A_TraerDatos();
-        return builder.create();   	
+        return builder.create();   	*/
     } 
   
     OnKeyListener keyListener = new OnKeyListener() 
@@ -124,6 +154,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 		{
 			idProducto = getArguments().getLong("_idProducto"); 
 	    	idTipoPrecio = getArguments().getLong("_idTipoPrecio");
+<<<<<<< HEAD
 	    	nmapp=(NMApp)this.getActivity().getApplicationContext();
 			NMApp.getController().setEntities(this,new BProductoM());
 			NMApp.getController().addOutboxHandler(new Handler(this));
@@ -134,6 +165,31 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 			NMApp.getController().getInboxHandler().sendMessage(msg);    
 			pd = ProgressDialog.show(this.getActivity(), "Espere por favor", "Cargando Información", true, false);			
+=======
+	    	Message msg = new Message();
+	    	Bundle b = new Bundle();
+	    	
+	    	b.putLong("_idProducto",idProducto); 
+			msg.setData(b);
+			msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
+			
+			NMApp.controller.removeBridgeByName(BProductoM.class.toString());
+			NMApp.controller.setEntities(this,new BProductoM());
+			NMApp.controller.addOutboxHandler(new Handler(this));
+			NMApp.controller.getInboxHandler().sendMessage(msg); 
+			
+	    	/*
+	    	nmapp=(NMApp)this.getActivity().getApplicationContext();
+			NMApp.getController().setEntities(this,new BProductoM());
+			NMApp.getController().addOutboxHandler(new Handler(this));
+			
+			
+			
+			NMApp.getController().getInboxHandler().sendMessage(msg);
+			pd = ProgressDialog.show(this.getActivity(), "Espere por favor", "Cargando Información", true, false);*/
+			
+			pd = ProgressDialog.show(parent!=null ? parent : parent2  , "Espere por favor", "Cargando Información", true, false);
+>>>>>>> origin/master
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -171,7 +227,17 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			NMApp.getController().removeOutboxHandler(TAG);
 		    NMApp.getController().removebridge(NMApp.getController().getBridge());
 		    NMApp.getController().disposeEntities();		
+<<<<<<< HEAD
 		    NMApp.getController().setEntities((parent),parent.getBridge());
+=======
+		    //NMApp.getController().setEntities((parent),parent.getBridge());
+		    if(this.getActivity() instanceof ViewPedidoEdit){
+		    	NMApp.getController().setEntities((parent),parent.getBridge());	
+		    }
+		    if(this.getActivity() instanceof ProductoView){
+		    	NMApp.getController().setEntities((parent2),parent2.getBridge());	
+		    }
+>>>>>>> origin/master
 		    
 		} catch (Exception e) 
 		{ 
@@ -185,5 +251,9 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 
 	public ViewPedidoEdit getParent(){
 		return parent;
+	}
+	
+	public ProductoView getListParent(){
+		return parent2;
 	}
 }

@@ -8,6 +8,10 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHE
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +39,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -755,6 +760,9 @@ public class ViewRecibo extends ActionBarActivity implements
 		
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU  && fragmentActive != FragmentActive.CUENTAS_POR_COBRAR) {
+			 drawerLayout.openDrawer(Gravity.LEFT);
+		}
 		if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {			
 			cuentasPorCobrar.mostrarMenu();
 			return true;

@@ -479,6 +479,9 @@ public class vCliente extends ActionBarActivity implements
     		  if (fragment instanceof FichaClienteFragment) {
     			  return true;  
     		  }
+    		  else{
+					drawerLayout.openDrawer(Gravity.LEFT);
+			}
     	}
     	if (keyCode == KeyEvent.KEYCODE_SETTINGS) {
     		return false;

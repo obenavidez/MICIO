@@ -1,12 +1,12 @@
 package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.C_FICHACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.C_SETTING_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +52,7 @@ import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
+import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
 
@@ -84,6 +86,8 @@ public class ProductoView extends ActionBarActivity implements
 	ListaFragment<Producto> firstFragment;
 	private static final int FICHA_DETALLE=0;
 	private static final int BONIFICACIONES=1;
+	private static final int LISTA_PRECIO=2;
+	private static final int SINCRONIZE_ALL_PRODUCTO= 3; 
 	private static final int CERRAR=4;
 
 
@@ -233,11 +237,6 @@ public class ProductoView extends ActionBarActivity implements
 			establecer(list);
 			pDialog.dismiss();
 			return true;
-
-		case C_FICHACLIENTE:
-
-			return true;
-
 		case C_UPDATE_STARTED:
 
 			return true;
@@ -393,6 +392,9 @@ public class ProductoView extends ActionBarActivity implements
       	   }
            return true;
 	    }
+        if(keyCode== KeyEvent.KEYCODE_MENU)
+        	drawerLayout.openDrawer(Gravity.LEFT);
+        
         return super.onKeyUp(keyCode, event); 
     } 
 	
@@ -539,6 +541,25 @@ public class ProductoView extends ActionBarActivity implements
 					bonificaciones.show(Fragtransaction, "dialog");
 					drawerLayout.closeDrawers();
 					break;
+				case LISTA_PRECIO :
+					if(product_selected== null){
+						AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
+					android.support.v4.app.Fragment dialog = getSupportFragmentManager().findFragmentByTag("dialog");
+					if (dialog != null){
+						mytransaction.remove(dialog);
+					}
+					mytransaction.addToBackStack(null);
+					ConsultaPrecioProducto newFragment = ConsultaPrecioProducto.newInstance(product_selected.getId(),0);
+					newFragment.show(mytransaction, "dialog");
+					drawerLayout.closeDrawers();
+					break;
+				case SINCRONIZE_ALL_PRODUCTO :
+					SINCRONIZE_PRODUCTOS();
+					drawerLayout.closeDrawers();
+					break;
 				case CERRAR : 
 				drawerLayout.closeDrawers();
 				FINISH_ACTIVITY();
@@ -593,5 +614,26 @@ public class ProductoView extends ActionBarActivity implements
 	}
 	public BProductoM getBridge() {
 		return bpm;
+	}
+	private void SINCRONIZE_PRODUCTOS()
+	{
+		try {
+			NMApp.getThreadPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						if (SessionManager.getCredenciales().trim() != ""){
+							NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER); 
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+	
+				}
+			});
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
