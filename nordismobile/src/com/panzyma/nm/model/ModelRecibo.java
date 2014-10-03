@@ -8,6 +8,7 @@ import org.ksoap2.serialization.SoapPrimitive;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -65,14 +66,15 @@ public class ModelRecibo {
 		return Long.parseLong(rs.toString()); 
 	}
 	
-	public synchronized static int borraReciboByID (ContentResolver content,int reciboID){
+	public synchronized static int borraReciboByID (ContentResolver content,int reciboID, Context context){
 		String[] projection = new String[] {};
 		String[] pry = new String[] {
 				NMConfig.Cliente.Factura.Abonado,
 				NMConfig.Cliente.Factura.Retenido,
 				NMConfig.Cliente.Factura.Saldo,
 				NMConfig.Cliente.Factura.Estado,
-				NMConfig.Cliente.Factura.CodEstado
+				NMConfig.Cliente.Factura.CodEstado,
+				NMConfig.Cliente.Factura.TotalFacturado
 		};
 		int result = 0; 
 		ReciboColector recibo = getReciboByID(content, reciboID);
@@ -92,6 +94,7 @@ public class ModelRecibo {
 						_factura.setSaldo(cur.getFloat(cur.getColumnIndex(NMConfig.Cliente.Factura.Saldo)));
 						_factura.setEstado(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Factura.Estado)));
 						_factura.setCodEstado(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Factura.CodEstado)));
+						_factura.setTotalFacturado(cur.getFloat(cur.getColumnIndex(NMConfig.Cliente.Factura.TotalFacturado)));
 					}while(cur.moveToNext());
 				}
 				
@@ -112,8 +115,10 @@ public class ModelRecibo {
 				mUpdateValues.put(NMConfig.Cliente.Factura.Saldo, _factura.getTotalFacturado() - abonado);
 				mUpdateValues.put(NMConfig.Cliente.Factura.Estado, estado);
 				mUpdateValues.put(NMConfig.Cliente.Factura.CodEstado, codEstado);
+				uri = DatabaseProvider.CONTENT_URI_FACTURA +"/"+String.valueOf(factura.getObjFacturaID());
+				SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
 				//Actualizar Factura
-				content.update(Uri.parse(uri), 
+				db.update(DatabaseProvider.TABLA_FACTURA, 
 						mUpdateValues,
 						mWhereClause,
 						null);			

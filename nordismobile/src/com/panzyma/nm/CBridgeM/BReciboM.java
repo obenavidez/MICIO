@@ -355,7 +355,7 @@ public final class BReciboM {
 					try 
 					{						
 						int idrecibo = reciboID;
-						ModelRecibo.borraReciboByID(view.getContentResolver(), idrecibo);
+						ModelRecibo.borraReciboByID(view.getContentResolver(), idrecibo, view.getContext());
 						//Obtener el reciboid max generado
 						int maxid=ModelConfiguracion.getMaxReciboID(view.getContext());
 						//Obteniendo el IDRecibo

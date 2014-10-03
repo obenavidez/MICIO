@@ -4,10 +4,7 @@ package com.panzyma.nm.view;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG; 
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/master
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;

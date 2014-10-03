@@ -154,7 +154,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 		{
 			idProducto = getArguments().getLong("_idProducto"); 
 	    	idTipoPrecio = getArguments().getLong("_idTipoPrecio");
-<<<<<<< HEAD
+
 	    	nmapp=(NMApp)this.getActivity().getApplicationContext();
 			NMApp.getController().setEntities(this,new BProductoM());
 			NMApp.getController().addOutboxHandler(new Handler(this));
@@ -165,8 +165,8 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 			NMApp.getController().getInboxHandler().sendMessage(msg);    
 			pd = ProgressDialog.show(this.getActivity(), "Espere por favor", "Cargando Información", true, false);			
-=======
-	    	Message msg = new Message();
+
+			/*Message msg = new Message();
 	    	Bundle b = new Bundle();
 	    	
 	    	b.putLong("_idProducto",idProducto); 
@@ -178,7 +178,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			NMApp.controller.addOutboxHandler(new Handler(this));
 			NMApp.controller.getInboxHandler().sendMessage(msg); 
 			
-	    	/*
+	    	
 	    	nmapp=(NMApp)this.getActivity().getApplicationContext();
 			NMApp.getController().setEntities(this,new BProductoM());
 			NMApp.getController().addOutboxHandler(new Handler(this));
@@ -189,7 +189,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			pd = ProgressDialog.show(this.getActivity(), "Espere por favor", "Cargando Información", true, false);*/
 			
 			pd = ProgressDialog.show(parent!=null ? parent : parent2  , "Espere por favor", "Cargando Información", true, false);
->>>>>>> origin/master
+
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -227,9 +227,9 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			NMApp.getController().removeOutboxHandler(TAG);
 		    NMApp.getController().removebridge(NMApp.getController().getBridge());
 		    NMApp.getController().disposeEntities();		
-<<<<<<< HEAD
+
 		    NMApp.getController().setEntities((parent),parent.getBridge());
-=======
+
 		    //NMApp.getController().setEntities((parent),parent.getBridge());
 		    if(this.getActivity() instanceof ViewPedidoEdit){
 		    	NMApp.getController().setEntities((parent),parent.getBridge());	
@@ -237,7 +237,6 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 		    if(this.getActivity() instanceof ProductoView){
 		    	NMApp.getController().setEntities((parent2),parent2.getBridge());	
 		    }
->>>>>>> origin/master
 		    
 		} catch (Exception e) 
 		{ 
