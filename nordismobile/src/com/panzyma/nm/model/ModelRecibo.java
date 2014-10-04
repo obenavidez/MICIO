@@ -3,6 +3,8 @@ package com.panzyma.nm.model;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapPrimitive;
 
@@ -20,6 +22,8 @@ import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.datastore.DatabaseProvider.Helper;
+import com.panzyma.nm.serviceproxy.CCNotaCredito;
+import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboColector;
@@ -66,73 +70,118 @@ public class ModelRecibo {
 		return Long.parseLong(rs.toString()); 
 	}
 	
-	public synchronized static int borraReciboByID (ContentResolver content,int reciboID, Context context){
-		String[] projection = new String[] {};
-		String[] pry = new String[] {
-				NMConfig.Cliente.Factura.Abonado,
-				NMConfig.Cliente.Factura.Retenido,
-				NMConfig.Cliente.Factura.Saldo,
-				NMConfig.Cliente.Factura.Estado,
-				NMConfig.Cliente.Factura.CodEstado,
-				NMConfig.Cliente.Factura.TotalFacturado
-		};
-		int result = 0; 
-		ReciboColector recibo = getReciboByID(content, reciboID);
-		
-		if(recibo.getNumero() == 0){
-					
-			for(ReciboDetFactura factura : recibo.getFacturasRecibo()){
-				String uri = DatabaseProvider.CONTENT_URI_FACTURA_BY_ID +"/"+String.valueOf(factura.getObjFacturaID());
-				Factura _factura = null;
-				
-				Cursor cur = content.query(Uri.parse(uri), pry, null, null, null);
-				if (cur.moveToFirst()) {
-					do{
-						_factura = new Factura();
-						_factura.setAbonado(cur.getFloat(cur.getColumnIndex(NMConfig.Cliente.Factura.Abonado)));	
-						_factura.setRetenido(cur.getFloat(cur.getColumnIndex(NMConfig.Cliente.Factura.Retenido)));
-						_factura.setSaldo(cur.getFloat(cur.getColumnIndex(NMConfig.Cliente.Factura.Saldo)));
-						_factura.setEstado(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Factura.Estado)));
-						_factura.setCodEstado(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Factura.CodEstado)));
-						_factura.setTotalFacturado(cur.getFloat(cur.getColumnIndex(NMConfig.Cliente.Factura.TotalFacturado)));
-					}while(cur.moveToNext());
-				}
-				
-				// Filtro de factura
-				String mWhereClause = NMConfig.Cliente.Factura.Id +  " = " + factura.getObjFacturaID();				
-				//Columnas a actualizar
-				ContentValues mUpdateValues = new ContentValues();
-				float abonado = _factura.getAbonado() - factura.getMonto();
-				String estado = "";
-				String codEstado = "";
-				if(abonado == 0.00) {
-					estado = "Facturada";
-					codEstado = "EMITIDA";
-				}
-				mUpdateValues.put(NMConfig.Cliente.Factura.Abonado, abonado);
-				mUpdateValues.put(NMConfig.Cliente.Factura.Descontado, _factura.getDescontado() - factura.getDescuento());
-				mUpdateValues.put(NMConfig.Cliente.Factura.Retenido, _factura.getRetenido() - factura.getRetencion());
-				mUpdateValues.put(NMConfig.Cliente.Factura.Saldo, _factura.getTotalFacturado() - abonado);
-				mUpdateValues.put(NMConfig.Cliente.Factura.Estado, estado);
-				mUpdateValues.put(NMConfig.Cliente.Factura.CodEstado, codEstado);
-				uri = DatabaseProvider.CONTENT_URI_FACTURA +"/"+String.valueOf(factura.getObjFacturaID());
-				SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
-				//Actualizar Factura
-				db.update(DatabaseProvider.TABLA_FACTURA, 
-						mUpdateValues,
-						mWhereClause,
-						null);			
-				
-			}			
+	private static void updateFacturas(List<ReciboDetFactura> facturas, ContentResolver content,Context context){
+		for(ReciboDetFactura factura : facturas){
+			
+			Factura _factura = ModelDocumento.getFacturaByID(content, factura.getObjFacturaID());		
+			// Filtro de factura
+			String mWhereClause = NMConfig.Cliente.Factura.Id +  " = " + factura.getObjFacturaID();				
+			//Columnas a actualizar
+			ContentValues mUpdateValues = new ContentValues();
+			float abonado = _factura.getAbonado() - factura.getMonto();
+			String estado = "";
+			String codEstado = "";
+			if(abonado == 0.00) {
+				estado = "Facturada";
+				codEstado = "EMITIDA";
+			}
+			mUpdateValues.put(NMConfig.Cliente.Factura.Abonado, abonado);
+			mUpdateValues.put(NMConfig.Cliente.Factura.Descontado, _factura.getDescontado() - factura.getDescuento());
+			mUpdateValues.put(NMConfig.Cliente.Factura.Retenido, _factura.getRetenido() - factura.getRetencion());
+			mUpdateValues.put(NMConfig.Cliente.Factura.Saldo, _factura.getTotalFacturado() - abonado);
+			mUpdateValues.put(NMConfig.Cliente.Factura.Estado, estado);
+			mUpdateValues.put(NMConfig.Cliente.Factura.CodEstado, codEstado);
+			
+			String uri = DatabaseProvider.CONTENT_URI_FACTURA +"/"+String.valueOf(factura.getObjFacturaID());
+			SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
+			//Actualizar Factura
+			db.update(DatabaseProvider.TABLA_FACTURA, 
+					mUpdateValues,
+					mWhereClause,
+					null);			
 			
 		}
+	}
+
+	private static void updateNotasCredito(List<ReciboDetNC> notasCredito, ContentResolver content,Context context){
+		for(ReciboDetNC notaCredito : notasCredito){
+			
+			CCNotaCredito _notaCredito = ModelDocumento.getNotaCreditoByID(content, notaCredito.getObjNotaCreditoID());		
+			// Filtro de factura
+			String mWhereClause = NMConfig.Cliente.CCNotaCredito.Id +  " = " + notaCredito.getObjNotaCreditoID();				
+			//Columnas a actualizar
+			ContentValues mUpdateValues = new ContentValues();
+			float abonado = _notaCredito.getMonto() - notaCredito.getMonto();
+			String estado = "";
+			String codEstado = "";
+			if(abonado == 0.00) {
+				estado = "Autorizada";
+				codEstado = "AUTORIZADA";
+			}
+			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.Monto, abonado);
+			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.Estado, estado);
+			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.CodEstado, codEstado);
+			
+			String uri = DatabaseProvider.CONTENT_URI_CCNOTACREDITO +"/"+String.valueOf(notaCredito.getObjNotaCreditoID());
+			SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
+			//Actualizar Factura
+			db.update(DatabaseProvider.TABLA_CCNOTACREDITO, 
+					mUpdateValues,
+					mWhereClause,
+					null);			
+			
+		}
+	}
+	
+	private static void updateNotasDebito(List<ReciboDetND> notasDebito, ContentResolver content,Context context){
+		for(ReciboDetND notaDebito : notasDebito){
+				
+			CCNotaDebito _notaDebito = ModelDocumento.getNotasDebitoByID(content, notaDebito.getObjNotaDebitoID());		
+			// Filtro de factura
+			String mWhereClause = NMConfig.Cliente.CCNotaCredito.Id +  " = " + notaDebito.getObjNotaDebitoID();				
+			//Columnas a actualizar
+			ContentValues mUpdateValues = new ContentValues();
+			float abonado = _notaDebito.getMonto() - _notaDebito.getMonto();
+			String estado = "";
+			String codEstado = "";
+			if(abonado == 0.00) {
+				estado = "Autorizada";
+				codEstado = "AUTORIZADA";
+			}
+			mUpdateValues.put(NMConfig.Cliente.CCNotaDebito.Monto, abonado);
+			mUpdateValues.put(NMConfig.Cliente.CCNotaDebito.Estado, estado);
+			mUpdateValues.put(NMConfig.Cliente.CCNotaDebito.CodEstado, codEstado);
+			
+			String uri = DatabaseProvider.CONTENT_URI_CCNOTADEBITO +"/"+String.valueOf(notaDebito.getObjNotaDebitoID());
+			SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
+			//Actualizar Factura
+			db.update(DatabaseProvider.TABLA_CCNOTADEBITO, 
+					mUpdateValues,
+					mWhereClause,
+					null);			
+			
+		}
+	}
+	public synchronized static int borraReciboByID (ContentResolver content,int reciboID, Context context){
+		String[] projection = new String[] {};
 		
+		int result = 0; 	
+		ReciboColector recibo = getReciboByID(content, reciboID);
+		//SI EL RECIBO AUN NO HA SIDO ENVIADO
+		if(recibo.getNumero() == 0){
+			//ACTUALIZAR LOS DOCUMENTOS PENDIENTES DEL CLIENTE QUE ESTAN LOCAL
+			updateFacturas(recibo.getFacturasRecibo(),content,context);
+			updateNotasCredito(recibo.getNotasCreditoRecibo(), content, context);
+			updateNotasDebito(recibo.getNotasDebitoRecibo(), content, context);
+		}		
 		String url = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA +"/"+String.valueOf(reciboID);			
 		content.delete(Uri.parse(url), "", projection);
 		url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO +"/"+String.valueOf(reciboID);
 		content.delete(Uri.parse(url), "", projection);
 		url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTACREDITO +"/"+String.valueOf(reciboID);
 		content.delete(Uri.parse(url), "", projection);		
+		url = DatabaseProvider.CONTENT_URI_RECIBODETALLEFORMAPAGO +"/"+String.valueOf(reciboID);
+		content.delete(Uri.parse(url), "", projection);
 		url = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(reciboID);		
 		content.delete(Uri.parse(url), "", projection);
 		result = 1; 

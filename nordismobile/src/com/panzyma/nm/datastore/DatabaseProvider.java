@@ -49,7 +49,9 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_PROMOCIONCOBRO = Uri.parse(CONTENT_URI+"/promocioncobro");
 	public static final Uri CONTENT_URI_MONTOPROVEEDOR = Uri.parse(CONTENT_URI+"/montoproveedor");
 	public static final Uri CONTENT_URI_CCNOTACREDITO = Uri.parse(CONTENT_URI+"/ccnotacredito");
+	public static final Uri CONTENT_URI_CCNOTACREDITO_BY_ID = Uri.parse(CONTENT_URI+"/ccnotacreditobyid");
 	public static final Uri CONTENT_URI_CCNOTADEBITO = Uri.parse(CONTENT_URI+"/ccnotadebito");
+	public static final Uri CONTENT_URI_CCNOTADEBITO_BY_ID = Uri.parse(CONTENT_URI+"/ccnotadebitobyid");
 	public static final Uri CONTENT_URI_DESCUENTOPROVEEDOR = Uri.parse(CONTENT_URI+"/descuentoproveedor");
 	public static final Uri CONTENT_URI_CATALOGO = Uri.parse(CONTENT_URI+"/catalogo");
 	public static final Uri CONTENT_URI_VALORCATALOGO = Uri.parse(CONTENT_URI+"/valorcatalogo");
@@ -166,9 +168,11 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "ccnotacredito", CCNOTACREDITO);
 		uriMatcher.addURI(AUTHORITY, "ccnotacredito/#", CCNOTACREDITO_ID);
+		uriMatcher.addURI(AUTHORITY, "ccnotacreditobyid/#", CCNOTACREDITO_ID);
 		
 		uriMatcher.addURI(AUTHORITY, "ccnotadebito", CCNOTADEBITO );
 		uriMatcher.addURI(AUTHORITY, "ccnotadebito/#",CCNOTADEBITO_ID);
+		uriMatcher.addURI(AUTHORITY, "ccnotadebitobyid/#", CCNOTADEBITO_ID);
 		
 		uriMatcher.addURI(AUTHORITY, "descuentoproveedor", DESCUENTOPROVEEDOR);
 		uriMatcher.addURI(AUTHORITY, "descuentoproveedor/#", DESCUENTOPROVEEDOR_ID);
@@ -999,20 +1003,32 @@ public class DatabaseProvider extends ContentProvider
 										dictionary.put(MONTOPROVEEDOR+1,"objFacturaID=" + uri.getLastPathSegment()); 
 										break;
 									
-			case CCNOTACREDITO:			dictionary.put(CCNOTACREDITO, TABLA_CCNOTACREDITO);
+			case CCNOTACREDITO:			
+										dictionary.put(CCNOTACREDITO, TABLA_CCNOTACREDITO);
 										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_CCNOTACREDITO.toString());
+																				
 										break;
 									
-			case CCNOTACREDITO_ID:  	dictionary.put(CCNOTACREDITO, TABLA_CCNOTACREDITO);
-										dictionary.put(CCNOTACREDITO+1,"objSucursalID=" + uri.getLastPathSegment());  
+			case CCNOTACREDITO_ID:  	if( uri.toString().indexOf("byid") != -1){
+											dictionary.put(CCNOTACREDITO, TABLA_CCNOTACREDITO);
+											dictionary.put(CCNOTACREDITO+1,"Id=" + uri.getLastPathSegment());
+										} else {
+											dictionary.put(CCNOTACREDITO, TABLA_CCNOTACREDITO);
+											dictionary.put(CCNOTACREDITO+1,"objSucursalID=" + uri.getLastPathSegment());
+										}										  
 										break;
 									
 			case CCNOTADEBITO:			dictionary.put(CCNOTADEBITO,TABLA_CCNOTADEBITO);
 										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_CCNOTADEBITO.toString());
 										break;
 										
-			case CCNOTADEBITO_ID:   	dictionary.put(CCNOTADEBITO,TABLA_CCNOTADEBITO);
-										dictionary.put(CCNOTADEBITO+1,"objSucursalID=" + uri.getLastPathSegment()); 
+			case CCNOTADEBITO_ID:   	if( uri.toString().indexOf("byid") != -1){
+											dictionary.put(CCNOTADEBITO, TABLA_CCNOTADEBITO);
+											dictionary.put(CCNOTADEBITO+1,"Id=" + uri.getLastPathSegment());
+										} else {					
+											dictionary.put(CCNOTADEBITO,TABLA_CCNOTADEBITO);
+											dictionary.put(CCNOTADEBITO+1,"objSucursalID=" + uri.getLastPathSegment());
+										}
 										break;
 									
 			case DESCUENTOPROVEEDOR:	dictionary.put(DESCUENTOPROVEEDOR, TABLA_DESCUENTOPROVEEDOR);
