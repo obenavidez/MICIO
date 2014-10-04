@@ -1,6 +1,5 @@
 package com.panzyma.nm.fragments;
 
-import java.io.Serializable;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -14,7 +13,6 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.panzyma.nm.interfaces.Filterable;
-import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("unchecked")

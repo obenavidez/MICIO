@@ -54,9 +54,9 @@ public class BValorCatalogoM {
 	
 	public BValorCatalogoM(EditFormaPago view)
 	{		
-    	this.controller=((NMApp)view.getContext().getApplicationContext()).getController();  
+    	this.controller=NMApp.getController();  
     	this.view = view; 
-    	this.pool=((NMApp)view.getContext().getApplicationContext()).getThreadPool(); 
+    	this.pool=NMApp.getThreadPool(); 
     	catalogos.clear();
     	catalogos.put(0, "FormaPago");
 		catalogos.put(1, "Moneda");

@@ -1,9 +1,4 @@
-package com.panzyma.nm.auxiliar; 
-
-import android.os.Bundle;
-
-import com.panzyma.nm.serviceproxy.ReciboColector;
-import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
+package com.panzyma.nm.auxiliar;
 
 public class NotificationMessage {
 	

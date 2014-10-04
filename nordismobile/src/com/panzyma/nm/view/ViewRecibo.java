@@ -8,7 +8,6 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHE
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -225,6 +224,8 @@ public class ViewRecibo extends ActionBarActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		final ViewRecibo $this = this;
+		
 		context = getApplicationContext();
 		SessionManager.setContext(this);
 		setContentView(R.layout.layout_client_fragment);
@@ -290,10 +291,24 @@ public class ViewRecibo extends ActionBarActivity implements
 					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
 					if ("REGISTRADO".equals(recibo_selected.getCodEstado())) 
 					{
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("idrecibo", recibo_selected.getId());  
+						msg.setData(b);
+						msg.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
+						
+						NMApp.getController().removeBridgeByName(BReciboM.class.toString());
+						NMApp.getController().addOutboxHandler(new Handler($this));
+						try {
+							NMApp.getController().setEntities($this, new BReciboM());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						NMApp.getController()
 								.getInboxHandler()
-								.sendEmptyMessage(
-										ControllerProtocol.DELETE_DATA_FROM_LOCALHOST);
+								.sendMessage(msg);
+						
 					} else {
 						Toast.makeText(getApplicationContext(), String.format("Los recibos con estado '%s'.\n No se pueden eliminar.", recibo_selected.getDescEstado()), Toast.LENGTH_SHORT).show();
 						return;

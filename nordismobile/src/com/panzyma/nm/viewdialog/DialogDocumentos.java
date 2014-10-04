@@ -118,11 +118,11 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			Message msg = new Message();
 			Bundle params = new Bundle();
 			params.putLong("sucursalID", cliente.getIdSucursal());
-			msg.setData(params);
-			msg.what = C_FACTURACLIENTE;
+			msg.setData(params);			
+			msg.what = C_FACTURACLIENTE;			
 			nmapp.getController().getInboxHandler().sendMessage(msg); 
 			pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
-			initComponents();
+			initComponents();			
 		} catch (Exception e) {
 			e.printStackTrace();
 			buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
@@ -217,7 +217,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		case FACTURA:
 			for(Object obj: array){
 				list.add(obj);
-				for(Factura factura: ((ViewReciboEdit)parent).getFacturasRecibo()){
+				for(Factura factura: parent.getFacturasRecibo()){
 					if( factura.getNoFactura().equals(((Factura)obj).getNoFactura()) )
 						list.remove(obj);						
 				}				
@@ -226,7 +226,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		case NOTA_DEBITO:
 			for(Object obj: array){
 				list.add(obj);
-				for(CCNotaDebito notaDebito: ((ViewReciboEdit)parent).getNotasDebitoRecibo()){
+				for(CCNotaDebito notaDebito: parent.getNotasDebitoRecibo()){
 					if( notaDebito.getNumero().equals(((CCNotaDebito)obj).getNumero()) )
 						list.remove(obj);						
 				}				
@@ -235,7 +235,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		case NOTA_CREDITO:
 			for(Object obj: array){
 				list.add(obj);
-				for(CCNotaCredito notaCredito: ((ViewReciboEdit)parent).getNotasCreditoRecibo()){
+				for(CCNotaCredito notaCredito: parent.getNotasCreditoRecibo()){
 					if( notaCredito.getNumero().equals(((CCNotaCredito)obj).getNumero()) )
 						list.remove(obj);						
 				}				
@@ -291,7 +291,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		try {						
 			if(facturas.length > 0){
 				//SE OBTIENEN LAS FACTURAS SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
-				ArrayList<Factura> _facturas = (ArrayList<Factura>) getArray(facturas, facturas[0]);
+				ArrayList<Factura> _facturas = getArray(facturas, facturas[0]);
 				if( _facturas.size() == 0 ){
 					pd.dismiss();
 					FINISH_ACTIVITY();
@@ -329,7 +329,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			
 			if(notasDebito.length > 0){
 				//SE OBTIENEN LAS NOTAS DE DEBITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
-				ArrayList<CCNotaDebito> _notasDebito = (ArrayList<CCNotaDebito>) getArray(notasDebito, notasDebito[0]);
+				ArrayList<CCNotaDebito> _notasDebito = getArray(notasDebito, notasDebito[0]);
 				if( _notasDebito.size() == 0 ){
 					pd.dismiss();
 					FINISH_ACTIVITY();
@@ -430,7 +430,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
 		try {
-		nmapp.getController().setEntities(((ViewReciboEdit)parent),((ViewReciboEdit)parent).getBridge());
+		nmapp.getController().setEntities((parent),parent.getBridge());
 		} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
