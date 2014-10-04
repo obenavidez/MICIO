@@ -441,30 +441,10 @@ public class ViewConfiguracion extends FragmentActivity implements
 							}
 
 						} else if (actionId == ID_SINCRONIZE_TODOS) 
-						{
-							try 
-							{
+						{ 
+								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); 
 								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-								NMApp.getThreadPool().execute(new Runnable() 
-								{
-									@Override
-									public void run() 
-									{
-										try
-										{
-											setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-											controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS);
-										} catch (Exception e) 
-										{
-											e.printStackTrace();
-										}
-
-									}
-								}); 
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS); 
 
 						} else if (actionId == ID_SETTING_BLUETOOTHDEVICE) 
 						{

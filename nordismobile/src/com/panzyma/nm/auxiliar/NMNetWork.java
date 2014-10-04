@@ -63,7 +63,9 @@ public class NMNetWork {
 				{ 
 						SessionManager.hasError=true;
 						SessionManager.setErrorAuntentication(error.getTittle()+"\n"+error.getMessage());
+						Thread.sleep(1000);
 						NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,error); 
+						
 						return false;
 				} catch (Exception e) { 
 					e.printStackTrace();
@@ -99,6 +101,7 @@ public class NMNetWork {
 				{ 
 						SessionManager.hasError=true;
 						SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());
+						Thread.sleep(1000);
 						NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,error); 
 						return false;
 				} catch (Exception e) { 

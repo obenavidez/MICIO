@@ -169,7 +169,8 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 					_det.setCodProducto(_producto.getCodigo());
 					_det.setNombreProducto(_producto.getNombre());
 				}
-				if (!_nuevo) {
+				if (!_nuevo) 
+				{
 
 					if (nuevaCantidadOrdenada != _det.getCantidadOrdenada())
 					{
@@ -202,7 +203,8 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 						_det.setPrecio(precio);
 						_det.setMontoPrecioEditado(precio);
 						_det.setPrecioEditado(false);
-					} else 
+					}
+					else 
 					{
 						float precio = Float.valueOf(tboxPrecio.getText().toString());
 						if (precio == 0F) {
