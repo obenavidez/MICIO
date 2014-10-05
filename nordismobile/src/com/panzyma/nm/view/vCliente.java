@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -80,7 +81,7 @@ public class vCliente extends ActionBarActivity implements
 	ListaFragment<vmCliente> firstFragment;
 	List<vmCliente> clientes = new ArrayList<vmCliente>();
 	vmCliente cliente_selected;
-	
+	private static CustomDialog dlg;
 
 	//Menu Variables
 	int listFragmentId;
@@ -162,11 +163,16 @@ public class vCliente extends ActionBarActivity implements
 	public boolean handleMessage(Message msg) {
 		boolean result = false;
 		ArrayList<vmCliente> list = null;
+		if(dlg!=null){
+			 dlg.hide();
+		}
+		
 		switch (msg.what) {
 			case C_DATA:
 				 list= (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
 				SetList(list);
-				pDialog.hide();
+				//pDialog.hide();
+				pDialog.dismiss();
 				result=true;
 					
 				break;
@@ -182,11 +188,47 @@ public class vCliente extends ActionBarActivity implements
 				break;
 				
 		   case C_UPDATE_FINISHED:
-
-			    pDialog.hide();
+			   final String  finishMessage =msg.obj.toString();
+			   runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						
+						AppDialog.showMessage(vc,"",finishMessage,
+								AppDialog.DialogType.DIALOGO_ALERTA,
+								new AppDialog.OnButtonClickListener() {
+									@Override
+									public void onButtonClick(AlertDialog _dialog,
+											int actionId) 
+									{
+		
+										if (AppDialog.OK_BUTTOM == actionId) 
+										{
+											_dialog.dismiss();
+											Load_Data(LOAD_DATA_FROM_LOCALHOST);
+										}
+							        }
+						});
+						
+					}
+				});
+			    
 				result=true;
 				break;
-				
+		   case C_UPDATE_IN_PROGRESS :
+			  // pDialog.hide();
+			     final String  mensaje =msg.obj.toString();
+			     pDialog.dismiss();
+				 runOnUiThread(new Runnable() {
+						@Override
+						public void run() 
+						{
+							// pDialog.hide();
+							 dlg =new CustomDialog(vc,mensaje, false, NOTIFICATION_DIALOG);
+							 dlg.show();
+						}
+					});
+				 result=true;
+			   break;
 			case ERROR:
 				ErrorMessage error=((ErrorMessage)msg.obj);
 				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();				 
@@ -550,6 +592,7 @@ public class vCliente extends ActionBarActivity implements
 												firstFragment.setItems(data);
 												gridheader.setText("Listado de Clientes("+ customArrayAdapter.getCount() + ")");
 												footerView.setVisibility(View.VISIBLE);
+												firstFragment.getAdapter().notifyDataSetChanged();
 												ShowEmptyMessage(false);
 											}
 											else {
@@ -560,6 +603,7 @@ public class vCliente extends ActionBarActivity implements
 												firstFragment.setItems(data);
 												customArrayAdapter.setSelectedPosition(0);
 												positioncache = 0;
+												firstFragment.getAdapter().notifyDataSetChanged();
 												/*product_selected = customArrayAdapter.getItem(0);*/
 											}
 											
