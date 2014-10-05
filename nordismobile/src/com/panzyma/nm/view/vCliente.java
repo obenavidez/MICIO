@@ -157,7 +157,6 @@ public class vCliente extends ActionBarActivity implements
 		}
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
@@ -166,27 +165,22 @@ public class vCliente extends ActionBarActivity implements
 		if(dlg!=null){
 			 dlg.hide();
 		}
-		
 		switch (msg.what) {
 			case C_DATA:
-				 list= (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
+				list= (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
 				SetList(list);
-				//pDialog.hide();
 				pDialog.dismiss();
 				result=true;
-					
 				break;
 			case C_SETTING_DATA:
-				 list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
+				list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
 				SetData(list, C_SETTING_DATA);
 				result=true;
-				
 				break;
 		   case C_UPDATE_ITEM_FINISHED:
-			   //buildToastMessage(msg.obj.toString(), Toast.LENGTH_SHORT).show();
-			   pDialog.dismiss();
-			   final String  finisUpdatehMessage =msg.obj.toString();
-			   runOnUiThread(new Runnable() {
+			    pDialog.dismiss();
+			    final String  finisUpdatehMessage =msg.obj.toString();
+			    runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						
@@ -207,14 +201,11 @@ public class vCliente extends ActionBarActivity implements
 						
 					}
 				});
-			   
-			   
-			   result=true;
+			    result=true;
 				break;
-				
 		   case C_UPDATE_FINISHED:
-			   final String  finishMessage =msg.obj.toString();
-			   runOnUiThread(new Runnable() {
+			    final String  finishMessage =msg.obj.toString();
+			    runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						
@@ -236,14 +227,12 @@ public class vCliente extends ActionBarActivity implements
 						
 					}
 				});
-			    
 				result=true;
 				break;
 		   case C_UPDATE_IN_PROGRESS :
-			  // pDialog.hide();
-			     final String  mensaje =msg.obj.toString();
-			     pDialog.dismiss();
-				 runOnUiThread(new Runnable() {
+			    final String  mensaje =msg.obj.toString();
+			    pDialog.dismiss();
+				runOnUiThread(new Runnable() {
 						@Override
 						public void run() 
 						{
@@ -252,7 +241,7 @@ public class vCliente extends ActionBarActivity implements
 							 dlg.show();
 						}
 					});
-				 result=true;
+				result=true;
 			   break;
 			case ERROR:
 				ErrorMessage error=((ErrorMessage)msg.obj);
@@ -326,41 +315,6 @@ public class vCliente extends ActionBarActivity implements
 			item.getItemId();
 			return true;
 		}
-		/*
-		switch (item.getItemId()) 
-		{
-			case R.id.sincronizar_all:
-				Load_Data(LOAD_DATA_FROM_SERVER);
-			break;
-			
-			case R.id.consultar_fc:
-				//SI SE ESTÁ FUERA DE LA COBERTURA
-	            if(!NMNetWork.isPhoneConnected(context,nmapp.controller) && !NMNetWork.CheckConnection(nmapp.controller))
-	            {
-	            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-	            	return false;
-	            }
-				LOAD_FICHACLIENTE_FROMSERVER();
-				break;
-			case R.id.consultar_cxc:
-				if(!NMNetWork.isPhoneConnected(context,nmapp.controller) && !NMNetWork.CheckConnection(nmapp.controller))
-	            {
-	            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-	            	return false;
-	            }
-				LOAD_CUENTASXPAGAR();
-			break;
-			case R.id.sincronizar_selected: 
-				UPDATE_SELECTEDITEM_FROMSERVER();
-				break;
-			case R.id.salir:
-				FINISH_ACTIVITY();
-				break;
-				
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-		*/
 		return true;
 	}
 	
@@ -444,7 +398,7 @@ public class vCliente extends ActionBarActivity implements
 			            if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
 			            	drawerLayout.closeDrawers();
 			            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-			            	
+			            	return;
 			            }
 						LOAD_FICHACLIENTE_FROMSERVER();
 						drawerLayout.closeDrawers();
@@ -458,6 +412,7 @@ public class vCliente extends ActionBarActivity implements
 						if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
 							drawerLayout.closeDrawers();
 			            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+			            	return;
 			            }
 						LOAD_CUENTASXPAGAR();
 						drawerLayout.closeDrawers();
@@ -471,6 +426,7 @@ public class vCliente extends ActionBarActivity implements
 						 if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
 				          	drawerLayout.closeDrawers();
 				          	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+				          	return;
 				        }
 						UPDATE_SELECTEDITEM_FROMSERVER();
 						drawerLayout.closeDrawers();
@@ -479,6 +435,7 @@ public class vCliente extends ActionBarActivity implements
 						if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
 					          	drawerLayout.closeDrawers();
 					          	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+					          	return;
 					    }
 						Load_Data(LOAD_DATA_FROM_SERVER);
 						drawerLayout.closeDrawers();
@@ -537,8 +494,7 @@ public class vCliente extends ActionBarActivity implements
 			e.printStackTrace();
 		}
 	}
-	
-	
+		
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) 
     { 
