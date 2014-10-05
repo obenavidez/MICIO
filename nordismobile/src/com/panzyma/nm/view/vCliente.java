@@ -183,7 +183,32 @@ public class vCliente extends ActionBarActivity implements
 				
 				break;
 		   case C_UPDATE_ITEM_FINISHED:
-			   buildToastMessage(msg.obj.toString(), Toast.LENGTH_SHORT).show();
+			   //buildToastMessage(msg.obj.toString(), Toast.LENGTH_SHORT).show();
+			   pDialog.dismiss();
+			   final String  finisUpdatehMessage =msg.obj.toString();
+			   runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						
+						AppDialog.showMessage(vc,"",finisUpdatehMessage,
+								AppDialog.DialogType.DIALOGO_ALERTA,
+								new AppDialog.OnButtonClickListener() {
+									@Override
+									public void onButtonClick(AlertDialog _dialog,
+											int actionId) 
+									{
+		
+										if (AppDialog.OK_BUTTOM == actionId) 
+										{
+											_dialog.dismiss();
+										}
+							        }
+						});
+						
+					}
+				});
+			   
+			   
 			   result=true;
 				break;
 				
@@ -406,7 +431,8 @@ public class vCliente extends ActionBarActivity implements
 						drawerLayout.closeDrawers();
 						break;
 					case NUEVO_DEVOLUCION:
-						
+						buildToastMessage("PROXIMANTE....",5);
+						drawerLayout.closeDrawers();
 						break;
 					case  FICHA_CLIENTE : 
 						if(cliente_selected== null){
@@ -741,7 +767,12 @@ public class vCliente extends ActionBarActivity implements
 		ms.obj = get_SucursalID();
 		
 		NMApp.getController().getInboxHandler().sendMessage(ms);
-	    Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);  
+	    //Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);
+		pDialog = new ProgressDialog(vCliente.this);
+		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pDialog.setMessage("sincronizando cliente...");
+		pDialog.setCancelable(true);
+		pDialog.show();
 	} 	
 
 	@Override
