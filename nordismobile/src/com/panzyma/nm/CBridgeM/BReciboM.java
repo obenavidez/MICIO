@@ -504,8 +504,7 @@ public final class BReciboM {
 						String credenciales="";
 						credenciales=SessionManager.getCredentials();						
 						if(credenciales!="")
-						{
-							 
+						{							 
 					        imprimir = true;
 					        pagarOnLine = true;        
 					        //Si se está fuera de covertura, salir        
