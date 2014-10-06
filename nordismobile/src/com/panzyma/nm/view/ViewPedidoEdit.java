@@ -779,8 +779,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				.getCodEstado().compareTo("APROBADO") == 0)))
 			return;
 
-		if (cliente == null) {
-
+		if (cliente == null) 
+		{
 			showStatus("Seleccione primero el cliente del pedido.", true);
 			return;
 		}
@@ -795,7 +795,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		dp.setOnDialogProductButtonClickListener(new DialogProducto.OnButtonClickListener() {
 
 			@Override
-			public void onButtonClick(DetallePedido det_p, Producto prod) {
+			public void onButtonClick(DetallePedido det_p, Producto prod) 
+			{
 
 				dpselected = det_p;
 				det_p.setId(pedido.getId());

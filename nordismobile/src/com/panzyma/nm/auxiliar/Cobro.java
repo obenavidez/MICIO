@@ -40,10 +40,10 @@ public class Cobro
         int diasAplicaMora = Integer.parseInt((String) Cobro.getParametro(cnt,"HolguraDiasAplicarDescPP"));
         for(int i = 0; i < _ff.size(); i++) 
         {
-            ReciboDetFactura fac = _ff.get(i);
-            
+            ReciboDetFactura fac = _ff.get(i);            
             //Tiene que estar seleccionada y cancelándose
-            if (!fac.isEsAbono()) {
+            if (!fac.isEsAbono()) 
+            {
                 //Ver si factura ya está vencida
                 long fechaVence = fac.getFechaAplicaDescPP();
                 long fechaNoAplicaDescPP = DateUtil.addDays(fechaVence, diasAplicaMora);
@@ -55,10 +55,11 @@ public class Cobro
             }
         }
         
-        return puedeAplicarDescOca=true;//quitar true
+        return puedeAplicarDescOca;//quitar true
     } //ValidaAplicDescOca
 	
-	public static float getTotalPagoRecibo(ReciboColector rcol) {
+	public static float getTotalPagoRecibo(ReciboColector rcol) 
+	{
         if (rcol.getFormasPagoRecibo().size() == 0) return 0;
         
         ArrayList<ReciboDetFormaPago> fp = rcol.getFormasPagoRecibo();         

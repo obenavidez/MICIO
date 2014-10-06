@@ -232,15 +232,30 @@ public final class BReciboM {
 						if(credenciales!="")
 						{
 							long rs=0;
+							if(ModelConfiguracion.yaseEnvioSolicitud(NMApp.getContext(), recibo.getReferencia()))
+							{
+								Processor.notifyToView(
+										controller,
+										ControllerProtocol.NOTIFICATION,
+										0,
+										0,
+										NotificationMessage.newInstance("","Solicitud descuento ya fue enviada con anterioridad.",""));
+									ModelConfiguracion.guardarSolicitudDescuentoRec(NMApp.getContext(), recibo.getReferencia(), notas);
+								return;
+							}
 							rs=ModelRecibo.solicitarDescuentoOcacional(credenciales, recibo, notas);
 							if(rs!=0)
+							{
 								Processor.notifyToView(
 									controller,
 									ControllerProtocol.NOTIFICATION,
 									0,
 									0,
 									NotificationMessage.newInstance("","La solicitud descuento fue enviada a la central con exito",""));
-						}
+								ModelConfiguracion.guardarSolicitudDescuentoRec(NMApp.getContext(), recibo.getReferencia(), notas);
+							}
+						}	
+						
 						
 					} catch (Exception e) 
 					{ 
@@ -554,7 +569,7 @@ public final class BReciboM {
 															 )
 									      ); 
 				                }
-								//Actualizar información del nuevo estaado del recibo
+								//Actualizar información del nuevo estado del recibo
 				                recibo.setObjEstadoID(rs.getNuevoEstado().getId());
 				                recibo.setCodEstado(rs.getNuevoEstado().getCodigo());
 				                recibo.setDescEstado(rs.getNuevoEstado().getDescripcion());
@@ -569,10 +584,9 @@ public final class BReciboM {
 								Cliente cliente=BClienteM.actualizarCliente(NMApp.getContext(), SessionManager.getCredenciales(),recibo.getObjSucursalID());
 								//actualizando el cliente en el hilo principal
 								recibo.setCliente(cliente);								
-				              
+								
 				                //Salvar los cambios en el hilo pricipal
-				                Processor.notifyToView(controller,ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,
-										imprimir?1:0,0,recibo);
+				                Processor.notifyToView(controller,ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,imprimir?1:0,0,recibo);
 							}
 							else
 							{								 
@@ -582,12 +596,9 @@ public final class BReciboM {
 				               //Guardando cambios en el Dispositivo 
 				                saveRecibo(recibo,facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate); 
 				                //enviar los cambios en el hilo pricipal
-				                Processor.notifyToView(controller,ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,
-				                		imprimir?1:0,0,recibo);
+				                Processor.notifyToView(controller,ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,imprimir?1:0,0,recibo);
 							}
-							
-//					        if(imprimir)
-//					        	enviarImprimirRecibo(recibo);
+							ModelConfiguracion.borrarEnvioSolicitud(NMApp.getContext(),recibo.getReferencia());
 							
 						} 
 						else
