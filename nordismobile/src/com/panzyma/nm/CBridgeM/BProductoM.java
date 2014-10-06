@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.Log;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_PRODUCTOS;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
@@ -20,6 +21,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
@@ -145,80 +147,138 @@ public class BProductoM {
 		}
 	}
 
-	private void onLoadALLData_From_Server() throws Exception {
-
-		try {
-			this.pool.execute(new Runnable() {
-				@Override
-				public void run() {
-					try {
-
-						if (NMNetWork.isPhoneConnected(view, controller)
-								&& NMNetWork.CheckConnection(controller)) {
-							/*
-							 * Integer page=1; while(true) { ArrayList<Producto>
-							 * modelproducto
-							 * =ModelProducto.getArrayProductoFromServer
-							 * ("sa||nordis09||dp","areyes",page,50);
-							 * if(modelproducto.size()!=0) {
-							 * obj.addAll(modelproducto);
-							 * Processor.builAndsend_ViewProductoToView
-							 * (modelproducto, controller); page++; } else
-							 * break; } onSave_From_LocalHost(obj);
-							 * Processor.notifyToView
-							 * (controller,C_UPDATE_FINISHED,0,0,null);
-							 */
-
-							Integer page = 1;
-							while (true) {
-								JSONArray modelproducto = ModelProducto
-										.getArrayProductoFromServer(
-												"sa-nordis09-dp", "areyes",
-												page, 50);
-								if (modelproducto.length() != 0) {
-									jsonA.put(modelproducto);
-									ModelProducto.saveProductos(modelproducto,
-											view, page);
-									// obj.addAll(modelproducto);
-									Processor.builAndsend_ViewProductoToView(
-											modelproducto, controller);
-									page++;
-								} else
-									break;
-							}
-							// ModelProducto.saveProductos(jsonA, view);
-							// onSave_From_LocalHost(jsonA);
-							Processor.notifyToView(controller,
-									C_UPDATE_FINISHED, 0, 0, null);
-
+	private void onLoadALLData_From_Server(){
+		try
+		{ 
+		    final String credentials=SessionManager.getCredenciales();
+			  
+			if(credentials.trim()!="")
+			{
+				NMApp.getThreadPool().execute(  new Runnable()
+	            {
+	            	@Override
+					public void run() 
+					{
+	            		try 
+						{
+							if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller))
+						    {
+								Integer page=1;
+								while (true) 
+								{
+									JSONArray modelproducto = ModelProducto.getArrayProductoFromServer(credentials,"areyes",page, 50);
+									if (modelproducto.length() != 0) {
+										jsonA.put(modelproducto);
+										ModelProducto.saveProductos(modelproducto,view, page);
+										Processor.notifyToView(
+												controller,
+												ControllerProtocol.C_UPDATE_IN_PROGRESS,
+												0,
+												0,"Sincronizando Productos \npágina:"+ page.toString());
+										page++;
+									} 
+									 else break;		
+								}
+								Processor.notifyToView(controller,C_UPDATE_FINISHED,0,1,"Los Productos han sido sincronizados exitosamente");
+						    }
 						}
-
-					} catch (Exception e) {
-						e.printStackTrace();
-						try {
-							Processor
-									.notifyToView(
-											controller,
-											ERROR,
-											0,
-											0,
-											new ErrorMessage(
-													"Error en la sincronización con el servidor",
-													e.toString(), "\n Causa: "
-															+ e.getCause()));
-						} catch (Exception e1) {
-							e1.printStackTrace();
+	            		catch (Exception e) 
+				        { 
+							e.printStackTrace();
+							try {
+								Processor.notifyToView(controller,ERROR,0,1,new ErrorMessage("Error en la sincronización de productos con el servidor",e.getMessage(),"\n Causa: "+e.getCause()));
+							} catch (Exception e1) { 
+								e1.printStackTrace();
+							} 
 						}
+	            		
 					}
-				}
-
-			});
-			Processor.notifyToView(controller, C_UPDATE_STARTED, 0, 0, null);
-		} catch (InterruptedException e) {
+	            });
+			}
+		}
+		catch(Exception e)
+		{
 			e.printStackTrace();
 		}
-
+		
+		
 	}
+	
+	
+//	private void onLoadALLData_From_Server() throws Exception {
+//
+//		try {
+//			this.pool.execute(new Runnable() {
+//				@Override
+//				public void run() {
+//					try {
+//
+//						if (NMNetWork.isPhoneConnected(view, controller)
+//								&& NMNetWork.CheckConnection(controller)) {
+//							/*
+//							 * Integer page=1; while(true) { ArrayList<Producto>
+//							 * modelproducto
+//							 * =ModelProducto.getArrayProductoFromServer
+//							 * ("sa||nordis09||dp","areyes",page,50);
+//							 * if(modelproducto.size()!=0) {
+//							 * obj.addAll(modelproducto);
+//							 * Processor.builAndsend_ViewProductoToView
+//							 * (modelproducto, controller); page++; } else
+//							 * break; } onSave_From_LocalHost(obj);
+//							 * Processor.notifyToView
+//							 * (controller,C_UPDATE_FINISHED,0,0,null);
+//							 */
+//
+//							Integer page = 1;
+//							while (true) {
+//								JSONArray modelproducto = ModelProducto
+//										.getArrayProductoFromServer(
+//												"sa-nordis09-dp", "areyes",
+//												page, 50);
+//								if (modelproducto.length() != 0) {
+//									jsonA.put(modelproducto);
+//									ModelProducto.saveProductos(modelproducto,
+//											view, page);
+//									// obj.addAll(modelproducto);
+//									Processor.builAndsend_ViewProductoToView(
+//											modelproducto, controller);
+//									page++;
+//								} else
+//									break;
+//							}
+//							// ModelProducto.saveProductos(jsonA, view);
+//							// onSave_From_LocalHost(jsonA);
+//							Processor.notifyToView(controller,
+//									C_UPDATE_FINISHED, 0, 0, null);
+//
+//						}
+//
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//						try {
+//							Processor
+//									.notifyToView(
+//											controller,
+//											ERROR,
+//											0,
+//											0,
+//											new ErrorMessage(
+//													"Error en la sincronización con el servidor",
+//													e.toString(), "\n Causa: "
+//															+ e.getCause()));
+//						} catch (Exception e1) {
+//							e1.printStackTrace();
+//						}
+//					}
+//				}
+//
+//			});
+//			Processor.notifyToView(controller, C_UPDATE_STARTED, 0, 0, null);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	private void onUpdateItem_From_Server() {
 
