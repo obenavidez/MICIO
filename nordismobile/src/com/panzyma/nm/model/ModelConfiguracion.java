@@ -1,17 +1,18 @@
 package com.panzyma.nm.model;
 
 import java.lang.reflect.Type; 
-
+import java.util.HashMap;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo; 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters; 
 import com.panzyma.nm.auxiliar.NMConfig;
@@ -20,6 +21,7 @@ import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.serviceproxy.LoginUserResult; 
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 
@@ -184,6 +186,35 @@ public class ModelConfiguracion {
 		ModelConfiguracion.guardarImpresora(view, setting.getImpresora());
 	}
 
+	public static boolean yaseEnvioSolicitud(Context cnt,int referencia)
+	{
+		pref = cnt.getSharedPreferences("SolictudDesOcaRecibo", Context.MODE_PRIVATE);
+		Map<String, ?> items = pref.getAll();
+		if(items!=null && !items.isEmpty())
+			return items.containsKey(""+referencia);
+		else
+			return false;
+			
+	}
+	
+	@SuppressLint("CommitPrefEdits") 
+	public static void borrarEnvioSolicitud(Context cnt,int referencia)
+	{
+		pref = cnt.getSharedPreferences("SolictudDesOcaRecibo", Context.MODE_PRIVATE);		
+		if(pref!=null)
+			edit=pref.edit();
+		if(edit!=null)
+			edit.remove(""+referencia); 
+	}
+	
+	public static void guardarSolicitudDescuentoRec(Context view,int referencia,String nota)throws Exception 
+	{
+		pref = view.getSharedPreferences("SolictudDesOcaRecibo", Context.MODE_PRIVATE);
+		edit = pref.edit();
+		edit.putString(""+referencia,nota);
+		edit.commit();
+	}
+	
 	public static String[] getVariablesSession(Context cnt)
 	{
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);	

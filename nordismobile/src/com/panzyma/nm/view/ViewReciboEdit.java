@@ -550,7 +550,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					recibo=((ReciboColector)msg.obj);
 					cliente=recibo.getCliente();
 					actualizarOnUINumRef(recibo); 
-					enviarImprimirRecibo(recibo);
+					if(msg.arg1==1)
+						enviarImprimirRecibo(recibo);
 				}
 				break;
 			case ControllerProtocol.NOTIFICATION:
@@ -582,7 +583,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			@Override
 			public void run() 
 			{ 
-				 AppDialog.showMessage(me,"Confirme por favor.!!!","Desea Imprimir el Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+				 AppDialog.showMessage(me,"","Desea Imprimir el Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
 				 {						 
 						@Override
 		    			public void onButtonClick(AlertDialog _dialog, int actionId) 
@@ -696,25 +697,25 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		//Si se está fuera de covertura, salir 
         if(!SessionManager.isPhoneConnected()) 
 		{
-            //Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
+        	AppDialog.showMessage(me,"","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
             return;
-        }        
-        if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
-        {            
-        	AppDialog.showMessage(me,"Alerta","Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",DialogType.DIALOGO_ALERTA);
-            return;
-        }   
-
+        }     
 		if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
 		{            
 			AppDialog.showMessage(me,"Alerta","Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",DialogType.DIALOGO_ALERTA);
 			return;
 		}  
-		if(cliente==null){ 
+		if(cliente==null)
+		{ 
 			AppDialog.showMessage(me,"Alerta","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
 			return;
 		} 
-		AppDialog.showMessage(me,"Solicitar descuento Ocosional","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener()
+		if(recibo.getReferencia()==0)
+		{
+			AppDialog.showMessage(me,"","Debe guardar primero el recibo localmente.",DialogType.DIALOGO_ALERTA);
+			return;
+		}
+		AppDialog.showMessage(me,"Ingrese el Descuento Ocosional a solicitar","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener()
 		{ 
 			@Override
 			public void onButtonClick(AlertDialog alert, int actionId) 
@@ -723,7 +724,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				{ 					 
 					try 
 					{
-						String nota =  ((TextView)alert.findViewById(R.id.txtpayamount)).getText().toString();
+						String nota="";
+						nota =  ((TextView)alert.findViewById(R.id.txtpayamount)).getText().toString();
+						if(nota=="")
+							return;
 						NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
 						NMApp.getController().addOutboxHandler((getHandler()==null)?new Handler(me):getHandler()); 
 						Message msg = new Message();
@@ -949,8 +953,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         } 
 		showStatus("Enviando recibo a la central");  
 		try 
-		{ 
-			
+		{ 			
 			Message msg = new Message();
 			Bundle b = new Bundle();
 			b.putParcelable("recibo", recibo); 

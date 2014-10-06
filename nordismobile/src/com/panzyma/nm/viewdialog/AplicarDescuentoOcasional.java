@@ -1,7 +1,9 @@
 package com.panzyma.nm.viewdialog;
  
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.view.ViewReciboEdit;
@@ -112,7 +114,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		
 	       //Si el porcentaje es < 100, pedir clave
 	       if (tbox_collectorpercent.getText().toString().trim().equals("")) {
-	          // Dialog.alert("Ingrese porcentaje asumido por colector.");
+	    	   AppDialog.showMessage(parent,"","Ingrese porcentaje asumido por colector.",DialogType.DIALOGO_ALERTA);
 	           return;
 	       }
 	       
@@ -120,12 +122,12 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	        
 	       //Validar que prc sea entre 0 y 100
 	       if (percentcollector < 0) {
-	          // Dialog.alert("El porcentaje debe ser mayor o igual a cero.");
+	    	   AppDialog.showMessage(parent,"","El porcentaje debe ser mayor o igual a cero.",DialogType.DIALOGO_ALERTA);
 	           return;
 	       }
 	        
 	       if (percentcollector > 100) {
-	           //Dialog.alert("El porcentaje debe ser menor o igual a 100.");
+	    	   AppDialog.showMessage(parent,"","El porcentaje debe ser menor o igual a 100.",DialogType.DIALOGO_ALERTA);
 	           return;
 	       }
 	        
@@ -138,7 +140,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	                if (_clave.compareTo("") == 0) 
 	                {
 	                	_clave="";
-	                   // Dialog.alert("Favor ingresar clave de autorización.");
+	                	AppDialog.showMessage(parent,"","Favor ingresar clave de autorización.",DialogType.DIALOGO_ALERTA);
 	                    return;
 	                } 
 	            } 
@@ -167,22 +169,22 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
         try 
         { 
             if (resp.compareTo("0") == 0) {
-                //Dialog.alert("No se ha solicitado autorización.");
+            	AppDialog.showMessage(parent,"","No se ha solicitado autorización.",DialogType.DIALOGO_ALERTA);
                 return false;
             }
             
             if (resp.compareTo("1") == 0) {
-                //Dialog.alert("La solicitud aún no ha sido autorizada.");
+            	AppDialog.showMessage(parent,"","La solicitud aún no ha sido autorizada.",DialogType.DIALOGO_ALERTA);
                 return false;
             }
             
             if (resp.compareTo("2") == 0) {
-                //Dialog.alert("Error de procesamiento en el servidor.");
+            	AppDialog.showMessage(parent,"","Error de procesamiento en el servidor.",DialogType.DIALOGO_ALERTA);
                 return false;
             }
             
             if (resp.compareTo("3") == 0) {
-                //Dialog.alert("La solicitud ha sido denegada.");
+            	AppDialog.showMessage(parent,"","La solicitud ha sido denegada.",DialogType.DIALOGO_ALERTA);
                 return false;
             }
             
@@ -190,7 +192,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
             return true;    
         }
         catch(Exception ex) {
-            //Dialog.alert("Error: " + ex.toString());            
+        	AppDialog.showMessage(parent,"","Error: " + ex.toString(),DialogType.DIALOGO_ALERTA);     
         }
         return  false;
     } //verificarClaveDescOca
@@ -207,6 +209,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 				}
 				break;
 			case ControllerProtocol.ERROR:
+				AppDialog.showMessage(parent,"",msg.toString(),DialogType.DIALOGO_ALERTA);
 				break;
 			default:
 				break;

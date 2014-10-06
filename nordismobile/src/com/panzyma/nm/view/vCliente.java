@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -80,7 +81,7 @@ public class vCliente extends ActionBarActivity implements
 	ListaFragment<vmCliente> firstFragment;
 	List<vmCliente> clientes = new ArrayList<vmCliente>();
 	vmCliente cliente_selected;
-	
+	private static CustomDialog dlg;
 
 	//Menu Variables
 	int listFragmentId;
@@ -156,37 +157,92 @@ public class vCliente extends ActionBarActivity implements
 		}
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
 		boolean result = false;
 		ArrayList<vmCliente> list = null;
+		if(dlg!=null){
+			 dlg.hide();
+		}
 		switch (msg.what) {
 			case C_DATA:
-				 list= (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
+				list= (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
 				SetList(list);
-				pDialog.hide();
+				pDialog.dismiss();
 				result=true;
-					
 				break;
 			case C_SETTING_DATA:
-				 list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
+				list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
 				SetData(list, C_SETTING_DATA);
 				result=true;
-				
 				break;
 		   case C_UPDATE_ITEM_FINISHED:
-			   buildToastMessage(msg.obj.toString(), Toast.LENGTH_SHORT).show();
-			   result=true;
+			    pDialog.dismiss();
+			    final String  finisUpdatehMessage =msg.obj.toString();
+			    runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						
+						AppDialog.showMessage(vc,"",finisUpdatehMessage,
+								AppDialog.DialogType.DIALOGO_ALERTA,
+								new AppDialog.OnButtonClickListener() {
+									@Override
+									public void onButtonClick(AlertDialog _dialog,
+											int actionId) 
+									{
+		
+										if (AppDialog.OK_BUTTOM == actionId) 
+										{
+											_dialog.dismiss();
+										}
+							        }
+						});
+						
+					}
+				});
+			    result=true;
 				break;
-				
 		   case C_UPDATE_FINISHED:
-
-			    pDialog.hide();
+			    final String  finishMessage =msg.obj.toString();
+			    runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						
+						AppDialog.showMessage(vc,"",finishMessage,
+								AppDialog.DialogType.DIALOGO_ALERTA,
+								new AppDialog.OnButtonClickListener() {
+									@Override
+									public void onButtonClick(AlertDialog _dialog,
+											int actionId) 
+									{
+		
+										if (AppDialog.OK_BUTTOM == actionId) 
+										{
+											_dialog.dismiss();
+											Load_Data(LOAD_DATA_FROM_LOCALHOST);
+										}
+							        }
+						});
+						
+					}
+				});
 				result=true;
 				break;
-				
+		   case C_UPDATE_IN_PROGRESS :
+			    final String  mensaje =msg.obj.toString();
+			    pDialog.dismiss();
+				runOnUiThread(new Runnable() {
+						@Override
+						public void run() 
+						{
+							// pDialog.hide();
+							 dlg =new CustomDialog(vc,mensaje, false, NOTIFICATION_DIALOG);
+							 dlg.show();
+						}
+					});
+				result=true;
+			   break;
 			case ERROR:
 				ErrorMessage error=((ErrorMessage)msg.obj);
 				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();				 
@@ -259,41 +315,6 @@ public class vCliente extends ActionBarActivity implements
 			item.getItemId();
 			return true;
 		}
-		/*
-		switch (item.getItemId()) 
-		{
-			case R.id.sincronizar_all:
-				Load_Data(LOAD_DATA_FROM_SERVER);
-			break;
-			
-			case R.id.consultar_fc:
-				//SI SE ESTÁ FUERA DE LA COBERTURA
-	            if(!NMNetWork.isPhoneConnected(context,nmapp.controller) && !NMNetWork.CheckConnection(nmapp.controller))
-	            {
-	            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-	            	return false;
-	            }
-				LOAD_FICHACLIENTE_FROMSERVER();
-				break;
-			case R.id.consultar_cxc:
-				if(!NMNetWork.isPhoneConnected(context,nmapp.controller) && !NMNetWork.CheckConnection(nmapp.controller))
-	            {
-	            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-	            	return false;
-	            }
-				LOAD_CUENTASXPAGAR();
-			break;
-			case R.id.sincronizar_selected: 
-				UPDATE_SELECTEDITEM_FROMSERVER();
-				break;
-			case R.id.salir:
-				FINISH_ACTIVITY();
-				break;
-				
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-		*/
 		return true;
 	}
 	
@@ -364,7 +385,8 @@ public class vCliente extends ActionBarActivity implements
 						drawerLayout.closeDrawers();
 						break;
 					case NUEVO_DEVOLUCION:
-						
+						buildToastMessage("PROXIMANTE....",5);
+						drawerLayout.closeDrawers();
 						break;
 					case  FICHA_CLIENTE : 
 						if(cliente_selected== null){
@@ -376,7 +398,7 @@ public class vCliente extends ActionBarActivity implements
 			            if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
 			            	drawerLayout.closeDrawers();
 			            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-			            	
+			            	return;
 			            }
 						LOAD_FICHACLIENTE_FROMSERVER();
 						drawerLayout.closeDrawers();
@@ -390,6 +412,7 @@ public class vCliente extends ActionBarActivity implements
 						if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
 							drawerLayout.closeDrawers();
 			            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+			            	return;
 			            }
 						LOAD_CUENTASXPAGAR();
 						drawerLayout.closeDrawers();
@@ -403,6 +426,7 @@ public class vCliente extends ActionBarActivity implements
 						 if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
 				          	drawerLayout.closeDrawers();
 				          	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+				          	return;
 				        }
 						UPDATE_SELECTEDITEM_FROMSERVER();
 						drawerLayout.closeDrawers();
@@ -411,6 +435,7 @@ public class vCliente extends ActionBarActivity implements
 						if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
 					          	drawerLayout.closeDrawers();
 					          	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+					          	return;
 					    }
 						Load_Data(LOAD_DATA_FROM_SERVER);
 						drawerLayout.closeDrawers();
@@ -469,8 +494,7 @@ public class vCliente extends ActionBarActivity implements
 			e.printStackTrace();
 		}
 	}
-	
-	
+		
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) 
     { 
@@ -550,6 +574,7 @@ public class vCliente extends ActionBarActivity implements
 												firstFragment.setItems(data);
 												gridheader.setText("Listado de Clientes("+ customArrayAdapter.getCount() + ")");
 												footerView.setVisibility(View.VISIBLE);
+												firstFragment.getAdapter().notifyDataSetChanged();
 												ShowEmptyMessage(false);
 											}
 											else {
@@ -560,6 +585,7 @@ public class vCliente extends ActionBarActivity implements
 												firstFragment.setItems(data);
 												customArrayAdapter.setSelectedPosition(0);
 												positioncache = 0;
+												firstFragment.getAdapter().notifyDataSetChanged();
 												/*product_selected = customArrayAdapter.getItem(0);*/
 											}
 											
@@ -697,7 +723,12 @@ public class vCliente extends ActionBarActivity implements
 		ms.obj = get_SucursalID();
 		
 		NMApp.getController().getInboxHandler().sendMessage(ms);
-	    Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);  
+	    //Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);
+		pDialog = new ProgressDialog(vCliente.this);
+		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pDialog.setMessage("sincronizando cliente...");
+		pDialog.setCancelable(true);
+		pDialog.show();
 	} 	
 
 	@Override

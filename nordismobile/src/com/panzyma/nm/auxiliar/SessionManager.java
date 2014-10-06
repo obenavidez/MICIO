@@ -445,7 +445,8 @@ public class SessionManager
         });
 	    synchronized(lock2)
         {
-            try {
+            try 
+            {
             	lock2.wait();
 			} catch (InterruptedException e) { 
 				e.printStackTrace();
