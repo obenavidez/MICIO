@@ -136,21 +136,15 @@ public class ModelRecibo {
 	private static void updateNotasDebito(List<ReciboDetND> notasDebito, ContentResolver content,Context context){
 		for(ReciboDetND notaDebito : notasDebito){
 				
-			CCNotaDebito _notaDebito = ModelDocumento.getNotasDebitoByID(content, notaDebito.getObjNotaDebitoID());		
+			CCNotaDebito _notaDebito = ModelDocumento.getNotasDebitoByID(content, notaDebito.getObjNotaDebitoID());			
 			// Filtro de factura
-			String mWhereClause = NMConfig.Cliente.CCNotaCredito.Id +  " = " + notaDebito.getObjNotaDebitoID();				
+			String mWhereClause = NMConfig.Cliente.CCNotaDebito.Id +  " = " + notaDebito.getObjNotaDebitoID();				
 			//Columnas a actualizar
 			ContentValues mUpdateValues = new ContentValues();
-			float abonado = _notaDebito.getMonto() - _notaDebito.getMonto();
-			String estado = "";
-			String codEstado = "";
-			if(abonado == 0.00) {
-				estado = "Autorizada";
-				codEstado = "AUTORIZADA";
-			}
-			mUpdateValues.put(NMConfig.Cliente.CCNotaDebito.Monto, abonado);
-			mUpdateValues.put(NMConfig.Cliente.CCNotaDebito.Estado, estado);
-			mUpdateValues.put(NMConfig.Cliente.CCNotaDebito.CodEstado, codEstado);
+			float abonado = _notaDebito.getMontoAbonado() - notaDebito.getMontoPagar();
+			float saldo = _notaDebito.getMonto() - abonado;
+			mUpdateValues.put(NMConfig.Cliente.CCNotaDebito.MontoAbonado, abonado);
+			mUpdateValues.put(NMConfig.Cliente.CCNotaDebito.Saldo, saldo );
 			
 			String uri = DatabaseProvider.CONTENT_URI_CCNOTADEBITO +"/"+String.valueOf(notaDebito.getObjNotaDebitoID());
 			SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
@@ -375,7 +369,7 @@ public class ModelRecibo {
 				NMConfig.Recibo.DetalleNotaDebito.INTERES_MORATORIO,
 				NMConfig.Recibo.DetalleNotaDebito.SALDO_TOTAL,
 				NMConfig.Recibo.DetalleNotaDebito.MONTO_NETO };
-		ReciboDetND notadebitoDetalle = null;
+		ReciboDetND notaDebitoDetalle = null;
 		try {
 			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO	+ "/" + String.valueOf(reciboID);
 			Cursor cur = content.query(Uri.parse(uriString), 
@@ -386,22 +380,23 @@ public class ModelRecibo {
 			
 			if (cur.moveToFirst()) {				
 				do {
-					notadebitoDetalle = new ReciboDetND();
-					notadebitoDetalle.setId(Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))));
-					notadebitoDetalle.setObjNotaDebitoID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[1]))));
-					notadebitoDetalle.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))));
-					boolean esAbono = ( Integer.parseInt(cur.getString(cur.getColumnIndex(projection[3]))) == 0);
-					notadebitoDetalle.setEsAbono(esAbono);
-					notadebitoDetalle.setMontoPagar(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[4]))));
-					notadebitoDetalle.setNumero(cur.getString(cur.getColumnIndex(projection[5])));
-					notadebitoDetalle.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(projection[6]))));
-					notadebitoDetalle.setFechaVence(Long.parseLong(cur.getString(cur.getColumnIndex(projection[7]))));
-					notadebitoDetalle.setMontoND(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[8]))));
-					notadebitoDetalle.setSaldoND(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[9]))));
-					notadebitoDetalle.setInteresMoratorio(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[10]))));
-					notadebitoDetalle.setSaldoTotal(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[11]))));
-					notadebitoDetalle.setMontoNeto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[12]))));
-					notasdebito.add(notadebitoDetalle);
+					notaDebitoDetalle = new ReciboDetND();
+					notaDebitoDetalle.setId(Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))));
+					notaDebitoDetalle.setObjNotaDebitoID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[1]))));
+					notaDebitoDetalle.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))));
+					notaDebitoDetalle.setInteresMoratorio(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[3]))));
+					boolean esAbono = ( Integer.parseInt(cur.getString(cur.getColumnIndex(projection[4]))) == 0);
+					notaDebitoDetalle.setEsAbono(esAbono);
+					notaDebitoDetalle.setMontoPagar(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[5]))));
+					notaDebitoDetalle.setNumero(cur.getString(cur.getColumnIndex(projection[6])));
+					notaDebitoDetalle.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(projection[7]))));
+					notaDebitoDetalle.setFechaVence(Long.parseLong(cur.getString(cur.getColumnIndex(projection[8]))));
+					notaDebitoDetalle.setMontoND(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[9]))));
+					notaDebitoDetalle.setSaldoND(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[10]))));
+					notaDebitoDetalle.setInteresMoratorio(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[11]))));
+					notaDebitoDetalle.setSaldoTotal(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[12]))));
+					notaDebitoDetalle.setMontoNeto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[13]))));
+					notasdebito.add(notaDebitoDetalle);
 				} while(cur.moveToNext());
 			}
 

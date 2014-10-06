@@ -110,10 +110,10 @@ public class BLogicM {
 								Result.ABONOS_FACTURAS_OTROS_RECIBOS.getResult(),
 								0, 
 								0,
-								ModelLogic.getAbonosFacturaEnOtrosRecibos(
+								ModelLogic.getAbonosEnOtrosRecibos(
 										view.getActivity(),
 										facturaId,
-										reciboId)
+										reciboId, 0)
 							);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block

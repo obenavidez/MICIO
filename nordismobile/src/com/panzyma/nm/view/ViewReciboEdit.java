@@ -550,7 +550,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					recibo=((ReciboColector)msg.obj);
 					cliente=recibo.getCliente();
 					actualizarOnUINumRef(recibo); 
-					enviarImprimirRecibo(recibo);
+					if(msg.arg1==1)
+						enviarImprimirRecibo(recibo);
 				}
 				break;
 			case ControllerProtocol.NOTIFICATION:
@@ -582,7 +583,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			@Override
 			public void run() 
 			{ 
-				 AppDialog.showMessage(me,"Confirme por favor.!!!","Desea Imprimir el Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+				 AppDialog.showMessage(me,"","Desea Imprimir el Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
 				 {						 
 						@Override
 		    			public void onButtonClick(AlertDialog _dialog, int actionId) 
@@ -696,25 +697,25 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		//Si se está fuera de covertura, salir 
         if(!SessionManager.isPhoneConnected()) 
 		{
-            //Dialog.alert("La operación no puede ser realizada ya que está fuera de cobertura.");
+        	AppDialog.showMessage(me,"","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
             return;
-        }        
-        if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
-        {            
-        	AppDialog.showMessage(me,"Alerta","Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",DialogType.DIALOGO_ALERTA);
-            return;
-        }   
-
+        }     
 		if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
 		{            
 			AppDialog.showMessage(me,"Alerta","Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",DialogType.DIALOGO_ALERTA);
 			return;
 		}  
-		if(cliente==null){ 
+		if(cliente==null)
+		{ 
 			AppDialog.showMessage(me,"Alerta","Por favor seleccione un cliente.",DialogType.DIALOGO_ALERTA);
 			return;
 		} 
-		AppDialog.showMessage(me,"Solicitar descuento Ocosional","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener()
+		if(recibo.getReferencia()==0)
+		{
+			AppDialog.showMessage(me,"","Debe guardar primero el recibo localmente.",DialogType.DIALOGO_ALERTA);
+			return;
+		}
+		AppDialog.showMessage(me,"Ingrese el Descuento Ocosional a solicitar","",DialogType.DIALOGO_INPUT,new AppDialog.OnButtonClickListener()
 		{ 
 			@Override
 			public void onButtonClick(AlertDialog alert, int actionId) 
@@ -723,7 +724,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				{ 					 
 					try 
 					{
-						String nota =  ((TextView)alert.findViewById(R.id.txtpayamount)).getText().toString();
+						String nota="";
+						nota =  ((TextView)alert.findViewById(R.id.txtpayamount)).getText().toString();
+						if(nota=="")
+							return;
 						NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
 						NMApp.getController().addOutboxHandler((getHandler()==null)?new Handler(me):getHandler()); 
 						Message msg = new Message();
@@ -868,7 +872,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				final ReciboDetFactura facturaDetalle = (ReciboDetFactura) documentToEdit.getObject();
 				final Factura factura = getFacturaByID(facturaDetalle.getObjFacturaID());
 				
-				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.EDIT, true);
+				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, recibo, ActionType.EDIT, true);
 				dialogConfirmacion.setActionPago(new Pagable() {					
 					@Override
 					public void onPagarEvent(List<Ammount> montos) {
@@ -883,7 +887,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				final ReciboDetND notaDebitoDetalle = (ReciboDetND) documentToEdit.getObject();
 				final CCNotaDebito factura = getNotaDebitoByID(notaDebitoDetalle.getObjNotaDebitoID());
 				
-				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaDebitoDetalle, ActionType.EDIT, true);
+				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaDebitoDetalle, recibo, ActionType.EDIT, true);
 				dialogConfirmacion.setActionPago(new Pagable() {					
 					@Override
 					public void onPagarEvent(List<Ammount> montos) {
@@ -949,8 +953,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
         } 
 		showStatus("Enviando recibo a la central");  
 		try 
-		{ 
-			
+		{ 			
 			Message msg = new Message();
 			Bundle b = new Bundle();
 			b.putParcelable("recibo", recibo); 
@@ -1297,7 +1300,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			CCNotaDebito notaDebito,
 			List<Ammount> montos, boolean agregar) {
 		for (Ammount ammount : montos) {
-			switch (ammount.getAmmountType()) {			
+			switch (ammount.getAmmountType()) {	
+			case ABONADO_OTROS_RECIBOS:
+				if( ammount.isEvaluar() ){
+					float montoAbonado = 0.00F;
+					montoAbonado = ammount.getValue();
+					notaDebito.setMontoAbonado(montoAbonado);					
+				}
+				break;
 			case ABONADO: 
 				if( ammount.isEvaluar() ){
 					float montoAbonado = 0.00F,
@@ -1305,13 +1315,13 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					montoAbonado = ammount.getValue();
 					notaDebito.setMontoAbonado(notaDebito.getMontoAbonado() + montoAbonado);					
 					saldo = notaDebito.getMonto() - notaDebito.getMontoAbonado();
-					if ( saldo > 0 ) {
+					/*if ( saldo > 0 ) {
 						notaDebito.setCodEstado("ABONADA");
 						notaDebito.setEstado("Abonada");
 					} else  {
 						notaDebito.setCodEstado("CANCELADA");
 						notaDebito.setEstado("Cancelada");
-					}
+					}*/
 					notaDebito.setSaldo(saldo);
 					notaDebitoDetalle.setMontoPagar(montoAbonado);
 					notaDebitoDetalle.setMontoNeto(notaDebitoDetalle.getMontoPagar() - notaDebitoDetalle.getMontoInteres());
@@ -1327,7 +1337,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			documents.add(notaDebitoDetalle);			
 		}		
 		agregarDocumentosAlDetalleDeRecibo();
-		Cobro.ActualizaTotalFacturas(recibo);
+		Cobro.ActualizaTotalNotasDebito(recibo);
 		actualizaTotales();
 		
 	}
@@ -1384,7 +1394,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							facturaDetalle.setSubTotal(factura.getSubtotalFactura() - factura.getDescuentoFactura());
 							facturaDetalle.setTotalFactura(factura.getTotalFacturado());
 
-							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, ActionType.ADD);
+							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, recibo, ActionType.ADD);
 							dialogConfirmacion.setActionPago(new Pagable() {					
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
@@ -1419,7 +1429,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							notaDebitoDetalle.setSaldoTotal(notaDebitoDetalle.getSaldoND() + notaDebitoDetalle.getMontoInteres()); 
 							notaDebitoDetalle.setMontoPagar(notaDebitoDetalle.getSaldoTotal());
 							
-							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaDebitoDetalle, ActionType.ADD);
+							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaDebitoDetalle, recibo, ActionType.ADD);
 							dialogConfirmacion.setActionPago(new Pagable() {					
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
@@ -1444,7 +1454,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							notaCreditoDetalle.setNumero(notaCredito.getNumero());
 							notaCreditoDetalle.setObjNotaCreditoID(notaCredito.getId());							
 							
-							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaCreditoDetalle, ActionType.ADD);
+							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaCreditoDetalle, recibo, ActionType.ADD);
 							dialogConfirmacion.setActionPago(new Pagable() {					
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
@@ -1587,7 +1597,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				++count;
 			}
 			facturasRecibo.remove(positionDocument);
-			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());			
+			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());
+			
 		} else if (documentRemoved instanceof ReciboDetND) {
 			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE DEBITO
 			ReciboDetND notaDebitoToRemoved = ((ReciboDetND)documentRemoved.getObject());
@@ -1598,7 +1609,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				++count;
 			}
 			notasDebitoRecibo.remove(positionDocument);
-			recibo.setTotalFacturas(recibo.getTotalFacturas() - notaDebitoToRemoved.getMonto());	
+			recibo.setTotalND(recibo.getTotalND() - notaDebitoToRemoved.getMonto());	
 		} else if (documentRemoved instanceof ReciboDetNC) {
 			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE CREDITO
 			ReciboDetNC notaCreditoToRemoved = ((ReciboDetNC)documentRemoved.getObject());
@@ -1608,8 +1619,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				}
 				++count;
 			}
-			notasDebitoRecibo.remove(positionDocument);
-			recibo.setTotalFacturas(recibo.getTotalFacturas() - notaCreditoToRemoved.getMonto());
+			notasCreditoRecibo.remove(positionDocument);
+			recibo.setTotalNC(recibo.getTotalNC() - notaCreditoToRemoved.getMonto());
 		}
 
 	}
@@ -1698,7 +1709,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);
 
-		final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(documentToEdit, ActionType.EDIT);
+		final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(documentToEdit, recibo, ActionType.EDIT);
 		dialogConfirmacion.setActionPago(new Pagable() {					
 			@Override
 			public void onPagarEvent(List<Ammount> montos) {

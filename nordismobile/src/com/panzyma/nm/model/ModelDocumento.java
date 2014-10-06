@@ -1,7 +1,9 @@
 package com.panzyma.nm.model;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.panzyma.nm.auxiliar.NMConfig;
@@ -9,6 +11,7 @@ import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.serviceproxy.ReciboDetND;
 
 public class ModelDocumento {
 	
@@ -133,4 +136,62 @@ public class ModelDocumento {
 		return nd;
 	}
 	
+	/**
+	 * Obtiene el Detalle de nota de debito
+	 * @param cnt Contexto para realizar consulta
+	 * @param objReciboID Id del Recibo a buscar
+	 * @param objNotaDebitoID Id de la nota de debito a buscar
+	 * @return
+	 */
+	public static ReciboDetND getReciboDetND(Context cnt,Long objReciboID ,Long objNotaDebitoID){
+		SQLiteDatabase db = null;
+		String[] columns = new String[] {
+				NMConfig.Recibo.DetalleNotaDebito.ID,
+				NMConfig.Recibo.DetalleNotaDebito.NOTADEBITO_ID,
+				NMConfig.Recibo.DetalleNotaDebito.RECIBO_ID,
+				NMConfig.Recibo.DetalleNotaDebito.MONTO_INTERES,
+				NMConfig.Recibo.DetalleNotaDebito.ESABONO,
+				NMConfig.Recibo.DetalleNotaDebito.MONTO_PAGAR,
+				NMConfig.Recibo.DetalleNotaDebito.NUMERO,
+				NMConfig.Recibo.DetalleNotaDebito.FECHA,
+				NMConfig.Recibo.DetalleNotaDebito.FECHA_VENCE,
+				NMConfig.Recibo.DetalleNotaDebito.MONTO_ND,
+				NMConfig.Recibo.DetalleNotaDebito.SALDO_ND,
+				NMConfig.Recibo.DetalleNotaDebito.INTERES_MORATORIO,
+				NMConfig.Recibo.DetalleNotaDebito.SALDO_TOTAL,
+				NMConfig.Recibo.DetalleNotaDebito.MONTO_NETO };
+		ReciboDetND notaDebitoDetalle = null;
+		String where = String.format(" objReciboID = %s AND objNotaDebitoID = %s ", objReciboID, objNotaDebitoID);
+		try {
+			db = DatabaseProvider.Helper.getDatabase(cnt);
+			Cursor cur = db.query(
+					DatabaseProvider.TABLA_RECIBO_DETALLE_NOTA_DEBITO, columns,
+					where, null, null, null, null, null);
+			if (cur.moveToFirst()) {				
+				do {
+					notaDebitoDetalle = new ReciboDetND();
+					notaDebitoDetalle.setId(Long.parseLong(cur.getString(cur.getColumnIndex(columns[0]))));
+					notaDebitoDetalle.setObjNotaDebitoID(Long.parseLong(cur.getString(cur.getColumnIndex(columns[1]))));
+					notaDebitoDetalle.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(columns[2]))));
+					notaDebitoDetalle.setInteresMoratorio(Float.parseFloat(cur.getString(cur.getColumnIndex(columns[3]))));
+					boolean esAbono = ( Integer.parseInt(cur.getString(cur.getColumnIndex(columns[4]))) == 0);
+					notaDebitoDetalle.setEsAbono(esAbono);
+					notaDebitoDetalle.setMontoPagar(Float.parseFloat(cur.getString(cur.getColumnIndex(columns[5]))));
+					notaDebitoDetalle.setNumero(cur.getString(cur.getColumnIndex(columns[6])));
+					notaDebitoDetalle.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(columns[7]))));
+					notaDebitoDetalle.setFechaVence(Long.parseLong(cur.getString(cur.getColumnIndex(columns[8]))));
+					notaDebitoDetalle.setMontoND(Float.parseFloat(cur.getString(cur.getColumnIndex(columns[9]))));
+					notaDebitoDetalle.setSaldoND(Float.parseFloat(cur.getString(cur.getColumnIndex(columns[10]))));
+					notaDebitoDetalle.setInteresMoratorio(Float.parseFloat(cur.getString(cur.getColumnIndex(columns[11]))));
+					notaDebitoDetalle.setSaldoTotal(Float.parseFloat(cur.getString(cur.getColumnIndex(columns[12]))));
+					notaDebitoDetalle.setMontoNeto(Float.parseFloat(cur.getString(cur.getColumnIndex(columns[13]))));
+					
+				} while(cur.moveToNext());
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		return notaDebitoDetalle;
+	}
 }

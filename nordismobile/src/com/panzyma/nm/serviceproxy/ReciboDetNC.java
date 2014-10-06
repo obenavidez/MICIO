@@ -114,7 +114,7 @@ public class ReciboDetNC implements KvmSerializable,Documento, Parcelable {
 	@Override
 	public float getSaldo() {
 		// TODO Auto-generated method stub
-		return 0;
+		return Monto;
 	}
 
 	@Override
