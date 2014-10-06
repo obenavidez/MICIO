@@ -174,9 +174,7 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 				rowRetencion.setVisibility(View.GONE);
 				rowDescuento.setVisibility(View.GONE);
 			}
-			else 
-			{
-				
+			else {
 				rowRetencion.setVisibility(View.VISIBLE);
 				rowDescuento.setVisibility(editDescuento ? View.VISIBLE : View.GONE);
 			}				
