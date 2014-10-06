@@ -605,6 +605,19 @@ public class Cobro
     	
     }
     
+    public static void ActualizaTotalNotasDebito(ReciboColector rcol) {    	    
+        //ReciboDetND[] _ff = getArraOfNotasDebitoDetalle( rcol.getNotasDebitoRecibo() );
+        if (rcol == null) return;   
+        if (rcol.getNotasDebitoRecibo() == null || rcol.getNotasDebitoRecibo().size() == 0) return;    
+        rcol.setTotalND(0.00F);
+      //Inicializar descuento PP en cero en todas ls facturas
+        for(ReciboDetND nd : rcol.getNotasDebitoRecibo()) {
+        	ReciboDetND _f = nd;
+            rcol.setTotalND(rcol.getTotalND() + _f.getMonto() );
+        }  
+    	
+    }
+  
 	private static ReciboDetFactura[] getArraOfFacturaDetalle(List<ReciboDetFactura> objList) {
 		   ReciboDetFactura[] list = new ReciboDetFactura[objList.size()];
 		   

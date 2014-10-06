@@ -169,7 +169,7 @@ public class ReciboDetND implements KvmSerializable,Documento, Parcelable {
 
 	@Override
 	public float getMonto() {
-		return getMontoPagar();
+		return MontoPagar;
 	}
 
 	@Override
@@ -190,13 +190,13 @@ public class ReciboDetND implements KvmSerializable,Documento, Parcelable {
 	@Override
 	public float getSaldo() {
 		// TODO Auto-generated method stub
-		return 0;
+		return SaldoND;
 	}
 
 	@Override
 	public float getRetencion() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 0.00f;
 	}
 
 	@Override

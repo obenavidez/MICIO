@@ -1,19 +1,28 @@
 package com.panzyma.nm.viewdialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.ActionType;
 import com.panzyma.nm.auxiliar.Ammount;
 import com.panzyma.nm.auxiliar.AmmountType;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.model.ModelLogic;
+import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Documento;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
+import com.panzyma.nm.serviceproxy.TasaCambio;
+import com.panzyma.nm.viewdialog.EditFormaPago.LoadDataToUI;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
@@ -21,6 +30,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
@@ -53,14 +63,16 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 	private boolean editDescuento;
 	private float montoAbonado;
 	private NMApp nmapp;
+	private ReciboColector recibo;
 		
 	public interface Pagable {
 		public void onPagarEvent(List<Ammount> montos);
 	}
 
-	public DialogoConfirmacion(Documento documento, ActionType actionType,boolean... editDescuento) {
+	public DialogoConfirmacion(Documento documento, ReciboColector recibo, ActionType actionType,boolean... editDescuento) {
 		super();
 		this.document = documento;
+		this.recibo = recibo;
 		this.actionType = actionType;
 		this.editDescuento = editDescuento.length > 0 && editDescuento[0];
 	}
@@ -111,28 +123,6 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		
 		nmapp = (NMApp) this.getActivity().getApplicationContext();
 		
-		if( document instanceof ReciboDetFactura) {
-			try {
-				
-				Message msg = new Message();
-				msg.what = ControllerProtocol.LOAD_ABONOS_FACTURA_EN_OTROS_RECIBOS;
-				Bundle params = new Bundle();
-				ReciboDetFactura fac = (ReciboDetFactura) document.getObject();
-				params.putLong("objFacturaID", fac.getObjFacturaID());
-				params.putLong("objReciboID", fac.getObjReciboID());
-				msg.setData(params);
-				nmapp.getController().removeViewByName(DialogoConfirmacion.class.toString());
-				nmapp.getController().removeBridgeByName(BLogicM.class.toString());
-				nmapp.getController().setEntities(this, new BLogicM());
-				nmapp.getController().addOutboxHandler(new Handler(this));
-				nmapp.getController()
-						.getInboxHandler()
-						.sendMessage(msg);
-			}catch(Exception ex){
-				ex.printStackTrace();
-			}
-		}		
-		
 		monto.addTextChangedListener(new TextWatcher(){
 
 			@Override
@@ -146,17 +136,27 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 			public void onTextChanged(CharSequence arg0, int arg1, int arg2,
 					int arg3) 
 			{
-				float nSaldo = 0.00f, 
-						nTotalDocumento = 0.00f;
-				String monto = arg0.toString().trim().equals("") ? "0.00" : arg0.toString();
-				if(document instanceof ReciboDetFactura)
-					nTotalDocumento = ((ReciboDetFactura)document).getTotalfactura();
-				else if (document instanceof ReciboDetND)
-					nTotalDocumento = ((ReciboDetND)document).getMontoND();
-				else if (document instanceof ReciboDetNC)
-					nTotalDocumento = ((ReciboDetNC)document).getMonto();
-				nSaldo = nTotalDocumento - Float.parseFloat(String.valueOf(monto.replace(",", ""))) ;
-				saldo.setText(StringUtil.formatReal(nSaldo));				
+				
+				Long documentID = null, reciboID = null, documentType = null;
+				
+				if(document instanceof ReciboDetFactura){
+					ReciboDetFactura fac = (ReciboDetFactura) document.getObject();
+					documentID = fac.getObjFacturaID();
+					reciboID = fac.getObjReciboID();
+					documentType = 10L;
+				} else if (document instanceof ReciboDetND) {
+					ReciboDetND nd = (ReciboDetND) document.getObject();
+					documentID = nd.getObjNotaDebitoID();
+					reciboID = nd.getObjReciboID();
+					documentType = 20L;
+				} else if (document instanceof ReciboDetNC) {
+					ReciboDetNC nc = (ReciboDetNC) document.getObject();
+					documentID = nc.getObjNotaCreditoID();
+					reciboID = nc.getObjReciboID();
+					documentType = 30L;
+				}
+				LoadDataToUI loadData = new LoadDataToUI(arg0.toString().trim());
+				loadData.execute(new Long[]{documentID,reciboID,documentType});
 			}
 			
 		});
@@ -165,7 +165,17 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		numero.setText(document.getNumero());
 		saldo.setText(StringUtil.formatReal(document.getSaldo()));
 		interes.setText("0.00");
-		monto.setText(StringUtil.formatReal((document.getMonto())));
+		//monto.setText(StringUtil.formatReal((document.getMonto())));	
+		switch(actionType){
+		case ADD: 
+			monto.setText(StringUtil.formatReal(document.getSaldo())); 
+			break;
+		case EDIT:
+			monto.setText(StringUtil.formatReal(document.getMonto()));
+			break;
+		default:
+			break;
+		}		
 		retencion.setText(StringUtil.formatReal(document.getRetencion()));
 		descuento.setText(StringUtil.formatReal(document.getRetencion()));
 		//SI ESTAMOS ANTE UNA FACTURA Y ESTAMOS EDITANDO EL ITEM
@@ -177,8 +187,7 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 			else {
 				rowRetencion.setVisibility(View.VISIBLE);
 				rowDescuento.setVisibility(editDescuento ? View.VISIBLE : View.GONE);
-			}				
-			
+			}		
 			if (this.editDescuento) {	
 				titulo.setText("Editando descuento");
 				monto.setEnabled(false);
@@ -225,4 +234,39 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		return false;
 	}	
 
+	public class LoadDataToUI extends AsyncTask<Long, Void, Float > {
+
+		private String monto = "0";			
+		
+		public LoadDataToUI(String monto){
+			this.monto = monto;
+		}
+		
+		@Override
+		protected Float doInBackground(Long... params) {			
+			return ModelLogic.getAbonosEnOtrosRecibos(DialogoConfirmacion.this.getActivity(), params[0], params[1], params[2]);
+		}
+
+		@Override
+		protected void onPostExecute(Float result) {
+			float nSaldo = 0.00f, 
+				  nTotalDocumento = 0.00f,
+				  nAbonadoEnOtrosRecibos = result;			
+			montoAbonado = nAbonadoEnOtrosRecibos;
+			if(document instanceof ReciboDetFactura) {
+				nTotalDocumento = ((ReciboDetFactura)document).getTotalfactura();				
+			} else if (document instanceof ReciboDetND){
+				nTotalDocumento = ((ReciboDetND)document).getMontoND();
+			} else if (document instanceof ReciboDetNC) {
+				nTotalDocumento = ((ReciboDetNC)document).getMonto();
+			}			
+			nSaldo = nTotalDocumento - nAbonadoEnOtrosRecibos;			
+			monto  = ( monto.toString().trim().length() == 0 ? "0" : monto);
+			nSaldo = nSaldo - Float.parseFloat(String.valueOf(monto.replace(",", ""))) ;			
+			saldo.setText(StringUtil.formatReal(nSaldo));		
+			super.onPostExecute(result);
+		}
+		
+	}
+	
 }

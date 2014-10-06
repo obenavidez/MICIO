@@ -62,26 +62,49 @@ public class ModelLogic {
 	 * OBTENER EL VALOR DE MONTO ABONADO PARA LA FACTURA EN OTROS RECIBOS
 	 * @param view
 	 * @param objFacturaId
+	 * @param objType TODO
 	 * @return
 	 */
-	public synchronized static float getAbonosFacturaEnOtrosRecibos(Context view, long objFacturaId, long objReciboId){
+	public synchronized static float getAbonosEnOtrosRecibos(Context view, long objDocumentId, long objReciboId, long objType){
 		SQLiteDatabase bd = Helper.getDatabase(view);
 		float montoAbonado = 0.00F;
 		try {			
 			StringBuilder sQuery = new StringBuilder();
-			sQuery.append("SELECT SUM(monto) AS montoAbonado ");
-			sQuery.append(" FROM ReciboDetalleFactura AS rdf ");
-			sQuery.append("      INNER JOIN Recibo r ");
-			sQuery.append("      ON  r.id = rdf.objReciboID ");
-			sQuery.append(" WHERE rdf.objFacturaID = " + objFacturaId);
-			sQuery.append("       AND rdf.objReciboID <> " + objReciboId);
-			sQuery.append("       AND r.codEstado <> 'ANULADO' ");
+			if( objType == 10){
+				sQuery.append(" SELECT SUM(A.Abonado) AS montoAbonado ");
+				sQuery.append(" FROM Factura AS A ");
+				sQuery.append("      LEFT JOIN ( ");
+				sQuery.append("      	SELECT  _nd.objFacturaID AS objFacturaID ");
+				sQuery.append("      	FROM ReciboDetalleFactura _nd ");
+				sQuery.append("      		 INNER JOIN Recibo r ");
+				sQuery.append("      		 ON r.id = _nd.objReciboID ");
+				sQuery.append("      	WHERE r.id <> " + objReciboId);
+				sQuery.append("      	      AND r.codEstado <> 'ANULADO' ");
+				sQuery.append("      	      AND _nd.objFacturaID = " + objDocumentId);
+				sQuery.append("      ) AS B ");
+				sQuery.append("      ON A.id = B.objFacturaID ");				
+				sQuery.append(" WHERE A.id = " + objDocumentId);
+			} else if( objType == 20) {
+				sQuery.append(" SELECT SUM(A.MontoAbonado) AS montoAbonado ");
+				sQuery.append(" FROM CCNotaDebito AS A ");
+				sQuery.append("      LEFT JOIN ( ");
+				sQuery.append("      	SELECT  _nd.objNotaDebitoID AS objNotaDebitoID ");
+				sQuery.append("      	FROM ReciboDetalleNotaDebito _nd ");
+				sQuery.append("      		 INNER JOIN Recibo r ");
+				sQuery.append("      		 ON r.id = _nd.objReciboID ");
+				sQuery.append("      	WHERE r.id <> " + objReciboId);
+				sQuery.append("      	      AND r.codEstado <> 'ANULADO' ");
+				sQuery.append("      	      AND _nd.objNotaDebitoID = " + objDocumentId);
+				sQuery.append("      ) AS B ");
+				sQuery.append("      ON A.id = B.objNotaDebitoID ");				
+				sQuery.append(" WHERE A.id = " + objDocumentId);				
+			}			
 			Cursor c = DatabaseProvider.query(bd, sQuery.toString());
 			// Nos aseguramos de que existe al menos un registro
 			if (c.moveToFirst()) {
 				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
 				do {				
-					montoAbonado = c.getInt(0);
+					montoAbonado = c.getFloat(0);
 				} while (c.moveToNext());
 			}			
 		} catch (Exception e) {
