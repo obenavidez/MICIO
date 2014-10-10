@@ -462,7 +462,7 @@ public final class BReciboM {
 						// Parameters params = viewcc.get_FacturaParameters();
 						Processor.send_ViewReciboEditToView(
 								ModelCliente.getClienteBySucursalID(view1.getContext()
-										.getContentResolver(), sucursalID), controller);
+										.getContentResolver(), sucursalID, 0), controller);
 
 					} catch (Exception e) {
 						e.printStackTrace();

@@ -256,7 +256,7 @@ public class ModelRecibo {
 				} while (cur.moveToNext());
 				
 				//OBTENER EL CLIENTE DEL RECIBO
-				Cliente cliente = ModelCliente.getClienteBySucursalID(content, recibo.getObjSucursalID());
+				Cliente cliente = ModelCliente.getClienteBySucursalID(content, recibo.getObjSucursalID(), recibo.getId());
 				recibo.setCliente(cliente);
 				
 			}
@@ -614,7 +614,7 @@ public class ModelRecibo {
 						recibo.setExento(exento);
 						recibo.setAutorizacionDGI(cur.getString(cur.getColumnIndex(projection[30])));
 						//Get Customer reference
-						Cliente cliente = ModelCliente.getClienteBySucursalID(content, recibo.getObjSucursalID());
+						Cliente cliente = ModelCliente.getClienteBySucursalID(content, recibo.getObjSucursalID(), recibo.getId());
 						recibo.setCliente(cliente);
 						//Get Detail
 						recibo.setFacturasRecibo(getFacturasDelRecibo(content, recibo.getId()));

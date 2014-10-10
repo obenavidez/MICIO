@@ -134,7 +134,7 @@ public class ModelCliente
 	}
 	
 	 
-	public synchronized static Cliente getClienteBySucursalID(ContentResolver content,long objSucursalID)throws Exception
+	public synchronized static Cliente getClienteBySucursalID(ContentResolver content,long objSucursalID, long reciboID)throws Exception
 	{
 		Cliente cliente=new Cliente(); 
 		Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_CLIENTE+"/"+String.valueOf(objSucursalID)); 
@@ -180,9 +180,9 @@ public class ModelCliente
 	        		
 	        	 }while (cur.moveToNext());
 	            
-	            cliente.setFacturasPendientes(getDocumentosPendientes(content,cliente.getIdSucursal())); 
-	    		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(content,cliente.getIdSucursal()));
-	    		cliente.setNotasDebitoPendientes(getCCNotasDeDebito(content,cliente.getIdSucursal()));
+	            cliente.setFacturasPendientes(getDocumentosPendientes(content,cliente.getIdSucursal(),reciboID) ); 
+	    		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(content,cliente.getIdSucursal(),reciboID) );
+	    		cliente.setNotasDebitoPendientes(getCCNotasDeDebito(content,cliente.getIdSucursal(),reciboID) );
 	    		cliente.setDescuentosProveedor(getDescuentosProveedor(content,cliente.getIdSucursal()));
 			 }  
 		} catch(Exception ex){
@@ -192,7 +192,7 @@ public class ModelCliente
 	}
 	
 	
-	private static Factura[] getDocumentosPendientes(ContentResolver content,long objSucursalID)
+	private static Factura[] getDocumentosPendientes(ContentResolver content,long objSucursalID, long reciboID)
 	{
 		int cont=0;
 		Cursor cur_fact=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_FACTURA+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
@@ -240,10 +240,10 @@ public class ModelCliente
             	Factura fact=new Factura();		       	            	
             	fact.setId(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Id))));   
             	
-            	for(Long facturaID : facturasGravadas) {
+            	/*for(Long facturaID : facturasGravadas) {
             		if(fact.getId() == facturaID)
             			agregar = false;
-            	}
+            	}*/
             	
             	fact.setNombreSucursal(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NombreSucursal)));
             	fact.setNoFactura(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NoFactura)));
@@ -327,7 +327,7 @@ public class ModelCliente
 		
 	}
 	
-	private static CCNotaCredito[] getCCNotasDeCredito(ContentResolver content,long objSucursalID)
+	private static CCNotaCredito[] getCCNotasDeCredito(ContentResolver content,long objSucursalID,long reciboID)
 	{
 		int cont=0;
 		Cursor cur_nc=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_CCNOTACREDITO+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
@@ -338,12 +338,19 @@ public class ModelCliente
 		    //OBTENIENDO LAS FACTURAS
 		    db = Helper.getDatabase(NMApp.ctx);
 		    StringBuilder sQuery = new StringBuilder();
-			sQuery.append("SELECT rdf.objNotaDebitoID ");
-			sQuery.append(" FROM ReciboDetalleNotaDebito AS rdf ");
+			
+		    sQuery.append(" SELECT Id ");
+			sQuery.append(" FROM CCNotaCredito AS nd ");
+			sQuery.append(" WHERE nd.objSucursalID = " + objSucursalID);
+			sQuery.append(" EXCEPT ");
+			sQuery.append(" SELECT rdf.objNotaCreditoID " );		
+			sQuery.append(" FROM ReciboDetalleNotaCredito AS rdf ");
 			sQuery.append("      INNER JOIN Recibo r ");
 			sQuery.append("      ON  r.id = rdf.objReciboID ");
-			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);		
-			sQuery.append("       AND r.codEstado <> 'ANULADO' ");
+			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
+			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );
+			sQuery.append("       AND r.id <> " + reciboID );
+			
 			Cursor c = DatabaseProvider.query(db, sQuery.toString());
 			
 			if (c.moveToFirst()) {
@@ -363,17 +370,18 @@ public class ModelCliente
 				db = null;
 			}
 		} 
-		CCNotaCredito[] anc=new CCNotaCredito[cur_nc.getCount()-notasCreditoGravadas.size()]; 
+	    int size = notasCreditoGravadas.size();   
+		CCNotaCredito[] anc=new CCNotaCredito[size]; 
  	    if (cur_nc.moveToFirst()) 
 		{   	    	   			 
             do
             {
-            	boolean agregar = true;
+            	boolean agregar = false;
         	    CCNotaCredito nc=new CCNotaCredito();        	    
         	    nc.setId(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Id))));
         	    for(Long id : notasCreditoGravadas) {
         	    	if(id == nc.getId()) {
-        	    		agregar = false;
+        	    		agregar = true;
         	    	}
         	    }
         	    nc.setNombreSucursal(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.NombreSucursal)));
@@ -399,7 +407,7 @@ public class ModelCliente
  	    return anc.length==0?null:anc;
 	}
 	
-	private static CCNotaDebito[] getCCNotasDeDebito(ContentResolver content,long objSucursalID)
+	private static CCNotaDebito[] getCCNotasDeDebito(ContentResolver content,long objSucursalID, long reciboID)
 	{
 		int cont=0;
 		Cursor cur_nd=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_CCNOTADEBITO+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
@@ -410,12 +418,19 @@ public class ModelCliente
 		    //OBTENIENDO LAS FACTURAS
 		    db = Helper.getDatabase(NMApp.ctx);
 		    StringBuilder sQuery = new StringBuilder();
-			sQuery.append("SELECT rdf.objNotaDebitoID ");
+		    
+		    sQuery.append(" SELECT Id ");
+			sQuery.append(" FROM CCNotaDebito AS nd ");
+			sQuery.append(" WHERE nd.objSucursalID = " + objSucursalID);
+			sQuery.append(" EXCEPT ");
+			sQuery.append(" SELECT rdf.objNotaDebitoID " );		
 			sQuery.append(" FROM ReciboDetalleNotaDebito AS rdf ");
 			sQuery.append("      INNER JOIN Recibo r ");
 			sQuery.append("      ON  r.id = rdf.objReciboID ");
-			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);		
-			sQuery.append("       AND r.codEstado <> 'ANULADO' ");
+			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
+			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );	
+			sQuery.append("       AND r.id <> " + reciboID );
+			
 			Cursor c = DatabaseProvider.query(db, sQuery.toString());
 			
 			if (c.moveToFirst()) {
@@ -435,17 +450,18 @@ public class ModelCliente
 				db = null;
 			}
 		} 
-		CCNotaDebito[] and=new CCNotaDebito[cur_nd.getCount()-notasDebitoGravadas.size()]; 
+	    int size = notasDebitoGravadas.size();	    
+		CCNotaDebito[] array_nd = new CCNotaDebito[size]; 
  	    if (cur_nd.moveToFirst()) 
 		{   	    	   			 
             do
             {
-            	boolean agregar = true;
+            	boolean agregar = false;
             	CCNotaDebito nd=new CCNotaDebito();        	    
         	    nd.setId(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Id))));   
         	    for(Long id : notasDebitoGravadas) {
         	    	if(id == nd.getId()) {
-        	    		agregar = false;
+        	    		agregar = true;
         	    	}
         	    }
         	    nd.setNombreSucursal(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.NombreSucursal)));
@@ -462,14 +478,14 @@ public class ModelCliente
         	    nd.setDescripcion(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Descripcion)));
         	    
         	    if(agregar) {
-        	    	and[cont]=nd;
+        	    	array_nd[cont]=nd;
             	    cont++;
         	    }
         	    
 
             }while (cur_nd.moveToNext());
 		}
- 	    return  and.length==0?null:and;
+ 	    return  array_nd.length==0?null:array_nd;
 	}
 	
 	private static DescuentoProveedor[] getDescuentosProveedor(ContentResolver content,long objSucursalID)
