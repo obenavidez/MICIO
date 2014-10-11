@@ -17,6 +17,7 @@ import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
+import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 /*import com.panzyma.nm.auxiliar.Parameters; by jrostran*/
@@ -68,43 +69,54 @@ public class ModelLogic {
 	public synchronized static float getAbonosEnOtrosRecibos(Context view, long objDocumentId, long objReciboId, long objType){
 		SQLiteDatabase bd = Helper.getDatabase(view);
 		float montoAbonado = 0.00F;
+		int contador = 1;
 		try {			
 			StringBuilder sQuery = new StringBuilder();
-			if( objType == 10){
-				sQuery.append(" SELECT SUM(A.Abonado) AS montoAbonado ");
-				sQuery.append(" FROM Factura AS A ");
-				sQuery.append("      LEFT JOIN ( ");
-				sQuery.append("      	SELECT  _nd.objFacturaID AS objFacturaID ");
-				sQuery.append("      	FROM ReciboDetalleFactura _nd ");
-				sQuery.append("      		 INNER JOIN Recibo r ");
-				sQuery.append("      		 ON r.id = _nd.objReciboID ");
-				sQuery.append("      	WHERE r.id <> " + objReciboId);
-				sQuery.append("      	      AND r.codEstado <> 'ANULADO' ");
-				sQuery.append("      	      AND _nd.objFacturaID = " + objDocumentId);
-				sQuery.append("      ) AS B ");
-				sQuery.append("      ON A.id = B.objFacturaID ");				
+			if( objType == 10){				
+				sQuery.append(" SELECT SUM(A.Abonado)  AS montoAbonado  ");
+				sQuery.append(" FROM Factura AS A  ");
 				sQuery.append(" WHERE A.id = " + objDocumentId);
-			} else if( objType == 20) {
-				sQuery.append(" SELECT SUM(A.MontoAbonado) AS montoAbonado ");
-				sQuery.append(" FROM CCNotaDebito AS A ");
-				sQuery.append("      LEFT JOIN ( ");
-				sQuery.append("      	SELECT  _nd.objNotaDebitoID AS objNotaDebitoID ");
-				sQuery.append("      	FROM ReciboDetalleNotaDebito _nd ");
-				sQuery.append("      		 INNER JOIN Recibo r ");
-				sQuery.append("      		 ON r.id = _nd.objReciboID ");
-				sQuery.append("      	WHERE r.id <> " + objReciboId);
-				sQuery.append("      	      AND r.codEstado <> 'ANULADO' ");
-				sQuery.append("      	      AND _nd.objNotaDebitoID = " + objDocumentId);
-				sQuery.append("      ) AS B ");
-				sQuery.append("      ON A.id = B.objNotaDebitoID ");				
-				sQuery.append(" WHERE A.id = " + objDocumentId);				
+				sQuery.append(" UNION  ");
+				sQuery.append(" SELECT CASE WHEN _nd.monto IS NULL  ");
+				sQuery.append(" 	        THEN 0  ");
+				sQuery.append(" 	        ELSE _nd.monto  ");
+				sQuery.append(" 	   END  AS montoPagar  ");
+				sQuery.append(" FROM ReciboDetalleFactura _nd  ");
+				sQuery.append(" 	 INNER JOIN Recibo r " );
+				sQuery.append(" 	 ON r.id = _nd.objReciboID ");
+				sQuery.append(" WHERE r.id = " + objReciboId);
+				sQuery.append(" 	  AND r.codEstado <> 'ANULADO' ");			 
+				sQuery.append("       AND _nd.objFacturaID = " + objDocumentId);	
+				sQuery.append(" ORDER BY 1 DESC ");	
+			} else if( objType == 20) {				
+				sQuery.append(" SELECT SUM(A.MontoAbonado)  AS montoAbonado  ");
+				sQuery.append(" FROM CCNotaDebito AS A  ");
+				sQuery.append(" WHERE A.id = " + objDocumentId);
+				sQuery.append(" UNION  ");
+				sQuery.append(" SELECT CASE WHEN _nd.montoPagar IS NULL  ");
+				sQuery.append(" 	        THEN 0  ");
+				sQuery.append(" 	        ELSE _nd.montoPagar  ");
+				sQuery.append(" 	   END  AS montoPagar  ");
+				sQuery.append(" FROM ReciboDetalleNotaDebito _nd  ");
+				sQuery.append(" 	 INNER JOIN Recibo r " );
+				sQuery.append(" 	 ON r.id = _nd.objReciboID ");
+				sQuery.append(" WHERE r.id = " + objReciboId);
+				sQuery.append(" 	  AND r.codEstado <> 'ANULADO' ");			 
+				sQuery.append("       AND _nd.objNotaDebitoID = " + objDocumentId);	
+				sQuery.append(" ORDER BY 1 DESC ");				
 			}			
 			Cursor c = DatabaseProvider.query(bd, sQuery.toString());
 			// Nos aseguramos de que existe al menos un registro
+			montoAbonado = 0.0F;
 			if (c.moveToFirst()) {
 				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
-				do {				
-					montoAbonado = c.getFloat(0);
+				do {	
+					if(contador == 1){
+						montoAbonado = Util.Numero.redondear(c.getFloat(0), 2) ;
+					} else {
+						montoAbonado -= Util.Numero.redondear(c.getFloat(0), 2) ;
+					}
+					contador++;
 				} while (c.moveToNext());
 			}			
 		} catch (Exception e) {
@@ -117,7 +129,7 @@ public class ModelLogic {
 				bd = null;
 			}
 		} 
-		return montoAbonado;
+		return Util.Numero.redondear(montoAbonado,2);
 	}
 
 	/**

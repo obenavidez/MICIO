@@ -390,6 +390,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 			// AGREGAR LAS NOTAS DE DEBITO DEL RECIBO A LA GRILLA
 			for (ReciboDetND nd : recibo.getNotasDebitoRecibo()) {
+				for (CCNotaDebito ndp : cliente.getNotasDebitoPendientes()) {
+					if (nd.getObjNotaDebitoID() == ndp.getId()) {						
+						getNotasDebitoRecibo().add(ndp);
+					}
+				}
 				addWithoutRepeating(nd);
 			}
 			// AGREGAR LAS NOTAS DE CREDITO DEL RECIBO A LA GRILLA
@@ -885,13 +890,13 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			} else {
 				
 				final ReciboDetND notaDebitoDetalle = (ReciboDetND) documentToEdit.getObject();
-				final CCNotaDebito factura = getNotaDebitoByID(notaDebitoDetalle.getObjNotaDebitoID());
+				final CCNotaDebito nd = getNotaDebitoByID(notaDebitoDetalle.getObjNotaDebitoID());
 				
 				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaDebitoDetalle, recibo, ActionType.EDIT, true);
 				dialogConfirmacion.setActionPago(new Pagable() {					
 					@Override
 					public void onPagarEvent(List<Ammount> montos) {
-						procesaNotaDebito(notaDebitoDetalle, factura, montos, false);
+						procesaNotaDebito(notaDebitoDetalle, nd, montos, false);
 					}
 				});
 								

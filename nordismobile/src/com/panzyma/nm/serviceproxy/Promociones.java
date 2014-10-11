@@ -18,7 +18,7 @@ public class Promociones {
 	public static ArrayList<com.panzyma.nm.serviceproxy.Promocion> getPromocionesAplican(Pedido p,ContentResolver content) throws Exception {
 		ArrayList<com.panzyma.nm.serviceproxy.Promocion> vecP = new ArrayList<com.panzyma.nm.serviceproxy.Promocion>();
 		ArrayList<com.panzyma.nm.serviceproxy.Promocion> promos = getPromociones(content);
-		Cliente clie = ModelCliente.getClienteBySucursalID(content,p.getObjSucursalID());
+		Cliente clie = ModelCliente.getClienteBySucursalID(content,p.getObjSucursalID(), 0);
 
 		Vector idsExcluir = new Vector();
 		if (p.getPromocionesAplicadas() != null) 

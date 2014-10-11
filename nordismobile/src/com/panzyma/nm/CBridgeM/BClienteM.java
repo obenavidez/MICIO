@@ -265,7 +265,7 @@ public final class BClienteM
 	}
 	
 	public static Cliente getClienteBySucursalID(ContentResolver content,long objSucursalID)throws Exception{
-		 return ModelCliente.getClienteBySucursalID(content,objSucursalID);
+		 return ModelCliente.getClienteBySucursalID(content,objSucursalID,0);
 	}
 	
 	public static Cliente actualizarCliente(Context cnt,String credenciales, long objSucursalID) throws Exception

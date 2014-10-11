@@ -13,6 +13,7 @@ import com.panzyma.nm.auxiliar.Ammount;
 import com.panzyma.nm.auxiliar.AmmountType;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.serviceproxy.Catalogo;
@@ -88,10 +89,10 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				List<Ammount> montos = new ArrayList<Ammount>();
-				montos.add(new Ammount(AmmountType.ABONADO_OTROS_RECIBOS, montoAbonado, !editDescuento ) );
-				montos.add(new Ammount(AmmountType.ABONADO, getMontoAbonado(), !editDescuento ) );
-				montos.add(new Ammount(AmmountType.RETENIDO, getMontoRetenido(), !editDescuento) );
-				montos.add(new Ammount(AmmountType.DESCONTADO, getMontoDescontado(), editDescuento));
+				montos.add(new Ammount(AmmountType.ABONADO_OTROS_RECIBOS,Util.Numero.redondear( montoAbonado , 2), !editDescuento ) );
+				montos.add(new Ammount(AmmountType.ABONADO, Util.Numero.redondear(getMontoAbonado(), 2) , !editDescuento ) );
+				montos.add(new Ammount(AmmountType.RETENIDO,Util.Numero.redondear( getMontoRetenido(), 2) , !editDescuento) );
+				montos.add(new Ammount(AmmountType.DESCONTADO, Util.Numero.redondear(getMontoDescontado(), 2) , editDescuento));
 				eventPago.onPagarEvent(montos);			
 			}
 		});
