@@ -23,7 +23,6 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NotificationMessage;
-import com.panzyma.nm.auxiliar.SessionAdministrator;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
@@ -121,7 +120,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		
 		NMApp.modulo = NMApp.Modulo.HOME;
 		buttonActive = v.getId();
-		if(SessionAdministrator.isAppConfigured())
+		if(SessionManager.getLoginUser() != null)
 		{
 				switch (v.getId())  
 				{
