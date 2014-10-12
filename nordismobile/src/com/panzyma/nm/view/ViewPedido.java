@@ -824,8 +824,8 @@ public class ViewPedido extends ActionBarActivity implements
 			if (pedido_selected == null)
 				return;
 			pedido = Ventas.obtenerPedidoByID(pedido_selected.getId(), vp);
-
-			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
+			//PORVALIDAR
+			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("PORVALIDAR")==0) || (pedido
 					.getCodEstado().compareTo("APROBADO") == 0)))
 				return;
 

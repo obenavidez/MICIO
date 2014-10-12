@@ -25,7 +25,7 @@ import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({"rawtypes","unused"})
-public class DialogLogin extends Dialog  implements Handler.Callback
+public class DialogLogin extends Dialog
 {
 	private EditText txtenterprise;
 	private EditText txtusername;
@@ -184,13 +184,7 @@ public class DialogLogin extends Dialog  implements Handler.Callback
         }  
         
 		return true;
-	}
-	
-	@Override
-	public boolean handleMessage(Message arg0) 
-	{ 
-		return false;
-	}
+	} 
 
 	private void FINISH_ACTIVITY()
 	{  

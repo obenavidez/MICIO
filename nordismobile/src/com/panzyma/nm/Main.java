@@ -23,6 +23,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NotificationMessage;
+import com.panzyma.nm.auxiliar.SessionAdministrator;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
@@ -36,7 +37,7 @@ import com.panzyma.nm.view.vCliente;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("ShowToast")
-@SuppressWarnings({ "rawtypes", "unused" })
+@SuppressWarnings({ "unused" })
 public class Main extends DashBoardActivity implements Handler.Callback {
 
 	/* este es un Comentario */
@@ -50,6 +51,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	public int buttonActive;
 	Main ma;
 	private static CustomDialog dlg;
+	Intent intent;
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -82,8 +85,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		
 		if (SessionManager.dl != null)
 			SessionManager.dl.dismiss();
-		
-		//NMApp.killApp(true);
+		 
 		super.onDestroy();
 	}
 
@@ -116,11 +118,10 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	 * @param v
 	 */
 	public void onButtonClicker(View v) {
-		final Intent intent;
+		
 		NMApp.modulo = NMApp.Modulo.HOME;
 		buttonActive = v.getId();
-		Usuario user = SessionManager.getLoginUser();
-		if(user!=null)
+		if(SessionAdministrator.isAppConfigured())
 		{
 				switch (v.getId())  
 				{
@@ -157,7 +158,13 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				}
 		}
 		else
-			callDialogLogin();
+			{
+				NMApp.modulo = NMApp.Modulo.CONFIGURACION;
+				intent = new Intent(this, ViewConfiguracion.class);
+				intent.putExtra("isEditActive",true);
+				startActivity(intent);
+				FINISH_COMPONENT(); 
+			}
 	}
 
 	@SuppressLint("ParserError")
@@ -173,10 +180,10 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 					try
 			        { 						 
 						Usuario user = SessionManager.getLoginUser(); 
-						if(user==null || (user!=null && SessionManager.SignIn(false)))
+						if(user!=null && SessionManager.SignIn(false))
 						{  
 							NMApp.modulo = NMApp.Modulo.CONFIGURACION;
-							Intent intent = new Intent(context, ViewConfiguracion.class);
+							intent = new Intent(context, ViewConfiguracion.class);
 							intent.putExtra("isEditActive",(user!=null)?SessionManager.isAdmin():true);
 							startActivity(intent);
 							FINISH_COMPONENT(); 
@@ -335,7 +342,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			NMApp.getController().addOutboxHandler(new Handler(this));
 	}
 
-	private void FINISH_COMPONENT() {
+	private void FINISH_COMPONENT() 
+	{
 		NMApp.getController().removeOutboxHandler(TAG);
 		if (cd != null && cd.isShowing())
 			cd.dismiss();

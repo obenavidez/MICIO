@@ -214,7 +214,7 @@ public class ModelConfiguracion {
 		edit.putString(""+referencia,nota);
 		edit.commit();
 	}
-	
+	  
 	public static String[] getVariablesSession(Context cnt)
 	{
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);	
@@ -260,9 +260,12 @@ public class ModelConfiguracion {
 		if (pref.getLong("id", 0) == 0)
 			return null;
 		else
-			return new Usuario(pref.getLong("id", 0), pref.getString("login",
-					""), pref.getString("nombre", ""), pref.getString("sexo",
-					""), pref.getBoolean("isAccedeModuloPedidos", false),
+			return new Usuario(pref.getLong("id", 0), 
+					pref.getString("login",""), 
+					pref.getString("password", ""),
+					pref.getString("nombre", ""), 
+					pref.getString("sexo",""), 
+					pref.getBoolean("isAccedeModuloPedidos", false),
 					pref.getBoolean("isIsAdmin", false), pref.getBoolean(
 							"isPuedeConsultarPedido", false), pref.getBoolean(
 							"isPuedeCrearPedido", false), pref.getBoolean(
@@ -273,12 +276,14 @@ public class ModelConfiguracion {
 					pref.getString("codigo", ""), pref.getBoolean(
 							"isPuedeEditarPrecioArriba", false));
 	}
+	 
 
 	public static void saveUser(Context view, Usuario user) throws Exception {
 		pref = view.getSharedPreferences("LoginUser", Context.MODE_PRIVATE);
 		edit = pref.edit();
 		edit.putString("codigo", user.getCodigo());
 		edit.putString("login", user.getLogin());
+		edit.putString("password", user.getPassword());
 		edit.putString("nombre", user.getNombre());
 		edit.putString("sexo", user.getSexo());
 		edit.putLong("id", user.getId());
