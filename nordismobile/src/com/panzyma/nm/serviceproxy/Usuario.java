@@ -19,6 +19,7 @@ public class Usuario implements KvmSerializable
 {
     protected long Id;
     protected java.lang.String Login;
+    protected java.lang.String Password;
     protected java.lang.String Nombre;
     protected java.lang.String Sexo;
     protected boolean AccedeModuloPedidos;
@@ -46,7 +47,7 @@ public class Usuario implements KvmSerializable
     
     public static Usuario nuevaInstancia(Usuario _usuario)
     { 
-    		usuario=new Usuario(_usuario.getId(),_usuario.getLogin(),
+    		usuario=new Usuario(_usuario.getId(),_usuario.getLogin(),_usuario.getPassword(),
     							_usuario.getNombre(),_usuario.getSexo(),
     							_usuario.AccedeModuloPedidos,_usuario.isPuedeEditarPrecioAbajo(),
     							_usuario.isPuedeEditarPrecioArriba(),
@@ -61,9 +62,24 @@ public class Usuario implements KvmSerializable
     	return ModelConfiguracion.getUser(cnt);
     }
     
-    public Usuario(long id, java.lang.String login, java.lang.String nombre, java.lang.String sexo, boolean accedeModuloPedidos, boolean puedeEditarPrecioAbajo, boolean puedeEditarPrecioArriba, boolean puedeEditarBonifAbajo, boolean puedeEditarBonifArriba, boolean isAdmin, boolean puedeCrearPedido, boolean puedeConsultarPedido, java.lang.String codigo, boolean puedeEditarDescPP) {
+    public Usuario(	long id, 
+    				java.lang.String login, 
+    				java.lang.String password, 
+    				java.lang.String nombre, 
+    				java.lang.String sexo, 
+    				boolean accedeModuloPedidos, 
+    				boolean puedeEditarPrecioAbajo, 
+    				boolean puedeEditarPrecioArriba, 
+    				boolean puedeEditarBonifAbajo, 
+    				boolean puedeEditarBonifArriba, 
+    				boolean isAdmin, 
+    				boolean puedeCrearPedido, 
+    				boolean puedeConsultarPedido, 
+    				java.lang.String codigo, 
+    				boolean puedeEditarDescPP) {
         this.Id = id;
         this.Login = login;
+        this.Password=password;
         this.Nombre = nombre;
         this.Sexo = sexo;
         this.AccedeModuloPedidos = accedeModuloPedidos;
@@ -92,6 +108,14 @@ public class Usuario implements KvmSerializable
     
     public void setLogin(java.lang.String login) {
         this.Login = login;
+    }
+    
+    public java.lang.String getPassword() {
+        return this.Password;
+    }
+    
+    public void setPassword(java.lang.String passwd) {
+        this.Password = passwd;
     }
     
     public java.lang.String getNombre() {

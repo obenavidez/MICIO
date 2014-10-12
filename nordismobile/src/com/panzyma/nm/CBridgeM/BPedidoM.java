@@ -44,7 +44,7 @@ import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.viewmodel.vmEntity;
 
 @SuppressLint("SimpleDateFormat") @SuppressWarnings({"rawtypes"})
-public class BPedidoM {
+public class BPedidoM extends BBaseM {
 
 	String credenciales;
 	Controller controller;

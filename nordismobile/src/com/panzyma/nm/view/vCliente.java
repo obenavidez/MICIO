@@ -54,9 +54,10 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
-
+@InvokeBridge(bridgeName = "BClienteM")
 public class vCliente extends ActionBarActivity implements 
 	   ListaFragment.OnItemSelectedListener, Handler.Callback 
 {
@@ -258,7 +259,13 @@ public class vCliente extends ActionBarActivity implements
 		cliente_selected = (vmCliente) obj;
 		positioncache = position;
 	}
-	
+		
+	@Override
+	protected void onResume() {
+		NMApp.getController().setView(this);
+		super.onResume();
+	}
+
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub 
@@ -479,9 +486,8 @@ public class vCliente extends ActionBarActivity implements
 	private void Load_Data(int what)
 	{
 		/*controller.getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);*/
-		try {
-			NMApp.getController().setEntities(this, new BClienteM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
+		try {			
+			NMApp.getController().setView(this);
 			NMApp.getController().getInboxHandler().sendEmptyMessage(what);
 
 			pDialog = new ProgressDialog(vCliente.this);

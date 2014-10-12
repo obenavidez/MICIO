@@ -281,7 +281,6 @@ public class ViewConfiguracion extends FragmentActivity implements
 
 	public void initMenu() {
 		quickAction = new QuickAction(this, QuickAction.VERTICAL, 1);
-		// if(isEditActive)
 		quickAction.addActionItem((new ActionItem(ID_SALVAR_CONFIGURACION,
 				"Salvar Configuración")));
 		quickAction.addActionItem((new ActionItem(ID_SINCRONIZE_PARAMETROS,
@@ -319,132 +318,31 @@ public class ViewConfiguracion extends FragmentActivity implements
 						if (actionId == ID_SALVAR_CONFIGURACION)
 							salvarConfiguracion();
 						else if (actionId == ID_SINCRONIZE_PARAMETROS) {
-							try {
-
-								NMApp.getThreadPool().execute(new Runnable() {
-									@Override
-									public void run() 
-									{
-										try {
-											if (SessionManager.getCredenciales().trim() != "")
-												controller
-														.getInboxHandler()
-														.sendEmptyMessage(
-																ID_SINCRONIZE_PARAMETROS);
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-
-									}
-								});
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+							controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_PARAMETROS);								 
 
 						} else if (actionId == ID_SINCRONIZE_CATALOGOSBASICOS) {
-
-							try {
-								NMApp.getThreadPool().execute(new Runnable() {
-									@Override
-									public void run() {
-										try {
-											if (SessionManager.getCredenciales().trim() != "")
-												controller
-														.getInboxHandler()
-														.sendEmptyMessage(
-																ID_SINCRONIZE_CATALOGOSBASICOS);
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-
-									}
-								});
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+							controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_CATALOGOSBASICOS);
+									 
 						} else if (actionId == ID_SINCRONIZE_CLIENTES) {
-							try {
-								NMApp.getThreadPool().execute(new Runnable() {
-									@Override
-									public void run() {
-										try {
-											if (SessionManager.getCredenciales().trim() != "")
-												controller
-														.getInboxHandler()
-														.sendEmptyMessage(
-																ID_SINCRONIZE_CLIENTES);
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-
-									}
-								});
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+							controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_CLIENTES);
+								
 						} else if (actionId == ID_SINCRONIZE_PRODUCTOS) {
-							try {
-								NMApp.getThreadPool().execute(new Runnable() {
-									@Override
-									public void run() {
-										try {
-											if (SessionManager.getCredenciales().trim() != "")
-												controller
-														.getInboxHandler()
-														.sendEmptyMessage(
-																ID_SINCRONIZE_PRODUCTOS);
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
+							controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_PRODUCTOS);							
 
-									}
-								});
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-						} else if (actionId == ID_SINCRONIZE_PROMOCIONES) {
-							try {
-								NMApp.getThreadPool().execute(new Runnable() {
-									@Override
-									public void run() {
-										try {
-											if (validar())
-												if (SessionManager
-														.getCredenciales()
-														.trim() != "") {
-													Message msg = new Message();
-													Bundle b = new Bundle();
-													b.putString("LoginUsuario",
-															txtUsuario
-																	.getText()
-																	.toString());
-													msg.setData(b);
-													msg.what = ID_SINCRONIZE_PROMOCIONES;
-													controller
-															.getInboxHandler()
-															.sendMessage(msg);
-												}
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-
-									}
-								});
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
+						} else if (actionId == ID_SINCRONIZE_PROMOCIONES) 
+						{       
+						    Message msg = new Message();
+							Bundle b = new Bundle();
+							b.putString("LoginUsuario",txtUsuario.getText().toString());
+							msg.setData(b);
+							msg.what = ID_SINCRONIZE_PROMOCIONES;
+							controller.getInboxHandler().sendMessage(msg);
+						
 						} else if (actionId == ID_SINCRONIZE_TODOS) 
 						{ 
-								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); 
-								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS); 
+							setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); 
+							setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+							controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS); 
 
 						} else if (actionId == ID_SETTING_BLUETOOTHDEVICE) 
 						{

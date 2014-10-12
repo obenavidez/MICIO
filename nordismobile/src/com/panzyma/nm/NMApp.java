@@ -8,8 +8,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 @SuppressWarnings({"rawtypes"})
-public class NMApp extends Application
-{ 	 
+public class NMApp extends Application{ 	 
 	
 	public static  Controller controller;
 	private static ThreadPool pool;
@@ -31,24 +30,19 @@ public class NMApp extends Application
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
-		controller=new Controller();
+		controller = new Controller();
 		pool = new ThreadPool(5);
 		setContext(this);
 	}
 	
-	public static Context setContext(NMApp app)
-	{ 
-		return ctx=app.getApplicationContext();
-	} 
-	
-	public static Context getContext()
-	{ 
-		if(controller!=null && controller.getView()!=null)
-			return (Context) controller.getView();
-		else
-			return ctx;
+	public static Context setContext(NMApp app) {
+		return ctx = app.getApplicationContext();
 	}
+	
+	public static Context getContext() {
+		return ctx;
+	}
+	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) { 
 		super.onConfigurationChanged(newConfig);

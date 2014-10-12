@@ -398,7 +398,8 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 	}
 
 	public static ArrayList<Bonificacion> parseListaBonificaciones(
-			Producto prod, long idCatCliente) {
+			Producto prod, long idCatCliente) 
+			{
 		if (prod.getListaBonificaciones() == null)
 			return null;
 		if (prod.getListaBonificaciones() == "")
@@ -408,19 +409,25 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 		String catCLiente = idCatCliente + "";
 		String[] listaBonif = StringUtil.split(prod.getListaBonificaciones(),
 				"|");
-		for (int i = 0; i < listaBonif.length; i++) {
-			String[] bonifProd = StringUtil.split(listaBonif[i], ",");
-
-			if ((idCatCliente == 0)
-					|| (catCLiente.compareTo(bonifProd[1]) == 0)) {
-				Bonificacion b = new Bonificacion();
-				b.setObjBonificacionID(Long.parseLong(bonifProd[0]));
-				b.setObjCategoriaClienteID(idCatCliente);
-				b.setCantidad(Integer.parseInt(bonifProd[2]));
-				b.setCantBonificacion(Integer.parseInt(bonifProd[3]));
-				b.setCategoriaCliente(bonifProd[4]);
-				abon.add(b);
+		for (int i = 0; i < listaBonif.length; i++)
+		{
+			if(!listaBonif[0].equals(""))
+			{	
+				String[] bonifProd = StringUtil.split(listaBonif[i], ",");
+		
+				if(bonifProd!=null && bonifProd.length!=0 && bonifProd[0]!="")
+				if ((idCatCliente == 0) || (catCLiente.compareTo(bonifProd[1]) == 0)) {
+					Bonificacion b = new Bonificacion();
+					b.setObjBonificacionID(Long.parseLong(bonifProd[0]));
+					b.setObjCategoriaClienteID(idCatCliente);
+					b.setCantidad(Integer.parseInt(bonifProd[2]));
+					b.setCantBonificacion(Integer.parseInt(bonifProd[3]));
+					b.setCategoriaCliente(bonifProd[4]);
+					abon.add(b);
+				}
 			}
+			else
+				break;
 		}
 
 		return abon;
@@ -501,19 +508,21 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 	 * Devuelve el precio de un producto dada la cantidad que se está ordenando
 	 */
 	public static float getPrecioProducto(Producto prod, long idTipoPrecio,
-			int cantidad) {
-		ArrayList<PrecioProducto> precios = parseListaPrecios(prod,
-				idTipoPrecio);
-		PrecioProducto p = precios.get(0);
-		if (precios.size() > 1) {
-			for (int i = 0; i < precios.size(); i++) {
+			int cantidad) 
+	{
+		ArrayList<PrecioProducto> precios = parseListaPrecios(prod,idTipoPrecio); 
+		PrecioProducto p =(precios!=null && precios.size()!=0)? precios.get(0):null ;
+		if (precios.size() > 1) 
+		{
+			for (int i = 0; i < precios.size(); i++) 
+			{
 				p = precios.get(i);
 				if ((cantidad >= p.getMinimo()) && (cantidad <= p.getMaximo()))
 					break; // Salir del ciclo
 			}
 		}
 
-		return p.getPrecio();
+		return (p!=null)?p.getPrecio():null;
 	}
 
 	public boolean isValidInformation() {

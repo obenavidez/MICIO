@@ -39,7 +39,7 @@ import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 
 @SuppressWarnings({ "rawtypes", "unused" })
-public class BConfiguracionM {
+public class BConfiguracionM extends BBaseM {
 
 	String TAG = BConfiguracionM.class.getSimpleName();
 	ViewConfiguracion view;
@@ -588,10 +588,10 @@ public class BConfiguracionM {
 
 	}
 
-	private void SINCRONIZE_TODOS() {
+	private void SINCRONIZE_TODOS() 
+	{
 		try 
-		{ 
-			
+		{  
 			NMApp.getThreadPool().execute(
 					new Runnable() {
 						@Override
@@ -648,7 +648,8 @@ public class BConfiguracionM {
 
 					});
 
-		} catch (Exception e) {
+		} catch (Exception e) 
+		{
 			e.printStackTrace();
 		}
 

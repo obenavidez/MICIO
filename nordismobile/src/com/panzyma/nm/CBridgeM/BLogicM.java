@@ -18,7 +18,7 @@ import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion;
 
-public class BLogicM {
+public class BLogicM extends BBaseM {
 
 	private Controller controller = null;
 	private ThreadPool pool = null;

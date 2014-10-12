@@ -34,7 +34,7 @@ import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewdialog.DialogProducto;
 
 @SuppressWarnings("rawtypes")
-public class BProductoM {
+public class BProductoM extends BBaseM {
 
 	Controller controller;
 	ThreadPool pool;
@@ -363,10 +363,10 @@ public class BProductoM {
 				content=view.getParent().getContentResolver();
 				break;
 			case 3 :
-				content=view3.getListParent().getContentResolver();
+				content=view3.getParent().getContentResolver();
 				break;
 			case 4:
-				content=view4.getListParent().getContentResolver();
+				content=view4.getParent().getContentResolver();
 				break;
 			default:
 				break;
