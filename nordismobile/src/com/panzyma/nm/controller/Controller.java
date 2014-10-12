@@ -203,10 +203,10 @@ public class Controller<T, U>
 				obj=bridges.get(index);
 
 			else{
-				if( !(_bridge instanceof BClienteM) ) 
+				/*if( !(_bridge instanceof BClienteM) ) 
 					obj= (T) _bridge.getClass().getConstructor(view.getClass()).newInstance(view);
-				else 
-					obj = _bridge;
+				else */
+				obj = _bridge;
 				bridges.add(obj);
 			}
 

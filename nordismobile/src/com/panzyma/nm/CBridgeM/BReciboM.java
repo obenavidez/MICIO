@@ -11,20 +11,17 @@ import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALH
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
 import static com.panzyma.nm.controller.ControllerProtocol.APLICAR_DESCUENTO; 
-
 import java.util.ArrayList;
 import java.util.Arrays; 
 import java.util.Enumeration;
-import java.util.Hashtable; 
-
+import java.util.Hashtable;
 import org.json.JSONArray; 
-
+import android.annotation.SuppressLint;
 import android.app.AlertDialog; 
 import android.os.Bundle;
 import android.os.Parcelable; 
 import android.os.Message;
 import android.util.Log;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
@@ -35,9 +32,7 @@ import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.auxiliar.ThreadPool; 
 import com.panzyma.nm.bluetooth.BluetoothConnection;
-import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
@@ -54,9 +49,6 @@ import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.RespuestaEnviarRecibo;
-import com.panzyma.nm.view.ViewRecibo;
-import com.panzyma.nm.view.ViewReciboEdit;
-import com.panzyma.nm.viewdialog.DialogDocumentos;
 import com.panzyma.nm.viewmodel.vmRecibo;
 
 @SuppressWarnings("rawtypes")
@@ -64,11 +56,6 @@ public final class BReciboM extends BBaseM {
 
 	private static final String logger = BReciboM.class.getSimpleName();
 
-	Controller controller;
-	ThreadPool pool;
-	private ViewRecibo view;
-	private DialogDocumentos view1;
-	private ViewReciboEdit reciboEdit;
 	private Object lock=new Object();
 	boolean OK = false;
 	ArrayList<Producto> obj = new ArrayList<Producto>();
@@ -78,28 +65,9 @@ public final class BReciboM extends BBaseM {
     Bundle bdl=null;
 
 	protected String TAG;
-	public BReciboM() {
-	}
-
-	public BReciboM(ViewRecibo view) {
-		this.controller = NMApp.getController();
-		this.view = view;
-		this.pool = NMApp.getThreadPool();
-	}
-
-	public BReciboM(ViewReciboEdit view) { 
-		this.controller =NMApp.getController();
-		this.reciboEdit = view;
-		this.pool =NMApp.getThreadPool();
-	}
 	
-	public BReciboM(DialogDocumentos view1) {
-		this.controller = NMApp.getController();
-		this.view1 = view1;
-		this.pool =NMApp.getThreadPool();
-	}
-
-
+	public BReciboM() {}
+	
 	public boolean handleMessage(Message msg) throws Exception {
 		switch (msg.what) 
 		{
@@ -190,21 +158,31 @@ public final class BReciboM extends BBaseM {
 	{
 		try 
 		{
-			pool.execute(new Runnable() 
+			getPool().execute(new Runnable() 
 			{
 				@Override
 				public void run() 
 				{
 					try 
 					{
-						String credenciales="";
-						credenciales=SessionManager.getCredentials(); 					
-						if(credenciales!="") 
-							Processor.notifyToView(controller,ControllerProtocol.REQUEST_APLICAR_DESCUENTO,0,0,ModelRecibo.aplicarDescuentoOcacional(credenciales, recibo));
+						String credenciales = "";
+						credenciales = SessionManager.getCredentials(); 					
+						if(credenciales != "") 
+							Processor.notifyToView(getController(),
+									ControllerProtocol.REQUEST_APLICAR_DESCUENTO,
+									0,
+									0,
+									ModelRecibo.aplicarDescuentoOcacional(credenciales, recibo)
+									);
 							 
 						
 					} catch (Exception e) { 
-							e.printStackTrace();
+						Log.e(TAG, "Error en aplicar descuento ocasional", e);
+						try {
+							Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno en la sincronización con la BDD",e.toString(),"\n Causa: "+e.getCause()));
+						} catch (Exception e1) { 
+							e1.printStackTrace();
+						}
 					}
 				}
 			});
@@ -215,11 +193,11 @@ public final class BReciboM extends BBaseM {
 		
 	}
 	
-	private void solicitarDescuentoOcacional(final ReciboColector recibo,final String notas) 
+	private void solicitarDescuentoOcacional(final ReciboColector recibo, final String notas) 
 	{
 		try 
 		{
-			pool.execute(new Runnable() 
+			getPool().execute(new Runnable() 
 			{
 				@Override
 				public void run() 
@@ -228,49 +206,52 @@ public final class BReciboM extends BBaseM {
 					try 
 					{   
 						String credenciales="";
-						credenciales=SessionManager.getCredentials(); 
+						credenciales = SessionManager.getCredentials(); 
 						if(credenciales!="")
 						{
 							long rs=0;
-							if(ModelConfiguracion.yaseEnvioSolicitud(NMApp.getContext(), recibo.getReferencia()))
+							if(ModelConfiguracion.yaseEnvioSolicitud(getContext(), recibo.getReferencia()))
 							{
 								Processor.notifyToView(
-										controller,
+										getController(),
 										ControllerProtocol.NOTIFICATION,
 										0,
 										0,
 										NotificationMessage.newInstance("","Solicitud descuento ya fue enviada con anterioridad.",""));
-									ModelConfiguracion.guardarSolicitudDescuentoRec(NMApp.getContext(), recibo.getReferencia(), notas);
+									ModelConfiguracion.guardarSolicitudDescuentoRec(getContext(),
+											recibo.getReferencia(),
+											notas);
 								return;
 							}
-							rs=ModelRecibo.solicitarDescuentoOcacional(credenciales, recibo, notas);
-							if(rs!=0)
+							rs = ModelRecibo.solicitarDescuentoOcacional(credenciales, recibo, notas);
+							if(rs!= 0)
 							{
 								Processor.notifyToView(
-									controller,
+									getController(),
 									ControllerProtocol.NOTIFICATION,
 									0,
 									0,
 									NotificationMessage.newInstance("","La solicitud descuento fue enviada a la central con exito",""));
-								ModelConfiguracion.guardarSolicitudDescuentoRec(NMApp.getContext(), recibo.getReferencia(), notas);
+								ModelConfiguracion.guardarSolicitudDescuentoRec(getContext(),
+										recibo.getReferencia(), 
+										notas);
 							}
 						}	
 						
 						
-					} catch (Exception e) 
+					} catch (Exception e)
 					{ 
-						e.printStackTrace();
+						
 						try 
 						{
 							Processor.notifyToView(
-									controller,
+									getController(),
 									ERROR,
 									0,
 									0,
 									new ErrorMessage("Error interno en el registro de recibo",e.toString(), "\n Causa: "
 													+ e.getCause()));
 						} catch (Exception e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}				
@@ -284,15 +265,16 @@ public final class BReciboM extends BBaseM {
 	}
 
 	private void saveRecibo( ReciboColector recibo,ArrayList<Factura> facturasToUpdate, ArrayList<CCNotaDebito> notasDebitoToUpdate, ArrayList<CCNotaCredito> notasCreditoToUpdate) throws Exception
-	{ 		//Guardando localmente el recibo
-		DatabaseProvider.registrarRecibo(recibo, NMApp.getContext(), facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);
+	{ 	
+		//Guardando localmente el recibo
+		DatabaseProvider.registrarRecibo(recibo, getContext(), facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);
 	}
 
 	private void onSaveDataToLocalHost(final ReciboColector recibo, final ArrayList<Factura> facturasToUpdate, final ArrayList<CCNotaDebito> notasDebitoToUpdate, final ArrayList<CCNotaCredito> notasCreditoToUpdate) 
 	{
 		try 
 		{
-			pool.execute(new Runnable() {
+			getPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					
@@ -300,7 +282,7 @@ public final class BReciboM extends BBaseM {
 					{ 
 						saveRecibo(recibo, facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);	 
 						Processor.notifyToView(
-											controller,
+											getController(),
 											ControllerProtocol.NOTIFICATION,
 											ControllerProtocol.SAVE_DATA_FROM_LOCALHOST,
 											0,
@@ -312,7 +294,7 @@ public final class BReciboM extends BBaseM {
 						try {
 							Processor
 									.notifyToView(
-											controller,
+											getController(),
 											ERROR,
 											0,
 											0,
@@ -332,7 +314,7 @@ public final class BReciboM extends BBaseM {
 			try {
 				Processor
 						.notifyToView(
-								controller,
+								getController(),
 								ERROR,
 								0,
 								0,
@@ -348,21 +330,35 @@ public final class BReciboM extends BBaseM {
 
 	private void onLoadItemFromLocalHost(final Integer idrecibo) {
 		try {
-			pool.execute(new Runnable() {
+			getPool().execute(new Runnable() {
 				@Override
 				public void run() {
-					Processor.send_ViewReciboEditToView(ModelRecibo.getReciboByID(reciboEdit.getContentResolver(),idrecibo), controller);
+					Processor.send_ViewReciboEditToView(ModelRecibo.getReciboByID(getResolver(),idrecibo), getController());
 				}
 			});
 		}catch(Exception e){
-			e.printStackTrace();
+			Log.e(TAG, "Error in the update thread", e);
+			try {
+				Processor
+						.notifyToView(
+								getController(),
+								ERROR,
+								0,
+								0,
+								ErrorMessage.newInstance(
+										"Error interno",
+										e.getMessage(), "\n Causa: "
+												+ e.getCause()));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 	}
 
 	private void onDeleteDataFromLocalHost(final int reciboID) {
 		try {
-			pool.execute(new Runnable() {
+			getPool().execute(new Runnable() {
 
 				@Override
 				public void run() {
@@ -370,14 +366,14 @@ public final class BReciboM extends BBaseM {
 					try 
 					{						
 						int idrecibo = reciboID;
-						ModelRecibo.borraReciboByID(view.getContentResolver(), idrecibo, view.getContext());
+						ModelRecibo.borraReciboByID(getResolver(), idrecibo, getContext());
 						//Obtener el reciboid max generado
-						int maxid=ModelConfiguracion.getMaxReciboID(view.getContext());
+						int maxid = ModelConfiguracion.getMaxReciboID(getContext());
 						//Obteniendo el IDRecibo
-						Integer idrec =idrecibo-Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(view.getContext()), idrecibo));
+						Integer idrec =idrecibo-Integer.parseInt(NumberUtil.setFormatPrefijo(ModelConfiguracion.getDeviceID(getContext()), idrecibo));
 						//Actualizando el id máximo de recibo generado
-						ModelConfiguracion.setMaxReciboId(view,(maxid<idrec)?idrec:maxid);
-						Processor.send_ViewDeleteReciboToView(1,controller);
+						ModelConfiguracion.setMaxReciboId(getContext(), (maxid<idrec)?idrec:maxid);
+						Processor.send_ViewDeleteReciboToView(1, getController());
 						
 					} catch (Exception e) 
 					{
@@ -385,7 +381,7 @@ public final class BReciboM extends BBaseM {
 						try 
 						{
 							Processor.notifyToView(
-											controller,
+											getController(),
 											ERROR,
 											0,
 											0,
@@ -399,40 +395,29 @@ public final class BReciboM extends BBaseM {
 					}
 				}
 			});
-		} catch (Exception e) {
-			// TODO: handle exception
+		} catch (Exception e) {			
 		}
 		
 	}
 
-	private void onUpdateItem_From_Server() {
-		// TODO Auto-generated method stub
-
-	}
-
 	private void onLoadALLDataFromLocalHost() {
 		try {
-			pool.execute(new Runnable() {
+			getPool().execute(new Runnable() {
 
 				@Override
 				public void run() 
 				{
-
 					try 
-					{
-						
-						ArrayList<vmRecibo> vmr=ModelRecibo.getArrayCustomerFromLocalHost((view != null) ? view
-								.getContentResolver() : (view1 != null) ?view1
-								.getContext()
-								.getContentResolver():reciboEdit.getContentResolver());
-						Processor.send_ViewReciboToView(vmr,controller);
+					{						
+						ArrayList<vmRecibo> vmr = ModelRecibo.getArrayCustomerFromLocalHost(getResolver());
+						Processor.send_ViewReciboToView( vmr, getController());
 					} catch (Exception e) 
 					{
 						Log.e(logger, "Error in the update thread", e);
 						try {
 							Processor
 									.notifyToView(
-											controller,
+											getController(),
 											ERROR,
 											0,
 											0,
@@ -455,21 +440,23 @@ public final class BReciboM extends BBaseM {
 
 	private void onLoadDocumentosClienteFromLocalhost(final Long sucursalID) {
 		try {
-			this.pool.execute(new Runnable() {
+			this.getPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						// Parameters params = viewcc.get_FacturaParameters();
 						Processor.send_ViewReciboEditToView(
-								ModelCliente.getClienteBySucursalID(view1.getContext()
-										.getContentResolver(), sucursalID, 0), controller);
+								ModelCliente.getClienteBySucursalID(
+										getResolver(),
+										sucursalID,
+										0), getController());
 
 					} catch (Exception e) {
 						e.printStackTrace();
 						try {
 							Processor
 									.notifyToView(
-											controller,
+											getController(),
 											ERROR,
 											0,
 											0,
@@ -494,7 +481,7 @@ public final class BReciboM extends BBaseM {
 	{
 		try 
 		{
-			pool.execute(new Runnable() 
+			getPool().execute(new Runnable() 
 			{
 				@Override
 				public void run() 
@@ -513,7 +500,7 @@ public final class BReciboM extends BBaseM {
 					        	imprimir = false;
 					            if (!SessionManager.isPhoneConnected()) 
 					            {
-					            	Processor.notifyToView(controller,ERROR,0,0,
+					            	Processor.notifyToView(getController(),ERROR,0,0,
 											new ErrorMessage(
 													          "Error en el Modulo Recibo.",
 													          "Error en el proceso de envio del recibo", "\nCausa: "
@@ -528,7 +515,7 @@ public final class BReciboM extends BBaseM {
 					            if (!SessionManager.isPhoneConnected()) 
 					            {	
 					            	pagarOnLine = false;
-					            	Processor.notifyToView(controller,ERROR,0,0,
+					            	Processor.notifyToView(getController(),ERROR,0,0,
 											new ErrorMessage(
 													          "Error en el Modulo Recibo.",
 													          "Error en el proceso de envio del recibo", "\nCausa: "
@@ -544,12 +531,12 @@ public final class BReciboM extends BBaseM {
 					        if (pagarOnLine) 
 							{
 								
-								 Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
+								 Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
 									0,0,"Enviando recibo al servidor central");
 								RespuestaEnviarRecibo rs=ModelRecibo.enviarRecibo(credenciales,recibo);
 								if (rs == null) 
 								{
-									Processor.notifyToView(controller,ERROR,0,0,
+									Processor.notifyToView(getController(),ERROR,0,0,
 											new ErrorMessage(
 													          "Error en el Modulo Recibo.",
 													          "Error en el proceso de envio del recibo", "\nCausa: "
@@ -560,7 +547,7 @@ public final class BReciboM extends BBaseM {
 								else if (rs.getNuevoEstado().getCodigo().compareTo("RECHAZADO_FECHA") == 0) 
 				                {
 								
-									Processor.notifyToView(controller,ERROR,0,0,
+									Processor.notifyToView(getController(),ERROR,0,0,
 											new ErrorMessage(
 													          "Error en el Modulo Recibo.",
 													          "El recibo fue rechazado por el servidor", "\nCausa: "
@@ -577,15 +564,15 @@ public final class BReciboM extends BBaseM {
 				                //Guardando cambios en el Dispositivo 
 				                saveRecibo(recibo,facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate); 
 				                
-				                Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
+				                Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
 										0,0,"Actualindo estado de cuenta del cliente");
 				                //Trayendo información del Cliente actualizada desde el servidor y guadarla localmente automaticamente 
-								Cliente cliente=BClienteM.actualizarCliente(NMApp.getContext(), SessionManager.getCredenciales(),recibo.getObjSucursalID());
+								Cliente cliente=BClienteM.actualizarCliente(getContext(), SessionManager.getCredenciales(),recibo.getObjSucursalID());
 								//actualizando el cliente en el hilo principal
 								recibo.setCliente(cliente);								
 								
 				                //Salvar los cambios en el hilo pricipal
-				                Processor.notifyToView(controller,ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,imprimir?1:0,0,recibo);
+				                Processor.notifyToView(getController(),ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,imprimir?1:0,0,recibo);
 							}
 							else
 							{								 
@@ -595,19 +582,19 @@ public final class BReciboM extends BBaseM {
 				               //Guardando cambios en el Dispositivo 
 				                saveRecibo(recibo,facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate); 
 				                //enviar los cambios en el hilo pricipal
-				                Processor.notifyToView(controller,ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,imprimir?1:0,0,recibo);
+				                Processor.notifyToView(getController(),ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,imprimir?1:0,0,recibo);
 							}
-							ModelConfiguracion.borrarEnvioSolicitud(NMApp.getContext(),recibo.getReferencia());
+							ModelConfiguracion.borrarEnvioSolicitud(getContext(),recibo.getReferencia());
 							
 						} 
 						else
-							Processor.notifyToView(controller,0,0,0,null);
+							Processor.notifyToView(getController(),0,0,0,null);
 					} catch (Exception e) 
 					{ 
 						
 						try 
 						{
-							Processor.notifyToView(controller,ERROR,0,0,
+							Processor.notifyToView(getController(),ERROR,0,0,
 													new ErrorMessage(
 															          "Error en el proceso de enviar el recibo al servidor",
 															          e.toString(), "\nCausa: "
@@ -629,43 +616,49 @@ public final class BReciboM extends BBaseM {
 		} 
 	}
     
+	@SuppressWarnings("unused")
 	private void enviarImprimirRecibo(final ReciboColector recibo)
 	{		
-		reciboEdit.runOnUiThread(new Runnable() 
-        {
-			@Override
-			public void run() 
-			{ 
-				 AppDialog.showMessage(reciboEdit,"Confirme por favor.!!!","Desea Imprimir el Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
-				 {						 
-						@Override
-		    			public void onButtonClick(AlertDialog _dialog, int actionId) 
-		    			{
-		    				if(actionId == AppDialog.OK_BUTTOM) 
-		    				{		    					
-		    					try 
-		    					{  		    						
-	    							String credenciales="";
-	    							credenciales=SessionManager.getCredentials(); 
-	    							if(credenciales!="")
-	    							{ 
-	    								if(recibo.getReferencia()==0)							
-	    					                onSaveDataToLocalHost(recibo, null, null, null);//GUARDANDO LOCALMENTE EL RECIBO QUE SE VA ENVIAR AL SERVIDOR CENTRAL
-	    								ImprimirReciboColector(recibo, false);
-	    							}
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-		    				}	
-		    				synchronized(lock)
-		    				{
-		    					lock.notify();
-		    				}
-		    			}
-				  }); 
-	          }
-		});
+		//reciboEdit.runOnUiThread(new Runnable()
+		try {
+			getPool().execute(new Runnable()
+			{
+				@Override
+				public void run() 
+				{ 
+					 AppDialog.showMessage(getContext(),"Confirme por favor.!!!","Desea Imprimir el Recibo?",AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
+					 {						 
+							@Override
+			    			public void onButtonClick(AlertDialog _dialog, int actionId) 
+			    			{
+			    				if(actionId == AppDialog.OK_BUTTOM) 
+			    				{		    					
+			    					try 
+			    					{  		    						
+										String credenciales="";
+										credenciales=SessionManager.getCredentials(); 
+										if(credenciales!="")
+										{ 
+											if(recibo.getReferencia()==0)							
+								                onSaveDataToLocalHost(recibo, null, null, null);//GUARDANDO LOCALMENTE EL RECIBO QUE SE VA ENVIAR AL SERVIDOR CENTRAL
+											ImprimirReciboColector(recibo, false);
+										}
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+			    				}	
+			    				synchronized(lock)
+			    				{
+			    					lock.notify();
+			    				}
+			    			}
+					  }); 
+			      }
+			});
+		} catch (InterruptedException e1) {			
+			e1.printStackTrace();
+		}
 		
         synchronized(lock)
         {
@@ -677,13 +670,14 @@ public final class BReciboM extends BBaseM {
         }
 		
 	}
-	
+	@SuppressLint("UseValueOf")
+	@SuppressWarnings({ "unchecked", "unused" })
 	public  void ImprimirReciboColector(ReciboColector rcol,boolean reimpresion) 
 	{   
 		try
 		{
 	        String recibo = "";  
-	        String monedaNac = Cobro.getMoneda(NMApp.getContext());
+	        String monedaNac = Cobro.getMoneda(getContext());
 	          
 	        //Encabezado del recibo    
 	        recibo += "T 7 0 120 2 Distribuidora Panzyma - DISPAN\r\n";        
@@ -694,7 +688,7 @@ public final class BReciboM extends BBaseM {
 	        recibo += "T 7 0 0 80 Fecha:\r\n";
 	        recibo += "T 7 0 155 80 " + DateUtil.idateToStr(rcol.getFecha()) + "\r\n";
 	        recibo += "T 7 0 0 110 Recibo:\r\n";
-	        recibo += "T 7 0 155 110 " + Cobro.getNumeroRecibo(NMApp.getContext(),rcol.getReferencia()) + "\r\n"; 
+	        recibo += "T 7 0 155 110 " + Cobro.getNumeroRecibo(getContext(),rcol.getReferencia()) + "\r\n"; 
 	        
 	        //Monto total del recibo
 	        recibo += "RIGHT 575\r\n"; 
@@ -1143,6 +1137,5 @@ public final class BReciboM extends BBaseM {
 			Log.d(TAG,"ERROR al tratar de envia el recibo", e);
 		}
     }
- 
 	
 }

@@ -4,6 +4,7 @@ import com.panzyma.nordismobile.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
@@ -75,10 +76,11 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		mDismissListener = listener;
 	}
 	
-	public static void showMessage (Activity mContext,String msg, DialogType type)
+	public static void showMessage (Context mContext,String msg, DialogType type)
 	{
 		mybuilder = new AlertDialog.Builder(mContext);
-		inflater = mContext.getLayoutInflater();
+		//inflater = mContext.getLayoutInflater();
+		inflater = LayoutInflater.from(mContext);
 		Message = msg;
 		switch(type)
 		{
@@ -105,10 +107,11 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
         alert.show();
 	}
 	
-	public static void showMessage (Activity mContext,String title,String msg, DialogType type)
+	public static void showMessage (Context mContext,String title,String msg, DialogType type)
 	{
 		mybuilder = new AlertDialog.Builder(mContext);
-		inflater = mContext.getLayoutInflater();
+		//inflater = mContext.getLayoutInflater();
+		inflater = LayoutInflater.from(mContext);
 		Tittle = title;
 		Message = msg;
 		switch(type)
@@ -135,12 +138,12 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alert.show();
 	}
-	
-	
-	public static AlertDialog _showMessage(Activity mContext,String title,String msg, DialogType type ,final OnButtonClickListener mylistener)
+		
+	public static AlertDialog _showMessage(Context mContext,String title,String msg, DialogType type ,final OnButtonClickListener mylistener)
 	{
 		mybuilder = new AlertDialog.Builder(mContext);
-		inflater = mContext.getLayoutInflater();
+		//inflater = mContext.getLayoutInflater();
+		inflater = LayoutInflater.from(mContext);
 		Tittle = title;
 		Message = msg;
 		switch(type)
@@ -169,10 +172,11 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		return alert;
 	}
 	
-	public static void showMessage (Activity mContext,String title,String msg, DialogType type ,final OnButtonClickListener mylistener)
+	public static void showMessage (Context mContext,String title,String msg, DialogType type ,final OnButtonClickListener mylistener)
 	{
 		mybuilder = new AlertDialog.Builder(mContext);
-		inflater = mContext.getLayoutInflater();
+		//inflater = mContext.getLayoutInflater();
+		inflater = LayoutInflater.from(mContext);		
 		Tittle = title;
 		Message = msg;
 		switch(type)
@@ -228,6 +232,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	    });
 		
 	}
+	
 	private static void CreateDialog(final OnButtonClickListener mylistener)
 	{
 		vDialog =inflater.inflate(R.layout.alert_dialog2, null, false);
@@ -247,8 +252,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		/*mybuilder.setView(vDialog);
 		alert = mybuilder.create();*/
 	}
-	
-	
+		
 	private static void CreateOcationalDiscountDialog(final OnButtonClickListener mylistener){
 		vDialog =inflater.inflate(R.layout.oca_discount_dialog, null,false);
 		tvtittle = (TextView)vDialog.findViewById(R.id.title_ocadiscount);
@@ -313,14 +317,14 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	    });
 		txtpayamount =(EditText) vDialog.findViewById(R.id.txtpayamount);
 	}
-	
-	
+		
 	@Override	
 	public void onDestroyView() {
 	  if (getDialog() != null && getRetainInstance())
 	    getDialog().setOnDismissListener(null);
 	  super.onDestroyView();
 	}
+	
 	@Override
 	public void onResume()
 	{
@@ -328,6 +332,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	  getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 	  setStyle(DialogFragment.STYLE_NO_FRAME, android.R.style.Theme);
 	}
+	
 	@Override
 	public void onDismiss(DialogInterface dialog) {
 		mDismissListener.onDismiss();

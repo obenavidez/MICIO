@@ -48,6 +48,7 @@ import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND; 
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder; 
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
@@ -92,7 +93,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
-@SuppressLint("ShowToast") @SuppressWarnings({"unused","rawtypes","deprecation","unchecked"}) 
+@InvokeBridge(bridgeName = "BReciboM")
+@SuppressLint("ShowToast")
+@SuppressWarnings({"unused","rawtypes","deprecation","unchecked"}) 
 public class ViewReciboEdit extends FragmentActivity implements Handler.Callback, Editable {
 
 	private static CustomDialog dlg; 
@@ -210,9 +213,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			reciboId = (Integer)bundle.get(ViewRecibo.RECIBO_ID);
 			SessionManager.setContext(this);
 			me = this; 
-			NMApp.getController().removeBridgeByName(BReciboM.class.toString());
+			/*NMApp.getController().removeBridgeByName(BReciboM.class.toString());
 			NMApp.getController().setEntities(this, brm =  new BReciboM());
-			NMApp.getController().addOutboxHandler(handler=new Handler(this));
+			NMApp.getController().addOutboxHandler(handler=new Handler(this));*/
 
 			facturasRecibo = new ArrayList<Factura>();		
 			notasDebitoRecibo= new ArrayList<CCNotaDebito>();
@@ -234,6 +237,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				b.putInt("idrecibo", reciboId);  
 				msg.setData(b);
 				msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
+				NMApp.getController().setView(this);
 				NMApp.getController().getInboxHandler().sendMessage(msg);  
 			} 
 
@@ -276,6 +280,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	  //setList();
 	}
 	
+	@Override
+	protected void onResume() {
+		NMApp.getController().setView(this);
+		super.onResume();
+	}
+
 	private void initComponent() {
 
 		gridDetalleRecibo = findViewById(R.id.pddgrilla);
@@ -733,14 +743,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 						nota =  ((TextView)alert.findViewById(R.id.txtpayamount)).getText().toString();
 						if(nota=="")
 							return;
-						NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-						NMApp.getController().addOutboxHandler((getHandler()==null)?new Handler(me):getHandler()); 
+						//NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
+						//NMApp.getController().addOutboxHandler((getHandler()==null)?new Handler(me):getHandler()); 
 						Message msg = new Message();
 						Bundle b = new Bundle();
 						b.putParcelable("recibo", recibo);
 						b.putString("notas",nota); 
 						msg.setData(b);
-						msg.what=SOLICITAR_DESCUENTO;
+						msg.what=SOLICITAR_DESCUENTO;						
 						NMApp.getController().getInboxHandler().sendMessage(msg); 
 					} catch (Exception e) 
 					{ 
@@ -816,9 +826,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			try 
 
 			{				
-				NMApp.getController().removeBridgeByName(BReciboM.class.toString());
+				/*NMApp.getController().removeBridgeByName(BReciboM.class.toString());
 				NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-				NMApp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());
+				NMApp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());*/
 				Message msg = new Message();
 				Bundle b = new Bundle();
 				b.putParcelable("recibo", recibo); 
@@ -826,7 +836,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				b.putParcelableArray("notasDebitoToUpdate", getArrayOfNotasDebito() );
 				b.putParcelableArray("notasCreditoToUpdate", getArrayOfNotasCredito() );
 				msg.setData(b);
-				msg.what=SAVE_DATA_FROM_LOCALHOST;
+				msg.what=SAVE_DATA_FROM_LOCALHOST;				
 				NMApp.getController().getInboxHandler().sendMessage(msg);  	   			
 			} catch (Exception e) {				
 				e.printStackTrace();
