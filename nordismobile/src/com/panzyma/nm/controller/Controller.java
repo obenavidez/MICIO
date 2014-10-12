@@ -359,7 +359,8 @@ public class Controller<T, U>
 	private void handleMessage(Message msg) throws Exception {
 		Log.d(TAG, "Received message: " + msg);
 		InvokeBridge invokeBridge = view.getClass().getAnnotation(InvokeBridge.class);		
-		if(invokeBridge != null){
+		if(invokeBridge != null)
+		{
 			bridge = (T) BridgeFactory.getBridge(invokeBridge.bridgeName());
 			((BBaseM)bridge).handleMessage(msg);
 		} else {

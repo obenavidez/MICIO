@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Dialog;
 import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.Pedido;
@@ -21,8 +23,8 @@ import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.PromocionesViewHolder;
 import com.panzyma.nordismobile.R;
 
-public class DialogPromociones extends Dialog
-{
+public class DialogPromociones extends Dialog implements Handler.Callback{
+
 	private Pedido pedido;
 	
 	private TextView tv_codigo;
@@ -70,7 +72,7 @@ public class DialogPromociones extends Dialog
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initComponent() { 
-		
+		NMApp.getController().setView(this); 
 		gridDetallePromociones=findViewById(R.id.pgrilla);
 		tvdpromociones=(TextView)findViewById(R.id.tv_desc_promocion);
 		gridpromociones=((ListView)gridDetallePromociones.findViewById(R.id.data_items));
@@ -130,5 +132,11 @@ public class DialogPromociones extends Dialog
 			quickAction.addActionItem(null);
 		}
 		quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));		
+	}
+
+	@Override
+	public boolean handleMessage(Message msg) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

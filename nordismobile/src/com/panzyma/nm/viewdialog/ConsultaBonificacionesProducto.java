@@ -64,7 +64,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder=null;
 		LayoutInflater inflater =null;
-		
+		NMApp.getController().setView(this); 
 		if(this.getActivity() instanceof ViewPedidoEdit){
 			parent=(ViewPedidoEdit) this.getActivity();
 			builder = new AlertDialog.Builder(parent); 
@@ -135,17 +135,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 		b.putLong("_idProducto",idProducto); 
 		msg.setData(b);
 		msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
-    	//nmapp= parent!=null ? (NMApp) parent.getApplicationContext() : (NMApp) parent2.getApplicationContext();
-		try {
-			NMApp.controller.removeBridgeByName(BProductoM.class.toString());
-			NMApp.controller.setEntities(this,new BProductoM());
-			NMApp.controller.addOutboxHandler(new Handler(this));
-			NMApp.controller.getInboxHandler().sendMessage(msg);  
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	NMApp.controller.getInboxHandler().sendMessage(msg);   
 		pd = ProgressDialog.show(parent!=null ? parent : parent2  , "Espere por favor", "Cargando Información", true, false);
     }
 

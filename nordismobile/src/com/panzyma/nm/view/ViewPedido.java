@@ -62,21 +62,23 @@ import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.Promociones;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("SimpleDateFormat")
 @SuppressWarnings({ "rawtypes", "unchecked" })
+@InvokeBridge(bridgeName = "BPedidoM")
 public class ViewPedido extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {
 	@Override
-	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
+	protected void onActivityResult(int requestcode, int resultcode, Intent data) 
+	{
 		super.onActivityResult(requestcode, resultcode, data);
 		try 
 		{
 			SessionManager.setContext(this);
-			com.panzyma.nm.NMApp.getController().setEntities(this,
-					this.getBridge());
+			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
 			if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code)
 					&& data != null)
@@ -105,10 +107,7 @@ public class ViewPedido extends ActionBarActivity implements
 	protected void onResume() {
 		try {
 			SessionManager.setContext(this);
-			NMApp.getController().setEntities(this,
-					(bpm == null) ? bpm = new BPedidoM() : bpm);
-			NMApp.getController().addOutboxHandler(
-					(handler == null) ? handler = new Handler(this) : handler);
+			com.panzyma.nm.NMApp.getController().setView(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -401,18 +400,8 @@ public class ViewPedido extends ActionBarActivity implements
 				getSupportActionBar().setTitle(tituloSeccion);
 			}
 		});
-		try {
-			com.panzyma.nm.NMApp.getController().setEntities(this,
-					bpm = new BPedidoM());
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		com.panzyma.nm.NMApp.getController().addOutboxHandler(
-				handler = new Handler(this));
-		com.panzyma.nm.NMApp.getController().getInboxHandler()
-				.sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
-
+		
+		
 		tituloSeccion = getTitle();
 		tituloApp = getTitle();
 
@@ -437,22 +426,10 @@ public class ViewPedido extends ActionBarActivity implements
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
+		
+		com.panzyma.nm.NMApp.getController().setView(this);
+		com.panzyma.nm.NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 
-		try {
-
-			com.panzyma.nm.NMApp.getController().setEntities(this,
-					bpm = new BPedidoM());
-			com.panzyma.nm.NMApp.getController().addOutboxHandler(
-					new Handler(this));
-			com.panzyma.nm.NMApp
-					.getController()
-					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		// However, if we're being restored from a previous state,
 		// then we don't need to do anything and should return or else
 		// we could end up with overlapping fragments.
@@ -847,8 +824,7 @@ public class ViewPedido extends ActionBarActivity implements
 			b.putParcelable("pedido", pedido);
 			msg.setData(b);
 			msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
-			com.panzyma.nm.NMApp.getController().getInboxHandler()
-					.sendMessage(msg);
+			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 
 		} catch (Exception e) {
 			AppDialog.showMessage(this,

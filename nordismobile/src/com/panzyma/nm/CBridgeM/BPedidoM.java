@@ -44,36 +44,17 @@ import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.viewmodel.vmEntity;
 
 @SuppressLint("SimpleDateFormat") @SuppressWarnings({"rawtypes"})
+
 public class BPedidoM extends BBaseM {
 
-	String credenciales;
-	Controller controller;
-	ThreadPool pool;
-	ViewPedidoEdit pedidoedit;
-	ViewPedido view;
-	vmEntity pedido_selected;
+	String credenciales; 
 	String TAG = BClienteM.class.getSimpleName();
 	boolean OK = false;
 	ArrayList<Pedido> obj = new ArrayList<Pedido>();
 	private static final String logger = BPedidoM.class.getSimpleName();
 	BluetoothConnection bc;
 	Object lock=new Object();
-	public BPedidoM() 
-	{
-	}
-
-	public BPedidoM(ViewPedido view) {
-		this.controller = NMApp.getController();
-		this.view = view;
-		this.pool = NMApp.getThreadPool();
-	}
-
-	public BPedidoM(ViewPedidoEdit view) {
-		this.controller = NMApp.getController();
-		this.pedidoedit = view;
-		this.pool = NMApp.getThreadPool();
-	}
-
+	 
 	public boolean handleMessage(Message msg) {
 		Bundle b = msg.getData();
 		Boolean val= false;
@@ -117,7 +98,7 @@ public class BPedidoM extends BBaseM {
 					
 					guardar_Pedido((Pedido)b.getParcelable("pedido"));
 					Processor.notifyToView(
-								controller,
+								NMApp.getController(),
 								what,
 								0,
 								0,
@@ -127,7 +108,7 @@ public class BPedidoM extends BBaseM {
 					try {
 						Processor
 						.notifyToView(
-								controller,
+								NMApp.getController(),
 								ERROR,
 								0,
 								0,
@@ -166,21 +147,21 @@ public class BPedidoM extends BBaseM {
 	}
 
 	private void onDeleteDataFromLocalHost(final long pedidoID) {
-		try {
-			pool.execute(new Runnable() {
+		try 
+		{
+			getPool().execute(new Runnable() {
 
 				@Override
 				public void run() {
 				  try {
-						ContentResolver resolver =(view != null) ? view.getContentResolver() : pedidoedit.getContext().getContentResolver();
-						Processor.send_ViewDeletePedidoToView(ModelPedido.borraPedidoByID(resolver, pedidoID),controller);
+						 Processor.send_ViewDeletePedidoToView(ModelPedido.borraPedidoByID(getResolver(), pedidoID),getController());
 				  	} 
 				catch (Exception e) {
 				Log.e(logger, "Error in the update thread", e);
 						try {
 							Processor
 									.notifyToView(
-											controller,
+											NMApp.getController(),
 											ERROR,
 											0,
 											0,
@@ -201,21 +182,21 @@ public class BPedidoM extends BBaseM {
 	
 	private void onLoadALLData_From_LocalHost() {
 		try {
-			pool.execute(new Runnable() {
+			getPool().execute(new Runnable() {
 
 				@Override
 				public void run() {
 
 					try {
 						
-						Processor.send_ViewPedidoToView(C_DATA, controller, ModelPedido.obtenerPedidosLocalmente((view!=null)?view.getContentResolver():pedidoedit.getContentResolver()));
+						Processor.send_ViewPedidoToView(C_DATA, NMApp.getController(), ModelPedido.obtenerPedidosLocalmente(getResolver()));
 					 
 					} catch (Exception e) {
 						Log.e(TAG, "Error in the update thread", e);
 						try {
 							Processor
 									.notifyToView(
-											controller,
+											NMApp.getController(),
 											ERROR,
 											0,
 											0,
@@ -244,8 +225,9 @@ public class BPedidoM extends BBaseM {
 	}
 
 	private void onUpdateInventory_From_Server() {
-		try {
-			pool.execute(new Runnable() {
+		try 
+		{
+			getPool().execute(new Runnable() {
 
 				@Override
 				public void run() {
@@ -256,7 +238,7 @@ public class BPedidoM extends BBaseM {
 										"sa||nordis09||dp", "areyes", true);
 						if (DisponibilidadProducto != null)
 							ModelProducto.UpdateProducto(
-									view.getContentResolver(),
+									getResolver(),
 									DisponibilidadProducto);
 
 					} catch (Exception e) {
@@ -264,7 +246,7 @@ public class BPedidoM extends BBaseM {
 						try {
 							Processor
 									.notifyToView(
-											controller,
+											NMApp.getController(),
 											ERROR,
 											0,
 											0,
@@ -294,7 +276,7 @@ public class BPedidoM extends BBaseM {
 	{
 		try 
 		{
-			pool.execute(new Runnable() 
+			getPool().execute(new Runnable() 
 			{
 				@Override
 				public void run() 
@@ -304,7 +286,7 @@ public class BPedidoM extends BBaseM {
 					{
 						guardar_Pedido(pedido); 			        
 				        Processor.notifyToView(
-								controller,
+				        		NMApp.getController(),
 								ControllerProtocol.NOTIFICATION,
 								ControllerProtocol.SAVE_DATA_FROM_LOCALHOST,
 								0,
@@ -315,7 +297,7 @@ public class BPedidoM extends BBaseM {
 						try {
 							Processor
 									.notifyToView(
-											controller,
+											NMApp.getController(),
 											ERROR,
 											0,
 											0,
@@ -333,7 +315,7 @@ public class BPedidoM extends BBaseM {
 			});
 			
 			 Processor.notifyToView(
-						controller,
+					 NMApp.getController(),
 						ControllerProtocol.NOTIFICATION_DIALOG2,
 						0,
 						0,"Guardando pedido localmente");
@@ -385,7 +367,7 @@ public class BPedidoM extends BBaseM {
 			if(credenciales=="")
 				return;
 			
-			pool.execute(new Runnable()
+			getPool().execute(new Runnable()
 			{ 
 				
 				@SuppressWarnings("unchecked")
@@ -397,7 +379,7 @@ public class BPedidoM extends BBaseM {
 						//guardar primero el pedido localmente 
 						guardar_Pedido(pedido);
 						
-						Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
+						Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
 								0,0,"Enviando pedido al servidor central");
 						//enviado pedido al servidor central
 						Pedido obj=ModelPedido.enviarPedido(credenciales, pedido);; 
@@ -407,7 +389,7 @@ public class BPedidoM extends BBaseM {
 					    //guardando de nuevo localmente el pedido ya actualizado  
 						RegistrarPedido(obj,NMApp.getContext());
 						 
-						Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
+						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
 								0,0,"Actualizando el estado de cuentas del Cliente");
 			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
 			            Cliente cliente= BClienteM.actualizarCliente(NMApp.getContext(),SessionManager.getCredenciales(),obj.getObjSucursalID()); 
@@ -421,7 +403,7 @@ public class BPedidoM extends BBaseM {
 						try {
 							Processor
 									.notifyToView(
-											controller,
+											NMApp.getController(),
 											ERROR,
 											0,
 											0,
@@ -436,7 +418,7 @@ public class BPedidoM extends BBaseM {
 					}
 			    }
 			});
-			Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,
+			Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
 					0,0,"enviando pedido al servidor central");
 
 		} catch (Exception e) {
@@ -458,15 +440,14 @@ public class BPedidoM extends BBaseM {
 			if(credenciales=="")
 				return;
 		
-			pool.execute(new Runnable()
-			{ 
-				@SuppressWarnings("unchecked")
+			getPool().execute(new Runnable()
+			{  
 				@Override
 				public void run()
 			    {					 
 					try 
 					{
-						Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"Conectando con el servidor central.");
+						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"Conectando con el servidor central.");
 						
 						Pedido pedido= ModelPedido.anularPedido(credenciales, pedidoid);
 						
@@ -479,7 +460,7 @@ public class BPedidoM extends BBaseM {
 						try {
 							Processor
 									.notifyToView(
-											controller,
+											NMApp.getController(),
 											ERROR,
 											0,
 											0,

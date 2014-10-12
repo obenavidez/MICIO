@@ -39,13 +39,13 @@ import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.ProductoViewHolder;
 import com.panzyma.nm.viewdialog.DetalleProducto.OnButtonClickHandler;
 import com.panzyma.nordismobile.R;
-
+@InvokeBridge(bridgeName = "BProductoM")
 public class DialogProducto extends Dialog  implements Handler.Callback{
 
-	private static Context parent; 
 	private Display display;
 	private ProgressDialog pd;
 	private GenericAdapter adapter; 
@@ -72,7 +72,6 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
     private String codTipoPrecio;
     
     private String filtro = "";  
-    //private Producto _productoSeleccionado = null;
     private int[] dataIndex; 
     private long _idCategCliente;
     private long _idTipoPrecio;
@@ -83,7 +82,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	private ArrayList<Producto> _idsProdsExcluir; 
 	private ArrayList<Producto> Lproducto;
 	private com.panzyma.nm.interfaces.Editable _view;
-    @SuppressWarnings("unchecked")
+	
 	public DialogProducto(com.panzyma.nm.interfaces.Editable vpe,String codTP, ArrayList<Producto> ProdsExclir, long idPedido, long idCategCliente, long idTipoPrecio, long idTipoCliente, boolean exento) 
     {    
     	super(vpe.getContext(),android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);     
@@ -91,12 +90,10 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
         try 
         {   
 			setContentView(R.layout.mainproducto);   
-			_view=vpe;
-        	parent=vpe.getContext();       	 
-	        NMApp.getController().setEntities(this,new BProductoM()); 
-	        NMApp.getController().addOutboxHandler(new Handler(this));
-	        pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false); 
-			WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
+			_view=vpe;      	 
+	        NMApp.getController().setView(this);
+	        pd = ProgressDialog.show(vpe.getContext(), "Espere por favor", "Trayendo Info...", true, false); 
+			WindowManager wm = (WindowManager) vpe.getContext().getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay(); 
 			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
 			initComponents();
@@ -178,8 +175,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 				LoadData();
 				return true;
 			case ERROR: 
-				ErrorMessage error=((ErrorMessage)msg.obj);
-//				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();				 
+				ErrorMessage error=((ErrorMessage)msg.obj);			 
 				return true;		
 		}
 		return false;
@@ -215,7 +211,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			if(Lproducto.size()!=0 )
 			{ 
 					gridheader.setText("Listado de Productos("+Lproducto.size()+")");
-					adapter=new GenericAdapter(parent,ProductoViewHolder.class,Lproducto,R.layout.gridproducto);				 
+					adapter=new GenericAdapter(NMApp.getContext(),ProductoViewHolder.class,Lproducto,R.layout.gridproducto);				 
 					lvproducto.setAdapter(adapter);
 					lvproducto.setOnItemClickListener(new OnItemClickListener() 
 			        {
@@ -282,17 +278,8 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 
 	} 
 	
-	@SuppressWarnings("unchecked")
 	private void FINISH_ACTIVITY()
-	{
-		NMApp.getController().removeOutboxHandler(TAG);
-		NMApp.getController().removebridge(NMApp.getController().getBridge());
-		NMApp.getController().disposeEntities();
-		try {
-			NMApp.getController().setEntities(parent,_view.getBridge());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	{ 
 		if(pd!=null)
 			pd.dismiss();
 		Log.d(TAG, "Exit from DialogProducto"); 

@@ -36,8 +36,7 @@ import android.content.Context;
 import android.os.Message;
 import android.util.Log;
  
-@SuppressLint("ParserError")
-@SuppressWarnings({"rawtypes"})
+@SuppressLint("ParserError") 
 public final class BClienteM extends BBaseM
 { 
     ArrayList<vmCliente> a_vaC;
