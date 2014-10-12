@@ -40,7 +40,7 @@ import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 
 @SuppressWarnings({ "rawtypes", "unused" })
-public class BConfiguracionM {
+public class BConfiguracionM extends BBaseM {
 
 	String TAG = BConfiguracionM.class.getSimpleName();
 	ViewConfiguracion view;

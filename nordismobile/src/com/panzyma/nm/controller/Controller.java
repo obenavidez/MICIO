@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.panzyma.nm.Main;
+import com.panzyma.nm.CBridgeM.BBaseM;
+import com.panzyma.nm.CBridgeM.BClienteM;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.os.Handler.Callback;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
@@ -28,7 +32,7 @@ public class Controller<T, U>
 	private final List<T> bridges= new ArrayList<T>();
 	private final List<U> views= new ArrayList<U>();
 	 
-	public Controller(T VbridgeM,U view) throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException
+	public Controller(T VbridgeM,U view) throws Exception
 	{			 
 		inboxHandlerThread = new HandlerThread("Controller Inbox="+view.getClass().getSimpleName()); 
 		inboxHandlerThread.setPriority(Thread.MAX_PRIORITY);
@@ -40,13 +44,7 @@ public class Controller<T, U>
 			public void handleMessage(Message msg) {
 				try {
 					Controller.this.handleMessage(msg);
-				} catch (SecurityException e) { 
-					e.printStackTrace();
-				} catch (IllegalAccessException e) { 
-					e.printStackTrace();
-				} catch (InvocationTargetException e) { 
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) { 
+				} catch (Exception e) { 
 					e.printStackTrace();
 				}
 			}
@@ -64,15 +62,9 @@ public class Controller<T, U>
 			public void handleMessage(Message msg) {
 				try {
 					Controller.this.handleMessage(msg);
-				} catch (SecurityException e) { 
+				} catch (Exception e) { 
 					e.printStackTrace();
-				} catch (IllegalAccessException e) { 
-					e.printStackTrace();
-				} catch (InvocationTargetException e) { 
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) { 
-					e.printStackTrace();
-				}
+				} 
 			}
 		};
 		Log.d("Controller","constructor Controller after inboxHandler y de instanciar BClienteM");
@@ -102,6 +94,11 @@ public class Controller<T, U>
 	public U getView()
 	{
 		return view;
+	}
+	
+	public void setView(Callback _view) {
+		this.view = (U) _view;
+		addOutboxHandler(new Handler(_view));
 	}
 	
 	public T getBridge()
@@ -206,9 +203,12 @@ public class Controller<T, U>
 				obj=bridges.get(index);
 
 			else{
+				if( !(_bridge instanceof BClienteM) ) 
 					obj= (T) _bridge.getClass().getConstructor(view.getClass()).newInstance(view);
-					bridges.add(obj);
-				}
+				else 
+					obj = _bridge;
+				bridges.add(obj);
+			}
 
 			
 		} catch (Exception e) {
@@ -356,12 +356,15 @@ public class Controller<T, U>
 
 		}
 	}
-	private void handleMessage(Message msg) throws SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	private void handleMessage(Message msg) throws Exception {
 		Log.d(TAG, "Received message: " + msg);
-		boolean result=(Boolean) this.bridge.getClass().getMethod("handleMessage", Message.class).invoke(bridge, msg);
-		if (!result) {
-			Log.w(TAG, "Unknown message: " + msg);
-		}
+		InvokeBridge invokeBridge = view.getClass().getAnnotation(InvokeBridge.class);		
+		if(invokeBridge != null){
+			bridge = (T) BridgeFactory.getBridge(invokeBridge.bridgeName());
+			((BBaseM)bridge).handleMessage(msg);
+		} else {
+			this.bridge.getClass().getMethod("handleMessage", Message.class).invoke(bridge, msg);
+		}				
 	}
 	  
  

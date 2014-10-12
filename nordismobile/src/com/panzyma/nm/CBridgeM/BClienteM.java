@@ -1,12 +1,14 @@
 package com.panzyma.nm.CBridgeM;
 
-import static com.panzyma.nm.controller.ControllerProtocol.*;  
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;   
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.ksoap2.serialization.PropertyInfo;
 
+import static com.panzyma.nm.controller.ControllerProtocol.*;
 import com.comunicator.Parameters;
 import com.google.gson.Gson;
 import com.panzyma.nm.NMApp;
@@ -15,10 +17,9 @@ import com.panzyma.nm.auxiliar.NMNetWork;
 /*import com.panzyma.nm.auxiliar.Parameters;* Comentado por Jrostrn*/
 import com.panzyma.nm.auxiliar.Processor; 
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.auxiliar.ThreadPool;
-import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.model.ModelCliente;  
+import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;   
 import com.panzyma.nm.view.ViewCliente;
@@ -35,78 +36,16 @@ import android.content.Context;
 import android.os.Message;
 import android.util.Log;
  
-@SuppressLint("ParserError")@SuppressWarnings({"rawtypes"})
-public final class BClienteM 
+@SuppressLint("ParserError")
+@SuppressWarnings({"rawtypes"})
+public final class BClienteM extends BBaseM
 { 
-    ArrayList<vmCliente> a_vaC; 
-	Controller controller;
-	ViewCliente view2;
-	ViewReciboEdit view3;
-	ViewRecibo view4;
-	vCliente view;
-	FichaClienteFragment view5;
-	DialogCuentasPorCobrar viewcc;
+    ArrayList<vmCliente> a_vaC;
     ArrayList<Cliente> obj=new ArrayList<Cliente>();
-    CCCliente objccc=new CCCliente(); 
-    DialogCliente dlogCliente;
-    ThreadPool pool;
-	String TAG=BClienteM.class.getSimpleName();   
-	int view_activated;	
-	JSONArray ja_clientes=new JSONArray();
+    CCCliente objccc=new CCCliente();    
+	String TAG = BClienteM.class.getSimpleName();
+	JSONArray ja_clientes=new JSONArray();	
 	
-	public BClienteM(){}
-	
-	public BClienteM(vCliente view)
-	{
-		this.view = view;
-    	this.controller=NMApp.getController();      	
-    	this.pool =NMApp.getThreadPool();
-    	view_activated=1;
-    }
-	
-	public BClienteM(ViewReciboEdit view)
-	{
-		this.view3 = view;
-    	this.controller=NMApp.getController();      	
-    	this.pool =NMApp.getThreadPool();
-    	view_activated = 4;
-    }
-
-
-	public BClienteM(DialogCuentasPorCobrar view)
-	{
-    	this.controller=NMApp.getController();;  
-    	this.viewcc=view;
-    	this.pool = NMApp.getThreadPool();
-    	view_activated=2;
-    }
-	
-	public BClienteM(DialogCliente view)
-	{
-    	this.controller=NMApp.getController();  
-    	this.dlogCliente=view;
-    	this.pool = NMApp.getThreadPool();
-    	view_activated=3;
-    }
-
-	public BClienteM(ViewRecibo view)
-	{
-		this.view4 = view;
-    	this.controller=NMApp.getController();      	
-    	this.pool =NMApp.getThreadPool();
-    	view_activated=5;
-    }
-	public BClienteM(FichaClienteFragment view)
-	{
-		this.view5 = view;
-		this.controller=NMApp.getController();     	
-    	this.pool =NMApp.getThreadPool();
-		/*
-    	this.controller=NMApp.getController();      	
-    	this.pool =NMApp.getThreadPool();
-    	*/
-    	view_activated=6;
-    }
 	public boolean handleMessage(Message msg) 
 	{
 		Boolean val=false;
@@ -129,67 +68,34 @@ public final class BClienteM
 				    val=true;
 				    break;
 			case LOAD_FACTURASCLIENTE_FROM_SERVER: 
-				    onLoadFacturasCliente_From_Server(); 
+				    onLoadFacturasCliente_From_Server(msg); 
 				    val=true;	    
 					break;
 		}
 		return val;
 	}
-	public boolean handleMessage(int what) 
-	{
-		Boolean val=false;
-		switch (what) 
-		{  
-			case LOAD_DATA_FROM_LOCALHOST: 
-					onLoadALLData_From_LocalHost();
-					val=true;
-					break;
-			case LOAD_DATA_FROM_SERVER:  
-				    onLoadALLData_From_Server(); 
-				    val=true;
-					break;
-			/*case UPDATE_ITEM_FROM_SERVER:  
-					onUpdateItem_From_Server(); 
-					return true;*/
-			/*case LOAD_FICHACLIENTE_FROM_SERVER: 
-				    onLoadFichaCliente_From_Server(Long.parseLong(msg.obj.toString())); 
-				    return true; */
-			case LOAD_FACTURASCLIENTE_FROM_SERVER: 
-				    onLoadFacturasCliente_From_Server(); 
-				    val=true;
-			        break;
-					
-		}
-		return val;
-	}
+	
 	private void onLoadALLData_From_LocalHost()
 	{		
 		try 
 		{   
-			pool.execute
+			getPool().execute
 			(
 				new Runnable()
 				{
 	
 					@Override
 					public void run() 
-					{ 
-						
+					{ 						
 						try
-						{ 
-							if(view_activated==1)	
-							{								
-								Processor.send_ViewCustomerToView((ModelCliente.getArrayCustomerFromLocalHost(view.getContentResolver())), controller);
-							}
-							else if(view_activated==3)
-								Processor.send_ViewCustomerToView((ModelCliente.getArrayCustomerFromLocalHost(dlogCliente.getContext().getContentResolver())), controller);
-							
+						{ 													
+							Processor.send_ViewCustomerToView((ModelCliente.getArrayCustomerFromLocalHost(getResolver())), getController());							
 						}
 						catch (Exception e) 
 						{
 							Log.e(TAG, "Error in the update thread", e);
 							try {
-								Processor.notifyToView(controller,ERROR,0,0,new ErrorMessage("Error interno en la sincronización con la BDD",e.toString(),"\n Causa: "+e.getCause()));
+								Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno en la sincronización con la BDD",e.toString(),"\n Causa: "+e.getCause()));
 							} catch (Exception e1) { 
 								e1.printStackTrace();
 							}  
@@ -201,7 +107,11 @@ public final class BClienteM
 		}  
 		catch (Exception e) 
         { 
-			e.printStackTrace();
+			try {
+				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno en la sincronización con la BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}  
 		} 
 		
 	}
@@ -215,30 +125,35 @@ public final class BClienteM
 			if(credentials.trim()!="")
 			{	
 				
-				NMApp.getThreadPool().execute(  new Runnable()
+				getPool().execute(  new Runnable()
 	            {
 	            	@Override
 					public void run() 
 					{
 						try 
 						{
-							if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller))
+							if(NMNetWork.isPhoneConnected(getContext(),getController()) && NMNetWork.CheckConnection(getController() ) )
 						    {
 								Integer page=1;
+								String userName = ModelConfiguracion.getVMConfiguration(getContext()).getNameUser();
 							    while(true)
 								{ 					    	
-							       JSONArray modelcliente=ModelCliente.getArrayCustomerFromServer2(credentials,"ebuitrago",page,50); 
+							       JSONArray modelcliente=ModelCliente.getArrayCustomerFromServer2(
+							    		   credentials,
+							    		   userName,
+							    		   page,
+							    		   50); 
 								   if(modelcliente.length()!=0)
 								   {    
-									   ModelCliente.saveClientes(modelcliente,view,page);
+									   ModelCliente.saveClientes(modelcliente,getContext(),page);
 									   ja_clientes.toJSONObject(modelcliente);
-									   Processor.notifyToView(controller,C_UPDATE_IN_PROGRESS, 0, 0,"Sincronizando Clientes \npágina:"+page.toString()+" ...");
+									   Processor.notifyToView(getController(),C_UPDATE_IN_PROGRESS, 0, 0,"Sincronizando Clientes \npágina:"+page.toString()+" ...");
 								   	   page++;
 								   } 
 								   else break;			  
 								} 
 							    
-							     Processor.notifyToView(controller,C_UPDATE_FINISHED,0,1,"Los clientes han sido sincronizados exitosamente");
+							     Processor.notifyToView(getController(),C_UPDATE_FINISHED,0,1,"Los clientes han sido sincronizados exitosamente");
 								 					
 							}
 		  						 				 
@@ -247,14 +162,14 @@ public final class BClienteM
 				        { 
 							e.printStackTrace();
 							try {
-								Processor.notifyToView(controller,ERROR,0,1,new ErrorMessage("Error en la sincronización de clientes con el servidor",e.getMessage(),"\n Causa: "+e.getCause()));
+								Processor.notifyToView(getController(),ERROR,0,1,new ErrorMessage("Error en la sincronización de clientes con el servidor",e.getMessage(),"\n Causa: "+e.getCause()));
 							} catch (Exception e1) { 
 								e1.printStackTrace();
 							} 
 						} 
 					}
 	            }); 
-				Processor.notifyToView(controller,C_UPDATE_STARTED, 0, 1,"Sincronizando Clientes"); 		
+				Processor.notifyToView(getController(),C_UPDATE_STARTED, 0, 1,"Sincronizando Clientes"); 		
 		    }
 		}     
 		catch(Exception e)
@@ -293,7 +208,7 @@ public final class BClienteM
 			final String credentials=SessionManager.getCredenciales();			  
 			if(credentials.trim()=="")
 			   return;
-			this.pool.execute
+			this.getPool().execute
 			(  
 				new Runnable()
 	            { 
@@ -304,13 +219,13 @@ public final class BClienteM
 						{      	 
 							
 							JSONObject modelcliente = null;
-							if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller))
+							if(NMNetWork.isPhoneConnected(getContext(),getController()) && NMNetWork.CheckConnection(getController()))
 						    {
 								modelcliente =ModelCliente.actualizarCliente(credentials,sucursalID);
 								if(modelcliente!=null)  
 								{
-									ModelCliente.actualizarClienteLocalmente(modelcliente,view.getApplicationContext());	
-									Processor.notifyToView(controller,C_UPDATE_ITEM_FINISHED,0,0,"sincronización exitosa");
+									ModelCliente.actualizarClienteLocalmente(modelcliente,getContext());	
+									Processor.notifyToView(getController(),C_UPDATE_ITEM_FINISHED,0,0,"sincronización exitosa");
 								}
 							}
 							
@@ -319,7 +234,7 @@ public final class BClienteM
 				        { 
 							e.printStackTrace();
 							try {
-								Processor.notifyToView(controller,ERROR,0,0,new ErrorMessage("Error en la sincronización con el servidor",e.toString(),"\nCausa: "+e.getCause()));
+								Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error en la sincronización con el servidor",e.toString(),"\nCausa: "+e.getCause()));
 							} catch (Exception e1) { 
 								e1.printStackTrace();
 							} 
@@ -339,8 +254,11 @@ public final class BClienteM
     private void onLoadFichaCliente_From_Server(final Long sucursalID) 
 	{  
 		try 
-		{		  
-			this.pool.execute
+		{	
+			final String credentials=SessionManager.getCredenciales();			  
+			if(credentials.trim()=="")
+			   return;
+			this.getPool().execute
 			(  
 				new Runnable()
 	            { 
@@ -348,35 +266,16 @@ public final class BClienteM
 					public void run() 
 					{
 						try 
-						{   
-							Boolean conected= false;
-							switch (view_activated) {
-							case 1:
-								if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller))
-									conected=true;
-								break;
-							case 6:
-								if(NMNetWork.isPhoneConnected(view5.getActivity(),controller) && NMNetWork.CheckConnection(controller)) 
-									conected=true;
-								break;
+						{   							
+							if(NMNetWork.isPhoneConnected(getContext(),getController()) && NMNetWork.CheckConnection(getController()))								
+								Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer(credentials,sucursalID),getController());
 
-							default:
-								break;
-							}
-							if(conected)
-								Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer("sa||nordis09||dp",sucursalID),controller);
-
-							   // Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"Sincronizando Clientes \npágina:"+ page.toString());
-							/*if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller)) 
-									Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer("sa||nordis09||dp",sucursalID),controller);
-									*/
-							 
 						}  
 						catch (Exception e) 
 				        { 
 							e.printStackTrace();
 							try {
-								Processor.notifyToView(controller,ERROR,0,0,new ErrorMessage("Error en la sincronización con el servidor",e.toString(),"\nCausa: "+e.getCause()));
+								Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error en la sincronización con el servidor",e.toString(),"\nCausa: "+e.getCause()));
 							} catch (Exception e1) { 
 								e1.printStackTrace();
 							}  
@@ -393,11 +292,14 @@ public final class BClienteM
 		
 	}
  
-	private void onLoadFacturasCliente_From_Server() 
+	private void onLoadFacturasCliente_From_Server(final Message msg) 
 	{  
 		try 
-		{		  
-			this.pool.execute
+		{		 
+			final String credentials=SessionManager.getCredenciales();			  
+			if(credentials.trim()=="")
+			   return;
+			this.getPool().execute
 			(  
 				new Runnable()
 	            { 
@@ -406,17 +308,28 @@ public final class BClienteM
 					{
 						try 
 						{    
-							if(NMNetWork.isPhoneConnected(view,controller) && NMNetWork.CheckConnection(controller))
+							if(NMNetWork.isPhoneConnected(getContext(),getController()) && NMNetWork.CheckConnection(getController()))
 							{
-									Parameters params=viewcc.get_FacturaParameters();
-									Processor.send_FacturasToViewCuentasPorCobrar(ModelCliente.getFacturasClienteFromServer(params),controller);
+								Parameters params = new Parameters(
+										 (new String[]{"Credentials","idSucursal","fechaInic","fechaFin","mostrarTodasSucursales","soloConSaldo","codEstado"}),
+										 (new Object[]{credentials,
+												       msg.getData().getLong("idSucursal"),
+												       msg.getData().getLong("fechaInic"),
+												       msg.getData().getLong("fechaFin"),
+												       msg.getData().getBoolean("mostrarTodasSucursales"),
+												       msg.getData().getBoolean("soloConSaldo"),
+												       msg.getData().getBoolean("codEstado")}),
+										 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.BOOLEAN_CLASS,
+												 PropertyInfo.BOOLEAN_CLASS,PropertyInfo.STRING_CLASS})); 
+									
+									Processor.send_FacturasToViewCuentasPorCobrar(ModelCliente.getFacturasClienteFromServer(params),getController());
 							} 
 						}  
 						catch (Exception e) 
 				        { 
 							e.printStackTrace();
 							try {
-								Processor.notifyToView(controller,ERROR,0,0,new ErrorMessage("Error en la sincronización con el servidor",e.toString(),"\nCausa: "+e.getCause()));
+								Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error en la sincronización con el servidor",e.toString(),"\nCausa: "+e.getCause()));
 							} catch (Exception e1) { 
 								e1.printStackTrace();
 							}  

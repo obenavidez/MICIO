@@ -278,7 +278,7 @@ public class ViewPedido extends ActionBarActivity implements
 					
 					break;
 
-				case CUENTAS_POR_COBRAR: 
+				case CUENTAS_POR_COBRAR: 					
 					pedido_selected = customArrayAdapter.getItem(positioncache);
 					if (pedido_selected != null) 
 					{

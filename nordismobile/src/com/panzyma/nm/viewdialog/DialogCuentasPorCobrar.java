@@ -12,6 +12,7 @@ import org.ksoap2.serialization.PropertyInfo;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -34,7 +35,7 @@ import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nordismobile.R;
- @SuppressLint({ "ResourceAsColor", "ResourceAsColor" })
+@SuppressLint({ "ResourceAsColor", "ResourceAsColor" })
 @SuppressWarnings({"rawtypes","unused","unchecked"})
 public class DialogCuentasPorCobrar extends Dialog implements Handler.Callback
 {   
@@ -75,15 +76,27 @@ public class DialogCuentasPorCobrar extends Dialog implements Handler.Callback
     		mcontroller= new Controller(new BClienteM(),DialogCuentasPorCobrar.this); 
 			mcontroller.addOutboxHandler(new Handler(DialogCuentasPorCobrar.this));
 		    progress=(ProgressBar)this.findViewById(R.id.cxcprogressbar);
-    		mcontroller.getInboxHandler().sendEmptyMessage(LOAD_FACTURASCLIENTE_FROM_SERVER); 
-    		_idSucursal = idSucursal;
-            
+		    
+		    _idSucursal = idSucursal;            
             //Inicializando periodo por defecto de pedidos
             fechaFinPedidos = DateUtil.getToday();
             String s = new String(fechaFinPedidos + "");
             fechaInicPedidos = Integer.parseInt(s.substring(0, 6) + "01"); 
             fechaFinRCol = fechaFinPedidos;
             fechaInicRCol = fechaInicPedidos; 
+		    
+		    Message msg = new Message();
+		    Bundle params = new Bundle();
+		    params.putLong("idSucursal", _idSucursal);
+		    params.putLong("fechaInic", fechaInicFac);
+		    params.putLong("fechaFin", fechaFinFac);		    
+		    params.putBoolean("mostrarTodasSucursales", false);
+		    params.putBoolean("soloConSaldo", soloFacturasConSaldo);
+		    params.putString("estadoFac", estadoFac);
+		    msg.setData(params);
+		    msg.what = LOAD_FACTURASCLIENTE_FROM_SERVER;
+    		mcontroller.getInboxHandler().sendMessage(msg); 
+    		
             LoadCliente(obj);  
        	}
     	catch(Exception e)
@@ -93,7 +106,17 @@ public class DialogCuentasPorCobrar extends Dialog implements Handler.Callback
     		buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
     	}
     	
-	} 
+	}
+	
+	public Parameters get_FacturaParameters()
+	{ 
+	     return new Parameters(
+				 (new String[]{"Credentials","idSucursal","fechaInic","fechaFin","mostrarTodasSucursales","soloConSaldo","codEstado"}),
+				 (new Object[]{"sa||nordis09||dp",_idSucursal,fechaInicFac,fechaFinFac,false,soloFacturasConSaldo,estadoFac}),
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.BOOLEAN_CLASS,
+						 PropertyInfo.BOOLEAN_CLASS,PropertyInfo.STRING_CLASS})); 		 
+	}
+	
 	public void LoadCliente(final CCCliente objL)
 	{   
 
@@ -193,15 +216,7 @@ public class DialogCuentasPorCobrar extends Dialog implements Handler.Callback
 		}
 		return false;
 	}
-
-	public Parameters get_FacturaParameters()
-	{ 
-	     return new Parameters(
-				 (new String[]{"Credentials","idSucursal","fechaInic","fechaFin","mostrarTodasSucursales","soloConSaldo","codEstado"}),
-				 (new Object[]{"sa||nordis09||dp",_idSucursal,fechaInicFac,fechaFinFac,false,soloFacturasConSaldo,estadoFac}),
-				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.BOOLEAN_CLASS,
-						 PropertyInfo.BOOLEAN_CLASS,PropertyInfo.STRING_CLASS})); 		 
-	}
+	
 	public  Dialog buildCustomDialog(String tittle,String msg,int type)
 	{
 		return new CustomDialog(getContext(),tittle,msg,false,type);	    

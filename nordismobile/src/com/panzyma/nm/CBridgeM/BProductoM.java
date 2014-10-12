@@ -32,7 +32,7 @@ import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewdialog.DialogProducto;
 
 @SuppressWarnings("rawtypes")
-public class BProductoM {
+public class BProductoM extends BBaseM {
 
 	Controller controller;
 	ThreadPool pool;

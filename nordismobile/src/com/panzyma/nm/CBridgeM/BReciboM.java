@@ -60,7 +60,7 @@ import com.panzyma.nm.viewdialog.DialogDocumentos;
 import com.panzyma.nm.viewmodel.vmRecibo;
 
 @SuppressWarnings("rawtypes")
-public final class BReciboM {
+public final class BReciboM extends BBaseM {
 
 	private static final String logger = BReciboM.class.getSimpleName();
 

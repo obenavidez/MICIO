@@ -44,10 +44,11 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.ClienteViewHolder;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
-
+@InvokeBridge(bridgeName = "BClienteM")
 @SuppressWarnings({"rawtypes","unused","unchecked"})
 public class DialogCliente extends Dialog  implements Handler.Callback
 {
