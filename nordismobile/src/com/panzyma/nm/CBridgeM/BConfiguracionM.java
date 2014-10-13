@@ -42,9 +42,6 @@ import com.panzyma.nm.viewmodel.vmConfiguracion;
 public class BConfiguracionM extends BBaseM {
 
 	String TAG = BConfiguracionM.class.getSimpleName();
-	ViewConfiguracion view;
-	Controller controller;
-	int view_activated;
 	ArrayList<Cliente> LCliente;
 	JSONArray productos;
 	JSONArray promociones;
@@ -52,16 +49,24 @@ public class BConfiguracionM extends BBaseM {
 	Usuario user;
 	public int ON_ID_Handler;
 
-	public BConfiguracionM() {
-	}
-
-	public BConfiguracionM(ViewConfiguracion view) 
-	{
-		this.controller =NMApp.getController();
-		this.view = view;
-		view_activated = 1;
-	}
-
+	/*
+	 * 
+	 * Message msg = new Message();
+								Bundle b = new Bundle();
+								b.putString("URL",txtURL.getText().toString());
+								b.putString("URL2",txtURL2.getText().toString());
+								b.putString("Empresa",txtEmpresa.getText().toString());
+								b.putString("Credentials",SessionManager.getCredenciales()); 
+								b.putString("LoginUsuario", txtUsuario.getText().toString());
+								b.putParcelable("impresora", getImpresora());
+								b.putString("PIN",NMNetWork.getDeviceId(context));
+								
+								(final String Url,final String Url2,final String Empresa,final String Credentials,
+			final String LoginUsuario, final String PIN, final Impresora dispositivo) throws Exception 
+	 * 
+	 * */
+	
+	
 	public boolean handleMessage(Message msg) {
 		ON_ID_Handler = msg.what;
 		Bundle b = msg.getData();
@@ -71,9 +76,20 @@ public class BConfiguracionM extends BBaseM {
 			LOAD_DATA();
 			return true;
 		case LOAD_SETTING:
-			GET_DATACONFIGURATION(b.get("Credentials").toString(),
-					b.get("LoginUsuario").toString(), b.get("PIN").toString(),
-					(Impresora)b.getParcelable("impresora"));
+			
+			try 
+			{
+					GET_DATACONFIGURATION(b.get("URL").toString(),
+										  b.get("URL2").toString(),
+										  b.get("Empresa").toString(),
+										  b.get("Credentials").toString(),
+										  b.get("LoginUsuario").toString(),
+										  b.get("PIN").toString(),
+										  (Impresora)b.getParcelable("impresora")
+						);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			return true;
 		case ID_SALVAR_CONFIGURACION:
 			return true;
@@ -102,12 +118,12 @@ public class BConfiguracionM extends BBaseM {
 	private void LOAD_DATA() 
 	{
 		try {
-			Processor.send_DataSourceToView(ModelConfiguracion.getVMConfiguration(view), controller);
+			Processor.send_DataSourceToView(ModelConfiguracion.getVMConfiguration(getContext()), getController());
 		} catch (Exception e) {
 			try {
 				Processor
 						.notifyToView(
-								controller,
+								getController(),
 								ERROR,
 								0,
 								0,
@@ -150,7 +166,7 @@ public class BConfiguracionM extends BBaseM {
 									try {
 										Processor
 												.notifyToView(
-														controller,
+														getController(),
 														ERROR,
 														0,
 														1,
@@ -166,7 +182,7 @@ public class BConfiguracionM extends BBaseM {
 								}
 							}
 						});
-				Processor.notifyToView(controller, ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,"Sincronizando parametros del sistema"); 
+				Processor.notifyToView(getController(), ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,"Sincronizando parametros del sistema"); 
 			}
 
 		} catch (Exception e) {
@@ -190,7 +206,7 @@ public class BConfiguracionM extends BBaseM {
 															credentials,
 															"FormaPago-Moneda-EntidadBancaria"),
 											ID_SINCRONIZE_CATALOGOSBASICOS, 0);
-									Processor.notifyToView(controller,
+									Processor.notifyToView(getController(),
 											ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
 											"Sincronizando Tasas de Cambio");
 									onSave_From_LocalHost(ModelConfiguracion
@@ -201,7 +217,7 @@ public class BConfiguracionM extends BBaseM {
 									try {
 										Processor
 												.notifyToView(
-														controller,
+														getController(),
 														ERROR,
 														0,
 														1,
@@ -217,7 +233,7 @@ public class BConfiguracionM extends BBaseM {
 							}
 						});
 
-				Processor.notifyToView(controller, ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Sincronizando FormaPago-Moneda-EntidadBancaria");
+				Processor.notifyToView(getController(), ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Sincronizando FormaPago-Moneda-EntidadBancaria");
 			}
 
 		} catch (Exception e) {
@@ -226,89 +242,89 @@ public class BConfiguracionM extends BBaseM {
 
 	}
 
-	public  void GET_DATACONFIGURATION(final String Credentials,
-			final String LoginUsuario, final String PIN, final Impresora dispositivo) 
-	{
-		try {
-			NMApp.getThreadPool().execute(
-					new Runnable() {
-						@Override
-						public void run() {
-							try {
-								DataConfigurationResult res = ModelConfiguracion.getDataConfiguration
-																(
-																		Credentials,
-																		LoginUsuario, 
-																		PIN
-																);
-								if (res.get_error() == null) 
-								{
-									Processor.notifyToView(controller,
-											ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
-													"Salvando configuración.");
-									vmConfiguracion setting = vmConfiguracion.setConfiguration
-											(
-												view.getUrlServer(),
-												view.getUrlServer2(),
-												String.valueOf(res.get_devicePrefix()), 
-												view.getEnterprise(), 
-												res.get_userInfo().getLogin(), 
-												res.get_maxIdPedido(), 
-												res.get_maxIdRecibo(),
-												dispositivo
-											);
-									ModelConfiguracion.saveConfiguration(view,setting);
-									ModelConfiguracion.saveUser(view, res.get_userInfo());
-									SessionManager.setImpresora(dispositivo);
-									SessionManager.setLoguedUser(res.userInfo);
-
-									Processor
-											.notifyToView(
-													controller,
-													ControllerProtocol.NOTIFICATION,
-													res.get_devicePrefix(),
-													1,"Configuración registrada con exito." );
-								} else
-									Processor
-											.notifyToView(
-													controller,
-													ERROR,
-													0,
-													1,
-													new ErrorMessage(
-															"error en la comunicacion con el servidor",
-															res.get_error()
-																	+ "\r\n",
-															""));
-
-							} catch (Exception e) {
-								e.printStackTrace();
-								try {
-									Processor
-											.notifyToView(
-													controller,
-													ERROR,
-													0,
-													1,
-													new ErrorMessage(
-															"error en la comunicacion con el servidor",
-															e.getMessage()
-																	+ "\r\n",
-															""));
-								} catch (Exception e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-							}
-						}
-					});
-			Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
-							"Validando información con el servidor.");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public  void GET_DATACONFIGURATION(final String Credentials,
+//			final String LoginUsuario, final String PIN, final Impresora dispositivo) 
+//	{
+//		try {
+//			NMApp.getThreadPool().execute(
+//					new Runnable() {
+//						@Override
+//						public void run() {
+//							try {
+//								DataConfigurationResult res = ModelConfiguracion.getDataConfiguration
+//																(
+//																		Credentials,
+//																		LoginUsuario, 
+//																		PIN
+//																);
+//								if (res.get_error() == null) 
+//								{
+//									Processor.notifyToView(getController(),
+//											ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
+//													"Salvando configuración.");
+//									vmConfiguracion setting = vmConfiguracion.setConfiguration
+//											(
+//												view.getUrlServer(),
+//												view.getUrlServer2(),
+//												String.valueOf(res.get_devicePrefix()), 
+//												view.getEnterprise(), 
+//												res.get_userInfo().getLogin(), 
+//												res.get_maxIdPedido(), 
+//												res.get_maxIdRecibo(),
+//												dispositivo
+//											);
+//									ModelConfiguracion.saveConfiguration(getContext(),setting);
+//									ModelConfiguracion.saveUser(getContext(), res.get_userInfo());
+//									SessionManager.setImpresora(dispositivo);
+//									SessionManager.setLoguedUser(res.userInfo);
+//
+//									Processor
+//											.notifyToView(
+//													getController(),
+//													ControllerProtocol.NOTIFICATION,
+//													res.get_devicePrefix(),
+//													1,"Configuración registrada con exito." );
+//								} else
+//									Processor
+//											.notifyToView(
+//													getController(),
+//													ERROR,
+//													0,
+//													1,
+//													new ErrorMessage(
+//															"error en la comunicacion con el servidor",
+//															res.get_error()
+//																	+ "\r\n",
+//															""));
+//
+//							} catch (Exception e) {
+//								e.printStackTrace();
+//								try {
+//									Processor
+//											.notifyToView(
+//													getController(),
+//													ERROR,
+//													0,
+//													1,
+//													new ErrorMessage(
+//															"error en la comunicacion con el servidor",
+//															e.getMessage()
+//																	+ "\r\n",
+//															""));
+//								} catch (Exception e1) {
+//									// TODO Auto-generated catch block
+//									e1.printStackTrace();
+//								}
+//							}
+//						}
+//					});
+//			Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
+//							"Validando información con el servidor.");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	
 	
 	public static  void GET_DATACONFIGURATION(final String Url,final String Url2,final String Empresa,final String Credentials,
@@ -371,16 +387,16 @@ public class BConfiguracionM extends BBaseM {
 							@Override
 							public void run() {
 								try {
-									if (NMNetWork.isPhoneConnected(view,
-											controller)
+									if (NMNetWork.isPhoneConnected(getContext(),
+											getController())
 											&& NMNetWork
-													.CheckConnection(controller)) {
+													.CheckConnection(getController())) {
 										Integer page = 1;
 										while (true) {
 											JSONArray modelcliente = ModelCliente
 													.getArrayCustomerFromServer2(
 															credentials,
-															view.getLoginUsuario(),
+															SessionManager.getLoginUser().getNombre(),
 															page, 50);
 											if (modelcliente.length() != 0) {
 												onSave_From_LocalHost(
@@ -389,7 +405,7 @@ public class BConfiguracionM extends BBaseM {
 														page);
 												Processor
 														.notifyToView(
-																controller,
+																getController(),
 																ControllerProtocol.NOTIFICATION_DIALOG2,
 																0,
 																0,"Sincronizando Clientes \npágina:"
@@ -407,7 +423,7 @@ public class BConfiguracionM extends BBaseM {
 										if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
 											Processor
 											.notifyToView(
-													controller,
+													getController(),
 													ControllerProtocol.NOTIFICATION,
 													0,
 													1,"Los clientes han sido sincronizados exitosamente");
@@ -419,7 +435,7 @@ public class BConfiguracionM extends BBaseM {
 									try {
 										Processor
 												.notifyToView(
-														controller,
+														getController(),
 														ERROR,
 														0,
 														1,
@@ -436,7 +452,7 @@ public class BConfiguracionM extends BBaseM {
 						});
 				Processor
 				.notifyToView(
-						controller,
+						getController(),
 						ControllerProtocol.NOTIFICATION_DIALOG2,
 						0,
 						0,"Sincronizando Clientes"); 
@@ -462,7 +478,7 @@ public class BConfiguracionM extends BBaseM {
 										JSONArray modelproducto = ModelProducto
 												.getArrayProductoFromServer(
 														Credentials,
-														view.getLoginUsuario(),
+														SessionManager.getLoginUser().getNombre(),
 														page, 50);
 										if (modelproducto.length() != 0) {
 											onSave_From_LocalHost(
@@ -472,7 +488,7 @@ public class BConfiguracionM extends BBaseM {
 
 											Processor
 											.notifyToView(
-													controller,
+													getController(),
 													ControllerProtocol.NOTIFICATION_DIALOG2,
 													0,
 													0,"Sincronizando Productos \npágina:"
@@ -488,7 +504,7 @@ public class BConfiguracionM extends BBaseM {
 									if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
 										Processor
 										.notifyToView(
-												controller,
+												getController(),
 												ControllerProtocol.NOTIFICATION,
 												0,
 												1,"Los productos han sido sincronizados exitosamente");
@@ -497,7 +513,7 @@ public class BConfiguracionM extends BBaseM {
 									try {
 										Processor
 												.notifyToView(
-														controller,
+														getController(),
 														ERROR,
 														0,
 														1,
@@ -515,7 +531,7 @@ public class BConfiguracionM extends BBaseM {
 						});
 				Processor
 				.notifyToView(
-						controller,
+						getController(),
 						ControllerProtocol.NOTIFICATION_DIALOG2,
 						0,
 						0,"Sincronizando Productos"); 
@@ -542,7 +558,7 @@ public class BConfiguracionM extends BBaseM {
 										JSONArray lpromocion = ModelConfiguracion
 												.getPromocionesPaged(
 														credentials,
-														view.getLoginUsuario(),
+														SessionManager.getLoginUser().getNombre(),
 														page, 30);
 										if (lpromocion.length() != 0) 
 										{
@@ -552,7 +568,7 @@ public class BConfiguracionM extends BBaseM {
 											
 											Processor
 											.notifyToView(
-													controller,
+													getController(),
 													ControllerProtocol.NOTIFICATION_DIALOG2,
 													0,
 													0,"Sincronizando Promociones \npágina:"
@@ -566,7 +582,7 @@ public class BConfiguracionM extends BBaseM {
 										}
 										if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
 											Processor
-													.notifyToView(controller,
+													.notifyToView(getController(),
 															NOTIFICATION,
 															0, 1,
 															"Promociones fueron sincronizadas con exito.");
@@ -579,7 +595,7 @@ public class BConfiguracionM extends BBaseM {
 							}
 						});
 
-				Processor.notifyToView(controller, ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,"Sincronizando Promociones");
+				Processor.notifyToView(getController(), ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,"Sincronizando Promociones");
 			}
 
 		} catch (Exception e) {
@@ -638,7 +654,7 @@ public class BConfiguracionM extends BBaseM {
 								}
 							}
 							try {
-								Processor.notifyToView(controller,
+								Processor.notifyToView(getController(),
 										ControllerProtocol.NOTIFICATION, 0, 1,
 										"Catalogos sincronizados exitosamente");
 							} catch (Exception e) { 
@@ -668,10 +684,10 @@ public class BConfiguracionM extends BBaseM {
 							try {
 								switch (ID) {
 								case ID_SINCRONIZE_PARAMETROS:
-									ModelConfiguracion.saveSystemParam(view,objL);
+									ModelConfiguracion.saveSystemParam(getContext(),objL);
 									
 									if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
-										Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION, 0,0,
+										Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION, 0,0,
 												"Los Parametros del sistema fueron sincronizados con exito.");
 									synchronized (lock) {
 										try {
@@ -682,14 +698,14 @@ public class BConfiguracionM extends BBaseM {
 									}
 									break;
 								case ID_SINCRONIZE_CATALOGOSBASICOS:
-									ModelConfiguracion.saveValorCatalogoSystem(view, objL);
+									ModelConfiguracion.saveValorCatalogoSystem(getContext(), objL);
 									break;
 
 								case ID_SINCRONIZE_CATALOGOSBASICOS2:
-									ModelConfiguracion.saveTasasDeCambio(view,
+									ModelConfiguracion.saveTasasDeCambio(getContext(),
 											objL);
 									if (ON_ID_Handler != ID_SINCRONIZE_TODOS)
-										Processor.notifyToView(controller,ControllerProtocol.NOTIFICATION, 0,0,
+										Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION, 0,0,
 												"Los Catalogos Básicos del sistema fueron sincronizados con exito.");
 									synchronized (lock) {
 										try {
@@ -701,16 +717,16 @@ public class BConfiguracionM extends BBaseM {
 									break;
 
 								case ID_SINCRONIZE_CLIENTES:
-									ModelCliente.saveClientes(objL, view, page);
+									ModelCliente.saveClientes(objL, getContext(), page);
 									break;
 
 								case ID_SINCRONIZE_PRODUCTOS:
-									ModelProducto.saveProductos(objL, view,
+									ModelProducto.saveProductos(objL, getContext(),
 											page);
 									break;
 
 								case ID_SINCRONIZE_PROMOCIONES:
-									ModelConfiguracion.savePromociones(view,
+									ModelConfiguracion.savePromociones(getContext(),
 											objL, page);
 									break; 
 								}
@@ -719,7 +735,7 @@ public class BConfiguracionM extends BBaseM {
 								try {
 									Processor
 											.notifyToView(
-													controller,
+													getController(),
 													ERROR,
 													0,
 													1,

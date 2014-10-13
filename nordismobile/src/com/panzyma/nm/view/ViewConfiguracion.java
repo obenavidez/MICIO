@@ -64,11 +64,13 @@ import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("ShowToast")
 @SuppressWarnings({ "unchecked", "rawtypes", "unused", "static-access" })
+@InvokeBridge(bridgeName = "BConfiguracionM")
 public class ViewConfiguracion extends FragmentActivity implements
 		Handler.Callback {
 	String TAG = ViewConfiguracion.class.getSimpleName();
@@ -88,7 +90,6 @@ public class ViewConfiguracion extends FragmentActivity implements
 	private String url_server;
 	private String url_server2;
 	private String deviceid;
-	private NMApp NMApp;
 	private boolean onRestart;
 	private boolean onPause;
 	private DataConfigurationResult settingdata;
@@ -110,8 +111,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 		{			
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 			context = this;
-			NMApp.getController().setEntities(this, bcm = new BConfiguracionM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController().setView(this);
 			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA);
 
 			WindowManager wm = (WindowManager) this.getApplicationContext()
@@ -382,6 +382,9 @@ public class ViewConfiguracion extends FragmentActivity implements
 								
 								Message msg = new Message();
 								Bundle b = new Bundle();
+								b.putString("URL",txtURL.getText().toString());
+								b.putString("URL2",txtURL2.getText().toString());
+								b.putString("Empresa",txtEmpresa.getText().toString());
 								b.putString("Credentials",SessionManager.getCredenciales()); 
 								b.putString("LoginUsuario", txtUsuario.getText().toString());
 								b.putParcelable("impresora", getImpresora());
@@ -469,13 +472,10 @@ public class ViewConfiguracion extends FragmentActivity implements
 	}
 
 	private void initController() {
-		NMApp = (NMApp) this.getApplicationContext();
-		NMApp.getController().addOutboxHandler(new Handler(this));
+		NMApp.getController().setView(this);
 	}
 
 	private void FINISH_ACTIVITY() {
-		NMApp.getController().removeOutboxHandler(TAG);
-		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		finish();
 	} 
@@ -492,12 +492,13 @@ public class ViewConfiguracion extends FragmentActivity implements
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestcode, resultcode, data);
-		try {
+		try 
+		{
+			NMApp.getController().setView(this);
 			if (RESULTADO_IMPRESORA == resultcode && data != null)
 				actualizarImpresoraEnPantalla((Impresora) data
 						.getParcelableExtra("impresora"));
-			NMApp.getController().setEntities(this,
-					(bcm != null) ? getBridge() : new BConfiguracionM());
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
