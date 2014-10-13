@@ -36,7 +36,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -49,13 +48,15 @@ import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.view.ViewPedido.FragmentActive;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
 import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
 
-
+@InvokeBridge(bridgeName = "BProductoM")
 public class ProductoView extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {
 
@@ -66,7 +67,7 @@ public class ProductoView extends ActionBarActivity implements
 	int listFragmentId;
 	int positioncache = -1;
 	private Context context;
-
+	private FragmentActive fragmentActive = null;
 	private String[] opcionesMenu;
 	private DrawerLayout drawerLayout;
 	private ListView drawerList;
@@ -88,7 +89,9 @@ public class ProductoView extends ActionBarActivity implements
 	private static final int LISTA_PRECIO=2;
 	private static final int SINCRONIZE_ALL_PRODUCTO= 3; 
 	private static final int CERRAR=4;
-
+	public enum FragmentActive {
+		LIST,FICHAPRODUCTOFRAGMENT,BONIFICACIONES,LISTA_PRECIO
+	};
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -98,7 +101,7 @@ public class ProductoView extends ActionBarActivity implements
 		context = getApplicationContext();
 
 		setContentView(R.layout.layout_client_fragment);
-
+		fragmentActive = FragmentActive.LIST;
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
 		footerView = (TextView) findViewById(R.id.ctxtview_enty);
 		pv=this;
@@ -155,30 +158,30 @@ public class ProductoView extends ActionBarActivity implements
 		MenuItem searchItem = menu.findItem(R.id.action_search);
 
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
-		if (findViewById(R.id.fragment_container) != null) {
-			customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
-					.findFragmentById(R.id.fragment_container)).getAdapter();
-
-		} else {
-			customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
-					.findFragmentById(R.id.item_client_fragment)).getAdapter();
+		if (fragmentActive == FragmentActive.LIST) {
+			if (findViewById(R.id.fragment_container) != null) {
+				customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
+						.findFragmentById(R.id.fragment_container)).getAdapter();
+	
+			} else {
+				customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
+						.findFragmentById(R.id.item_client_fragment)).getAdapter();
+			}
+	
+			searchView.setOnQueryTextListener(new OnQueryTextListener() {
+				@Override
+				public boolean onQueryTextChange(String s) {
+					customArrayAdapter.getFilter().filter(s);
+					return false;
+				}
+	
+				@Override
+				public boolean onQueryTextSubmit(String s) {
+					customArrayAdapter.getFilter().filter(s);
+					return false;
+				}
+			});
 		}
-
-		searchView.setOnQueryTextListener(new OnQueryTextListener() {
-			@Override
-			public boolean onQueryTextChange(String s) {
-				customArrayAdapter.getFilter().filter(s);
-				return false;
-			}
-
-			@Override
-			public boolean onQueryTextSubmit(String s) {
-				customArrayAdapter.getFilter().filter(s);
-				return false;
-			}
-		});
-
 		return true;
 	}
 
@@ -424,6 +427,7 @@ public class ProductoView extends ActionBarActivity implements
 	    {        	
           Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
       	  if (fragment instanceof FichaProductoFragment) {
+      		  fragmentActive = FragmentActive.LIST;
       		  gridheader.setVisibility(View.VISIBLE);
       		  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
       		  transaction.detach(fragment);
@@ -538,6 +542,7 @@ public class ProductoView extends ActionBarActivity implements
 		        AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 		        return;
 		    }
+		    fragmentActive = FragmentActive.FICHAPRODUCTOFRAGMENT;
 		    Bundle args = new Bundle();
 		    args.putInt(FichaProductoFragment.ARG_POSITION, position);
 		    args.putParcelable(FichaProductoFragment.OBJECT, product_selected);
@@ -576,7 +581,7 @@ public class ProductoView extends ActionBarActivity implements
 		        AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 		        return;
 		    }
-		    
+		    fragmentActive = FragmentActive.BONIFICACIONES;
 		    FragmentTransaction Fragtransaction = getSupportFragmentManager().beginTransaction();
 		    android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
 		    if (prev != null){
@@ -593,6 +598,7 @@ public class ProductoView extends ActionBarActivity implements
 		        AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 		        return;
 		    }
+		    fragmentActive = FragmentActive.LISTA_PRECIO;
 		    FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
 		    android.support.v4.app.Fragment dialog = getSupportFragmentManager().findFragmentByTag("dialog");
 		    if (dialog != null){
@@ -651,11 +657,10 @@ public class ProductoView extends ActionBarActivity implements
 	private void Load_Data(int what)
 	{
 		try {
-				NMApp.getController().setEntities(this, bpm= new BProductoM());
-				NMApp.getController().addOutboxHandler(new Handler(this));
+				NMApp.getController().setView(this);
 				NMApp.getController().getInboxHandler().sendEmptyMessage(what);
-				
-				pDialog = new ProgressDialog(this);
+			
+				pDialog = new ProgressDialog(ProductoView.this);
 				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				pDialog.setMessage("Procesando...");
 				pDialog.setCancelable(true);
@@ -703,4 +708,10 @@ public class ProductoView extends ActionBarActivity implements
 //			e.printStackTrace();
 //		}*/
 //	}
+	
+	@Override
+	protected void onResume() {
+		NMApp.getController().setView(this);
+		super.onResume();
+	}
 }

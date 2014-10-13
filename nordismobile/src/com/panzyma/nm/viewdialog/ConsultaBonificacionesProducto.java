@@ -137,9 +137,10 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 		msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
     	//nmapp= parent!=null ? (NMApp) parent.getApplicationContext() : (NMApp) parent2.getApplicationContext();
 		try {
-			NMApp.controller.removeBridgeByName(BProductoM.class.toString());
-			NMApp.controller.setEntities(this,new BProductoM());
-			NMApp.controller.addOutboxHandler(new Handler(this));
+//			NMApp.controller.removeBridgeByName(BProductoM.class.toString());
+//			NMApp.controller.setEntities(this,new BProductoM());
+//			NMApp.controller.addOutboxHandler(new Handler(this));
+			NMApp.getController().setView(this);
 			NMApp.controller.getInboxHandler().sendMessage(msg);  
 			
 		} catch (Exception e) {
@@ -179,15 +180,15 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	{
 		try 
 		{
-			NMApp.getController().removeOutboxHandler(TAG);
-		    NMApp.getController().removebridge(NMApp.getController().getBridge());
-		    NMApp.getController().disposeEntities();
-		    if(this.getActivity() instanceof ViewPedidoEdit){
-		    	NMApp.getController().setEntities((parent),parent.getBridge());	
-		    }
-		    if(this.getActivity() instanceof ProductoView){
-		    	NMApp.getController().setEntities((parent2),parent2.getBridge());	
-		    }
+//			NMApp.getController().removeOutboxHandler(TAG);
+//		    NMApp.getController().removebridge(NMApp.getController().getBridge());
+//		    NMApp.getController().disposeEntities();
+//		    if(this.getActivity() instanceof ViewPedidoEdit){
+//		    	NMApp.getController().setEntities((parent),parent.getBridge());	
+//		    }
+//		    if(this.getActivity() instanceof ProductoView){
+//		    	NMApp.getController().setEntities((parent2),parent2.getBridge());	
+//		    }
 		} catch (Exception e) 
 		{ 
 			e.printStackTrace();

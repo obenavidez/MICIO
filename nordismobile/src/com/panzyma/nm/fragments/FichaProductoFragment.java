@@ -103,9 +103,9 @@ public class FichaProductoFragment extends Fragment {
 	public void onDetach ()
 	{
 		Log.d(TAG, "OnDetach");
-		NMApp.controller.removeOutboxHandler(TAG);
-		NMApp.controller.removebridge(NMApp.getController().getBridge());
-		NMApp.controller.disposeEntities();
+//		NMApp.controller.removeOutboxHandler(TAG);
+//		NMApp.controller.removebridge(NMApp.getController().getBridge());
+//		NMApp.controller.disposeEntities();
 		super.onDetach();
 	}
 	
