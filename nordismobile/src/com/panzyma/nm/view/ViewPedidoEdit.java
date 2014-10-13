@@ -1384,7 +1384,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	@Override
 	protected void onResume() {
 
-		try {
+		try 
+		{
 			SessionManager.setContext(me);
 			com.panzyma.nm.NMApp.getController().setView(this);
 		} catch (Exception e) {
