@@ -23,6 +23,7 @@ import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.TasaCambio;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.EditFormaPago.LoadDataToUI;
 import com.panzyma.nordismobile.R;
 
@@ -44,7 +45,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TableRow;
 import android.widget.TextView;
-
+@InvokeBridge(bridgeName = "BReciboM")
 @SuppressLint("ValidFragment")
 public class DialogoConfirmacion extends DialogFragment implements Callback {	
 	

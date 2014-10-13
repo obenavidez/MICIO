@@ -21,6 +21,7 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.ClienteViewHolder;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
@@ -56,6 +57,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+@InvokeBridge(bridgeName = "BReciboM")
 @SuppressWarnings({"rawtypes","unused","unchecked"})
 public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	
@@ -97,7 +99,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	
 	public void setOnDialogDocumentoButtonClickListener(OnDocumentoButtonClickListener listener) {
 		mButtonClickListener = listener;
-	}
+	}	
 	
 	@SuppressWarnings("static-access")
 	public DialogDocumentos(ViewReciboEdit me, int theme, Cliente cliente, Documento document) 
@@ -112,14 +114,15 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			display = wm.getDefaultDisplay();
 			setObjSucursalId(cliente.getIdSucursal());
 			nmapp=(NMApp) me.getApplication();
-			nmapp.getController().removeBridgeByName(BReciboM.class.toString());
+			/*nmapp.getController().removeBridgeByName(BReciboM.class.toString());
 			nmapp.getController().setEntities(this,new BReciboM()); 
-			nmapp.getController().addOutboxHandler(new Handler(this));
+			nmapp.getController().addOutboxHandler(new Handler(this));*/
 			Message msg = new Message();
 			Bundle params = new Bundle();
 			params.putLong("sucursalID", cliente.getIdSucursal());
 			msg.setData(params);			
-			msg.what = C_FACTURACLIENTE;			
+			msg.what = C_FACTURACLIENTE;	
+			nmapp.getController().setView(this);
 			nmapp.getController().getInboxHandler().sendMessage(msg); 
 			pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
 			initComponents();			
@@ -426,17 +429,17 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	@SuppressWarnings("static-access")
 	private void FINISH_ACTIVITY()
 	{
-		nmapp.getController().removeOutboxHandler(TAG);
+		/*nmapp.getController().removeOutboxHandler(TAG);
 		nmapp.getController().removebridge(nmapp.getController().getBridge());
 		nmapp.getController().disposeEntities();
 		try {
-		nmapp.getController().setEntities((parent),parent.getBridge());
+			nmapp.getController().setEntities((parent),parent.getBridge());
 		} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-		}
+		}*/
 		if(pd!=null)
-		pd.dismiss();	
+			pd.dismiss();	
 		Log.d(TAG, "Activity quitting"); 
 		pd = null;	
 		this.dismiss();

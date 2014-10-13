@@ -46,7 +46,6 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 	private GenericAdapter adapter;
 	ArrayList<PrecioProducto> lprecioproducto;	
 	private int positioncache;
-	private NMApp nmapp;
 	public static String TAG=ConsultaPrecioProducto.class.getSimpleName();
 	ProgressDialog pd;
 	private ViewPedidoEdit parent;
@@ -69,6 +68,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
     {
     	AlertDialog.Builder builder=null;
 		LayoutInflater inflater =null;
+		NMApp.getController().setView(this); 
 		if(this.getActivity() instanceof ViewPedidoEdit){
 			parent=(ViewPedidoEdit) this.getActivity();
 			builder = new AlertDialog.Builder(parent); 
@@ -156,9 +156,6 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 		{
 			idProducto = getArguments().getLong("_idProducto"); 
 	    	idTipoPrecio = getArguments().getLong("_idTipoPrecio");
- 
-			NMApp.getController().setEntities(this,new BProductoM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
 			Message msg = new Message();
 			Bundle b = new Bundle();
 			b.putLong("_idProducto",idProducto); 

@@ -53,8 +53,6 @@ import com.panzyma.nordismobile.R;
 public class DialogCliente extends Dialog  implements Handler.Callback
 {
 	
-
-	private Context mcontext;  
 	private GenericAdapter adapter; 
 	 
 	private vmCliente cliente_selected; 
@@ -68,8 +66,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	private int positioncache=-1; 
 	private OnButtonClickListener mButtonClickListener; 
 	public Cliente cliente;
-	private static Context parent;
-	private Editable _view;
+	
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(Cliente cliente);
 	}
@@ -82,16 +79,12 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	{		
 		super(vpe.getContext(),theme);
 		try 
-        {   
-			_view = vpe;
-			setContentView(R.layout.maincliente);  
-        	mcontext=this.getContext();  
-        	parent = vpe.getContext();;       	 
-	        NMApp.getController().setEntities(this,new BClienteM()); 
-	        NMApp.getController().addOutboxHandler(new Handler(this));
-			WindowManager wm = (WindowManager) parent.getSystemService(Context.WINDOW_SERVICE);
+        {    
+			setContentView(R.layout.maincliente);          	 
+	        NMApp.getController().setView(this); 
+			WindowManager wm = (WindowManager) NMApp.getContext().getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay();
-			pd = ProgressDialog.show(parent, "Espere por favor", "Trayendo Info...", true, false); 
+			pd = ProgressDialog.show((Context)vpe, "Espere por favor", "Trayendo Info...", true, false); 
 			Toast.makeText(this.getContext(), "TestersterexdsafADFASDF", Toast.LENGTH_LONG);
 			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
 	        initComponents();
@@ -175,7 +168,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			if(Lcliente.size()!=0)
 			{
 					gridheader.setText("Listado de Clientes("+Lcliente.size()+")");
-					adapter=new GenericAdapter(mcontext,ClienteViewHolder.class,Lcliente,R.layout.gridcliente);				 
+					adapter=new GenericAdapter(NMApp.getContext(),ClienteViewHolder.class,Lcliente,R.layout.gridcliente);				 
 					lvcliente.setAdapter(adapter);
 					lvcliente.setOnItemClickListener(new OnItemClickListener() 
 			        {
@@ -194,7 +187,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 								e.printStackTrace();
 							}
 			            	adapter.setSelectedPosition(position); 
-			            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));					            	 
+			            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));					            	 
 			            	mButtonClickListener.onButtonClick(cliente);
 			            	FINISH_ACTIVITY();
 			            }
@@ -216,7 +209,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 								e.printStackTrace();
 							}
 			            	adapter.setSelectedPosition(position); 
-			            	view.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.action_item_selected));
+			            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));
 			            	mButtonClickListener.onButtonClick(cliente);
 			            	FINISH_ACTIVITY();
 			            	//quickAction.show(view,display,false);
@@ -250,15 +243,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	
 	private void FINISH_ACTIVITY()
 	{
-		NMApp.getController().removeOutboxHandler(TAG);
-		NMApp.getController().removebridge(NMApp.getController().getBridge());
-		NMApp.getController().disposeEntities();
-		try {
-			NMApp.getController().setEntities(parent,_view.getBridge());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		if(pd!=null)
 			pd.dismiss();	
 		Log.d(TAG, "Activity quitting"); 

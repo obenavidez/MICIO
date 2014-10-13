@@ -65,9 +65,10 @@ import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.ReciboColector;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
-
+@InvokeBridge(bridgeName = "BReciboM")
 @SuppressWarnings("rawtypes")
 public class ViewRecibo extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {	
@@ -483,13 +484,20 @@ public class ViewRecibo extends ActionBarActivity implements
 	  gridheader.setText(String.format("Listado de Recibos (%s)",recibos.size()));
 	  //setList();
 	}
-	
+		
+	@Override
+	protected void onResume() {
+		NMApp.getController().setView(this);
+		super.onResume();
+	}
+
 	@SuppressWarnings("unchecked")
 	private void cargarRecibos() {
 		try {
-			NMApp.getController().removeBridgeByName(BReciboM.class.toString());
+			NMApp.getController().setView(this);
+			/*NMApp.getController().removeBridgeByName(BReciboM.class.toString());
 			NMApp.getController().setEntities(this, bpm = new BReciboM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
+			NMApp.getController().addOutboxHandler(new Handler(this));*/
 			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
@@ -499,7 +507,6 @@ public class ViewRecibo extends ActionBarActivity implements
 			e.printStackTrace();
 		}		
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	@SuppressLint("NewApi")

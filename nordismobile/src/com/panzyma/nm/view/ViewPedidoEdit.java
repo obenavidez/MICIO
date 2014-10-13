@@ -69,6 +69,7 @@ import com.panzyma.nm.serviceproxy.Promocion;
 import com.panzyma.nm.serviceproxy.Promociones;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.PProductoViewHolder;
 import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
 import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
@@ -83,8 +84,8 @@ import com.panzyma.nm.viewdialog.ExonerarImpuesto;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint({ "NewApi", "SimpleDateFormat" })
-@SuppressWarnings({ "unchecked", "rawtypes", "unused", "deprecation",
-		"static-access" })
+@SuppressWarnings({ "unchecked", "rawtypes", "unused", "deprecation","static-access" })
+@InvokeBridge(bridgeName = "BPedidoM")
 public class ViewPedidoEdit extends FragmentActivity implements
 		Handler.Callback, Editable {
 	private static CustomDialog dlg;
@@ -155,10 +156,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		try 
 		{
 			SessionManager.setContext(this);
+			com.panzyma.nm.NMApp.getController().setView(this);
 			aprodselected = new ArrayList<Producto>();
 			me = this;
-			NMApp.getController().setEntities(this, bpm = new BPedidoM());
-			NMApp.getController().addOutboxHandler(handler = new Handler(this));
+			
 			pedido = (getIntent().getParcelableExtra("pedido") != null) ? (Pedido) getIntent()
 					.getParcelableExtra("pedido") : null;
 			Lvmpproducto = new ArrayList<DetallePedido>();
@@ -655,16 +656,14 @@ public class ViewPedidoEdit extends FragmentActivity implements
 							public void onButtonClick(AlertDialog _dialog,
 									int actionId) {
 
-								if (pedido.getCodEstado()
-										.compareTo("FACTURADO") == 0) {
+								if (pedido.getCodEstado().compareTo("FACTURADO") == 0) {
 									Message msg = new Message();
 									Bundle b = new Bundle();
 									b.putParcelable("pedido", pedido);
 									b.putParcelable("cliente", cliente);
 									msg.setData(b);
 									msg.what = ControllerProtocol.IMPRIMIR;
-									NMApp.getController().getInboxHandler()
-											.sendMessage(msg);
+									NMApp.getController().getInboxHandler().sendMessage(msg);
 
 								}
 								_dialog.dismiss();
@@ -1387,10 +1386,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 		try {
 			SessionManager.setContext(me);
-			NMApp.getController().setEntities(this,
-					(bpm == null) ? bpm = new BPedidoM() : bpm);
-			NMApp.getController().addOutboxHandler(
-					(handler == null) ? handler = new Handler(this) : handler);
+			com.panzyma.nm.NMApp.getController().setView(this);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

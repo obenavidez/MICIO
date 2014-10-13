@@ -203,10 +203,10 @@ public class Controller<T, U>
 				obj=bridges.get(index);
 
 			else{
-				if( !(_bridge instanceof BClienteM) ) 
+				/*if( !(_bridge instanceof BClienteM) ) 
 					obj= (T) _bridge.getClass().getConstructor(view.getClass()).newInstance(view);
-				else 
-					obj = _bridge;
+				else */
+				obj = _bridge;
 				bridges.add(obj);
 			}
 
@@ -359,7 +359,8 @@ public class Controller<T, U>
 	private void handleMessage(Message msg) throws Exception {
 		Log.d(TAG, "Received message: " + msg);
 		InvokeBridge invokeBridge = view.getClass().getAnnotation(InvokeBridge.class);		
-		if(invokeBridge != null){
+		if(invokeBridge != null)
+		{
 			bridge = (T) BridgeFactory.getBridge(invokeBridge.bridgeName());
 			((BBaseM)bridge).handleMessage(msg);
 		} else {
