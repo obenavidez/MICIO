@@ -296,7 +296,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				//SE OBTIENEN LAS FACTURAS SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
 				ArrayList<Factura> _facturas = getArray(facturas, facturas[0]);
 				if( _facturas.size() == 0 ){
-					pd.dismiss();
+					if(pd != null)pd.dismiss();
 					FINISH_ACTIVITY();
 					Util.Message.buildToastMessage(parent, "No existen facturas pendientes", 1000).show();
 					return;
@@ -334,7 +334,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				//SE OBTIENEN LAS NOTAS DE DEBITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
 				ArrayList<CCNotaDebito> _notasDebito = getArray(notasDebito, notasDebito[0]);
 				if( _notasDebito.size() == 0 ){
-					pd.dismiss();
+					if(pd != null)pd.dismiss();
 					FINISH_ACTIVITY();
 					Util.Message.buildToastMessage(parent, "No existen notas de débito pendientes", 1000).show();
 					return;
@@ -376,7 +376,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				ArrayList<CCNotaCredito> _notasCredito = new ArrayList<CCNotaCredito>(Arrays.asList(notasCredito));	
 				if( _notasCredito.size() == 0 )
 				{
-					pd.dismiss();
+					if(pd != null)pd.dismiss();
 					FINISH_ACTIVITY();
 					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
 					return;
