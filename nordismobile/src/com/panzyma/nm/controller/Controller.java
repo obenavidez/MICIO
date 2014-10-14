@@ -69,13 +69,13 @@ public class Controller<T, U>
 		};
 		Log.d("Controller","constructor Controller after inboxHandler y de instanciar BClienteM");
 	}
+	
 	public  boolean hasEntities()
 	{
 		if(bridge!=null && this.view!=null)
 			return true;
 		return false;
 	}	
-	
 	
 	public  void setEntities(U _view,T _bridge) throws Exception
 	{
@@ -264,15 +264,17 @@ public class Controller<T, U>
 	
 	public final void addOutboxHandler(Handler handler) 
 	{
-		U _view=this.getView();
+		U _view=this.getView();	
 		
-		
-		if(_view==null)
+		if(_view == null)
 			outboxHandlers.put(Main.TAG,handler);
 		else
 		{
-			if(outboxHandlers.get(this.getView().getClass().getSimpleName())==null)
-				outboxHandlers.put(this.getView().getClass().getSimpleName(),handler);
+			String handlerKey = this.getView().getClass().getSimpleName();
+			if(outboxHandlers.get(handlerKey) != null) {
+				removeOutboxHandler(handlerKey);
+			}
+			outboxHandlers.put(this.getView().getClass().getSimpleName(),handler);
 		}
 	}	
 	public final void removeOutboxHandler(String handler) {
