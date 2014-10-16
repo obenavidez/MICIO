@@ -54,6 +54,7 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.view.ProductoView.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
@@ -83,7 +84,10 @@ public class vCliente extends ActionBarActivity implements
 	List<vmCliente> clientes = new ArrayList<vmCliente>();
 	vmCliente cliente_selected;
 	private static CustomDialog dlg;
-
+	public enum FragmentActive {
+		LIST,FICHACLIENTE,CONSULTAR_CUENTA_COBRAR
+	};
+	private FragmentActive fragmentActive = null;
 	//Menu Variables
 	int listFragmentId;
 	int positioncache = 0;
@@ -110,7 +114,7 @@ public class vCliente extends ActionBarActivity implements
 		
 		context = getApplicationContext();
 		setContentView(R.layout.layout_client_fragment);
-		
+		fragmentActive = FragmentActive.LIST;
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
 		footerView = (TextView) findViewById(R.id.ctextv_gridheader);
 		vc =this;
@@ -245,8 +249,18 @@ public class vCliente extends ActionBarActivity implements
 				result=true;
 			   break;
 			case ERROR:
-				ErrorMessage error=((ErrorMessage)msg.obj);
-				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();				 
+				final ErrorMessage error=((ErrorMessage)msg.obj);
+				//buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();
+				pDialog.dismiss();
+				runOnUiThread(new Runnable() {
+						@Override
+						public void run() 
+						{
+							// pDialog.hide();
+							 dlg =new CustomDialog(vc,error.getMessage()+error.getCause(), false, NOTIFICATION_DIALOG);
+							 dlg.show();
+						}
+					});
 				result=true;
 				break;
 		}
@@ -286,7 +300,7 @@ public class vCliente extends ActionBarActivity implements
 		
 		if(searchItem!=null) {
 			searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-	
+			if (fragmentActive == FragmentActive.LIST) {
 			customArrayAdapter = ((Filterable) getSupportFragmentManager()
 					.findFragmentById(R.id.fragment_container)).getAdapter();
 	
@@ -303,6 +317,7 @@ public class vCliente extends ActionBarActivity implements
 					return false;
 				}
 			});
+		  }
 		}
 		
 		return true;
@@ -407,6 +422,7 @@ public class vCliente extends ActionBarActivity implements
 			            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 			            	return;
 			            }
+			            fragmentActive = FragmentActive.FICHACLIENTE;
 						LOAD_FICHACLIENTE_FROMSERVER();
 						drawerLayout.closeDrawers();
 						break;
@@ -421,6 +437,7 @@ public class vCliente extends ActionBarActivity implements
 			            	AppDialog.showMessage(vc,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 			            	return;
 			            }
+						fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
 						LOAD_CUENTASXPAGAR();
 						drawerLayout.closeDrawers();
 						break;
@@ -523,9 +540,9 @@ public class vCliente extends ActionBarActivity implements
 	{ 	 		
     	if(pDialog!=null)
     		pDialog.dismiss();
-		NMApp.getController().removeOutboxHandler(TAG);
-		NMApp.getController().disposeEntities();
-		Log.d(TAG, "Activity quitting");
+//		NMApp.getController().removeOutboxHandler(TAG);
+//		NMApp.getController().disposeEntities();
+//		Log.d(TAG, "Activity quitting");
 		finish();		
 	}  
 	
@@ -759,6 +776,7 @@ public class vCliente extends ActionBarActivity implements
 		  transaction.replace(R.id.fragment_container, firstFragment);
 		  transaction.addToBackStack(null);
 		  transaction.commit();
+		  fragmentActive = FragmentActive.LIST;
 		  getSupportActionBar().show();
 	  }else{
 		  FINISH_ACTIVITY();
