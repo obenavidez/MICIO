@@ -40,20 +40,23 @@ public class ReciboViewHolder{
 	public void mappingData(Object entity)
 	{	
 		CCReciboColector recibo = (CCReciboColector) entity;
-		sucursal.setText(""+recibo.getNombreSucursal().substring(0,10)+".."); 
-		noRecibo.setText(""+recibo.getNetoRecibo());	    
-		totalNotaDebito.setText(""+StringUtil.formatReal(recibo.getTotalND())); 
-		totalNotaCredito.setText(""+StringUtil.formatReal(recibo.getTotalNC()));
-		estado.setText(""+recibo.getEstado()); 
-		fecha.setText(""+DateUtil.idateToStr(recibo.getFecha()));
-		intereses.setText(""+StringUtil.formatReal(recibo.getTotalIntereses()));
-		totalDescPP.setText(""+StringUtil.formatReal(recibo.getTotalDescPP()));
-		totalDescuentoOcasional.setText(""+StringUtil.formatReal(recibo.getTotalDescOca()));  
-		totalPromocion.setText(""+StringUtil.formatReal(recibo.getTotalDescProm())); 
-		totalOtros.setText(""+StringUtil.formatReal(recibo.getTotalOtro()));
-		neto.setText(""+StringUtil.formatReal(recibo.getNetoRecibo()));
-		retenido.setText(""+StringUtil.formatReal(recibo.getTotalRetenido()));
-				
+		if(recibo != null) {
+			if(recibo.getNombreSucursal() != null && recibo.getNombreSucursal().length() > 10 ){
+				sucursal.setText(""+recibo.getNombreSucursal().substring(0,10)+".."); 
+			}			
+			noRecibo.setText(""+recibo.getNetoRecibo());	    
+			totalNotaDebito.setText(""+StringUtil.formatReal(recibo.getTotalND())); 
+			totalNotaCredito.setText(""+StringUtil.formatReal(recibo.getTotalNC()));
+			estado.setText(""+recibo.getEstado()); 
+			fecha.setText(""+DateUtil.idateToStr(recibo.getFecha()));
+			intereses.setText(""+StringUtil.formatReal(recibo.getTotalIntereses()));
+			totalDescPP.setText(""+StringUtil.formatReal(recibo.getTotalDescPP()));
+			totalDescuentoOcasional.setText(""+StringUtil.formatReal(recibo.getTotalDescOca()));  
+			totalPromocion.setText(""+StringUtil.formatReal(recibo.getTotalDescProm())); 
+			totalOtros.setText(""+StringUtil.formatReal(recibo.getTotalOtro()));
+			neto.setText(""+StringUtil.formatReal(recibo.getNetoRecibo()));
+			retenido.setText(""+StringUtil.formatReal(recibo.getTotalRetenido()));
+		}				
 	}
 
 }

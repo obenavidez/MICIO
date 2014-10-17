@@ -23,6 +23,7 @@ import com.panzyma.nm.serviceproxy.CCPedido;
 import com.panzyma.nm.serviceproxy.CCReciboColector;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
@@ -50,7 +51,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
+@InvokeBridge(bridgeName ="BLogicM")
 public class CuentasPorCobrarFragment extends Fragment implements
 		Handler.Callback {
 
@@ -123,6 +124,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		outState.putInt(ARG_POSITION, mCurrentPosition);
 		outState.putLong(SUCURSAL_ID, objSucursalID);
 	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -133,9 +135,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			objSucursalID = savedInstanceState.getLong(SUCURSAL_ID);
 		}
 		return inflater.inflate(R.layout.cuentas_x_cobrar, container, false);
-	}
-
-	
+	}	
 	
 	@Override
 	public void onStart() {
@@ -152,8 +152,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		}*/
 		LoadDataToUI sync = new LoadDataToUI();
 		sync.execute();
-	}	
- 
+	}	 
 	
 	public long getSucursalId() {
 		return objSucursalID;
@@ -188,31 +187,33 @@ public class CuentasPorCobrarFragment extends Fragment implements
 				break;
 			default:
 				break;
-			}
-			
-		}
-		
+			}			
+		}		
 		return false;
 	}
 
+	@SuppressWarnings("unused")
 	private void cargarEncabezadoCliente() {
 		try {
 
-			//nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			//waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Info Cliente...", true, false);
-			NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_SERVER);
-
+			nmapp = (NMApp) this.getActivity().getApplication();
+			
+			Message msg = new Message();
+			Bundle params = new Bundle();
+			params.putLong("sucursalId", getSucursalId());
+			msg.setData(params);
+			msg.what = ControllerProtocol.LOAD_DATA_FROM_SERVER;
+			
+			NMApp.getController().setView(this);
+			NMApp.getController().
+				getInboxHandler().
+				sendMessage(msg);
 			
 			waiting = new ProgressDialog(getActivity());
 			waiting.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			waiting.setMessage("Buscando Info del Cliente...");
 			waiting.setCancelable(false);
-			waiting.show();
-			
-			
+			waiting.show();		
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -222,17 +223,27 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	//LLAMA AL SERVICIO WEB PARA TRAER LAS FACTURAS DEL SERVIDOR PANZYMA
 	public void cargarFacturasCliente() {
 		try {
-			//if( waiting != null ) waiting.dismiss();
-			//waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Facturas...", true, false);
-			if(waiting!=null) waiting.hide();
 			
+			if(waiting!=null) waiting.hide();			
 			
 			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER);
+		
+			Message msg = new Message();
 			
+			Bundle params = new Bundle();
+			params.putLong("sucursalId", getSucursalId());
+			params.putInt("fechaInic", getFechaInicFac());
+			params.putInt("fechaFin", getFechaFinFac());
+			params.putBoolean("soloConSaldo", isSoloFacturasConSaldo());
+			params.putString("estadoFac", getEstadoFac());
+			
+			msg.setData(params);
+			msg.what = ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER;
+			
+			NMApp.getController().setView(this);
+			NMApp.getController().
+				getInboxHandler().
+				sendMessage(msg);			
 			
 			waiting = new ProgressDialog(getActivity());
 			waiting.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -250,13 +261,22 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Débito...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
+			
+			Message msg = new Message();
+			
+			Bundle params = new Bundle();
+			params.putLong("sucursalId", getSucursalId());
+			params.putInt("fechaInic", getFechaInicND());
+			params.putInt("fechaFin", getFechaFinND());			
+			params.putString("estadoND", getEstadoND());
+			
+			msg.setData(params);			
+			msg.what = ControllerProtocol.LOAD_NOTAS_DEBITO_FROM_SERVER;
+			
+			NMApp.getController().setView(this);
 			NMApp.getController()
 					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_NOTAS_DEBITO_FROM_SERVER);
+					.sendMessage(msg);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -269,13 +289,22 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Crédito...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
+			
+			Message msg = new Message();
+			
+			Bundle params = new Bundle();
+			params.putLong("sucursalId", getSucursalId());
+			params.putInt("fechaInic", getFechaInicNC());
+			params.putInt("fechaFin", getFechaFinNC());			
+			params.putString("estadoNC", getEstadoNC());
+			
+			msg.setData(params);			
+			msg.what = ControllerProtocol.LOAD_NOTAS_CREDITO_FROM_SERVER;
+			
+			NMApp.getController().setView(this);
 			NMApp.getController()
 					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_NOTAS_CREDITO_FROM_SERVER);
+					.sendMessage(msg);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -288,13 +317,22 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Pedidos...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
+			
+			Message msg = new Message();
+			
+			Bundle params = new Bundle();
+			params.putLong("sucursalId", getSucursalId());
+			params.putInt("fechaInic", getFechaInicPedidos());
+			params.putInt("fechaFin", getFechaFinPedidos());			
+			params.putString("estadoPedidos", getEstadoPedidos());
+			
+			msg.setData(params);			
+			msg.what = ControllerProtocol.LOAD_PEDIDOS_FROM_SERVER;
+			
+			NMApp.getController().setView(this);
 			NMApp.getController()
 					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_PEDIDOS_FROM_SERVER);
+					.sendMessage(msg);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -307,13 +345,22 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Recibos...", true, false);
 			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
+			
+			Message msg = new Message();
+			
+			Bundle params = new Bundle();
+			params.putLong("sucursalId", getSucursalId());
+			params.putInt("fechaInic", getFechaInicRCol());
+			params.putInt("fechaFin", getFechaFinRCol());			
+			params.putString("estadoRecibos", getEstadoRCol());
+			
+			msg.setData(params);			
+			msg.what = ControllerProtocol.LOAD_RECIBOS_FROM_SERVER;
+			
+			NMApp.getController().setView(this);
 			NMApp.getController()
 					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_RECIBOS_FROM_SERVER);
+					.sendMessage(msg);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -581,6 +628,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		}
 		waiting.dismiss();
 	}
+	
 	private void initMenu() {
 		quickAction = new QuickAction(this.getActivity(), QuickAction.VERTICAL, 1);
 		quickAction.addActionItem(new ActionItem(MOSTRAR_FACTURAS,
@@ -637,8 +685,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		});
 
 	}
-	
-	
+		
 	public int getFechaFinFac() {
 		return fechaFinFac;
 	}
@@ -771,16 +818,13 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public void onDetach ()
 	{
 		Log.d(TAG, "OnDetach");
-		NMApp.controller.removeOutboxHandler(TAG);
-		NMApp.controller.removebridge(NMApp.getController().getBridge());
-		NMApp.controller.disposeEntities();
 		super.onDetach();
 	}
 	
 	@Override
     public void onStop() {
         super.onStop();
-        waiting.dismiss(); // try this
+        if(waiting!=null)waiting.dismiss(); // try this
         Log.d(TAG, "onStop");
     }
 	

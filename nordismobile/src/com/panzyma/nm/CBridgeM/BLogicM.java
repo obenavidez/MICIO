@@ -19,13 +19,9 @@ import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion;
 
 public class BLogicM extends BBaseM {
-
-	private Controller controller = null;
-	private ThreadPool pool = null;
+	
 	private String TAG = BLogicM.class.getSimpleName();
 	boolean OK = false;
-	private CuentasPorCobrarFragment fragment = null;	
-	private DialogoConfirmacion view;
 	
 	public enum Result 
 	{		
@@ -53,40 +49,53 @@ public class BLogicM extends BBaseM {
 		
 	}
 
-	public BLogicM() {
-	}
-
-	public BLogicM(CuentasPorCobrarFragment cuentasPorCobrarFragment) {
-		this.fragment = cuentasPorCobrarFragment;
-		this.controller = NMApp.controller; //((NMApp) cuentasPorCobrarFragment.getActivity().getApplication()).getController();
-		this.pool = NMApp.getThreadPool(); //((NMApp) cuentasPorCobrarFragment.getActivity().getApplication()).getThreadPool();
-	}
-	
-	public BLogicM(DialogoConfirmacion view) {
-		this.view = view;
-		this.controller = NMApp.getController();
-		this.pool = NMApp.getThreadPool();
-	}
-
 	public boolean handleMessage(Message msg) throws Exception {
 		switch (msg.what) {
 		case LOAD_DATA_FROM_SERVER:
-			onLoadClienteDataFromServer();
+			onLoadClienteDataFromServer(
+					msg.getData().getLong("sucursalId")
+					);
 			return true;
 		case ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER:
-			onLoadFacturasClienteFromServer();
+			onLoadFacturasClienteFromServer(
+					msg.getData().getLong("sucursalId"),
+					msg.getData().getInt("fechaInic"),
+					msg.getData().getInt("fechaFin"),
+					msg.getData().getBoolean("soloConSaldo"),
+					msg.getData().getString("estadoFac")
+					);
 			break;
 		case ControllerProtocol.LOAD_NOTAS_DEBITO_FROM_SERVER:
-			onLoadNotasDebitoClienteFromServer();
+			onLoadNotasDebitoClienteFromServer(
+					msg.getData().getLong("sucursalId"),
+					msg.getData().getInt("fechaInic"),
+					msg.getData().getInt("fechaFin"),					
+					msg.getData().getString("estadoND")
+					);
 			break;
 		case ControllerProtocol.LOAD_NOTAS_CREDITO_FROM_SERVER:
-			onLoadNotasCreditoClienteFromServer();
+			onLoadNotasCreditoClienteFromServer(
+					msg.getData().getLong("sucursalId"),
+					msg.getData().getInt("fechaInic"),
+					msg.getData().getInt("fechaFin"),					
+					msg.getData().getString("estadoNC")
+					);
 			break;
 		case ControllerProtocol.LOAD_PEDIDOS_FROM_SERVER:
-			onLoadPedidosClienteFromServer();
+			onLoadPedidosClienteFromServer(
+					msg.getData().getLong("sucursalId"),
+					msg.getData().getInt("fechaInic"),
+					msg.getData().getInt("fechaFin"),					
+					msg.getData().getString("estadoPedidos")
+					);
 			break;
 		case ControllerProtocol.LOAD_RECIBOS_FROM_SERVER:
-			onLoadRecibosClienteFromServer();
+			onLoadRecibosClienteFromServer(
+					msg.getData().getLong("sucursalId"),
+					msg.getData().getInt("fechaInic"),
+					msg.getData().getInt("fechaFin"),					
+					msg.getData().getString("estadoRecibos")
+					);
 			break;
 		case ControllerProtocol.LOAD_ABONOS_FACTURA_EN_OTROS_RECIBOS:
 			Bundle params = msg.getData();			
@@ -100,18 +109,18 @@ public class BLogicM extends BBaseM {
 
 	private void onLoadAbonosOtrasOtrosRecibosFactura(final long facturaId, final long reciboId) {
 		try {
-			pool.execute(new Runnable() {
+			getPool().execute(new Runnable() {
 
 				@Override
 				public void run() {
 
 					try {
-						Processor.notifyToView(controller,
+						Processor.notifyToView(getController(),
 								Result.ABONOS_FACTURAS_OTROS_RECIBOS.getResult(),
 								0, 
 								0,
 								ModelLogic.getAbonosEnOtrosRecibos(
-										view.getActivity(),
+										getContext(),
 										facturaId,
 										reciboId, 0)
 							);
@@ -127,7 +136,7 @@ public class BLogicM extends BBaseM {
 			try {
 				Processor
 						.notifyToView(
-								controller,
+								getController(),
 								ERROR,
 								0,
 								0,
@@ -142,27 +151,29 @@ public class BLogicM extends BBaseM {
 		
 	}
 
-	private void onLoadRecibosClienteFromServer() {
+	private void onLoadRecibosClienteFromServer(final long sucursalId, 
+			final int fechaIni,
+			final int fechaFin,			
+			final String estado) {
 		 final String credentials = SessionManager.getCredentials();
-		//final String credentials = "sa||nordis09||dp";
 
-		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(controller) ) {
+		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) {
 			try {
-				pool.execute(new Runnable() {
+				getPool().execute(new Runnable() {
 
 					@Override
 					public void run() {
 
 						try {
-							Processor.notifyToView(controller,
+							Processor.notifyToView(getController(),
 									Result.RECIBOS_COLECTOR.getResult(),
 									0, 
 									0,
 									ModelLogic.getRecibosColector(credentials,
-											fragment.getSucursalId(),
-											fragment.getFechaInicRCol(),
-											fragment.getFechaFinRCol(),
-											fragment.getEstadoRCol()));
+											sucursalId,
+											fechaIni,
+											fechaFin,
+											estado));
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -175,7 +186,7 @@ public class BLogicM extends BBaseM {
 				try {
 					Processor
 							.notifyToView(
-									controller,
+									getController(),
 									ERROR,
 									0,
 									0,
@@ -191,27 +202,29 @@ public class BLogicM extends BBaseM {
 
 	}
 
-	private void onLoadPedidosClienteFromServer() {
+	private void onLoadPedidosClienteFromServer(final long sucursalId, 
+			final int fechaIni,
+			final int fechaFin,			
+			final String estado) {
 		final String credentials = SessionManager.getCredentials();
-		//final String credentials = "sa||nordis09||dp";
-
-		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(controller) ) {
+		
+		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) {
 			try {
-				pool.execute(new Runnable() {
+				getPool().execute(new Runnable() {
 
 					@Override
 					public void run() {
 
 						try {
-							Processor.notifyToView(controller,
+							Processor.notifyToView(getController(),
 									Result.PEDIDOS.getResult(),
 									0,
 									0,
 									ModelLogic.getPedidosCliente(credentials,
-											fragment.getSucursalId(),
-											fragment.getFechaInicPedidos(),
-											fragment.getFechaFinPedidos(),
-											fragment.getEstadoPedidos()));
+											sucursalId,
+											fechaIni,
+											fechaFin,
+											estado));
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -224,7 +237,7 @@ public class BLogicM extends BBaseM {
 				try {
 					Processor
 							.notifyToView(
-									controller,
+									getController(),
 									ERROR,
 									0,
 									0,
@@ -239,27 +252,30 @@ public class BLogicM extends BBaseM {
 		}
 	}
 
-	private void onLoadNotasCreditoClienteFromServer() {
-		 final String credentials = SessionManager.getCredentials();
-		//final String credentials = "sa||nordis09||dp";
-		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(controller) ) {
+	private void onLoadNotasCreditoClienteFromServer(final long sucursalId, 
+			final int fechaIni,
+			final int fechaFin,			
+			final String estado) {
+		final String credentials = SessionManager.getCredentials();
+		
+		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) {
 			try {
-				pool.execute(new Runnable() {
+				getPool().execute(new Runnable() {
 
 					@Override
 					public void run() {
 
 						try {
-							Processor.notifyToView(controller,
+							Processor.notifyToView(getController(),
 									Result.NOTAS_CREDITO.getResult(),
 									0,
 									0,
 									ModelLogic.getNotasCreditoCliente(
 											credentials,
-											fragment.getSucursalId(),
-											fragment.getFechaInicNC(),
-											fragment.getFechaFinNC(),
-											fragment.getEstadoNC()));
+											sucursalId,
+											fechaIni,
+											fechaFin,
+											estado));
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -272,7 +288,7 @@ public class BLogicM extends BBaseM {
 				try {
 					Processor
 							.notifyToView(
-									controller,
+									getController(),
 									ERROR,
 									0,
 									0,
@@ -287,28 +303,30 @@ public class BLogicM extends BBaseM {
 		}
 	}
 
-	private void onLoadNotasDebitoClienteFromServer() {
-		// final String credentials = SessionManager.getCredentials();
-		final String credentials = "sa||nordis09||dp";
-
-		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(controller) ) {
+	private void onLoadNotasDebitoClienteFromServer(final long sucursalId, 
+			final int fechaIni,
+			final int fechaFin,			
+			final String estado) {
+		final String credentials = SessionManager.getCredentials();
+		
+		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) {
 			try {
-				pool.execute(new Runnable() {
+				getPool().execute(new Runnable() {
 
 					@Override
 					public void run() {
 
 						try {
-							Processor.notifyToView(controller,
+							Processor.notifyToView(getController(),
 									Result.NOTAS_DEBITO.getResult(),
 									0,
 									0,
 									ModelLogic.getNotasDebitoCliente(
 											credentials,
-											fragment.getSucursalId(),
-											fragment.getFechaInicND(),
-											fragment.getFechaFinND(),
-											fragment.getEstadoND()));
+											sucursalId,
+											fechaIni,
+											fechaFin,
+											estado));
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -321,7 +339,7 @@ public class BLogicM extends BBaseM {
 				try {
 					Processor
 							.notifyToView(
-									controller,
+									getController(),
 									ERROR,
 									0,
 									0,
@@ -337,29 +355,33 @@ public class BLogicM extends BBaseM {
 
 	}
 
-	private void onLoadFacturasClienteFromServer() {
+	private void onLoadFacturasClienteFromServer(final long sucursalId, 
+			final int fechaIni,
+			final int fechaFin,
+			final boolean soloConSaldo,
+			final String estado
+			) {
 
 		final String credentials = SessionManager.getCredentials();
-		//final String credentials = "sa||nordis09||dp";
-
-		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(controller) ) {
+		
+		if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) {
 			try {
-				pool.execute(new Runnable() {
+				getPool().execute(new Runnable() {
 
 					@Override
 					public void run() {
 
 						try {
-							Processor.notifyToView(controller,
+							Processor.notifyToView(getController(),
 									Result.FACTURAS_CLIENTE.getResult(),
 									0,
 									0,
 									ModelLogic.getFacturasCliente(credentials,
-											fragment.getSucursalId(),
-											fragment.getFechaInicFac(),
-											fragment.getFechaFinFac(),
-											fragment.isSoloFacturasConSaldo(),
-											fragment.getEstadoFac()));
+											sucursalId,
+											fechaIni,
+											fechaFin,
+											soloConSaldo,
+											estado));
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -372,7 +394,7 @@ public class BLogicM extends BBaseM {
 				try {
 					Processor
 							.notifyToView(
-									controller,
+									getController(),
 									ERROR,
 									0,
 									0,
@@ -388,33 +410,31 @@ public class BLogicM extends BBaseM {
 
 	}
 
-	private void onLoadClienteDataFromServer() {
+	private void onLoadClienteDataFromServer(final long sucursalId) {
 		try {
 		   final String credentials = SessionManager.getCredentials();
 
-			//final String credentials = "sa||nordis09||dp";
-
-			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(controller) ) {
-				pool.execute(new Runnable() {
+			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) {
+				getPool().execute(new Runnable() {
 
 					@Override
 					public void run() {
 
 						try {
-							Processor.notifyToView(controller,
+							Processor.notifyToView(getController(),
 									Result.CLIENTE.getResult(),
 									0, 
 									0, 
 									ModelLogic.getCuentasPorCobrarDelCliente(
 											credentials,
-											fragment.getSucursalId()));
+											sucursalId));
 
 						} catch (Exception e) {
 							Log.e(TAG, "Error in the update thread", e);
 							try {
 								Processor
 										.notifyToView(
-												controller,
+												getController(),
 												ERROR,
 												0,
 												0,
