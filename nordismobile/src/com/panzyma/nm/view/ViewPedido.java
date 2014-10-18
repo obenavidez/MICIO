@@ -740,9 +740,7 @@ public class ViewPedido extends ActionBarActivity implements
 				fragmentActive = FragmentActive.LIST;
 				gridheader.setVisibility(View.VISIBLE);
 				transaction = getSupportFragmentManager().beginTransaction();
-				transaction = getSupportFragmentManager().beginTransaction();
-				transaction.replace(R.id.fragment_container, firstFragment);
-				transaction.addToBackStack(null);
+				transaction.replace(R.id.fragment_container, firstFragment);				
 				transaction.commit();
 			} else
 				FINISH_ACTIVITY();
