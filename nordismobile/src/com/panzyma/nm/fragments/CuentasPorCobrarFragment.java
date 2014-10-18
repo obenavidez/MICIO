@@ -6,11 +6,14 @@ import java.util.List;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BLogicM.Result;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.menu.ActionItem;
@@ -115,6 +118,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		fcontext = activity;
 		nmapp = (NMApp) activity.getApplicationContext();		
 	}
 	
@@ -161,6 +165,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
+		
+		if(msg.what == ControllerProtocol.ERROR){
+			AppDialog.showMessage(fcontext, ((ErrorMessage) msg.obj).getTittle(),
+					((ErrorMessage) msg.obj).getMessage(),
+					DialogType.DIALOGO_ALERTA);
+		}
 
 		if(msg.what < 6) {
 			
@@ -866,12 +876,15 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		@Override
 		protected void onPostExecute(cuentaporcobrar objectResult) {
 			cuentaporcobrar value = objectResult;
-			txtViewCliente.setText(value.clienteseleccionado.getNombreCliente());
-			txtViewLimiteCredito.setText(StringUtil.formatReal(value.clienteseleccionado.getLimiteCredito()));
-			txtViewSaldo.setText(StringUtil.formatReal(value.clienteseleccionado.getSaldoActual()));
-			txtViewDisponible.setText(StringUtil.formatReal(value.clienteseleccionado.getDisponible()));
-			mostrarFacturas(value.facturaspendientes);
-
+			if(value.clienteseleccionado != null){
+				txtViewCliente.setText(value.clienteseleccionado.getNombreCliente());
+				txtViewLimiteCredito.setText(StringUtil.formatReal(value.clienteseleccionado.getLimiteCredito()));
+				txtViewSaldo.setText(StringUtil.formatReal(value.clienteseleccionado.getSaldoActual()));
+				txtViewDisponible.setText(StringUtil.formatReal(value.clienteseleccionado.getDisponible()));
+				mostrarFacturas(value.facturaspendientes);
+			} else {
+				if(waiting!=null) waiting.hide();
+			}
 		}
 		 
 	 }

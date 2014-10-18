@@ -62,6 +62,7 @@ import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.Promociones;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
@@ -736,6 +737,8 @@ public class ViewPedido extends ActionBarActivity implements
 			Fragment fragment = getSupportFragmentManager().findFragmentById(
 					R.id.fragment_container);
 			if (fragment instanceof CuentasPorCobrarFragment) {
+				fragmentActive = FragmentActive.LIST;
+				gridheader.setVisibility(View.VISIBLE);
 				transaction = getSupportFragmentManager().beginTransaction();
 				transaction = getSupportFragmentManager().beginTransaction();
 				transaction.replace(R.id.fragment_container, firstFragment);
