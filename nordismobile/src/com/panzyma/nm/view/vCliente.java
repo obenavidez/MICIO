@@ -42,6 +42,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage; 
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
@@ -53,6 +54,7 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.view.ProductoView.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
@@ -82,7 +84,10 @@ public class vCliente extends ActionBarActivity implements
 	List<vmCliente> clientes = new ArrayList<vmCliente>();
 	vmCliente cliente_selected;
 	private static CustomDialog dlg;
-
+	public enum FragmentActive {
+		LIST,FICHACLIENTE,CONSULTAR_CUENTA_COBRAR
+	};
+	private FragmentActive fragmentActive = null;
 	//Menu Variables
 	int listFragmentId;
 	int positioncache = 0;
@@ -108,8 +113,9 @@ public class vCliente extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		
 		context = getApplicationContext();
-		setContentView(R.layout.layout_client_fragment);
-		NMApp.getController().setView(this);
+		setContentView(R.layout.layout_client_fragment); 
+		NMApp.getController().setView(this); 
+		fragmentActive = FragmentActive.LIST; 
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
 		footerView = (TextView) findViewById(R.id.ctextv_gridheader);
 		vc =this;
@@ -256,10 +262,20 @@ public class vCliente extends ActionBarActivity implements
 			    showStatus(msg.obj.toString());
 				result=true;
 			   break;
-			case ERROR:
+			case ERROR: 
 				AppDialog.showMessage(vc, ((ErrorMessage) msg.obj).getTittle(),
 						((ErrorMessage) msg.obj).getMessage(),
-						DialogType.DIALOGO_ALERTA);					 
+						DialogType.DIALOGO_ALERTA);
+				final ErrorMessage error=((ErrorMessage)msg.obj); 
+				runOnUiThread(new Runnable() {
+						@Override
+						public void run() 
+						{
+							// pDialog.hide();
+							 dlg =new CustomDialog(vc,error.getMessage()+error.getCause(), false, NOTIFICATION_DIALOG);
+							 dlg.show();
+						}
+					}); 
 				result=true;
 				break;
 		}
@@ -298,7 +314,7 @@ public class vCliente extends ActionBarActivity implements
 		
 		if(searchItem!=null) {
 			searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-	
+			if (fragmentActive == FragmentActive.LIST) {
 			customArrayAdapter = ((Filterable) getSupportFragmentManager()
 					.findFragmentById(R.id.fragment_container)).getAdapter();
 	
@@ -315,6 +331,7 @@ public class vCliente extends ActionBarActivity implements
 					return false;
 				}
 			});
+		  }
 		}
 		
 		return true;
@@ -408,88 +425,26 @@ public class vCliente extends ActionBarActivity implements
 							
 							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
-						}
-						
-						
-//						try 
-//						{
-//							NMApp.getThreadPool().execute(new Runnable() {
-//								public void run() 
-//								{
-//									if(NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext()) && NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController())){
-										LOAD_FICHACLIENTE_FROMSERVER();
-//									}
-//									else 
-//										return;
-//								}
-//							});
-//						} catch (InterruptedException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-						
+						}   
+			            fragmentActive = FragmentActive.FICHACLIENTE;
+						LOAD_FICHACLIENTE_FROMSERVER(); 
 						break;
 					case CONSULTAR_CUENTA_COBRAR :
 						if(cliente_selected== null){
 							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
-						}
-//						try 
-//						{
-//							NMApp.getThreadPool().execute(new Runnable() {
-//								public void run() 
-//								{
-//									if(NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext()) && NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController())){
-										LOAD_CUENTASXPAGAR();
-//									}
-//									else 
-//										return;
-//								}
-//							});
-//						} catch (InterruptedException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
+						}  
+						fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+						LOAD_CUENTASXPAGAR(); 
 						break;
 					case SINCRONIZAR_ITEM :
 						if(cliente_selected== null){
 							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
-//						try 
-//						{
-//							NMApp.getThreadPool().execute(new Runnable() {
-//								public void run() 
-//								{
-//									if(NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext()) && NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController())){
-										UPDATE_SELECTEDITEM_FROMSERVER();
-//									}
-//									else 
-//										return;
-//								}
-//							});
-//						} catch (InterruptedException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
+						UPDATE_SELECTEDITEM_FROMSERVER(); 
 						break;
-					case SINCRONIZAR_TODOS : 
-//						try 
-//						{
-//							NMApp.getThreadPool().execute(new Runnable() {
-//								public void run() 
-//								{
-//									if(NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext()) && NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController())){
-										Load_Data(LOAD_DATA_FROM_SERVER);
-//									}
-//									else 
-//										return;
-//								}
-//							});
-//						} catch (InterruptedException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
+					case SINCRONIZAR_TODOS :  Load_Data(LOAD_DATA_FROM_SERVER); 
 						break;
 					case CERRAR : 
 						FINISH_ACTIVITY();
@@ -563,9 +518,11 @@ public class vCliente extends ActionBarActivity implements
     } 
 	
     private void FINISH_ACTIVITY()
-	{ 	 		
+	{ 	 		 
     	ocultarDialogos();
-		Log.d(TAG, "Activity quitting");
+		Log.d(TAG, "Activity quitting"); 
+    	if(pDialog!=null)
+    		pDialog.dismiss(); 
 		finish();		
 	}  
 	
@@ -800,6 +757,7 @@ public class vCliente extends ActionBarActivity implements
 		  transaction.replace(R.id.fragment_container, firstFragment);
 		  transaction.addToBackStack(null);
 		  transaction.commit();
+		  fragmentActive = FragmentActive.LIST;
 		  getSupportActionBar().show();
 	  }else{
 		  FINISH_ACTIVITY();

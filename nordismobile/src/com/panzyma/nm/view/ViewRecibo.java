@@ -227,7 +227,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		final ViewRecibo $this = this;
 		
-		context = getApplicationContext();
+		context = ViewRecibo.this;
 		SessionManager.setContext(this);
 		setContentView(R.layout.layout_client_fragment);
 		
@@ -659,7 +659,9 @@ public class ViewRecibo extends ActionBarActivity implements
 					: msg.obj), C_SETTING_DATA);
 			return true;
 		case ERROR:
-
+			AppDialog.showMessage(context, ((ErrorMessage) msg.obj).getTittle(),
+					((ErrorMessage) msg.obj).getMessage(),
+					DialogType.DIALOGO_ALERTA);
 			return true;
 
 		}
@@ -810,14 +812,14 @@ public class ViewRecibo extends ActionBarActivity implements
 	@Override
 	public void onBackPressed() {
 		Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-		if (fragment instanceof FichaClienteFragment) {
+		if (fragment instanceof FichaClienteFragment || fragment instanceof CuentasPorCobrarFragment) {
 			fragmentActive = FragmentActive.LIST;
 			gridheader.setVisibility(View.VISIBLE);
 			getSupportActionBar().show();
 			FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
 			mytransaction.replace(R.id.fragment_container, firstFragment);
 			mytransaction.commit();
-		}
+		} 
 	}
 
 	public Context getContext()
