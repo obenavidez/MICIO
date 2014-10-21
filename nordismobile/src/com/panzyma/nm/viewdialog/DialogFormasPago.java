@@ -168,15 +168,7 @@ public class DialogFormasPago extends Dialog {
 	
 	@SuppressWarnings({ "static-access", "unchecked" })
 	private void FINISH_ACTIVITY()
-	{
-		nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());
-		nmapp.getController().disposeEntities();
-		try {
-			nmapp.getController().setEntities((parent),parent.getBridge());
-		} catch (Exception e) {		
-			e.printStackTrace();
-		}
+	{ 
 		if(pd != null)
 			pd.dismiss();	
 		Log.d(TAG, "Activity quitting"); 

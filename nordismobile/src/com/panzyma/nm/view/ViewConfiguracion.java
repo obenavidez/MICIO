@@ -37,6 +37,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -113,7 +114,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 			context = this;
 			NMApp.getController().setView(this);
 			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA);
-
+			getDeviceId(this);
 			WindowManager wm = (WindowManager) this.getApplicationContext()
 					.getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
@@ -128,6 +129,11 @@ public class ViewConfiguracion extends FragmentActivity implements
 		}
 	}
 
+	public static String  getDeviceId(Context context){
+        TelephonyManager tm = (TelephonyManager)context.getSystemService(android.content.Context.TELEPHONY_SERVICE);
+        return tm.getDeviceId();
+    	
+    }
 	public String getTBoxUserName() {
 		return this.txtUsuario.getText().toString();
 	}
@@ -256,7 +262,8 @@ public class ViewConfiguracion extends FragmentActivity implements
 			quickAction.show(Menu, display, true);
 			return true;
 		}
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+		{
 			FINISH_ACTIVITY();
 			return true;
 		}
@@ -362,7 +369,8 @@ public class ViewConfiguracion extends FragmentActivity implements
 
 	}
 
-	private boolean salvarConfiguracion() {
+	private boolean salvarConfiguracion() 
+	{
 		if (validar()) 
 		{
 			try {

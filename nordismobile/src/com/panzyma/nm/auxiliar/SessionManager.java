@@ -369,7 +369,7 @@ public class SessionManager
 											}
 											
 										}catch (Exception e) {
-											sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo en la conexión con el servidor de aplicaciones.\r\n",e.toString()));
+											sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo la comunicación con el servidor de aplicaciones.\r\n",e.toString()));
 											e.printStackTrace();
 										}
 									}
@@ -415,7 +415,7 @@ public class SessionManager
 	public static void sendErrorMessage(final ErrorMessage error)
 	{
 		hasError=true;
-		errormessage=error.getTittle()+"\n\t\t"+error.getMessage();
+		errormessage=error.getTittle()+"\n"+error.getMessage()+"\n"+error.getCause();
 		NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
 		context.runOnUiThread(new Runnable()
         {

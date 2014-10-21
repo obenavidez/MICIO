@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.panzyma.nm.Main;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BBaseM;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.HandlerThread;
@@ -98,7 +102,7 @@ public class Controller<T, U>
 	
 	public void setView(Callback _view) {
 		this.view = (U) _view;
-		addOutboxHandler(new Handler(_view));
+		addOutboxHandler((_view));
 	}
 	
 	public T getBridge()
@@ -266,27 +270,34 @@ public class Controller<T, U>
 	{
 		U _view=this.getView();
 		
-		
 		if(_view==null)
 			outboxHandlers.put(Main.TAG,handler);
 		else
 		{
+			
 			if(outboxHandlers.get(this.getView().getClass().getSimpleName())==null)
 				outboxHandlers.put(this.getView().getClass().getSimpleName(),handler);
 		}
 	}	
+	
+	public final void addOutboxHandler(Callback _view) 
+	{
+		if(getView()==null)
+			outboxHandlers.put(Main.TAG,new Handler(_view));
+		else
+		{
+			outboxHandlers.remove(_view.getClass().getSimpleName());
+			outboxHandlers.put(this.getView().getClass().getSimpleName(),new Handler((Callback) _view));
+		}
+	}	
+	
 	public final void removeOutboxHandler(String handler) {
 		outboxHandlers.remove(handler);
 	}
 	public final void clearOutboxHandler() {
 		outboxHandlers.clear();
 	}
-	/*
-	public  List<Handler> getoutboxHandlers()
-	{
-		return outboxHandlers;
-	}
-	*/
+
 	public  Map<String, Handler> getoutboxHandlers()
 	{
 		return outboxHandlers;
@@ -319,10 +330,12 @@ public class Controller<T, U>
 	
 	public final <T> void notifyOutboxHandlers(int what, int arg1, int arg2, Object obj) {
 		if (outboxHandlers.isEmpty()) {
-			Log.w(TAG, String.format("No outbox handler to handle outgoing message (%d)", what));
+			Log.w(TAG, String.format("No outbox  handler to handle outgoing message (%d)", what));
 		} else {
 			
-			Object viewL=getView();
+//			ActivityManager am = (ActivityManager)NMApp.getContext().getSystemService(Context.ACTIVITY_SERVICE);
+//			ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+		    Object viewL=getView();
 			Handler handler;
 			if(viewL!=null) 
 				 handler=outboxHandlers.get(viewL.getClass().getSimpleName());
@@ -367,7 +380,5 @@ public class Controller<T, U>
 			this.bridge.getClass().getMethod("handleMessage", Message.class).invoke(bridge, msg);
 		}				
 	}
-	  
- 
 
 }

@@ -7,6 +7,7 @@ import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.view.ViewReciboEdit;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
@@ -22,11 +23,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText; 
-
+@InvokeBridge(bridgeName = "BPedidoM")
 public class AplicarDescuentoOcasional extends DialogFragment implements Handler.Callback
 {
 	
 
+	
 	private static AplicarDescuentoOcasional ado;
 	public static AplicarDescuentoOcasional newInstance(ReciboColector recibo) 
 	{
@@ -64,7 +66,9 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
     @Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) 
     {
-    	parent=(ViewReciboEdit) getActivity();
+		parent=(ViewReciboEdit) getActivity();
+		NMApp.getController().setView(this);
+    	
     	AlertDialog.Builder builder = new AlertDialog.Builder(parent); 
     	LayoutInflater inflater = parent.getLayoutInflater();
 		view = inflater.inflate(R.layout.oca_discount_dialog, null);
@@ -83,7 +87,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		builder.setNegativeButton("CANCELAR", new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
+				dismiss();
 			}
 		});
         return builder.create();   	
@@ -197,6 +201,13 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
         return  false;
     } //verificarClaveDescOca
 
+    
+    @Override
+	public void onDismiss(DialogInterface dialog) { 
+    	NMApp.getController().setView(parent);
+		super.onDismiss(dialog);
+	}
+    
 	@Override
 	public boolean handleMessage(Message msg) { 
 		switch (msg.what) 

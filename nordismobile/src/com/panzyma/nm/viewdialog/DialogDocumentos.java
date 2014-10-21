@@ -60,7 +60,7 @@ import android.widget.TextView;
 @InvokeBridge(bridgeName = "BReciboM")
 @SuppressWarnings({"rawtypes","unused","unchecked"})
 public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
-	
+
 	private Context mcontext;  
 	private GenericAdapter<Factura, FacturaViewHolder> adapter; 
 	private GenericAdapter<CCNotaDebito, NotaDebitoViewHolder> adapter2;
@@ -75,8 +75,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	ListView lvnotasd;
 	TextView gridheader;
 	private int positioncache=-1; 
-	private OnDocumentoButtonClickListener mButtonClickListener;
-	private NMApp nmapp;
+	private OnDocumentoButtonClickListener mButtonClickListener; 
 	public Factura factura_selected;
 	public CCNotaDebito nota_debito_selected;
 	public CCNotaCredito nota_credito_selected;
@@ -112,18 +111,14 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			parent = me; 
 			WindowManager wm = (WindowManager) me.getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
-			setObjSucursalId(cliente.getIdSucursal());
-			nmapp=(NMApp) me.getApplication();
-			/*nmapp.getController().removeBridgeByName(BReciboM.class.toString());
-			nmapp.getController().setEntities(this,new BReciboM()); 
-			nmapp.getController().addOutboxHandler(new Handler(this));*/
+			setObjSucursalId(cliente.getIdSucursal()); 
 			Message msg = new Message();
 			Bundle params = new Bundle();
 			params.putLong("sucursalID", cliente.getIdSucursal());
 			msg.setData(params);			
 			msg.what = C_FACTURACLIENTE;	
-			nmapp.getController().setView(this);
-			nmapp.getController().getInboxHandler().sendMessage(msg); 
+			NMApp.getController().setView(this);
+			NMApp.getController().getInboxHandler().sendMessage(msg); 
 			pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
 			initComponents();			
 		} catch (Exception e) {
@@ -184,7 +179,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 					loadFacturas( ( (msg.obj == null) ? new Factura[]{} : facturas ), C_DATA);
 				}else{
 					pd.dismiss();
-					FINISH_ACTIVITY();
+					//FINISH_ACTIVITY();
+					dismiss();
 					Util.Message.buildToastMessage(parent, "No existen facturas pendientes", 1000).show();
 				}					
 				break;
@@ -194,7 +190,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 					loadNotasDebito(((msg.obj==null)? new CCNotaDebito[]{} : notasdebito ),C_DATA);
 				} else {
 					pd.dismiss();
-					FINISH_ACTIVITY();
+					//FINISH_ACTIVITY();
+					dismiss();
 					Util.Message.buildToastMessage(parent, "No existen notas de débito pendientes", 1000).show();
 				}
 				break;
@@ -204,7 +201,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 					loadNotasCredito(((msg.obj==null)?new CCNotaCredito[]{} : notasCredito ),C_DATA);
 				} else {
 					pd.dismiss();
-					FINISH_ACTIVITY();
+					//FINISH_ACTIVITY();
+					dismiss();
 					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
 				}
 				break;
@@ -297,7 +295,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				ArrayList<Factura> _facturas = getArray(facturas, facturas[0]);
 				if( _facturas.size() == 0 ){
 					if(pd != null)pd.dismiss();
-					FINISH_ACTIVITY();
+					//FINISH_ACTIVITY();
+					dismiss();
 					Util.Message.buildToastMessage(parent, "No existen facturas pendientes", 1000).show();
 					return;
 				}
@@ -335,7 +334,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				ArrayList<CCNotaDebito> _notasDebito = getArray(notasDebito, notasDebito[0]);
 				if( _notasDebito.size() == 0 ){
 					if(pd != null)pd.dismiss();
-					FINISH_ACTIVITY();
+					//FINISH_ACTIVITY();
+					dismiss();
 					Util.Message.buildToastMessage(parent, "No existen notas de débito pendientes", 1000).show();
 					return;
 				}
@@ -352,7 +352,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		            	adapter2.setSelectedPosition(position); 
 		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);					            	 
 		            	mButtonClickListener.onButtonClick(nota_debito_selected);
-		            	FINISH_ACTIVITY();						
+		            	//FINISH_ACTIVITY();
+		            	dismiss();
 					}					
 				});
 				lvnotasd.setVisibility(View.VISIBLE);
@@ -377,7 +378,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				if( _notasCredito.size() == 0 )
 				{
 					if(pd != null)pd.dismiss();
-					FINISH_ACTIVITY();
+					//FINISH_ACTIVITY();
+					dismiss();
 					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
 					return;
 				}
@@ -395,7 +397,8 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		            	adapter3.setSelectedPosition(position); 
 		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);					            	 
 		            	mButtonClickListener.onButtonClick(nota_credito_selected);
-		            	FINISH_ACTIVITY();						
+		            	//FINISH_ACTIVITY();
+		            	dismiss();
 					}					
 				});
 				lvnotasd.setVisibility(View.VISIBLE);
@@ -417,29 +420,27 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	} 
 	
 	@Override
+	public void dismiss() {
+		FINISH_ACTIVITY();
+		super.dismiss();
+	}
+
+	
+	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) 
 	    {        	
-		  	FINISH_ACTIVITY();
+		  	dismiss();
 	        return true;
 	    }
 	    return super.onKeyUp(keyCode, event); 
-	}
+	} 
 	
-	@SuppressWarnings("static-access")
 	private void FINISH_ACTIVITY()
 	{
-		/*nmapp.getController().removeOutboxHandler(TAG);
-		nmapp.getController().removebridge(nmapp.getController().getBridge());
-		nmapp.getController().disposeEntities();
-		try {
-			nmapp.getController().setEntities((parent),parent.getBridge());
-		} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-		}*/
 		if(pd!=null)
 			pd.dismiss();	
+		NMApp.getController().setView(parent);
 		Log.d(TAG, "Activity quitting"); 
 		pd = null;	
 		this.dismiss();

@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.comunicator.Parameters;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
@@ -32,6 +34,7 @@ import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nordismobile.R;
@@ -73,8 +76,9 @@ public class DialogCuentasPorCobrar extends Dialog implements Handler.Callback
     	mcontext =this.getContext();  
     	try
     	{
-    		mcontroller= new Controller(new BClienteM(),DialogCuentasPorCobrar.this); 
-			mcontroller.addOutboxHandler(new Handler(DialogCuentasPorCobrar.this));
+    		NMApp.getController().setView(this);
+//    		mcontroller= new Controller(new BClienteM(),DialogCuentasPorCobrar.this); 
+//			mcontroller.addOutboxHandler(new Handler(DialogCuentasPorCobrar.this));
 		    progress=(ProgressBar)this.findViewById(R.id.cxcprogressbar);
 		    
 		    _idSucursal = idSucursal;            
@@ -206,6 +210,26 @@ public class DialogCuentasPorCobrar extends Dialog implements Handler.Callback
 			buildCustomDialog("Error on LoadFacturas !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();
 			progress.setVisibility(View.INVISIBLE);
 		}
+	}
+	
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+			dismiss();
+	        return true;
+	    }
+	    return super.onKeyUp(keyCode, event); 
+	}
+	
+	@Override
+	public void dismiss() 
+   	{   		 
+		com.panzyma.nm.NMApp.getController().setView((ViewPedidoEdit)getOwnerActivity());
+		Log.d(TAG, "Activity quitting");  
+		super.dismiss();
 	}
 	
 	@Override

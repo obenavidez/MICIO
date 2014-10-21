@@ -83,7 +83,7 @@ public class ViewProducto extends DashBoardActivity implements Handler.Callback
 	    {
 	    	mcontext=this;
 	    	nmapp=(NMApp) this.getApplication(); 
-	        NMApp.getController().setEntities(this,new BProductoM());
+	        NMApp.getController().setView(this);
 	        NMApp.getController().addOutboxHandler(new Handler(this)); 
 			WindowManager wm = (WindowManager) this.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
             display = wm.getDefaultDisplay(); 

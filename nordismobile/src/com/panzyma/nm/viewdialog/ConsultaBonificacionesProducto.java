@@ -11,6 +11,7 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DetallePromocionesViewHolder;
 import com.panzyma.nordismobile.R;
 
@@ -36,6 +37,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 @SuppressLint("ValidFragment")
+@InvokeBridge(bridgeName = "BProductoM")
 public class ConsultaBonificacionesProducto extends DialogFragment implements Handler.Callback{
 	 
 	private View view;	
@@ -101,7 +103,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
    		  {
    			if (keyCode == KeyEvent.KEYCODE_BACK) 
    			{        	
-   			  	FINISH_ACTIVITY();
+   			  	dismiss();
    			    return true;
    			}		  
    			return false;	 
@@ -110,7 +112,8 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	
     
    	@Override
-	public void onDismiss(DialogInterface dialog) {
+	public void onDismiss(DialogInterface dialog) 
+   	{   		
    		FINISH_ACTIVITY();
 		super.onDismiss(dialog);
 	}
@@ -168,25 +171,10 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 
 	private void FINISH_ACTIVITY()
 	{
-		try 
-		{
-//			NMApp.getController().removeOutboxHandler(TAG);
-//		    NMApp.getController().removebridge(NMApp.getController().getBridge());
-//		    NMApp.getController().disposeEntities();
-//		    if(this.getActivity() instanceof ViewPedidoEdit){
-//		    	NMApp.getController().setEntities((parent),parent.getBridge());	
-//		    }
-//		    if(this.getActivity() instanceof ProductoView){
-//		    	NMApp.getController().setEntities((parent2),parent2.getBridge());	
-//		    }
-		} catch (Exception e) 
-		{ 
-			e.printStackTrace();
-		}
+		com.panzyma.nm.NMApp.getController().setView((parent==null)?parent2:parent);
 		if(pd!=null)
 			pd.dismiss();	
-		Log.d(TAG, "Activity quitting"); 
-		dismiss();
+		Log.d(TAG, "Quitting"+ TAG); 
 	}
 	
 	public ViewPedidoEdit getParent(){

@@ -35,7 +35,7 @@ public class NMNetWork {
     }
     /**
      * Verificar si hay alguna red activa, ya sea WIFI o MOBILE.
-     * @param context
+     * @param parent
      * @return
      * @throws Exception 
      */
@@ -79,7 +79,7 @@ public class NMNetWork {
         return false;
     }  
     
-    public static boolean isPhoneConnected(Context context,Controller controller){
+    public static boolean isPhoneConnected(Context context){
 		try 
 		{	
     		error=null;
@@ -122,20 +122,20 @@ public class NMNetWork {
      * @return
      * @throws Exception 
      */
-    public static boolean isPhoneConnected(Context context){
-		try 
-		{	
-    		error=null;
-	        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-	        NetworkInfo info = cm.getActiveNetworkInfo(); 
-			return (info != null && info.isConnected());
-		}catch (Exception e) { 
-			e.printStackTrace();
-		}
-       
-        
-        return false;
-    }    
+//    public static boolean isPhoneConnected(Context context){
+//		try 
+//		{	
+//    		error=null;
+//	        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//	        NetworkInfo info = cm.getActiveNetworkInfo(); 
+//			return (info != null && info.isConnected());
+//		}catch (Exception e) { 
+//			e.printStackTrace();
+//		}
+//       
+//        
+//        return false;
+//    }    
     
     //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
     public static boolean CheckConnection(Controller controller) 

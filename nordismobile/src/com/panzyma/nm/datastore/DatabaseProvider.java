@@ -294,13 +294,8 @@ public class DatabaseProvider extends ContentProvider
 	@SuppressWarnings({ "rawtypes"})	
 	public static synchronized Cursor query( SQLiteDatabase db, String strQuery)
 	{			
-		Cursor c = null; 
-		try {					 
-				c = db.rawQuery(strQuery, null); 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	 
-		 
+		Cursor c = null;  
+		c = db.rawQuery(strQuery, null);   		 
 		return c;
 	}
 	

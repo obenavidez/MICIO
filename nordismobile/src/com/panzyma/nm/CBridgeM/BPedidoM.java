@@ -181,13 +181,15 @@ public class BPedidoM extends BBaseM {
 	}
 	
 	private void onLoadALLData_From_LocalHost() {
-		try {
+		try 
+		{
 			getPool().execute(new Runnable() {
 
 				@Override
 				public void run() {
 
-					try {
+					try 
+					{
 						
 						Processor.send_ViewPedidoToView(C_DATA, NMApp.getController(), ModelPedido.obtenerPedidosLocalmente(getResolver()));
 					 
@@ -375,7 +377,7 @@ public class BPedidoM extends BBaseM {
 				public void run()
 			    {					 
 					try 
-					{ 											
+					{ 				 
 						//guardar primero el pedido localmente 
 						guardar_Pedido(pedido);
 						

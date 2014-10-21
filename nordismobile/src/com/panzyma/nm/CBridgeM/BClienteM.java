@@ -119,11 +119,6 @@ public final class BClienteM extends BBaseM
 	{ 
 		try
 		{ 
-		    final String credentials=SessionManager.getCredenciales();
-			  
-			if(credentials.trim()!="")
-			{	
-				
 				getPool().execute(  new Runnable()
 	            {
 	            	@Override
@@ -131,7 +126,11 @@ public final class BClienteM extends BBaseM
 					{
 						try 
 						{
-							if(NMNetWork.isPhoneConnected(getContext(),getController()) && NMNetWork.CheckConnection(getController() ) )
+							
+							final String credentials=SessionManager.getCredenciales();			  
+							if(credentials.trim()=="")
+							   return;
+							if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController() ) )
 						    {
 								Integer page=1;
 								String userName = ModelConfiguracion.getVMConfiguration(getContext()).getNameUser();
@@ -168,8 +167,7 @@ public final class BClienteM extends BBaseM
 						} 
 					}
 	            }); 
-				Processor.notifyToView(getController(),C_UPDATE_STARTED, 0, 1,"Sincronizando Clientes"); 		
-		    }
+				Processor.notifyToView(getController(),C_UPDATE_STARTED, 0, 1,"Sincronizando Clientes"); 
 		}     
 		catch(Exception e)
 		{
@@ -204,9 +202,7 @@ public final class BClienteM extends BBaseM
 		obj.clear();
 		try 
 		{		  
-			final String credentials=SessionManager.getCredenciales();			  
-			if(credentials.trim()=="")
-			   return;
+			
 			this.getPool().execute
 			(  
 				new Runnable()
@@ -216,9 +212,11 @@ public final class BClienteM extends BBaseM
 					{
 						try 
 						{      	 
-							
+							final String credentials=SessionManager.getCredenciales();			  
+							if(credentials.trim()=="")
+							   return;
 							JSONObject modelcliente = null;
-							if(NMNetWork.isPhoneConnected(getContext(),getController()) && NMNetWork.CheckConnection(getController()))
+							if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController()))
 						    {
 								modelcliente =ModelCliente.actualizarCliente(credentials,sucursalID);
 								if(modelcliente!=null)  
@@ -254,10 +252,8 @@ public final class BClienteM extends BBaseM
 	{  
 		try 
 		{	
-			final String credentials=SessionManager.getCredenciales();			  
-			if(credentials.trim()=="")
-			   return;
-			this.getPool().execute
+			
+			getPool().execute
 			(  
 				new Runnable()
 	            { 
@@ -265,8 +261,11 @@ public final class BClienteM extends BBaseM
 					public void run() 
 					{
 						try 
-						{   							
-							if(NMNetWork.isPhoneConnected(getContext(),getController()) && NMNetWork.CheckConnection(getController()))								
+						{   
+							final String credentials=SessionManager.getCredentials();			  
+							if(credentials.trim()=="")
+							   return;				
+							if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController()))								
 								Processor.send_ViewFichaCustomerToView(ModelCliente.GetFichaCustomerFromServer(credentials,sucursalID),getController());
 
 						}  
@@ -295,10 +294,8 @@ public final class BClienteM extends BBaseM
 	{  
 		try 
 		{		 
-			final String credentials=SessionManager.getCredenciales();			  
-			if(credentials.trim()=="")
-			   return;
-			this.getPool().execute
+			
+			getPool().execute
 			(  
 				new Runnable()
 	            { 
@@ -306,8 +303,11 @@ public final class BClienteM extends BBaseM
 					public void run() 
 					{
 						try 
-						{    
-							if(NMNetWork.isPhoneConnected(getContext(),getController()) && NMNetWork.CheckConnection(getController()))
+						{   
+							final String credentials=SessionManager.getCredentials();			  
+							if(credentials.trim()=="")
+							   return;
+							if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController()))
 							{
 								Parameters params = new Parameters(
 										 (new String[]{"Credentials","idSucursal","fechaInic","fechaFin","mostrarTodasSucursales","soloConSaldo","codEstado"}),

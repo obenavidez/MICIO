@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.os.Handler;
 import android.os.Message;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,7 +26,9 @@ import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.PromocionesViewHolder;
 import com.panzyma.nordismobile.R;
 
-public class DialogPromociones extends Dialog implements Handler.Callback{
+public class DialogPromociones extends Dialog{
+
+	
 
 	private Pedido pedido;
 	
@@ -31,7 +36,7 @@ public class DialogPromociones extends Dialog implements Handler.Callback{
 	private TextView tv_promocion;
 
 	private View gridDetallePromociones;
-	ViewPedidoEdit context;
+	ViewPedidoEdit parent;
 	private GenericAdapter adapter;
 	List<com.panzyma.nm.serviceproxy.Promocion> Lpromociones=new ArrayList<com.panzyma.nm.serviceproxy.Promocion>();
     Promocion promocionseleccionada;
@@ -64,7 +69,7 @@ public class DialogPromociones extends Dialog implements Handler.Callback{
 		super(vpe,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         setContentView(R.layout.promociones); 
         pedido=p; 
-        context=vpe;
+        parent=vpe;
         promociones=_promociones;
         initComponent();
         
@@ -72,14 +77,14 @@ public class DialogPromociones extends Dialog implements Handler.Callback{
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initComponent() { 
-		NMApp.getController().setView(this); 
 		gridDetallePromociones=findViewById(R.id.pgrilla);
 		tvdpromociones=(TextView)findViewById(R.id.tv_desc_promocion);
 		gridpromociones=((ListView)gridDetallePromociones.findViewById(R.id.data_items));
 		btnaceptar=((Button)findViewById(R.id.btn_ok));
 		btnaceptar.setOnClickListener(new View.OnClickListener(){
 			@Override
-			public void onClick(View v) { 
+			public void onClick(View v) 
+			{ 
 				mButtonClickListener.onButtonClick(promocionseleccionada);		
 				dismiss();
 			}});
@@ -117,15 +122,15 @@ public class DialogPromociones extends Dialog implements Handler.Callback{
 		 }); 
 		 
 		Lpromociones=promociones;  
-		adapter=new GenericAdapter(context,PromocionesViewHolder.class,Lpromociones,R.layout.aplicarpromociones);				 
+		adapter=new GenericAdapter(parent,PromocionesViewHolder.class,Lpromociones,R.layout.aplicarpromociones);				 
 		gridpromociones.setAdapter(adapter);   
 		
 		
-	}
- 
+	} 
+	
 	public void initMenu()
 	{
-		quickAction = new QuickAction(context, QuickAction.VERTICAL, 1);		
+		quickAction = new QuickAction(parent, QuickAction.VERTICAL, 1);		
 		if(Lpromociones.size()!=0)
 		{
 			quickAction.addActionItem(new ActionItem(ID_APLICARPROMOCIONES,"Aplicar Promoción Seleccionada"));
@@ -134,9 +139,4 @@ public class DialogPromociones extends Dialog implements Handler.Callback{
 		quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));		
 	}
 
-	@Override
-	public boolean handleMessage(Message msg) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

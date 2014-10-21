@@ -28,6 +28,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -346,8 +347,7 @@ public class ViewPedido extends ActionBarActivity implements
 						// return;
 						// }
 						// SI SE ESTÁ FUERA DE LA COBERTURA
-						if (!NMNetWork.isPhoneConnected(context,
-								com.panzyma.nm.NMApp.getController())
+						if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext())
 								&& !NMNetWork
 										.CheckConnection(com.panzyma.nm.NMApp
 												.getController())) {
@@ -429,7 +429,7 @@ public class ViewPedido extends ActionBarActivity implements
 		
 		com.panzyma.nm.NMApp.getController().setView(this);
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
-
+		getDeviceId(this);
 		// However, if we're being restored from a previous state,
 		// then we don't need to do anything and should return or else
 		// we could end up with overlapping fragments.
@@ -493,6 +493,12 @@ public class ViewPedido extends ActionBarActivity implements
 		}
 		return true;
 	}
+	
+	public static String  getDeviceId(Context context){
+        TelephonyManager tm = (TelephonyManager)context.getSystemService(android.content.Context.TELEPHONY_SERVICE);
+        return tm.getDeviceId();
+    	
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

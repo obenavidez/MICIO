@@ -3,14 +3,14 @@ package com.panzyma.nm.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BVentaM;
+import com.panzyma.nm.NMApp; 
 import com.panzyma.nm.CBridgeM.BVentaM.Petition;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CVenta;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.VentaViewHolder;
 import com.panzyma.nordismobile.R;
 
@@ -20,9 +20,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Handler.Callback;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
+@InvokeBridge(bridgeName = "BVentaM")
 public class ConsultaVentasFragment extends Fragment implements
 		Handler.Callback {
 
@@ -70,6 +72,8 @@ public class ConsultaVentasFragment extends Fragment implements
 	private GenericAdapter adapter = null;
 	private NMApp nmapp;
 
+	public String TAG=ConsultaVentasFragment.class.getSimpleName();
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -85,6 +89,7 @@ public class ConsultaVentasFragment extends Fragment implements
 	public void onStart() {
 		super.onStart();
 		Bundle args = getArguments();
+		NMApp.controller.setView(this);
 		SessionManager.setContext(getActivity());
 		menuSelected = ActionMenu.VENTAS_DIA;
 		initComponents();
@@ -97,6 +102,21 @@ public class ConsultaVentasFragment extends Fragment implements
 		}
 	}
 
+	@Override
+	public void onDetach ()
+	{
+		Log.d(TAG, "OnDetach");
+		NMApp.getController().setView((Callback)getActivity()); 
+		super.onDetach();
+	}
+	
+	@Override
+    public void onStop() {
+        super.onStop();
+        waiting.dismiss(); 
+        Log.d(TAG, "onStop");
+    }
+	
 	private void cargarVentas() {		
 		cargarVentasDelDia();
 	}
@@ -164,12 +184,7 @@ public class ConsultaVentasFragment extends Fragment implements
 	public void cargarVentasDelDia() {
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
-			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BVentaM.class.toString());
-			NMApp.getController().setEntities(this, new BVentaM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			NMApp.getController().getInboxHandler()
-					.sendEmptyMessage(Petition.VENTAS_DEL_DIA.getActionCode());
+			NMApp.getController().getInboxHandler().sendEmptyMessage(Petition.VENTAS_DEL_DIA.getActionCode());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -180,10 +195,6 @@ public class ConsultaVentasFragment extends Fragment implements
 	public void cargarVentasDeSemana() {
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
-			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BVentaM.class.toString());
-			NMApp.getController().setEntities(this, new BVentaM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
 			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
@@ -198,10 +209,6 @@ public class ConsultaVentasFragment extends Fragment implements
 	public void cargarVentasDeMes() {
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo ventas Cliente...", true, false);
-			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BVentaM.class.toString());
-			NMApp.getController().setEntities(this, new BVentaM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
 			NMApp.getController()
 					.getInboxHandler()
 					.sendEmptyMessage(
@@ -303,7 +310,10 @@ public class ConsultaVentasFragment extends Fragment implements
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean handleMessage(Message msg) {
+	public boolean handleMessage(Message msg) 
+	{
+		if(waiting!=null)
+			waiting.dismiss();
 		if( msg.what < 3) {
 			Petition response = Petition.toInt(msg.what);
 			switch (response) {

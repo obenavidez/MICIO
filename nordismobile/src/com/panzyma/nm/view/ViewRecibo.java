@@ -325,7 +325,7 @@ public class ViewRecibo extends ActionBarActivity implements
 						return;
 					}
 					//SI SE ESTÁ FUERA DE LA COBERTURA
-		            if(!NMNetWork.isPhoneConnected(context,NMApp.getController()) && !NMNetWork.CheckConnection(NMApp.getController()))
+		            if(!NMNetWork.isPhoneConnected(NMApp.getContext()) && !NMNetWork.CheckConnection(NMApp.getController()))
 		            {
 		            	AppDialog.showMessage(vr,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 		            	return;

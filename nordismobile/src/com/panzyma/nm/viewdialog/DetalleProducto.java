@@ -28,9 +28,9 @@ import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nordismobile.R;
 
-public class DetalleProducto extends Dialog implements Handler.Callback {
+public class DetalleProducto extends Dialog{
 
-	private ViewPedidoEdit mcontext; 
+	private ViewPedidoEdit parent; 
 	EditText tboxdisponible;
 	EditText tboxcantidad;
 	EditText tboxproducto;
@@ -75,7 +75,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 		_nuevo = true;
 		_exonerado = exonerado;
 		_idTipoCliente = idTipoCliente;
-		mcontext =cnt;
+		parent =cnt;
 		usuario=SessionManager.getLoginUser();
 		initComponents();		
 	}
@@ -89,7 +89,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 		_idTipoPrecio = idTipoPrecio; 
 		_exonerado = exonerado;
 		_idTipoCliente = idTipoCliente;
-		mcontext = cnt;
+		parent = cnt;
 		_det=det;
 		usuario=SessionManager.getLoginUser();
 		initComponents();
@@ -108,7 +108,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 		// Via precio se habilita si codigo de tipo de cliente al que se está
 		// facturando es igual
 		// al parámetro CodTipoClienteMayorista
-		if (_idTipoCliente == Long.valueOf(mcontext.getSharedPreferences("SystemParams", android.content.Context.MODE_PRIVATE).getString("IdTipoClienteMayorista", "0"))) 
+		if (_idTipoCliente == Long.valueOf(parent.getSharedPreferences("SystemParams", android.content.Context.MODE_PRIVATE).getString("IdTipoClienteMayorista", "0"))) 
 		{
 			chkViaPrecio = ((CheckBox) findViewById(R.id.chkviaprecio));
 			chkViaPrecio.setVisibility(android.view.View.VISIBLE);
@@ -152,6 +152,13 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 
 	}
 
+	@Override
+	public void dismiss() 
+   	{   
+		super.dismiss();
+	}
+	
+	
 	android.view.View.OnClickListener clicklistener=new android.view.View.OnClickListener()
 	{
 		@Override
@@ -197,7 +204,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 						// Recalcular precio
 						long idTP = _idTipoPrecio;
 						if ((chkViaPrecio != null) && (!chkViaPrecio.isChecked()))
-							idTP = mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getLong("IdTipoPrecioGeneral", 0);
+							idTP = parent.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getLong("IdTipoPrecioGeneral", 0);
 
 						float precio = getPrecioProducto(_producto, idTP,nuevaCantidadOrdenada);
 						_det.setPrecio(precio);
@@ -216,7 +223,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 						// sea válida
 						int nuevaBonif = Integer.parseInt(tboxCantBonificada.getText().toString());
 
-						if (!mcontext.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarBonifAbajo",false)) 
+						if (!parent.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarBonifAbajo",false)) 
 						{
 							int bonifProd = 0;
 							if ((chkViaPrecio == null)|| (!chkViaPrecio.isChecked())) 
@@ -234,7 +241,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 							}
 						}
 
-						if (!mcontext.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarBonifArriba",false)) 
+						if (!parent.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarBonifArriba",false)) 
 						{
 							int bonifProd = 0;
 							if ((chkViaPrecio == null) || (!chkViaPrecio.isChecked())) 
@@ -253,12 +260,12 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 						}
 
 						// Validar que la edición del precio sea válida
-						if (!mcontext.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarPrecioAbajo",false)) 
+						if (!parent.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarPrecioAbajo",false)) 
 						{
 							// Calcular precio
 							long idTP = _idTipoPrecio;
 							if ((chkViaPrecio != null) && (!chkViaPrecio.isChecked()))
-								idTP = Long.parseLong(mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
+								idTP = Long.parseLong(parent.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
 							float precioProd = getPrecioProducto(_producto,idTP, nuevaCantidadOrdenada);
 
 							if (precio < precioProd) 
@@ -269,12 +276,12 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 							}
 						}
 
-						if (!mcontext.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarPrecioArriba",false)) 
+						if (!parent.getSharedPreferences("LoginUser",android.content.Context.MODE_PRIVATE).getBoolean("isPuedeEditarPrecioArriba",false)) 
 						{
 							// Calcular precio
 							long idTP = _idTipoPrecio;
 							if ((chkViaPrecio != null) && (!chkViaPrecio.isChecked()))
-								idTP = Long.parseLong(mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
+								idTP = Long.parseLong(parent.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
 							float precioProd = getPrecioProducto(_producto,idTP, nuevaCantidadOrdenada);
 
 							if (precio > precioProd) 
@@ -315,7 +322,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 					// Calcular precio
 					long idTP = _idTipoPrecio;
 					if ((chkViaPrecio != null) && (!chkViaPrecio.isChecked()))
-						idTP = Long.parseLong(mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
+						idTP = Long.parseLong(parent.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
 
 					float precio = getPrecioProducto(_producto, idTP,nuevaCantidadOrdenada);
 					_det.setPrecio(precio);
@@ -339,7 +346,7 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 				if (_producto.isEsGravable() && !_exonerado) 
 				{
 
-					float prcImp = Float.valueOf((mcontext.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeImpuesto", "0")));
+					float prcImp = Float.valueOf((parent.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeImpuesto", "0")));
 					_det.setImpuesto(_det.getSubtotal() * prcImp / 100);
 					_det.setPorcImpuesto(prcImp);
 				}
@@ -360,10 +367,10 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 
 		ocultarDialogos();
 		if (confirmacion.length != 0 && confirmacion[0]) {
-			mcontext.runOnUiThread(new Runnable() {
+			parent.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					AppDialog.showMessage(mcontext, "", mensaje,
+					AppDialog.showMessage(parent, "", mensaje,
 							AppDialog.DialogType.DIALOGO_ALERTA,
 							new AppDialog.OnButtonClickListener() {
 								@Override
@@ -378,24 +385,18 @@ public class DetalleProducto extends Dialog implements Handler.Callback {
 				}
 			});
 		} else {
-			mcontext.runOnUiThread(new Runnable() {
+			parent.runOnUiThread(new Runnable() {
 				
 
 				@Override
 				public void run() {
-					dlg = new CustomDialog(mcontext, mensaje, false,
+					dlg = new CustomDialog(parent, mensaje, false,
 							NOTIFICATION_DIALOG);
 					dlg.show();
 				}
 			});
 		}
-	}
-	
-	@Override
-	public boolean handleMessage(Message msg) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	} 
 
 	public static ArrayList<Bonificacion> parseListaBonificaciones(
 			Producto prod, long idCatCliente) 

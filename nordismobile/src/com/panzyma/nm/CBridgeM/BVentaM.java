@@ -8,15 +8,15 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.model.ModelVenta;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 
-public class BVentaM {
-
-	private Controller controller = null;
-	private ThreadPool pool = null;
+public class BVentaM extends BBaseM{
+ 
 	private String TAG = BVentaM.class.getSimpleName();
 	boolean OK = false;
 	private ConsultaVentasFragment fragment = null;
@@ -44,15 +44,9 @@ public class BVentaM {
 
 	public BVentaM() {
 	}
-
-	public BVentaM(ConsultaVentasFragment consultaVentas) {
-		this.fragment = consultaVentas;
-		this.controller = NMApp.getController();
-		this.pool = NMApp
-				.getThreadPool();
-	}
-
-	public boolean handleMessage(Message msg) throws Exception {
+ 
+	public boolean handleMessage(Message msg) throws Exception 
+	{
 		Petition request = Petition.toInt(msg.what);
 		switch (request) {
 		case VENTAS_DEL_DIA:
@@ -70,20 +64,19 @@ public class BVentaM {
 
 	private void loadVentas(final boolean delDia, final boolean deSemana,
 			final boolean delMes, final int fechaInic, final int fechaFin, final Petition peticion) {
-		try {
-			//final String credentials = SessionManager.getCredentials();
+		try
+		{
+			final String credentials = SessionManager.getCredentials(); 
 
-			final String credentials = "kpineda||123||dp";
-
-			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(controller) ) {
-				pool.execute(new Runnable() {
+			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) {
+				getPool().execute(new Runnable() {
 
 					@Override
 					public void run() {
 
 						try {
 							Processor.notifyToView(
-									controller,
+									getController(),
 									peticion.getActionCode(),
 									0,
 									0,
@@ -101,7 +94,7 @@ public class BVentaM {
 							try {
 								Processor
 										.notifyToView(
-												controller,
+												getController(),
 												ERROR,
 												0,
 												0,

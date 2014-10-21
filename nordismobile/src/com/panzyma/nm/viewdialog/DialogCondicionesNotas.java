@@ -22,6 +22,8 @@ public class DialogCondicionesNotas extends Dialog
 	private EditText etpcondicionado;
 	private EditText etpespecial;
 	
+	private ViewPedidoEdit parent;
+	
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(Pedido pedido);
 	}
@@ -121,7 +123,7 @@ public class DialogCondicionesNotas extends Dialog
 		}
         );
 	}	 
-	 
+	
 	@Override
     public boolean onKeyUp(int keyCode, KeyEvent event) 
     {  

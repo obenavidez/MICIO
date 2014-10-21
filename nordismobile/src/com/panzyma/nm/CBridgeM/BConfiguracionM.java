@@ -184,7 +184,8 @@ public class BConfiguracionM extends BBaseM {
 						});
 				Processor.notifyToView(getController(), ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,"Sincronizando parametros del sistema"); 
 			}
-
+			else
+				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 		} catch (Exception e) {
 
 		}
@@ -234,7 +235,8 @@ public class BConfiguracionM extends BBaseM {
 						});
 
 				Processor.notifyToView(getController(), ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Sincronizando FormaPago-Moneda-EntidadBancaria");
-			}
+			}else
+				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 
 		} catch (Exception e) {
 
@@ -361,17 +363,7 @@ public class BConfiguracionM extends BBaseM {
 									SessionManager.setLoguedUser(res.userInfo);
 									
 								} else
-									Processor
-											.notifyToView(
-													NMApp.getController(),
-													ERROR,
-													0,
-													1,
-													new ErrorMessage(
-															"error en la comunicacion con el servidor",
-															res.get_error()
-																	+ "\r\n",
-															""));
+									throw new Exception(res.get_error()); 
  
 	}
 	
@@ -387,8 +379,7 @@ public class BConfiguracionM extends BBaseM {
 							@Override
 							public void run() {
 								try {
-									if (NMNetWork.isPhoneConnected(getContext(),
-											getController())
+									if (NMNetWork.isPhoneConnected(getContext())
 											&& NMNetWork
 													.CheckConnection(getController())) {
 										Integer page = 1;
@@ -396,7 +387,7 @@ public class BConfiguracionM extends BBaseM {
 											JSONArray modelcliente = ModelCliente
 													.getArrayCustomerFromServer2(
 															credentials,
-															SessionManager.getLoginUser().getNombre(),
+															SessionManager.getLoginUser().getLogin(),
 															page, 50);
 											if (modelcliente.length() != 0) {
 												onSave_From_LocalHost(
@@ -456,7 +447,8 @@ public class BConfiguracionM extends BBaseM {
 						ControllerProtocol.NOTIFICATION_DIALOG2,
 						0,
 						0,"Sincronizando Clientes"); 
-			}
+			}else
+				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -467,7 +459,8 @@ public class BConfiguracionM extends BBaseM {
 		try {
 
 			final String Credentials = SessionManager.getCredenciales();
-			if (Credentials.trim() != "") {
+			if (Credentials.trim() != "") 
+			{
 				NMApp.getThreadPool().execute(
 						new Runnable() {
 							@Override
@@ -478,7 +471,7 @@ public class BConfiguracionM extends BBaseM {
 										JSONArray modelproducto = ModelProducto
 												.getArrayProductoFromServer(
 														Credentials,
-														SessionManager.getLoginUser().getNombre(),
+														SessionManager.getLoginUser().getLogin(),
 														page, 50);
 										if (modelproducto.length() != 0) {
 											onSave_From_LocalHost(
@@ -535,7 +528,8 @@ public class BConfiguracionM extends BBaseM {
 						ControllerProtocol.NOTIFICATION_DIALOG2,
 						0,
 						0,"Sincronizando Productos"); 
-			}
+			}else
+				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -551,14 +545,15 @@ public class BConfiguracionM extends BBaseM {
 						new Runnable() {
 							@Override
 							public void run() {
-								try {
+								try 
+								{
 									Integer page = 1;
 									while (true) 
 									{
 										JSONArray lpromocion = ModelConfiguracion
 												.getPromocionesPaged(
 														credentials,
-														SessionManager.getLoginUser().getNombre(),
+														SessionManager.getLoginUser().getLogin(),
 														page, 30);
 										if (lpromocion.length() != 0) 
 										{
@@ -590,13 +585,29 @@ public class BConfiguracionM extends BBaseM {
 									}
 
 								} catch (Exception e) {
-									Log.d(TAG, e.getMessage());
+									e.printStackTrace();
+									try {
+										Processor
+												.notifyToView(
+														getController(),
+														ERROR,
+														0,
+														1,
+														new ErrorMessage(
+																"Error en la sincronización de clientes con el servidor",
+																e.getMessage(),
+																"\n Causa: "
+																		+ e.getCause()));
+									} catch (Exception e1) {
+										e1.printStackTrace();
+									}
 								}
 							}
 						});
 
 				Processor.notifyToView(getController(), ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,"Sincronizando Promociones");
-			}
+			}else
+				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 
 		} catch (Exception e) {
 

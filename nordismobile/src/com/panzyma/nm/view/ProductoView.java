@@ -93,13 +93,12 @@ public class ProductoView extends ActionBarActivity implements
 		LIST,FICHAPRODUCTOFRAGMENT,BONIFICACIONES,LISTA_PRECIO
 	};
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		context = getApplicationContext();
-
+		NMApp.getController().setView(this);
 		setContentView(R.layout.layout_client_fragment);
 		fragmentActive = FragmentActive.LIST;
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
@@ -110,7 +109,8 @@ public class ProductoView extends ActionBarActivity implements
 		
 		gridheader.setVisibility(View.VISIBLE);
 		nmapp = (NMApp) this.getApplicationContext();
-		try {
+		try 
+		{
 			
 			productos=(savedInstanceState!=null)?productos=savedInstanceState.getParcelableArrayList("vmProducto"):null;
 			if(productos==null){
@@ -307,7 +307,6 @@ public class ProductoView extends ActionBarActivity implements
 
 	}
 
-	@SuppressWarnings({ "unused", "unchecked" })
 	private void establecer(List<Producto> list) {
 		/*productos = (List<Producto>) ((msg.obj == null) ? new ArrayList<Producto>()
 				: msg.obj);*/
@@ -330,7 +329,6 @@ public class ProductoView extends ActionBarActivity implements
 			if (data.size() != 0) {
 				this.runOnUiThread(new Runnable() {
 
-					@SuppressWarnings("unchecked")
 					@Override
 					public void run() {
 
@@ -449,8 +447,6 @@ public class ProductoView extends ActionBarActivity implements
 	
 	private void FINISH_ACTIVITY()
 	{ 	 		
-		NMApp.getController().removeOutboxHandler(TAG);
-		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		finish();		
 	}
@@ -610,7 +606,7 @@ public class ProductoView extends ActionBarActivity implements
 		    drawerLayout.closeDrawers();
 		    break;
 		    case SINCRONIZE_ALL_PRODUCTO :
-		    if(!NMNetWork.isPhoneConnected(context,NMApp.controller) && !NMNetWork.CheckConnection(NMApp.controller)){
+		    if(!NMNetWork.isPhoneConnected(NMApp.getContext()) && !NMNetWork.CheckConnection(NMApp.getController())){
 		        drawerLayout.closeDrawers();
 		        AppDialog.showMessage(pv,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 		        return;
@@ -657,7 +653,7 @@ public class ProductoView extends ActionBarActivity implements
 	private void Load_Data(int what)
 	{
 		try {
-				NMApp.getController().setView(this);
+				
 				NMApp.getController().getInboxHandler().sendEmptyMessage(what);
 			
 				pDialog = new ProgressDialog(ProductoView.this);

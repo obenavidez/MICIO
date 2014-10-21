@@ -73,7 +73,7 @@ public class BProductoM extends BBaseM {
 				public void run() {
 					try
 					{ 													
-						Processor.send_ViewProductosToView((ModelProducto.getArrayProductoFromLocalHost(getResolver())), getController());
+						Processor.send_ViewProductosToView((ModelProducto.getArrayProductoFromLocalHost(getContext())), getController());
 					}
 					catch (Exception e) 
 					{
@@ -106,7 +106,7 @@ public class BProductoM extends BBaseM {
 					public void run() {
 						try 
 						{
-							if(NMNetWork.isPhoneConnected(getContext(),getController()) && NMNetWork.CheckConnection(getController() ) )
+							if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController() ) )
 						    {
 								Integer page=1;
 								String userName = ModelConfiguracion.getVMConfiguration(getContext()).getNameUser();

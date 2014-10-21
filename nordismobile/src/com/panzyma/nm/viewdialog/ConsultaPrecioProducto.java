@@ -23,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.PrecioProducto;
 import com.panzyma.nm.serviceproxy.Producto;
@@ -31,11 +30,13 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DetallePrecioProductoViewHolder;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 @SuppressLint("ValidFragment")
+@InvokeBridge(bridgeName = "BProductoM")
 public class ConsultaPrecioProducto extends DialogFragment implements Handler.Callback{
 	
 	private View view;	
@@ -125,7 +126,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 		  {
 			if (keyCode == KeyEvent.KEYCODE_BACK) 
 			{        	
-			  	FINISH_ACTIVITY();
+			  	dismiss();
 			    return true;
 			}		  
 			return false;	 
@@ -189,7 +190,6 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			//pd = ProgressDialog.show(parent!=null ? parent : parent2  , "Espere por favor", "Cargando Información", true, false);
 
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
 		
     }
@@ -222,27 +222,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 	{
 		if(pd!=null)
 			pd.dismiss();
-		try 
-		{
-			NMApp.getController().removeOutboxHandler(TAG);
-		    NMApp.getController().removebridge(NMApp.getController().getBridge());
-		    NMApp.getController().disposeEntities();		
-
-		    NMApp.getController().setEntities((parent),parent.getBridge());
-
-		    //NMApp.getController().setEntities((parent),parent.getBridge());
-		    if(this.getActivity() instanceof ViewPedidoEdit){
-		    	NMApp.getController().setEntities((parent),parent.getBridge());	
-		    }
-		    if(this.getActivity() instanceof ProductoView){
-		    	NMApp.getController().setEntities((parent2),parent2.getBridge());	
-		    }
-		    
-		} catch (Exception e) 
-		{ 
-			e.printStackTrace();
-		}
-			
+		com.panzyma.nm.NMApp.getController().setView((parent==null)?parent2:parent);			
 		Log.d(TAG, "Activity quitting");  
 		dismiss();
 	}

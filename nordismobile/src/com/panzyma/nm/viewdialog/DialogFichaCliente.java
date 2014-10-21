@@ -23,7 +23,7 @@ import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.CNotaViewHolder;
 import com.panzyma.nordismobile.R;
 @SuppressWarnings({"static-access","unused", "rawtypes" })
-public class DialogFichaCliente extends Dialog  implements Handler.Callback
+public class DialogFichaCliente extends Dialog
 {  
 	private Controller controller=null;  
 	private Context mcontext;  
@@ -50,13 +50,6 @@ public class DialogFichaCliente extends Dialog  implements Handler.Callback
 		}	 
       
     }	
-	
-	@Override
-	public boolean handleMessage(Message msg) {
-		Log.d(TAG, "Received message: " + msg);
-		  
-		return true;
-	} 
 	
 	@SuppressWarnings("unchecked")
 	public void LoadData(final CCCliente objL)

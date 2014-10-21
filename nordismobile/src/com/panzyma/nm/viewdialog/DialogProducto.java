@@ -81,7 +81,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
     private boolean _exento;
 	private ArrayList<Producto> _idsProdsExcluir; 
 	private ArrayList<Producto> Lproducto;
-	private com.panzyma.nm.interfaces.Editable _view;
+	private com.panzyma.nm.interfaces.Editable parent;
 	
 	public DialogProducto(com.panzyma.nm.interfaces.Editable vpe,String codTP, ArrayList<Producto> ProdsExclir, long idPedido, long idCategCliente, long idTipoPrecio, long idTipoCliente, boolean exento) 
     {    
@@ -90,7 +90,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
         try 
         {   
 			setContentView(R.layout.mainproducto);   
-			_view=vpe;      	 
+			parent=vpe;      	 
 	        NMApp.getController().setView(this);
 	        pd = ProgressDialog.show(vpe.getContext(), "Espere por favor", "Trayendo Info...", true, false); 
 			WindowManager wm = (WindowManager) vpe.getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -115,15 +115,24 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) 
     { 
-    	pd.dismiss();
+    	if(pd!=null)
+    		pd.dismiss();
         if (keyCode == KeyEvent.KEYCODE_BACK) 
 	    {        	
-    	  	FINISH_ACTIVITY();
+    	  	dismiss();
             return true;
 	    }
         return super.onKeyUp(keyCode, event); 
     } 
 	
+    @Override
+	public void dismiss() 
+   	{   		
+   		FINISH_ACTIVITY();
+		super.dismiss();
+	}
+	
+    
 	public void initComponents()
 	{
 		LinearLayout.LayoutParams layoutParams;
@@ -233,17 +242,17 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 						@SuppressWarnings("deprecation")
 						@SuppressLint("NewApi")
 						@Override
-						public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) 
+						public boolean onItemLongClick(AdapterView<?> _parent, View view,int position, long id) 
 						{  											 
-							if((parent.getChildAt(positioncache))!=null)						            							            		
-			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+							if((_parent.getChildAt(positioncache))!=null)						            							            		
+			            		(_parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
 			            	product_selected=(Producto) adapter.getItem(position);	
 			            	adapter.setSelectedPosition(position); 
-			            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));				
+			            	view.setBackgroundDrawable(_parent.getResources().getDrawable(R.drawable.action_item_selected));				
 							
 			            	//EditDetPedido editForm = new EditDetPedido(prod, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
-							DetalleProducto dp=new DetalleProducto((ViewPedidoEdit)_view.getContext(),product_selected, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
+							DetalleProducto dp=new DetalleProducto((ViewPedidoEdit)parent,product_selected, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
 							
 							dp.setOnDialogDetalleProductButtonClickListener(new OnButtonClickHandler(){
 
@@ -280,10 +289,10 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	
 	private void FINISH_ACTIVITY()
 	{ 
+		com.panzyma.nm.NMApp.getController().setView((ViewPedidoEdit)parent);
 		if(pd!=null)
 			pd.dismiss();
 		Log.d(TAG, "Exit from DialogProducto"); 
-		this.dismiss();
 	}  
  
 

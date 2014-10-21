@@ -3,14 +3,20 @@ package com.panzyma.nm.fragments;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BLogicM;
+
+import static com.panzyma.nm.controller.ControllerProtocol.*;
+
+import com.panzyma.nm.NMApp; 
 import com.panzyma.nm.CBridgeM.BLogicM.Result;
+import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.menu.ActionItem;
@@ -23,6 +29,7 @@ import com.panzyma.nm.serviceproxy.CCPedido;
 import com.panzyma.nm.serviceproxy.CCReciboColector;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
@@ -31,11 +38,13 @@ import com.panzyma.nm.view.viewholder.ReciboViewHolder;
 import com.panzyma.nordismobile.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -50,13 +59,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
+@InvokeBridge(bridgeName = "BLogicM")
 public class CuentasPorCobrarFragment extends Fragment implements
 		Handler.Callback {
 
 	public enum TypeDetail {
 		FACTURA, NOTAS_DEBITO, NOTAS_CREDITO
 	}
+	
+	private static CustomDialog dlg;
 	private static final String TAG = CuentasPorCobrarFragment.class.getSimpleName();
 	private TypeDetail typeDetail = TypeDetail.FACTURA;
 	private int mCurrentPosition = -1;
@@ -111,11 +122,6 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public final static String ARG_POSITION = "position";
 	public final static String SUCURSAL_ID = "sucursalID";
 	
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		nmapp = (NMApp) activity.getApplicationContext();		
-	}
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -140,6 +146,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	@Override
 	public void onStart() {
 		super.onStart();
+		SessionManager.setContext(getActivity());
+		NMApp.getController().setView(this);
 		Bundle args = getArguments();
 		initComponents();
 		if (args != null) {
@@ -153,7 +161,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		LoadDataToUI sync = new LoadDataToUI();
 		sync.execute();
 	}	
- 
+  
 	
 	public long getSucursalId() {
 		return objSucursalID;
@@ -163,6 +171,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	@Override
 	public boolean handleMessage(Message msg) {
 
+		ocultarDialogos();	
 		if(msg.what < 6) {
 			
 			Result resultado = Result.toInt(msg.what);
@@ -186,53 +195,105 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			case RECIBOS_COLECTOR:
 				mostrarRecibosColector(((ArrayList<CCReciboColector>) msg.obj));
 				break;
+				
+			
 			default:
 				break;
 			}
 			
+			
 		}
+		switch (msg.what) {
+			case ControllerProtocol.NOTIFICATION:
+				showStatus(msg.obj.toString(), true);
+				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG2:
+				showStatus(msg.obj.toString());
+				break;
 		
+			case ControllerProtocol.ERROR:
+					AppDialog.showMessage(getActivity(), ((ErrorMessage) msg.obj).getTittle(),
+							((ErrorMessage) msg.obj).getMessage(),
+							DialogType.DIALOGO_ALERTA);
+					break;
+		}
 		return false;
 	}
+	
+	public void ocultarDialogos() {
+		if (dlg != null && dlg.isShowing())
+			dlg.dismiss();
+		if(waiting!=null && waiting.isShowing())
+			waiting.dismiss();
+	}
+	
+	public void showStatus(final String mensaje, boolean... confirmacion) {
+
+		ocultarDialogos();		 
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(getActivity(), "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					dlg = new CustomDialog(getActivity(), mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		}
+	}
+	
 
 	private void cargarEncabezadoCliente() {
-		try {
-
-			//nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			//waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Info Cliente...", true, false);
+		try 
+		{
 			NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_SERVER);
-
-			
 			waiting = new ProgressDialog(getActivity());
 			waiting.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			waiting.setMessage("Buscando Info del Cliente...");
 			waiting.setCancelable(false);
 			waiting.show();
-			
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	//LLAMA AL SERVICIO WEB PARA TRAER LAS FACTURAS DEL SERVIDOR PANZYMA
-	public void cargarFacturasCliente() {
+	public void cargarFacturasCliente() 
+	{
 		try {
 			//if( waiting != null ) waiting.dismiss();
 			//waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Facturas...", true, false);
 			if(waiting!=null) waiting.hide();
 			
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putLong("SucursalId", getSucursalId());
+			b.putInt("FechaInicFac", getFechaInicFac());
+			b.putInt("FechaFinFac", getFechaFinFac());
+			b.putBoolean("SoloFacturasConSaldo", isSoloFacturasConSaldo());
+			b.putString("EstadoFac", getEstadoFac()); 
+			msg.setData(b);
+			msg.what = ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER;
 			
-			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_FACTURASCLIENTE_FROM_SERVER);
-			
+			NMApp.getController().getInboxHandler().sendMessage(msg);
 			
 			waiting = new ProgressDialog(getActivity());
 			waiting.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -249,15 +310,18 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public void cargarNotasDebito() {
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Débito...", true, false);
-			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			NMApp.getController()
-					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_NOTAS_DEBITO_FROM_SERVER);
-
+			
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putLong("SucursalId", getSucursalId());
+			b.putInt("FechaInicND", getFechaInicND());
+			b.putInt("FechaFinND", getFechaFinND());
+			b.putString("EstadoND", getEstadoND());
+			msg.setData(b);
+			msg.what = ControllerProtocol.LOAD_NOTAS_DEBITO_FROM_SERVER;
+			
+			NMApp.getController().getInboxHandler().sendMessage(msg);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -268,14 +332,17 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public void cargarNotasCredito() {
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Notas Crédito...", true, false);
-			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			NMApp.getController()
-					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_NOTAS_CREDITO_FROM_SERVER);
+			
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putLong("SucursalId", getSucursalId());
+			b.putInt("FechaInicNC", getFechaInicNC());
+			b.putInt("FechaFinNC", getFechaFinNC());
+			b.putString("EstadoNC", getEstadoNC());
+			msg.setData(b);
+			msg.what = ControllerProtocol.LOAD_NOTAS_CREDITO_FROM_SERVER;
+			
+			NMApp.getController().getInboxHandler().sendMessage(msg);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -287,14 +354,17 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public void cargarPedidos() {
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Pedidos...", true, false);
-			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			NMApp.getController()
-					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_PEDIDOS_FROM_SERVER);
+			
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putLong("SucursalId", getSucursalId());
+			b.putInt("FechaInicPedidos", getFechaInicPedidos());
+			b.putInt("FechaFinPedidos", getFechaFinPedidos());
+			b.putString("EstadoPedidos", getEstadoPedidos());
+			msg.setData(b);
+			msg.what = ControllerProtocol.LOAD_PEDIDOS_FROM_SERVER;
+			
+			NMApp.getController().getInboxHandler().sendMessage(msg);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -306,14 +376,17 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public void cargarRecibosColector() {
 		try {
 			waiting = ProgressDialog.show(getActivity(), "Espere por favor", "Trayendo Recibos...", true, false);
-			nmapp = (NMApp) this.getActivity().getApplication();
-			NMApp.getController().removeBridgeByName(BLogicM.class.toString());
-			NMApp.getController().setEntities(this, new BLogicM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			NMApp.getController()
-					.getInboxHandler()
-					.sendEmptyMessage(
-							ControllerProtocol.LOAD_RECIBOS_FROM_SERVER);
+			
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putLong("SucursalId", getSucursalId());
+			b.putInt("FechaInicRCol", getFechaInicRCol());
+			b.putInt("FechaFinRCol", getFechaFinRCol());
+			b.putString("EstadoRCol", getEstadoRCol());
+			msg.setData(b);
+			msg.what = ControllerProtocol.LOAD_RECIBOS_FROM_SERVER;
+			
+			NMApp.getController().getInboxHandler().sendMessage(msg);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -465,7 +538,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			listaGenerica.setAdapter(adapter);
 			mostrarDetalleConsulta("facturas", true, fechaInicFac, fechaFinFac,
 					estadoFac);
-		} else {
+		} else 
+		{
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
 			txtenty.setVisibility(View.VISIBLE);
@@ -474,8 +548,6 @@ public class CuentasPorCobrarFragment extends Fragment implements
 				adapter.notifyDataSetChanged();
 			}
 		}
-		//waiting.dismiss();
-		waiting.hide();
 	}
 	
 	private void mostrarNotasDebito(ArrayList<CCNotaDebito> notasDebito) {
@@ -770,18 +842,15 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	@Override
 	public void onDetach ()
 	{
-		Log.d(TAG, "OnDetach");
-		NMApp.controller.removeOutboxHandler(TAG);
-		NMApp.controller.removebridge(NMApp.getController().getBridge());
-		NMApp.controller.disposeEntities();
+		NMApp.getController().setView((Callback)getActivity());
 		super.onDetach();
 	}
 	
 	@Override
     public void onStop() {
         super.onStop();
-        waiting.dismiss(); // try this
-        Log.d(TAG, "onStop");
+        ocultarDialogos();
+        NMApp.getController().setView((Callback)getActivity());
     }
 	
 	 private class LoadDataToUI extends AsyncTask<Void, Void, cuentaporcobrar > {
@@ -820,14 +889,19 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		}
 		
 		@Override
-		protected void onPostExecute(cuentaporcobrar objectResult) {
+		protected void onPostExecute(cuentaporcobrar objectResult) 
+		{
+			
 			cuentaporcobrar value = objectResult;
-			txtViewCliente.setText(value.clienteseleccionado.getNombreCliente());
-			txtViewLimiteCredito.setText(StringUtil.formatReal(value.clienteseleccionado.getLimiteCredito()));
-			txtViewSaldo.setText(StringUtil.formatReal(value.clienteseleccionado.getSaldoActual()));
-			txtViewDisponible.setText(StringUtil.formatReal(value.clienteseleccionado.getDisponible()));
-			mostrarFacturas(value.facturaspendientes);
-
+			if(value!=null && value.clienteseleccionado!=null && value.facturaspendientes!=null)
+			{
+				txtViewCliente.setText(value.clienteseleccionado.getNombreCliente());
+				txtViewLimiteCredito.setText(StringUtil.formatReal(value.clienteseleccionado.getLimiteCredito()));
+				txtViewSaldo.setText(StringUtil.formatReal(value.clienteseleccionado.getSaldoActual()));
+				txtViewDisponible.setText(StringUtil.formatReal(value.clienteseleccionado.getDisponible()));
+				mostrarFacturas(value.facturaspendientes);
+			}
+			ocultarDialogos();
 		}
 		 
 	 }

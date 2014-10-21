@@ -66,7 +66,7 @@ public class ModelCliente
 	
 	public synchronized static JSONArray getArrayCustomerFromServer2(String Credentials,String UsuarioVendedor,Integer page,Integer rowpage)throws Exception
 	{
-		UsuarioVendedor = "ebuitrago"; // <<-- COMENTAR LUEGO
+		//UsuarioVendedor = "ebuitrago"; // <<-- COMENTAR LUEGO
 		return AppNMComunication.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetClientesPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage);
 		//return NMComunicacion.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetClientesPaged+"/"+Credentials+"/"+UsuarioVendedor+"/"+page+"/"+rowpage);
 	}

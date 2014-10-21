@@ -189,7 +189,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	}
 
-	public void initComponent() {
+	public void initComponent() 
+	{
 		salvado = false;
 		gridDetallePedido = findViewById(R.id.pddgrilla);
 		grid_dp = (ListView) (findViewById(R.id.pddgrilla))
@@ -323,7 +324,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			dpselected = Lvmpproducto.get(0);
 		gridheader.setText("Productos a Facturar(" + adapter.getCount() + ")");
 
-		if (pedido != null && pedido.getCodEstado() != "REGISTRADO" && pedido.getCodEstado() != "APROBADO") 
+		if (pedido != null && !pedido.getCodEstado().equals("REGISTRADO") && !pedido.getCodEstado().equals("APROBADO")) 
 		{
 			grid_dp.setEnabled(false);
 			tbxFecha.setEnabled(false);
@@ -345,7 +346,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			@Override
 			public void run() 
 			{
-				if (pedido != null && pedido.getCodEstado() == "REGISTRADO") 
+				if (pedido != null && pedido.getCodEstado().equals("REGISTRADO")) 
 				{
 					quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1);
 					quickAction2.addActionItem(new ActionItem(ID_EDITAR_PRODUCTO,"Editar Producto"));
@@ -375,7 +376,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	public void initMenu() 
 	{
 		quickAction = new QuickAction(me, QuickAction.VERTICAL, 1);
-		if (pedido != null && pedido.getCodEstado() != "REGISTRADO" && pedido.getCodEstado() != "APROBADO") 
+		if (pedido != null && !pedido.getCodEstado().equals("REGISTRADO") && !pedido.getCodEstado().equals("APROBADO")) 
 		{
 			quickAction.addActionItem(new ActionItem(ID_IMPRIMIR_COMPROBANTE,
 					"Imprimir Comprobante"));
@@ -395,10 +396,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			quickAction.addActionItem(new ActionItem(ID_ELIMINAR_PRODUCTO,
 					"Eliminar Productos"));
 			quickAction.addActionItem(null);
-			quickAction
-					.addActionItem(new ActionItem(
-							ID_CONSULTAR_CUENTAS_X_COBRAR,
-							"Consultar Cuentas X Cobrar"));
+//			quickAction
+//					.addActionItem(new ActionItem(
+//							ID_CONSULTAR_CUENTAS_X_COBRAR,
+//							"Consultar Cuentas X Cobrar"));
 			quickAction.addActionItem(new ActionItem(
 					ID_CONSULTAR_BONIFICACIONES, "Consultar Bonificaciones"));
 			quickAction.addActionItem(new ActionItem(
@@ -678,8 +679,6 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	{
 		int requescode = 0;
 		ocultarDialogos();
-		NMApp.getController().removeOutboxHandler(TAG);
-		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting");
 		Intent intent = null;
 		if (pedido != null && pedido.getDetalles().length != 0
@@ -736,33 +735,12 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		dc.setOnDialogClientButtonClickListener(new OnButtonClickListener() {
 
 			@Override
-			public void onButtonClick(Cliente _cliente) {
+			public void onButtonClick(Cliente _cliente) 
+			{
+				com.panzyma.nm.NMApp.getController().setView(me);
 				if (pedido.getCodEstado().compareTo("REGISTRADO") != 0)
 					return;
-
-				// if (cliente != null &&
-				// Lvmpproducto !=
-				// null) {
-				// if (Lvmpproducto.size() > 0)
-				// if (Dialog.ask(Dialog.D_YES_NO,
-				// "Si cambia el cliente se eliminarán los detalles del pedido.\n\n¿Desea continuar?")
-				// != Dialog.YES) return;
-				// }
 				cliente = _cliente;
-				/*
-				 * tbxNombreDelCliente.setText(cliente.getNombreCliente());
-				 * pedido.setObjClienteID(cliente.getIdCliente());
-				 * pedido.setObjSucursalID(cliente.getIdSucursal());
-				 * 
-				 * String[] nomClie =
-				 * StringUtil.split(cliente.getNombreCliente(), "/");
-				 * pedido.setNombreCliente(nomClie[1]);
-				 * pedido.setNombreSucursal(nomClie[0]);
-				 * pedido.setObjTipoPrecioVentaID
-				 * (cliente.getObjPrecioVentaID());
-				 * pedido.setCodTipoPrecio(cliente.getCodTipoPrecio());
-				 * pedido.setDescTipoPrecio(cliente.getDesTipoPrecio());
-				 */
 				setInformacionCliente();
 			}
 		});
@@ -796,7 +774,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			@Override
 			public void onButtonClick(DetallePedido det_p, Producto prod) 
 			{
-
+				com.panzyma.nm.NMApp.getController().setView(me);
 				dpselected = det_p;
 				det_p.setId(pedido.getId());
 				aprodselected.add(prod);
@@ -848,8 +826,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			dp.setOnDialogDetalleProductButtonClickListener(new OnButtonClickHandler() {
 
 				@Override
-				public void onButtonClick(DetallePedido det_p, boolean btn) {
-
+				public void onButtonClick(DetallePedido det_p, boolean btn) 
+				{
+					com.panzyma.nm.NMApp.getController().setView(me);
 					det_p.setId(pedido.getId());
 					Lvmpproducto.set(positioncache, det_p);
 
@@ -1021,7 +1000,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 					@Override
 					public void onButtonClick(Promocion promocion) {
-						if (promocion != null) {
+						com.panzyma.nm.NMApp.getController().setView(me);	
+						if (promocion != null) 
+						{
 							// Validar que no se haya alcanzado el máximo de
 							// promociones
 							// a aplicar
@@ -1139,7 +1120,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 		cn.setOnDialogCNButtonClickListener(new com.panzyma.nm.viewdialog.DialogCondicionesNotas.OnButtonClickListener() {
 			@Override
-			public void onButtonClick(Pedido _pedido) {
+			public void onButtonClick(Pedido _pedido) {	
 				pedido = _pedido;
 			}
 		});

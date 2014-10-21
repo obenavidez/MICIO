@@ -12,6 +12,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
 
@@ -43,6 +44,7 @@ import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.ClienteViewHolder;
@@ -66,6 +68,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	private int positioncache=-1; 
 	private OnButtonClickListener mButtonClickListener; 
 	public Cliente cliente;
+	private Editable parent;
 	
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(Cliente cliente);
@@ -80,6 +83,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		super(vpe.getContext(),theme);
 		try 
         {    
+			parent=vpe;
 			setContentView(R.layout.maincliente);          	 
 	        NMApp.getController().setView(this); 
 			WindowManager wm = (WindowManager) NMApp.getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -100,11 +104,19 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) 
 	    {        	
-		  	FINISH_ACTIVITY();
+			dismiss();
 	        return true;
 	    }
 	    return super.onKeyUp(keyCode, event); 
 	}
+	
+	@Override
+	public void dismiss() 
+   	{   		
+   		FINISH_ACTIVITY();
+		super.dismiss();
+	}
+	
 	public void initComponents()
 	{
 		LinearLayout.LayoutParams layoutParams;
@@ -189,7 +201,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			            	adapter.setSelectedPosition(position); 
 			            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));					            	 
 			            	mButtonClickListener.onButtonClick(cliente);
-			            	FINISH_ACTIVITY();
+			            	dismiss();
 			            }
 			        }); 								
 				    lvcliente.setOnItemLongClickListener(new OnItemLongClickListener()
@@ -211,7 +223,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			            	adapter.setSelectedPosition(position); 
 			            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));
 			            	mButtonClickListener.onButtonClick(cliente);
-			            	FINISH_ACTIVITY();
+			            	dismiss();
 			            	//quickAction.show(view,display,false);
 							return true;
 						}
@@ -246,7 +258,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		
 		if(pd!=null)
 			pd.dismiss();	
-		Log.d(TAG, "Activity quitting"); 
-		this.dismiss();
+		com.panzyma.nm.NMApp.getController().setView((ViewPedidoEdit)parent);
+		Log.d(TAG, "Activity quitting");  
 	}  
 }
