@@ -1,6 +1,7 @@
 package com.panzyma.nm.fragments;
 
 import android.os.Bundle;
+import android.os.Handler.Callback;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -112,6 +113,7 @@ public class FichaProductoFragment extends Fragment {
 	@Override
     public void onStop() {
         super.onStop();
+        NMApp.getController().setView((Callback)getActivity()); 
         Log.d(TAG, "onStop");
     }
 }

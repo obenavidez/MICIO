@@ -17,6 +17,7 @@ import com.panzyma.nordismobile.R;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -102,6 +103,8 @@ public class ConsultaVentasFragment extends Fragment implements
 		}
 	}
 
+	 
+	
 	@Override
 	public void onDetach ()
 	{
@@ -112,10 +115,11 @@ public class ConsultaVentasFragment extends Fragment implements
 	
 	@Override
     public void onStop() {
-        super.onStop();
-        waiting.dismiss(); 
+        super.onStop(); 
+		NMApp.getController().setView((Callback)getActivity());  
         Log.d(TAG, "onStop");
     }
+	 
 	
 	private void cargarVentas() {		
 		cargarVentasDelDia();

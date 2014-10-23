@@ -287,7 +287,8 @@ public class Promociones {
         
         for(int i=0; i<prodsBase.length; i++) {
             ProdBase pb = new ProdBase();
-            String[] strPb = StringUtil.split(prodsBase[i], ",");
+            //String[] strPb = StringUtil.split(prodsBase[i], ",");
+            String[] strPb = StringUtil.split(prodsBase[i], "-");
             pb.setObjProductoID(Long.parseLong(strPb[0]));
             pb.setCantidadMinima(Integer.parseInt(strPb[1]));
             pb.setMontoMinimo(Float.parseFloat(strPb[2]));
@@ -870,10 +871,14 @@ public class Promociones {
 	        Vector vec = new Vector();
 	        String[] prods = StringUtil.split(promo.getProdsPremio(), "|");
 	        
+	        if(prods==null || (prods!=null && prods.length==0) || (prods!=null && prods.length!=0 && prods[0].equals("")))
+	        	return vec;
+	        
 	        for(int i=0; i<prods.length; i++) 
 	        {
 	            ProdPremio pp = new ProdPremio();
-	            String[] strPP = StringUtil.split(prods[i], ",");
+	            //String[] strPP = StringUtil.split(prods[i], ",");
+	            String[] strPP = StringUtil.split(prods[i], "-");
 	            pp.setObjProductoID(0);
 	            if (strPP[0].trim().compareTo("") != 0)
 	                pp.setObjProductoID(Long.parseLong(strPP[0]));

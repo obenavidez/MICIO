@@ -870,7 +870,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
     public void onStop() {
         super.onStop(); 
         ocultarDialogos();
-        NMApp.getController().setView((Callback)getActivity()); 
+        NMApp.getController().setView((Callback)getActivity());  
         if(waiting!=null)waiting.dismiss(); // try this
         Log.d(TAG, "onStop"); 
     }

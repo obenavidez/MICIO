@@ -2,8 +2,7 @@ package com.panzyma.nm.viewdialog;
 
 import java.util.ArrayList; 
 
-import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BProductoM;
+import com.panzyma.nm.NMApp; 
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.Bonificacion;
 import com.panzyma.nm.serviceproxy.Producto;

@@ -53,7 +53,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	private QuickAction quickAction;  
 	private static final String TAG = DialogProducto.class.getSimpleName(); 
 	ListView lvproducto;	
-	TextView gridheader;
+	TextView gridheader;EditText filterEditText;
 	private int positioncache=-1;  
 	private OnButtonClickListener mButtonClickListener; 
 	
@@ -154,14 +154,15 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	    ViewStub stub = (ViewStub) findViewById(R.id.vsHeader);
 	    ((ViewGroup) lvproducto.getParent()).removeView(stub);
 	    
-		EditText filterEditText = (EditText) findViewById(R.id.p_editextfilter_prod); 
+		filterEditText = (EditText) findViewById(R.id.p_editextfilter_prod); 
 	    filterEditText.addTextChangedListener(
 	    new TextWatcher() 
 	    {
 	        @Override
 	        public void onTextChanged(CharSequence s, int start, int before, int count) 
 	        {
-	            adapter.getFilter().filter(s.toString());
+	        	if(adapter!=null && adapter.getCount()!=0)
+	        		adapter.getFilter().filter(s.toString());
 	        }
 	        @Override
 	        public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
@@ -260,9 +261,12 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 								public void onButtonClick(DetallePedido det_p,boolean btn) {
 									if(btn)
 									{ 
+										
 										mButtonClickListener.onButtonClick(det_p,product_selected);
 										Lproducto.remove(positioncache);
 										adapter.notifyDataSetChanged(); 
+										filterEditText.setText("");
+										
 									}
 																		
 									

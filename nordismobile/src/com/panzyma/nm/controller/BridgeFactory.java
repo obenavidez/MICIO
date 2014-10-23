@@ -7,6 +7,7 @@ import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.CBridgeM.BReciboM;
+import com.panzyma.nm.CBridgeM.BVentaM;
 
 public final class BridgeFactory {
 	
@@ -18,7 +19,8 @@ public final class BridgeFactory {
 		BRECIBOM("BReciboM"),
 		BCONFIGURACIONM("BConfiguracionM"),
 		BLOGICM("BLogicM"),
-		BPRODUCTOM("BProductoM");
+		BPRODUCTOM("BProductoM"),
+		BVENTAM("BVentaM");
 
 		private String name;
 
@@ -61,6 +63,9 @@ public final class BridgeFactory {
 			break;
 		case BLOGICM:
 			bridge = new BLogicM();
+			break;
+		case BVENTAM:
+			bridge = new BVentaM();
 			break;
 		case BCONFIGURACIONM:
 			bridge = new BConfiguracionM();

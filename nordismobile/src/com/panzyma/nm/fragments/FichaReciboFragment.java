@@ -1,10 +1,13 @@
 package com.panzyma.nm.fragments;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 import android.os.Bundle;
+import android.os.Handler.Callback;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +36,12 @@ public class FichaReciboFragment extends Fragment {
 		return inflater.inflate(R.layout.view_producto_detalle, container,
 				false);
 	}
+	
+	@Override
+    public void onStop() {
+        super.onStop();
+        NMApp.getController().setView((Callback)getActivity()); 
+    }
 
 	@Override
 	public void onStart() {

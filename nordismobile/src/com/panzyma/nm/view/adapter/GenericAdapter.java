@@ -143,7 +143,8 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 				
 				 FilterResults results = new FilterResults(); 
                  List<E> FilteredArrList = new ArrayList<E>();
-				
+				 if (items==null || (items!=null && items.size()==0))
+					 return null;
                  if (mOriginalValues  == null) 
                 	 mOriginalValues  = new ArrayList<E>(items); // guardar los datos originales en  mOriginalValues
                  if (constraint == null || constraint.length() == 0) 

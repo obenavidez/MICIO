@@ -19,6 +19,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Handler.Callback;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -318,7 +319,9 @@ public class ViewPedido extends ActionBarActivity implements
 						getSupportActionBar().hide();
 						if (findViewById(R.id.fragment_container) != null) 
 						{
-							consultasVentas = new ConsultaVentasFragment();
+							transaction = getSupportFragmentManager()
+									.beginTransaction();
+							consultasVentas = new ConsultaVentasFragment(); 
 							Bundle msg = new Bundle();
 							msg.putInt(CuentasPorCobrarFragment.ARG_POSITION,
 									positioncache);
@@ -739,10 +742,12 @@ public class ViewPedido extends ActionBarActivity implements
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+		{
 			Fragment fragment = getSupportFragmentManager().findFragmentById(
 					R.id.fragment_container);
-			if (fragment instanceof CuentasPorCobrarFragment) {
+			if (fragment instanceof CuentasPorCobrarFragment || fragment instanceof ConsultaVentasFragment) 
+			{ 
 				fragmentActive = FragmentActive.LIST;
 				gridheader.setVisibility(View.VISIBLE);
 				transaction = getSupportFragmentManager().beginTransaction();
@@ -769,9 +774,9 @@ public class ViewPedido extends ActionBarActivity implements
 		return super.onKeyUp(keyCode, event);
 	}
 
-	private void FINISH_ACTIVITY() {
-		com.panzyma.nm.NMApp.getController().removeOutboxHandler(TAG);
-		com.panzyma.nm.NMApp.getController().disposeEntities();
+	private void FINISH_ACTIVITY() 
+	{
+		NMApp.getController().setView((Callback) getParent());  
 		Log.d(TAG, "Activity quitting");
 		finish();
 	}

@@ -112,7 +112,7 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 			updateArticleView(this.mCurrentPosition,DetailCustomerSelected);
 			break;
 		case ControllerProtocol.ERROR:
-			AppDialog.showMessage(getActivity(), ((ErrorMessage) msg.obj).getTittle(),
+			AppDialog.showMessage(getActivity(),msg.obj.toString(),
 					((ErrorMessage) msg.obj).getMessage(),
 					DialogType.DIALOGO_ALERTA);
 			break;

@@ -482,13 +482,12 @@ public class vCliente extends ActionBarActivity implements
 	
 	@SuppressWarnings("unchecked")
 	private void Load_Data(int what)
-	{
-		/*controller.getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);*/
+	{ 
 		try 
 		{			
 			
 			NMApp.getController().getInboxHandler().sendEmptyMessage(what);
-			pDialog = new ProgressDialog(vCliente.this);
+			pDialog = new ProgressDialog(this);
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			pDialog.setMessage("Procesando...");
 			pDialog.setCancelable(true);
