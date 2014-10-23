@@ -7,7 +7,9 @@ import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.os.Handler.Callback;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
@@ -67,6 +70,7 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmEntity;
+import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("SimpleDateFormat")
@@ -429,20 +433,32 @@ public class ViewPedido extends ActionBarActivity implements
 		drawerLayout.setDrawerListener(drawerToggle);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);		
 		
-		com.panzyma.nm.NMApp.getController().setView(this);
-		com.panzyma.nm.NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 		getDeviceId(this);
+		
+		// Create an instance of ExampleFragment
+		firstFragment = new ListaFragment<vmEntity>();
+		firstFragment.setRetainInstance(true);
 		// However, if we're being restored from a previous state,
 		// then we don't need to do anything and should return or else
 		// we could end up with overlapping fragments.
+		if ( savedInstanceState != null ) {
+			Parcelable[] objects = savedInstanceState.getParcelableArray("pedidos");	
+			pedidos = new ArrayList<vmEntity>((Collection<? extends vmEntity>) Arrays.asList(objects));
+			//recibos = vmRecibo.arrayParcelToArrayRecibo(objects);			
+		} else {
+			pedidos = null;
+		} 
+		
+		if(pedidos == null){
+			com.panzyma.nm.NMApp.getController().setView(this);
+			com.panzyma.nm.NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+		}
+		
 		if (savedInstanceState != null) {
 			return;
-		}
-
-		// Create an instance of ExampleFragment
-		firstFragment = new ListaFragment<vmEntity>();
+		}	
 		 
 		// In case this activity was started with special instructions from
 		// an Intent,
@@ -459,6 +475,34 @@ public class ViewPedido extends ActionBarActivity implements
 		}
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	  super.onSaveInstanceState(savedInstanceState);
+	  // Save UI state changes to the savedInstanceState.
+	  // This bundle will be passed to onCreate if the process is
+	  // killed and restarted.
+	  Parcelable [] objects = new Parcelable[pedidos.size()];
+	  pedidos.toArray(objects);
+	  savedInstanceState.putParcelableArray("pedidos", objects);
+	  savedInstanceState.putInt("positioncache", positioncache);
+	  savedInstanceState.putParcelable("fragment", firstFragment);
+	   // etc.
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	  super.onRestoreInstanceState(savedInstanceState);
+	  // Restore UI state from the savedInstanceState.
+	  // This bundle has also been passed to onCreate.
+	  Parcelable [] objects = savedInstanceState.getParcelableArray("pedidos");
+	  pedidos = new ArrayList<vmEntity>( (Collection<? extends vmEntity>) Arrays.asList(objects) ); 
+	  positioncache = savedInstanceState.getInt("positioncache");	  
+	  firstFragment = (ListaFragment<vmEntity>) savedInstanceState.getParcelable("fragment");
+	  gridheader.setText(String.format("Listado de Pedidos (%s)",pedidos.size()));
+	  //setList();
+	}
+	
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) 
