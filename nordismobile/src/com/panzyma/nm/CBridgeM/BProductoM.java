@@ -1,39 +1,25 @@
 package com.panzyma.nm.CBridgeM;
 
-import java.util.ArrayList;
-
 import org.json.JSONArray;
 
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
-import android.content.ContentResolver;
+import static com.panzyma.nm.controller.ControllerProtocol.*;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_PRODUCTOS;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
 
-import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.auxiliar.ThreadPool;
-import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelProducto;
-import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.view.ProductoView;
-import com.panzyma.nm.view.ViewProducto;
-import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
-import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
-import com.panzyma.nm.viewdialog.DialogProducto;
+import com.panzyma.nm.serviceproxy.CProducto;
 
 @SuppressWarnings("rawtypes")
 public class BProductoM extends BBaseM {
@@ -49,7 +35,7 @@ public class BProductoM extends BBaseM {
 		{
 			case LOAD_ITEM_FROM_LOCALHOST:
 				Bundle b = msg.getData();
-				getProductoByID(b.getLong("_idProducto"));
+				getProductoByID(Long.parseLong(msg.obj.toString()));//b.getLong("idProducto"));
 				return true;
 			case LOAD_DATA_FROM_LOCALHOST:
 				onLoadALLData_From_LocalHost();
@@ -154,8 +140,49 @@ public class BProductoM extends BBaseM {
 		
 	}
 	public void getProductoByID(final long idProducto)
-	{		 
+	{
 		try 
+		{
+			getPool().execute(  new Runnable()
+            {
+				@Override
+				public void run() {
+					try 
+					{
+						CProducto producto= null;
+						final String credentials=SessionManager.getCredentials();			  
+						if(credentials.trim()=="")
+							   return;	
+						if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController())){
+							producto =ModelProducto.getCProducto(credentials, idProducto);
+							Processor.notifyToView(getController(),ID_SINCRONIZE_PRODUCTO,0,1,producto);
+					    }
+						
+					}
+					catch (Exception e) 
+			        { 
+						e.printStackTrace();
+						try {
+							Processor.notifyToView(getController(),ERROR,0,1,new ErrorMessage("Error en la sincronización de clientes con el servidor",e.getMessage(),"\n Causa: "+e.getCause()));
+						} catch (Exception e1) { 
+							e1.printStackTrace();
+						} 
+					}
+				}
+            });
+		}
+		catch(Exception e)
+		{
+			try {
+				Processor.notifyToView(getController(),ERROR,0,1,new ErrorMessage("Error en la sincronización de clientes con el servidor",e.getMessage(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		
+		
+		/*try 
 		{
 			Processor.notifyToView(
 					getController(),
@@ -172,6 +199,7 @@ public class BProductoM extends BBaseM {
 				e1.printStackTrace();
 			}
 		}
+		*/
 	}
 
 	@SuppressWarnings("unused")

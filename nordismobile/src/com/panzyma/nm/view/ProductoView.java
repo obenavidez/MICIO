@@ -48,12 +48,9 @@ import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.view.ViewPedido.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
 import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
-import com.panzyma.nm.viewmodel.vmCliente;
-import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nordismobile.R;
 
 @InvokeBridge(bridgeName = "BProductoM")
@@ -221,87 +218,80 @@ public class ProductoView extends ActionBarActivity implements
 			 dlg.hide();
 		}
 		switch (msg.what) {
-		case C_DATA:
-			list=(ArrayList<Producto>) ((msg.obj == null) ? new ArrayList<Producto>() : msg.obj);
-			establecer(list);
-			pDialog.dismiss();
-			result=true;
-			break;
-//		case C_UPDATE_STARTED:
-//
-//			return true;
-		case C_UPDATE_ITEM_FINISHED:
-			pDialog.dismiss();
-			final String  finisUpdatehMessage =msg.obj.toString();
-		    runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					
-					AppDialog.showMessage(pv,"",finisUpdatehMessage,
-							AppDialog.DialogType.DIALOGO_ALERTA,
-							new AppDialog.OnButtonClickListener() {
-								@Override
-								public void onButtonClick(AlertDialog _dialog,
-										int actionId) 
-								{
-	
-									if (AppDialog.OK_BUTTOM == actionId) 
-									{
-										_dialog.dismiss();
-									}
-						        }
-					});
-					
-				}
-			});
-			result=true;
-			break;
-		case C_UPDATE_FINISHED:
-			// pDialog.hide();
-			 final String  finishMessage =msg.obj.toString();
-			 runOnUiThread(new Runnable() {
+			case C_DATA:
+				list=(ArrayList<Producto>) ((msg.obj == null) ? new ArrayList<Producto>() : msg.obj);
+				establecer(list);
+				pDialog.dismiss();
+				result=true;
+				break;
+			case C_UPDATE_ITEM_FINISHED:
+				pDialog.dismiss();
+				final String  finisUpdatehMessage =msg.obj.toString();
+			    runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AppDialog.showMessage(pv,"",finishMessage,AppDialog.DialogType.DIALOGO_ALERTA,
+						
+						AppDialog.showMessage(pv,"",finisUpdatehMessage,
+								AppDialog.DialogType.DIALOGO_ALERTA,
 								new AppDialog.OnButtonClickListener() {
 									@Override
-									public void onButtonClick(AlertDialog _dialog,int actionId) {
-										if (AppDialog.OK_BUTTOM == actionId) {
+									public void onButtonClick(AlertDialog _dialog,
+											int actionId) 
+									{
+		
+										if (AppDialog.OK_BUTTOM == actionId) 
+										{
 											_dialog.dismiss();
-											Load_Data(LOAD_DATA_FROM_LOCALHOST);
 										}
 							        }
 						});
+						
 					}
-			});
-			result=true;
-			break;
-		case C_SETTING_DATA:
-			list = (ArrayList<Producto>) ((msg.obj == null) ? new ArrayList<Producto>() : msg.obj);
-			setData(list, C_SETTING_DATA);
-			
-//			setData((ArrayList<Producto>) ((msg.obj == null) ? new ArrayList<vmProducto>()
-//					: msg.obj), C_SETTING_DATA);
-			result=true;
-			break;
-		case C_UPDATE_IN_PROGRESS :
-			final String  mensaje =msg.obj.toString();
-		    pDialog.dismiss();
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() 
-				{
-					// pDialog.hide();
-					 dlg =new CustomDialog(pv,mensaje, false, NOTIFICATION_DIALOG);
-					 dlg.show();
-				}
-			});
-			result=true;
-			break;
-		case ERROR:
-
-			return true;
-			
+				});
+				result=true;
+				break;
+			case C_UPDATE_FINISHED:
+				// pDialog.hide();
+				 final String  finishMessage =msg.obj.toString();
+				 runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							AppDialog.showMessage(pv,"",finishMessage,AppDialog.DialogType.DIALOGO_ALERTA,
+									new AppDialog.OnButtonClickListener() {
+										@Override
+										public void onButtonClick(AlertDialog _dialog,int actionId) {
+											if (AppDialog.OK_BUTTOM == actionId) {
+												_dialog.dismiss();
+												Load_Data(LOAD_DATA_FROM_LOCALHOST);
+											}
+								        }
+							});
+						}
+				});
+				result=true;
+				break;
+			case C_SETTING_DATA:
+				list = (ArrayList<Producto>) ((msg.obj == null) ? new ArrayList<Producto>() : msg.obj);
+				setData(list, C_SETTING_DATA);
+				result=true;
+				break;
+			case C_UPDATE_IN_PROGRESS :
+				final String  mensaje =msg.obj.toString();
+			    pDialog.dismiss();
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() 
+					{
+						// pDialog.hide();
+						 dlg =new CustomDialog(pv,mensaje, false, NOTIFICATION_DIALOG);
+						 dlg.show();
+					}
+				});
+				result=true;
+				break;
+			case ERROR:
+	
+				return true;			
 		}
 		return false;
 
@@ -533,43 +523,50 @@ public class ProductoView extends ActionBarActivity implements
 			product_selected =customArrayAdapter.getItem(positioncache);
 			switch (position) {
 		    case FICHA_DETALLE :
-		    if(product_selected== null){
-		        drawerLayout.closeDrawers();
-		        AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-		        return;
-		    }
-		    fragmentActive = FragmentActive.FICHAPRODUCTOFRAGMENT;
-		    Bundle args = new Bundle();
-		    args.putInt(FichaProductoFragment.ARG_POSITION, position);
-		    args.putParcelable(FichaProductoFragment.OBJECT, product_selected);
-		    FichaProductoFragment productFrag;
-		    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		    if (findViewById(R.id.dynamic_fragment) != null) {
-		        productFrag = (FichaProductoFragment) getSupportFragmentManager().findFragmentById(R.id.dynamic_fragment);
-		        if (productFrag != null) {
-		            productFrag.updateArticleView(product_selected, position);
-		        }
-		        else {
-		            productFrag = new FichaProductoFragment();
-		            productFrag.setArguments(args);
-		            transaction.add(R.id.dynamic_fragment, productFrag);
-		            transaction.addToBackStack(null);
-		        }
-		        
-		    }
-		    else {
-		        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-		        gridheader.setVisibility(View.INVISIBLE);
-		        if (fragment instanceof ListaFragment) {
-		            productFrag = new FichaProductoFragment();
-		            productFrag.setArguments(args);
-		            transaction.replace(R.id.fragment_container, productFrag);
-		            transaction.addToBackStack(null);
-		        }
-		    }
-		    //Commit the transaction transaction.commit();
-		    transaction.commit();
-		    drawerLayout.closeDrawers();
+			    if(product_selected== null){
+			        drawerLayout.closeDrawers();
+			        AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+			        return;
+			    }
+			    if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext())&& !NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController())) {
+			     AppDialog.showMessage(pv,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+			     return;
+			    }
+			    fragmentActive = FragmentActive.FICHAPRODUCTOFRAGMENT;
+			    Bundle args = new Bundle();
+			    
+			    args.putInt(FichaProductoFragment.ARG_POSITION, position);
+			    args.putLong(FichaProductoFragment.ARG_PRODUCTO, product_selected.Id);
+			    
+			    FichaProductoFragment productFrag;
+			    
+			    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			    if (findViewById(R.id.dynamic_fragment) != null) {
+			        productFrag = (FichaProductoFragment) getSupportFragmentManager().findFragmentById(R.id.dynamic_fragment);
+			        if (productFrag != null) {
+			            //productFrag.updateArticleView(product_selected, position);
+			        }
+			        else {
+			            productFrag = new FichaProductoFragment();
+			            productFrag.setArguments(args);
+			            transaction.add(R.id.dynamic_fragment, productFrag);
+			            transaction.addToBackStack(null);
+			        }
+			        
+			    }
+			    else {
+			        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+			        gridheader.setVisibility(View.INVISIBLE);
+			        if (fragment instanceof ListaFragment) {
+			            productFrag = new FichaProductoFragment();
+			            productFrag.setArguments(args);
+			            transaction.replace(R.id.fragment_container, productFrag);
+			            transaction.addToBackStack(null);
+			        }
+			    }
+			    //Commit the transaction transaction.commit();
+			    transaction.commit();
+			    drawerLayout.closeDrawers();
 		    break;
 		    case BONIFICACIONES:
 		    if(product_selected== null){
