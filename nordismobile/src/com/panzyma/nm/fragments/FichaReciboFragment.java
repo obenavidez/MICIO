@@ -7,7 +7,6 @@ import com.panzyma.nordismobile.R;
 import android.os.Bundle;
 import android.os.Handler.Callback;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,16 +69,16 @@ public class FichaReciboFragment extends Fragment {
 
 	public void updateArticleView(int position) {
 		// R.id.article
-		TextView codigo = (TextView) getActivity().findViewById(
-				R.id.txt_view_product_codigo);
-		TextView descripcion = (TextView) getActivity().findViewById(
-				R.id.txt_view_product_nombre);
-		TextView existencia = (TextView) getActivity().findViewById(
-				R.id.txt_view_product_disponibilidad);
-
-		codigo.setText(Contenido.lista.get(position).getCodigo());
-		descripcion.setText(Contenido.lista.get(position).getNombreCliente());
-		existencia.setText(Contenido.lista.get(position).getUbicacion());
+//		TextView codigo = (TextView) getActivity().findViewById(
+//				R.id.txt_view_product_codigo);
+//		TextView descripcion = (TextView) getActivity().findViewById(
+//				R.id.txt_view_product_nombre);
+//		TextView existencia = (TextView) getActivity().findViewById(
+//				R.id.txt_view_product_disponibilidad);
+//
+//		codigo.setText(Contenido.lista.get(position).getCodigo());
+//		descripcion.setText(Contenido.lista.get(position).getNombreCliente());
+//		existencia.setText(Contenido.lista.get(position).getUbicacion());
 
 		mCurrentPosition = position;
 	}
