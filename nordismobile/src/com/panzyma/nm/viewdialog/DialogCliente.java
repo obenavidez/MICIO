@@ -14,6 +14,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.os.Handler.Callback;
 import android.os.Message;
 
 import com.panzyma.nm.interfaces.Editable;
@@ -258,7 +259,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		
 		if(pd!=null)
 			pd.dismiss();	
-		com.panzyma.nm.NMApp.getController().setView((ViewPedidoEdit)parent);
+		com.panzyma.nm.NMApp.getController().setView((Callback)parent);
 		Log.d(TAG, "Activity quitting");  
 	}  
 }

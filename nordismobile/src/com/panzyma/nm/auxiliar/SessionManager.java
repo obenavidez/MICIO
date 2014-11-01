@@ -305,7 +305,7 @@ public class SessionManager
 		hasError=false;
 		try 
 		{ 							
-			pool.execute(new Runnable()
+			NMApp.getThreadPool().execute(new Runnable()
 			{
 				@Override
 				public void run() 
@@ -314,7 +314,7 @@ public class SessionManager
 					{
 						try 
 						{
-								pool.execute(new Runnable()
+							NMApp.getThreadPool().execute(new Runnable()
 								{
 									@Override
 									public void run()

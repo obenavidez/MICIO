@@ -72,14 +72,13 @@ import com.panzyma.nordismobile.R;
 @SuppressWarnings("rawtypes")
 public class ViewRecibo extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {	
-
-	@SuppressWarnings("unchecked")
+ 
 	@Override
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {		
 		super.onActivityResult(requestcode, resultcode, data);
 		try 
 		{ 
-			NMApp.getController().setEntities(this,this.getBridge());
+			NMApp.getController().setView(this);
 			request_code = requestcode;
 			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)	&& data != null)
 				establecer(data.getParcelableExtra("recibo"));

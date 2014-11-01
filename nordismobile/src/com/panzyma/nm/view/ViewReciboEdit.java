@@ -388,18 +388,24 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				recibo.setFecha(date);
 			}
 			// AGREGAGAR LAS FACTURAS DEL RECIBO A LA GRILLA
-			for (ReciboDetFactura factura : recibo.getFacturasRecibo()) {				
-				for (Factura fac : cliente.getFacturasPendientes()) {
-					if (fac.getId() == factura.getObjFacturaID()) {
-						fac.setAbonado(factura.getMonto());
-						factura.setTotalFactura(fac.getTotalFacturado());
-						getFacturasRecibo().add(fac);
+			for (ReciboDetFactura factura : recibo.getFacturasRecibo()) 
+			{				
+				if(cliente.getFacturasPendientes()!=null)
+					for (Factura fac : cliente.getFacturasPendientes()) 
+					{
+						if (fac.getId() == factura.getObjFacturaID()) {
+							fac.setAbonado(factura.getMonto());
+							factura.setTotalFactura(fac.getTotalFacturado());
+							getFacturasRecibo().add(fac);
+						}
 					}
-				}
 				addWithoutRepeating(factura);
 			}
 			// AGREGAR LAS NOTAS DE DEBITO DEL RECIBO A LA GRILLA
-			for (ReciboDetND nd : recibo.getNotasDebitoRecibo()) {
+			for (ReciboDetND nd : recibo.getNotasDebitoRecibo()) 
+			{
+				if(cliente.getNotasDebitoPendientes()!=null)
+				
 				for (CCNotaDebito ndp : cliente.getNotasDebitoPendientes()) {
 					if (nd.getObjNotaDebitoID() == ndp.getId()) {						
 						getNotasDebitoRecibo().add(ndp);
@@ -408,6 +414,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				addWithoutRepeating(nd);
 			}
 			// AGREGAR LAS NOTAS DE CREDITO DEL RECIBO A LA GRILLA
+			if(recibo.getNotasCreditoRecibo()!=null && recibo.getNotasCreditoRecibo().size()!=0)
 			for (ReciboDetNC nc : recibo.getNotasCreditoRecibo()) {
 				addWithoutRepeating(nc);
 			}
@@ -1849,9 +1856,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	
 	private void FINISH_ACTIVITY()
 	{
-		int requescode=0; 
-		NMApp.getController().removeOutboxHandler(TAG);
-		NMApp.getController().disposeEntities();
+		int requescode=0;  
 		if(pd!=null)
 			pd.dismiss();	
 		Log.d(TAG, "Activity quitting");
@@ -1861,7 +1866,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		if( recibo !=null 
 				&& ( recibo.getFacturasRecibo().size() > 0 
 						|| recibo.getNotasCreditoRecibo().size() > 0
-						|| recibo.getNotasDebitoRecibo().size() > 0 ) )
+						|| recibo.getNotasDebitoRecibo().size() > 0 ) && recibo.getReferencia()!=0 )
 		{
 			intent = new Intent();
 			Bundle b = new Bundle();

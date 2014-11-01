@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
+import android.os.Handler.Callback;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -293,7 +294,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	
 	private void FINISH_ACTIVITY()
 	{ 
-		com.panzyma.nm.NMApp.getController().setView((ViewPedidoEdit)parent);
+		com.panzyma.nm.NMApp.getController().setView((Callback)parent);
 		if(pd!=null)
 			pd.dismiss();
 		Log.d(TAG, "Exit from DialogProducto"); 

@@ -124,8 +124,8 @@ public final class BReciboM extends BBaseM {
 				aplicarDescuentoOcacional((ReciboColector)bdl.getParcelable("recibo"));
 				return true;
 			case SEND_DATA_FROM_SERVER:  
-				Bundle rec3=msg.getData();
-				Parcelable [] arrayParcelable2 = rec3.getParcelableArray("facturasToUpdate");			
+				bdl=msg.getData();
+				Parcelable [] arrayParcelable2 = bdl.getParcelableArray("facturasToUpdate");			
 				ArrayList<Factura> facturasToUpdate2 = new ArrayList<Factura>();
 				Object [] list2 = Arrays.copyOf(arrayParcelable2, arrayParcelable2.length , Factura[].class);
 				for(Object obj: list2){
@@ -143,7 +143,7 @@ public final class BReciboM extends BBaseM {
 				for(Object obj: list){
 					notasCreditoToUpdate2.add((CCNotaCredito)obj);
 				}
-				enviarRecibo((ReciboColector)rec3.getParcelable("recibo"), facturasToUpdate2, notasDebitoToUpdate2, notasCreditoToUpdate2 );
+				enviarRecibo((ReciboColector)bdl.getParcelable("recibo"), facturasToUpdate2, notasDebitoToUpdate2, notasCreditoToUpdate2 );
 				break; 
 			case ControllerProtocol.IMPRIMIR:
 				bdl=msg.getData();

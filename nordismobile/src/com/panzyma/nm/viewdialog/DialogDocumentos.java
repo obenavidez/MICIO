@@ -441,9 +441,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		if(pd!=null)
 			pd.dismiss();	
 		NMApp.getController().setView(parent);
-		Log.d(TAG, "Activity quitting"); 
-		pd = null;	
-		this.dismiss();
+		Log.d(TAG, "Activity quitting");  
 	}
 	
 }
