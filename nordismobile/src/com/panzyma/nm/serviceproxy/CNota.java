@@ -5,7 +5,12 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
-public class CNota implements KvmSerializable 
+import com.panzyma.nm.viewmodel.vmFicha;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class CNota implements KvmSerializable, Parcelable 
 { 
 	public java.lang.String Fecha;
     public java.lang.String ElaboradaPor;
@@ -28,6 +33,17 @@ public class CNota implements KvmSerializable
         this.Concepto = concepto;
     }
     
+	public CNota(Parcel parcel) {
+		readFromParcel(parcel);
+	}
+
+	private void readFromParcel(Parcel parcel) {
+		Fecha = parcel.readString();
+	    ElaboradaPor = parcel.readString();
+	    TextoNota = parcel.readString();
+	    Concepto = parcel.readString();		
+	}
+
 	@Override
 	public Object getProperty(int arg0) {
 
@@ -128,7 +144,35 @@ public class CNota implements KvmSerializable
     public void setConcepto(java.lang.String concepto) {
         this.Concepto = concepto;
     }
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		 parcel.writeString(Fecha);
+	     parcel.writeString(ElaboradaPor);
+	     parcel.writeString(TextoNota);
+	     parcel.writeString(Concepto);		
+	}
 	
+	@SuppressWarnings("rawtypes")
+	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+		@Override
+		public CNota createFromParcel(Parcel parcel) {
+			return new CNota(parcel);
+		}
+
+		@Override
+		public CNota[] newArray(int size) {
+			return new CNota[size];
+		}
+
+	};
 	
 	
 

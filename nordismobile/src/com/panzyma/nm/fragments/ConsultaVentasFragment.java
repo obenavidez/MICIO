@@ -144,7 +144,9 @@ public class ConsultaVentasFragment extends Fragment implements
 				if (vntas.size() > 0){
 					String docNumerToFound = s.toString();
 					for(CVenta venta : vntas) {
-						if( venta.getNombreCliente().contains(docNumerToFound) || venta.getFecha().contains(docNumerToFound)){
+						if( venta.getNumeroCentral().contains(docNumerToFound) 
+								|| venta.getNombreCliente().contains(docNumerToFound)
+								|| venta.getFecha().contains(docNumerToFound)){
 							filterVentas.add(venta);
 						}
 					}					

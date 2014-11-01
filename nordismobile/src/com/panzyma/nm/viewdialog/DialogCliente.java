@@ -258,7 +258,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		
 		if(pd!=null)
 			pd.dismiss();	
-		com.panzyma.nm.NMApp.getController().setView((ViewPedidoEdit)parent);
+		//com.panzyma.nm.NMApp.getController().setView((ViewPedidoEdit)parent);
 		Log.d(TAG, "Activity quitting");  
 	}  
 }
