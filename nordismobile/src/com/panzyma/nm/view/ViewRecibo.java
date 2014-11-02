@@ -228,10 +228,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		
 		context = ViewRecibo.this;
 		SessionManager.setContext(this);
-		setContentView(R.layout.layout_client_fragment);
-		
-		transaction = getSupportFragmentManager()
-				.beginTransaction();
+		setContentView(R.layout.layout_client_fragment);		
 
 		WindowManager wm = (WindowManager) context
 				.getSystemService(Context.WINDOW_SERVICE);
@@ -368,7 +365,8 @@ public class ViewRecibo extends ActionBarActivity implements
 						Bundle msg = new Bundle();
 						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
 						msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
-						cuentasPorCobrar.setArguments(msg);
+						cuentasPorCobrar.setArguments(msg);	
+						transaction = getSupportFragmentManager().beginTransaction();
 						transaction.replace(R.id.fragment_container,cuentasPorCobrar);
 						transaction.addToBackStack(null);
 						transaction.commit();						

@@ -81,5 +81,6 @@ public interface ControllerProtocol {
 	int LOAD_DATA_FROM_FORMA_PAGO = 901;
 	
 	int ANULAR_PEDIDO = 900;
+	int ID_SINCRONIZE_PRODUCTO = 7;
     
 }

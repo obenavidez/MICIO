@@ -4,7 +4,9 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_FICHACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_FICHACLIENTE_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -13,6 +15,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -35,6 +38,7 @@ import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.CNotaViewHolder;
@@ -64,8 +68,19 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 		super.onSaveInstanceState(outState);
 		outState.putInt(ARG_POSITION, mCurrentPosition);
 		outState.putLong(ARG_SUCURSAL, sucursalID);
+		outState.putParcelable("cliente", customer);
+	}	
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+	    super.onActivityCreated(savedInstanceState);
+	    if (savedInstanceState != null) {	       
+	      customer = savedInstanceState.getParcelable("cliente");
+	  	  mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
+	  	  sucursalID = savedInstanceState.getLong(ARG_SUCURSAL);
+	    }
 	}
-	 
+
 	@Override
 	public void onStart() {	
 		super.onStart();

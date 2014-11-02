@@ -2,6 +2,8 @@ package com.panzyma.nm.fragments;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static com.panzyma.nm.controller.ControllerProtocol.*;
@@ -35,6 +37,7 @@ import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
 import com.panzyma.nm.view.viewholder.PedidoViewHolder;
 import com.panzyma.nm.view.viewholder.ReciboViewHolder;
+import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
 import android.app.Activity;
@@ -44,6 +47,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -127,13 +131,30 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		super.onAttach(activity);
 		fcontext = activity;
 		nmapp = (NMApp) activity.getApplicationContext();		
-	} 
+	} 	
 	
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putInt(ARG_POSITION, mCurrentPosition);
-		outState.putLong(SUCURSAL_ID, objSucursalID);
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	  super.onSaveInstanceState(savedInstanceState);
+	  savedInstanceState.putInt(ARG_POSITION, mCurrentPosition);
+	  savedInstanceState.putLong(SUCURSAL_ID, objSucursalID);
+	  // Save UI state changes to the savedInstanceState.
+	  // This bundle will be passed to onCreate if the process is
+	  // killed and restarted.
+	  Parcelable [] objects = new Parcelable[documentos.size()];
+	  documentos.toArray(objects);
+	  savedInstanceState.putParcelableArray("documentos", objects);	 
+	   // etc.
+	}	
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+	    super.onActivityCreated(savedInstanceState);
+	    if (savedInstanceState != null) {	       
+	      Parcelable [] objects = savedInstanceState.getParcelableArray("documentos");
+	  	  documentos = new ArrayList<GenericDocument>( (Collection<? extends GenericDocument>) Arrays.asList(objects) ); 
+	  	  mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
+	    }
 	}
 	
 	@Override

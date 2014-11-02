@@ -41,8 +41,14 @@
     <string name="drawer_open">Menú Abierto</string>
     <string name="drawer_close">Menú Cerrado</string>
     <string name="view_product_codigo">Código</string>
-    <string name="view_product_nombre">Descripción</string>
-    <string name="view_product_disponibilidad">Existencias</string>
+    <string name="view_product_producto">Producto:</string>
+    <string name="view_product_proveedor">Proveedor:</string>
+    <string name="view_product_nombregenerico">Nombre Genérico:</string>
+    <string name="view_product_forma">Forma:</string>
+    <string name="view_product_accion">Acción:</string>
+    <string name="view_product_tipo">Tipo:</string>
+    <string name="view_product_categoria">Categoría:</string>
+    <string name="view_product_especialidades">Especialidades:</string>
     <string name="txtdocumentos_title">Lista de Documentos</string>
     <string name="message_pay_amount">Ingrese el monto</string>
     <string name="message_ocational_discount">Aplicar Descuento Ocasional</string>
@@ -50,5 +56,6 @@
     <string name="txt_ocational_discount_key">Clave</string>
     <string name="text_scan_devices">Buscar Dispositivos</string>
     <string name="txtbluetoothdevice_title">Lista de Dispositivos</string>
-    
+    <string name="title_listaproducto">Datos del Producto</string>
+    <string name="notasproducto">Notas del Producto</string>
 </resources>

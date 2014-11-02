@@ -1,10 +1,12 @@
 package com.panzyma.nm.model;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 import org.json.JSONArray;
+import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
 import android.content.ContentResolver;
@@ -16,9 +18,13 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.comunicator.AppNMComunication;
+import com.comunicator.Parameters;
+import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig; 
+import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider; 
 import com.panzyma.nm.datastore.DatabaseProvider.Helper;
+import com.panzyma.nm.serviceproxy.CProducto;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.viewmodel.vmProducto;
@@ -260,6 +266,18 @@ public class ModelProducto
 		return 1; 
 	   
    }    
+   
+   
+   public synchronized static CProducto getCProducto(String Credentials , long idproducto) throws Exception
+   {
+	   Parameters params=new Parameters((new String[]{"Credentials","idProducto"}),
+				 (new Object[]{Credentials,idproducto}),
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
+	   	
+	  return  NMTranslate.ToObject(AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetFichaProducto),new CProducto());
+	  //return AppNMComunication.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetFichaProducto+"/"+Credentials+"/"+idproducto);
+   }
+   
    
 
 }

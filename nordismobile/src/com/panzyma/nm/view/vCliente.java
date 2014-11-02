@@ -3,6 +3,8 @@ package com.panzyma.nm.view;
 import static com.panzyma.nm.controller.ControllerProtocol.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -41,7 +43,7 @@ import android.widget.Toast;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
-import com.panzyma.nm.auxiliar.ErrorMessage; 
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
@@ -57,17 +59,17 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.view.ProductoView.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmCliente;
+import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 @InvokeBridge(bridgeName = "BClienteM")
-public class vCliente extends ActionBarActivity implements 
-	   ListaFragment.OnItemSelectedListener, Handler.Callback 
-{
+public class vCliente extends ActionBarActivity implements
+		ListaFragment.OnItemSelectedListener, Handler.Callback {
 
 	// VARIABLES
-	CustomArrayAdapter customArrayAdapter; 
+	CustomArrayAdapter customArrayAdapter;
 	ProgressDialog pDialog;
-	
+
 	SearchView searchView;
 	Context context;
 	String[] opcionesMenu;
@@ -79,16 +81,18 @@ public class vCliente extends ActionBarActivity implements
 	CharSequence tituloApp;
 	vCliente vc;
 	TextView gridheader;
-	TextView footerView;	
+	TextView footerView;
 	ListaFragment<vmCliente> firstFragment;
 	List<vmCliente> clientes = new ArrayList<vmCliente>();
 	vmCliente cliente_selected;
 	private static CustomDialog dlg;
+
 	public enum FragmentActive {
-		LIST,FICHACLIENTE,CONSULTAR_CUENTA_COBRAR
+		LIST, FICHACLIENTE, CONSULTAR_CUENTA_COBRAR
 	};
+
 	private FragmentActive fragmentActive = null;
-	//Menu Variables
+	// Menu Variables
 	int listFragmentId;
 	int positioncache = 0;
 	long idsucursal;
@@ -96,69 +100,77 @@ public class vCliente extends ActionBarActivity implements
 	static final String TAG = vCliente.class.getSimpleName();
 	private static final int NUEVO_PEDIDO = 0;
 	private static final int NUEVO_RECIBO = 1;
-	private static final int NUEVO_DEVOLUCION=2;
-	private static final int FICHA_CLIENTE=3;
-	private static final int CONSULTAR_CUENTA_COBRAR=4;
-	private static final int SINCRONIZAR_ITEM=5;
-	private static final int SINCRONIZAR_TODOS=6;
-	private static final int CERRAR=7;
-	//RECIBO
+	private static final int NUEVO_DEVOLUCION = 2;
+	private static final int FICHA_CLIENTE = 3;
+	private static final int CONSULTAR_CUENTA_COBRAR = 4;
+	private static final int SINCRONIZAR_ITEM = 5;
+	private static final int SINCRONIZAR_TODOS = 6;
+	private static final int CERRAR = 7;
+	// RECIBO
 	public static final String PEDIDO_ID = "pedido_id";
 	public static final String RECIBO_ID = "recibo_id";
 	public static final String CLIENTE = "cliente";
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		context = getApplicationContext();
-		setContentView(R.layout.layout_client_fragment); 
-		NMApp.getController().setView(this); 
-		fragmentActive = FragmentActive.LIST; 
+		setContentView(R.layout.layout_client_fragment);
+		NMApp.getController().setView(this);
+		fragmentActive = FragmentActive.LIST;
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
 		footerView = (TextView) findViewById(R.id.ctextv_gridheader);
-		vc =this;
+		vc = this;
 		CreateMenu();
-		SessionManager.setContext(this);  
-		try 
-		{
-			clientes=(savedInstanceState!=null)?clientes=savedInstanceState.getParcelableArrayList("vmCliente"):null;
-			if(clientes==null)
+		SessionManager.setContext(this);
+		/*
+		try {
+			clientes = (savedInstanceState != null) ? clientes = savedInstanceState
+					.getParcelableArrayList("vmCliente") : null;
+			if (clientes == null)
 				Load_Data(LOAD_DATA_FROM_LOCALHOST);
 			else {
 				SetList(clientes);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
-		// However, if we're being restored from a previous state,
-		// then we don't need to do anything and should return or else
-		// we could end up with overlapping fragments.
-		if (savedInstanceState != null) {
-			return;
-		}
-		
+		fragmentActive = FragmentActive.LIST;		
+
 		// Create an instance of ExampleFragment
 		firstFragment = new ListaFragment<vmCliente>();
 		firstFragment.setRetainInstance(true);
 		// In case this activity was started with special instructions from
-		//an Intent,
+		// an Intent,
 		// pass the Intent's extras to the fragment as arguments
 		firstFragment.setArguments(getIntent().getExtras());
 		
-		//if device is a mobile 
+		if ( savedInstanceState != null ) {
+			Parcelable[] objects = savedInstanceState.getParcelableArray("vmCliente");	
+			clientes = new ArrayList<vmCliente>((Collection<? extends vmCliente>) Arrays.asList(objects));
+			//recibos = vmRecibo.arrayParcelToArrayRecibo(objects);			
+		} else {
+			clientes = null;
+		}
+		
+		if (clientes == null) {
+			Load_Data(LOAD_DATA_FROM_LOCALHOST);
+		}			
+		/*else {
+			SetList(clientes);
+		}*/
+
+		// if device is a mobile
 		if (findViewById(R.id.fragment_container) != null) {
 			getSupportFragmentManager().beginTransaction()
-			.add(R.id.fragment_container, firstFragment,"lista")
-			.addToBackStack("list")
-			.commit();
-		}
-		else {
-			
+					.add(R.id.fragment_container, firstFragment, "lista")
+					.addToBackStack("list").commit();
+		} else {
+
 		}
 	}
 
@@ -168,7 +180,7 @@ public class vCliente extends ActionBarActivity implements
 		if (pDialog != null && pDialog.isShowing())
 			pDialog.dismiss();
 	}
-	
+
 	public void showStatus(final String mensaje, boolean... confirmacion) {
 
 		ocultarDialogos();
@@ -201,9 +213,41 @@ public class vCliente extends ActionBarActivity implements
 			});
 		}
 	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		/*
+		 * if(savedInstanceState != null) {
+		 */
+		Parcelable[] objects = new Parcelable[clientes.size()];
+		clientes.toArray(objects);
+		savedInstanceState.putParcelableArray("vmCliente", objects);
+		savedInstanceState.putInt("positioncache", positioncache);
+		savedInstanceState.putParcelable("fragment", firstFragment);
+		/*
+		 * clientes=new ArrayList<vmCliente>();
+		 * clientes=customArrayAdapter.getItems();
+		 * bundle.putParcelableArrayList("vmCliente",(ArrayList<? extends
+		 * Parcelable>) clientes);
+		 */
+		// }
+	}
 	
-	
-	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	  super.onRestoreInstanceState(savedInstanceState);
+	  // Restore UI state from the savedInstanceState.
+	  // This bundle has also been passed to onCreate.
+	  Parcelable [] objects = savedInstanceState.getParcelableArray("vmCliente");
+	  clientes = new ArrayList<vmCliente>( (Collection<? extends vmCliente>) Arrays.asList(objects) ); 
+	  positioncache = savedInstanceState.getInt("positioncache");	  
+	  firstFragment = (ListaFragment<vmCliente>) savedInstanceState.getParcelable("fragment");
+	  gridheader.setText(String.format("Listado de Clientes (%s)", clientes.size()));
+	  //setList();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
@@ -211,73 +255,73 @@ public class vCliente extends ActionBarActivity implements
 		ArrayList<vmCliente> list = null;
 		ocultarDialogos();
 		switch (msg.what) {
-			case ControllerProtocol.NOTIFICATION:
-				showStatus(msg.obj.toString(), true);
-				break;
-			case ControllerProtocol.NOTIFICATION_DIALOG2:
-				showStatus(msg.obj.toString());
-				break;
-		
-			case C_DATA:
-				list= (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
-				SetList(list); 
-				result=true;
-				break;
-			case C_SETTING_DATA:
-				list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>() : msg.obj);
-				SetData(list, C_SETTING_DATA);
-				result=true;
-				break;
-		   case C_UPDATE_ITEM_FINISHED: 
-			    showStatus(msg.obj.toString(), true);
-			    result=true;
-				break;
-		   case C_UPDATE_FINISHED:
-			    final String  finishMessage =msg.obj.toString();
-			    runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						
-						AppDialog.showMessage(vc,"",finishMessage,
-								AppDialog.DialogType.DIALOGO_ALERTA,
-								new AppDialog.OnButtonClickListener() {
-									@Override
-									public void onButtonClick(AlertDialog _dialog,
-											int actionId) 
-									{
-		
-										if (AppDialog.OK_BUTTOM == actionId) 
-										{
-											_dialog.dismiss();
-											Load_Data(LOAD_DATA_FROM_LOCALHOST);
-										}
-							        }
-						});
-						
-					}
-				});
-				result=true;
-				break;
-		   case C_UPDATE_IN_PROGRESS : 
-			    showStatus(msg.obj.toString());
-				result=true;
-			   break;
-			case ERROR: 
-				AppDialog.showMessage(vc, ((ErrorMessage) msg.obj).getTittle(),
-						((ErrorMessage) msg.obj).getMessage(),
-						DialogType.DIALOGO_ALERTA);
-				final ErrorMessage error=((ErrorMessage)msg.obj); 
-				runOnUiThread(new Runnable() {
-						@Override
-						public void run() 
-						{
-							// pDialog.hide();
-							 dlg =new CustomDialog(vc,error.getMessage()+error.getCause(), false, NOTIFICATION_DIALOG);
-							 dlg.show();
-						}
-					}); 
-				result=true;
-				break;
+		case ControllerProtocol.NOTIFICATION:
+			showStatus(msg.obj.toString(), true);
+			break;
+		case ControllerProtocol.NOTIFICATION_DIALOG2:
+			showStatus(msg.obj.toString());
+			break;
+
+		case C_DATA:
+			list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>()
+					: msg.obj);
+			SetList(list);
+			result = true;
+			break;
+		case C_SETTING_DATA:
+			list = (ArrayList<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>()
+					: msg.obj);
+			SetData(list, C_SETTING_DATA);
+			result = true;
+			break;
+		case C_UPDATE_ITEM_FINISHED:
+			showStatus(msg.obj.toString(), true);
+			result = true;
+			break;
+		case C_UPDATE_FINISHED:
+			final String finishMessage = msg.obj.toString();
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+
+					AppDialog.showMessage(vc, "", finishMessage,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+										Load_Data(LOAD_DATA_FROM_LOCALHOST);
+									}
+								}
+							});
+
+				}
+			});
+			result = true;
+			break;
+		case C_UPDATE_IN_PROGRESS:
+			showStatus(msg.obj.toString());
+			result = true;
+			break;
+		case ERROR:
+			AppDialog.showMessage(vc, ((ErrorMessage) msg.obj).getTittle(),
+					((ErrorMessage) msg.obj).getMessage(),
+					DialogType.DIALOGO_ALERTA);
+			final ErrorMessage error = ((ErrorMessage) msg.obj);
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					// pDialog.hide();
+					dlg = new CustomDialog(vc, error.getMessage()
+							+ error.getCause(), false, NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+			result = true;
+			break;
 		}
 		return result;
 	}
@@ -288,7 +332,7 @@ public class vCliente extends ActionBarActivity implements
 		cliente_selected = (vmCliente) obj;
 		positioncache = position;
 	}
-		
+
 	@Override
 	protected void onResume() {
 		NMApp.getController().setView(this);
@@ -297,43 +341,44 @@ public class vCliente extends ActionBarActivity implements
 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub 
+		// TODO Auto-generated method stub
 		ocultarDialogos();
 		customArrayAdapter.notifyDataSetChanged();
 		super.onPause();
-	} 
-	
+	}
+
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		
+
 		getMenuInflater().inflate(R.menu.mcliente, menu);
-		
+
 		MenuItem searchItem = menu.findItem(R.id.action_search);
-		
-		if(searchItem!=null) {
+
+		if (searchItem != null) {
 			searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 			if (fragmentActive == FragmentActive.LIST) {
-			customArrayAdapter = ((Filterable) getSupportFragmentManager()
-					.findFragmentById(R.id.fragment_container)).getAdapter();
-	
-			searchView.setOnQueryTextListener(new OnQueryTextListener() {
-				@Override
-				public boolean onQueryTextChange(String s) {
-					customArrayAdapter.getFilter().filter(s);
-					return false;
-				}
-	
-				@Override
-				public boolean onQueryTextSubmit(String s) {
-					customArrayAdapter.getFilter().filter(s);
-					return false;
-				}
-			});
-		  }
+				customArrayAdapter = ((Filterable) getSupportFragmentManager()
+						.findFragmentById(R.id.fragment_container))
+						.getAdapter();
+
+				searchView.setOnQueryTextListener(new OnQueryTextListener() {
+					@Override
+					public boolean onQueryTextChange(String s) {
+						customArrayAdapter.getFilter().filter(s);
+						return false;
+					}
+
+					@Override
+					public boolean onQueryTextSubmit(String s) {
+						customArrayAdapter.getFilter().filter(s);
+						return false;
+					}
+				});
+			}
 		}
-		
+
 		return true;
 	}
 
@@ -346,14 +391,14 @@ public class vCliente extends ActionBarActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
+
 		if (drawerToggle.onOptionsItemSelected(item)) {
 			item.getItemId();
 			return true;
 		}
 		return true;
 	}
-	
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -365,20 +410,19 @@ public class vCliente extends ActionBarActivity implements
 		super.onConfigurationChanged(newConfig);
 		drawerToggle.onConfigurationChanged(newConfig);
 	}
-	
-	private void CreateMenu()
-	{
+
+	private void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
 		opcionesMenu = getResources().getStringArray(R.array.customeroptions);
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		//Buscamos nuestro menu lateral
+		// Buscamos nuestro menu lateral
 		drawerList = (ListView) findViewById(R.id.left_drawer);
 
 		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
 				.getThemedContext(), android.R.layout.simple_list_item_1,
 				opcionesMenu));
-		
-		//Añadimos Funciones al menú laterak
+
+		// Añadimos Funciones al menú laterak
 		drawerList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -388,78 +432,89 @@ public class vCliente extends ActionBarActivity implements
 				drawerList.setItemChecked(position, true);
 				drawerLayout.closeDrawers();
 				tituloSeccion = opcionesMenu[position];
-				//Ponemos el titulo del Menú
-				getSupportActionBar().setTitle(tituloSeccion);	
-				//SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+				// Ponemos el titulo del Menú
+				getSupportActionBar().setTitle(tituloSeccion);
+				// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
 				int pos = customArrayAdapter.getSelectedPosition();
-				//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-				cliente_selected =(vmCliente) customArrayAdapter.getItem(pos);
-				
+				// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+				cliente_selected = (vmCliente) customArrayAdapter.getItem(pos);
+
 				switch (position) {
-					case NUEVO_PEDIDO:
-						if(cliente_selected== null){
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						intent = new Intent(vCliente.this,ViewPedidoEdit.class);
-						intent.putExtra(PEDIDO_ID, 0);
-						intent.putExtra(CLIENTE,cliente_selected.IdSucursal);
-						startActivity(intent);
+				case NUEVO_PEDIDO:
+					if (cliente_selected == null) {
+						drawerLayout.closeDrawers();
+						AppDialog.showMessage(vc, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					intent = new Intent(vCliente.this, ViewPedidoEdit.class);
+					intent.putExtra(PEDIDO_ID, 0);
+					intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
+					startActivity(intent);
 					break;
-					case NUEVO_RECIBO :
-						if(cliente_selected== null){
-							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						intent = new Intent(vCliente.this,ViewReciboEdit.class);
-						intent.putExtra(RECIBO_ID, 0);
-						intent.putExtra(CLIENTE,cliente_selected.getIdCliente());
-						startActivity(intent);	
-						break;
-					case NUEVO_DEVOLUCION:
-						buildToastMessage("PROXIMANTE....",5);
-						break;
-					case  FICHA_CLIENTE : 
-						if(cliente_selected== null){
-							
-							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}   
-			            fragmentActive = FragmentActive.FICHACLIENTE;
-						LOAD_FICHACLIENTE_FROMSERVER(); 
-						break;
-					case CONSULTAR_CUENTA_COBRAR :
-						if(cliente_selected== null){
-							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}  
-						fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
-						LOAD_CUENTASXPAGAR(); 
-						break;
-					case SINCRONIZAR_ITEM :
-						if(cliente_selected== null){
-							AppDialog.showMessage(vc,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						UPDATE_SELECTEDITEM_FROMSERVER(); 
-						break;
-					case SINCRONIZAR_TODOS :  Load_Data(LOAD_DATA_FROM_SERVER); 
-						break;
-					case CERRAR : 
-						FINISH_ACTIVITY();
-						break;
+				case NUEVO_RECIBO:
+					if (cliente_selected == null) {
+						AppDialog.showMessage(vc, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					intent = new Intent(vCliente.this, ViewReciboEdit.class);
+					intent.putExtra(RECIBO_ID, 0);
+					intent.putExtra(CLIENTE, cliente_selected.getIdCliente());
+					startActivity(intent);
+					break;
+				case NUEVO_DEVOLUCION:
+					buildToastMessage("PROXIMANTE....", 5);
+					break;
+				case FICHA_CLIENTE:
+					if (cliente_selected == null) {
+
+						AppDialog.showMessage(vc, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					fragmentActive = FragmentActive.FICHACLIENTE;
+					LOAD_FICHACLIENTE_FROMSERVER();
+					break;
+				case CONSULTAR_CUENTA_COBRAR:
+					if (cliente_selected == null) {
+						AppDialog.showMessage(vc, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+					LOAD_CUENTASXPAGAR();
+					break;
+				case SINCRONIZAR_ITEM:
+					if (cliente_selected == null) {
+						AppDialog.showMessage(vc, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					UPDATE_SELECTEDITEM_FROMSERVER();
+					break;
+				case SINCRONIZAR_TODOS:
+					Load_Data(LOAD_DATA_FROM_SERVER);
+					break;
+				case CERRAR:
+					FINISH_ACTIVITY();
+					break;
 				}
 			}
 		});
-		
+
 		tituloSeccion = getTitle();
 		tituloApp = getTitle();
-		
+
 		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
 				R.drawable.ic_navigation_drawer, R.string.drawer_open,
 				R.string.drawer_close) {
-			
+
 			@Override
 			public void onDrawerClosed(View view) {
 				getSupportActionBar().setTitle(tituloSeccion);
@@ -473,19 +528,17 @@ public class vCliente extends ActionBarActivity implements
 
 			}
 		};
-		//establecemos el listener para el dragable ....
+		// establecemos el listener para el dragable ....
 		drawerLayout.setDrawerListener(drawerToggle);
-		
+
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private void Load_Data(int what)
-	{ 
-		try 
-		{			
-			
+	private void Load_Data(int what) {
+		try {
+
 			NMApp.getController().getInboxHandler().sendEmptyMessage(what);
 			pDialog = new ProgressDialog(this);
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -497,283 +550,266 @@ public class vCliente extends ActionBarActivity implements
 			e.printStackTrace();
 		}
 	}
-		
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) 
-    { 
-    	if(keyCode==KeyEvent.KEYCODE_MENU){
-    		 Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-    		  if (fragment instanceof FichaClienteFragment) {
-    			  return true;  
-    		  }
-    		  else{
-					drawerLayout.openDrawer(Gravity.LEFT);
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			Fragment fragment = getSupportFragmentManager().findFragmentById(
+					R.id.fragment_container);
+			if (fragment instanceof FichaClienteFragment) {
+				return true;
+			} else {
+				drawerLayout.openDrawer(Gravity.LEFT);
 			}
-    	}
-    	if (keyCode == KeyEvent.KEYCODE_SETTINGS) {
-    		return false;
-    	}
-        return super.onKeyUp(keyCode, event); 
-    } 
-	
-    private void FINISH_ACTIVITY()
-	{ 	 		 
-    	ocultarDialogos();
-		Log.d(TAG, "Activity quitting"); 
-    	if(pDialog!=null)
-    		pDialog.dismiss(); 
-		finish();		
-	}  
-	
+		}
+		if (keyCode == KeyEvent.KEYCODE_SETTINGS) {
+			return false;
+		}
+		return super.onKeyUp(keyCode, event);
+	}
+
+	private void FINISH_ACTIVITY() {
+		ocultarDialogos();
+		Log.d(TAG, "Activity quitting");
+		if (pDialog != null)
+			pDialog.dismiss();
+		finish();
+	}
+
 	@SuppressWarnings({ "unused", "unchecked" })
 	private void SetList(List<vmCliente> list) {
-		
-		//clientes = (List<vmCliente>) ((msg.obj == null) ? new ArrayList<vmCliente>(): msg.obj);
+
+		// clientes = (List<vmCliente>) ((msg.obj == null) ? new
+		// ArrayList<vmCliente>(): msg.obj);
 
 		clientes = list;
-		gridheader.setText(String.format("Listado de Clientes (%s)",clientes.size()));
-		
+		gridheader.setText(String.format("Listado de Clientes (%s)",
+				clientes.size()));
+
 		if (clientes.size() == 0) {
-			
+
 			ShowEmptyMessage(true);
-		}
-		else {
+		} else {
 			ShowEmptyMessage(false);
 		}
-		
+
 		firstFragment.setItems(clientes);
 	}
-	
-	private void ShowEmptyMessage(boolean show)
-	{
+
+	private void ShowEmptyMessage(boolean show) {
 		TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
-		
-		if(show)
-		{
+
+		if (show) {
 			txtenty.setVisibility(View.VISIBLE);
-		}
-		else{
+		} else {
 			txtenty.setVisibility(View.INVISIBLE);
 		}
 	}
-	
+
 	private void SetData(final ArrayList<vmCliente> data, final int what) {
 		try {
 			if (data.size() != 0) {
-				
-				NMApp.getThreadPool().execute(
-						new Runnable() {
+
+				NMApp.getThreadPool().execute(new Runnable() {
+					@Override
+					public void run() {
+						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								runOnUiThread(new Runnable() {
-									@Override
-									public void run() 
-									{
-										try 
-										{
-											if (what == C_SETTING_DATA && customArrayAdapter != null && customArrayAdapter.getCount() >= 0) {
-												customArrayAdapter.AddAllToListViewDataSource(data);
-												firstFragment.setItems(data);
-												gridheader.setText("Listado de Clientes("+ customArrayAdapter.getCount() + ")");
-												footerView.setVisibility(View.VISIBLE);
-												firstFragment.getAdapter().notifyDataSetChanged();
-												ShowEmptyMessage(false);
-											}
-											else {
-												if (what == C_SETTING_DATA)
-													footerView.setVisibility(View.VISIBLE);
-												
-												gridheader.setText("Listado de Clientes("+ data.size() + ")");
-												firstFragment.setItems(data);
-												customArrayAdapter.setSelectedPosition(0);
-												positioncache = 0;
-												firstFragment.getAdapter().notifyDataSetChanged();
-												/*product_selected = customArrayAdapter.getItem(0);*/
-											}
-											
-										}
-										catch (Exception e) {
-											e.printStackTrace();
-										}
+								try {
+									if (what == C_SETTING_DATA
+											&& customArrayAdapter != null
+											&& customArrayAdapter.getCount() >= 0) {
+										customArrayAdapter
+												.AddAllToListViewDataSource(data);
+										firstFragment.setItems(data);
+										gridheader
+												.setText("Listado de Clientes("
+														+ customArrayAdapter
+																.getCount()
+														+ ")");
+										footerView.setVisibility(View.VISIBLE);
+										firstFragment.getAdapter()
+												.notifyDataSetChanged();
+										ShowEmptyMessage(false);
+									} else {
+										if (what == C_SETTING_DATA)
+											footerView
+													.setVisibility(View.VISIBLE);
+
+										gridheader
+												.setText("Listado de Clientes("
+														+ data.size() + ")");
+										firstFragment.setItems(data);
+										customArrayAdapter
+												.setSelectedPosition(0);
+										positioncache = 0;
+										firstFragment.getAdapter()
+												.notifyDataSetChanged();
+										/*
+										 * product_selected =
+										 * customArrayAdapter.getItem(0);
+										 */
 									}
-								});
+
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 							}
 						});
+					}
+				});
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private void ShowCustomerDetails ()
-	{
+
+	private void ShowCustomerDetails() {
 		Bundle args = new Bundle();
 		args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
 		args.putLong(FichaClienteFragment.ARG_SUCURSAL, idsucursal);
-		
-		//establecemos el titulo
+
+		// establecemos el titulo
 		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
-		
-		FichaClienteFragment ficha;	
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		
-		if (findViewById(R.id.dynamic_fragment) != null) 
-		{
-		}
-		else
-		{
-			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+		FichaClienteFragment ficha;
+		FragmentTransaction transaction = getSupportFragmentManager()
+				.beginTransaction();
+
+		if (findViewById(R.id.dynamic_fragment) != null) {
+		} else {
+			Fragment fragment = getSupportFragmentManager().findFragmentById(
+					R.id.fragment_container);
 			if (fragment instanceof ListaFragment) {
 				ficha = new FichaClienteFragment();
 				ficha.setArguments(args);
 				transaction.addToBackStack(null);
-				transaction.replace(R.id.fragment_container, ficha,"ficha");
+				transaction.replace(R.id.fragment_container, ficha, "ficha");
 				gridheader.setVisibility(View.INVISIBLE);
 			}
 		}
 		// Commit the transaction transaction.commit();
 		transaction.commit();
 	}
-	
-	private void LOAD_FICHACLIENTE_FROMSERVER()
-	{
-		
-		idsucursal=get_SucursalID();
-		if(idsucursal != 0 && idsucursal != 1)
-		{			
-			ShowCustomerDetails();		
-    	}
-		else 
-		{ 
-		    if(idsucursal==1) 					
-		    	buildCustomDialog("No hay cliente que consultar",
-		    			          "Debe sincronizar con el servidor primero...\nDesea Sincronizar ahora?",
-		    			           CONFIRMATION_DIALOG).show(); 	 
-			else 
-				buildCustomDialog("No hay cliente que consultar","Seleccione cliente primero",ALERT_DIALOG).show();  
+
+	private void LOAD_FICHACLIENTE_FROMSERVER() {
+
+		idsucursal = get_SucursalID();
+		if (idsucursal != 0 && idsucursal != 1) {
+			ShowCustomerDetails();
+		} else {
+			if (idsucursal == 1)
+				buildCustomDialog(
+						"No hay cliente que consultar",
+						"Debe sincronizar con el servidor primero...\nDesea Sincronizar ahora?",
+						CONFIRMATION_DIALOG).show();
+			else
+				buildCustomDialog("No hay cliente que consultar",
+						"Seleccione cliente primero", ALERT_DIALOG).show();
 		}
-		
+
 	}
-	
-	public long get_SucursalID()
-	{ 
-		if(positioncache!=-1)
-		{
-			cliente_selected = (vmCliente)customArrayAdapter.getItem(positioncache);
-			idsucursal= cliente_selected.getIdSucursal();
-		}
-		else {
-			if(customArrayAdapter!=null){
-				if(customArrayAdapter.getCount()!=0)
-				{
-					idsucursal= cliente_selected.getIdSucursal();
+
+	public long get_SucursalID() {
+		if (positioncache != -1) {
+			cliente_selected = (vmCliente) customArrayAdapter
+					.getItem(positioncache);
+			idsucursal = cliente_selected.getIdSucursal();
+		} else {
+			if (customArrayAdapter != null) {
+				if (customArrayAdapter.getCount() != 0) {
+					idsucursal = cliente_selected.getIdSucursal();
 				}
 			}
-			//idsucursal= ()?((customArrayAdapter.getCount()!=0)?(   (  (cliente_selected!=null)?cliente_selected.getIdSucursal():0  )  ):1):1;
+			// idsucursal= ()?((customArrayAdapter.getCount()!=0)?( (
+			// (cliente_selected!=null)?cliente_selected.getIdSucursal():0 )
+			// ):1):1;
 		}
 		return idsucursal;
 	}
-	
-	public  Dialog buildCustomDialog(String tittle,String msg,int type)
-	{
-		final CustomDialog dialog=new CustomDialog(this);
+
+	public Dialog buildCustomDialog(String tittle, String msg, int type) {
+		final CustomDialog dialog = new CustomDialog(this);
 		dialog.setCancelable(true);
-	    dialog.setCanceledOnTouchOutside(true);
-	    dialog.setMessageType(type);
-	    dialog.setTitulo(tittle);
-	    dialog.setMensaje(msg);    
-	    dialog.setOnActionDialogButtonClickListener
-	    (
-    		 new OnActionButtonClickListener()
-    		 {
-				@SuppressWarnings("static-access")
-				@Override
-				public void onButtonClick(View _dialog,int actionId) {									 
-					if(actionId==CustomDialog.OK_BUTTOM && idsucursal==1)
-						NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);	
-					else if(actionId==CustomDialog.OK_BUTTOM)
-						dialog.dismiss();
-				}
-			 } 
-	    );
-	    dialog.setOnDismissDialogListener
-	    (
-    		 new OnDismissDialogListener()
-    		 {
-				@Override
-				public void onDismiss() {
-					
-				}
-    		 }
-	    );		
-	    
-	    return dialog;
+		dialog.setCanceledOnTouchOutside(true);
+		dialog.setMessageType(type);
+		dialog.setTitulo(tittle);
+		dialog.setMensaje(msg);
+		dialog.setOnActionDialogButtonClickListener(new OnActionButtonClickListener() {
+			@SuppressWarnings("static-access")
+			@Override
+			public void onButtonClick(View _dialog, int actionId) {
+				if (actionId == CustomDialog.OK_BUTTOM && idsucursal == 1)
+					NMApp.getController().getInboxHandler()
+							.sendEmptyMessage(LOAD_DATA_FROM_SERVER);
+				else if (actionId == CustomDialog.OK_BUTTOM)
+					dialog.dismiss();
+			}
+		});
+		dialog.setOnDismissDialogListener(new OnDismissDialogListener() {
+			@Override
+			public void onDismiss() {
+
+			}
+		});
+
+		return dialog;
 	}
 
 	@SuppressLint("ShowToast")
-	public Toast buildToastMessage(String msg,int duration)
-	{
-		Toast toast= Toast.makeText(getApplicationContext(),msg,duration);  
-		toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0); 
+	public Toast buildToastMessage(String msg, int duration) {
+		Toast toast = Toast.makeText(getApplicationContext(), msg, duration);
+		toast.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL, 0, 0);
 		return toast;
-	}	
+	}
 
-	private void UPDATE_SELECTEDITEM_FROMSERVER()
-	{
-		Message ms = new  Message();
-		ms.what=UPDATE_ITEM_FROM_SERVER; 
+	private void UPDATE_SELECTEDITEM_FROMSERVER() {
+		Message ms = new Message();
+		ms.what = UPDATE_ITEM_FROM_SERVER;
 		ms.obj = get_SucursalID();
-		
+
 		NMApp.getController().getInboxHandler().sendMessage(ms);
-	    //Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);
+		// Toast.makeText(this, "sincronizando cliente...",Toast.LENGTH_LONG);
 		pDialog = new ProgressDialog(vCliente.this);
 		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pDialog.setMessage("sincronizando cliente...");
 		pDialog.setCancelable(true);
 		pDialog.show();
-	} 	
-
-	@Override
-	protected void onSaveInstanceState(Bundle bundle) 
-	{ 
-		super.onSaveInstanceState(bundle);
-		if(customArrayAdapter!=null && customArrayAdapter.getItems().size()!=0) 
-		{  
-			clientes=new ArrayList<vmCliente>();
-			clientes=customArrayAdapter.getItems();
-			bundle.putParcelableArrayList("vmCliente",(ArrayList<? extends Parcelable>) clientes);  
-		}
-	} 
+	}
 
 	@Override
 	public void onBackPressed() {
-	  Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-	  if (fragment instanceof FichaClienteFragment || fragment instanceof  CuentasPorCobrarFragment) {
-		  gridheader.setVisibility(View.VISIBLE);
-		  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		  transaction.detach(fragment);
-		  transaction.replace(R.id.fragment_container, firstFragment);
-		  transaction.addToBackStack(null);
-		  transaction.commit();
-		  fragmentActive = FragmentActive.LIST;
-		  getSupportActionBar().show();
-	  }else{
-		  FINISH_ACTIVITY();
-	   }
+		Fragment fragment = getSupportFragmentManager().findFragmentById(
+				R.id.fragment_container);
+		if (fragment instanceof FichaClienteFragment
+				|| fragment instanceof CuentasPorCobrarFragment) {
+			gridheader.setVisibility(View.VISIBLE);
+			FragmentTransaction transaction = getSupportFragmentManager()
+					.beginTransaction();
+			transaction.detach(fragment);
+			transaction.replace(R.id.fragment_container, firstFragment);
+			transaction.addToBackStack(null);
+			transaction.commit();
+			fragmentActive = FragmentActive.LIST;
+			getSupportActionBar().show();
+		} else {
+			FINISH_ACTIVITY();
+		}
 	}
-	
-	public void LOAD_CUENTASXPAGAR(){
-		 CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
-		 Bundle msg = new Bundle();
-		 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-         msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
-         msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,cliente_selected.getIdSucursal());
-         cuentasPorCobrar.setArguments(msg);
-         transaction.replace(R.id.fragment_container,
-         cuentasPorCobrar);
-         transaction.addToBackStack(null);
-         transaction.commit();
+
+	public void LOAD_CUENTASXPAGAR() {
+		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
+		Bundle msg = new Bundle();
+		FragmentTransaction transaction = getSupportFragmentManager()
+				.beginTransaction();
+		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
+				cliente_selected.getIdSucursal());
+		cuentasPorCobrar.setArguments(msg);
+		transaction.replace(R.id.fragment_container, cuentasPorCobrar);
+		transaction.addToBackStack(null);
+		transaction.commit();
 	}
 
 }
