@@ -31,22 +31,33 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
@@ -72,8 +83,7 @@ import com.panzyma.nordismobile.R;
 @SuppressLint("ShowToast")
 @SuppressWarnings({ "unchecked", "rawtypes", "unused", "static-access" })
 @InvokeBridge(bridgeName = "BConfiguracionM")
-public class ViewConfiguracion extends FragmentActivity implements
-		Handler.Callback {
+public class ViewConfiguracion extends ActionBarActivity implements Handler.Callback {
 	String TAG = ViewConfiguracion.class.getSimpleName();
 	QuickAction quickAction;
 	Display display;
@@ -102,6 +112,21 @@ public class ViewConfiguracion extends FragmentActivity implements
 	public static int RESULTADO_IMPRESORA = 1;
 	private Impresora impresora;
 	private vmConfiguracion oldata;
+    DrawerLayout drawerLayout;
+    ListView drawerList;
+    ActionBarDrawerToggle drawerToggle;
+    String[] opcionesMenu;
+    CharSequence tituloSeccion;
+    CharSequence tituloApp;
+    private static final int SALVAR_CONFIGURACION =0;
+	    private static final int SINCRONIZAR_PARAMETROS =1;
+	    private static final int SINCRONIZAR_CATALOGOS=2;
+	    private static final int SINCRONIZAR_CLIENTES=3;
+	    private static final int SINCRONIZAR_PRODUCTOS=4;
+	    private static final int SINCRONIZAR_PROMOCIONES =5;
+	    private static final int SINCRONIZAR_TODO=6;
+	    private static final int CONFIGURAR_IMPRESORA=7;
+	    private static final int CERRAR  =8;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -121,6 +146,7 @@ public class ViewConfiguracion extends FragmentActivity implements
 			pd = ProgressDialog.show(this, "Espere por favor",
 					"Trayendo Info...", true, false);
 			initComponents();
+			CreateMenu();
 		} catch (Exception e) {
 			e.printStackTrace();
 			dlg = (CustomDialog) dialog("Error Message", e.getMessage()
@@ -591,4 +617,128 @@ public class ViewConfiguracion extends FragmentActivity implements
 			}
 		});
 	}
+	
+	
+	 @Override
+	    public boolean onPrepareOptionsMenu(Menu menu) {
+	        //menu.findItem(R.id.action_search).setVisible(true);
+	        super.onPrepareOptionsMenu(menu);
+	        return true;
+	    }
+
+	    @Override
+	    public boolean onOptionsItemSelected(MenuItem item) {
+
+	        if (drawerToggle.onOptionsItemSelected(item)) {
+	            item.getItemId();
+	            return true;
+	        }
+	        return true;
+	    }
+
+	    @Override
+	    protected void onPostCreate(Bundle savedInstanceState) {
+	        super.onPostCreate(savedInstanceState);
+	        drawerToggle.syncState();
+	    }
+
+	    @Override
+	    public void onConfigurationChanged(Configuration newConfig) {
+	        super.onConfigurationChanged(newConfig);
+	        drawerToggle.onConfigurationChanged(newConfig);
+	    }
+	    
+	    public void CreateMenu(){
+	            // Obtenemos las opciones desde el recurso
+	            opcionesMenu = getResources().getStringArray(R.array.configurationoptions);
+	            drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+	            // Buscamos nuestro menu lateral
+	            drawerList = (ListView) findViewById(R.id.left_drawer);
+	            drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
+	            
+	            // Añadimos Funciones al menú laterak
+	            drawerList.setOnItemClickListener(new OnItemClickListener() {
+	                @Override
+	                public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
+	                    drawerList.setItemChecked(position, true);
+	                    drawerLayout.closeDrawers();
+	                    tituloSeccion = opcionesMenu[position];
+	                    // Ponemos el titulo del Menú
+	                    getSupportActionBar().setTitle(tituloSeccion);
+	                    Controller controller = NMApp.getController();
+	    				switch (position) {
+	    				    case SALVAR_CONFIGURACION : 
+	    				    	salvarConfiguracion();
+	    				    	break;
+		       			    case SINCRONIZAR_PARAMETROS : 
+		       			    	controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_PARAMETROS);
+		       			    	break;
+		       			    case SINCRONIZAR_CATALOGOS :
+		       			    	controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_CATALOGOSBASICOS);
+		       			    	break;
+		       			    case SINCRONIZAR_CLIENTES :
+		       			    	controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_CLIENTES);
+		       			    	break;
+		       			    case SINCRONIZAR_PRODUCTOS :
+		       			    	controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_PRODUCTOS);
+		       			    	break;
+		       			    case SINCRONIZAR_PROMOCIONES : 
+		       			    	SinCronizar_Promociones();
+		       			    	break;
+		       			    case SINCRONIZAR_TODO :
+		       			     controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS);
+		       			     	break;
+		       			    case CONFIGURAR_IMPRESORA :
+		       			    	Set_BlueTooth();
+		       			    	break;
+		       			    case CERRAR  :
+		       			    	FINISH_ACTIVITY();
+		       			    	break;
+	    				}
+	                }
+	            });
+	            
+	            tituloSeccion = getTitle();
+	            tituloApp = getTitle();
+	            
+	            drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+	            R.drawable.ic_navigation_drawer, R.string.drawer_open,
+	            R.string.drawer_close) {
+	                
+	                @Override
+	                public void onDrawerClosed(View view) {
+	                    getSupportActionBar().setTitle(tituloSeccion);
+	                    ActivityCompat.invalidateOptionsMenu(ViewConfiguracion.this);
+	                }
+	                
+	                @Override
+	                public void onDrawerOpened(View drawerView) {
+	                    getSupportActionBar().setTitle(tituloApp);
+	                    ActivityCompat.invalidateOptionsMenu(ViewConfiguracion.this);
+	                    
+	                }
+	            };
+	            
+	            // establecemos el listener para el dragable ....
+	            drawerLayout.setDrawerListener(drawerToggle);
+	            
+	            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	            getSupportActionBar().setHomeButtonEnabled(true);
+	        }
+	    
+	    private void SinCronizar_Promociones()
+	    {
+	        Message msg = new Message();
+	        Bundle b = new Bundle();
+	        b.putString("LoginUsuario",txtUsuario.getText().toString());
+	        msg.setData(b);
+	        msg.what = ID_SINCRONIZE_PROMOCIONES;
+	        NMApp.getController().getInboxHandler().sendMessage(msg);
+	    }
+	    private void Set_BlueTooth(){
+	    	 intento = new Intent(ViewConfiguracion.this,ConfigurarDispositivosBluetooth.class);
+	         startActivityForResult(intento, 0);
+	    }
+	
+	
 }

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    
+  <TextView 
+		          android:id="@+id/fctextv_header"
+			      android:layout_width="fill_parent"
+			      android:layout_height="wrap_content" 
+			      android:text="@string/title_listaproducto" 
+			      android:textColor="@color/DodgerBlue" 
+			      android:textStyle="bold"
+			      android:textSize="13sp" 
+		 />
+         <!-- Separador -->   
+        <View
+			    android:layout_width="fill_parent"
+			    android:layout_height="1dp"
+			    android:background="@color/Gray"/>
+        <!-- Scroll para el Formulario -->
+		<ScrollView
+			    android:id="@+id/ScrollView01"
+			    android:layout_width="fill_parent"
+			    android:layout_height="240dp"
+			    android:layout_marginBottom="3dip">
+	         <LinearLayout
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:layout_marginLeft="3dp"
+				        android:layout_marginRight="3dp"
+				        android:layout_marginTop="3dp"
+				        android:orientation="vertical" >
+			 <!-- PRIMERA FILA -->      
+	             <TextView
+				        android:id="@+id/lblproductproducto"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:text="@string/view_product_producto" /> 
+				        
+	            <TextView
+			                android:id="@+id/txt_view_product_producto"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:textColor="@color/DarkGray" 
+			                android:isScrollContainer="true"
+							android:gravity="top"
+			                />
+	          <!-- Segunda FIlA -->
+	          
+	          <TextView
+			        android:id="@+id/lblproductproveedor"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="@string/view_product_proveedor" />
+	          
+	           <TextView
+			            android:id="@+id/txt_view_product_proveedor"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:textColor="@color/DarkGray" />
+	          
+	          <!-- Tercera FILA -->
+	          <TextView
+			        android:id="@+id/lblproductnombregenerico"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="@string/view_product_nombregenerico" />
+	           <TextView
+			        android:id="@+id/txt_view_product_nombre_generico"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			         android:textColor="@color/DarkGray"
+			         >
+			   </TextView>
+	           
+	          <!-- CUARTA FILA -->
+	            <TextView
+				        android:id="@+id/lblproductforma"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:text="@string/view_product_forma" />
+	             <TextView
+			                android:id="@+id/txt_view_product_forma"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:textColor="@color/DarkGray" />
+	              
+	             <!-- Quinta fila -->
+	             
+	              <TextView
+			                android:id="@+id/lblproductaccion"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/view_product_accion"
+			                 />
+    	          <TextView
+			                android:id="@+id/txt_view_product_accion"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:textColor="@color/DarkGray" />
+    	          <!-- Sexta fila -->
+    	          <TextView
+			                android:id="@+id/lblproducttipo"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/view_product_tipo"
+			                android:textColor="@color/Black"/>
+    	          <TextView
+			                android:id="@+id/txt_view_product_tipo"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:textColor="@color/DarkGray" />
+    	          
+    	          <!-- -Septima FILA -->
+    	          
+    	            <TextView
+			                android:id="@+id/lblproductcategoria"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/view_product_categoria"
+			                android:textColor="@color/Black" />
+
+    	         
+    	          <TextView
+			                android:id="@+id/txt_view_product_categoria"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:textColor="@color/DarkGray" />
+    	          
+    	          <!-- OCTAVA FILA -->
+    	          
+    	            <TextView
+			                android:id="@+id/lblproductespeciales"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/view_product_especialidades"
+			                android:textColor="@color/Black"
+			                />
+
+    	         
+    	          <TextView
+			                android:id="@+id/txt_view_product_especiales"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:paddingBottom="5dip"
+			                android:textColor="@color/DarkGray" />
+	             
+		    </LinearLayout>
+		</ScrollView>
+		   <!-- NOTAS  -->
+        <LinearLayout  
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+    	
+           <TextView 
+				    android:id="@+id/fctextv_header2"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content" 
+				    android:text="@string/notasproducto" 
+				    android:textColor="@color/DodgerBlue" 
+				    android:textStyle="bold"
+				    android:gravity="center"
+				    android:textSize="13sp" 
+				 />
+			    <View
+				    android:layout_width="fill_parent"
+				    android:layout_height="1dp"
+				    android:background="@color/Gray"/> 
+          
+           <ListView
+				    android:id="@+id/fclvnotas"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:divider="@color/DarkGray"
+				    android:dividerHeight="0.3sp"
+				    android:scrollingCache="false" 
+				    android:choiceMode="singleChoice"
+				    android:listSelector="@drawable/statelist" >
+			
+			     </ListView>
+			     
+			     <TextView
+				    android:id="@+id/fctxtview_enty"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:gravity="center_horizontal"
+				    android:text="@string/txtclient_entymessage"
+				    android:textColor="@color/Black"
+				    android:textSize="12sp"
+				    android:visibility="gone" />
+          
+</LinearLayout>
+          
+</LinearLayout>

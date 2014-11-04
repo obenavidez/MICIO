@@ -31,5 +31,15 @@
         <item >Nota de Débito</item>
         <item >Nota de Credito</item>       
     </string-array>
-    
+    <string-array name="configurationoptions">
+        <item >Salvar Configuración</item>
+        <item >Sincronizar Parametros</item>
+        <item >Sincronizar Catalogos Básicos</item>
+        <item >Sincronizar Clientes</item>
+        <item >Sincronizar Productos</item>
+        <item >Sincronizar Promociones</item>
+        <item >Sincronizar Todo</item>
+        <item >Configurar Impresora</item>
+       <item >Cerrar</item> 
+    </string-array>
 </resources>
