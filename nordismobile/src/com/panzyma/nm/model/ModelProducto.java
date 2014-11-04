@@ -274,7 +274,7 @@ public class ModelProducto
 				 (new Object[]{Credentials,idproducto}),
 				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
 	   	
-	  return  NMTranslate.ToObject(AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetFichaProducto),new CProducto());
+	  return  NMTranslate.ToObject(AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetCProducto),new CProducto());
 	  //return AppNMComunication.InvokeService2(NMConfig.URL2+NMConfig.MethodName.GetFichaProducto+"/"+Credentials+"/"+idproducto);
    }
    

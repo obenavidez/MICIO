@@ -43,7 +43,7 @@ public class NMConfig
 		public static final String EnviarRecibo="EnviarRecibo";
 		public static final String SolicitarDescuento="SolicitarDescuento";
 		public static final String VerificarAutorizacionDescuento="VerificarAutorizacionDescuento";
-		public static final String GetFichaProducto="GetCProducto";
+		public static final String GetCProducto="GetCProducto";
 		
 	}
 	

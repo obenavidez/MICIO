@@ -166,37 +166,16 @@ public class NMComunicacion {
 	}
 	
 	public static synchronized StringBuilder MakeCall_To_Service(String url) throws Exception
-	{  
-        HttpClient httpclient = new DefaultHttpClient();  
-        
-        HttpGet request = new HttpGet(url);                
-    	request.setHeader("Accept", "application/json");
-        request.setHeader("Content-type", "application/json");
-        
-    	HttpResponse response = httpclient.execute(request);
-    	
-        final int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode != HttpStatus.SC_OK) { 
-            Log.w(TAG, "Error " + statusCode + " for URL " + url); 
-            return null;
-        }
-         
-        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-    	StringBuilder builder = new StringBuilder();
-    	for (String line = null; (line = reader.readLine()) != null ; ) {
-    		builder.append(line).append("\n");
-    	}   
-        return builder;     
-    }
-	
-	public static synchronized JSONArray  MakeCall_To_Service2(String url) throws Exception
-	{  
-		  HttpClient httpclient = new DefaultHttpClient();  
-	        
-	        HttpGet request = new HttpGet(url);                
+	{  StringBuilder builder = null;
+	   HttpClient httpclient = null;
+	   BufferedReader reader = null;
+		try 
+		{
+			  
+			httpclient = new DefaultHttpClient();
+	        HttpGet request = new HttpGet(url);   
 	    	request.setHeader("Accept", "application/json");
-	        request.setHeader("Content-type", "application/json");
-	        
+	        request.setHeader("Content-type", "application/json"); 
 	    	HttpResponse response = httpclient.execute(request);
 	    	
 	        final int statusCode = response.getStatusLine().getStatusCode();
@@ -205,12 +184,60 @@ public class NMComunicacion {
 	            return null;
 	        }
 	         
-	        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-	    	StringBuilder builder = new StringBuilder();
+	        reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+	    	builder = new StringBuilder();
 	    	for (String line = null; (line = reader.readLine()) != null ; ) {
 	    		builder.append(line).append("\n");
-	    	}  
-	      JSONArray arrayjson = new JSONArray(new String(builder));
+	    	}   
+		} catch (Exception e) 
+		{  
+			if(httpclient!=null)
+				httpclient.getConnectionManager().shutdown();		
+			if(reader!=null)
+				reader.close();
+			 throw new Exception(e);
+		}
+        
+        return builder;     
+    }
+	
+	public static synchronized JSONArray  MakeCall_To_Service2(String url) throws Exception
+	{  
+		  	   
+		  	StringBuilder builder = null;
+		  	HttpClient httpclient = null;
+		  	BufferedReader reader = null;
+		  	JSONArray arrayjson;
+	   try
+	   {
+		    httpclient = new DefaultHttpClient(); 
+			HttpGet request = new HttpGet(url);                
+			request.setHeader("Accept", "application/json");
+			request.setHeader("Content-type", "application/json");
+			
+			HttpResponse response = httpclient.execute(request);
+			
+			final int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode != HttpStatus.SC_OK) { 
+			    Log.w(TAG, "Error " + statusCode + " for URL " + url); 
+			    return null;
+			}
+			 
+			reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+			builder = new StringBuilder();
+			for (String line = null; (line = reader.readLine()) != null ; ) {
+				builder.append(line).append("\n");
+				}  
+		   arrayjson = new JSONArray(new String(builder));
+		} catch (Exception e) 
+		{  
+			if(httpclient!=null)
+				httpclient.getConnectionManager().shutdown();	
+			if(reader!=null)
+				reader.close();
+			 throw new Exception(e);
+		}
+	      
         return arrayjson;
     }
 

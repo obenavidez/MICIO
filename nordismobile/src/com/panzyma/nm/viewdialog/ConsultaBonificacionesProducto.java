@@ -1,8 +1,14 @@
 package com.panzyma.nm.viewdialog;
 
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+
 import java.util.ArrayList; 
 
 import com.panzyma.nm.NMApp; 
+import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.Bonificacion;
 import com.panzyma.nm.serviceproxy.Producto;
@@ -48,7 +54,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 	ArrayList<Bonificacion> lBonificacion;	
 	private int positioncache; 
 	public static String TAG= ConsultaBonificacionesProducto.class.getSimpleName();
-	private ProgressDialog pd;
+	private ProgressDialog pd;private static CustomDialog dlg;
 	private ViewPedidoEdit parent;
 	private ProductoView parent2;
 	
@@ -119,13 +125,66 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
    	
     @Override
 	public boolean handleMessage(Message msg) {
+    	ocultarDialogos();
     	switch (msg.what) 
 		{
 			case ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST:
 					establecerBonificacionesProducto((msg.obj != null) ?(Producto)msg.obj:new Producto());
 					return true;
+					
+			case ControllerProtocol.NOTIFICATION:
+				showStatus(msg.obj.toString(), true);
+				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG2:
+				showStatus(msg.obj.toString());
+				break;
+			case ControllerProtocol.ERROR:
+				AppDialog.showMessage(getActivity(), ((ErrorMessage) msg.obj).getTittle(),
+						((ErrorMessage) msg.obj).getMessage(),
+						DialogType.DIALOGO_ALERTA);
+				break;
 		}
 		return false;
+	}
+    
+    public void ocultarDialogos() {
+		if (dlg != null && dlg.isShowing())
+			dlg.dismiss();
+		if (pd != null && pd.isShowing())
+			pd.dismiss();
+	}
+    
+    public void showStatus(final String mensaje, boolean... confirmacion) {
+
+		ocultarDialogos();
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(getActivity(), "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					dlg = new CustomDialog(getActivity(), mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		}
 	}
     
     public void  mandar_A_TraerDatos() 

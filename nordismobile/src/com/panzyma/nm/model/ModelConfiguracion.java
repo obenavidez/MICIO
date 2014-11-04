@@ -3,9 +3,11 @@ package com.panzyma.nm.model;
 import java.lang.reflect.Type; 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo; 
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,8 +15,10 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters; 
+import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate; 
 import com.panzyma.nm.datastore.DatabaseProvider;
@@ -136,9 +140,13 @@ public class ModelConfiguracion {
 	public static LoginUserResult verifyLogin(String Uri2,String Credentials, String Roll)
 			throws Exception {
 		return NMTranslate.ToObject(
-				AppNMComunication.InvokeService(Uri2
+				NMComunicacion.InvokeService(Uri2
 						+ NMConfig.MethodName.LoginUser + "/" + Credentials
 						+ "/" + Roll), new LoginUserResult());
+//		return NMTranslate.ToObject(
+//				AppNMComunication.InvokeService(Uri2
+//						+ NMConfig.MethodName.LoginUser + "/" + Credentials
+//						+ "/" + Roll), new LoginUserResult());
 	}
 	
 	public static DataConfigurationResult getDataConfiguration(String Credentials, String LoginUsuario, String PIN)	throws Exception 

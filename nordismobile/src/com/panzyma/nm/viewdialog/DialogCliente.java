@@ -201,8 +201,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 							}
 			            	adapter.setSelectedPosition(position); 
 			            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));					            	 
-			            	mButtonClickListener.onButtonClick(cliente);
-			            	dismiss();
+			             
 			            }
 			        }); 								
 				    lvcliente.setOnItemLongClickListener(new OnItemLongClickListener()
@@ -213,19 +212,17 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 							if((parent.getChildAt(positioncache))!=null)						            							            		
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
-			            	cliente_selected=(vmCliente) adapter.getItem(position);
-			            	try {
-			            		
-								NMApp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",long.class).invoke(cliente,cliente_selected.getIdSucursal());
+			            	cliente_selected=(vmCliente) adapter.getItem(position);	
+			            	try { 
+								cliente=(Cliente) NMApp.getController().getBridge().getClass().getMethod("getClienteBySucursalID",ContentResolver.class,long.class).invoke(null,DialogCliente.this.getContext().getContentResolver(),cliente_selected.getIdSucursal());
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 			            	adapter.setSelectedPosition(position); 
-			            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));
+			            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));					            	 
 			            	mButtonClickListener.onButtonClick(cliente);
 			            	dismiss();
-			            	//quickAction.show(view,display,false);
 							return true;
 						}
 				        	

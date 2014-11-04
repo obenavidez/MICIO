@@ -30,12 +30,15 @@ public class BProductoM extends BBaseM {
 	@Override
 	public boolean handleMessage(Message msg)  
 	{
+		Bundle b = msg.getData();
 		Boolean val=false;
 		switch (msg.what) 
 		{
-			case LOAD_ITEM_FROM_LOCALHOST:
-				Bundle b = msg.getData();
-				getProductoByID(Long.parseLong(msg.obj.toString()));//b.getLong("idProducto"));
+			case LOAD_ITEM_FROM_LOCALHOST:				
+				getProductoByID(b.getLong("idProducto"));
+				return true;
+			case LOAD_FICHAPRODUCTO_FROM_SERVER: 
+				getFichaProductoByID(b.getLong("idProducto"));
 				return true;
 			case LOAD_DATA_FROM_LOCALHOST:
 				onLoadALLData_From_LocalHost();
@@ -139,7 +142,30 @@ public class BProductoM extends BBaseM {
 	private void onUpdateItem_From_Server(){
 		
 	}
+	
+	
 	public void getProductoByID(final long idProducto)
+	{		 
+		try 
+		{
+			Processor.notifyToView(
+					getController(),
+					ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST,
+					0,
+					0,
+					ModelProducto.getProductoByID(getContext().getContentResolver(),idProducto));
+		}
+		catch(Exception e)
+		{
+			try {
+				Processor.notifyToView(getController(),ERROR,0,1,new ErrorMessage("Error en la sincronización de clientes con el servidor",e.getMessage(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	public void getFichaProductoByID(final long idProducto)
 	{
 		try 
 		{
