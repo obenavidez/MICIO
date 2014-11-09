@@ -1,13 +1,8 @@
 package com.panzyma.nm.view;
 
+import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.C_FINISH;
-import static com.panzyma.nm.controller.ControllerProtocol.C_SAVING;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_IN_PROGRESS;
-import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_CERRAR;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SALVAR_CONFIGURACION;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_CATALOGOSBASICOS;
@@ -19,15 +14,11 @@ import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_TODOS;
 import static com.panzyma.nm.controller.ControllerProtocol.ID_SETTING_BLUETOOTHDEVICE;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -38,14 +29,11 @@ import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,18 +44,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
-import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork; 
-import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
@@ -75,7 +60,6 @@ import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
-import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 import com.panzyma.nordismobile.R;
@@ -243,6 +227,27 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 			pd.dismiss();
 		switch (msg.what) 
 		{ 
+			case C_UPDATE_FINISHED :
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						AppDialog.showMessage(context,"",msg.obj.toString(),
+								AppDialog.DialogType.DIALOGO_ALERTA,
+								new AppDialog.OnButtonClickListener() {
+									@Override
+									public void onButtonClick(AlertDialog _dialog,
+											int actionId) 
+									{
+		
+										if (AppDialog.OK_BUTTOM == actionId) 
+										{
+											_dialog.dismiss();
+										}
+							        }
+						});
+					}
+				});
+			break;
 			case C_DATA:
 				setData((vmConfiguracion) msg.obj);
 				break;  
@@ -562,7 +567,7 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 
 			@Override
 			public void run() {
-				txtImpresora.setText(dispositivo.obtenerNombre());
+				txtImpresora.setText(Impresora.obtenerNombre());
 			}
 		});
 	}

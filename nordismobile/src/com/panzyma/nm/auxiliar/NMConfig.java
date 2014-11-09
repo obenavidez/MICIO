@@ -444,4 +444,28 @@ public class NMConfig
 		}
 	}
 
+	public static final class CProducto
+	{
+	    public static final String ID="Id";
+	    public static final java.lang.String CODIGO="Codigo";
+	    public static final java.lang.String NOMBRE="Nombre";
+	    public static final java.lang.String REGISTRO="Registro";
+	    public static final java.lang.String NOMBRE_COMERCIAL="NombreComercial";
+	    public static final java.lang.String NOMBRE_GENERICO="NombreGenerico";
+	    public static final java.lang.String PROVEEDOR="Proveedor";
+	    public static final java.lang.String CATEGORIA="Categoria";
+	    public static final java.lang.String FORMA_FARMACEUTICA="FormaFarmaceutica";
+	    public static final java.lang.String ACCION_FARMACOLOGICA="AccionFarmacologica";
+	    public static final java.lang.String TIPO_PRODUCTO="TipoProducto";
+	    public static final java.lang.String ESPECIALIDADES="Especialidades";
+	    public static final class CNota
+		{
+	    	public static final java.lang.String PRODUCTOID="objProductoID";
+	    	public static final java.lang.String FECHA="Fecha";
+	        public static final java.lang.String ELABORADO_POR="ElaboradaPor";
+	        public static final java.lang.String TEXTONOTA="TextoNota";
+	        public static final java.lang.String CONCEPTO="Concepto";
+		}
+
+	}
 }

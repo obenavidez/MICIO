@@ -1,11 +1,14 @@
 package com.panzyma.nm.auxiliar;
-import com.comunicator.*;
+
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
+
 import java.util.ArrayList;
 
 import org.ksoap2.serialization.SoapPrimitive; 
 
+import com.comunicator.AppNMComunication;
+import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.Controller;
 
