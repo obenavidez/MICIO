@@ -159,7 +159,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 	    	idTipoPrecio = getArguments().getLong("_idTipoPrecio");
 			Message msg = new Message();
 			Bundle b = new Bundle();
-			b.putLong("_idProducto",idProducto); 
+			b.putLong("idProducto",idProducto); 
 			msg.setData(b);
 			msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 			NMApp.getController().getInboxHandler().sendMessage(msg);    

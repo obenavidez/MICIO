@@ -586,7 +586,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 		case ControllerProtocol.NOTIFICATION:
 			if (ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1) {
-				actualizarOnUINumRef();
+				actualizarOnUINumRef(); 
 				salvado = true;
 			}
 			showStatus(msg.obj.toString(), true);
@@ -1033,7 +1033,14 @@ public class ViewPedidoEdit extends FragmentActivity implements
 								return;
 							showStatus("aplicando promociones...");
 							// Salvar la promoción aplicada
-							salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES);
+							salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES);  
+							Lvmpproducto.clear();
+							for(int i=0;i<pedido.getDetalles().length;i++) 
+								Lvmpproducto.add(pedido.getDetalles()[i]); 
+							adapter.setItems(Lvmpproducto);
+							CalculaTotales();
+							setTotales(true); 
+							
 						} else
 							AppDialog
 									.showMessage(
@@ -1062,20 +1069,25 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	}
 
-	public void actualizarDetallePedido() {
-		DetallePedido[] detPed = pedido.getDetalles();
-		Lvmpproducto = new ArrayList<DetallePedido>();
-		for (int i = 0; i < detPed.length; i++) {
-			Lvmpproducto.add(detPed[i]);
-		}
-
-		CalculaTotales();
-		setTotales(true);
-		adapter.notifyDataSetChanged();
+	public void actualizarDetallePedido() 
+	{
+		runOnUiThread(new Runnable() 
+		{
+			@Override
+			public void run() {
+				DetallePedido[] detPed = pedido.getDetalles();
+				Lvmpproducto = new ArrayList<DetallePedido>();
+				for (int i = 0; i < detPed.length; i++) {
+					Lvmpproducto.add(detPed[i]);
+				}
+		
+				CalculaTotales();
+				setTotales(true);
+				adapter.notifyDataSetChanged();
+			}
+		});
 
 	}
-
-	// }
 
 	public void desaplicarPromociones() {
 

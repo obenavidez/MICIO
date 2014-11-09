@@ -83,12 +83,12 @@ public class BPedidoM extends BBaseM {
 				try 
 				{
 					String mensaje="";
-					mensaje=(msg.what==ControllerProtocol.NOTIFICATION)?"Las promociones fueron aplicadas exitosamente":
+					mensaje=(msg.what==ControllerProtocol.NOTIFICATION || msg.what==ControllerProtocol.APLICARPEDIDOPROMOCIONES)?"Las promociones fueron aplicadas exitosamente":
 						msg.what==ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES?"Las promociones fueron desaplicadas exitosamente":"";
 					
 					int what=(msg.what==ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES)?							
 							ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
-							(msg.what==ControllerProtocol.NOTIFICATION)?ControllerProtocol.NOTIFICATION:
+							(msg.what==ControllerProtocol.NOTIFICATION || msg.what==ControllerProtocol.APLICARPEDIDOPROMOCIONES)?ControllerProtocol.NOTIFICATION:
 								ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES;
 					
 					
@@ -96,7 +96,7 @@ public class BPedidoM extends BBaseM {
 					Processor.notifyToView(
 								NMApp.getController(),
 								what,
-								0,
+								ControllerProtocol.SAVE_DATA_FROM_LOCALHOST,
 								0,
 								mensaje);
 					

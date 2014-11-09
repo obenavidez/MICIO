@@ -193,7 +193,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
         idCatCliente = getArguments().getLong("_idCatCliente"); 
         Message msg = new Message();
 		Bundle b = new Bundle();
-		b.putLong("_idProducto",idProducto); 
+		b.putLong("idProducto",idProducto); 
 		msg.setData(b);
 		msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
     	NMApp.controller.getInboxHandler().sendMessage(msg);   
