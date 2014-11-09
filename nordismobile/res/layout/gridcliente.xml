@@ -6,12 +6,15 @@
 
     <TextView
         android:id="@+id/gc_clientecod"
+        style="@style/StyleFontTexViewMediumLarge"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp" />
 
     <TextView
         android:id="@+id/gc_clientenom"
+        style="@style/StyleFontTexViewMediumLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
@@ -22,6 +25,8 @@
         android:id="@+id/gc_clienteubi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/Blue"
+        android:textStyle="bold"
         android:layout_marginLeft="8dp" />
 
 </LinearLayout>

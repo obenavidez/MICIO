@@ -81,7 +81,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	
 	public DialogCliente(Editable vpe,int theme) 
 	{		
-		super(vpe.getContext(),theme);
+		super(vpe.getContext(),android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 		try 
         {    
 			parent=vpe;
