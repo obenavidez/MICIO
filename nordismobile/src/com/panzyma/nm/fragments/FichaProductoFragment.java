@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Handler.Callback;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

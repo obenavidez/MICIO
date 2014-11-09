@@ -1,7 +1,6 @@
 package com.panzyma.nm.model;
 
 import java.lang.reflect.Type; 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -25,7 +24,6 @@ import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.serviceproxy.LoginUserResult; 
-import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 
@@ -74,7 +72,7 @@ public class ModelConfiguracion {
 				//pref.getString("url_server", "http://www.panzyma.com/nordisservertest/mobileservice.asmx"), 
 				//pref.getString("url_server2", "http://www.panzyma.com/SimfacProd/SimfacService.svc/"),
 				pref.getString("url_server", "http://192.168.1.100/NordisServer/MobileService.asmx"), 
-				pref.getString("url_server2","http://192.168.1.2:8081/SIMFAC/SimfacService.svc/"),
+				pref.getString("url_server2","http://192.168.1.4:8081/SIMFAC/SimfacService.svc/"),
 				pref.getString("device_id", ""),
 				pref.getString("enterprise", "dp"),
 				pref.getString("name_user", ""),

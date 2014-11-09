@@ -33,7 +33,6 @@ import android.widget.ListView;
 import android.widget.TextView; 
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.DetallePedido;

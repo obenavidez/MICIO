@@ -68,6 +68,7 @@ public final class BReciboM extends BBaseM {
 	
 	public BReciboM() {}
 	
+	@Override
 	public boolean handleMessage(Message msg) throws Exception {
 		switch (msg.what) 
 		{

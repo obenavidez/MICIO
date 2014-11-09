@@ -67,6 +67,7 @@ public class BConfiguracionM extends BBaseM {
 	 * */
 	
 	
+	@Override
 	public boolean handleMessage(Message msg) {
 		ON_ID_Handler = msg.what;
 		Bundle b = msg.getData();

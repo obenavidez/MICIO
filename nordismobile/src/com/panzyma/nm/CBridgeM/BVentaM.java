@@ -4,16 +4,12 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import android.os.Message;
 import android.util.Log;
 
-import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.auxiliar.ThreadPool;
-import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.model.ModelVenta;
-import com.panzyma.nm.view.adapter.InvokeBridge;
 
 public class BVentaM extends BBaseM{
  
@@ -45,6 +41,7 @@ public class BVentaM extends BBaseM{
 	public BVentaM() {
 	}
  
+	@Override
 	public boolean handleMessage(Message msg) throws Exception 
 	{
 		Petition request = Petition.toInt(msg.what);

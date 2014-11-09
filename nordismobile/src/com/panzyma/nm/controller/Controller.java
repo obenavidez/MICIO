@@ -288,7 +288,7 @@ public class Controller<T, U>
 		else
 		{
 			outboxHandlers.remove(_view.getClass().getSimpleName());
-			outboxHandlers.put(this.getView().getClass().getSimpleName(),new Handler((Callback) _view));
+			outboxHandlers.put(this.getView().getClass().getSimpleName(),new Handler(_view));
 		}
 	}	
 	

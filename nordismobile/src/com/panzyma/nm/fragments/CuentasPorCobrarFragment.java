@@ -37,7 +37,6 @@ import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
 import com.panzyma.nm.view.viewholder.PedidoViewHolder;
 import com.panzyma.nm.view.viewholder.ReciboViewHolder;
-import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
 import android.app.Activity;

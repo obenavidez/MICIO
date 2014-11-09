@@ -1,30 +1,21 @@
 package com.panzyma.nm.viewdialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.ActionType;
 import com.panzyma.nm.auxiliar.Ammount;
 import com.panzyma.nm.auxiliar.AmmountType;
-import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
-import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelLogic;
-import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Documento;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
-import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.view.adapter.InvokeBridge;
-import com.panzyma.nm.viewdialog.EditFormaPago.LoadDataToUI;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
@@ -34,7 +25,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;

@@ -8,7 +8,6 @@ import java.util.Date;
 import com.panzyma.nm.Main;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
-import com.panzyma.nm.NMApp.Modulo;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.Impresora;

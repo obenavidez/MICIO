@@ -11,23 +11,15 @@ import org.ksoap2.serialization.PropertyInfo;
 import static com.panzyma.nm.controller.ControllerProtocol.*;
 import com.comunicator.Parameters;
 import com.google.gson.Gson;
-import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 /*import com.panzyma.nm.auxiliar.Parameters;* Comentado por Jrostrn*/
 import com.panzyma.nm.auxiliar.Processor; 
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.model.ModelCliente;  
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;   
-import com.panzyma.nm.view.ViewCliente;
-import com.panzyma.nm.view.ViewRecibo;
-import com.panzyma.nm.view.ViewReciboEdit;
-import com.panzyma.nm.view.vCliente;
-import com.panzyma.nm.viewdialog.DialogCliente;
-import com.panzyma.nm.viewdialog.DialogCuentasPorCobrar;
 import com.panzyma.nm.viewmodel.vmCliente;
 
 import android.annotation.SuppressLint; 
@@ -45,6 +37,7 @@ public final class BClienteM extends BBaseM
 	String TAG = BClienteM.class.getSimpleName();
 	JSONArray ja_clientes=new JSONArray();	
 	
+	@Override
 	public boolean handleMessage(Message msg) 
 	{
 		Boolean val=false;

@@ -1,7 +1,6 @@
 package com.panzyma.nm.auxiliar;
 import com.panzyma.nordismobile.R;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;

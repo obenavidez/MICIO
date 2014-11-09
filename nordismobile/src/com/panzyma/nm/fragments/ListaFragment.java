@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
@@ -17,8 +19,9 @@ import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("unchecked")
 @SuppressLint({ "NewApi", "ValidFragment" })
-public class ListaFragment<E> extends ListFragment implements Filterable, Parcelable {
-	
+public class ListaFragment<E> extends ListFragment implements Filterable,
+		Parcelable {
+
 	transient OnItemSelectedListener mCallback;
 	private transient List<E> items;
 	private transient CustomArrayAdapter<E> mAdapter = null;
@@ -30,14 +33,15 @@ public class ListaFragment<E> extends ListFragment implements Filterable, Parcel
 
 	public void setItems(List<E> items) {
 		if (mAdapter == null) {
-			mAdapter = new CustomArrayAdapter<E>( getActivity(), android.R.id.list, items);
-			setListAdapter(mAdapter);
-		} else {			
-			mAdapter.items = items;
+			mAdapter = new CustomArrayAdapter<E>(getActivity(),
+					android.R.id.list, items);
+		} else {
+			mAdapter.setData(items);
 		}
+		setListAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 	}
-	 
+
 	// The container Activity must implement this interface so the frag can
 	// deliver messages
 	public interface OnItemSelectedListener<E> {
@@ -45,14 +49,24 @@ public class ListaFragment<E> extends ListFragment implements Filterable, Parcel
 		public void onItemSelected(E obj, int position);
 	}
 
+	/*
+	 * @Override public View onCreateView(LayoutInflater inflater, ViewGroup
+	 * container, Bundle savedInstanceState) {
+	 * 
+	 * mAdapter = new CustomArrayAdapter<E>(getActivity(), android.R.id.list,
+	 * items); setListAdapter(mAdapter);
+	 * 
+	 * return super.onCreateView(inflater, container, savedInstanceState); }
+	 */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);	
-		
+		super.onCreate(savedInstanceState);
+
 		mAdapter = new CustomArrayAdapter<E>(getActivity(), android.R.id.list,
 				items);
 		setListAdapter(mAdapter);
-		
+
 	}
 
 	@Override
@@ -63,9 +77,9 @@ public class ListaFragment<E> extends ListFragment implements Filterable, Parcel
 		// list item
 		// (We do this during onStart because at the point the listview is
 		// available.)
-		 
+
 		if (getFragmentManager().findFragmentById(R.id.dynamic_fragment) != null) {
-			//getListView().setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+			// getListView().setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
 			getListView().setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
 		}
 	}
@@ -89,7 +103,8 @@ public class ListaFragment<E> extends ListFragment implements Filterable, Parcel
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		// Notify the parent activity of selected item
-		mCallback.onItemSelected(getAdapter().getItems().get(position), position);
+		mCallback.onItemSelected(getAdapter().getItems().get(position),
+				position);
 		// Set the item as checked to be highlighted when in two-pane layout
 		getListView().setItemChecked(position, true);
 		mAdapter.setSelectedPosition(position);
@@ -98,11 +113,11 @@ public class ListaFragment<E> extends ListFragment implements Filterable, Parcel
 
 	@Override
 	public CustomArrayAdapter<E> getAdapter() {
-		return mAdapter; 
-	}  
-	
+		return mAdapter;
+	}
+
 	public void setAdapter(CustomArrayAdapter<E> adapter) {
-		this.mAdapter = adapter; 
+		this.mAdapter = adapter;
 	}
 
 	@Override
@@ -114,12 +129,12 @@ public class ListaFragment<E> extends ListFragment implements Filterable, Parcel
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	public ListaFragment(Parcel in) {		
+
+	public ListaFragment(Parcel in) {
 	}
-	
+
 	public static final Parcelable.Creator<ListaFragment> CREATOR = new Parcelable.Creator<ListaFragment>() {
 		@Override
 		public ListaFragment createFromParcel(Parcel in) {
@@ -130,6 +145,6 @@ public class ListaFragment<E> extends ListFragment implements Filterable, Parcel
 		public ListaFragment[] newArray(int size) {
 			return new ListaFragment[size];
 		}
-	};	
-	
+	};
+
 }

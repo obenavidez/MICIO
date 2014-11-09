@@ -5,8 +5,6 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
-import com.panzyma.nm.viewmodel.vmFicha;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 

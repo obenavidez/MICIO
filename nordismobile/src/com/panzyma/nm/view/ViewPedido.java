@@ -1,9 +1,9 @@
 package com.panzyma.nm.view;
-
+ 
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG; 
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,10 +67,8 @@ import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.Promociones;
 import com.panzyma.nm.serviceproxy.Ventas;
-import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmEntity;
-import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("SimpleDateFormat")
@@ -79,17 +77,15 @@ import com.panzyma.nordismobile.R;
 public class ViewPedido extends ActionBarActivity implements
 		ListaFragment.OnItemSelectedListener, Handler.Callback {
 	@Override
-	protected void onActivityResult(int requestcode, int resultcode, Intent data) 
-	{
+	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		super.onActivityResult(requestcode, resultcode, data);
-		try 
-		{
+		try {
 			SessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
 			if ((NUEVO_PEDIDO == request_code || EDITAR_PEDIDO == request_code)
 					&& data != null)
-				establecer(data.getParcelableExtra("pedido"));
+				establecer(data.getParcelableExtra("pedido"), false);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -115,6 +111,8 @@ public class ViewPedido extends ActionBarActivity implements
 		try {
 			SessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
+			if(firstFragment.getAdapter() != null)
+				firstFragment.getAdapter().notifyDataSetChanged();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -214,23 +212,23 @@ public class ViewPedido extends ActionBarActivity implements
 				positioncache = customArrayAdapter.getSelectedPosition();
 				// CERRAR EL MENU DEL DRAWER
 				drawerLayout.closeDrawers();
-				
+
 				switch (position) {
-				case NUEVO_PEDIDO: 
+				case NUEVO_PEDIDO:
 					intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
 					intent.putExtra("requestcode", NUEVO_PEDIDO);
 					startActivityForResult(intent, NUEVO_PEDIDO);// Activity is
 
 					break;
 				case EDITAR_PEDIDO:
-					try 
-					{
-						if(pedido_selected!=null)
-						{
+					try {
+						if (pedido_selected != null) {
 							drawerLayout.closeDrawers();
-							positioncache = customArrayAdapter.getSelectedPosition();
+							positioncache = customArrayAdapter
+									.getSelectedPosition();
 							Pedido p = null;
-							p = Ventas.obtenerPedidoByID(pedido_selected.getId(), vp);
+							p = Ventas.obtenerPedidoByID(
+									pedido_selected.getId(), vp);
 							intent = new Intent(ViewPedido.this,
 									ViewPedidoEdit.class);
 							b = new Bundle();
@@ -238,7 +236,7 @@ public class ViewPedido extends ActionBarActivity implements
 							intent.putExtras(b);
 							intent.putExtra("requestcode", EDITAR_PEDIDO);
 							startActivityForResult(intent, EDITAR_PEDIDO);// Activity
-						}												// is
+						} // is
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -248,16 +246,15 @@ public class ViewPedido extends ActionBarActivity implements
 					// with requestCode 2
 					break;
 
-				case ENVIAR_PEDIDO: 
+				case ENVIAR_PEDIDO:
 					enviarPedido();
 					break;
 
 				case BORRAR_PEDIDO:
-					
+
 					// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
 					pedido_selected = customArrayAdapter.getItem(positioncache);
-					if (pedido_selected != null) 
-					{
+					if (pedido_selected != null) {
 						// OBTENER EL ESTADO DEL REGISTRO
 						state = pedido_selected.getDescEstado();
 						if ("PORVALIDAR".equals(state)
@@ -277,20 +274,18 @@ public class ViewPedido extends ActionBarActivity implements
 						ShowNoRecords();
 					}
 					// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-					if(customArrayAdapter.getCount()!=0)
+					if (customArrayAdapter.getCount() != 0)
 						pedido_selected = customArrayAdapter.getItem(0);
-					else 
-						pedido_selected=null;
-					
+					else
+						pedido_selected = null;
+
 					break;
 
-				case CUENTAS_POR_COBRAR: 					
+				case CUENTAS_POR_COBRAR:
 					pedido_selected = customArrayAdapter.getItem(positioncache);
-					if (pedido_selected != null) 
-					{
+					if (pedido_selected != null) {
 						fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
-						if (findViewById(R.id.fragment_container) != null) 
-						{
+						if (findViewById(R.id.fragment_container) != null) {
 							Pedido p1 = null;
 							try {
 								p1 = Ventas.obtenerPedidoByID(
@@ -315,17 +310,15 @@ public class ViewPedido extends ActionBarActivity implements
 					}
 					break;
 				case CONSULTA_VENTAS:
-					fragmentActive = FragmentActive.CONSULTA_VENTAS; 
+					fragmentActive = FragmentActive.CONSULTA_VENTAS;
 					// OCULTAR LA BARRA DE ACCION
 					pedido_selected = customArrayAdapter.getItem(positioncache);
-					if (pedido_selected != null) 
-					{
+					if (pedido_selected != null) {
 						getSupportActionBar().hide();
-						if (findViewById(R.id.fragment_container) != null) 
-						{
+						if (findViewById(R.id.fragment_container) != null) {
 							transaction = getSupportFragmentManager()
 									.beginTransaction();
-							consultasVentas = new ConsultaVentasFragment(); 
+							consultasVentas = new ConsultaVentasFragment();
 							Bundle msg = new Bundle();
 							msg.putInt(CuentasPorCobrarFragment.ARG_POSITION,
 									positioncache);
@@ -355,7 +348,8 @@ public class ViewPedido extends ActionBarActivity implements
 						// return;
 						// }
 						// SI SE ESTÁ FUERA DE LA COBERTURA
-						if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext())
+						if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp
+								.getContext())
 								&& !NMNetWork
 										.CheckConnection(com.panzyma.nm.NMApp
 												.getController())) {
@@ -408,8 +402,7 @@ public class ViewPedido extends ActionBarActivity implements
 				getSupportActionBar().setTitle(tituloSeccion);
 			}
 		});
-		
-		
+
 		tituloSeccion = getTitle();
 		tituloApp = getTitle();
 
@@ -433,33 +426,39 @@ public class ViewPedido extends ActionBarActivity implements
 		drawerLayout.setDrawerListener(drawerToggle);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setHomeButtonEnabled(true);		
-		
+		getSupportActionBar().setHomeButtonEnabled(true);
+
 		getDeviceId(this);
-		
+
 		// Create an instance of ExampleFragment
 		firstFragment = new ListaFragment<vmEntity>();
 		firstFragment.setRetainInstance(true);
 		// However, if we're being restored from a previous state,
 		// then we don't need to do anything and should return or else
 		// we could end up with overlapping fragments.
-		if ( savedInstanceState != null ) {
-			Parcelable[] objects = savedInstanceState.getParcelableArray("pedidos");	
-			pedidos = new ArrayList<vmEntity>((Collection<? extends vmEntity>) Arrays.asList(objects));
-			//recibos = vmRecibo.arrayParcelToArrayRecibo(objects);			
+		if (savedInstanceState != null) {
+			Parcelable[] objects = savedInstanceState
+					.getParcelableArray("pedidos");
+			pedidos = new ArrayList<vmEntity>(
+					(Collection<? extends vmEntity>) Arrays.asList(objects));
+			// recibos = vmRecibo.arrayParcelToArrayRecibo(objects);
 		} else {
 			pedidos = null;
-		} 
-		
-		if(pedidos == null){
-			com.panzyma.nm.NMApp.getController().setView(this);
-			com.panzyma.nm.NMApp.getController().getInboxHandler().sendEmptyMessage(ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
 		}
-		
+
+		if (pedidos == null) {
+			com.panzyma.nm.NMApp.getController().setView(this);
+			com.panzyma.nm.NMApp
+					.getController()
+					.getInboxHandler()
+					.sendEmptyMessage(
+							ControllerProtocol.LOAD_DATA_FROM_LOCALHOST);
+		}
+
 		if (savedInstanceState != null) {
 			return;
-		}	
-		 
+		}
+
 		// In case this activity was started with special instructions from
 		// an Intent,
 		// pass the Intent's extras to the fragment as arguments
@@ -477,36 +476,38 @@ public class ViewPedido extends ActionBarActivity implements
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-	  super.onSaveInstanceState(savedInstanceState);
-	  // Save UI state changes to the savedInstanceState.
-	  // This bundle will be passed to onCreate if the process is
-	  // killed and restarted.
-	  Parcelable [] objects = new Parcelable[pedidos.size()];
-	  pedidos.toArray(objects);
-	  savedInstanceState.putParcelableArray("pedidos", objects);
-	  savedInstanceState.putInt("positioncache", positioncache);
-	  savedInstanceState.putParcelable("fragment", firstFragment);
-	   // etc.
+		super.onSaveInstanceState(savedInstanceState);
+		// Save UI state changes to the savedInstanceState.
+		// This bundle will be passed to onCreate if the process is
+		// killed and restarted.
+		Parcelable[] objects = new Parcelable[pedidos.size()];
+		pedidos.toArray(objects);
+		savedInstanceState.putParcelableArray("pedidos", objects);
+		savedInstanceState.putInt("positioncache", positioncache);
+		savedInstanceState.putParcelable("fragment", firstFragment);
+		// etc.
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
-	  super.onRestoreInstanceState(savedInstanceState);
-	  // Restore UI state from the savedInstanceState.
-	  // This bundle has also been passed to onCreate.
-	  Parcelable [] objects = savedInstanceState.getParcelableArray("pedidos");
-	  pedidos = new ArrayList<vmEntity>( (Collection<? extends vmEntity>) Arrays.asList(objects) ); 
-	  positioncache = savedInstanceState.getInt("positioncache");	  
-	  firstFragment = (ListaFragment<vmEntity>) savedInstanceState.getParcelable("fragment");
-	  gridheader.setText(String.format("Listado de Pedidos (%s)",pedidos.size()));
-	  //setList();
+		super.onRestoreInstanceState(savedInstanceState);
+		// Restore UI state from the savedInstanceState.
+		// This bundle has also been passed to onCreate.
+		Parcelable[] objects = savedInstanceState.getParcelableArray("pedidos");
+		pedidos = new ArrayList<vmEntity>(
+				(Collection<? extends vmEntity>) Arrays.asList(objects));
+		positioncache = savedInstanceState.getInt("positioncache");
+		firstFragment = (ListaFragment<vmEntity>) savedInstanceState
+				.getParcelable("fragment");
+		gridheader.setText(String.format("Listado de Pedidos (%s)",
+				pedidos.size()));
+		// setList();
 	}
-	
+
 	@SuppressLint("NewApi")
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) 
-	{
+	public boolean onCreateOptionsMenu(Menu menu) {
 
 		getMenuInflater().inflate(R.menu.main, menu);
 
@@ -541,12 +542,13 @@ public class ViewPedido extends ActionBarActivity implements
 		}
 		return true;
 	}
-	
-	public static String  getDeviceId(Context context){
-        TelephonyManager tm = (TelephonyManager)context.getSystemService(android.content.Context.TELEPHONY_SERVICE);
-        return tm.getDeviceId();
-    	
-    }
+
+	public static String getDeviceId(Context context) {
+		TelephonyManager tm = (TelephonyManager) context
+				.getSystemService(android.content.Context.TELEPHONY_SERVICE);
+		return tm.getDeviceId();
+
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -618,10 +620,9 @@ public class ViewPedido extends ActionBarActivity implements
 		Boolean val = false;
 		final Object item = msg.obj;
 		ocultarDialogos();
-		switch (msg.what) 
-		{
+		switch (msg.what) {
 		case C_DATA:
-			establecer(msg);
+			establecer(msg, true);
 			val = true;
 			break;
 		case ControllerProtocol.NOTIFICATION:
@@ -675,7 +676,7 @@ public class ViewPedido extends ActionBarActivity implements
 					});
 			val = true;
 			break;
-		case ControllerProtocol.ID_REQUEST_ANULARPEDIDO: 
+		case ControllerProtocol.ID_REQUEST_ANULARPEDIDO:
 			AppDialog.showMessage(vp, "Información",
 					"El pedido ha sido anulado.", DialogType.DIALOGO_ALERTA);
 			break;
@@ -693,7 +694,7 @@ public class ViewPedido extends ActionBarActivity implements
 		if (clte != null)
 			cliente = (Cliente) clte;
 
-		establecer(pedd);
+		establecer(pedd, false);
 
 		final String sms = (pedido.getCodEstado().compareTo("FACTURADO") == 0) ? "El pedido ha sido enviado y facturado \n¿Desea imprimir el recibo?"
 				: "El pedido ha sido enviado.Estado: " + pedido.getDescEstado()
@@ -728,7 +729,7 @@ public class ViewPedido extends ActionBarActivity implements
 		positioncache = position;
 	}
 
-	private void establecer(Object _obj) {
+	private void establecer(Object _obj, boolean thread) {
 		if (_obj == null)
 			return;
 
@@ -754,26 +755,31 @@ public class ViewPedido extends ActionBarActivity implements
 				positioncache = pedidos.size() - 1;
 			}
 		}
-
+		/*if(!thread){
+			setList();
+			return;
+		}*/
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				gridheader.setVisibility(View.VISIBLE);
-				gridheader.setText(String.format("Listado de Pedidos (%s)",
-						pedidos.size()));
-				if (pedidos.size() == 0) {
-					TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
-					txtenty.setVisibility(View.VISIBLE);
-				} else {
-					firstFragment.setItems(pedidos);
-					firstFragment.getAdapter().setSelectedPosition(
-							positioncache);
-					pedido_selected = firstFragment.getAdapter().getItem(
-							positioncache);
-				}
+				setList();
 			}
 		});
 
+	}
+
+	public synchronized void setList() {
+		gridheader.setVisibility(View.VISIBLE);
+		gridheader.setText(String.format("Listado de Pedidos (%s)",
+				pedidos.size()));
+		if (pedidos.size() == 0) {
+			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
+			txtenty.setVisibility(View.VISIBLE);
+		} else {
+			firstFragment.setItems(pedidos);
+			firstFragment.getAdapter().setSelectedPosition(positioncache);
+			pedido_selected = firstFragment.getAdapter().getItem(positioncache);
+		}
 	}
 
 	public vmEntity getPedidoSelected() {
@@ -786,16 +792,15 @@ public class ViewPedido extends ActionBarActivity implements
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) 
-		{
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Fragment fragment = getSupportFragmentManager().findFragmentById(
 					R.id.fragment_container);
-			if (fragment instanceof CuentasPorCobrarFragment || fragment instanceof ConsultaVentasFragment) 
-			{ 
+			if (fragment instanceof CuentasPorCobrarFragment
+					|| fragment instanceof ConsultaVentasFragment) {
 				fragmentActive = FragmentActive.LIST;
 				gridheader.setVisibility(View.VISIBLE);
 				transaction = getSupportFragmentManager().beginTransaction();
-				transaction.replace(R.id.fragment_container, firstFragment);				
+				transaction.replace(R.id.fragment_container, firstFragment);
 				transaction.commit();
 			} else
 				FINISH_ACTIVITY();
@@ -818,9 +823,8 @@ public class ViewPedido extends ActionBarActivity implements
 		return super.onKeyUp(keyCode, event);
 	}
 
-	private void FINISH_ACTIVITY() 
-	{
-		NMApp.getController().setView((Callback) getParent());  
+	private void FINISH_ACTIVITY() {
+		NMApp.getController().setView((Callback) getParent());
 		Log.d(TAG, "Activity quitting");
 		finish();
 	}
@@ -857,8 +861,9 @@ public class ViewPedido extends ActionBarActivity implements
 			if (pedido_selected == null)
 				return;
 			pedido = Ventas.obtenerPedidoByID(pedido_selected.getId(), vp);
-			//PORVALIDAR
-			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("PORVALIDAR")==0) || (pedido
+			// PORVALIDAR
+			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0)
+					|| (pedido.getCodEstado().compareTo("PORVALIDAR") == 0) || (pedido
 					.getCodEstado().compareTo("APROBADO") == 0)))
 				return;
 
@@ -880,7 +885,8 @@ public class ViewPedido extends ActionBarActivity implements
 			b.putParcelable("pedido", pedido);
 			msg.setData(b);
 			msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
-			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+			com.panzyma.nm.NMApp.getController().getInboxHandler()
+					.sendMessage(msg);
 
 		} catch (Exception e) {
 			AppDialog.showMessage(this,

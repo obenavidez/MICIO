@@ -7,8 +7,6 @@ import android.os.Parcelable;
 
 import com.panzyma.nm.interfaces.Item;
 import com.panzyma.nm.serviceproxy.CNota;
-import com.panzyma.nm.serviceproxy.ReciboColector;
-import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 
 public class vmFicha implements Parcelable, Item {
 

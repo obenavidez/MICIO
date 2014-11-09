@@ -49,6 +49,15 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 		this.context = context;
 		items = objects;
 	}
+	
+	public void setData(List<E> data) {        
+        items.clear();
+        if (data != null) {
+            for (E appEntry : data) {                
+                items.add(appEntry);
+            }
+        }
+    }
 
 	/* private view holder class */
 	private class ViewHolder { 
