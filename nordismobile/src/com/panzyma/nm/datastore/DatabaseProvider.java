@@ -12,8 +12,10 @@ import org.json.JSONObject;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.model.ModelConfiguracion;
+import com.panzyma.nm.serviceproxy.ArrayOfCNota;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
+import com.panzyma.nm.serviceproxy.CProducto;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Factura; 
@@ -68,6 +70,8 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_PEDIDOPROMOCION = Uri.parse(CONTENT_URI+ "/pedidopromocion");
 	public static final Uri CONTENT_URI_PEDIDOPROMOCIONDETALLE = Uri.parse(CONTENT_URI+ "/pedidopromociondetalle");
 	public static final Uri CONTENT_URI_RECIBODETALLEFORMAPAGO = Uri.parse(CONTENT_URI+ "/recibodetalleformapago");
+	public static final Uri CONTENT_URI_CPRODUCTO = Uri.parse(CONTENT_URI+ "/cproducto");
+	public static final Uri CONTENT_URI_CNOTA = Uri.parse(CONTENT_URI+ "/cnota");
 	
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
@@ -121,6 +125,11 @@ public class DatabaseProvider extends ContentProvider
 	
 	private static final int PEDIDOPROMOCIONDETALLE = 42;
 	private static final int PEDIDOPROMOCIONDETALLE_ID = 43;
+	
+	private static final int CPRODUTO  = 46;
+	private static final int CPRODUTO_ID  = 47;
+	
+	private static final int CNOTA = 48;
 	//Base de datos
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
@@ -150,6 +159,9 @@ public class DatabaseProvider extends ContentProvider
 	public static final String TABLA_PEDIDODETALLE = "PedidoDetalle";
 	public static final String TABLA_PEDIDOPROMOCION = "PedidoPromocion";
 	public static final String TABLA_PEDIDOPROMOCIONDETALLE = "PedidoPromocionDetalle";	
+	public static final String TABLA_CPRODUCTO = "CProducto";	
+	public static final String TABLA_CNOTA = "CNota";
+	
 	
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -221,6 +233,9 @@ public class DatabaseProvider extends ContentProvider
 	
 		uriMatcher.addURI(AUTHORITY, "recibodetalleformapago", RECIBODETALLEFORMAPAGO);
 		uriMatcher.addURI(AUTHORITY, "recibodetalleformapago/#", RECIBODETALLEFORMAPAGO_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "cproducto", CPRODUTO);
+		uriMatcher.addURI(AUTHORITY, "cproducto/#", CPRODUTO);
 		
 	}
 	
@@ -1557,4 +1572,52 @@ public class DatabaseProvider extends ContentProvider
 		}
 		
 	}
+	
+	public static void RegistrarDetalleProducto(CProducto detalle,Context cnt) throws Exception
+	{
+		SQLiteDatabase bdd = null;
+		try 
+		{
+			NM_SQLiteHelper helper = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	
+			bdd =helper.getWritableDatabase();		
+			bdd.beginTransaction();
+			ContentValues values= new ContentValues();
+			//llenamos los valores
+			values.put(NMConfig.CProducto.ID, detalle.getId());		
+			values.put(NMConfig.CProducto.NOMBRE, detalle.getNombre());		
+			values.put(NMConfig.CProducto.ACCION_FARMACOLOGICA, detalle.getAccionFarmacologica());		
+			values.put(NMConfig.CProducto.CATEGORIA, detalle.getCategoria());	
+			values.put(NMConfig.CProducto.CODIGO, detalle.getCodigo());	
+			values.put(NMConfig.CProducto.ESPECIALIDADES, detalle.getEspecialidades());	
+			values.put(NMConfig.CProducto.FORMA_FARMACEUTICA, detalle.getFormaFarmaceutica());	
+			values.put(NMConfig.CProducto.NOMBRE_COMERCIAL, detalle.getNombreComercial());
+			values.put(NMConfig.CProducto.NOMBRE_GENERICO, detalle.getNombreGenerico());
+			values.put(NMConfig.CProducto.PROVEEDOR, detalle.getProveedor());
+			values.put(NMConfig.CProducto.REGISTRO, detalle.getRegistro());
+			values.put(NMConfig.CProducto.TIPO_PRODUCTO, detalle.getTipoProducto());
+			bdd.insert(TABLA_CPRODUCTO, null, values);	
+			
+			ArrayOfCNota notas =detalle.getNotas();
+			for(int i=0;i<notas.getCNota().length;i++)
+			{
+				values = new ContentValues();
+				values.put(NMConfig.CProducto.CNota.PRODUCTOID, detalle.getId());
+				values.put(NMConfig.CProducto.CNota.CONCEPTO, notas.getCNota()[i].getConcepto());
+				values.put(NMConfig.CProducto.CNota.ELABORADO_POR, notas.getCNota()[i].getElaboradaPor());
+				values.put(NMConfig.CProducto.CNota.FECHA, notas.getCNota()[i].getFecha());
+				values.put(NMConfig.CProducto.CNota.TEXTONOTA, notas.getCNota()[i].getTextoNota());
+				bdd.insert(TABLA_CNOTA, null, values);
+			}
+			
+		}
+		catch (Exception e) 
+		{
+			if (bdd != null || (bdd != null  && bdd.isOpen())) {
+				bdd.endTransaction();
+				bdd.close();
+			}
+			throw new Exception(e);
+		}
+	}
+	
 }

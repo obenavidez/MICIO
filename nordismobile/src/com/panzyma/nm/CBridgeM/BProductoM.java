@@ -17,6 +17,7 @@ import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.model.ModelCProducto;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.CProducto;
@@ -175,13 +176,14 @@ public class BProductoM extends BBaseM {
 				public void run() {
 					try 
 					{
-						CProducto producto= null;
+						CProducto fichaproducto= null;
 						final String credentials=SessionManager.getCredentials();			  
 						if(credentials.trim()=="")
 							   return;	
 						if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController())){
-							producto =ModelProducto.getCProducto(credentials, idProducto);
-							Processor.notifyToView(getController(),ID_SINCRONIZE_PRODUCTO,0,1,producto);
+							fichaproducto =ModelCProducto.getFichaProducto(credentials, idProducto);
+							ModelCProducto.saveCProducto(fichaproducto, getContext());
+							Processor.notifyToView(getController(),ID_SINCRONIZE_PRODUCTO,0,1,fichaproducto);
 					    }
 						
 					}

@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Handler.Callback;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +25,6 @@ import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.CNotaViewHolder;
 import com.panzyma.nordismobile.R;
-
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 
 @InvokeBridge(bridgeName = "BProductoM")
 public class FichaProductoFragment extends Fragment implements Handler.Callback {
@@ -58,7 +55,7 @@ public class FichaProductoFragment extends Fragment implements Handler.Callback 
 		{
 			productoID = args.getLong(ARG_PRODUCTO);
 			mCurrentPosition = args.getInt(ARG_POSITION);
-			ms.what=LOAD_ITEM_FROM_LOCALHOST; 
+			ms.what=LOAD_FICHAPRODUCTO_FROM_SERVER; 
 			ms.obj = productoID;
 			NMApp.getController().getInboxHandler().sendMessage(ms); 
 			

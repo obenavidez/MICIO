@@ -5,8 +5,6 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
-import com.panzyma.nm.viewmodel.vmFicha;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -16,7 +14,7 @@ public class CNota implements KvmSerializable, Parcelable
     public java.lang.String ElaboradaPor;
     public java.lang.String TextoNota;
     public java.lang.String Concepto;
-   
+    public java.lang.Long ProductoID;
     
     public CNota()
 	{		
@@ -24,13 +22,16 @@ public class CNota implements KvmSerializable, Parcelable
 		ElaboradaPor ="";
 		TextoNota ="";
 		Concepto = "";
+		ProductoID=(long) 0;
+		
 	} 
     
-    public CNota(java.lang.String fecha, java.lang.String elaboradaPor, java.lang.String textoNota, java.lang.String concepto) {
+    public CNota(java.lang.String fecha, java.lang.String elaboradaPor, java.lang.String textoNota, java.lang.String concepto,java.lang.Long productoId) {
         this.Fecha = fecha;
         this.ElaboradaPor = elaboradaPor;
         this.TextoNota = textoNota;
         this.Concepto = concepto;
+        this.ProductoID = productoId;
     }
     
 	public CNota(Parcel parcel) {
@@ -41,7 +42,8 @@ public class CNota implements KvmSerializable, Parcelable
 		Fecha = parcel.readString();
 	    ElaboradaPor = parcel.readString();
 	    TextoNota = parcel.readString();
-	    Concepto = parcel.readString();		
+	    Concepto = parcel.readString();	
+	    ProductoID  = parcel.readLong();
 	}
 
 	@Override
@@ -57,6 +59,8 @@ public class CNota implements KvmSerializable, Parcelable
             return TextoNota;
         case 3:
             return Concepto;
+        case 4:
+        	return ProductoID;
         }
 		
 		return null;
@@ -88,6 +92,10 @@ public class CNota implements KvmSerializable, Parcelable
 	            info.type = PropertyInfo.STRING_CLASS;
 	            info.name = "Concepto";
 	            break;
+	        case 4:
+	            info.type = PropertyInfo.LONG_CLASS;
+	            info.type = "ProductoID";
+	            break;
 	        default:break;
         }
 	}
@@ -108,6 +116,9 @@ public class CNota implements KvmSerializable, Parcelable
 	        case 3:
 	        	Concepto = String.valueOf(val.toString());
 	            break;
+	        case 4:
+	        	ProductoID = Long.valueOf(val.toString());
+	            break;
 	        default:
 	            break;
         }
@@ -125,7 +136,15 @@ public class CNota implements KvmSerializable, Parcelable
         return ElaboradaPor;
     }
     
-    public void setElaboradaPor(java.lang.String elaboradaPor) {
+    public java.lang.Long getProductoID() {
+		return ProductoID;
+	}
+
+	public void setProductoID(java.lang.Long productoID) {
+		ProductoID = productoID;
+	}
+
+	public void setElaboradaPor(java.lang.String elaboradaPor) {
         this.ElaboradaPor = elaboradaPor;
     }
     
@@ -156,7 +175,8 @@ public class CNota implements KvmSerializable, Parcelable
 		 parcel.writeString(Fecha);
 	     parcel.writeString(ElaboradaPor);
 	     parcel.writeString(TextoNota);
-	     parcel.writeString(Concepto);		
+	     parcel.writeString(Concepto);	
+	     parcel.writeLong(ProductoID);	
 	}
 	
 	@SuppressWarnings("rawtypes")
