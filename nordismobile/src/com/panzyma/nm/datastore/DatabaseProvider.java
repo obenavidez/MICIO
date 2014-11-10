@@ -508,7 +508,7 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.Promocion.FechaFin,prom.getInt(NMConfig.Promocion.FechaFin));
 			values.put(NMConfig.Promocion.MomentoAplicacion,prom.getString(NMConfig.Promocion.MomentoAplicacion));
 			values.put(NMConfig.Promocion.TipoPromo,prom.getString(NMConfig.Promocion.TipoPromo));
-			values.put(NMConfig.Promocion.MontoMinimo,prom.getDouble(NMConfig.Promocion.MontoBaseMinimo));
+			values.put(NMConfig.Promocion.MontoMinimo,prom.getDouble(NMConfig.Promocion.MontoMinimo));
 			values.put(NMConfig.Promocion.TipoDescuento,prom.getString(NMConfig.Promocion.TipoDescuento));
 			values.put(NMConfig.Promocion.Descuento,prom.getDouble(NMConfig.Promocion.Descuento));
 			values.put(NMConfig.Promocion.AplicacionMultiple,(prom.getBoolean(NMConfig.Promocion.AplicacionMultiple)==true)?1:0);
