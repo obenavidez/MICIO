@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;
@@ -13,7 +14,7 @@ import org.ksoap2.serialization.SoapObject;
 
 import com.panzyma.nm.auxiliar.NMConfig;
 
-public final class PedidoPromocion implements KvmSerializable,Parcelable {
+public  class PedidoPromocion implements KvmSerializable,Parcelable {
   
 	private long objPromocionID;
     private float Descuento;
@@ -166,7 +167,11 @@ public final class PedidoPromocion implements KvmSerializable,Parcelable {
     {
 	  	this.objPromocionID = parcel.readLong();  
 	  	this.Descuento=parcel.readFloat();
-	  	this.Detalles=(PedidoPromocionDetalle[]) parcel.readParcelableArray(PedidoPromocionDetalle[].class.getClassLoader());
+	  	
+	  	Parcelable[] parcelableArray = parcel.readParcelableArray(PedidoPromocionDetalle.class.getClassLoader()); 
+		if (parcelableArray != null) {
+			this.Detalles = Arrays.copyOf(parcelableArray, parcelableArray.length, PedidoPromocionDetalle[].class);
+		} 	  	 
 	  	this.CodigoPromocion=parcel.readString();
 	  	this.NombrePromocion=parcel.readString(); 
   	
