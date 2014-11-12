@@ -37,19 +37,19 @@ public class BProductoM extends BBaseM {
 		{
 			case LOAD_ITEM_FROM_LOCALHOST:				
 				getProductoByID(b.getLong("idProducto"));
-				return true;
+				break;
 			case LOAD_FICHAPRODUCTO_FROM_SERVER: 
 				getFichaProductoByID(b.getLong("idProducto"));
-				return true;
+				break;
 			case LOAD_DATA_FROM_LOCALHOST:
 				onLoadALLData_From_LocalHost();
-				return true;
+				break;
 			case LOAD_DATA_FROM_SERVER:
 				onLoadALLData_From_Server();
-				return true;
+				break;
 			case UPDATE_ITEM_FROM_SERVER:
 				onUpdateItem_From_Server();
-				return true;
+				break;
 
 		}
 		return val;
@@ -181,7 +181,7 @@ public class BProductoM extends BBaseM {
 						if(credentials.trim()=="")
 							   return;	
 						if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController())){
-							fichaproducto =ModelCProducto.getFichaProducto(credentials, idProducto);
+							fichaproducto =ModelCProducto.getFichaProductoFromServer(credentials, idProducto);
 							ModelCProducto.saveCProducto(fichaproducto, getContext());
 							Processor.notifyToView(getController(),ID_SINCRONIZE_PRODUCTO,0,1,fichaproducto);
 					    }
@@ -191,7 +191,7 @@ public class BProductoM extends BBaseM {
 			        { 
 						e.printStackTrace();
 						try {
-							Processor.notifyToView(getController(),ERROR,0,1,new ErrorMessage("Error en la sincronización de clientes con el servidor",e.getMessage(),"\n Causa: "+e.getCause()));
+							Processor.notifyToView(getController(),ERROR,0,1,new ErrorMessage("Error en la sincronización de la ficha de producto con el servidor",e.getMessage(),"\n Causa: "+e.getCause()));
 						} catch (Exception e1) { 
 							e1.printStackTrace();
 						} 

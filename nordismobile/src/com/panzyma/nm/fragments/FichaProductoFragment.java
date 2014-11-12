@@ -56,7 +56,11 @@ public class FichaProductoFragment extends Fragment implements Handler.Callback 
 			productoID = args.getLong(ARG_PRODUCTO);
 			mCurrentPosition = args.getInt(ARG_POSITION);
 			ms.what=LOAD_FICHAPRODUCTO_FROM_SERVER; 
-			ms.obj = productoID;
+			//ms.obj = productoID;
+			Bundle data = new Bundle();
+			data.putLong(ARG_PRODUCTO, productoID);
+			ms.setData(data);
+			
 			NMApp.getController().getInboxHandler().sendMessage(ms); 
 			
 			pDialog = new ProgressDialog(getActivity());
@@ -163,7 +167,7 @@ public class FichaProductoFragment extends Fragment implements Handler.Callback 
 			TextView txtenty=(TextView) getActivity().findViewById(R.id.fctxtview_enty);
 			ListView lvcnotas = (ListView) getActivity().findViewById(R.id.fclvnotas);
 			if(producto.getNotas()!=null){
-				String message = String.format("Notas del Producto(%d)", producto.getNotas().getCNota().length);
+				String message = String.format("Notas del Producto(%d)", producto.getNotas().length);
 				adapter=new GenericAdapter(NMApp.getContext(),CNotaViewHolder.class,Arrays.asList(producto.getNotas()),R.layout.grid_cnota);
 				if(adapter!=null){
 					lvcnotas.setAdapter(adapter);
@@ -191,6 +195,11 @@ public class FichaProductoFragment extends Fragment implements Handler.Callback 
 			break;
 			case NOTIFICATION_DIALOG: 
 				AppDialog.showMessage(getActivity(),msg.obj.toString(),DialogType.DIALOGO_ALERTA);
+				break;
+			case ERROR:
+				AppDialog.showMessage(getActivity(),msg.obj.toString(),DialogType.DIALOGO_ALERTA);
+				if (pDialog != null && pDialog.isShowing())
+					pDialog.dismiss();
 				break;
 		}
 		return false;

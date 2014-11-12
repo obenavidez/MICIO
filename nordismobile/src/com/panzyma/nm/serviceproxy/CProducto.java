@@ -2,10 +2,12 @@ package com.panzyma.nm.serviceproxy;
 
 public class CProducto {
 	
-	protected com.panzyma.nm.serviceproxy.ArrayOfCNota Notas;
-    protected long Id;
+//	protected com.panzyma.nm.serviceproxy.ArrayOfCNota Notas;
+
+	protected CNota[]  Notas;
+	protected long Id;
     protected java.lang.String Codigo;
-    protected java.lang.String Nombre;
+	protected java.lang.String Nombre;
     protected java.lang.String Registro;
     protected java.lang.String NombreComercial;
     protected java.lang.String NombreGenerico;
@@ -16,7 +18,19 @@ public class CProducto {
     protected java.lang.String TipoProducto;
     protected java.lang.String Especialidades;
 	
-	 public CProducto() {}
+	 public CProducto() {
+		    this.Codigo="";
+		    this.Nombre="";
+		    this.Registro="";
+		    this.NombreComercial="";
+		    this.NombreGenerico="";
+		    this.Proveedor="";
+		    this.Categoria="";
+		    this.FormaFarmaceutica="";
+		    this.AccionFarmacologica="";
+		    this.TipoProducto="";
+		    this.Especialidades="";
+	 }
 	 
 	 
 	 public long getId() {
@@ -114,12 +128,11 @@ public class CProducto {
 	    public void setEspecialidades(java.lang.String especialidades) {
 	        this.Especialidades = especialidades;
 	    }
-	    public com.panzyma.nm.serviceproxy.ArrayOfCNota getNotas() {
-	        return Notas;
-	    }
-	    
-	    public void setNotas(com.panzyma.nm.serviceproxy.ArrayOfCNota notas) {
-	        this.Notas = notas;
-	    }
-	    
+	    public CNota[] getNotas() {
+			return Notas;
+		}
+		public void setNotas(CNota[] notas) {
+			Notas = notas;
+		}
+		
 }

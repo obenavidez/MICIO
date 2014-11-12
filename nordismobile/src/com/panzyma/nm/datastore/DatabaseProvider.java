@@ -15,6 +15,7 @@ import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.ArrayOfCNota;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
+import com.panzyma.nm.serviceproxy.CNota;
 import com.panzyma.nm.serviceproxy.CProducto;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
@@ -134,7 +135,7 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 8; 
+	private static final int BD_VERSION = 10; 
 	
 	public static final String TABLA_CLIENTE = "Cliente";
 	public static final String TABLA_FACTURA = "Factura";
@@ -235,7 +236,7 @@ public class DatabaseProvider extends ContentProvider
 		uriMatcher.addURI(AUTHORITY, "recibodetalleformapago/#", RECIBODETALLEFORMAPAGO_ID);
 		
 		uriMatcher.addURI(AUTHORITY, "cproducto", CPRODUTO);
-		uriMatcher.addURI(AUTHORITY, "cproducto/#", CPRODUTO);
+		uriMatcher.addURI(AUTHORITY, "cproducto/#", CPRODUTO_ID);
 		
 	}
 	
@@ -1597,18 +1598,24 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.CProducto.TIPO_PRODUCTO, detalle.getTipoProducto());
 			bdd.insert(TABLA_CPRODUCTO, null, values);	
 			
-			ArrayOfCNota notas =detalle.getNotas();
-			for(int i=0;i<notas.getCNota().length;i++)
-			{
-				values = new ContentValues();
-				values.put(NMConfig.CProducto.CNota.PRODUCTOID, detalle.getId());
-				values.put(NMConfig.CProducto.CNota.CONCEPTO, notas.getCNota()[i].getConcepto());
-				values.put(NMConfig.CProducto.CNota.ELABORADO_POR, notas.getCNota()[i].getElaboradaPor());
-				values.put(NMConfig.CProducto.CNota.FECHA, notas.getCNota()[i].getFecha());
-				values.put(NMConfig.CProducto.CNota.TEXTONOTA, notas.getCNota()[i].getTextoNota());
-				bdd.insert(TABLA_CNOTA, null, values);
+			if(detalle.getNotas()!=null){
+				CNota[] notas =detalle.getNotas();
+				for(int i=0;i<notas.length;i++)
+				{
+					values = new ContentValues();
+					values.put(NMConfig.CProducto.CNota.PRODUCTOID, detalle.getId());
+					values.put(NMConfig.CProducto.CNota.CONCEPTO, notas[i].getConcepto());
+					values.put(NMConfig.CProducto.CNota.ELABORADO_POR, notas[i].getElaboradaPor());
+					values.put(NMConfig.CProducto.CNota.FECHA, notas[i].getFecha());
+					values.put(NMConfig.CProducto.CNota.TEXTONOTA, notas[i].getTextoNota());
+					bdd.insert(TABLA_CNOTA, null, values);
+				}
 			}
-			
+			bdd.setTransactionSuccessful();
+			if (bdd != null || (bdd.isOpen())) {
+				bdd.endTransaction();
+				bdd.close();
+			}	
 		}
 		catch (Exception e) 
 		{
