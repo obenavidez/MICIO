@@ -247,8 +247,8 @@ public class ModelPedido {
 		int cont=0;int value;  
 		Cursor cur = content.query(DatabaseProvider.CONTENT_URI_PEDIDOPROMOCION,
 		        null, //Columnas a devolver
-		        "objPedidoID=?",       //Condición de la query
-		        new String[]{ String.valueOf(ObjPedidoID) }  ,       //Argumentos variables de la query
+		        NMConfig.Pedido.DetallePedido.objPedidoID+"="+String.valueOf(ObjPedidoID),       //Condición de la query,       //Condición de la query
+		        null  ,       //Argumentos variables de la query
    	        null); 
 		PedidoPromocion[] app=new PedidoPromocion[cur.getCount()];
 		
@@ -277,8 +277,8 @@ public class ModelPedido {
 		int cont=0;int value;  
 		Cursor cur = content.query(DatabaseProvider.CONTENT_URI_PEDIDOPROMOCIONDETALLE,
 		        null, //Columnas a devolver
-		        "objPromocionID=?",       //Condición de la query
-		        new String[]{String.valueOf(objPromocionID)} ,       //Argumentos variables de la query
+		        NMConfig.Pedido.PedidoPromocion.objPromocionID+"="+String.valueOf(objPromocionID),
+		        null ,       //Argumentos variables de la query
    	        null); 
 		PedidoPromocionDetalle[] appd=new PedidoPromocionDetalle[cur.getCount()];
 		

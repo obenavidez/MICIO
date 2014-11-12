@@ -54,91 +54,87 @@ public class BPedidoM extends BBaseM {
 	public boolean handleMessage(Message msg) {
 		Bundle b = msg.getData();
 		Boolean val= false;
-		switch (msg.what) {
-			case LOAD_DATA_FROM_LOCALHOST:
-				onLoadALLData_From_LocalHost();
-				val= true;
-				break;
-			case LOAD_DATA_FROM_SERVER:
-				onLoadALLData_From_Server();
-				val= true;
-				break;
-			case UPDATE_ITEM_FROM_SERVER:
-				onUpdateItem_From_Server();
-				val= true;
-				break;
-			case UPDATE_INVENTORY_FROM_SERVER:
-				onUpdateInventory_From_Server();
-				val= true;
-				break;
-			case ID_SALVAR:
-				val= true;
-				break;
-			case ControllerProtocol.SAVE_DATA_FROM_LOCALHOST:				
-				guardarPedido((Pedido)b.getParcelable("pedido"));
-				break;
-			case ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
-			case ControllerProtocol.APLICARPEDIDOPROMOCIONES:
-			case ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES:
-				try 
-				{
-					String mensaje="";
-					mensaje=(msg.what==ControllerProtocol.NOTIFICATION || msg.what==ControllerProtocol.APLICARPEDIDOPROMOCIONES)?"Las promociones fueron aplicadas exitosamente":
-						msg.what==ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES?"Las promociones fueron desaplicadas exitosamente":"";
+		try 
+		{
+			
+			switch (msg.what) 
+			{
+				case LOAD_DATA_FROM_LOCALHOST:
+					onLoadALLData_From_LocalHost();
+					val= true;
+					break;
+				case LOAD_DATA_FROM_SERVER:
+					onLoadALLData_From_Server();
+					val= true;
+					break;
+				case UPDATE_ITEM_FROM_SERVER:
+					onUpdateItem_From_Server();
+					val= true;
+					break;
+				case UPDATE_INVENTORY_FROM_SERVER:
+					onUpdateInventory_From_Server();
+					val= true;
+					break;
+				case ID_SALVAR:
+					val= true;
+					break;
+				case ControllerProtocol.SAVE_DATA_FROM_LOCALHOST:				
+					guardarPedido((Pedido)b.getParcelable("pedido"));
+					break;  
+				
+				case ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
+				case ControllerProtocol.APLICARPEDIDOPROMOCIONES:
+				case ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES: 
 					
-					int what=(msg.what==ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES)?							
-							ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
-							(msg.what==ControllerProtocol.NOTIFICATION || msg.what==ControllerProtocol.APLICARPEDIDOPROMOCIONES)?ControllerProtocol.NOTIFICATION:
-								ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES;
+						String mensaje="";
+						int arg1=msg.what; 
+						mensaje=(ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES==msg.what)?"Aplicando promociones...":
+							(ControllerProtocol.APLICARPEDIDOPROMOCIONES==msg.what)?"Las promociones fueron aplicadas exitosamente...":
+							(ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES==msg.what)?"Las promociones fueron desaplicadas exitosamente...":"";
+						
+						guardar_Pedido((Pedido)b.getParcelable("pedido"));
+						Processor.notifyToView(
+									NMApp.getController(),
+									(msg.what==ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES)?ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
+									ControllerProtocol.NOTIFICATION,
+									arg1,
+									0,
+									mensaje); 
+						
+					break;
 					
-					
-					guardar_Pedido((Pedido)b.getParcelable("pedido"));
-					Processor.notifyToView(
-								NMApp.getController(),
-								what,
-								ControllerProtocol.SAVE_DATA_FROM_LOCALHOST,
-								0,
-								mensaje);
-					
-				} catch (Exception e) {
-					try {
-						Processor
-						.notifyToView(
-								NMApp.getController(),
-								ERROR,
-								0,
-								0,
-								ErrorMessage.newInstance("",
-										e.toString(), "\n Causa: "
-												+ e.getCause()));
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-				break;
-			case DELETE_DATA_FROM_LOCALHOST :
-				onDeleteDataFromLocalHost(Long.parseLong(msg.obj.toString()));
-				val= true;
-				break;
-			case ControllerProtocol.SEND_DATA_FROM_SERVER:				
-				enviarPedido((Pedido)b.getParcelable("pedido"));
-				break;
-			case ControllerProtocol.IMPRIMIR:
-				imprimirPedido((Pedido)b.getParcelable("pedido"),(Cliente)b.getParcelable("cliente"));
-				break;
-			case ControllerProtocol.ANULAR_PEDIDO : 
-				try {
-					anularPedido(Long.parseLong(msg.obj.toString()));
-				} 
-				catch (NumberFormatException e) {
-					e.printStackTrace();
-				} 
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-				break;
+				case DELETE_DATA_FROM_LOCALHOST :
+					onDeleteDataFromLocalHost(Long.parseLong(msg.obj.toString()));
+					val= true;
+					break;
+				case ControllerProtocol.SEND_DATA_FROM_SERVER:				
+					enviarPedido((Pedido)b.getParcelable("pedido"));
+					break;
+				case ControllerProtocol.IMPRIMIR:
+					imprimirPedido((Pedido)b.getParcelable("pedido"),(Cliente)b.getParcelable("cliente"));
+					break;
+				case ControllerProtocol.ANULAR_PEDIDO : 
+						anularPedido(Long.parseLong(msg.obj.toString())); 
+			}
+			
+			
+		} catch (Exception e) {
+			try {
+				Processor
+				.notifyToView(
+						NMApp.getController(),
+						ERROR,
+						0,
+						0,
+						ErrorMessage.newInstance("",
+								e.toString(), "\n Causa: "
+										+ e.getCause()));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
+		
 		return val;
 	}
 

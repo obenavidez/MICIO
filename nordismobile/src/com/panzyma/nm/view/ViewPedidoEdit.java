@@ -572,57 +572,55 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	}
 
 	@Override
-	public boolean handleMessage(Message msg) {
+	public boolean handleMessage(Message msg) 
+	{
 
 		ocultarDialogos();
-		switch (msg.what) {
-		case C_DATA:
-
-			setData((ArrayList<Pedido>) ((msg.obj == null) ? new ArrayList<Pedido>()
-					: msg.obj), C_DATA);
-			return true;
-		case C_INVETORY_UPDATED:
-			return true;
-
-		case ControllerProtocol.NOTIFICATION:
-			if (ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1) {
-				actualizarOnUINumRef(); 
+		switch (msg.what) 
+		{
+			case C_DATA:
+	
+				setData((ArrayList<Pedido>) ((msg.obj == null) ? new ArrayList<Pedido>()
+						: msg.obj), C_DATA);
+				return true;
+			case C_INVETORY_UPDATED:
+				return true;
+	
+			case ControllerProtocol.NOTIFICATION:
+				if (
+					 ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1 ||
+					 ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES==msg.arg1 ||
+					 ControllerProtocol.APLICARPEDIDOPROMOCIONES==msg.arg1
+				   ) 
+				{ 
+					actualizarOnUINumRef(); 
+					actualizarDetallePedido();
+					salvado = true;
+				}
+				showStatus(msg.obj.toString(), true);
+				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG2:
+				showStatus(msg.obj.toString());
+				break;
+			case ControllerProtocol.ERROR:
+				AppDialog.showMessage(me, ((ErrorMessage) msg.obj).getTittle(),
+						((ErrorMessage) msg.obj).getMessage(),
+						DialogType.DIALOGO_ALERTA);
+				break;
+			case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
+				resultadoEnvioPedido(msg.obj);
 				salvado = true;
-			}
-			showStatus(msg.obj.toString(), true);
-			break;
-		case ControllerProtocol.NOTIFICATION_DIALOG2:
-			showStatus(msg.obj.toString());
-			break;
-		case ControllerProtocol.ERROR:
-			AppDialog.showMessage(me, ((ErrorMessage) msg.obj).getTittle(),
-					((ErrorMessage) msg.obj).getMessage(),
-					DialogType.DIALOGO_ALERTA);
-			break;
-		case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
-
-			resultadoEnvioPedido(msg.obj);
-
-			salvado = true;
-			break;
-		case ControllerProtocol.ID_REQUEST_PROMOCIONES:
-			actualizarDetallePedido();
-			AppDialog.showMessage(me,
-					msg.arg1 == 1 ? "Las promociones han sido aplicadas."
-							: "Las Promociones fueron aplicadas",
-					DialogType.DIALOGO_ALERTA);
-			break;
-		case ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
-			aplicarPromociones();
-			break;
-		case ControllerProtocol.APLICARPEDIDOPROMOCIONES:
-			showStatus(msg.obj.toString(), true);
-			actualizarDetallePedido();
-			break;
-		case ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES:
-			actualizarDetallePedido();
-			showStatus(msg.obj.toString(), true);
-			break;
+				break;
+			case ControllerProtocol.ID_REQUEST_PROMOCIONES:
+				actualizarDetallePedido();
+				AppDialog.showMessage(me,
+						msg.arg1 == 1 ? "Las promociones han sido aplicadas."
+								: "Las Promociones fueron aplicadas",
+						DialogType.DIALOGO_ALERTA);
+				break;
+			case ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
+				aplicarPromociones();
+				break; 
 		}
 
 		return false;
@@ -968,104 +966,163 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 					.getCodEstado().compareTo("APROBADO") == 0)))
+			{	
+				showStatus("No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado());
 				return;
-
+			}
 			if (cliente == null) {
 				showStatus("Seleccione primero el cliente del pedido.", true);
 				return;
 			}
 			if ((Lvmpproducto == null) || (Lvmpproducto.size() == 0)) {
 				AppDialog.showMessage(me,
-						"El pedido no tiene detalle de productos.",
+						"El pedido no tiene detalle.",
 						DialogType.DIALOGO_ALERTA);
 				return;
 			}
 
-			if (salvar.length != 0 && salvar[0]) {
-				salvarPedido(ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES);
-				showStatus("Guardando 1mero el pedido");
+			if (salvar.length != 0 && salvar[0]) 
+			{
+				showStatus("Guardando primero el pedido...");
+				salvarPedido(ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES);				
 				return;
 			}
 
 			ArrayList<Promocion> promociones = Promociones
 					.getPromocionesAplican(pedido, getContentResolver());
 
-			if (promociones != null && promociones.size() != 0) {
+			if (promociones == null || (promociones!=null && promociones.size() == 0))  
+			{			AppDialog.showMessage(me,
+					"No hay Promomociones pendientes que aplicar...",
+					DialogType.DIALOGO_ALERTA);
+				return;
+			}
+			DialogPromociones dprom = new DialogPromociones(
+					ViewPedidoEdit.this, pedido, promociones,
+					android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 
-				DialogPromociones dprom = new DialogPromociones(
-						ViewPedidoEdit.this, pedido, promociones,
-						android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+			dprom.setOnDialogPromocionesButtonClickListener(new com.panzyma.nm.viewdialog.DialogPromociones.OnButtonClickHandler() {
 
-				dprom.setOnDialogPromocionesButtonClickListener(new com.panzyma.nm.viewdialog.DialogPromociones.OnButtonClickHandler() {
-
-					@Override
-					public void onButtonClick(Promocion promocion) {
-						com.panzyma.nm.NMApp.getController().setView(me);	
-						if (promocion != null) 
-						{
-							// Validar que no se haya alcanzado el máximo de
-							// promociones
-							// a aplicar
-							PedidoPromocion[] pproms = pedido
-									.getPromocionesAplicadas();
-							if (pproms != null) {
-								int maxPromos = Integer
-										.parseInt(me
-												.getApplicationContext()
-												.getSharedPreferences(
-														"SystemParams",
-														android.content.Context.MODE_PRIVATE)
-												.getString(
-														"CantMaximaPromocionesAplicar",
-														"0"));
-								if (pproms.length >= maxPromos) {
-									showStatus(
-											"La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.",
-											true);
-									return;
-								}
-							}
-
-							Promociones.aplicarPromocion(pedido, promocion,
-									me.getContentResolver());
-							Promociones.ActualizaPedidoDePromociones(pedido);
-							if (pedido.getPromocionesAplicadas().length == 0)
+				@Override
+				public void onButtonClick(Promocion promocion) {
+					com.panzyma.nm.NMApp.getController().setView(me);	
+					if (promocion != null) 
+					{
+						// Validar que no se haya alcanzado el máximo de
+						// promociones
+						// a aplicar
+						PedidoPromocion[] pproms = pedido
+								.getPromocionesAplicadas();
+						if (pproms != null) {
+							int maxPromos = Integer
+									.parseInt(me
+											.getApplicationContext()
+											.getSharedPreferences(
+													"SystemParams",
+													android.content.Context.MODE_PRIVATE)
+											.getString(
+													"CantMaximaPromocionesAplicar",
+													"0"));
+							if (pproms.length >= maxPromos) {
+								showStatus(
+										"La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.",
+										true);
 								return;
-							showStatus("aplicando promociones...");
-							// Salvar la promoción aplicada
-							salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES);  
-							Lvmpproducto.clear();
-							for(int i=0;i<pedido.getDetalles().length;i++) 
-								Lvmpproducto.add(pedido.getDetalles()[i]); 
-							adapter.setItems(Lvmpproducto);
-							CalculaTotales();
-							setTotales(true); 
-							
-						} else
-							AppDialog
-									.showMessage(
-											me,
-											"No hay Promomociones pendientes que aplicar...",
-											DialogType.DIALOGO_ALERTA);
+							}
+						}
 
-					}
-				});
+						Promociones.aplicarPromocion(pedido, promocion,
+								me.getContentResolver());
+						Promociones.ActualizaPedidoDePromociones(pedido);
+						if (pedido.getPromocionesAplicadas().length == 0)
+							return; 
+						// Salvar la promoción aplicada
+						salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES); 
+						
+					} else
+						AppDialog
+								.showMessage(
+										me,
+										"No hay Promomociones pendientes que aplicar...",
+										DialogType.DIALOGO_ALERTA);
 
-				Window window = dprom.getWindow();
-				window.setGravity(Gravity.CENTER);
-				window.setLayout(display.getWidth() - 5,
-						display.getHeight() - 10);
-				dprom.show();
-			} else
-				AppDialog.showMessage(me,
-						"No hay Promomociones pendientes que aplicar...",
-						DialogType.DIALOGO_ALERTA);
+				}
+			});
+
+			Window window = dprom.getWindow();
+			window.setGravity(Gravity.CENTER);
+			window.setLayout(display.getWidth() - 5,
+					display.getHeight() - 10);
+			dprom.show();
+			
 
 		} catch (Exception e) {
 			AppDialog.showMessage(me,
 					e.getMessage() + "\nCausa: " + e.getCause(),
 					DialogType.DIALOGO_ALERTA);
 		}
+
+	}
+	
+	public void desaplicarPromociones() 
+	{
+		
+		try 
+		{
+			
+			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0)))
+			{
+				showStatus("No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado());
+				return;
+			}
+
+			if (pedido.getPromocionesAplicadas() == null || 
+				(pedido.getPromocionesAplicadas() != null && pedido.getPromocionesAplicadas().length == 0)) 
+			{
+
+				AppDialog.showMessage(me,
+						"El pedido no tiene promociones aplicadas.",
+						DialogType.DIALOGO_ALERTA);
+				return;
+			}
+
+			showStatus("Desaplicando promociones...");
+			
+			Promociones.DesaplicarPromociones(pedido);
+
+			Promociones.ActualizaPedidoDePromociones(pedido);
+ 
+			// Salvar la promoción aplicada
+			salvarPedido(ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES);
+			
+		} catch (Exception e) 
+		{ 
+			AppDialog.showMessage(me,
+					e.getMessage() + "\nCausa: " + e.getCause(),
+					DialogType.DIALOGO_ALERTA);
+		}
+
+		
+	}
+
+
+	public void actualizarDetallePedido(final Pedido pedido) 
+	{
+		runOnUiThread(new Runnable() 
+		{
+			@Override
+			public void run() {
+				DetallePedido[] detPed = pedido.getDetalles();
+				Lvmpproducto = new ArrayList<DetallePedido>();
+				for (int i = 0; i < detPed.length; i++) {
+					Lvmpproducto.add(detPed[i]);
+				}
+				adapter.setItems(Lvmpproducto);
+				CalculaTotales();
+				setTotales(true);
+				adapter.notifyDataSetChanged();
+			}
+		});
 
 	}
 
@@ -1080,7 +1137,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				for (int i = 0; i < detPed.length; i++) {
 					Lvmpproducto.add(detPed[i]);
 				}
-		
+				adapter.setItems(Lvmpproducto);
 				CalculaTotales();
 				setTotales(true);
 				adapter.notifyDataSetChanged();
@@ -1088,33 +1145,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		});
 
 	}
-
-	public void desaplicarPromociones() {
-
-		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
-				.getCodEstado().compareTo("APROBADO") == 0)))
-			return;
-
-		if (pedido.getPromocionesAplicadas() == null
-				|| (pedido.getPromocionesAplicadas() == null && pedido
-						.getPromocionesAplicadas().length == 0)) {
-
-			AppDialog.showMessage(me,
-					"El pedido no tiene promociones aplicadas.",
-					DialogType.DIALOGO_ALERTA);
-			return;
-		}
-
-		Promociones.DesaplicarPromociones(pedido);
-
-		Promociones.ActualizaPedidoDePromociones(pedido);
-
-		// Salvar la promoción aplicada
-		showStatus("Desaplicando promociones...");
-		// Salvar la promoción aplicada
-		salvarPedido(ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES);
-	}
-
+	
+	
 	public void agregarCondicionesYNotas() {
 		if (pedido.getObjClienteID() == 0) {
 			AppDialog.showMessage(me, "Debe agregar primero el cliente",
