@@ -31,6 +31,7 @@ public class FichaProductoFragment extends Fragment implements Handler.Callback 
 
 	public final static String ARG_POSITION = "position";
 	public final static String ARG_PRODUCTO = "idProducto";
+	public final static String ARG_CONECCTION = "conecction";
 	//private Producto producto;
 	int mCurrentPosition = -1;
 	private static final String TAG = FichaProductoFragment.class.getSimpleName();
@@ -38,6 +39,7 @@ public class FichaProductoFragment extends Fragment implements Handler.Callback 
 	static ProgressDialog pDialog;
 	long productoID;
 	private GenericAdapter adapter;
+	private boolean conecction = false;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -55,7 +57,8 @@ public class FichaProductoFragment extends Fragment implements Handler.Callback 
 		{
 			productoID = args.getLong(ARG_PRODUCTO);
 			mCurrentPosition = args.getInt(ARG_POSITION);
-			ms.what=LOAD_FICHAPRODUCTO_FROM_SERVER; 
+			//conecction =(boolean) args.getBoolean(ARG_CONECCTION);
+			ms.what=LOAD_FICHAPRODUCTO_FROM_SERVER;
 			//ms.obj = productoID;
 			Bundle data = new Bundle();
 			data.putLong(ARG_PRODUCTO, productoID);
@@ -197,9 +200,11 @@ public class FichaProductoFragment extends Fragment implements Handler.Callback 
 				AppDialog.showMessage(getActivity(),msg.obj.toString(),DialogType.DIALOGO_ALERTA);
 				break;
 			case ERROR:
-				AppDialog.showMessage(getActivity(),msg.obj.toString(),DialogType.DIALOGO_ALERTA);
 				if (pDialog != null && pDialog.isShowing())
 					pDialog.dismiss();
+				
+				AppDialog.showMessage(getActivity(),msg.obj.toString(),DialogType.DIALOGO_ALERTA);
+				
 				break;
 		}
 		return false;

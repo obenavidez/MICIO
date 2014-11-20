@@ -177,15 +177,35 @@ public class BProductoM extends BBaseM {
 					try 
 					{
 						CProducto fichaproducto= null;
-						final String credentials=SessionManager.getCredentials();			  
-						if(credentials.trim()=="")
-							   return;	
-						if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController())){
+						String credentials="";//SessionManager.getCredentials();			  
+
+
+
+						if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController()))
+						{
+							credentials=SessionManager.getCredentials();			  
+							if(credentials.trim()=="")
+								return;	
+
+
 							fichaproducto =ModelCProducto.getFichaProductoFromServer(credentials, idProducto);
 							ModelCProducto.saveCProducto(fichaproducto, getContext());
 							Processor.notifyToView(getController(),ID_SINCRONIZE_PRODUCTO,0,1,fichaproducto);
-					    }
-						
+						}
+						else
+						{
+							fichaproducto = GetFichaFromLocal(idProducto);
+							Processor.notifyToView(getController(),ID_SINCRONIZE_PRODUCTO,0,1,fichaproducto);
+						}
+//						if(NMNetWork.isPhoneConnected(getContext()) && NMNetWork.CheckConnection(getController())){
+//							fichaproducto =ModelCProducto.getFichaProductoFromServer(credentials, idProducto);
+//							ModelCProducto.saveCProducto(fichaproducto, getContext());
+//							Processor.notifyToView(getController(),ID_SINCRONIZE_PRODUCTO,0,1,fichaproducto);
+//					    }
+//						else {
+//							fichaproducto = GetFichaFromLocal(idProducto);
+//							Processor.notifyToView(getController(),ID_SINCRONIZE_PRODUCTO,0,1,fichaproducto);
+//						}
 					}
 					catch (Exception e) 
 			        { 
@@ -262,6 +282,18 @@ public class BProductoM extends BBaseM {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private CProducto GetFichaFromLocal(long idProducto){
+		
+		CProducto fichaproducto= null;
+		try {
+			fichaproducto =ModelCProducto.getFichaProductoFromLocalHost(getContext().getContentResolver(),idProducto);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return fichaproducto;
 	}
 	
 	//

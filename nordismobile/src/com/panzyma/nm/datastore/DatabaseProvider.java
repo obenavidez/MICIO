@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.model.ModelCProducto;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.ArrayOfCNota;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
@@ -131,6 +132,7 @@ public class DatabaseProvider extends ContentProvider
 	private static final int CPRODUTO_ID  = 47;
 	
 	private static final int CNOTA = 48;
+	private static final int CNOTA_CPRODUCTOID = 49;
 	//Base de datos
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
@@ -237,6 +239,9 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "cproducto", CPRODUTO);
 		uriMatcher.addURI(AUTHORITY, "cproducto/#", CPRODUTO_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "cnota", CNOTA);
+		uriMatcher.addURI(AUTHORITY, "cnota/#", CNOTA_CPRODUCTOID);
 		
 	}
 	
@@ -1153,6 +1158,18 @@ public class DatabaseProvider extends ContentProvider
 			case RECIBODETALLEFORMAPAGO_ID : dictionary.put(RECIBODETALLEFORMAPAGO, TABLA_RECIBO_DETALLE_FORMA_PAGO);
 										dictionary.put(RECIBODETALLEFORMAPAGO_ID,"objReciboID=" + uri.getLastPathSegment());
 										break;
+			case CPRODUTO :			    
+										dictionary.put(CPRODUTO, TABLA_CPRODUCTO);
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_CPRODUCTO.toString());
+										break;
+										
+			case CPRODUTO_ID :			dictionary.put(CPRODUTO, TABLA_CPRODUCTO);
+										dictionary.put(CPRODUTO +1,"Id="+ uri.getLastPathSegment());
+										break;
+										
+			case CNOTA_CPRODUCTOID : 	dictionary.put(CPRODUTO, TABLA_CNOTA);
+									 	dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_CNOTA.toString());
+									 	break;
 		} 
 		Iterator it = dictionary.entrySet().iterator();
 		while (it.hasNext()) 
@@ -1184,9 +1201,9 @@ public class DatabaseProvider extends ContentProvider
 	 
 		switch(uriMatcher.match(uri))
 		{		 
-			case CLIENTE:case FACTURA:case PROMOCIONCOBRO:case MONTOPROVEEDOR:case CCNOTACREDITO:case CCNOTADEBITO:case DESCUENTOPROVEEDOR:case PRODUCTO:case LOTE:case CATALOGO:case PROMOCION:case USUARIO:case PEDIDO:case PEDIDODETALLE: case PEDIDOPROMOCION:case PEDIDOPROMOCIONDETALLE:
+			case CLIENTE:case FACTURA:case PROMOCIONCOBRO:case MONTOPROVEEDOR:case CCNOTACREDITO:case CCNOTADEBITO:case DESCUENTOPROVEEDOR:case PRODUCTO:case LOTE:case CATALOGO:case PROMOCION:case USUARIO:case PEDIDO:case PEDIDODETALLE: case PEDIDOPROMOCION:case PEDIDOPROMOCIONDETALLE: case CPRODUTO :case CNOTA:
 				 return "vnd.android.cursor.dir/vnd"+AUTHORITY;
-			case CLIENTE_ID:case FACTURA_ID:case PROMOCIONCOBRO_ID:case MONTOPROVEEDOR_ID:case CCNOTACREDITO_ID:case CCNOTADEBITO_ID:case DESCUENTOPROVEEDOR_ID:case PRODUCTO_ID:case LOTE_ID:case CATALOGO_ID:case PROMOCION_ID:case USUARIO_ID:case PEDIDO_ID:case PEDIDODETALLE_ID:case PEDIDOPROMOCION_ID:case PEDIDOPROMOCIONDETALLE_ID:
+			case CLIENTE_ID:case FACTURA_ID:case PROMOCIONCOBRO_ID:case MONTOPROVEEDOR_ID:case CCNOTACREDITO_ID:case CCNOTADEBITO_ID:case DESCUENTOPROVEEDOR_ID:case PRODUCTO_ID:case LOTE_ID:case CATALOGO_ID:case PROMOCION_ID:case USUARIO_ID:case PEDIDO_ID:case PEDIDODETALLE_ID:case PEDIDOPROMOCION_ID:case PEDIDOPROMOCIONDETALLE_ID:case CPRODUTO_ID: case CNOTA_CPRODUCTOID:
 				 return "vnd.android.cursor.item/vnd"+AUTHORITY; 									
 		    default:throw new IllegalArgumentException("Invalid Uri: "+ uri);
 		}  
@@ -1579,6 +1596,13 @@ public class DatabaseProvider extends ContentProvider
 		SQLiteDatabase bdd = null;
 		try 
 		{
+			boolean new_register = true;
+			/*Buscamos el producto del LocalHOst*/
+			CProducto local =  ModelCProducto.getFichaProductoFromLocalHost(cnt.getContentResolver(), detalle.getId());
+			if(local!=null){
+				new_register = false;
+			}
+			
 			NM_SQLiteHelper helper = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	
 			bdd =helper.getWritableDatabase();		
 			bdd.beginTransaction();
@@ -1596,9 +1620,21 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.CProducto.PROVEEDOR, detalle.getProveedor());
 			values.put(NMConfig.CProducto.REGISTRO, detalle.getRegistro());
 			values.put(NMConfig.CProducto.TIPO_PRODUCTO, detalle.getTipoProducto());
-			bdd.insert(TABLA_CPRODUCTO, null, values);	
 			
+			if(new_register){
+				bdd.insert(TABLA_CPRODUCTO, null, values);
+			}
+			else{
+				bdd.update(TABLA_CPRODUCTO, values, null, null);	
+			}
+			
+			String where = NMConfig.CProducto.CNota.PRODUCTOID+"="+String.valueOf(detalle.getId());
+			
+			//BORRAR LAS NOTAS DEL PRODUCTO
+			bdd.delete(TABLA_CNOTA, where ,null); 
+
 			if(detalle.getNotas()!=null){
+				
 				CNota[] notas =detalle.getNotas();
 				for(int i=0;i<notas.length;i++)
 				{

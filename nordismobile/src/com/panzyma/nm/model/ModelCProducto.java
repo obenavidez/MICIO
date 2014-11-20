@@ -45,37 +45,63 @@ public class ModelCProducto {
 	}
 	public synchronized static CProducto getFichaProductoFromLocalHost(ContentResolver content,long idproducto)throws Exception
 	{
-		CProducto detalle = new CProducto();
 
+		//String uriString = DatabaseProvider.CONTENT_URI_CPRODUCTO.toString(); //+"/"+String.valueOf(idproducto);
+		//String query = NMConfig.CProducto.ID+ "=?";
+		
+//		Cursor cur = content.query(DatabaseProvider.CONTENT_URI_CPRODUCTO,
+//		        null, //Columnas a devolver
+//		        "Id=?",       //Condición de la query
+//		        new String[]{String.valueOf(idproducto)},       //Argumentos variables de la query
+//		        null);  
+		
+//		Uri uri = Uri.parse(DatabaseProvider.CONTENT_URI_CPRODUCTO.toString()); 
+//		Cursor cur = content.query(uri,
+//		        null, //Columnas a devolver
+//		        "Id=?",       //Condición de la query
+//		        new String[]{ String.valueOf(idproducto) },       //Argumentos variables de la query
+//		        null);
+		
 		Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_CPRODUCTO+"/"+String.valueOf(idproducto)); 
-		Cursor cur = content.query(uri,null,/*Columnas a devolver*/null,/*Condición de la query*/null,/*Argumentos variables de la query*/null); 
+		Cursor cur = content.query(uri,
+		        null, //Columnas a devolver
+		        null,       //Condición de la query
+		        null,       //Argumentos variables de la query
+		        null); 
+
+		CProducto detalle = null;
+
 		if (cur.moveToFirst()) 
 		{  
-			do{
-				detalle.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.CProducto.ID))));
-				detalle.setNombre(cur.getString(cur.getColumnIndex(NMConfig.CProducto.NOMBRE)));
-				detalle.setNombreComercial(cur.getString(cur.getColumnIndex(NMConfig.CProducto.NOMBRE_COMERCIAL)));
-				detalle.setNombreGenerico(cur.getString(cur.getColumnIndex(NMConfig.CProducto.NOMBRE_GENERICO)));
-				detalle.setProveedor(cur.getString(cur.getColumnIndex(NMConfig.CProducto.PROVEEDOR)));
-				detalle.setAccionFarmacologica(cur.getString(cur.getColumnIndex(NMConfig.CProducto.ACCION_FARMACOLOGICA)));
-				detalle.setFormaFarmaceutica(cur.getString(cur.getColumnIndex(NMConfig.CProducto.FORMA_FARMACEUTICA)));
-				detalle.setCategoria(cur.getString(cur.getColumnIndex(NMConfig.CProducto.CATEGORIA)));
-				detalle.setCodigo(cur.getString(cur.getColumnIndex(NMConfig.CProducto.CODIGO)));
-				detalle.setEspecialidades(cur.getString(cur.getColumnIndex(NMConfig.CProducto.ESPECIALIDADES)));
-				detalle.setRegistro(cur.getString(cur.getColumnIndex(NMConfig.CProducto.REGISTRO)));
-				detalle.setTipoProducto(cur.getString(cur.getColumnIndex(NMConfig.CProducto.TIPO_PRODUCTO)));
-
-			}
-			while (cur.moveToNext());
-			 CNota[] notas = getCNotasByProductoID(content,idproducto);
+			detalle = new CProducto();
+			detalle.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.CProducto.ID))));
+			detalle.setNombre(cur.getString(cur.getColumnIndex(NMConfig.CProducto.NOMBRE)));
+			detalle.setNombreComercial(cur.getString(cur.getColumnIndex(NMConfig.CProducto.NOMBRE_COMERCIAL)));
+			detalle.setNombreGenerico(cur.getString(cur.getColumnIndex(NMConfig.CProducto.NOMBRE_GENERICO)));
+			detalle.setProveedor(cur.getString(cur.getColumnIndex(NMConfig.CProducto.PROVEEDOR)));
+			detalle.setAccionFarmacologica(cur.getString(cur.getColumnIndex(NMConfig.CProducto.ACCION_FARMACOLOGICA)));
+			detalle.setFormaFarmaceutica(cur.getString(cur.getColumnIndex(NMConfig.CProducto.FORMA_FARMACEUTICA)));
+			detalle.setCategoria(cur.getString(cur.getColumnIndex(NMConfig.CProducto.CATEGORIA)));
+			detalle.setCodigo(cur.getString(cur.getColumnIndex(NMConfig.CProducto.CODIGO)));
+			detalle.setEspecialidades(cur.getString(cur.getColumnIndex(NMConfig.CProducto.ESPECIALIDADES)));
+			detalle.setRegistro(cur.getString(cur.getColumnIndex(NMConfig.CProducto.REGISTRO)));
+			detalle.setTipoProducto(cur.getString(cur.getColumnIndex(NMConfig.CProducto.TIPO_PRODUCTO)));
+			CNota[] notas = getCNotasByProductoID(content,idproducto);
 			detalle.setNotas(notas);
 		}
 		return detalle;
 	}
+	
 	public synchronized static CNota[] getCNotasByProductoID(ContentResolver content,long ObjProductoID)throws Exception{
 		int cont=0;
-		Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_CNOTA+""); 
-		Cursor cur = content.query(uri,null,/*Columnas a devolver*/"ProductoID=?",/*Condición de la query*/new String[]{String.valueOf(ObjProductoID)} ,null);
+		
+		String uriString = DatabaseProvider.CONTENT_URI_CNOTA+"/"+String.valueOf(ObjProductoID);
+		Cursor cur = content.query(Uri.parse(uriString),
+				null, // Columnas a devolver
+				null, // Condición de la query
+				null, // Argumentos variables de la query
+				null);
+
 		CNota[] notas=new CNota[cur.getCount()];
 		if (cur.moveToFirst()) 
 		{ 
