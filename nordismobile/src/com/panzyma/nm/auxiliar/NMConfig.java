@@ -461,7 +461,7 @@ public class NMConfig
 	    public static final java.lang.String ESPECIALIDADES="Especialidades";
 	    public static final class CNota
 		{
-	    	public static final java.lang.String PRODUCTOID="objProductoID";
+	    	public static final java.lang.String PRODUCTOID="ProductoID";
 	    	public static final java.lang.String FECHA="Fecha";
 	        public static final java.lang.String ELABORADO_POR="ElaboradaPor";
 	        public static final java.lang.String TEXTONOTA="TextoNota";

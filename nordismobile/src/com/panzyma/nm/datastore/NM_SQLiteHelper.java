@@ -284,6 +284,30 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
             + "       FOREIGN KEY(objReciboID) REFERENCES Recibo(id) " 
 			+ ");";
     
+    String sqlCProducto = "CREATE TABLE IF NOT EXISTS CProducto ("
+    		   + "Id BLOB PRIMARY KEY  NOT NULL UNIQUE,"
+    		   + "Codigo TEXT ,"
+    		   + "Nombre TEXT ,"
+    		   + "Registro TEXT ,"
+    		   + "NombreComercial TEXT ,"
+    		   + "NombreGenerico TEXT ,"
+    		   + "Proveedor TEXT ,"
+    		   + "Categoria TEXT ,"
+    		   + "FormaFarmaceutica TEXT ,"
+    		   + "AccionFarmacologica TEXT ,"
+    		   + "TipoProducto TEXT ,"
+    		   + "Especialidades TEXT "
+    		   + ");";
+    
+    String sqlCNota = "CREATE TABLE IF NOT EXISTS CNota ("
+            + " Fecha TEXT , " 
+            + " ElaboradaPor TEXT , " 
+            + " TextoNota TEXT , " 
+            + " Concepto TEXT , " 
+            + " ProductoID BLOB ,"
+            + " FOREIGN KEY(ProductoID) REFERENCES CProducto(Id) " 
+ 		    + ");";
+    
     String sqlDrop_Cliente=			  "DROP TABLE IF EXISTS Cliente";
     String sqlDrop_Factura=			  "DROP TABLE IF EXISTS Factura";
     String sqlDrop_PromocionCobro=	  "DROP TABLE IF EXISTS PromocionCobro";
@@ -309,6 +333,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDrop_PedidoDetalle = "DROP TABLE IF EXISTS PedidoDetalle";
     String sqlDrop_PedidoPromocion = "DROP TABLE IF EXISTS PedidoPromocion";
     String sqlDrop_PedidoPromocionDetalle = "DROP TABLE IF EXISTS PedidoPromocionDetalle";
+    String sqlDrop_CProducto = "DROP TABLE IF EXISTS CProducto";
+    String sqlDrop_CNota = "DROP TABLE IF EXISTS CNotas";
 	
     String sqlDeleteDesProv=  		"DELETE FROM DescuentoProveedor";
     String sqlDeleteND=       		"DELETE FROM CCNotaDebito";
@@ -335,6 +361,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDelete_PedidoPromocion = "DELETE FROM PedidoPromocion";
     String sqlDelete_PedidoPromocionDetalle = "DELETE FROM PedidoPromocionDetalle";
     String sqlDelete_ReciboDetalleFormaPago = "DROP TABLE IF EXISTS ReciboDetalleFormaPago ";
+    String sqlDelete_CProducto = "DELETE FROM  CProducto";
+    String sqlDelete_CNota = "DELETE FROM  CNota";
 
     
     public NM_SQLiteHelper(Context contexto, String nombre, CursorFactory factory, int version) 
@@ -397,6 +425,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlReciboDetalleNotaDebito);
 			db.execSQL(sqlReciboDetalleNotaCredito);
 			db.execSQL(sqlReciboDetalleFormaPago);
+			db.execSQL(sqlCProducto);
+			db.execSQL(sqlCNota);
         } 
     	catch (SQLException e) 
         {
@@ -436,6 +466,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlDrop_PedidoPromocion);
 			db.execSQL(sqlDrop_PedidoPromocionDetalle);
 			db.execSQL(sqlDrop_ReciboDetalleFormaPago);
+			db.execSQL(sqlDrop_CProducto);
+			db.execSQL(sqlDrop_CNota);
         } 
     	catch (SQLException e) 
         {

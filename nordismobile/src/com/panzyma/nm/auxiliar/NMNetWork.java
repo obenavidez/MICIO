@@ -149,15 +149,15 @@ public class NMNetWork {
         } 
         catch(Exception ex) 
         {         	 
-        	SessionManager.hasError=true;
-        	error=new ErrorMessage("Error de conexión","error en la comunicación con el servidor de aplicaciones.\n",ex.toString());
-        	try 
-        	{
-        		SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());
-        		Processor.notifyToView(controller,ERROR,0,0,error);				 
-			} catch (Exception e) { 
-				e.printStackTrace();
-			}
+//        	SessionManager.hasError=true;
+//        	error=new ErrorMessage("Error de conexión","error en la comunicación con el servidor de aplicaciones.\n",ex.toString());
+//        	try 
+//        	{
+//        		SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());
+//        		Processor.notifyToView(controller,ERROR,0,0,error);				 
+//			} catch (Exception e) { 
+//				e.printStackTrace();
+//			}
         	
             return false;
         }  

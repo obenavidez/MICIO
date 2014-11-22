@@ -528,10 +528,10 @@ public class ProductoView extends ActionBarActivity implements
 			        AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 			        return;
 			    }
-			    if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext())&& !NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController())) {
-			     AppDialog.showMessage(pv,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-			     return;
-			    }
+//			    if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext())&& !NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController())) {
+//			     AppDialog.showMessage(pv,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+//			     return;
+//			    }
 			    fragmentActive = FragmentActive.FICHAPRODUCTOFRAGMENT;
 			    Bundle args = new Bundle();
 			    
