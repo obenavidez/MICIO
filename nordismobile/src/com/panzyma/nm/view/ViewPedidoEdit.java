@@ -593,11 +593,15 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					 ControllerProtocol.APLICARPEDIDOPROMOCIONES==msg.arg1
 				   ) 
 				{ 
+					if(msg.obj!=null && msg.obj instanceof Pedido)
+						pedido=(Pedido) msg.obj;
 					actualizarOnUINumRef(); 
 					actualizarDetallePedido();
 					salvado = true;
 				}
-				showStatus(msg.obj.toString(), true);
+				
+				showStatus((ControllerProtocol.SAVE_DATA_FROM_LOCALHOST==msg.what)?"El pedido fue guardado satisfactoriamente..."
+						:msg.obj.toString(), true);
 				break;
 			case ControllerProtocol.NOTIFICATION_DIALOG2:
 				showStatus(msg.obj.toString());
@@ -649,7 +653,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			public void run() {
 				// Informar al usuario
 				AppDialog.showMessage(me, "", sms,
-						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						AppDialog.DialogType.DIALOGO_ALERTA,
 						new AppDialog.OnButtonClickListener() {
 							@Override
 							public void onButtonClick(AlertDialog _dialog,
@@ -1072,7 +1076,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0)))
 			{
-				showStatus("No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado());
+				showStatus("No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado(),true);
 				return;
 			}
 

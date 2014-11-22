@@ -134,7 +134,7 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 8; 
+	private static final int BD_VERSION = 9; 
 	
 	public static final String TABLA_CLIENTE = "Cliente";
 	public static final String TABLA_FACTURA = "Factura";
@@ -313,8 +313,6 @@ public class DatabaseProvider extends ContentProvider
 		c = db.rawQuery(strQuery, null);   		 
 		return c;
 	}
-	
-	
 
 	public static void RegistrarTasaCambios(JSONArray objL,Context view) throws Exception
 	{		 
@@ -1441,7 +1439,7 @@ public class DatabaseProvider extends ContentProvider
 		return recibo;
 	}
 		
-	public static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception{
+	public static Pedido RegistrarPedido(Pedido pedido,Context cnt)throws Exception{
 		
 		SQLiteDatabase bdd = null;
 		try 
@@ -1454,19 +1452,22 @@ public class DatabaseProvider extends ContentProvider
 			bdd = d.getWritableDatabase();		
 			bdd.beginTransaction();
 			
-			values = new ContentValues();		
-			long id=0;
+			values = new ContentValues();		 
+			
+			Cursor _c=bdd.rawQuery("select Id from Pedido where NumeroMovil="+pedido.getNumeroMovil(), null);
+			if(_c.moveToNext())
+				idpedido=_c.getInt(0);
+		 
+			if(idpedido!=0)
+			{
+				bdd.delete(TABLA_PEDIDO, NMConfig.Pedido.Id+"="+String.valueOf(idpedido),null); 
+				bdd.delete(TABLA_PEDIDODETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(idpedido),null);
+				bdd.delete(TABLA_PEDIDOPROMOCION,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(idpedido),null);
+				bdd.delete(TABLA_PEDIDOPROMOCIONDETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(idpedido),null);
+			}
 			if(pedido.getNumeroCentral()!=0)
-				id=Long.valueOf(pedido.getNumeroMovil());
-			else
-				id=Long.valueOf(pedido.getId());
+				values.put(NMConfig.Pedido.Id, pedido.getId());	
 			
-			bdd.delete(TABLA_PEDIDO, NMConfig.Pedido.Id+"="+String.valueOf(id),null); 
-			bdd.delete(TABLA_PEDIDODETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(id),null);
-			bdd.delete(TABLA_PEDIDOPROMOCION,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(id),null);
-			bdd.delete(TABLA_PEDIDOPROMOCIONDETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(id),null);
-			
-			values.put(NMConfig.Pedido.Id, pedido.getId());		
 			values.put(NMConfig.Pedido.NumeroMovil, pedido.getNumeroMovil());		
 			values.put(NMConfig.Pedido.NumeroCentral, pedido.getNumeroCentral());		
 			values.put(NMConfig.Pedido.Tipo, pedido.getTipo());		
@@ -1500,7 +1501,8 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.Pedido.Exento, pedido.isExento());
 			values.put(NMConfig.Pedido.AutorizacionDGI, pedido.getAutorizacionDGI()); 
 			
-			idpedido=bdd.insert(TABLA_PEDIDO, null, values);		
+			idpedido=bdd.insert(TABLA_PEDIDO, null, values);	
+			pedido.setId(idpedido);
 			DetallePedido[] detp=pedido.getDetalles();
 			if(detp!=null && detp.length!=0)
 			for(DetallePedido dp:detp)
@@ -1561,7 +1563,7 @@ public class DatabaseProvider extends ContentProvider
 				bdd.endTransaction();
 				bdd.close();
 			}		
-		return idpedido;
+		return pedido;
 		} catch (Exception e) 
 		{
 			if (bdd != null || (bdd != null  && bdd.isOpen())) {

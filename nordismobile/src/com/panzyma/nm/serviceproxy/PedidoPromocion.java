@@ -71,26 +71,33 @@ public  class PedidoPromocion implements KvmSerializable,Parcelable {
 
     @Override
 	@SuppressLint("UseValueOf")
-	public Object getProperty(int _index) {
-        switch(_index)  {
-        case 0: return new Long(objPromocionID);
-        case 1: return Descuento;
-        case 2: 
-	        	SoapObject _detalle=new SoapObject(NMConfig.NAME_SPACE, "Detalles");
-	    		for(PedidoPromocionDetalle ppd:Detalles)
-	    		{ 
-	    			for(int i=0;i>ppd.getPropertyCount();i++)
-	    			{
-	    				PropertyInfo info=new PropertyInfo();
-	    				ppd.getPropertyInfo(i, null, info);
-	    				info.setNamespace(NMConfig.NAME_SPACE);
-	    				_detalle.addProperty(info.name,ppd.getProperty(i));
-	    			}
-	    			
-	    		}	
-        	return  _detalle;
-        case 3: return CodigoPromocion;
-        case 4: return NombrePromocion;
+	public Object getProperty(int _index) 
+    {
+        switch(_index)  
+        {
+	        case 0: return new Long(objPromocionID);
+	        case 1: return Descuento;
+	        case 2: 
+	        	
+		        	if (Detalles != null && Detalles.length > 0) 
+		        	{   
+		        		SoapObject _detalle=null; 
+			    		for(PedidoPromocionDetalle ppd:Detalles)
+			    		{ 
+			    			_detalle=new SoapObject("", "Detalles");
+			    			for(int i=0;i<ppd.getPropertyCount();i++)
+			    			{
+			    				PropertyInfo info=new PropertyInfo();
+			    				ppd.getPropertyInfo(i, null, info);
+			    			//	info.setNamespace(NMConfig.NAME_SPACE);
+			    				_detalle.addProperty(info.name,ppd.getProperty(i));
+			    			} 
+			    		}	
+		        	    return  _detalle;
+		        	}
+	        		break;
+	        case 3: return CodigoPromocion;
+	        case 4: return NombrePromocion;
         }
         return null;
     }

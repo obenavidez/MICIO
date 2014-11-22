@@ -21,7 +21,9 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
 import com.comunicator.Parameters;
+import com.panzyma.nm.serviceproxy.MarshallArray;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.PedidoPromocion;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -139,10 +141,38 @@ public class NMComunicacion {
         return  MakeCall(URL,envelope,NAME_SPACE,METHOD_NAME);
     } 
 	
+	public static synchronized Object InvokeMethod2(ArrayList<Parameters> params,String URL,String NAME_SPACE,String METHOD_NAME,Class<?> mapping)throws Exception
+    { 
+		 SoapObject request =new SoapObject(NAME_SPACE,METHOD_NAME); 
+	        for(PropertyInfo pinfo:params) 
+	        	request.addProperty(pinfo);
+	        //SoapSerializationEnvelope envelope = GetEnvelope(request);
+	        SMFSerializacionSoap envelope = GetEnvelope2(request);
+	        if(mapping!=null)
+	        	envelope.addMapping(NAME_SPACE,mapping.getSimpleName(),mapping); 		
+			Marshal floatMarshal = new MarshalFloat();  
+			floatMarshal.register(envelope);
+			new MarshalBase64().register(envelope); 
+	        return  MakeCall(URL,envelope,NAME_SPACE,METHOD_NAME);
+    } 
+	
+	
     public static synchronized SoapSerializationEnvelope GetEnvelope(SoapObject Soap)throws Exception
     {
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-        envelope.dotNet = true;
+        envelope.implicitTypes=true;
+        envelope.setAddAdornments(false);
+        envelope.dotNet = true; 
+        envelope.setOutputSoapObject(Soap);           
+        return envelope;
+    } 
+    
+    public static synchronized SMFSerializacionSoap GetEnvelope2(SoapObject Soap)throws Exception
+    {
+        //SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        SMFSerializacionSoap envelope = new SMFSerializacionSoap(SoapEnvelope.VER11);
+        envelope.implicitTypes=true;
+        envelope.dotNet = true; 
         envelope.setOutputSoapObject(Soap);           
         return envelope;
     } 
@@ -150,8 +180,8 @@ public class NMComunicacion {
 	public static synchronized Object MakeCall(String URL, SoapSerializationEnvelope Envelope, String NAMESPACE, String METHOD_NAME)throws Exception
     {   
 	        HttpTransportSE ht = new HttpTransportSE(URL); 
-	        ht.debug = true;
-	        ht.call(NAMESPACE+METHOD_NAME, Envelope);
+	        ht.debug = true; 
+	        ht.call(NAMESPACE+METHOD_NAME, Envelope); 
         return  Envelope.getResponse(); 
     }
 	

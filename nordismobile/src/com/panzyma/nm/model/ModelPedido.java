@@ -34,7 +34,7 @@ public class ModelPedido {
 		return com.comunicator.AppNMComunication.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.TraerDisponibilidadProductos);
 	}   
 	
-	public  static long RegistrarPedido(Pedido pedido,Context cnt)throws Exception
+	public  static Pedido RegistrarPedido(Pedido pedido,Context cnt)throws Exception
 	{
  		return DatabaseProvider.RegistrarPedido(pedido, cnt);	
 	}
@@ -45,9 +45,21 @@ public class ModelPedido {
 				 (new Object[]{credenciales,pedido}),
 				 (new Type[]{PropertyInfo.STRING_CLASS,pedido.getClass()}));
 		
-		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarPedido,Pedido.class);
+		//Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarPedido,Pedido.class);
+		Object rs= NMComunicacion.InvokeMethod2(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.EnviarPedido,Pedido.class);
 		return NMTranslate.ToObject(rs,new Pedido());
 	
+	}
+	
+	public static Pedido refrescarPedido(String credenciales,long refPedido ) throws Exception{
+		
+		Parameters params=new Parameters((new String[]{"Credentials","refPedido"}),
+				 (new Object[]{credenciales,refPedido}),
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS}));
+		
+		Object rs= NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.GetPedidoByRef,Pedido.class);
+		return NMTranslate.ToObject(rs,new Pedido());
+		
 	}
 	
 	public static List<vmEntity> obtenerPedidosLocalmente(ContentResolver content)
@@ -303,14 +315,14 @@ public class ModelPedido {
 		String[] projection = new String[] {};
 		int result = 0;
 		String url = "";
-		try {
-			/*
-			String url = DatabaseProvider.CONTENT_URI_PEDIDOPROMOCIONDETALLE +"/"+String.valueOf(PedidoID);
+		try 
+		{			
+			url = DatabaseProvider.CONTENT_URI_PEDIDOPROMOCIONDETALLE +"/"+String.valueOf(PedidoID);
 			content.delete(Uri.parse(url), "", projection);
 			url = DatabaseProvider.CONTENT_URI_PEDIDODETALLE +"/"+String.valueOf(PedidoID);
 			content.delete(Uri.parse(url), "", projection);
 			url = DatabaseProvider.CONTENT_URI_PEDIDOPROMOCION +"/"+String.valueOf(PedidoID);
-			content.delete(Uri.parse(url), "", projection);*/
+			content.delete(Uri.parse(url), "", projection);
 			url = DatabaseProvider.CONTENT_URI_PEDIDO +"/"+String.valueOf(PedidoID);			
 			result=content.delete(Uri.parse(url), "", projection);
 			//result = 1;

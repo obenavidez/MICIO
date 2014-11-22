@@ -327,7 +327,7 @@ public class BConfiguracionM extends BBaseM {
 
 
 	public static  void GET_DATACONFIGURATION(final String Url,final String Url2,final String Empresa,final String Credentials,
-			final String LoginUsuario, final String PIN, final Impresora dispositivo) throws Exception 
+			final String LoginUsuario, final String PIN, final Impresora dispositivo, boolean... mode) throws Exception 
 			{
 
 
@@ -358,7 +358,8 @@ public class BConfiguracionM extends BBaseM {
 			ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
 			SessionManager.setImpresora(dispositivo);
 			SessionManager.setLoguedUser(res.userInfo);
-			Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION, 0, 0, "Configuración Finalizada Correctamente.");
+			if(mode==null)
+				Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION, 0, 0, "Configuración Finalizada Correctamente.");
 
 		} else
 			throw new Exception(res.get_error()); 

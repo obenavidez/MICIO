@@ -67,8 +67,8 @@ public class BPedidoM extends BBaseM {
 					onLoadALLData_From_Server();
 					val= true;
 					break;
-				case UPDATE_ITEM_FROM_SERVER:
-					onUpdateItem_From_Server();
+				case UPDATE_ITEM_FROM_SERVER:					
+					onUpdateItem_From_Server(b.getLong("refpedido"));
 					val= true;
 					break;
 				case UPDATE_INVENTORY_FROM_SERVER:
@@ -214,8 +214,45 @@ public class BPedidoM extends BBaseM {
 
 	}
 
-	private void onUpdateItem_From_Server() {
+	private void onUpdateItem_From_Server(final long refPedido) {
 
+		try 
+		{
+			credenciales="";
+			credenciales=SessionManager.getCredentials(); 
+			if(credenciales=="")
+				return;
+			getPool().execute(new Runnable() {
+
+				@Override
+				public void run() {
+ 
+					try 
+					{ 
+						NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER, 0, 0,guardar_Pedido(ModelPedido.refrescarPedido(credenciales, refPedido)));
+					} catch (Exception e) { 
+						Log.e(TAG, "Error in the update thread", e);
+						try {
+							Processor
+									.notifyToView(
+											NMApp.getController(),
+											ERROR,
+											0,
+											0,
+											ErrorMessage.newInstance(
+													"Error en el envio del pedido",
+													e.getMessage(), "\n Causa: "
+															+ e.getCause()));
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					}
+					
+					}
+			});
+		}catch(Exception e){
+			
+		}
 	}
 
 	private void onUpdateInventory_From_Server() {
@@ -284,7 +321,7 @@ public class BPedidoM extends BBaseM {
 								ControllerProtocol.NOTIFICATION,
 								ControllerProtocol.SAVE_DATA_FROM_LOCALHOST,
 								0,
-								"Pedido guardado exitosamente");
+								pedido);
 						
 					} catch (Exception e) {
 						Log.e(TAG, "Error in the update thread", e);
@@ -320,11 +357,11 @@ public class BPedidoM extends BBaseM {
 		}
 	}
 
-	public long RegistrarPedido(Pedido pedido, Context cnt) throws Exception {
+	public Pedido RegistrarPedido(Pedido pedido, Context cnt) throws Exception {
 		return ModelPedido.RegistrarPedido(pedido, cnt);
 	}
  
-	public void guardar_Pedido(Pedido pedido)throws Exception
+	public Pedido guardar_Pedido(Pedido pedido)throws Exception
 	{		
 		//Salvando el tipo de pedido (crédito contado)		 
         Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
@@ -339,7 +376,7 @@ public class BPedidoM extends BBaseM {
             String strIdMovil = prefijo.intValue() + "" + pedidomax.intValue();
             int idMovil = Integer.parseInt(strIdMovil);
             
-            pedido.setId(idMovil);
+            pedido.setId(0);
             pedido.setNumeroMovil(idMovil);
             pedido.setObjEstadoID(0);
             pedido.setObjCausaEstadoID(0);
@@ -350,16 +387,14 @@ public class BPedidoM extends BBaseM {
         }  
         RegistrarPedido(pedido,NMApp.getContext());         
         ModelConfiguracion.ActualizarSecuenciaPedido(NMApp.getContext(),(pedidomax));
+        return pedido;
 	}
 	
 	public void enviarPedido(final Pedido pedido)  
 	{
 		try 
 		{
-			credenciales="";
-			credenciales=SessionManager.getCredentials(); 
-			if(credenciales=="")
-				return;
+			
 			
 			getPool().execute(new Runnable()
 			{ 
@@ -369,7 +404,14 @@ public class BPedidoM extends BBaseM {
 				public void run()
 			    {					 
 					try 
-					{ 				 
+					{ 	
+						credenciales="";
+						credenciales=SessionManager.getCredentials(); 
+						if(credenciales=="")
+							return;
+						
+						Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
+								0,0,"Salvando primero la información en el dispositivo");
 						//guardar primero el pedido localmente 
 						guardar_Pedido(pedido);
 						
@@ -381,7 +423,7 @@ public class BPedidoM extends BBaseM {
 						if (obj == null) return; 
 						
 					    //guardando de nuevo localmente el pedido ya actualizado  
-						RegistrarPedido(obj,NMApp.getContext());
+						guardar_Pedido(obj);
 						 
 						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
 								0,0,"Actualizando el estado de cuentas del Cliente");
@@ -395,8 +437,7 @@ public class BPedidoM extends BBaseM {
 					{ 
 						Log.e(TAG, "Error in the update thread", e);
 						try {
-							Processor
-									.notifyToView(
+							Processor.notifyToView(
 											NMApp.getController(),
 											ERROR,
 											0,
@@ -412,8 +453,6 @@ public class BPedidoM extends BBaseM {
 					}
 			    }
 			});
-			Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
-					0,0,"enviando pedido al servidor central");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -475,8 +514,7 @@ public class BPedidoM extends BBaseM {
 		}
 		//return ModelPedido.anularPedido("sa-nordis09-dp", pedidoid);
 	}
- 
-    
+     
 	public void imprimirPedido(final Pedido pedido, final Cliente cliente)
     { 
 		try 

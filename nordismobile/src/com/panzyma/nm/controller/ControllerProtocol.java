@@ -15,7 +15,9 @@ public interface ControllerProtocol {
 	int ID_SALVAR=01; 
 	int ID_REQUEST_SALVARPEDIDO=104;
 	int ID_REQUEST_ENVIARPEDIDO=105;
+	int ID_REQUEST_UPDATEITEM_FROMSERVER=108;
 	int ID_REQUEST_PROMOCIONES=106;
+	
 	int V_REQUEST_QUIT = 101; // empty
 	int V_REQUEST_UPDATE = 102; // empty
 	int V_REQUEST_DATA = 103; // empty

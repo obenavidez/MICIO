@@ -44,6 +44,7 @@ public class NMConfig
 		public static final String SolicitarDescuento="SolicitarDescuento";
 		public static final String VerificarAutorizacionDescuento="VerificarAutorizacionDescuento";
 		public static final String GetCProducto="GetCProducto";
+		public static final String GetPedidoByRef="GetPedidoByRef";
 		
 	}
 	

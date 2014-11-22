@@ -344,7 +344,11 @@ public class SessionManager
 													{ 
 														if(user==null && NMApp.modulo== NMApp.Modulo.CONFIGURACION)
 														{
-															BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, nombreusuario+"-"+password+"-"+empresa, ((ViewConfiguracion)SessionManager.getContext()).getTBoxUserName(), NMNetWork.getDeviceId(context),getImpresora());
+															BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, 
+																									nombreusuario+"-"+password+"-"+empresa,
+																									((ViewConfiguracion)SessionManager.getContext()).getTBoxUserName(),
+																									NMNetWork.getDeviceId(context),getImpresora(),
+																									true);
 														}														
 														_esAdmin=res.IsAdmin();
 														SessionManager.setEmpresa(empresa);

@@ -10,6 +10,7 @@ import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
 import com.google.gson.Gson;
+import com.panzyma.nm.serviceproxy.PedidoPromocion;
 
 @SuppressWarnings({"unchecked","unused"})
 public class NMTranslate 
@@ -38,11 +39,12 @@ public class NMTranslate
     	Field[] fields; 
     	Type type;
     	PropertyInfo pInfo=new PropertyInfo();      
+    	PropertyInfo pInfo2=new PropertyInfo();
 		fields=(unknowclass.getClass().getDeclaredFields().length !=0)? unknowclass.getClass().getDeclaredFields():unknowclass.getClass().getFields();
-		
+		SoapObject objsoap=null;
 		if (obj != null) 
 		{
-			   
+			    objsoap=(SoapObject) obj;
 				for(int i=0;i<fields.length;i++)
 				{   
 						type=fields[i].getType();
@@ -50,10 +52,11 @@ public class NMTranslate
 					       continue; 
 				        fields[i].setAccessible(true); 
 				        Object value=null;
-				        boolean exists=((SoapObject) obj).hasProperty(fields[i].getName()); 
+				       
+				        boolean exists=objsoap.hasProperty(fields[i].getName()); 
 				        if(exists)
-					        value=((SoapObject) obj).getProperty(fields[i].getName()); 
-					    
+					        value=objsoap.getProperty(fields[i].getName()); 
+				        
 					    if(value!=null)
 					    {
 							    if(value.getClass()==org.ksoap2.serialization.SoapPrimitive.class)
@@ -65,15 +68,24 @@ public class NMTranslate
 							    	SoapObject soap=(SoapObject) value;
 							    	if(soap.getPropertyCount()!=0)
 							    	{									    		 
-								    	soap.getPropertyInfo(0, pInfo);
+								    	soap.getPropertyInfo(0, pInfo); 
 								    	 
 								    	if(fields[i].getType().isArray())
 								    	{
-									    	Class<?> c=Class.forName("com.panzyma.nm.serviceproxy."+pInfo.getName()); 
-									    	ArrayList<?> o=ToCollection(soap,c);
-									    	T[] objrs =(T[]) Array.newInstance(c, o.size());  
-									    	objrs=o.toArray(objrs); 
-									    	fields[i].set(unknowclass,objrs); 	
+								    		T[] objrs;
+								    		Class<?> c=fields[i].getType().getComponentType();	
+								    		if("PedidoPromocion".equals(c.getSimpleName()))
+								    		{
+								    			objrs=(T[]) ObtnerPedidoPromocion(objsoap,c);
+								    			fields[i].set(unknowclass,objrs);
+								    		}
+								    		else
+								    		{
+										    	ArrayList<?> o=ToCollection(soap,c);
+										        objrs =(T[]) Array.newInstance(c, o.size());  
+										    	objrs=o.toArray(objrs); 
+										    	fields[i].set(unknowclass,objrs); 	
+								    		}
 							    		}
 								    	else
 								    	{
@@ -104,14 +116,21 @@ public class NMTranslate
     	else if(type==Long.class || type==Long.TYPE)
 	    	field.set(unknowclass,(Long.valueOf(value.toString())));
 	}
+	
 	public synchronized static <U, T> ArrayList<T> ToCollection(Object object,Class<T> unKnowClass) throws Exception 
 	{ 
     	Field[] fields;
     	SoapObject obj=(SoapObject) object;
-        ArrayList<T> convertedObjects=new ArrayList<T>(obj.getPropertyCount());  
+    	if(obj==null)
+    		return null;
+    	if(obj.getPropertyCount()!=0 && obj.getProperty(0).getClass()==org.ksoap2.serialization.SoapPrimitive.class);
+        //ArrayList<T> convertedObjects=new ArrayList<T>(obj.getPropertyCount());  
+    	ArrayList<T> convertedObjects=new ArrayList<T>((obj.getPropertyCount()!=0 && obj.getProperty(0).getClass()==org.ksoap2.serialization.SoapPrimitive.class)?1:
+    		obj.getPropertyCount());
     	for(int a=0;a<obj.getPropertyCount();a++)
 		{
-    		SoapObject obj2=(SoapObject) obj.getProperty(a);  
+    		SoapObject obj2=(obj.getPropertyCount()!=0 && obj.getProperty(0).getClass()==org.ksoap2.serialization.SoapPrimitive.class)?obj:
+    				(SoapObject) obj.getProperty(a);  
     		convertedObjects.add(a, unKnowClass.newInstance()); 
     		fields=(convertedObjects.get(a).getClass().getDeclaredFields().length!=0)?convertedObjects.get(a).getClass().getDeclaredFields():convertedObjects.get(a).getClass().getFields();
     		 
@@ -183,10 +202,43 @@ public class NMTranslate
                 	
                 }    			
 			}
+    		if (obj.getProperty(0).getClass()==org.ksoap2.serialization.SoapPrimitive.class)
+    			break;
 		} 
 		return convertedObjects;				
 	}
 
- 
+	public synchronized static <T> T[] ObtnerPedidoPromocion(SoapObject soap,Class<T> unKnowClass)throws Exception
+	{
+		PropertyInfo pInfo2=new PropertyInfo(); 
+		SoapObject obj = null;
+		ArrayList<PedidoPromocion> lpp=new ArrayList<PedidoPromocion>();
+		T[] objrs = null ;
+		for(int e=31;e<soap.getPropertyCount();e++)
+		{
+			soap.getPropertyInfo(e, null, pInfo2);
+			if("PromocionesAplicadas".equals(pInfo2.getName()))
+			{
+				if(soap.getProperty(e)!=null)
+				{	
+					obj=(SoapObject) soap.getProperty(e);   
+		    		T entidad=(T) ToObject(obj,unKnowClass.newInstance());	
+		    		lpp.add((PedidoPromocion) entidad); 
+	    		}
+			}
+			else
+				break;
+			
+		} 
+		if(lpp!=null && lpp.size()!=0)
+		{
+			objrs =(T[]) Array.newInstance(unKnowClass, lpp.size());  
+			objrs=lpp.toArray(objrs); 
+		}
+    	 
+		
+		 return objrs;
+        
+	}
 	
 }
