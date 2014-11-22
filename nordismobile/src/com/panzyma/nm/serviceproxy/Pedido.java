@@ -4,22 +4,12 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
  
- 
-
-
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Vector;
-
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
- 
-
-
-import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.interfaces.Item;
-import com.panzyma.nm.logic.DataArray;
   
 public class Pedido  implements KvmSerializable,Item,Parcelable{ 
 	
@@ -398,7 +388,6 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 		    			{
 		    				PropertyInfo info=new PropertyInfo();
 		    				dp.getPropertyInfo(i, null, info);
-		    				//info.setNamespace(NMConfig.NAME_SPACE);
 		    				item.addProperty(info.name,dp.getProperty(i));
 		    			}		    	
 		    			_detalle.addSoapObject(item);
@@ -422,7 +411,6 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 					{
 						PropertyInfo info = new PropertyInfo();
 						pa.getPropertyInfo(i, null, info);
-						//info.setNamespace(NMConfig.NAME_SPACE);
 						if ("Detalles" == info.name)
 							item.addSoapObject((SoapObject) pa.getProperty(i));
 						else
@@ -581,19 +569,12 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
            case 30:
                _info.name = "Detalles";
                _info.type= DetallePedido[].class;
-               //_info.type= new DetallePedido(){}.getClass();
-              // _info.type = new  Vector<DetallePedido>().getClass();
-              //_info.type =  dataarray.getClass();
                break;
            case 31:
         	   if(PromocionesAplicadas!= null && PromocionesAplicadas.length > 0) 
         	   {        		   
                    _info.name = "PROMOCIONES_AP";
                    _info.type=PedidoPromocion[].class;
-//                   PropertyInfo arrayType = new PropertyInfo();
-//                   arrayType.name = "PedidoPromocion";
-//                   arrayType.type =  PedidoPromocion.class;               
-//                   _info.elementType = arrayType;
         	   }        	  
                break; 
            case 32:
@@ -697,8 +678,6 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 		parcel.writeString(NombreVendedor);
 		parcel.writeParcelableArray(Detalles, flags);
 		parcel.writeParcelableArray(PromocionesAplicadas,flags);
-		//parcel.writeArray(Detalles);
-		//parcel.writeArray(PromocionesAplicadas);
 		parcel.writeString(Nota);
 		parcel.writeString(AutorizacionDGI);
 		  
@@ -746,11 +725,6 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 		if (parcelableArray != null) {
 			this.PromocionesAplicadas = Arrays.copyOf(parcelableArray, parcelableArray.length, PedidoPromocion[].class);
 		}
-		//this.Detalles=(DetallePedido[]) parcel.readParcelableArray(DetallePedido.class.getClassLoader());
-		//this.PromocionesAplicadas=(PedidoPromocion[] ) parcel.readParcelableArray(PedidoPromocion.class.getClassLoader());
-
-//		this.Detalles=(DetallePedido[]) parcel.readArray(DetallePedido[].class.getClassLoader());
-//		this.PromocionesAplicadas=(PedidoPromocion[] ) parcel.readArray(PedidoPromocion[].class.getClassLoader());
 		this.Nota=parcel.readString();
 		this.AutorizacionDGI=parcel.readString();
 	}
@@ -761,140 +735,5 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 		return 0;
 	}
 	 
-	public SoapObject getSoapObject (String NAME_SPACE)throws Exception
-  { 
-		
-      SoapObject p =new SoapObject(NAME_SPACE,"pedido"); 
-      SoapObject dp =new SoapObject(NAME_SPACE,"Detalles");
-
-      p.addProperty(NMConfig.Pedido.Id,getId());
-      p.addProperty(NMConfig.Pedido.NumeroMovil,getNumeroMovil());
-      p.addProperty(NMConfig.Pedido.NumeroCentral,getNumeroCentral());
-      p.addProperty(NMConfig.Pedido.Tipo,getTipo());
-      p.addProperty(NMConfig.Pedido.Fecha,getFecha());
-      p.addProperty(NMConfig.Pedido.objClienteID,getObjClienteID());
-
-      p.addProperty(NMConfig.Pedido.NombreCliente,getNombreCliente());
-      p.addProperty(NMConfig.Pedido.objSucursalID,getObjSucursalID());
-      p.addProperty(NMConfig.Pedido.NombreSucursal,getNombreSucursal());
-      p.addProperty(NMConfig.Pedido.objTipoPrecioVentaID,getObjTipoPrecioVentaID());
-      p.addProperty(NMConfig.Pedido.CodTipoPrecio,getCodTipoPrecio());
-      p.addProperty(NMConfig.Pedido.DescTipoPrecio,getDescTipoPrecio());
-
-      p.addProperty(NMConfig.Pedido.objVendedorID,getObjVendedorID());
-      p.addProperty(NMConfig.Pedido.BonificacionEspecial,getBonificacionEspecial());
-      p.addProperty(NMConfig.Pedido.BonificacionSolicitada,getBonificacionSolicitada());
-      p.addProperty(NMConfig.Pedido.PrecioEspecial,getPrecioEspecial());
-      p.addProperty(NMConfig.Pedido.PrecioSolicitado,getPrecioSolicitado());
-      p.addProperty(NMConfig.Pedido.PedidoCondicionado,getPedidoCondicionado());
-      
-      p.addProperty(NMConfig.Pedido.Condicion,getCondicion());
-      p.addProperty(NMConfig.Pedido.Subtotal,getSubtotal());
-      p.addProperty(NMConfig.Pedido.Descuento,getDescuento());
-      p.addProperty(NMConfig.Pedido.Impuesto,getImpuesto());
-      p.addProperty(NMConfig.Pedido.Total,getTotal());
-      p.addProperty(NMConfig.Pedido.objEstadoID,getObjEstadoID());
-      
-      p.addProperty(NMConfig.Pedido.CodEstado,getCodEstado());
-      p.addProperty(NMConfig.Pedido.DescEstado,getDescEstado());
-      p.addProperty(NMConfig.Pedido.objCausaEstadoID,getObjCausaEstadoID());
-      p.addProperty(NMConfig.Pedido.CodCausaEstado,getCodCausaEstado());
-      p.addProperty(NMConfig.Pedido.DescCausaEstado,getDescCausaEstado());
-      p.addProperty(NMConfig.Pedido.NombreVendedor,getNombreVendedor());
-      /////////////////////////////////////////////////////////////////////////
-      
-      DetallePedido[] ad=getDetalles();
-      for(int i=0;i<ad.length;i++)
-      {
-      	DetallePedido d=ad[i];
-      	SoapObject _dp =new SoapObject(NAME_SPACE,"DetallePedido");
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.Id,d.getId());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.objPedidoID,d.getObjPedidoID());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.objProductoID,d.getObjProductoID());   
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.codProducto,d.getCodProducto());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.nombreProducto,d.getNombreProducto());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadOrdenada,d.getCantidadOrdenada()); 
-
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadBonificada,d.getCantidadBonificada());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.objBonificacionID,d.getObjBonificacionID());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.bonifEditada,d.getBonifEditada()); 
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadBonificadaEditada,d.getCantidadBonificadaEditada());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.precio,d.getPrecio());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.montoPrecioEditado,d.getMontoPrecioEditado()); 
-
-      	
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.precioEditado,d.getPrecioEditado());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.subtotal,d.getSubtotal());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.descuento,d.getDescuento()); 
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.porcImpuesto,d.getPorcImpuesto());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.impuesto,d.getImpuesto());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.total,d.getTotal()); 
-
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadDespachada,d.getCantidadDespachada());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadADespachar,d.getCantidadADespachar());
-      	_dp.addProperty(NMConfig.Pedido.DetallePedido.cantidadPromocion,d.getCantidadPromocion()); 
-
-      	dp.addSoapObject(_dp);
-      }
-      p.addSoapObject(dp);
-      PedidoPromocion[] app=getPromocionesAplicadas();
-      
-      for(int i=0;app!=null && i<app.length;i++)
-      {
-      	PedidoPromocion pr=app[i]; 
-        SoapObject pp =new SoapObject(NAME_SPACE,"PromocionesAplicadas");
-      	pp.addProperty(NMConfig.Pedido.PedidoPromocion.objPromocionID,pr.getObjPromocionID());
-      	pp.addProperty(NMConfig.Pedido.PedidoPromocion.descuento,pr.getDescuento());
-      	
-      	 
-      	 PedidoPromocionDetalle[] appd=pr.getDetalles();
-           for(int e=0;appd!=null && e<appd.length;e++)
-           {
-          	 PedidoPromocionDetalle ppd=appd[e];
-          	 SoapObject _ppd=new SoapObject(NAME_SPACE,"Detalles");
-          	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.objProductoID,ppd.getObjProductoID());
-          	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.nombreProducto,ppd.getNombreProducto());
-          	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.cantidadEntregada,ppd.getCantidadEntregada());
-          	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.descuento,ppd.getDescuento());
-          	 
-          	 pp.addSoapObject(_ppd);
-           	 
-           } 
-        pp.addProperty(NMConfig.Pedido.PedidoPromocion.codigoPromocion,pr.getCodigoPromocion());
-        pp.addProperty(NMConfig.Pedido.PedidoPromocion.nombrePromocion,pr.getNombrePromocion());
-      	p.addSoapObject(pp);  
-      	
-//      	SoapObject _pp =new SoapObject(NAME_SPACE,"PromocionesAplicadas");
-//      	_pp.addProperty(NMConfig.Pedido.PedidoPromocion.objPromocionID,pr.getObjPromocionID());
-//      	_pp.addProperty(NMConfig.Pedido.PedidoPromocion.descuento,pr.getDescuento());
-//      	_pp.addProperty(NMConfig.Pedido.PedidoPromocion.codigoPromocion,pr.getCodigoPromocion());
-//      	_pp.addProperty(NMConfig.Pedido.PedidoPromocion.nombrePromocion,pr.getNombrePromocion());
-//      	 
-//      	 PedidoPromocionDetalle[] appd=pr.getDetalles();
-//           for(int e=0;e>appd.length;e++)
-//           {
-//          	 PedidoPromocionDetalle ppd=appd[i];
-//          	 SoapObject _ppd=new SoapObject(NAME_SPACE,"Detalles");
-//          	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.objProductoID,ppd.getObjProductoID());
-//          	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.nombreProducto,ppd.getNombreProducto());
-//          	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.cantidadEntregada,ppd.getCantidadEntregada());
-//          	 _ppd.addProperty(NMConfig.Pedido.PedidoPromocion.PedidoPromocionDetalle.descuento,ppd.getDescuento());
-//          	 
-//          	 _pp.addSoapObject(_ppd);
-//           	 
-//           } 
-//      	pp.addSoapObject(_pp);
-      	
-      }
-      
-     
-            
-      p.addProperty(NMConfig.Pedido.Nota,getNota());
-      p.addProperty(NMConfig.Pedido.Exento,isExento());
-      p.addProperty(NMConfig.Pedido.AutorizacionDGI,getAutorizacionDGI());
-      
-      
-		return p;
-	}
-	
+	 
 }
