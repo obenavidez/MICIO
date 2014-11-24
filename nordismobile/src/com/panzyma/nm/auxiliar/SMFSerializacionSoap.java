@@ -76,7 +76,8 @@ public class SMFSerializacionSoap extends SoapSerializationEnvelope {
 
 	@Override
 	public void writeObjectBody(XmlSerializer writer, KvmSerializable obj)
-			throws IOException {
+			throws IOException 
+	{
 		int cnt = obj.getPropertyCount();
 		
 		PropertyInfo propertyInfo = new PropertyInfo();

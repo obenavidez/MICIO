@@ -684,6 +684,7 @@ public class ViewPedido extends ActionBarActivity implements
 				return false;
 			}
 			establecer((Pedido)msg.obj, true,ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER);
+			showStatus("Pedido actualizado con exito...", true);
 			val = true;
 			break; 
 			

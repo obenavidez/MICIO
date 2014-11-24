@@ -124,7 +124,6 @@ public class NMTranslate
     	if(obj==null)
     		return null;
     	if(obj.getPropertyCount()!=0 && obj.getProperty(0).getClass()==org.ksoap2.serialization.SoapPrimitive.class);
-        //ArrayList<T> convertedObjects=new ArrayList<T>(obj.getPropertyCount());  
     	ArrayList<T> convertedObjects=new ArrayList<T>((obj.getPropertyCount()!=0 && obj.getProperty(0).getClass()==org.ksoap2.serialization.SoapPrimitive.class)?1:
     		obj.getPropertyCount());
     	for(int a=0;a<obj.getPropertyCount();a++)
