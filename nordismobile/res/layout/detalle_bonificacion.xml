@@ -11,7 +11,8 @@
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:layout_weight="1"
-             android:textColor="@color/White"
+             android:textStyle="bold" 
+             style="@style/StyleFontTexViewMediumLarge"
              android:textSize="10dp" />
 
         <TextView
@@ -23,7 +24,8 @@
             android:lines="1"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
-            android:textColor="@color/White"
+            android:textColor="@color/Black"
+            style="@style/StyleFontTexViewMediumLarge"
             android:textSize="10dp" />
 
         <TextView
@@ -35,7 +37,9 @@
             android:lines="1"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
-            android:textColor="@color/White"
-            android:textSize="10dp" />
+            style="@style/StyleFontTexViewMediumLarge"
+            android:textSize="10dp"
+            android:textColor="@color/Blue"
+             />
       
 </LinearLayout>
