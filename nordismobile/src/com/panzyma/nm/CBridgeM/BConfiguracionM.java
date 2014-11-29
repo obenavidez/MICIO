@@ -361,7 +361,7 @@ public class BConfiguracionM extends BBaseM {
 				ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
 				SessionManager.setImpresora(dispositivo);
 				SessionManager.setLoguedUser(res.userInfo);
-				if(mode==null)
+				if(mode.length==0)
 					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION, 0, 0, "Configuración Finalizada Correctamente.");
 
 			} else

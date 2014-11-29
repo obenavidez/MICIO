@@ -347,8 +347,7 @@ public class SessionManager
 															BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, 
 																									nombreusuario+"-"+password+"-"+empresa,
 																									((ViewConfiguracion)SessionManager.getContext()).getTBoxUserName(),
-																									NMNetWork.getDeviceId(context),getImpresora(),
-																									true);
+																									NMNetWork.getDeviceId(context),getImpresora());
 														}														
 														_esAdmin=res.IsAdmin();
 														SessionManager.setEmpresa(empresa);
