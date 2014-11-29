@@ -39,7 +39,7 @@
             android:scrollHorizontally="true"
             style="@style/StyleFontTexViewMediumLarge"
             android:textSize="10dp"
-            android:textColor="@color/Blue"
+            android:textColor="@color/Black"
              />
       
 </LinearLayout>
