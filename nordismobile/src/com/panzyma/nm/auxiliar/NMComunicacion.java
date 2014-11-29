@@ -21,10 +21,7 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
 import com.comunicator.Parameters;
-import com.panzyma.nm.serviceproxy.MarshallArray;
 import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.PedidoPromocion;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;

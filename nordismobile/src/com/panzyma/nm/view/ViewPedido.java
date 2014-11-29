@@ -4,8 +4,6 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
-import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +55,6 @@ import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
@@ -68,7 +65,6 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.Promociones;
-import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
@@ -123,7 +119,21 @@ public class ViewPedido extends ActionBarActivity implements
 	}
 
 	public enum FragmentActive {
-		LIST, ITEM, CUENTAS_POR_COBRAR, CONSULTA_VENTAS
+		LIST(1), ITEM(2), CUENTAS_POR_COBRAR(3), CONSULTA_VENTAS(4);
+		int value;
+		FragmentActive(int _value)
+		{
+			value=_value;
+		}
+		public int getValue()
+		{
+			return value;
+		}
+		
+		public static FragmentActive getValue(int x) 
+		{			
+			return FragmentActive.values()[x];
+		}
 	};
 
 	private FragmentActive fragmentActive = null;
@@ -184,9 +194,13 @@ public class ViewPedido extends ActionBarActivity implements
 
 		setContentView(R.layout.layout_client_fragment);
 
+		if(savedInstanceState!=null)
+			fragmentActive=savedInstanceState.getParcelable("fragmentActive");
 		initComponent();
-
-		fragmentActive = FragmentActive.LIST;
+		
+		
+		if(fragmentActive==null || (fragmentActive!=null && fragmentActive==FragmentActive.getValue(0)))
+			fragmentActive = FragmentActive.LIST;
 
 		vp = this;
 		transaction = getSupportFragmentManager().beginTransaction();
@@ -206,7 +220,8 @@ public class ViewPedido extends ActionBarActivity implements
 
 			@Override
 			public void onItemClick(AdapterView parent, View view,
-					int position, long id) {
+					int position, long id) 
+			{
 				Bundle bundle =null;
 				Message msg =null;
 				int pos = 0;
@@ -214,200 +229,151 @@ public class ViewPedido extends ActionBarActivity implements
 				// SELECCIONAR LA POSICION DEL PEDIDO SELECCIONADO
 				// ACTUALMENTE
 				positioncache = customArrayAdapter.getSelectedPosition();
+				pedido_selected = customArrayAdapter.getItem(positioncache);
 				// CERRAR EL MENU DEL DRAWER
 				drawerLayout.closeDrawers();
 
-				switch (position) {
-				case NUEVO_PEDIDO:
-					intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
-					intent.putExtra("requestcode", NUEVO_PEDIDO);
-					startActivityForResult(intent, NUEVO_PEDIDO);// Activity is
-
-					break;
-				case ABRIR_PEDIDO:
-					try {
+				switch (position) 
+				{
+					case NUEVO_PEDIDO:
+						intent = new Intent(ViewPedido.this, ViewPedidoEdit.class);
+						intent.putExtra("requestcode", NUEVO_PEDIDO);
+						startActivityForResult(intent, NUEVO_PEDIDO);// Activity is
+	
+						break;
+					case ABRIR_PEDIDO:
+						abrirPedido(true);
+						break;
+					case ENVIAR_PEDIDO:
+						enviarPedido(true);
+						break;
+					case REFRESCAR_PEDIDO:					
+						msg = new Message();
+						b = new Bundle();
+						b.putLong("refpedido", pedido_selected.getNumero());
+						msg.setData(b);
+						msg.what =ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
+						NMApp.getController().getInboxHandler().sendMessage(msg);					
+						break;
+					case BORRAR_PEDIDO:
+	
+						// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+						pedido_selected = customArrayAdapter.getItem(positioncache);
 						if (pedido_selected != null) {
-							drawerLayout.closeDrawers();
-							positioncache = customArrayAdapter
-									.getSelectedPosition();
-							Pedido p = null;
-							p = Ventas.obtenerPedidoByID(
-									pedido_selected.getId(), vp);
-							intent = new Intent(ViewPedido.this,
-									ViewPedidoEdit.class);
-							b = new Bundle();
-							b.putParcelable("pedido", p);
-							intent.putExtras(b);
-							intent.putExtra("requestcode", ABRIR_PEDIDO);
-							startActivityForResult(intent, ABRIR_PEDIDO);// Activity
-						} // is
-
-					} catch (Exception e) {
-						e.printStackTrace();
-						AppDialog.showMessage(vp, "Información",
-								e.getMessage(), DialogType.DIALOGO_ALERTA);
-					}
-					// with requestCode 2
-					break;
-
-				case ENVIAR_PEDIDO:
-					enviarPedido();
-					break;
-
-				case REFRESCAR_PEDIDO:
-					
-					msg = new Message();
-					b = new Bundle();
-					b.putLong("refpedido", pedido_selected.getNumero());
-					msg.setData(b);
-					msg.what =ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
-					NMApp.getController().getInboxHandler().sendMessage(msg);
-					
-					break;
-				case BORRAR_PEDIDO:
-
-					// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-					pedido_selected = customArrayAdapter.getItem(positioncache);
-					if (pedido_selected != null) {
-						// OBTENER EL ESTADO DEL REGISTRO
-						state = pedido_selected.getDescEstado();
-						if ("PORVALIDAR".equals(state)
-								|| "APROBADO".equals(state)) {
-							AppDialog
-									.showMessage(
-											vp,
-											"Información",
-											"No puede borrar pedidos por validar o aprobados.",
-											DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						AllowRemove("Confirmación",
-								"¿Está seguro que desea eliminar el pedido?",
-								DialogType.DIALOGO_CONFIRMACION);
-					} else {
-						ShowNoRecords();
-					}
-					// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-					if (customArrayAdapter.getCount() != 0)
-						pedido_selected = customArrayAdapter.getItem(0);
-					else
-						pedido_selected = null;
-
-					break;
-
-				case CUENTAS_POR_COBRAR:
-					pedido_selected = customArrayAdapter.getItem(positioncache);
-					if (pedido_selected != null) {
-						fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
-						if (findViewById(R.id.fragment_container) != null) {
-							Pedido p1 = null;
-							try {
-								p1 = Ventas.obtenerPedidoByID(
-										pedido_selected.getId(), vp);
-							} catch (Exception e) {
-								e.printStackTrace();
+							// OBTENER EL ESTADO DEL REGISTRO
+							state = pedido_selected.getDescEstado();
+							if ("PORVALIDAR".equals(state)
+									|| "APROBADO".equals(state)) {
+								AppDialog
+										.showMessage(
+												vp,
+												"Información",
+												"No puede borrar pedidos por validar o aprobados.",
+												DialogType.DIALOGO_ALERTA);
+								return;
 							}
-							transaction = getSupportFragmentManager()
-									.beginTransaction();
-							cuentasPorCobrar = new CuentasPorCobrarFragment();
-							bundle = new Bundle();
-							bundle.putInt(CuentasPorCobrarFragment.ARG_POSITION,
-									positioncache);
-							bundle.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
-									p1.getObjSucursalID());
-							cuentasPorCobrar.setArguments(bundle);
-							transaction.replace(R.id.fragment_container,
-									cuentasPorCobrar);
-							transaction.addToBackStack(null);
-							transaction.commit();
+							AllowRemove("Confirmación",
+									"¿Está seguro que desea eliminar el pedido?",
+									DialogType.DIALOGO_CONFIRMACION);
+						} else {
+							ShowNoRecords();
 						}
-					}
-					break;
-				case CONSULTA_VENTAS:
-					fragmentActive = FragmentActive.CONSULTA_VENTAS;
-					// OCULTAR LA BARRA DE ACCION
-					pedido_selected = customArrayAdapter.getItem(positioncache);
-					if (pedido_selected != null) {
-						getSupportActionBar().hide();
-						if (findViewById(R.id.fragment_container) != null) {
-							transaction = getSupportFragmentManager()
-									.beginTransaction();
-							consultasVentas = new ConsultaVentasFragment();
-							bundle = new Bundle();
-							bundle.putInt(CuentasPorCobrarFragment.ARG_POSITION,
-									positioncache);
-							consultasVentas.setArguments(bundle);
-							transaction.replace(R.id.fragment_container,
-									consultasVentas);
-							transaction.addToBackStack(null);
-							transaction.commit();
+						// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+						if (customArrayAdapter.getCount() != 0)
+							pedido_selected = customArrayAdapter.getItem(0);
+						else
+							pedido_selected = null;
+	
+						break;
+	
+					case CUENTAS_POR_COBRAR:
+						mostrarCuentasPorCobrar(true);
+						break;
+					case CONSULTA_VENTAS:
+						fragmentActive = FragmentActive.CONSULTA_VENTAS;
+						// OCULTAR LA BARRA DE ACCION
+						pedido_selected = customArrayAdapter.getItem(positioncache);
+						if (pedido_selected != null) {
+							getSupportActionBar().hide();
+							if (findViewById(R.id.fragment_container) != null) {
+								transaction = getSupportFragmentManager()
+										.beginTransaction();
+								consultasVentas = new ConsultaVentasFragment();
+								bundle = new Bundle();
+								bundle.putInt(CuentasPorCobrarFragment.ARG_POSITION,
+										positioncache);
+								consultasVentas.setArguments(bundle);
+								transaction.replace(R.id.fragment_container,
+										consultasVentas);
+								transaction.addToBackStack(null);
+								transaction.commit();
+							}
 						}
-					}
-					break;
-				case ANULAR_PEDIDO:
-					// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO
-					// ACTUALMENTE
-					pos = customArrayAdapter.getSelectedPosition();
-					// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-					pedido_selected = customArrayAdapter.getItem(pos);
-					if (pedido_selected != null) {
-						// OBTENER EL ESTADO DEL REGISTRO
-						state = pedido_selected.getCodEstado();
-						// VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
-						// if ("APROBADO".compareTo(state) != 0)
-						// {
-						// AppDialog.showMessage(vp,"Información","Solo se pueden anular pedidos en estado de APROBADO.",DialogType.DIALOGO_ALERTA);
-						// //CERRAR EL MENU DEL DRAWER
-						// drawerLayout.closeDrawers();
-						// return;
-						// }
-						// SI SE ESTÁ FUERA DE LA COBERTURA
-						if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp
-								.getContext())
-								&& !NMNetWork
-										.CheckConnection(com.panzyma.nm.NMApp
-												.getController())) {
-							// Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.",
-							// Toast.LENGTH_SHORT).show();
-							AppDialog
-									.showMessage(
-											vp,
-											"Información",
-											"La operación no puede ser realizada ya que está fuera de cobertura.",
-											DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						try {
-							// SOLICITAMOS QUE SE ANULE EL PEDIDO
-							msg = new Message();
-							msg.obj = pedido_selected.getId();
-							msg.what = ControllerProtocol.ANULAR_PEDIDO;
-							/*
-							 * NMApp.controller.removeBridgeByName(ViewPedido.class
-							 * .toString());
-							 * com.panzyma.nm.NMApp.getController()
-							 * .setEntities(this, bpm = new BPedidoM());
-							 * com.panzyma
-							 * .nm.NMApp.getController().addOutboxHandler(new
-							 * Handler(vp));
-							 */
-							com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+						break;
+					case ANULAR_PEDIDO:
+						// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO
+						// ACTUALMENTE
+						pos = customArrayAdapter.getSelectedPosition();
+						// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+						pedido_selected = customArrayAdapter.getItem(pos);
+						if (pedido_selected != null) {
+							// OBTENER EL ESTADO DEL REGISTRO
+							state = pedido_selected.getCodEstado();
+							// VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
+							 if ("FACTURADO".compareTo(state) != 0)
+							 {
+								 AppDialog.showMessage(vp,"Información","Solo se pueden anular pedidos en estado de APROBADO.",DialogType.DIALOGO_ALERTA);
+								 //CERRAR EL MENU DEL DRAWER
+								 drawerLayout.closeDrawers();
+								 return;
+							 }
+							// SI SE ESTÁ FUERA DE LA COBERTURA
+							if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp
+									.getContext())
+									&& !NMNetWork
+											.CheckConnection(com.panzyma.nm.NMApp
+													.getController())) {
+								// Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.",
+								// Toast.LENGTH_SHORT).show();
+								AppDialog
+										.showMessage(
+												vp,
+												"Información",
+												"La operación no puede ser realizada ya que está fuera de cobertura.",
+												DialogType.DIALOGO_ALERTA);
+								return;
+							}
+							try {
+								// SOLICITAMOS QUE SE ANULE EL PEDIDO
+								msg = new Message();
+								msg.obj = pedido_selected.getId();
+								msg.what = ControllerProtocol.ANULAR_PEDIDO;
+								/*
+								 * NMApp.controller.removeBridgeByName(ViewPedido.class
+								 * .toString());
+								 * com.panzyma.nm.NMApp.getController()
+								 * .setEntities(this, bpm = new BPedidoM());
+								 * com.panzyma
+								 * .nm.NMApp.getController().addOutboxHandler(new
+								 * Handler(vp));
+								 */
+								com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+								// CERRAR EL MENU DEL DRAWER
+								drawerLayout.closeDrawers();
+							} catch (Exception ex) {
+								ex.printStackTrace();
+								drawerLayout.closeDrawers();
+							}
+						} else {
 							// CERRAR EL MENU DEL DRAWER
 							drawerLayout.closeDrawers();
-						} catch (Exception ex) {
-							ex.printStackTrace();
-							drawerLayout.closeDrawers();
+							ShowNoRecords();
 						}
-					} else {
-						// CERRAR EL MENU DEL DRAWER
+						break;
+					case CERRAR:
 						drawerLayout.closeDrawers();
-						ShowNoRecords();
-					}
-					break;
-				case CERRAR:
-					drawerLayout.closeDrawers();
-					FINISH_ACTIVITY();
-					break;
+						FINISH_ACTIVITY();
+						break;
 				}
 
 				drawerList.setItemChecked(position, true);
@@ -497,6 +463,7 @@ public class ViewPedido extends ActionBarActivity implements
 		pedidos.toArray(objects);
 		savedInstanceState.putParcelableArray("pedidos", objects);
 		savedInstanceState.putInt("positioncache", positioncache);
+		savedInstanceState.putInt("fragmentActive", fragmentActive.getValue());
 		savedInstanceState.putParcelable("fragment", firstFragment);
 		// etc.
 	}
@@ -633,79 +600,100 @@ public class ViewPedido extends ActionBarActivity implements
 		Boolean val = false;
 		final Object item = msg.obj;
 		ocultarDialogos();
-		switch (msg.what) {
-		case C_DATA:
-			establecer(msg, true);
-			val = true;
-			break;
-		case ControllerProtocol.NOTIFICATION:
-			showStatus(msg.obj.toString(), true);
-			break;
-		case ControllerProtocol.NOTIFICATION_DIALOG2:
-			showStatus(msg.obj.toString());
-			break;
-		case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
-			request_code = ABRIR_PEDIDO;
-			resultadoEnvioPedido(msg.obj);
-			break;
-		case DELETE_ITEM_FINISHED:
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					if (Integer.parseInt(item.toString()) == 1) {
-						Boolean removed = pedidos.remove(pedido_selected);
-						if (removed) {
-							firstFragment.getAdapter().notifyDataSetChanged();
-							gridheader.setText(String.format(
-									"Listado de Pedidos (%s)", pedidos.size()));
-							customArrayAdapter.remove(pedido_selected);
-
-							if (pedidos.size() > 0) {
-								firstFragment.getAdapter().setSelectedPosition(
-										0);
-								pedido_selected = pedidos.get(0);
+		switch (msg.what) 
+		{
+			case C_DATA:
+				establecer(msg, true);
+				val = true;
+				break;
+			case ControllerProtocol.NOTIFICATION:
+				showStatus(msg.obj.toString(), true);
+				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG2:
+				showStatus(msg.obj.toString());
+				break;
+			case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
+				request_code = ABRIR_PEDIDO;
+				resultadoEnvioPedido(msg.obj);
+				break;			
+			case DELETE_ITEM_FINISHED:
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (Integer.parseInt(item.toString()) == 1) {
+							Boolean removed = pedidos.remove(pedido_selected);
+							if (removed) {
+								firstFragment.getAdapter().notifyDataSetChanged();
+								gridheader.setText(String.format(
+										"Listado de Pedidos (%s)", pedidos.size()));
+								customArrayAdapter.remove(pedido_selected);
+	
+								if (pedidos.size() > 0) {
+									firstFragment.getAdapter().setSelectedPosition(
+											0);
+									pedido_selected = pedidos.get(0);
+								}
+								;
+								AppDialog.showMessage(vp, "Exíto",
+										"Se ha Elimando Correctamente el pedido.",
+										DialogType.DIALOGO_ALERTA);
 							}
-							;
-							AppDialog.showMessage(vp, "Exíto",
-									"Se ha Elimando Correctamente el pedido.",
-									DialogType.DIALOGO_ALERTA);
 						}
 					}
+				});
+				val = true;
+				break;
+			case ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER:
+				if (msg.obj==null) 
+		        {	 
+					AppDialog.showMessage(this,
+							"El pedido no fue aprobado....",
+							DialogType.DIALOGO_ALERTA); 
+					return false;
 				}
-			});
-			val = true;
-			break;
-		case ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER:
-			if (msg.obj==null) 
-	        {	 
-				AppDialog.showMessage(this,
-						"El pedido no fue aprobado....",
-						DialogType.DIALOGO_ALERTA); 
-				return false;
-			}
-			establecer((Pedido)msg.obj, true,ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER);
-			showStatus("Pedido actualizado con exito...", true);
-			val = true;
-			break; 
-			
-		case ERROR:
-			ErrorMessage error = ((ErrorMessage) msg.obj);
-			Toast.makeText(getApplicationContext(), error.getTittle(),
-					Toast.LENGTH_SHORT).show();
-			AppDialog.showMessage(vp, error.getTittle(), error.getMessage()
-					+ error.getCause(), DialogType.DIALOGO_ALERTA,
-					new OnButtonClickListener() {
-						@Override
-						public void onButtonClick(AlertDialog alert,
-								int actionId) {
-						}
-					});
-			val = true;
-			break;
-		case ControllerProtocol.ID_REQUEST_ANULARPEDIDO:
-			AppDialog.showMessage(vp, "Información",
-					"El pedido ha sido anulado.", DialogType.DIALOGO_ALERTA);
-			break;
+				establecer((Pedido)msg.obj, true,ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER);
+				showStatus("Pedido actualizado con exito...", true);
+				val = true;
+				break; 
+				
+			case ERROR:
+				ErrorMessage error = ((ErrorMessage) msg.obj);
+				Toast.makeText(getApplicationContext(), error.getTittle(),
+						Toast.LENGTH_SHORT).show();
+				AppDialog.showMessage(vp, error.getTittle(), error.getMessage()
+						+ error.getCause(), DialogType.DIALOGO_ALERTA,
+						new OnButtonClickListener() {
+							@Override
+							public void onButtonClick(AlertDialog alert,
+									int actionId) {
+							}
+						});
+				val = true;
+				break;
+			case ControllerProtocol.ID_REQUEST_ANULARPEDIDO:
+				AppDialog.showMessage(vp, "Información",
+						"El pedido ha sido anulado.", DialogType.DIALOGO_ALERTA);
+				break;
+			case ControllerProtocol.ID_REQUEST_LOADITEM_LOCALHOST:  
+					if (msg.obj==null) 
+			        {	 
+						AppDialog.showMessage(this,
+								"Error al obtener pedido localmente....",
+								DialogType.DIALOGO_ALERTA); 
+						return false;
+					}
+					
+					if(msg.obj instanceof Pedido)
+					{
+						pedido=(Pedido) msg.obj;	
+						if(ControllerProtocol.SEND_DATA_FROM_SERVER==msg.arg1)
+							enviarPedido();
+						if(ABRIR_PEDIDO==msg.arg1)
+							abrirPedido();
+						if(CUENTAS_POR_COBRAR==msg.arg1)
+							mostrarCuentasPorCobrar();
+					} 
+				break;
 		}
 		return val;
 	}
@@ -881,13 +869,98 @@ public class ViewPedido extends ActionBarActivity implements
 		}
 	}
 
-	private void enviarPedido() 
+	public void mostrarCuentasPorCobrar(boolean... obtener)
+	{
+	
+		if (pedido_selected == null)
+			return;
+		
+		if (obtener!=null && obtener.length != 0 && obtener[0]) 
+		{ 
+			mandarObtenerPedido(CUENTAS_POR_COBRAR);		
+			return;
+		}	 
+		if (pedido== null) 
+		{
+			AppDialog.showMessage(vp, "Información",
+					"Error al obtener el pedido localmente...", DialogType.DIALOGO_ALERTA);
+			return;
+		}
+		fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
+		if (findViewById(R.id.fragment_container) != null) 
+		{ 			
+			transaction = getSupportFragmentManager().beginTransaction();
+			cuentasPorCobrar = new CuentasPorCobrarFragment();
+			Bundle bundle = new Bundle();
+			bundle.putInt(CuentasPorCobrarFragment.ARG_POSITION,positioncache);
+			bundle.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
+					pedido.getObjSucursalID());
+			cuentasPorCobrar.setArguments(bundle);
+			transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+			transaction.addToBackStack(null);
+			transaction.commit(); 
+	    }
+		
+	}
+	
+	public void mandarObtenerPedido(int arg)
+	{
+		Message msg = new Message(); 
+		msg.obj=pedido_selected.getNumero();
+		msg.arg1=arg;
+		msg.what =ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
+		NMApp.getController().getInboxHandler().sendMessage(msg); 
+	}
+	
+	
+	public void abrirPedido(boolean... obtener)
+	{
+		
+		try 
+		{ 
+			if (pedido_selected == null) 
+				return;
+			if (obtener!=null && obtener.length != 0 && obtener[0]) 
+			{ 
+				mandarObtenerPedido(ABRIR_PEDIDO);		
+				return;
+			}
+			
+			if (pedido== null) 
+			{
+				AppDialog.showMessage(vp, "Información",
+						"Error al obtener el pedido localmente...", DialogType.DIALOGO_ALERTA);
+				return;
+			}
+			
+			positioncache = customArrayAdapter.getSelectedPosition(); 
+			intent = new Intent(ViewPedido.this,ViewPedidoEdit.class);
+			b = new Bundle();
+			b.putParcelable("pedido", pedido);
+			intent.putExtras(b);
+			intent.putExtra("requestcode", ABRIR_PEDIDO);
+			startActivityForResult(intent, ABRIR_PEDIDO); 
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			AppDialog.showMessage(vp, "Información",
+					e.getMessage(), DialogType.DIALOGO_ALERTA);
+		} 
+		
+	}
+	
+	private void enviarPedido(boolean... obtener) 
 	{
 		try 
 		{
 			if (pedido_selected == null)
 				return;
-			pedido = Ventas.obtenerPedidoByID(pedido_selected.getId(), vp);
+			
+			if (obtener!=null && obtener.length != 0 && obtener[0]) 
+			{ 
+				mandarObtenerPedido(ControllerProtocol.SEND_DATA_FROM_SERVER);		
+				return;
+			}			
 			// PORVALIDAR
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0)
 					|| (pedido.getCodEstado().compareTo("PORVALIDAR") == 0) || (pedido

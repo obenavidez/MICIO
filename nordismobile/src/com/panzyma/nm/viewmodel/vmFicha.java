@@ -10,6 +10,34 @@ import com.panzyma.nm.serviceproxy.CNota;
 
 public class vmFicha implements Parcelable, Item {
 
+	public vmFicha(CNota[] notas, long idCliente, long idSucursal,
+			String nombreCliente, String nombreSucursal,
+			boolean creditoCentralizado, float limiteCredito,
+			float saldoActual, float disponible, int plazoCredito,
+			String precioVenta, String descuentos, String direccionSucursal,
+			String tipo, String categoria, String telefono, int plazoDescuento,
+			float montoMinimoAbono) {
+		super();
+		Notas = notas;
+		IdCliente = idCliente;
+		IdSucursal = idSucursal;
+		NombreCliente = nombreCliente;
+		NombreSucursal = nombreSucursal;
+		CreditoCentralizado = creditoCentralizado;
+		LimiteCredito = limiteCredito;
+		SaldoActual = saldoActual;
+		Disponible = disponible;
+		PlazoCredito = plazoCredito;
+		PrecioVenta = precioVenta;
+		Descuentos = descuentos;
+		DireccionSucursal = direccionSucursal;
+		Tipo = tipo;
+		Categoria = categoria;
+		Telefono = telefono;
+		PlazoDescuento = plazoDescuento;
+		MontoMinimoAbono = montoMinimoAbono;
+	}
+
 	public CNota[] Notas;
 	public long IdCliente;
 	public long IdSucursal;

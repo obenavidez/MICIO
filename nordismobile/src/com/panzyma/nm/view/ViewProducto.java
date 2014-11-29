@@ -38,7 +38,6 @@ import android.widget.Toast;
 
 import com.panzyma.nm.DashBoardActivity;
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BProductoM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;

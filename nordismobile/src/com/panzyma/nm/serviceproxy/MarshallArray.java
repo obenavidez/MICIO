@@ -9,8 +9,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
 
-import com.panzyma.nm.auxiliar.NMConfig;
-
 import android.util.Log;
 
 public class MarshallArray implements Marshal 

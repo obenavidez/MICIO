@@ -102,10 +102,12 @@ public class vmConfiguracion implements Comparable<vmConfiguracion> {
 	@SuppressWarnings("static-access")
 	@Override
 	public int compareTo(vmConfiguracion obj) {
+		this.getImpresora();
+		obj.getImpresora();
 		if (this.getAppServerURL() == obj.getAppServerURL()
 				&& this.getDeviceId() == obj.getDeviceId()
 				&& this.getNameUser() == obj.getNameUser() 
-				&& this.getImpresora().obtenerMac()==obj.getImpresora().obtenerMac())
+				&& Impresora.obtenerMac()==Impresora.obtenerMac())
 			return 0;
 		else
 			return -1;

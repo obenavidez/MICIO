@@ -1,21 +1,15 @@
 package com.panzyma.nm.controller;
   
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List; 
 import java.util.Map;
 
 import com.panzyma.nm.Main;
-import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BBaseM;
-import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.HandlerThread;

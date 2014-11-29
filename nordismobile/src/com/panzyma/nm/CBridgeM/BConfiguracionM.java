@@ -328,43 +328,66 @@ public class BConfiguracionM extends BBaseM {
 
 	public static  void GET_DATACONFIGURATION(final String Url,final String Url2,final String Empresa,final String Credentials,
 			final String LoginUsuario, final String PIN, final Impresora dispositivo, boolean... mode) throws Exception 
-			{
+	{
 
-
-		DataConfigurationResult res = ModelConfiguracion.getDataConfiguration
-				(	
-						Url2,
-						Credentials,
-						LoginUsuario, 
-						PIN
-						);
-		if (res.get_error() == null) 
+		try 
 		{
-			Processor.notifyToView(NMApp.getController(),
-					ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
-					"Salvando configuración.");
-			vmConfiguracion setting = vmConfiguracion.setConfiguration
-					(
-							Url,
-							Url2,
-							String.valueOf(res.get_devicePrefix()), 
-							Empresa, 
-							res.get_userInfo().getLogin(), 
-							res.get_maxIdPedido(), 
-							res.get_maxIdRecibo(),
-							dispositivo
-							);
-			ModelConfiguracion.saveConfiguration(NMApp.getContext(),setting);
-			ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
-			SessionManager.setImpresora(dispositivo);
-			SessionManager.setLoguedUser(res.userInfo);
-			if(mode==null)
-				Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION, 0, 0, "Configuración Finalizada Correctamente.");
+			
+			DataConfigurationResult res = ModelConfiguracion.getDataConfiguration
+			(	
+					Url2,
+					Credentials,
+					LoginUsuario, 
+					PIN
+			);
+			
+			if (res.get_error() == null) 
+			{
+				Processor.notifyToView(NMApp.getController(),
+						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
+						"Salvando configuración.");
+				vmConfiguracion setting = vmConfiguracion.setConfiguration
+						(
+								Url,
+								Url2,
+								String.valueOf(res.get_devicePrefix()), 
+								Empresa, 
+								res.get_userInfo().getLogin(), 
+								res.get_maxIdPedido(), 
+								res.get_maxIdRecibo(),
+								dispositivo
+						);
+				ModelConfiguracion.saveConfiguration(NMApp.getContext(),setting);
+				ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
+				SessionManager.setImpresora(dispositivo);
+				SessionManager.setLoguedUser(res.userInfo);
+				if(mode==null)
+					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION, 0, 0, "Configuración Finalizada Correctamente.");
 
-		} else
-			throw new Exception(res.get_error()); 
-
+			} else
+				throw new Exception(res.get_error()); 
+			
+		} catch (Exception e) 
+		{
+			try 
+			{
+				Processor
+						.notifyToView(NMApp.getController(),
+								ERROR,
+								0,
+								1,
+								new ErrorMessage(
+										"error en la comunicacion con el servidor",
+										e.getMessage()
+												+ "\r\n",
+										""));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
+		} 
+		
+	}
 
 
 	private void SINCRONIZE_CLIENTES() {

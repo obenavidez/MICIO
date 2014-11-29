@@ -4,18 +4,12 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_FICHACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_FICHACLIENTE_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -34,11 +28,8 @@ import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
-import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.CNotaViewHolder;
@@ -62,20 +53,26 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 	static ProgressDialog pDialog;
 	private BClienteM bcm;
 	private static CustomDialog dlg;
+	private vmFicha DetailCustomerSelected;
+	View _view;
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt(ARG_POSITION, mCurrentPosition);
-		outState.putLong(ARG_SUCURSAL, sucursalID);
+		outState.putInt(ARG_POSITION, mCurrentPosition); 
 		outState.putParcelable("cliente", customer);
+		outState.putLong(ARG_SUCURSAL, sucursalID);
+		outState.putParcelable("detailcustomer", DetailCustomerSelected); 
+		
 	}	
 	
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
+	public void onActivityCreated(Bundle savedInstanceState) 
+	{
 	    super.onActivityCreated(savedInstanceState);
-	    if (savedInstanceState != null) {	       
-	      customer = savedInstanceState.getParcelable("cliente");
+	    if (savedInstanceState != null) 
+	    {	       
+	      DetailCustomerSelected = savedInstanceState.getParcelable("detailcustomer");
 	  	  mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 	  	  sucursalID = savedInstanceState.getLong(ARG_SUCURSAL);
 	    }
@@ -91,23 +88,45 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 		
 		if (args != null) 
 		{
-			sucursalID = args.getLong(ARG_SUCURSAL);
-			mCurrentPosition = args.getInt(ARG_POSITION);
-			ms.what=LOAD_FICHACLIENTE_FROM_SERVER; 
-			ms.obj = sucursalID;
-			NMApp.getController().getInboxHandler().sendMessage(ms); 
-			 
-			pDialog = new ProgressDialog(getActivity());
-			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Buscando ficha del Cliente...");
-			pDialog.setCancelable(false);
-			pDialog.show();
+			
+			if(DetailCustomerSelected!=null)
+			{
+				updateArticleView(this.mCurrentPosition,DetailCustomerSelected);
+			}
+			else
+			{
+				sucursalID = args.getLong(ARG_SUCURSAL);
+				mCurrentPosition = args.getInt(ARG_POSITION);
+				ms.what=LOAD_FICHACLIENTE_FROM_SERVER; 
+				ms.obj = sucursalID;
+				NMApp.getController().getInboxHandler().sendMessage(ms); 
+				pDialog = new ProgressDialog(getActivity());
+				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				pDialog.setMessage("Buscando ficha del Cliente...");
+				pDialog.setCancelable(false);
+				pDialog.show();
+			}
+			
 		}
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.ficha_cliente, container, false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) 
+	{ 
+//		_view = null;
+//		if(getActivity().getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
+			_view=inflater.inflate(R.layout.ficha_cliente, container, false);
+//    	if(getActivity().getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE)
+//    		_view=inflater.inflate(R.layout.ficha_cliente2, container, false);
+		 
+//		ScrollView sc=(ScrollView) ll.findViewById(R.id.ScrollView01);
+//		HorizontalScrollView hsc=(HorizontalScrollView) ll.findViewById(R.id.HorizontalScrollView01);
+		
+//		sc.getLayoutParams().width=LayoutParams.MATCH_PARENT;
+//		hsc.getLayoutParams().width=LayoutParams.MATCH_PARENT; 
+//		hsc.getLayoutParams().height=LayoutParams.WRAP_CONTENT;  
+		
+		return _view;//inflater.inflate(R.layout.ficha_cliente, container, false);
 	}
 
 	@Override
@@ -123,7 +142,7 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 			showStatus(msg.obj.toString());
 			break;
 		case C_FICHACLIENTE: 
-			vmFicha DetailCustomerSelected = ((vmFicha)((msg.obj==null)?new vmFicha():msg.obj));
+			DetailCustomerSelected = ((vmFicha)((msg.obj==null)?new vmFicha():msg.obj));
 			updateArticleView(this.mCurrentPosition,DetailCustomerSelected);
 			break;
 		case ControllerProtocol.ERROR:

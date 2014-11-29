@@ -3,7 +3,6 @@ package com.panzyma.nm.auxiliar;
 import java.io.IOException;
 import java.util.Vector;
 
-import org.ksoap2.serialization.AttributeInfo;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.Marshal;
 import org.ksoap2.serialization.PropertyInfo;
@@ -164,6 +163,7 @@ public class SMFSerializacionSoap extends SoapSerializationEnvelope {
 		}
 	}
 
+	@Override
 	protected void writeVectorBody(XmlSerializer writer, Vector vector,
 			PropertyInfo elementType) throws IOException {
 		String itemsTagName = "item";

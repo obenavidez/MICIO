@@ -415,7 +415,7 @@ public class ViewCliente extends DashBoardActivity implements Handler.Callback
 				@Override
 				public void onButtonClick(View _dialog,int actionId) {									 
 					if(actionId==CustomDialog.OK_BUTTOM && idsucursal==1)
-						nmapp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);	
+						NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_SERVER);	
 					else if(actionId==CustomDialog.OK_BUTTOM)
 						dialog.dismiss();
 				}

@@ -87,6 +87,61 @@ public class ModelPedido {
 		return le;
 	}
 	
+	public static Pedido obtenerPedidoByID(int numeromovil,ContentResolver content)throws Exception
+	{  
+		Cursor cur = content.query(DatabaseProvider.CONTENT_URI_PEDIDO,
+		        null, //Columnas a devolver
+		        "NumeroMovil="+numeromovil,       //Condición de la query
+		        null,       //Argumentos variables de la query
+		        null);  
+		Pedido p=new Pedido();
+		if (cur.moveToFirst()) 
+		 {    
+        	   int value;
+        	   p.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Id))));
+        	   p.setNumeroMovil(cur.getInt(cur.getColumnIndex(NMConfig.Pedido.NumeroMovil)));
+        	   p.setNumeroCentral(cur.getInt(cur.getColumnIndex(NMConfig.Pedido.NumeroCentral)));
+        	   p.setTipo(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Tipo)));
+        	   p.setFecha(cur.getInt(cur.getColumnIndex(NMConfig.Pedido.Fecha)));
+        	   p.setObjClienteID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objClienteID))));
+        	   p.setNombreCliente(cur.getString(cur.getColumnIndex(NMConfig.Pedido.NombreCliente)));
+        	   p.setObjSucursalID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objSucursalID))));
+        	   p.setNombreSucursal(cur.getString(cur.getColumnIndex(NMConfig.Pedido.NombreSucursal)));
+        	   p.setObjTipoPrecioVentaID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objTipoPrecioVentaID))));
+        	   p.setCodTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Pedido.CodTipoPrecio)));
+        	   p.setDescTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Pedido.DescTipoPrecio)));
+        	   p.setObjVendedorID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objVendedorID))));
+        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Pedido.BonificacionEspecial)); 
+        	   p.setBonificacionEspecial(value==1?true:false);
+        	   p.setBonificacionSolicitada(cur.getString(cur.getColumnIndex(NMConfig.Pedido.BonificacionSolicitada)));
+        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Pedido.PrecioEspecial));
+        	   p.setPrecioEspecial(value==1?true:false);
+        	   p.setPrecioSolicitado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.PrecioSolicitado)));
+        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Pedido.PedidoCondicionado));
+        	   p.setPedidoCondicionado(value==1?true:false);
+        	   p.setCondicion(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Condicion)));
+        	   p.setSubtotal(cur.getFloat(cur.getColumnIndex(NMConfig.Pedido.Subtotal)));
+        	   p.setDescuento(cur.getFloat(cur.getColumnIndex(NMConfig.Pedido.Descuento)));
+        	   p.setImpuesto(cur.getFloat(cur.getColumnIndex(NMConfig.Pedido.Impuesto)));
+        	   p.setTotal(cur.getFloat(cur.getColumnIndex(NMConfig.Pedido.Total)));
+        	   p.setObjEstadoID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objEstadoID))));
+        	   p.setCodEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.CodEstado)));
+        	   p.setDescEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.DescEstado)));
+        	   p.setObjCausaEstadoID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objCausaEstadoID))));
+        	   p.setCodCausaEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.CodCausaEstado)));
+        	   p.setDescCausaEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.DescCausaEstado)));
+        	   p.setNombreVendedor(cur.getString(cur.getColumnIndex(NMConfig.Pedido.NombreVendedor)));
+        	   p.setNota(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Nota)));
+        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Pedido.Exento));        	   
+        	   p.setExento(value==1?true:false);
+        	   p.setAutorizacionDGI(cur.getString(cur.getColumnIndex(NMConfig.Pedido.AutorizacionDGI)));
+        	   
+        	   p.setDetalles(obtenerDetallePedido(content,p.getId()));
+        	   p.setPromocionesAplicadas(obtenerPedidoPromocion(content,p.getId()));
+        	    
+          }
+		return p;
+	}
 	
 	public static Pedido obtenerPedidoByID(long idpedido,ContentResolver content)throws Exception
 	{  

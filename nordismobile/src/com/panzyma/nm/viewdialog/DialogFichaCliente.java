@@ -7,8 +7,6 @@ import java.util.Arrays;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,8 +36,8 @@ public class DialogFichaCliente extends Dialog
         super(context, theme);   
         
         try 
-        {     
-        	setContentView(R.layout.ficha_cliente);    
+        {      
+            setContentView(R.layout.ficha_cliente);   
             this.sucursalId=sucursalId; 
         	mcontext=getContext();  
         	LoadData(obj); 

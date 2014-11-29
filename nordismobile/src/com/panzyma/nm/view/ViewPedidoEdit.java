@@ -9,10 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.ResourceBundle.Control;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -50,9 +47,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
-import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
@@ -600,7 +595,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					salvado = true;
 				}
 				
-				showStatus((ControllerProtocol.SAVE_DATA_FROM_LOCALHOST==msg.what)?"El pedido fue guardado satisfactoriamente..."
+				showStatus((ControllerProtocol.SAVE_DATA_FROM_LOCALHOST==msg.arg1)?"El pedido fue guardado satisfactoriamente..."
 						:msg.obj.toString(), true);
 				break;
 			case ControllerProtocol.NOTIFICATION_DIALOG2:
@@ -666,7 +661,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 									b.putParcelable("cliente", cliente);
 									msg.setData(b);
 									msg.what = ControllerProtocol.IMPRIMIR;
-									NMApp.getController().getInboxHandler().sendMessage(msg);
+									com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 
 								}
 								_dialog.dismiss();
@@ -1277,7 +1272,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		b.putParcelable("cliente", cliente);
 		msg.setData(b);
 		msg.what = ControllerProtocol.IMPRIMIR;
-		NMApp.getController().getInboxHandler().sendMessage(msg);
+		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 
 	@Override
@@ -1401,7 +1396,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			b.putParcelable("pedido", pedido);
 			msg.setData(b);
 			msg.what = arg.length != 0 ? arg[0] : SAVE_DATA_FROM_LOCALHOST;
-			NMApp.getController().getInboxHandler().sendMessage(msg);
+			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 
 		} catch (Exception e) {
 			AppDialog.showMessage(me,
@@ -1452,7 +1447,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			b.putParcelable("pedido", pedido);
 			msg.setData(b);
 			msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
-			NMApp.getController().getInboxHandler().sendMessage(msg);
+			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 
 		} catch (Exception e) {
 			AppDialog.showMessage(me,

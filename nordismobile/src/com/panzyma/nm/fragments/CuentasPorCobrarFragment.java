@@ -193,12 +193,26 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean handleMessage(Message msg) {
+	public boolean handleMessage(final Message msg) {
 		
-		if(msg.what == ControllerProtocol.ERROR){
-			AppDialog.showMessage(fcontext, ((ErrorMessage) msg.obj).getTittle(),
-					((ErrorMessage) msg.obj).getMessage(),
-					DialogType.DIALOGO_ALERTA);
+		if(msg.what == ControllerProtocol.ERROR)
+		{ 
+			
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(getActivity(),((ErrorMessage) msg.obj).getTittle(),
+							((ErrorMessage) msg.obj).getMessage(),
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) { 
+										_dialog.dismiss(); 
+								}
+							});
+				}
+			});
 		}
 
 		ocultarDialogos();	

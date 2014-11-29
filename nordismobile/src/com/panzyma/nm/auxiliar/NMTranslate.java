@@ -221,7 +221,7 @@ public class NMTranslate
 				if(soap.getProperty(e)!=null)
 				{	
 					obj=(SoapObject) soap.getProperty(e);   
-		    		T entidad=(T) ToObject(obj,unKnowClass.newInstance());	
+		    		T entidad=ToObject(obj,unKnowClass.newInstance());	
 		    		lpp.add((PedidoPromocion) entidad); 
 	    		}
 			}

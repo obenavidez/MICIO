@@ -3,15 +3,11 @@ package com.panzyma.nm.viewdialog;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BClienteM;
-import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.menu.QuickAction;
@@ -22,22 +18,16 @@ import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
-import com.panzyma.nm.view.viewholder.ClienteViewHolder;
 import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
-import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
-import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
-import android.opengl.Visibility;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;

@@ -152,7 +152,7 @@ public class SessionAdministrator
 	
 	@SuppressWarnings("static-access")
 	public static Impresora getImpresora(){
-		if(impresora==null || (impresora!=null && impresora.obtenerMac().trim()==""))
+		if(impresora==null || (impresora!=null && Impresora.obtenerMac().trim()==""))
 			impresora=Impresora.get(context);
 		return impresora;
 	}

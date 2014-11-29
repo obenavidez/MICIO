@@ -2,7 +2,6 @@ package com.panzyma.nm;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
@@ -47,8 +45,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	private ThreadPool pool;
 	private boolean onRestart;
 	private boolean onPause;
-	public int buttonActive;
-	Main ma;
+	public int buttonActive; 
 	private static CustomDialog dlg;
 	Intent intent;
 	
@@ -74,8 +71,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		NMApp.getController().addOutboxHandler(new Handler(this));
 		if ((savedInstanceState != null) ? savedInstanceState
 				.getBoolean("dl_visible") : false)
-			callDialogLogin();
-		ma=this;
+			callDialogLogin(); 
 		NMApp.modulo = NMApp.Modulo.HOME;
 	}
 
@@ -237,7 +233,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				showStatus(msg.obj.toString());
 				break;  
 			case ERROR:			 
-				AppDialog.showMessage(ma, ((ErrorMessage) msg.obj).getTittle(),
+				AppDialog.showMessage(context, ((ErrorMessage) msg.obj).getTittle(),
 						((ErrorMessage) msg.obj).getMessage(),
 						DialogType.DIALOGO_ALERTA);
 				break;
@@ -254,7 +250,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				@Override
 				public void run() 
 				{
-					AppDialog.showMessage(ma, "", mensaje,
+					AppDialog.showMessage(context, "", mensaje,
 							AppDialog.DialogType.DIALOGO_ALERTA,
 							new AppDialog.OnButtonClickListener() {
 								@Override
@@ -273,7 +269,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					dlg =  new CustomDialog(ma, mensaje, false,
+					dlg =  new CustomDialog(context, mensaje, false,
 							NOTIFICATION_DIALOG);
 					dlg.show();
 				}

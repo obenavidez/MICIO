@@ -19,7 +19,6 @@ import android.util.Log;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
-import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig; 
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider; 

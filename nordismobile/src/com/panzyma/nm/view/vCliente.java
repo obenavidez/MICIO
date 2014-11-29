@@ -146,17 +146,17 @@ public class vCliente extends ActionBarActivity implements
 		// pass the Intent's extras to the fragment as arguments
 		firstFragment.setArguments(getIntent().getExtras());
 		
-		if ( savedInstanceState != null ) {
-			Parcelable[] objects = savedInstanceState.getParcelableArray("vmCliente");	
-			clientes = new ArrayList<vmCliente>((Collection<? extends vmCliente>) Arrays.asList(objects));
-			//recibos = vmRecibo.arrayParcelToArrayRecibo(objects);			
-		} else {
-			clientes = null;
-		}
+//		if ( savedInstanceState != null ) {
+//			Parcelable[] objects = savedInstanceState.getParcelableArray("vmCliente");	
+//			clientes = new ArrayList<vmCliente>((Collection<? extends vmCliente>) Arrays.asList(objects)); 
+//			//recibos = vmRecibo.arrayParcelToArrayRecibo(objects);			
+//		} else {
+//			clientes = null;
+//		}
 		
-		if (clientes == null) {
+//		if (clientes == null) {
 			Load_Data(LOAD_DATA_FROM_LOCALHOST);
-		}			
+//		}			
 		/*else {
 			SetList(clientes);
 		}*/
@@ -170,7 +170,7 @@ public class vCliente extends ActionBarActivity implements
 
 		}
 	}
-
+ 
 	public void ocultarDialogos() {
 		if (dlg != null && dlg.isShowing())
 			dlg.dismiss();
@@ -359,7 +359,7 @@ public class vCliente extends ActionBarActivity implements
 				customArrayAdapter = ((Filterable) getSupportFragmentManager()
 						.findFragmentById(R.id.fragment_container))
 						.getAdapter();
-
+																
 				searchView.setOnQueryTextListener(new OnQueryTextListener() {
 					@Override
 					public boolean onQueryTextChange(String s) {
@@ -402,11 +402,13 @@ public class vCliente extends ActionBarActivity implements
 		drawerToggle.syncState();
 	}
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		drawerToggle.onConfigurationChanged(newConfig);
-	}
+//	@Override
+//	public void onConfigurationChanged(Configuration newConfig) {
+//		super.onConfigurationChanged(newConfig);
+//		
+//		drawerToggle.onConfigurationChanged(newConfig);
+//		SetList(clientes);
+//	}
 
 	private void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
@@ -673,7 +675,7 @@ public class vCliente extends ActionBarActivity implements
 		FichaClienteFragment ficha;
 		FragmentTransaction transaction = getSupportFragmentManager()
 				.beginTransaction();
-
+ 
 		if (findViewById(R.id.dynamic_fragment) != null) {
 		} else {
 			Fragment fragment = getSupportFragmentManager().findFragmentById(

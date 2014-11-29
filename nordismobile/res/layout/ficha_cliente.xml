@@ -27,19 +27,18 @@
 			<ScrollView
 			    android:id="@+id/ScrollView01"
 			    android:layout_width="fill_parent"
-			    android:layout_height="240dp"
+			    android:layout_height="wrap_content"
 			    android:layout_marginBottom="3dip">
 
 			    <HorizontalScrollView android:id="@+id/HorizontalScrollView01"
                       android:layout_width="wrap_content"
-                      android:layout_height="wrap_content">
+                      android:layout_height="fill_parent">
                   
 		    	     <RelativeLayout
 				        android:layout_width="wrap_content"
 				        android:layout_height="wrap_content"
 				        android:layout_marginLeft="3dp"
-				        android:layout_marginRight="3dp"
-				        android:layout_marginTop="3dp"
+				        android:layout_marginRight="3dp" 
 				        android:orientation="vertical" >
 			             
 	
@@ -233,13 +232,7 @@
 			                android:layout_below="@+id/fclbl_limitecredito"
 			                android:layout_toRightOf="@+id/fclbl_plazocredito"
 			                android:text="Detalle Plazo Credito"
-			                android:textColor="@color/DarkGray" />
-	
-	
-	
-	
-	
-	
+			                android:textColor="@color/DarkGray" /> 
 	
 			            <TextView
 			                android:id="@+id/fclbl_plazodescuento"

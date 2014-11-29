@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.ListFragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
@@ -33,7 +31,10 @@ public class ListaFragment<E> extends ListFragment implements Filterable,
 
 	public void setItems(List<E> items) {
 		if (mAdapter == null) {
-			mAdapter = new CustomArrayAdapter<E>(getActivity(),
+			Activity a=getActivity();
+			if(a==null)
+				return;
+			mAdapter = new CustomArrayAdapter<E>(a,
 					android.R.id.list, items);
 		} else {
 			mAdapter.setData(items);

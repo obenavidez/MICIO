@@ -246,9 +246,9 @@ public class ModelConfiguracion {
 	{
 		pref = view.getSharedPreferences("Impresora", Context.MODE_PRIVATE);
 		edit = pref.edit();
-		edit.putString("nombre", dispositivo.obtenerNombre());
-		edit.putString("mac", dispositivo.obtenerMac());
-		edit.putInt("estado", dispositivo.obtenerEstado());
+		edit.putString("nombre", Impresora.obtenerNombre());
+		edit.putString("mac", Impresora.obtenerMac());
+		edit.putInt("estado", Impresora.obtenerEstado());
 		edit.commit();
 	}
 

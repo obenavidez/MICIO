@@ -1,30 +1,19 @@
 package com.panzyma.nm.model;
 import java.lang.reflect.Type;
 
-import org.json.JSONArray;
 import org.ksoap2.serialization.PropertyInfo;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Message;
-
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
-import com.panzyma.nm.CBridgeM.BBaseM;
-import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMConfig;
-import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.NMTranslate;
-import com.panzyma.nm.auxiliar.Processor;
-import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.datastore.DatabaseProvider;
-import com.panzyma.nm.serviceproxy.ArrayOfCNota;
 import com.panzyma.nm.serviceproxy.CNota;
 import com.panzyma.nm.serviceproxy.CProducto;
-import com.panzyma.nm.serviceproxy.Lote;
 
 public class ModelCProducto {
 

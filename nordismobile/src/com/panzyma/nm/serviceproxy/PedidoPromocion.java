@@ -12,8 +12,6 @@ import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo; 
 import org.ksoap2.serialization.SoapObject;
 
-import com.panzyma.nm.auxiliar.NMConfig;
-
 public  class PedidoPromocion implements KvmSerializable,Parcelable {
   
 	private long objPromocionID;

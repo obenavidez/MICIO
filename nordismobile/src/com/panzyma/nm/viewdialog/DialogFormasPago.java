@@ -1,20 +1,14 @@
 package com.panzyma.nm.viewdialog;
 
-import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.Util;
-import com.panzyma.nm.serviceproxy.Factura;
-import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
-import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.FormaPagoViewHolder;
-import com.panzyma.nm.viewdialog.DialogDocumentos.OnDocumentoButtonClickListener;
 import com.panzyma.nordismobile.R;
 
 import android.app.Dialog;

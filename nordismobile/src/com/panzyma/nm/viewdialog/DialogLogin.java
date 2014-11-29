@@ -1,16 +1,11 @@
 package com.panzyma.nm.viewdialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
@@ -20,8 +15,6 @@ import com.panzyma.nm.Main;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.Controller;
-import com.panzyma.nm.serviceproxy.Usuario;
-import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({"rawtypes","unused"})

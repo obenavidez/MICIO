@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo;
 
 import static com.panzyma.nm.controller.ControllerProtocol.*;
+
 import com.comunicator.Parameters;
 import com.google.gson.Gson;
 import com.panzyma.nm.auxiliar.ErrorMessage;
@@ -16,12 +17,12 @@ import com.panzyma.nm.auxiliar.NMNetWork;
 /*import com.panzyma.nm.auxiliar.Parameters;* Comentado por Jrostrn*/
 import com.panzyma.nm.auxiliar.Processor; 
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelCliente;  
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;   
 import com.panzyma.nm.viewmodel.vmCliente;
-
 import android.annotation.SuppressLint; 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -47,6 +48,10 @@ public final class BClienteM extends BBaseM
 					onLoadALLData_From_LocalHost();
 					val=true;	
 					break;
+			case ControllerProtocol.LOAD_FICHACLIENTE_FROM_LOCALHOST:  
+			    val=true;
+			    break;
+			    
 			case LOAD_DATA_FROM_SERVER:  
 				    onLoadALLData_From_Server(); 
 				    val=true;
@@ -240,7 +245,8 @@ public final class BClienteM extends BBaseM
 		}
 		
 	} 
-    
+
+	
     private void onLoadFichaCliente_From_Server(final Long sucursalID) 
 	{  
 		try 

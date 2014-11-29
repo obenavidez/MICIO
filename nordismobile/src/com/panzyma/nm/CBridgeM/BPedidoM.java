@@ -67,6 +67,11 @@ public class BPedidoM extends BBaseM {
 					onLoadALLData_From_Server();
 					val= true;
 					break;
+				case ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST:
+					obtenerPedidoByID((Integer)msg.obj,msg.arg1);
+					val= true;
+					break;
+					
 				case UPDATE_ITEM_FROM_SERVER:					
 					onUpdateItem_From_Server(b.getLong("refpedido"));
 					val= true;
@@ -462,6 +467,11 @@ public class BPedidoM extends BBaseM {
 	public static Pedido obtenerPedidoByID(long idpedido,ContentResolver content)throws Exception
 	{
 		return ModelPedido.obtenerPedidoByID(idpedido, content);
+	}
+	
+	public  void obtenerPedidoByID(int numeromovil , int... arg)throws Exception
+	{ 
+	     NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_LOADITEM_LOCALHOST, (arg!=null)?arg[0]:0, 0, ModelPedido.obtenerPedidoByID(numeromovil,getResolver()));		
 	}
 	
 	public void anularPedido(final long pedidoid) throws Exception

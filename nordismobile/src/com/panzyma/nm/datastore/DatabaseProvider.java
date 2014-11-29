@@ -13,7 +13,6 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.model.ModelCProducto;
 import com.panzyma.nm.model.ModelConfiguracion;
-import com.panzyma.nm.serviceproxy.ArrayOfCNota;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.CNota;

@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 /*import com.panzyma.nm.auxiliar.Parameters; omentado por jrostan*/
