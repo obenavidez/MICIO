@@ -411,7 +411,8 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 						try 
 						{
 							Controller c = NMApp.getController();
-							if (SessionManager.SignIn(true)) 
+							 
+							if ((SessionManager.getSession()!=null && SessionManager.getSession().length!=0) || SessionManager.SignIn(true)) 
 							{
 								setEnterprise(txtEmpresa.getText().toString());
 								setUserName(txtUsuario.getText().toString());

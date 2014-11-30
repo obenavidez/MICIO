@@ -56,6 +56,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		super.onCreate(savedInstanceState);
 		SessionManager.setContext(this);
 		setContentView(R.layout.home);
+		NMApp.getController().setView(this);
 		setHeader(getString(R.string.HomeActivityTitle), false, true);
 		WindowManager wm = (WindowManager) this
 				.getSystemService(Context.WINDOW_SERVICE);
@@ -175,7 +176,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 					try
 			        { 						 
 						Usuario user = SessionManager.getLoginUser(); 
-						if(user!=null && SessionManager.SignIn(false))
+						if(user!=null && SessionManager.SignIn(true))
 						{  
 							NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 							intent = new Intent(context, ViewConfiguracion.class);

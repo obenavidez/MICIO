@@ -204,7 +204,7 @@ public class SessionManager
 		isOK=true; 
 		if(SessionManager.getLoginUser()!=null || NMApp.modulo == NMApp.Modulo.CONFIGURACION)
 		{
-			while( ((!SessionManager.isLogged()) && isOK) || (admin && !SessionManager.isAdmin() && isOK) )
+			while( ((!SessionManager.isLogged()) && isOK) || (admin && !SessionManager.isAdmin() && isOK && !(NMApp.getController().getView() instanceof Main)) )
 			{
 				if(hasError)
 					break;

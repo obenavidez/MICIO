@@ -106,7 +106,7 @@ public class DialogLogin extends Dialog
 	    String[] session=SessionManager.getSession();
 		if(session!=null || (session!=null && session.length!=0)) 
 	    { 			
-			if(NMApp.getContext() instanceof Main)
+			if(NMApp.getController().getView() instanceof Main)
 			{
 				txtenterprise.setText(session[0]);
 		    	txtenterprise.setEnabled(true);  

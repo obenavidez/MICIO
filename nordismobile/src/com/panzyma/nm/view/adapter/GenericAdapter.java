@@ -142,10 +142,8 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 			protected FilterResults performFiltering(CharSequence constraint) { 
 				
 				 FilterResults results = new FilterResults(); 
-                 List<E> FilteredArrList = new ArrayList<E>();
-				 if (items==null || (items!=null && items.size()==0))
-					 return null;
-                 if (mOriginalValues  == null) 
+                 List<E> FilteredArrList = new ArrayList<E>(); 
+                 if (mOriginalValues  == null && items!=null) 
                 	 mOriginalValues  = new ArrayList<E>(items); // guardar los datos originales en  mOriginalValues
                  if (constraint == null || constraint.length() == 0) 
                  {
@@ -180,7 +178,8 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 			@SuppressWarnings("unchecked")
 			@Override
 			protected void publishResults(CharSequence constraint, FilterResults results) { 
-				 items = (List<E>) results.values; //contiene los datos filtrados
+				
+				 items =  (results!=null && results.values!=null)?(List<E>)results.values:new ArrayList<E>(); //contiene los datos filtrados
                  notifyDataSetChanged();  //notificar al base adapter que hay nuevo valores que han sido filtrados
 			}
 			

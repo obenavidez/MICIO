@@ -82,7 +82,7 @@ public class BConfiguracionM extends BBaseM {
 						b.get("Credentials").toString(),
 						b.get("LoginUsuario").toString(),
 						b.get("PIN").toString(),
-						(Impresora)b.getParcelable("impresora")
+						(b.getParcelable("impresora")!=null)?(Impresora)b.getParcelable("impresora"):null
 						);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -361,8 +361,8 @@ public class BConfiguracionM extends BBaseM {
 				ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
 				SessionManager.setImpresora(dispositivo);
 				SessionManager.setLoguedUser(res.userInfo);
-				if(mode==null)
-					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION, 0, 0, "Configuración Finalizada Correctamente.");
+				if(mode==null || (mode!=null && mode.length==0))
+					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION, 0, 0, "Configuracion guardada exitosamente...");
 
 			} else
 				throw new Exception(res.get_error()); 
