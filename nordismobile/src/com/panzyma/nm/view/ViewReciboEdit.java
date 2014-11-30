@@ -1226,6 +1226,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 						factura.setSaldo(saldo);
 						facturaDetalle.setMonto(ammount.getValue());
 						facturaDetalle.setSaldoFactura(factura.getSaldo());
+						facturaDetalle.setSaldoTotal(factura.getSaldo());
+						facturaDetalle.setMontoNeto(facturaDetalle.getMonto());
 						Cobro.ActualizaTotalFacturas(recibo);
 					}
 					break;

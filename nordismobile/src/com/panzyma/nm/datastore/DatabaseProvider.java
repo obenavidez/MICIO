@@ -1289,8 +1289,11 @@ public class DatabaseProvider extends ContentProvider
 	   		   bdd.insert(TABLA_RECIBO, null, values);
 	   		   
 	        }else {
+	        	values.put(NMConfig.Recibo.ID, recibo.getId());
+	        	//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
+				bdd.delete(TABLA_RECIBO, NMConfig.Recibo.ID+"="+String.valueOf(recibo.getId()) ,null);
 				// ACTUALIZANDO RECIBO
-				bdd.update(TABLA_RECIBO, values, null, null);
+				bdd.insert(TABLA_RECIBO, null, values);
 			}	
 			
 			String where = NMConfig.Recibo.DetalleFactura.RECIBO_ID+"="+String.valueOf(recibo.getId());

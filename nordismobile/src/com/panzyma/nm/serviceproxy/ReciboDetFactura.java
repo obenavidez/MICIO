@@ -425,38 +425,38 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 		{
 			case 0: return new Long(Id);
 			case 1: return new Long(ObjFacturaID);
-			case 2: return new Long(ObjReciboID);
-			case 3: return Monto;
-			case 4: return (EsAbono)?1:0;
-			case 5: return MontoDescEspecifico;
-			case 6: return MontoDescOcasional;
-			case 7: return MontoRetencion;
-			case 8: return MontoImpuesto;
-			case 9: return MontoInteres;
-			case 10:return MontoNeto;
-			case 11:return MontoOtrasDeducciones;
-			case 12:return MontoDescPromocion;
-			case 13:return PorcDescOcasional;
-			case 14:return PorcDescPromo;
-			case 15:return Numero;
-			case 16: return new Long(Fecha);
-			case 17: return new Long(FechaVence);
-			case 18: return new Long(FechaAplicaDescPP);
-			case 19: return SubTotal;
-			case 20: return Impuesto;
-			case 21: return Totalfactura;
-			case 22: return Saldofactura;
-			case 23:return InteresMoratorio;
-			case 24:return SaldoTotal;
-			case 25:return MontoImpuestoExento;
-			case 26:return MontoDescEspecificoCalc; 
+			/*case 2: return new Long(ObjReciboID);*/
+			case 2: return Monto;
+			case 3: return (EsAbono)?1:0;
+			case 4: return MontoDescEspecifico;
+			case 5: return MontoDescOcasional;
+			case 6: return MontoRetencion;
+			case 7: return MontoImpuesto;
+			case 8: return MontoInteres;
+			case 9:return MontoNeto;
+			case 10:return MontoOtrasDeducciones;
+			case 11:return MontoDescPromocion;
+			case 12:return PorcDescOcasional;
+			case 13:return PorcDescPromo;
+			case 14:return Numero;
+			case 15: return new Long(Fecha);
+			case 16: return new Long(FechaVence);
+			case 17: return new Long(FechaAplicaDescPP);
+			case 18: return SubTotal;
+			case 19: return Impuesto;
+			case 20: return Totalfactura;
+			case 21: return Saldofactura;
+			case 22:return InteresMoratorio;
+			case 23:return SaldoTotal;
+			case 24:return MontoImpuestoExento;
+			case 25:return MontoDescEspecificoCalc; 
 		} 		
 		return null;
 	}
 
 	@Override
 	public int getPropertyCount() { 
-		return 27;
+		return 26;
 	}
 
 	@Override
@@ -471,103 +471,103 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 	            _info.name = "ObjFacturaID";
 	            _info.type = Long.class; 
 	            break;
-	        case 2:
+	        /*case 2:
 	            _info.name = "ObjReciboID";
 	            _info.type = Long.class; 
-	            break;
-	        case 3:
+	            break;*/
+	        case 2:
 	            _info.name = "Monto";
 	            _info.type = Float.class; 
 	            break;
-	        case 4:
+	        case 3:
 	            _info.name = "EsAbono";
 	            _info.type = Boolean.class; 
 	            break;
-	        case 5:
+	        case 4:
 	            _info.name = "MontoDescEspecifico";
 	            _info.type = Float.class; 
 	            break;
-	        case 6:
+	        case 5:
 	            _info.name = "MontoDescOcasional";
 	            _info.type = Float.class; 
 	            break;
-	        case 7:
+	        case 6:
 	            _info.name = "MontoRetencion";
 	            _info.type = Float.class; 
 	            break;
-	        case 8:
+	        case 7:
 	            _info.name = "MontoImpuesto";
 	            _info.type = Float.class; 
 	            break;
-	        case 9:
+	        case 8:
 	            _info.name = "MontoInteres";
 	            _info.type = Float.class; 
 	            break;
-	        case 10:
+	        case 9:
 	            _info.name = "MontoNeto";
 	            _info.type = Float.class; 
 	            break;
-	        case 11:
+	        case 10:
 	            _info.name = "MontoOtrasDeducciones";
 	            _info.type = Float.class; 
 	            break;
-	        case 12:
+	        case 11:
 	            _info.name = "MontoDescPromocion";
 	            _info.type = Float.class; 
 	            break;
-	        case 13:
+	        case 12:
 	            _info.name = "PorcDescOcasional";
 	            _info.type = Float.class; 
 	            break;
-	        case 14:
+	        case 13:
 	            _info.name = "PorcDescPromo";
 	            _info.type = Float.class; 
 	            break;
-	        case 15:
+	        case 14:
 	            _info.name = "Numero";
 	            _info.type = String.class; 
 	            break;
-	        case 16:
+	        case 15:
 	            _info.name = "Fecha";
 	            _info.type = Long.class; 
 	            break;
-	        case 17:
+	        case 16:
 	            _info.name = "FechaVence";
 	            _info.type = Long.class; 
 	            break;
-	        case 18:
+	        case 17:
 	            _info.name = "FechaAplicaDescPP";
 	            _info.type = Long.class; 
 	            break;
-	        case 19:
+	        case 18:
 	            _info.name = "SubTotal";
 	            _info.type = Float.class; 
 	            break;
-	        case 20:
+	        case 19:
 	            _info.name = "Impuesto";
 	            _info.type = Float.class; 
 	            break;
-	        case 21:
+	        case 20:
 	            _info.name = "Totalfactura";
 	            _info.type = Float.class; 
 	            break;
-	        case 22:
+	        case 21:
 	            _info.name = "Saldofactura";
 	            _info.type = Float.class; 
 	            break;
-	        case 23:
+	        case 22:
 	            _info.name = "InteresMoratorio";
 	            _info.type = Float.class; 
 	            break;
-	        case 24:
+	        case 23:
 	            _info.name = "SaldoTotal";
 	            _info.type = Float.class; 
 	            break;
-	        case 25:
+	        case 24:
 	            _info.name = "MontoImpuestoExento";
 	            _info.type = Float.class; 
 	            break;
-	        case 26:
+	        case 25:
 	            _info.name = "MontoDescEspecificoCalc";
 	            _info.type = Float.class; 
 	            break;

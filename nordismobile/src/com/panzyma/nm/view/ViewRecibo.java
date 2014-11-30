@@ -8,8 +8,12 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHE
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_STARTED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
@@ -52,10 +56,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
+import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
@@ -64,7 +72,9 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
+import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
@@ -117,7 +127,7 @@ public class ViewRecibo extends ActionBarActivity implements
 			if (EDITAR_RECIBO == request_code) {
 				vmRecibo recibe = recibos.get(positioncache);
 				recibe.setRecibo(Integer.parseInt(String.valueOf(p.getId())),
-						p.getNumero(),
+						p.getReferencia(),
 						p.getFecha(),
 						p.getTotalRecibo(),
 						p.getNombreCliente(),
@@ -127,7 +137,7 @@ public class ViewRecibo extends ActionBarActivity implements
 			}else if (NUEVO_RECIBO == request_code) {
 				recibos.add(
 						new vmRecibo(Integer.parseInt(String.valueOf(p.getId())),
-								p.getNumero(),
+								p.getReferencia(),
 								p.getFecha(),
 								p.getTotalRecibo(),
 								p.getNombreCliente(),
@@ -211,6 +221,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	FragmentTransaction transaction;
 	CuentasPorCobrarFragment cuentasPorCobrar;
 	Object lock=new Object();
+	CustomDialog dlg;
 	
 	private static final int MOSTRAR_FACTURAS = 0;
 	private static final int MOSTRAR_NOTAS_DEBITO = 1;
@@ -276,7 +287,7 @@ public class ViewRecibo extends ActionBarActivity implements
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
 					if(recibo_selected != null) {
 						//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
-						intento.putExtra(RECIBO_ID, recibo_selected.getId());
+						intento.putExtra(RECIBO_ID, recibo_selected.getNumero());
 						//startActivity(intento);	
 						startActivityForResult(intento, EDITAR_RECIBO);
 					} else {
@@ -311,7 +322,11 @@ public class ViewRecibo extends ActionBarActivity implements
 						return;
 					} 
 					break;	
-				case ENVIAR_RECIBO:  
+				case ENVIAR_RECIBO: 
+					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
+					if ("REGISTRADO".equals(recibo_selected.getCodEstado())) {
+						enviarRecibo(recibo_selected);
+					}					
 					break;
 				case FICHA_CLIENTE :			
 					
@@ -452,6 +467,274 @@ public class ViewRecibo extends ActionBarActivity implements
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.item_client_fragment, firstFragment).commit();
 		}
+	}
+	
+	public boolean valido(ReciboColector recibo) 
+	{        
+
+		try 
+		{
+			
+			//Validar fecha del pedido
+			long d = recibo.getFecha();            
+			if (d > DateUtil.d2i(Calendar.getInstance().getTime())) 
+			{
+				showStatusOnUI(
+						new ErrorMessage(
+								"Error en el proceso de enviar el recibo al servidor",
+								"Fecha invalida", "\nCausa: "+"La fecha del recibo no debe ser mayor a la fecha actual."));				
+
+				return false;
+			}
+
+			if (recibo.getNombreCliente().trim() == "") 
+			{            
+				showStatusOnUI(
+						new ErrorMessage(
+								"Error en el proceso de enviar el recibo al servidor",
+								"El cliente del recibo no ha sido ingresado.", "")); 
+				return false;
+			}
+
+			//Se incluya al menos una factura y/o la cantidad de facturas marcadas para ser incluidas       
+			int cantFac = Cobro.cantFacturas(recibo);
+			int cantND = Cobro.cantNDs(recibo);
+			if (cantFac == 0) {
+				if(cantND == 0) {
+					showStatusOnUI(
+							new ErrorMessage(
+									"Error en el proceso de enviar el recibo al servidor",
+									"Problemas con las Facturas.", "Debe incluir al menos una factura o nota de débito."));
+
+					return false;
+				}
+			}
+
+			//Validar que la cantidad de facturas incluidas no sea mayor que el valor del parámetro CantMaxFacturasEnRecibo.
+			int max = Integer.parseInt(Cobro.getParametro(this.getContext(),"CantMaxFacturasEnRecibo")+"");
+			if (cantFac > max) {
+				showStatusOnUI(
+						new ErrorMessage(
+								"Error en el proceso de enviar el recibo al servidor",
+								"Problemas con los Documentos.", "La cantidad de facturas no debe ser mayor que "+max));             
+
+				return false;
+			}
+
+			//La cantidad de notas de débito marcadas para ser incluidas en el recibo 
+			//no debe ser mayor que el valor del párametro CantMaxNotasDebitoEnRecibo        
+			max = Integer.parseInt(Cobro.getParametro(this.getContext(),"CantMaxNotasDebitoEnRecibo")+"");
+			if (cantND > max) {
+
+				showStatusOnUI(
+						new ErrorMessage(
+								"Error en el proceso de enviar el recibo al servidor",
+								"Problemas con los Documentos.", "La cantidad de notas de débito no debe ser mayor que "+max + "."));             
+				return false;
+			}
+
+			//La cantidad de notas de crédito incluidas a pagar no debe ser mayor 
+			//que el valor del parámetro CantMaxNotasCreditoEnRecibo        
+			max = Integer.parseInt(Cobro.getParametro(this.getContext(),"CantMaxNotasCreditoEnRecibo")+"");
+			if (Cobro.cantNCs(recibo) > max) {
+				showStatusOnUI(
+						new ErrorMessage(
+								"Error al Validar el Recibo",
+								"Problemas con los Documentos.", "La cantidad de notas de crédito no debe ser mayor que " + max + "."));
+				//Dialog.alert("La cantidad de notas de crédito no debe ser mayor que " + max + ".");
+				return false;
+			}
+
+			//Validar que se haya ingresado al menos un pago
+			if (Cobro.cantFPs(recibo) == 0) {
+				showStatusOnUI(
+						new ErrorMessage(
+								"Error al Validar el Recibo",
+								"No se ha agregado ningun pago.", ""));
+
+				//Dialog.alert("Detalle de pagos no ingresado.");
+				return false; 
+			}
+
+			//Validar que la sumatoria de los montos de las NC seleccionadas no sea mayor ni igual que la sumatoria
+			//de los montos a pagar de las facturas incluidas en el recibo, a excepción de que solamente se estén
+			//pagando facturas vencidas en cuyo caso SÍ se permite un monto igual
+			if (recibo.getTotalNC() > 0) { //Si hay NC aplicadas
+
+				//Ver si todas las facturas aplicadas son vencidas
+				boolean todasVencidas = true;
+				int diasAplicaMora = Integer.parseInt(Cobro.getParametro(this.getContext(), "DiasDespuesVenceCalculaMora")+"");
+				long fechaHoy = DateUtil.getTime(DateUtil.getToday());
+				if (recibo.getFacturasRecibo().size() != 0) {
+					ReciboDetFactura[] ff = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray();
+					if (ff != null) {
+						for(int i=0; i<ff.length; i++) {
+							ReciboDetFactura f = ff[i];
+							String s = f.getFechaVence() + "";
+							int fechaVence = Integer.parseInt(s.substring(0, 8));
+							long fechaCaeEnMora = DateUtil.addDays(DateUtil.getTime(fechaVence), diasAplicaMora);
+							if (fechaCaeEnMora > fechaHoy) {
+								todasVencidas = false;
+								break;
+							}
+						}
+					}
+				} //Ver si todas las facturas aplicadas son vencidas
+
+				if (todasVencidas && (recibo.getTotalNC() > recibo.getTotalFacturas()))  {
+					showStatusOnUI(
+							new ErrorMessage(
+									"Error al Validar el Recibo",
+									"Problemas con los Documentos.", "El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas." + max + "."));
+					// Dialog.alert("El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas.");
+					return false;
+				}
+
+				if (todasVencidas && (recibo.getTotalNC() >= recibo.getTotalFacturas()))  {
+					showStatusOnUI(
+							new ErrorMessage(
+									"Error al Validar el Recibo",
+									"Problemas con los Documentos.", "El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas."));
+
+					// Dialog.alert("El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas.");
+					return false;
+				}
+
+			} //Si hay NC aplicadas
+
+
+			//Monto Mínimo Recibo: Para aplicar descuento específico a cada factura que se va cancelar,
+			//el total del recibo deber mayor o igual al valor del parámetro 'MontoMinReciboAplicaDpp'
+			boolean ValidarMontoAplicaDpp = false;
+
+			//Determinando si hay descPP que validar
+			if (recibo.getFacturasRecibo().size() != 0) {
+				ArrayList<ReciboDetFactura> ff =recibo.getFacturasRecibo();
+				if (ff != null) {
+					for(int i=0; i<ff.size(); i++) {
+						ReciboDetFactura f = ff.get(i);
+						if (f.getMontoDescEspecifico() != 0) {
+							ValidarMontoAplicaDpp = true;
+							break;
+						}
+					}
+				}
+			} //Determinando si hay descPP que validar
+
+			//Validando el monto mínimo del recibo
+			float montoMinimoRecibo = Float.parseFloat(Cobro.getParametro(this.getContext(),"MontoMinReciboAplicaDpp")+"");
+			if ((recibo.getTotalRecibo() < montoMinimoRecibo) && ValidarMontoAplicaDpp) {
+				//Recalcular detalles del recibo sin aplicar DescPP
+				Cobro.calcularDetFacturasRecibo(this.getContext(),recibo, recibo.getCliente(), false);
+				//actualizaTotales();            
+				showStatusOnUI(
+						new ErrorMessage(
+								"Error al Validar el Recibo",
+								"Problemas el Descuento PP.","Para aplicar descuento pronto pago \r\nel monto del recibo no debe ser menor que " + StringUtil.formatReal(montoMinimoRecibo) + "."));
+
+				return false;
+			}              
+			if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) {
+				showStatusOnUI(
+						new ErrorMessage(
+								"Error al Validar el Recibo",
+								"Problema con el Monto Total del Recibo","El monto pagado no cuadra con el total del recibo."));
+
+				// Dialog.alert("El monto pagado no cuadra con el total del recibo.");
+				return false;
+			}
+			return true;
+
+
+		} catch (Exception e) 
+		{
+
+		}
+		return false;
+	}
+	
+	public  void showStatus(final NotificationMessage notificacion)
+	{
+		if(dlg!=null)
+			dlg.dismiss();
+		runOnUiThread(new Runnable()
+        {
+            @Override
+			public void run()
+            { 
+            	dlg= new CustomDialog(context,notificacion.getMessage()+notificacion.getCause(),false,NOTIFICATION_DIALOG); 
+            	dlg.show();
+            }
+        });		
+	}
+	
+	public void showStatus(final String mensaje, boolean... confirmacion) {		 
+			if (confirmacion.length != 0 && confirmacion[0]) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						AppDialog.showMessage(context, "", mensaje,
+								AppDialog.DialogType.DIALOGO_ALERTA,
+								new AppDialog.OnButtonClickListener() {
+									@Override
+									public void onButtonClick(
+											AlertDialog _dialog, int actionId) 
+									{
+										if (AppDialog.OK_BUTTOM == actionId) 
+										{
+											_dialog.dismiss();
+										}
+									}
+								});
+					}
+				});
+			} else 
+			{
+				runOnUiThread(new Runnable() 
+				{
+					@Override
+					public void run() {
+						dlg =  new CustomDialog(context, mensaje, false,
+								NOTIFICATION_DIALOG);
+						dlg.show();
+					}
+				});
+			} 
+	}
+	
+	private void enviarRecibo(vmRecibo recibe)
+	{   
+		ReciboColector recibo = ModelRecibo.getReciboByID(this.getContentResolver(), recibe.getNumero());
+		if(!valido(recibo)) return;  
+		
+		if (recibo.getCodEstado().compareTo("PAGADO") == 0) 
+		{
+			showStatus("No se puede enviar un recibo que tiene estado PAGADO",true);  
+			return;
+		}
+        
+        if (recibo.getNumero() > 0) 
+        {
+        	showStatus("El recibo ya fue enviado anteriormente",true);  
+			return; 
+        } 
+		showStatus("Enviando recibo a la central");  
+		try 
+		{ 			
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putParcelable("recibo", recibo); 
+			b.putParcelableArray("facturasToUpdate", (Parcelable[]) recibo.getFacturasRecibo().toArray() ); //getArrayOfFacturas()
+			b.putParcelableArray("notasDebitoToUpdate", (Parcelable[]) recibo.getNotasDebitoRecibo().toArray() ); // getArrayOfNotasDebito()
+			b.putParcelableArray("notasCreditoToUpdate",  (Parcelable[]) recibo.getNotasCreditoRecibo().toArray()); // getArrayOfNotasCredito()
+			msg.setData(b);
+			msg.what=SEND_DATA_FROM_SERVER;
+			NMApp.getController().getInboxHandler().sendMessage(msg);  	 
+
+		} catch (Exception e) {			
+			e.printStackTrace();
+		}
+
 	}
 		
 	@Override

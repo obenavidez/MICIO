@@ -208,10 +208,11 @@ public class ModelRecibo {
 				NMConfig.Recibo.EXENTO, NMConfig.Recibo.AUTORIZA_DGI };	
 		ReciboColector recibo = null;
 		try {
-			String uriString = DatabaseProvider.CONTENT_URI_RECIBO +"/"+String.valueOf(integer);
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBO.toString();
 			Cursor cur = content.query(Uri.parse(uriString),
-					projection, // Columnas a devolver
-					null, // Condición de la query
+					null,
+					" referencia = " + String.valueOf(integer), // Columnas a devolver
+					 // Condición de la query
 					null, // Argumentos variables de la query
 					null);
 			if (cur.moveToFirst()) {
@@ -263,10 +264,10 @@ public class ModelRecibo {
 			e.printStackTrace();
 		}
 		
-		recibo.setFacturasRecibo(getFacturasDelRecibo(content, integer));
-		recibo.setNotasDebitoRecibo(getNotasDebitoDelRecibo(content, integer));
-		recibo.setNotasCreditoRecibo(getNotasCreitoDelRecibo(content, integer));
-		recibo.setFormasPagoRecibo(getFormasPagoDelRecibo(content, integer));
+		recibo.setFacturasRecibo(getFacturasDelRecibo(content, recibo.getId()));
+		recibo.setNotasDebitoRecibo(getNotasDebitoDelRecibo(content, recibo.getId()));
+		recibo.setNotasCreditoRecibo(getNotasCreitoDelRecibo(content, recibo.getId()));
+		recibo.setFormasPagoRecibo(getFormasPagoDelRecibo(content, recibo.getId()));
 		return recibo;
 	}
 	
@@ -302,10 +303,10 @@ public class ModelRecibo {
 				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO };		
 		ReciboDetFactura detalleFactura = null;
 		try {	
-			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA +"/"+String.valueOf(reciboID);
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA.toString() ;
 			Cursor cur = content.query(Uri.parse(uriString),
 					projection, // Columnas a devolver
-					null, // Condición de la query
+					"objReciboID = "+String.valueOf(reciboID), // Condición de la query
 					null, // Argumentos variables de la query
 					null);
 			if (cur.moveToFirst()) {				
@@ -370,10 +371,10 @@ public class ModelRecibo {
 				NMConfig.Recibo.DetalleNotaDebito.MONTO_NETO };
 		ReciboDetND notaDebitoDetalle = null;
 		try {
-			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO	+ "/" + String.valueOf(reciboID);
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO.toString();
 			Cursor cur = content.query(Uri.parse(uriString), 
 					projection, // Columnas a devolver
-					null, // Condición de la query
+					"objReciboID = "+String.valueOf(reciboID), // Condición de la query
 					null, // Argumentos variables de la query
 					null);
 			
@@ -417,10 +418,10 @@ public class ModelRecibo {
 				NMConfig.Recibo.DetalleNotaCredito.FECHA_VENCE };
 		ReciboDetNC notacreditoDetalle = null;
 		try {
-			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTACREDITO + "/" + String.valueOf(reciboID);
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTACREDITO.toString();
 			Cursor cur = content.query(Uri.parse(uriString), 
 					projection, // Columnas a devolver
-					null, // Condición de la query
+					"objReciboID = "+String.valueOf(reciboID), // Condición de la query
 					null, // Argumentos variables de la query
 					null);
 			
@@ -469,10 +470,10 @@ public class ModelRecibo {
 		ReciboDetFormaPago formaPago = null;
 		
 		try {
-			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFORMAPAGO	+ "/" + String.valueOf(reciboID);
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFORMAPAGO.toString();
 			Cursor cur = content.query(Uri.parse(uriString), 
 					projection, // Columnas a devolver
-					null, // Condición de la query
+					"objReciboID = "+String.valueOf(reciboID), // Condición de la query
 					null, // Argumentos variables de la query
 					null);
 			
@@ -510,7 +511,7 @@ public class ModelRecibo {
 			ContentResolver content) throws Exception {
 
 		String[] projection = new String[] { NMConfig.Recibo.ID,
-				NMConfig.Recibo.NUMERO, NMConfig.Recibo.FECHA,
+				NMConfig.Recibo.REFERENCIA, NMConfig.Recibo.FECHA,
 				NMConfig.Recibo.TOTAL_RECIBO, NMConfig.Recibo.NOMBRE_CLIENTE,
 				NMConfig.Recibo.DESCRICION_ESTADO,NMConfig.Recibo.CODIGO_ESTADO, NMConfig.Recibo.SUCURSAL_ID };
 
@@ -524,17 +525,16 @@ public class ModelRecibo {
 		if (cur.moveToFirst()) {
 			do {
 
-				a_vmprod.add(new vmRecibo(Integer.parseInt(cur.getString(cur
-						.getColumnIndex(projection[0]))), Integer.parseInt(cur
-						.getString(cur.getColumnIndex(projection[1]))), Long
-						.parseLong(cur.getString(cur
-								.getColumnIndex(projection[2]))), Float
-						.parseFloat(cur.getString(cur
-								.getColumnIndex(projection[3]))), cur
-						.getString(cur.getColumnIndex(projection[4])), cur
-						.getString(cur.getColumnIndex(projection[5])), cur
-						.getString(cur.getColumnIndex(projection[6])), cur
-						.getLong(cur.getColumnIndex(projection[7]))));
+				a_vmprod.add(new vmRecibo(
+						Integer.parseInt(cur.getString(cur.getColumnIndex(projection[0]))),
+						Integer.parseInt(cur.getString(cur.getColumnIndex(projection[1]))),
+						Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))),
+						Float.parseFloat(cur.getString(cur.getColumnIndex(projection[3]))),
+						cur.getString(cur.getColumnIndex(projection[4])),
+						cur.getString(cur.getColumnIndex(projection[5])),
+						cur.getString(cur.getColumnIndex(projection[6])),
+						cur.getLong(cur.getColumnIndex(projection[7])))
+				);
 			} while (cur.moveToNext());
 		}
 
