@@ -414,24 +414,24 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 							 
 							if ((SessionManager.getSession()!=null && SessionManager.getSession().length!=0) || SessionManager.SignIn(true)) 
 							{
-								setEnterprise(txtEmpresa.getText().toString());
-								setUserName(txtUsuario.getText().toString());
-								setUrlServer(txtURL.getText().toString());
-								setUrlServer2(txtURL2.getText().toString());
-								setDeviceId(txtDispositivoID.getText().toString());
-								
-								Message msg = new Message();
-								Bundle b = new Bundle();
-								b.putString("URL",txtURL.getText().toString());
-								b.putString("URL2",txtURL2.getText().toString());
-								b.putString("Empresa",txtEmpresa.getText().toString());
-								b.putString("Credentials",SessionManager.getCredenciales()); 
-								b.putString("LoginUsuario", txtUsuario.getText().toString());
-								b.putParcelable("impresora", getImpresora());
-								b.putString("PIN",NMNetWork.getDeviceId(context));
-								msg.setData(b);
-								msg.what = LOAD_SETTING;
-								c.getInboxHandler().sendMessage(msg);
+//								setEnterprise(txtEmpresa.getText().toString());
+//								setUserName(txtUsuario.getText().toString());
+//								setUrlServer(txtURL.getText().toString());
+//								setUrlServer2(txtURL2.getText().toString());
+//								setDeviceId(txtDispositivoID.getText().toString());
+//								
+//								Message msg = new Message();
+//								Bundle b = new Bundle();
+//								b.putString("URL",txtURL.getText().toString());
+//								b.putString("URL2",txtURL2.getText().toString());
+//								b.putString("Empresa",txtEmpresa.getText().toString());
+//								b.putString("Credentials",SessionManager.getCredenciales()); 
+//								b.putString("LoginUsuario", txtUsuario.getText().toString());
+//								b.putParcelable("impresora", getImpresora());
+//								b.putString("PIN",NMNetWork.getDeviceId(context));
+//								msg.setData(b);
+//								msg.what = LOAD_SETTING;
+//								c.getInboxHandler().sendMessage(msg);
 							}
 
 						} catch (Exception e) {

@@ -360,9 +360,10 @@ public class BConfiguracionM extends BBaseM {
 				ModelConfiguracion.saveConfiguration(NMApp.getContext(),setting);
 				ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
 				SessionManager.setImpresora(dispositivo);
-				SessionManager.setLoguedUser(res.userInfo);
+				SessionManager.setLoguedUser(res.userInfo); 
 				if(mode==null || (mode!=null && mode.length==0))
 					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION, 0, 0, "Configuracion guardada exitosamente...");
+ 
 
 			} else
 				throw new Exception(res.get_error()); 

@@ -70,7 +70,7 @@
                             android:isScrollContainer="true"
                             android:lines="2"
                             android:text="Detalle Cliente :"
-                            android:textColor="@color/DarkGray" />
+                            android:textColor="@color/Blue" />
 
                         <TextView
                             android:id="@+id/fclbl_sucursal"
@@ -91,7 +91,7 @@
                             android:layout_toRightOf="@+id/fclbl_sucursal"
                             android:lines="2"
                             android:text="Detalle Sucursal :"
-                            android:textColor="@color/DarkGray" />
+                            android:textColor="@color/Blue" />
 
                         <TextView
                             android:id="@+id/fclbl_direccion"
@@ -111,7 +111,7 @@
                             android:layout_below="@+id/fclbl_sucursal"
                             android:layout_toRightOf="@+id/fclbl_direccion"
                             android:text="Detalle Dirección"
-                            android:textColor="@color/DarkGray" />
+                            android:textColor="@color/Blue" />
 
                         <TextView
                             android:id="@+id/fclbl_telefono"
@@ -131,7 +131,7 @@
                             android:layout_below="@+id/fclbl_direccion"
                             android:layout_toRightOf="@+id/fclbl_telefono"
                             android:text="Detalle Teléfono"
-                            android:textColor="@color/DarkGray" />
+                            android:textColor="@color/Blue" />
                          
                         
                     </RelativeLayout>
@@ -157,7 +157,7 @@
 			                android:layout_height="wrap_content" 
 			                android:layout_toRightOf="@+id/fclbl_tipo"
 			                android:text="Detalle Tipo"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 	
 	
 			            <TextView
@@ -178,7 +178,7 @@
 			                android:layout_below="@+id/fclbl_tipo"
 			                android:layout_toRightOf="@+id/fclbl_categoria"
 			                android:text="Detalle Categoria"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 			            
 			            <TextView
 			                android:id="@+id/fclbl_precioventa"
@@ -198,7 +198,7 @@
 			                android:layout_toRightOf="@+id/fclbl_precioventa"
 			                android:layout_below="@+id/fclbl_categoria"
 			                android:text="Detalle Precio Venta"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 			            
 			            <TextView
 			                android:id="@+id/fclbl_limitecredito"
@@ -218,7 +218,7 @@
 			                android:layout_below="@+id/fclbl_precioventa"
 			                android:layout_toRightOf="@+id/fclbl_limitecredito"
 			                android:text="Detalle Limite Credito"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
                     
                     </RelativeLayout>
                         
