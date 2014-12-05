@@ -159,7 +159,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold"
                         android:typeface="sans" />
 
@@ -178,7 +178,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold" />
 
                     <TextView
@@ -196,7 +196,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold" />
                 </TableRow>
 
@@ -220,7 +220,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold"
                         android:typeface="sans" />
 
@@ -239,7 +239,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold" />
 
                     <TextView
@@ -257,7 +257,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold" />
                 </TableRow>
 
@@ -281,7 +281,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold"
                         android:typeface="sans" />
 
@@ -300,7 +300,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold" />
                 </TableRow>
 
@@ -324,7 +324,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold"
                         android:typeface="sans" />
 
@@ -343,7 +343,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold" />
 
                     <TextView
@@ -361,7 +361,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_weight="1"
                         android:text="0.00"
-                        android:textColor="@color/Black"
+                        android:textColor="@color/Blue"
                         android:textStyle="bold" />
                 </TableRow>
             </TableLayout>			

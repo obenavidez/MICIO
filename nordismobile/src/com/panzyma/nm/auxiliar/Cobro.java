@@ -601,6 +601,7 @@ public class Cobro
       //Inicializar descuento PP en cero en todas las facturas
         for(int i=0; i < _ff.length; i++) {
             ReciboDetFactura _f = _ff[i];
+            //_f.setTotalFactura(_f.getMonto() - _f.getMontoInteres());
             rcol.setTotalFacturas(rcol.getTotalFacturas() + _f.getMonto() );
         }  
     	
@@ -615,6 +616,19 @@ public class Cobro
         for(ReciboDetND nd : rcol.getNotasDebitoRecibo()) {
         	ReciboDetND _f = nd;
             rcol.setTotalND(rcol.getTotalND() + _f.getMonto() );
+        }  
+    	
+    }
+    
+    public static void ActualizaTotalNotasCredito(ReciboColector rcol) {    	    
+        //ReciboDetND[] _ff = getArraOfNotasDebitoDetalle( rcol.getNotasDebitoRecibo() );
+        if (rcol == null) return;   
+        if (rcol.getNotasCreditoRecibo() == null || rcol.getNotasCreditoRecibo().size() == 0) return;    
+        rcol.setTotalNC(0.00F);
+      //Inicializar descuento PP en cero en todas ls facturas
+        for(ReciboDetNC nc : rcol.getNotasCreditoRecibo()) {
+        	ReciboDetNC _f = nc;
+            rcol.setTotalNC(rcol.getTotalNC() + _f.getMonto() );
         }  
     	
     }

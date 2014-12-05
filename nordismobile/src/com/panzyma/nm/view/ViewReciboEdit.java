@@ -593,8 +593,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 		return false;
 	}
-	
-	
+		
 	private void enviarImprimirRecibo(final ReciboColector recibo)
 	{		
 		runOnUiThread(new Runnable() 
@@ -632,7 +631,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		
 	}
 	
-
 	public void actualizarOnUINumRef(final ReciboColector r) {
 		runOnUiThread(new Runnable() {
 
@@ -1172,26 +1170,94 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 		return false;
 	}
+	
+	private float getMontoInteresFacturas(){
+		float interes = 0.0f;
+		for(ReciboDetFactura f : recibo.getFacturasRecibo()){
+			interes += f.getMontoInteres();
+		}
+		return interes;
+	}
+	
+	private float getMontoInteresNotaDebito(){
+		float interes = 0.0f;
+		for(ReciboDetND nd : recibo.getNotasDebitoRecibo()){
+			interes += nd.getMontoInteres();
+		}
+		return interes;
+	}
+	
+	private float getMontoDescuentoFacturas(){
+		float monto = 0.0f;
+		for(ReciboDetFactura f : recibo.getFacturasRecibo()){
+			monto += f.getMontoDescOcasional() + f.getMontoDescPromocion() + f.getMontoDescEspecifico() ;
+		}
+		return monto;
+	}
+	
+	private float getMontoRetencionFacturas(){
+		float monto = 0.0f;
+		for(ReciboDetFactura f : recibo.getFacturasRecibo()){
+			monto += f.getMontoRetencion();
+		}
+		return monto;
+	}
+	
+	private float getMontoOtrasDeduccionesFacturas(){
+		float monto = 0.0f;
+		for(ReciboDetFactura f : recibo.getFacturasRecibo()){
+			monto += f.getMontoOtrasDeducciones();
+		}
+		return monto;
+	}
+	
+	private float getMontoImpuestoExentoFacturas(){
+		float monto = 0.0f;
+		for(ReciboDetFactura f : recibo.getFacturasRecibo()){
+			monto += f.getMontoImpuestoExento();
+		}
+		return monto;
+	}
 
 	private void actualizaTotales() {
-		// ENCONTRANDO EL SUBTOTAL DEL RECIBO
-		txtTotalAbonadoFacturas.setText(String.valueOf(recibo
-				.getTotalFacturas()));
-		txtTotalAbonadoND.setText(String.valueOf(recibo.getTotalND()));
-		recibo.setSubTotal(recibo.getTotalFacturas() + recibo.getTotalND()
-				+ recibo.getTotalInteres());
-		txtSubTotal.setText(String.valueOf(recibo.getSubTotal()));
-		// OBTENIENDO EL TOTAL DE DESCUENTO
-		recibo.setTotalDesc(recibo.getTotalDescOca() + recibo.getTotalDescPP()
-				+ recibo.getTotalDescPromo());
-		// TOTAL NOTAS DE CREDITO
-		txtTotalAbonadoNC.setText(String.valueOf(recibo.getTotalNC()));
-
-		recibo.setTotalRecibo(recibo.getSubTotal() - recibo.getTotalNC()
-				- recibo.getTotalDesc() - recibo.getTotalRetenido()
-				- recibo.getTotalOtrasDed()
-				- recibo.getTotalImpuestoExonerado());
-		txtTotal.setText(String.valueOf(recibo.getTotalRecibo()));
+		
+		/*------------- CALCULANDO VALORES ---------------- */
+		// CALCULARA EL INTERES
+		float interesMora = getMontoInteresFacturas() + getMontoInteresNotaDebito();
+		// CALCULANDO EL SUBTOTAL
+		float totalFacturas = recibo.getTotalFacturas() - getMontoInteresFacturas();
+		float totalNotasDebito = recibo.getTotalND() - getMontoInteresNotaDebito();
+		float totalNotaCredito = recibo.getTotalNC();
+		float subTotal = totalFacturas + totalNotasDebito;				
+		// CALCULAR EL TOTAL DE DESCUENTO
+		float totalDesc   = getMontoDescuentoFacturas();
+		// CALCULAR EL TOTAL RETENIDO
+		float totalRetencion = getMontoRetencionFacturas();
+		// CALCULAR EL TOTAL DE OTRAS DEDUCCIONES
+		float totalOtrasDed = getMontoOtrasDeduccionesFacturas();
+		// CALCULAR EL TOTAL DE IMPUESTO EXENTO
+		float totalImpuestoExento = getMontoImpuestoExentoFacturas(); 
+		float netoRecibo = subTotal - ( totalNotaCredito +
+				                        totalDesc +
+				                        totalRetencion + 
+				                        totalOtrasDed +
+				                        totalImpuestoExento);
+		/*------------- ESTABLECIENDO VALORES A RECIBO ----------------*/
+		recibo.setTotalFacturas(totalFacturas);
+		recibo.setTotalND(totalNotasDebito);
+		recibo.setSubTotal(subTotal);
+		recibo.setTotalDesc(totalDesc);
+		recibo.setTotalImpuestoExonerado(totalImpuestoExento);
+		recibo.setTotalRetenido(totalRetencion);
+		recibo.setTotalOtrasDed(totalOtrasDed);
+		recibo.setTotalInteres(interesMora);
+		recibo.setTotalRecibo(netoRecibo);
+		/*------------- ESTABLECIENDO VALORES A LA VISTA ----------------*/		
+		txtTotalAbonadoFacturas.setText(StringUtil.formatReal(recibo.getTotalFacturas()));
+		txtTotalAbonadoND.setText(StringUtil.formatReal(recibo.getTotalND()));
+		txtTotalAbonadoNC.setText(StringUtil.formatReal(recibo.getTotalNC()));
+		txtSubTotal.setText(StringUtil.formatReal(recibo.getSubTotal()));		
+		txtTotal.setText(StringUtil.formatReal(recibo.getTotalRecibo()));
 	}	
 
 	private void procesaFactura(ReciboDetFactura facturaDetalle,
@@ -1310,7 +1376,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			documents.add(notaCreditoDetalle);			
 		}		
 		agregarDocumentosAlDetalleDeRecibo();
-		Cobro.ActualizaTotalFacturas(recibo);
+		Cobro.ActualizaTotalNotasCredito(recibo);
 		actualizaTotales();
 		
 	}
@@ -1614,10 +1680,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			for(Factura fac : getFacturasRecibo()){
 				if(fac.getId() == facturaToRemoved.getObjFacturaID() ){
 					positionDocument = count;
+					break;
 				}
 				++count;
 			}
 			facturasRecibo.remove(positionDocument);
+			recibo.getFacturasRecibo().remove(positionDocument);
 			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());
 			
 		} else if (documentRemoved instanceof ReciboDetND) {
@@ -1626,10 +1694,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			for(CCNotaDebito notaDebito : getNotasDebitoRecibo() ){
 				if(notaDebito.getId() == notaDebitoToRemoved.getObjNotaDebitoID() ){
 					positionDocument = count;
+					break;
 				}
 				++count;
 			}
 			notasDebitoRecibo.remove(positionDocument);
+			recibo.getNotasDebitoRecibo().remove(positionDocument);
 			recibo.setTotalND(recibo.getTotalND() - notaDebitoToRemoved.getMonto());	
 		} else if (documentRemoved instanceof ReciboDetNC) {
 			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE CREDITO
@@ -1637,10 +1707,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			for(CCNotaCredito notaCredito : getNotasCreditoRecibo() ){
 				if(notaCredito.getId() == notaCreditoToRemoved.getObjNotaCreditoID() ){
 					positionDocument = count;
+					break;
 				}
 				++count;
 			}
 			notasCreditoRecibo.remove(positionDocument);
+			recibo.getNotasCreditoRecibo().remove(positionDocument);
 			recibo.setTotalNC(recibo.getTotalNC() - notaCreditoToRemoved.getMonto());
 		}
 
