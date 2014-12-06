@@ -327,23 +327,23 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			return;
 		boolean repetido = false;
 		for(com.panzyma.nm.serviceproxy.Documento doc : documents) {
-			if (obj instanceof ReciboDetFactura) {
+			if (obj instanceof ReciboDetFactura && doc.getObject() instanceof ReciboDetFactura) {
 				ReciboDetFactura fac = (ReciboDetFactura) obj;
 				ReciboDetFactura fac2 = (ReciboDetFactura)doc.getObject();
 				if (fac2.getObjFacturaID() == fac.getObjFacturaID()) {
 					repetido = true;
 					break;
 				}									
-			} else if (obj instanceof ReciboDetND) {
+			} else if (obj instanceof ReciboDetND && doc.getObject() instanceof ReciboDetND) {
 				ReciboDetND nd = (ReciboDetND) obj;
-				ReciboDetND nd2 = (ReciboDetND) doc.getObject();;
+				ReciboDetND nd2 = (ReciboDetND) doc.getObject();
 				if (nd.getObjNotaDebitoID() == nd2.getObjNotaDebitoID()){
 					repetido = true;
 					break;
 				}									
-			} else if (obj instanceof ReciboDetNC) {
-				ReciboDetNC nc = (ReciboDetNC) obj;
-				ReciboDetNC nc2 = (ReciboDetNC) doc.getObject();;
+			} else if (obj instanceof ReciboDetNC && doc.getObject() instanceof ReciboDetNC) {
+				ReciboDetNC nc = (ReciboDetNC) obj;				
+				ReciboDetNC nc2 = (ReciboDetNC) doc.getObject();
 				if (nc.getObjNotaCreditoID() == nc2.getObjNotaCreditoID()){
 					repetido = true;
 					break;
@@ -399,20 +399,24 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				addWithoutRepeating(factura);
 			}
 			// AGREGAR LAS NOTAS DE DEBITO DEL RECIBO A LA GRILLA
-			for (ReciboDetND nd : recibo.getNotasDebitoRecibo()) 
-			{
-				if(cliente.getNotasDebitoPendientes()!=null)
-				
-				for (CCNotaDebito ndp : cliente.getNotasDebitoPendientes()) {
-					if (nd.getObjNotaDebitoID() == ndp.getId()) {						
-						getNotasDebitoRecibo().add(ndp);
+			for (ReciboDetND nd : recibo.getNotasDebitoRecibo()) {
+				if(cliente.getNotasDebitoPendientes()!=null)				
+					for (CCNotaDebito ndp : cliente.getNotasDebitoPendientes()) {
+						if (nd.getObjNotaDebitoID() == ndp.getId()) {						
+							getNotasDebitoRecibo().add(ndp);
+						}
 					}
-				}
 				addWithoutRepeating(nd);
 			}
 			// AGREGAR LAS NOTAS DE CREDITO DEL RECIBO A LA GRILLA
 			if(recibo.getNotasCreditoRecibo()!=null && recibo.getNotasCreditoRecibo().size()!=0)
 			for (ReciboDetNC nc : recibo.getNotasCreditoRecibo()) {
+				if(cliente.getNotasDebitoPendientes()!=null)
+					for (CCNotaCredito ncp : cliente.getNotasCreditoPendientes()) {
+						if (nc.getObjNotaCreditoID() == ncp.getId()) {						
+							getNotasCreditoRecibo().add(ncp);
+						}
+					}
 				addWithoutRepeating(nc);
 			}
 			adapter = null;
@@ -779,18 +783,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		if (valido()) 
 		{ 
 
-
-			this.subTotal = (this.totalFacturas + this.totalNotasDebito + this.totalInteres)
-					- this.totalNotasCredito;
-
-			this.totalDescuento = this.totalDescuentoOcasional
-					+ this.totalDescuentoPromocion
-					+ this.totalDescuentoProntoPago;
-
-			this.totalRecibo = this.subTotal
-					+ (this.totalImpuestoProporcional + this.totalImpuestoExonerado)
-					- (this.totalDescuento - this.totalOtrasDeducciones);
-
+			CalculaTotales();
 			// colector
 			recibo.setObjColectorID(10);
 			recibo.setAplicaDescOca(false);
@@ -1084,7 +1077,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				int diasAplicaMora = Integer.parseInt(Cobro.getParametro(me, "DiasDespuesVenceCalculaMora")+"");
 				long fechaHoy = DateUtil.getTime(DateUtil.getToday());
 				if (recibo.getFacturasRecibo().size() != 0) {
-					ReciboDetFactura[] ff = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray();
+					ReciboDetFactura[] ff = new ReciboDetFactura[recibo.getFacturasRecibo().size()];
+					recibo.getFacturasRecibo().toArray(ff);					
 					if (ff != null) {
 						for(int i=0; i<ff.length; i++) {
 							ReciboDetFactura f = ff[i];
@@ -1166,6 +1160,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 		} catch (Exception e) 
 		{
+			try {
+				showStatusOnUI(
+						new ErrorMessage(
+								"Error al Validar el Recibo",
+								e.getMessage(),e.getMessage()));
+			} catch (InterruptedException e1) {}
 
 		}
 		return false;
@@ -2186,7 +2186,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					_facRecibo.setSubTotal(_fac.getSubtotalFactura() - _fac.getDescuentoFactura());
 					_facRecibo.setTotalFactura(_fac.getTotalFacturado());            
 					_facRecibo.setEsAbono(_facRecibo.getMonto() < _facRecibo.getSaldoTotal());        
-					//Agregarla a facturas seleccionadas
+					//Agregarla a facturas seleccionadasha
 					_facSeleccionadas.add(_facRecibo);                         
 
 					if (mto <= 0) break;                
