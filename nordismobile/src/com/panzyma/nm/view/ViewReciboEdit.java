@@ -688,6 +688,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	{
 		if(cliente==null)
 			return;   
+		if (!Cobro.validaAplicDescOca(me.getContext(),recibo))
+        {            
+			AppDialog.showMessage(me,"Alerta","Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",DialogType.DIALOGO_ALERTA); 
+            return;
+        } 
+		
 		FragmentTransaction ft =getSupportFragmentManager().beginTransaction(); 
 	    android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
 	    if (prev != null) {
@@ -707,6 +713,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	    
 	    newFragment.show(ft, "dialog"); 
 	}
+	 
 	
 	private void DesaplicarDescuentoOcasional()
 	{

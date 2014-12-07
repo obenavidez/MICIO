@@ -60,6 +60,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState); 
 		recibo=getArguments().getParcelable("recibo");
+		_clave="";
 	}
 	
 	@SuppressLint("InflateParams") 

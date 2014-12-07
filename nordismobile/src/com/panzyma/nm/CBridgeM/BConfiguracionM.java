@@ -404,9 +404,11 @@ public class BConfiguracionM extends BBaseM {
 								try {
 									if (NMNetWork.isPhoneConnected(getContext())
 											&& NMNetWork
-											.CheckConnection(getController())) {
+											.CheckConnection(getController())) 
+									{
 										Integer page = 1;
-										while (true) {
+										while (true) 
+										{
 											JSONArray modelcliente = ModelCliente
 													.getArrayCustomerFromServer2(
 															credentials,
