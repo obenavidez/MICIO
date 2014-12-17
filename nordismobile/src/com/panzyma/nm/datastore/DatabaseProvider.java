@@ -1629,7 +1629,7 @@ public class DatabaseProvider extends ContentProvider
 				bdd.insert(TABLA_CPRODUCTO, null, values);
 			}
 			else{
-				bdd.update(TABLA_CPRODUCTO, values, null, null);	
+				bdd.update(TABLA_CPRODUCTO, values, NMConfig.CProducto.ID+"="+String.valueOf(detalle.getId()) , null);	
 			}
 			
 			String where = NMConfig.CProducto.CNota.PRODUCTOID+"="+String.valueOf(detalle.getId());

@@ -30,6 +30,7 @@ import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -140,32 +141,23 @@ public class vCliente extends ActionBarActivity implements
 
 		// Create an instance of ExampleFragment
 		firstFragment = new ListaFragment<vmCliente>();
-		firstFragment.setRetainInstance(true);
+//		firstFragment.setRetainInstance(true);
 		// In case this activity was started with special instructions from
 		// an Intent,
 		// pass the Intent's extras to the fragment as arguments
 		firstFragment.setArguments(getIntent().getExtras());
 		
-//		if ( savedInstanceState != null ) {
-//			Parcelable[] objects = savedInstanceState.getParcelableArray("vmCliente");	
-//			clientes = new ArrayList<vmCliente>((Collection<? extends vmCliente>) Arrays.asList(objects)); 
-//			//recibos = vmRecibo.arrayParcelToArrayRecibo(objects);			
-//		} else {
-//			clientes = null;
-//		}
-		
-//		if (clientes == null) {
 			Load_Data(LOAD_DATA_FROM_LOCALHOST);
-//		}			
-		/*else {
-			SetList(clientes);
-		}*/
-
 		// if device is a mobile
 		if (findViewById(R.id.fragment_container) != null) {
+//			getSupportFragmentManager().beginTransaction()
+//					.add(R.id.fragment_container, firstFragment, "lista")
+//					.addToBackStack("list").commit();
+			// Display the fragment as the main content.
 			getSupportFragmentManager().beginTransaction()
-					.add(R.id.fragment_container, firstFragment, "lista")
-					.addToBackStack("list").commit();
+	                .replace(R.id.fragment_container, firstFragment)
+	                .commit();
+			
 		} else {
 
 		}
@@ -683,6 +675,7 @@ public class vCliente extends ActionBarActivity implements
 			if (fragment instanceof ListaFragment) {
 				ficha = new FichaClienteFragment();
 				ficha.setArguments(args);
+				ficha.setRetainInstance(true);
 				transaction.addToBackStack(null);
 				transaction.replace(R.id.fragment_container, ficha, "ficha");
 				gridheader.setVisibility(View.INVISIBLE);
@@ -784,9 +777,8 @@ public class vCliente extends ActionBarActivity implements
 		if (fragment instanceof FichaClienteFragment
 				|| fragment instanceof CuentasPorCobrarFragment) {
 			gridheader.setVisibility(View.VISIBLE);
-			FragmentTransaction transaction = getSupportFragmentManager()
-					.beginTransaction();
-			transaction.detach(fragment);
+			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			//transaction.detach(fragment);
 			transaction.replace(R.id.fragment_container, firstFragment);
 			transaction.addToBackStack(null);
 			transaction.commit();
@@ -810,5 +802,4 @@ public class vCliente extends ActionBarActivity implements
 		transaction.addToBackStack(null);
 		transaction.commit();
 	}
-
 }
