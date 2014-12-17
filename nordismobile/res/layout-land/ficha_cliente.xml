@@ -244,7 +244,7 @@
 			                android:layout_height="wrap_content" 
 			                android:layout_toRightOf="@+id/fclbl_plazocredito"
 			                android:text="Detalle Plazo Credito"
-			                android:textColor="@color/DarkGray" /> 
+			                android:textColor="@color/Blue" /> 
 	
 			            <TextView
 			                android:id="@+id/fclbl_plazodescuento"
@@ -264,7 +264,7 @@
 			                android:layout_below="@+id/fclbl_plazocredito"
 			                android:layout_toRightOf="@+id/fclbl_plazodescuento"
 			                android:text="Detalle Plazo Descuento"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 	
 	
 			             <TextView
@@ -285,7 +285,7 @@
 			                android:layout_below="@+id/fclbl_plazodescuento"
 			                android:layout_toRightOf="@+id/fclbl_minabono"
 			                android:text="Detalle Min Abono"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 	
 	
 			             <TextView
@@ -309,7 +309,7 @@
 			                android:layout_toRightOf="@+id/fclbl_descuentos"
 			                android:lines="2"
 			                android:text="Detalle Descuentos"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
                         
                     </RelativeLayout>
                 </LinearLayout>
