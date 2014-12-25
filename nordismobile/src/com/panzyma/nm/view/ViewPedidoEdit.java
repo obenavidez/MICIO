@@ -141,7 +141,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	private Bundle extras;
 	private boolean onEdit = false;
 	private boolean onNew;
-
+	int requescode = 0;
+	Intent intent = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -158,13 +159,16 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			pedido = (getIntent().getParcelableExtra("pedido") != null) ? (Pedido) getIntent()
 					.getParcelableExtra("pedido") : null;
 			Lvmpproducto = new ArrayList<DetallePedido>();
-			if (pedido != null) {
+			if (pedido != null) 
+			{
 				DetallePedido[] detPed = pedido.getDetalles();
 				for (int i = 0; i < detPed.length; i++)
 					Lvmpproducto.add(detPed[i]);
 				onEdit = true;
 				cliente = Ventas.getClienteBySucursalID(
 						pedido.getObjSucursalID(), me.getContentResolver());
+				pedido.setOldData(pedido);
+				
 			}
 			// BUscamos si
 			if (getIntent().hasExtra("cliente")) {
@@ -259,7 +263,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			}
 		});
 
-		if (pedido == null) {
+		if (pedido == null) 
+		{
 			pedido = new Pedido();
 			if (getIntent().hasExtra("cliente")) {
 				setInformacionCliente();
@@ -589,7 +594,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				   ) 
 				{ 
 					if(msg.obj!=null && msg.obj instanceof Pedido)
-						pedido=(Pedido) msg.obj;
+						pedido=(Pedido) msg.obj;					
+					pedido.setOldData(pedido);
 					actualizarOnUINumRef(); 
 					actualizarDetallePedido();
 					salvado = true;
@@ -618,8 +624,18 @@ public class ViewPedidoEdit extends FragmentActivity implements
 						DialogType.DIALOGO_ALERTA);
 				break;
 			case ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
-				aplicarPromociones();
+				aplicarPromociones(); 
 				break; 
+			case ControllerProtocol.SALVARPEDIDOANTESDESALIR:
+				intent = new Intent();
+				Bundle b = new Bundle();
+				b.putParcelable("pedido", pedido);
+				intent.putExtras(b); 
+				if (onEdit)
+					requescode = getIntent().getIntExtra("requestcode", 0);
+				setResult(requescode, intent);
+				finish();
+				break;
 		}
 
 		return false;
@@ -638,6 +654,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		if (clte != null)
 			cliente = (Cliente) clte;
 
+		pedido.setOldData(pedido);
+		
 		actualizarOnUINumRef(pedido);
 
 		final String sms = (pedido.getCodEstado().compareTo("FACTURADO") == 0) ? "El pedido ha sido enviado y facturado \n¿Desea imprimir el recibo?"
@@ -673,22 +691,54 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	}
 
 	private void FINISH_ACTIVITY() 
-	{
-		int requescode = 0;
+	{ 
 		ocultarDialogos();
-		Log.d(TAG, "Activity quitting");
-		Intent intent = null;
-		if (pedido != null && pedido.getDetalles().length != 0
-				&& pedido.getNumeroMovil() != 0 && salvado) {
-			intent = new Intent();
-			Bundle b = new Bundle();
-			b.putParcelable("pedido", pedido);
-			intent.putExtras(b);
+		Log.d(TAG, "Activity quitting"); 
+		
+		if(pedido.hasModified(pedido.getOldData()))
+		{
+			 
+			AppDialog.showMessage(me, "",
+					"¿Desea guardar la información antes de salir?",
+					AppDialog.DialogType.DIALOGO_CONFIRMACION,
+					new AppDialog.OnButtonClickListener() 
+			{
+						@Override
+						public void onButtonClick(AlertDialog _dialog,
+								int actionId) 
+						{
+
+							if (AppDialog.OK_BUTTOM == actionId) 
+							{
+								try 
+								{
+									if(isDataValid())
+									{ 
+										showStatus("Guardando Pedido...");
+										salvarPedido(ControllerProtocol.SALVARPEDIDOANTESDESALIR); 
+										
+									}
+									
+								} catch (Exception e) 
+								{
+									
+								}
+								
+							}else
+								finish();
+							
+							_dialog.dismiss();
+	
+						}
+						
+	
+			}); 
+			
+			
+			
+			
 		}
-		if (onEdit)
-			requescode = getIntent().getIntExtra("requestcode", 0);
-		setResult(requescode, intent);
-		finish();
+		
 	}
 
 	@SuppressLint("NewApi")
@@ -1334,6 +1384,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			return false;
 		}
 
+		if (pedido == null && (pedido.getDetalles()!=null && pedido.getDetalles().length == 0)) 
+			msg = "El pedido no tiene detalle de productos.";
 		if (tbxNombreDelCliente.getText().toString().trim() == "")
 			msg = "El cliente del pedido no ha sido ingresado.";
 		else {

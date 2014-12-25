@@ -221,6 +221,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				Parcelable [] docs = savedInstanceState.getParcelableArray("documentos");
 				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>( (Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays.asList(docs) );
 				recibo = savedInstanceState.getParcelable("recibo");
+				recibo.setOldData(recibo);
 			} else {
 				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
 			}
@@ -565,12 +566,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		{
 			case C_DATA:
 				recibo = (ReciboColector)msg.obj;
+				recibo.setOldData(recibo);
 				loadData();
 				break; 
 			case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
 				if(msg.obj!=null)
 				{
 					recibo=((ReciboColector)msg.obj);
+					recibo.setOldData(recibo);
 					cliente=recibo.getCliente();
 					actualizarOnUINumRef(recibo); 
 					if(msg.arg1==1)
@@ -581,6 +584,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				if (ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1)
 				{	
 					recibo = (ReciboColector)msg.obj;
+					recibo.setOldData(recibo);
 					actualizarOnUINumRef(recibo); 				
 					salvado=true;
 					showStatus("El Recibo fue registrado con exito", true);
@@ -594,6 +598,37 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			case ControllerProtocol.ERROR: 
 				AppDialog.showMessage(me,((ErrorMessage)msg.obj).getTittle(),((ErrorMessage)msg.obj).getMessage(),DialogType.DIALOGO_ALERTA);
 				break;		 
+				
+			case ControllerProtocol.SALVARRECIBOANTESDESALIR: 
+				
+				int requescode=0;  
+				if(pd!=null)
+					pd.dismiss();	
+				Log.d(TAG, "Activity quitting");
+
+				Intent intent =null;
+				
+				if( recibo !=null 
+						&& ( recibo.getFacturasRecibo().size() > 0 
+								|| recibo.getNotasCreditoRecibo().size() > 0
+								|| recibo.getNotasDebitoRecibo().size() > 0 ) && recibo.getReferencia()!=0 )
+				{
+					intent = new Intent();
+					Bundle b = new Bundle();
+					b.putParcelable("recibo", recibo);
+					intent.putExtras(b);
+				} 
+				if (onEdit)
+					requescode = getIntent().getIntExtra("requestcode", 0); 		
+				setResult(requescode,intent);	
+				finish();
+				
+				if(dlg!=null)
+					dlg.dismiss();
+				
+				Log.d(TAG, "Activity quitting");  
+				
+				break;
 		}
 		return false;
 	}
@@ -774,7 +809,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		});   
 	}  
   
-	private void guardarRecibo() 
+	private void guardarRecibo(int... arg) 
 	{
 
 		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
@@ -828,9 +863,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			try 
 
 			{				
-				/*NMApp.getController().removeBridgeByName(BReciboM.class.toString());
-				NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-				NMApp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());*/
 				Message msg = new Message();
 				Bundle b = new Bundle();
 				b.putParcelable("recibo", recibo); 
@@ -838,7 +870,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				b.putParcelableArray("notasDebitoToUpdate", getArrayOfNotasDebito() );
 				b.putParcelableArray("notasCreditoToUpdate", getArrayOfNotasCredito() );
 				msg.setData(b);
-				msg.what=SAVE_DATA_FROM_LOCALHOST;				
+				msg.what = arg.length != 0 ? arg[0] : SAVE_DATA_FROM_LOCALHOST; 	
 				NMApp.getController().getInboxHandler().sendMessage(msg);  	   			
 			} catch (Exception e) {				
 				e.printStackTrace();
@@ -1933,29 +1965,50 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 	
 	private void FINISH_ACTIVITY()
-	{
-		int requescode=0;  
-		if(pd!=null)
-			pd.dismiss();	
-		Log.d(TAG, "Activity quitting");
-
-		Intent intent =null;
-		
-		if( recibo !=null 
-				&& ( recibo.getFacturasRecibo().size() > 0 
-						|| recibo.getNotasCreditoRecibo().size() > 0
-						|| recibo.getNotasDebitoRecibo().size() > 0 ) && recibo.getReferencia()!=0 )
+	{		
+		if(recibo.hasModified(recibo.getOldData()))
 		{
-			intent = new Intent();
-			Bundle b = new Bundle();
-			b.putParcelable("recibo", recibo);
-			intent.putExtras(b);
-		} 
-		if (onEdit)
-			requescode = getIntent().getIntExtra("requestcode", 0);
-		//requescode = getIntent().getIntExtra("requestcode", (onEdit)?1:0);			
-		setResult(requescode,intent);	
-		finish();
+			 
+			AppDialog.showMessage(me, "",
+					"¿Desea guardar la información antes de salir?",
+					AppDialog.DialogType.DIALOGO_CONFIRMACION,
+					new AppDialog.OnButtonClickListener() 
+			{
+						@Override
+						public void onButtonClick(AlertDialog _dialog,
+								int actionId) 
+						{
+
+							if (AppDialog.OK_BUTTOM == actionId) 
+							{
+								try 
+								{ 
+										showStatus("Guardando Recibo...");
+										guardarRecibo(ControllerProtocol.SALVARRECIBOANTESDESALIR); 
+									
+								} catch (Exception e) 
+								{
+									
+								}
+								
+							}else
+								finish();
+							
+							_dialog.dismiss();
+	
+						}
+						
+	
+			}); 
+			
+			
+			
+			
+		}else
+			finish();
+		
+		
+		
 	}
 
 	private void PagarTodo()

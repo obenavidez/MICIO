@@ -4,19 +4,19 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
  
+
+
+
 import java.util.Arrays;
 import java.util.Hashtable;
+
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
+
 import com.panzyma.nm.interfaces.Item;
   
-public class Pedido  implements KvmSerializable,Item,Parcelable{ 
-	
-	public Pedido() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+public class Pedido  implements KvmSerializable,Item,Parcelable{  
 	private long Id;
     private int NumeroMovil;
     private int NumeroCentral;
@@ -52,7 +52,62 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
     private java.lang.String Nota;
     private boolean Exento;
     private java.lang.String AutorizacionDGI;
- 
+  
+    protected Pedido oldata;
+    
+    public Pedido() { ;; }
+    /**
+	 * @param Pedido
+	 */
+	public Pedido(Pedido _pedido) 
+	{
+		this.Id = _pedido.getId();
+		this.NumeroMovil = _pedido.getNumeroMovil();
+		this.NumeroCentral =_pedido.getNumeroCentral();
+		this.Tipo = _pedido.getTipo();
+		this.Fecha = getFecha();
+		this.objClienteID = _pedido.getObjClienteID();
+		this.NombreCliente = _pedido.getNombreCliente();
+		this.objSucursalID = _pedido.getObjSucursalID();
+		this.NombreSucursal = _pedido.getNombreSucursal();
+		this.objTipoPrecioVentaID =_pedido.getObjTipoPrecioVentaID();
+		this.CodTipoPrecio = _pedido.getCodTipoPrecio();
+		this.DescTipoPrecio = _pedido.getDescTipoPrecio();
+		this.objVendedorID = _pedido.getObjVendedorID();
+		this.BonificacionEspecial =_pedido.getBonificacionEspecial();
+		this.BonificacionSolicitada = _pedido.getBonificacionSolicitada();
+		this.PrecioEspecial = _pedido.getPrecioEspecial();
+		this.PrecioSolicitado = _pedido.getPrecioSolicitado();
+		this.PedidoCondicionado = _pedido.getPedidoCondicionado();
+		this.Condicion = _pedido.getCondicion();
+		this.Subtotal = _pedido.getSubtotal();
+		this.Descuento = _pedido.getDescuento();
+		this.Impuesto = _pedido.getImpuesto();
+		this.Total = _pedido.getTotal();
+		this.objEstadoID = _pedido.getObjEstadoID();
+		this.CodEstado = _pedido.getCodEstado();
+		this.DescEstado = _pedido.getDescEstado();
+		this.objCausaEstadoID = _pedido.getObjCausaEstadoID();
+		this.CodCausaEstado = _pedido.getCodCausaEstado();
+		this.DescCausaEstado = _pedido.getDescCausaEstado();
+		this.NombreVendedor = _pedido.getNombreVendedor();
+		this.Detalles = _pedido.getDetalles();
+		this.PromocionesAplicadas = _pedido.getPromocionesAplicadas();
+		this.Nota = _pedido.getNota();
+		this.Exento = _pedido.isExento();
+		this.AutorizacionDGI = _pedido.getAutorizacionDGI();
+	}
+    
+	public void setOldData(Pedido _pedido)
+	{
+		oldata=new Pedido(_pedido);
+	}
+	
+	public Pedido getOldData()
+	{
+		return oldata;
+	}
+	
     public void setId(long id) {
         this.Id = id;
     }
@@ -337,6 +392,35 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
 	public int getPropertyCount() {
         return 35;
     }
+    
+    @SuppressWarnings("unused")
+	public boolean hasModified(Object obj) 
+    { 
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Pedido other = (Pedido) obj;
+		if(other==null && this!=null)
+			return true;	
+		
+		DetallePedido[] detother=other.getDetalles();
+		DetallePedido[] det=getDetalles();
+		
+		if(getObjSucursalID()!=other.getObjSucursalID())
+			return true;
+		if(!(getTipo().equals(other.getTipo())))
+			return true;
+		if(getTotal()!=other.getTotal())
+			return true;
+		if(detother==null && det!=null)
+			return true;		
+		if(detother.length!=det.length)
+			return true;	
+		
+		return false;
+    }
+     
     
     @SuppressLint("UseValueOf")
 	@Override 
