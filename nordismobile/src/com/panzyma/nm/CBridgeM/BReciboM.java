@@ -114,7 +114,7 @@ public final class BReciboM extends BBaseM {
 				break;
 			case C_FACTURACLIENTE:
 				bdl = msg.getData();				
-				onLoadDocumentosClienteFromLocalhost(bdl.getLong("sucursalID"));
+				onLoadDocumentosClienteFromLocalhost(bdl.getLong("sucursalID"),bdl.getLong("reciboID"));
 				break; 
 			case LOAD_DATA_FROM_SERVER:
 				// onLoadALLData_From_LocalHost();
@@ -533,7 +533,7 @@ public final class BReciboM extends BBaseM {
 
 	}
 
-	private void onLoadDocumentosClienteFromLocalhost(final Long sucursalID) {
+	private void onLoadDocumentosClienteFromLocalhost(final Long sucursalID, final long reciboId) {
 		try {
 			this.getPool().execute(new Runnable() {
 				@Override
@@ -544,7 +544,7 @@ public final class BReciboM extends BBaseM {
 								ModelCliente.getClienteBySucursalID(
 										getResolver(),
 										sucursalID,
-										0), getController());
+										reciboId), getController());
 
 					} catch (Exception e) {
 						e.printStackTrace();

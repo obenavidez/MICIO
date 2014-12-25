@@ -69,7 +69,7 @@ public class ModelRecibo {
 		return Long.parseLong(rs.toString()); 
 	}
 	
-	private static void updateFacturas(List<ReciboDetFactura> facturas, ContentResolver content,Context context){
+	public static void updateFacturas(List<ReciboDetFactura> facturas, ContentResolver content,Context context){
 		for(ReciboDetFactura factura : facturas){
 			
 			Factura _factura = ModelDocumento.getFacturaByID(content, factura.getObjFacturaID());		
@@ -102,7 +102,7 @@ public class ModelRecibo {
 		}
 	}
 
-	private static void updateNotasCredito(List<ReciboDetNC> notasCredito, ContentResolver content,Context context){
+	public static void updateNotasCredito(List<ReciboDetNC> notasCredito, ContentResolver content,Context context){
 		for(ReciboDetNC notaCredito : notasCredito){
 			
 			CCNotaCredito _notaCredito = ModelDocumento.getNotaCreditoByID(content, notaCredito.getObjNotaCreditoID());		
@@ -132,7 +132,7 @@ public class ModelRecibo {
 		}
 	}
 	
-	private static void updateNotasDebito(List<ReciboDetND> notasDebito, ContentResolver content,Context context){
+	public static void updateNotasDebito(List<ReciboDetND> notasDebito, ContentResolver content,Context context){
 		for(ReciboDetND notaDebito : notasDebito){
 				
 			CCNotaDebito _notaDebito = ModelDocumento.getNotasDebitoByID(content, notaDebito.getObjNotaDebitoID());			
@@ -316,7 +316,7 @@ public class ModelRecibo {
 					detalleFactura.setObjFacturaID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[1]))));
 					detalleFactura.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))));
 					detalleFactura.setMonto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[3]))));
-					boolean esAbono = ( Integer.parseInt(cur.getString(cur.getColumnIndex(projection[4]))) == 0 );
+					boolean esAbono = ( Integer.parseInt(cur.getString(cur.getColumnIndex(projection[4]))) == 255 );
 					detalleFactura.setEsAbono(esAbono);
 					detalleFactura.setMontoDescEspecifico(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[5]))));
 					detalleFactura.setMontoDescOcasional(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[6]))));

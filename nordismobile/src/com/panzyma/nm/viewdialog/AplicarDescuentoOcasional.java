@@ -23,7 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText; 
-@InvokeBridge(bridgeName = "BPedidoM")
+@InvokeBridge(bridgeName = "BReciboM")
 public class AplicarDescuentoOcasional extends DialogFragment implements Handler.Callback
 {
 	
@@ -76,7 +76,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		tbox_discoutnkey =(EditText) view.findViewById(R.id.editkey);
 		tbox_collectorpercent =(EditText) view.findViewById(R.id.editpercent);
 		tbox_collectorpercent.setText("0.0");
-		if(!SessionManager.isPhoneConnected())
+		if(SessionManager.isPhoneConnected())
 			tbox_discoutnkey.setVisibility(View.GONE);
 		builder.setTitle("Aplicar Descuento Ocasional");
 		builder.setView(view);
