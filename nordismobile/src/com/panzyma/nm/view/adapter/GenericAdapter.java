@@ -170,15 +170,14 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 						} 
                      }
                  }
-
                  
 			   return results;
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
-			protected void publishResults(CharSequence constraint, FilterResults results) { 
-				
+			protected void publishResults(CharSequence constraint, FilterResults results) 
+			{				
 				 items =  (results!=null && results.values!=null)?(List<E>)results.values:new ArrayList<E>(); //contiene los datos filtrados
                  notifyDataSetChanged();  //notificar al base adapter que hay nuevo valores que han sido filtrados
 			}

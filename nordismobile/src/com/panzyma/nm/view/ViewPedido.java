@@ -85,7 +85,8 @@ public class ViewPedido extends ActionBarActivity implements
 					&& data != null)
 				establecer(data.getParcelableExtra("pedido"), false);
 
-		} catch (Exception e) {
+		} catch (Exception e) 
+		{
 			e.printStackTrace();
 		}
 		if (drawerLayout != null && drawerLayout.isShown())

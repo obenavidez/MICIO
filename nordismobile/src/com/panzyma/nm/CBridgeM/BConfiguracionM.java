@@ -362,7 +362,7 @@ public class BConfiguracionM extends BBaseM {
 				SessionManager.setImpresora(dispositivo);
 				SessionManager.setLoguedUser(res.userInfo); 
 				if(mode==null || (mode!=null && mode.length==0))
-					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION, 0, 0, "Configuracion guardada exitosamente...");
+					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Configuracion guardada exitosamente...");
  
 
 			} else
