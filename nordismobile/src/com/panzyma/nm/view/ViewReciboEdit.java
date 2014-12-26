@@ -87,6 +87,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -398,7 +399,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					for (Factura fac : cliente.getFacturasPendientes()) 
 					{
 						if (fac.getId() == factura.getObjFacturaID()) {
-							fac.setAbonado(factura.getMonto());
+							//fac.setAbonado(factura.getMonto());
 							factura.setTotalFactura(fac.getTotalFacturado());
 							getFacturasRecibo().add(fac);
 						}
@@ -781,18 +782,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 		});   
 	}  
-	
-  
+	  
 	private void guardarRecibo(boolean ...bs) 
 	{
 
 		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
 				.trim().equals("") ? "0" : tbxNumRecibo.getText().toString())));
 
-		if(bs != null && bs.length == 0) 		
-			recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
-					.toString().trim().equals("")) ? "0" : tbxNumReferencia
-							.getText().toString()));
+		recibo.setReferencia(Integer.valueOf(recibo.getId()+""));
 
 		recibo.setNotas((tbxNotas.getText().toString().trim().equals("") ? "0"
 				: tbxNotas.getText().toString()));
@@ -1642,12 +1639,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	public void agregarDocumentosAlDetalleDeRecibo(){
 
 		//gridheader.setText("Listado de Productos a Vender");
+		ListView list = ((ListView)gridDetalleRecibo.findViewById(R.id.data_items));
 		if(adapter==null)
 		{
 			//adapter=new GenericAdapter(this, FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);
 			adapter=new GenericAdapter(this, DocumentoViewHolder.class, documents,R.layout.list_row);
-			((ListView)gridDetalleRecibo.findViewById(R.id.data_items)).setAdapter(adapter);
+			list.setAdapter(adapter);
 			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
+			adapter.setSelectedPosition(0);
 		}
 		else
 		{ 			
@@ -1655,6 +1654,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			adapter.setSelectedPosition(documents.size() - 1);
 			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
 		}
+		list.setOnItemClickListener(new OnItemClickListener() {
+		    @Override
+		    public void onItemClick(AdapterView<?> parent, View view, int position,long arg3) {
+		        view.setSelected(true);		        
+		    }
+		});
 	}
 
 	public void showMenu(final View view) 
@@ -1713,9 +1718,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			if(recibo.getId() != 0) {
 				List<ReciboDetFactura> factToUpd = new ArrayList<ReciboDetFactura>();
 				factToUpd.add(factDetalle);
+				ContentResolver cntr = (ContentResolver)NMApp.getContext().getContentResolver();
+				Context cntx = (Context)NMApp.getContext(); 
 				ModelRecibo.updateFacturas(factToUpd, 
-						(ContentResolver)NMApp.getContext().getContentResolver() ,
-						(Context)NMApp.getContext());
+						cntr,
+						cntx);
+				ModelRecibo.deleteDocument(10, factDetalle.getId(), recibo.getId(), cntx);
 			}			
 			
 			facturasRecibo.remove(positionDocument);
@@ -1741,9 +1749,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			if(recibo.getId() != 0) {
 				List<ReciboDetND> ndToUpd = new ArrayList<ReciboDetND>();
 				ndToUpd.add(ndDetalle);
+				ContentResolver cntr = (ContentResolver)NMApp.getContext().getContentResolver();
+				Context cntx = (Context)NMApp.getContext(); 
 				ModelRecibo.updateNotasDebito(ndToUpd, 
-						(ContentResolver)NMApp.getContext().getContentResolver() ,
-						(Context)NMApp.getContext());
+						cntr,
+						cntx);
+				ModelRecibo.deleteDocument(20, ndDetalle.getId(), recibo.getId(), cntx);
 			}	
 			
 			notasDebitoRecibo.remove(positionDocument);
@@ -1766,9 +1777,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			if(recibo.getId() != 0) {
 				List<ReciboDetNC> ncToUpd = new ArrayList<ReciboDetNC>();
 				ncToUpd.add(ncDetalle);
+				ContentResolver cntr = (ContentResolver)NMApp.getContext().getContentResolver();
+				Context cntx = (Context)NMApp.getContext();
 				ModelRecibo.updateNotasCredito(ncToUpd, 
-						(ContentResolver)NMApp.getContext().getContentResolver() ,
-						(Context)NMApp.getContext());
+						cntr ,
+						cntx);
+				ModelRecibo.deleteDocument(30, ncDetalle.getId(), recibo.getId(), cntx);
 			}	
 			
 			notasCreditoRecibo.remove(positionDocument);
@@ -1814,6 +1828,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									//ACTUALIZA EL TOTAL EN LA PANTALLA Y ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
 									actualizaTotales();
 
+									// ACTUALIZA LOS MONTOS DEL RECIBO
+									ModelRecibo.updateRecibo(recibo, NMApp.getContext());
+									
 									if (documents.size() > 0) {
 										if (posicion == 0)
 										{ 
