@@ -56,7 +56,7 @@ public class BPedidoM extends BBaseM {
 		Boolean val= false;
 		try 
 		{
-			
+			Pedido pedido;
 			switch (msg.what) 
 			{
 				case LOAD_DATA_FROM_LOCALHOST:
@@ -96,8 +96,14 @@ public class BPedidoM extends BBaseM {
 						mensaje=(ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES==msg.what)?"Aplicando promociones...":
 							(ControllerProtocol.APLICARPEDIDOPROMOCIONES==msg.what)?"Las promociones fueron aplicadas exitosamente...":
 							(ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES==msg.what)?"Las promociones fueron desaplicadas exitosamente...":"";
-						
-						guardar_Pedido((Pedido)b.getParcelable("pedido"));
+						pedido=(Pedido)b.getParcelable("pedido");
+						guardar_Pedido(pedido);
+						Processor.notifyToView(
+								NMApp.getController(),
+								ControllerProtocol.NOTIFICATION,
+								arg1,
+								0,
+								pedido); 
 						Processor.notifyToView(
 									NMApp.getController(),
 									(msg.what==ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES)?ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES:
@@ -120,6 +126,14 @@ public class BPedidoM extends BBaseM {
 					break;
 				case ControllerProtocol.ANULAR_PEDIDO : 
 						anularPedido(Long.parseLong(msg.obj.toString())); 
+				case ControllerProtocol.SALVARPEDIDOANTESDESALIR:
+					pedido=(Pedido)b.getParcelable("pedido");
+					guardar_Pedido(pedido);
+					Processor.notifyToView(NMApp.getController(),ControllerProtocol.SALVARPEDIDOANTESDESALIR,
+							0,
+							0,
+							pedido); 
+					break;
 			}
 			
 			

@@ -3,6 +3,7 @@ package com.panzyma.nm.serviceproxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -51,8 +52,45 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 	protected ArrayList<ReciboDetNC> DetalleNotasCredito = new ArrayList<ReciboDetNC>(); 
 	protected ArrayList<ReciboDetFormaPago> DetalleFormasPago = new ArrayList<ReciboDetFormaPago>(); 
 	
+	protected ReciboColector oldata;
+	
 	public ReciboColector() {
 		super();		
+	}
+	
+	public ReciboColector(ReciboColector rc) {
+		super();
+		this.Id = rc.getId();
+		this.Numero =rc.getNumero();
+		this.Fecha = rc.getFecha();
+		this.Notas = rc.getNotas();
+		this.TotalRecibo =rc.getTotalRecibo();
+		this.TotalFacturas = rc.getTotalFacturas();
+		this.TotalND = rc.getTotalND();
+		this.TotalInteres = rc.getTotalInteres();
+		this.SubTotal = rc.getSubTotal();
+		this.TotalDesc = rc.getTotalDesc();
+		this.TotalRetenido = rc.getTotalRetenido();
+		this.TotalOtrasDed =rc.getTotalOtrasDed();
+		this.TotalNC = rc.getTotalNC();
+		this.Referencia = rc.getReferencia();
+		this.ObjClienteID = rc.getObjClienteID();
+		this.ObjSucursalID = rc.getObjSucursalID();
+		this.NombreCliente = rc.getNombreCliente();
+		this.ObjColectorID = rc.getObjColectorID();
+		this.AplicaDescOca = rc.isAplicaDescOca();
+		this.ClaveAutorizaDescOca = rc.getClaveAutorizaDescOca();
+		this.PorcDescOcaColector = rc.getPorcDescOcaColector();
+		this.ObjEstadoID = rc.getObjEstadoID();
+		this.CodEstado = rc.getCodEstado();
+		this.DescEstado = rc.getDescEstado();
+		this.TotalDescOca = rc.getTotalDescOca();
+		this.TotalDescPromo = rc.getTotalDescPromo();
+		this.TotalDescPP = rc.getTotalDescPP();
+		this.TotalImpuestoProporcional = rc.getTotalImpuestoProporcional();
+		this.TotalImpuestoExonerado = rc.getTotalImpuestoExonerado();
+		this.Exento = rc.isExento();
+		this.AutorizacionDGI = rc.getAutorizacionDGI();
 	}
 
 	public ReciboColector(long id, int numero, long fecha, String notas,
@@ -99,7 +137,65 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 		this.Exento = exento;
 		this.AutorizacionDGI = autorizacionDGI;
 	}
+	
+	public void setOldData(ReciboColector rc)
+	{
+		oldata=new ReciboColector(rc);
+	}
 
+	public ReciboColector getOldData()
+	{
+		return oldata;
+	}
+	
+	@SuppressWarnings("unused")
+	public boolean hasModified(Object obj) 
+    { 
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ReciboColector other = (ReciboColector) obj;
+		if(other==null && this!=null)
+			return true;	 
+		
+		if(getObjSucursalID()!=other.getObjSucursalID())
+			return true;
+		if(getTotalRecibo()!=other.getTotalRecibo())
+			return true; 
+		
+		ArrayList<ReciboDetFactura> df =other.getFacturasRecibo(); 
+		ArrayList<ReciboDetND> dnd =other.getNotasDebitoRecibo();
+		ArrayList<ReciboDetNC> dnc = other.getNotasCreditoRecibo(); 
+		ArrayList<ReciboDetFormaPago> dnp = other.getFormasPagoRecibo(); 
+		
+		ArrayList<ReciboDetFactura> df2=getFacturasRecibo(); 
+		ArrayList<ReciboDetND> dnd2 =getNotasDebitoRecibo();
+		ArrayList<ReciboDetNC> dnc2 = getNotasCreditoRecibo(); 
+		ArrayList<ReciboDetFormaPago> dnp2 =getFormasPagoRecibo();
+		
+		
+		if(df==null && df2!=null)
+			return true;		
+		if(dnd==null && dnd2!=null)
+			return true;
+		if(dnc==null && dnc2!=null)
+			return true;
+		if(dnp==null && dnp2!=null)
+			return true;		
+		if(df.size()!=df2.size())
+			return true;	
+		if(dnd.size()!=dnd2.size())
+			return true;	
+		if(dnc.size()!=dnc2.size())
+			return true;	
+		if(dnp.size()!=dnp.size())
+			return true;	
+		if(getNotas()!=other.getNotas())
+			return true;
+		return false;
+    }
+	
 	public long getId() {
 		return Id;
 	}

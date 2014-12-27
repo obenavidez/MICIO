@@ -121,7 +121,7 @@ public class DialogFormasPago extends Dialog {
 					Util.Message.buildToastMessage(parent, "No existen formas de pago", Toast.LENGTH_SHORT).show();
 					return;
 				}
-				FINISH_ACTIVITY();
+				//FINISH_ACTIVITY();
 				gridheader.setText("Listado de Formas de Pago (" + formasPago.size() + ")");				
 				adapter = new GenericAdapter<ReciboDetFormaPago, FormaPagoViewHolder>(parent.getContext(),FormaPagoViewHolder.class,formasPago,R.layout.detalle_forma_pago);				 
 				lvfacturas.setAdapter(adapter);

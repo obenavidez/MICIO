@@ -161,13 +161,20 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	        @Override
 	        public void onTextChanged(CharSequence s, int start, int before, int count) 
 	        {
-	        	if(adapter!=null && adapter.getCount()!=0)
+	        	if(adapter!=null)
+	        	{
 	        		adapter.getFilter().filter(s.toString());
+	        		
+	        	}
 	        }
 	        @Override
-	        public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
+	        public void beforeTextChanged(CharSequence s, int start, int count,int after) {
+	        	
+	        }
 	        @Override
-	        public void afterTextChanged(Editable s) {}
+	        public void afterTextChanged(Editable s) {
+	        	gridheader.setText("Listado de Productos("+adapter.getCount()+")");
+	        }
 	    });  
 	    
 	}

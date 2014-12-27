@@ -105,10 +105,11 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			Message msg = new Message();
 			Bundle params = new Bundle();
 			params.putLong("sucursalID", cliente.getIdSucursal());
+			params.putLong("reciboID",me.getRecibo().getId());
 			msg.setData(params);			
 			msg.what = C_FACTURACLIENTE;	
 			NMApp.getController().setView(this);
-			NMApp.getController().getInboxHandler().sendMessage(msg); 
+			NMApp.getController().getInboxHandler().sendMessage(msg); 			
 			pd = ProgressDialog.show(me, "Espere por favor", "Trayendo Info...", true, false);
 			initComponents();			
 		} catch (Exception e) {

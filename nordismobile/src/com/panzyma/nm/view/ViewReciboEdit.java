@@ -23,6 +23,7 @@ import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil; 
 import com.panzyma.nm.auxiliar.ErrorMessage; 
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
@@ -36,6 +37,7 @@ import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction; 
 import com.panzyma.nm.model.FacND;
+import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente; 
@@ -69,6 +71,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context; 
 import android.content.Intent; 
 import android.os.Bundle;
@@ -84,6 +87,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -106,6 +110,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private TextView txtTotalAbonadoNC;
 	private TextView txtSubTotal;
 	private TextView txtTotal;
+	private TextView txtTotalDescuento;
 
 	
 	private float totalRecibo = 0.00f;
@@ -221,6 +226,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				Parcelable [] docs = savedInstanceState.getParcelableArray("documentos");
 				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>( (Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays.asList(docs) );
 				recibo = savedInstanceState.getParcelable("recibo");
+				recibo.setOldData(recibo);
 			} else {
 				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
 			}
@@ -299,6 +305,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		txtTotalAbonadoND = (TextView) findViewById(R.id.txtTotalNotasDebito);
 		txtTotalAbonadoNC = (TextView) findViewById(R.id.txtTotalNotaCredito);
 		txtSubTotal = (TextView) findViewById(R.id.txtSubTotal);
+		txtTotalDescuento = (TextView) findViewById(R.id.txtTotalDescuento);
 		txtTotal = (TextView) findViewById(R.id.txtTotal);
 
 		item_document.setOnItemLongClickListener(new OnItemLongClickListener() {
@@ -333,25 +340,27 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				if (fac2.getObjFacturaID() == fac.getObjFacturaID()) {
 					repetido = true;
 					break;
-				}									
+				} 									
 			} else if (obj instanceof ReciboDetND && doc.getObject() instanceof ReciboDetND) {
 				ReciboDetND nd = (ReciboDetND) obj;
 				ReciboDetND nd2 = (ReciboDetND) doc.getObject();
 				if (nd.getObjNotaDebitoID() == nd2.getObjNotaDebitoID()){
 					repetido = true;
 					break;
-				}									
+				} 								
 			} else if (obj instanceof ReciboDetNC && doc.getObject() instanceof ReciboDetNC) {
 				ReciboDetNC nc = (ReciboDetNC) obj;				
 				ReciboDetNC nc2 = (ReciboDetNC) doc.getObject();
 				if (nc.getObjNotaCreditoID() == nc2.getObjNotaCreditoID()){
 					repetido = true;
 					break;
-				}									
+				}							
 			}
 		}
-		if (!repetido)
-			documents.add((com.panzyma.nm.serviceproxy.Documento) obj);
+		if (!repetido) {
+			documents.add((com.panzyma.nm.serviceproxy.Documento) obj);				
+		}
+			
 	}
  
 	private void loadData() {
@@ -379,19 +388,19 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		} else {
 
 			cliente = recibo.getCliente();
-
+			
 			// EDICION DE RECIBO
 			if ("REGISTRADO".equals(recibo.getDescEstado())) {
 				recibo.setFecha(date);
 			}
-			// AGREGAGAR LAS FACTURAS DEL RECIBO A LA GRILLA
+			// AGREGAR LAS FACTURAS DEL RECIBO A LA GRILLA
 			for (ReciboDetFactura factura : recibo.getFacturasRecibo()) 
 			{				
 				if(cliente.getFacturasPendientes()!=null)
 					for (Factura fac : cliente.getFacturasPendientes()) 
 					{
 						if (fac.getId() == factura.getObjFacturaID()) {
-							fac.setAbonado(factura.getMonto());
+							//fac.setAbonado(factura.getMonto());
 							factura.setTotalFactura(fac.getTotalFacturado());
 							getFacturasRecibo().add(fac);
 						}
@@ -433,6 +442,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		txtTotalAbonadoND.setText("" + recibo.getTotalND());
 		txtTotalAbonadoNC.setText("" + recibo.getTotalNC());
 		txtSubTotal.setText("" + recibo.getSubTotal());
+		txtTotalDescuento.setText("" + recibo.getTotalDesc());
 		txtTotal.setText("" + recibo.getTotalRecibo());
 	}
 
@@ -565,12 +575,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		{
 			case C_DATA:
 				recibo = (ReciboColector)msg.obj;
+				recibo.setOldData(recibo);
 				loadData();
 				break; 
 			case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
 				if(msg.obj!=null)
 				{
 					recibo=((ReciboColector)msg.obj);
+					recibo.setOldData(recibo);
 					cliente=recibo.getCliente();
 					actualizarOnUINumRef(recibo); 
 					if(msg.arg1==1)
@@ -581,6 +593,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				if (ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1)
 				{	
 					recibo = (ReciboColector)msg.obj;
+					recibo.setOldData(recibo);
 					actualizarOnUINumRef(recibo); 				
 					salvado=true;
 					showStatus("El Recibo fue registrado con exito", true);
@@ -594,6 +607,37 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			case ControllerProtocol.ERROR: 
 				AppDialog.showMessage(me,((ErrorMessage)msg.obj).getTittle(),((ErrorMessage)msg.obj).getMessage(),DialogType.DIALOGO_ALERTA);
 				break;		 
+				
+			case ControllerProtocol.SALVARRECIBOANTESDESALIR: 
+				
+				int requescode=0;  
+				if(pd!=null)
+					pd.dismiss();	
+				Log.d(TAG, "Activity quitting");
+
+				Intent intent =null;
+				
+				if( recibo !=null 
+						&& ( recibo.getFacturasRecibo().size() > 0 
+								|| recibo.getNotasCreditoRecibo().size() > 0
+								|| recibo.getNotasDebitoRecibo().size() > 0 ) && recibo.getReferencia()!=0 )
+				{
+					intent = new Intent();
+					Bundle b = new Bundle();
+					b.putParcelable("recibo", recibo);
+					intent.putExtras(b);
+				} 
+				if (onEdit)
+					requescode = getIntent().getIntExtra("requestcode", 0); 		
+				setResult(requescode,intent);	
+				finish();
+				
+				if(dlg!=null)
+					dlg.dismiss();
+				
+				Log.d(TAG, "Activity quitting");  
+				
+				break;
 		}
 		return false;
 	}
@@ -773,16 +817,26 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 		});   
 	}  
-  
-	private void guardarRecibo() 
+	  
+	private void guardarRecibo(int...arg)  
 	{
 
 		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
 				.trim().equals("") ? "0" : tbxNumRecibo.getText().toString())));
 
-		recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
-				.toString().trim().equals("")) ? "0" : tbxNumReferencia
-						.getText().toString()));
+
+		recibo.setReferencia(Integer.valueOf(recibo.getId()+""));
+
+		if(recibo.getId() != 0) 		
+				recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
+						.toString().trim().equals("")) ? "0" : tbxNumReferencia
+								.getText().toString()));
+ 
+//		if(bs != null && bs.length == 0) 		
+//			recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
+//					.toString().trim().equals("")) ? "0" : tbxNumReferencia
+//							.getText().toString()));
+
 
 		recibo.setNotas((tbxNotas.getText().toString().trim().equals("") ? "0"
 				: tbxNotas.getText().toString()));
@@ -828,9 +882,6 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			try 
 
 			{				
-				/*NMApp.getController().removeBridgeByName(BReciboM.class.toString());
-				NMApp.getController().setEntities(this,getBridge()==null?new BReciboM():getBridge());
-				NMApp.getController().addOutboxHandler(getHandler()==null?new Handler(this):getHandler());*/
 				Message msg = new Message();
 				Bundle b = new Bundle();
 				b.putParcelable("recibo", recibo); 
@@ -838,7 +889,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				b.putParcelableArray("notasDebitoToUpdate", getArrayOfNotasDebito() );
 				b.putParcelableArray("notasCreditoToUpdate", getArrayOfNotasCredito() );
 				msg.setData(b);
-				msg.what=SAVE_DATA_FROM_LOCALHOST;				
+				msg.what = arg.length != 0 ? arg[0] : SAVE_DATA_FROM_LOCALHOST; 	
 				NMApp.getController().getInboxHandler().sendMessage(msg);  	   			
 			} catch (Exception e) {				
 				e.printStackTrace();
@@ -1263,7 +1314,8 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		txtTotalAbonadoFacturas.setText(StringUtil.formatReal(recibo.getTotalFacturas()));
 		txtTotalAbonadoND.setText(StringUtil.formatReal(recibo.getTotalND()));
 		txtTotalAbonadoNC.setText(StringUtil.formatReal(recibo.getTotalNC()));
-		txtSubTotal.setText(StringUtil.formatReal(recibo.getSubTotal()));		
+		txtSubTotal.setText(StringUtil.formatReal(recibo.getSubTotal()));	
+		txtTotalDescuento.setText(StringUtil.formatReal(recibo.getTotalDesc()));
 		txtTotal.setText(StringUtil.formatReal(recibo.getTotalRecibo()));
 	}	
 
@@ -1290,12 +1342,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 						if ( saldo > 0 ) {
 							factura.setCodEstado("ABONADA");
 							factura.setEstado("Abonada");
+							facturaDetalle.setEsAbono(true);
 						} else  {
 							factura.setCodEstado("CANCELADA");
 							factura.setEstado("Cancelada");
-						}					
-						facturaDetalle.setEsAbono(factura.getTotalFacturado() > factura
-								.getAbonado());
+							facturaDetalle.setEsAbono(false);
+						}
 						factura.setSaldo(saldo);
 						facturaDetalle.setMonto(ammount.getValue());
 						facturaDetalle.setSaldoFactura(factura.getSaldo());
@@ -1339,9 +1391,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		}
 		if( agregar ) 
 		{
-			facturaDetalle.setFechaAplicaDescPP(factura.getFechaAppDescPP());
+			facturaDetalle.setFechaAplicaDescPP(factura.getFechaAppDescPP());			
 			facturasRecibo.add(factura);
 			recibo.getFacturasRecibo().add(facturaDetalle);
+			recibo.setCliente(cliente);
+			Cobro.calcularDetFacturasRecibo(contexto,recibo,recibo.getCliente(),true);
 			documents.add(facturaDetalle);
 			
 		}		
@@ -1379,9 +1433,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		if( agregar ) 
 		{			
 			notasCreditoRecibo.add(notaCredito);
-			recibo.getNotasCreditoRecibo().add(notaCreditoDetalle);
+			recibo.getNotasCreditoRecibo().add(notaCreditoDetalle);			
 			documents.add(notaCreditoDetalle);			
-		}		
+		}	
+		recibo.setCliente(cliente);
+		Cobro.calcularDetFacturasRecibo(contexto,recibo,recibo.getCliente(),true);
+		
 		agregarDocumentosAlDetalleDeRecibo();
 		Cobro.ActualizaTotalNotasCredito(recibo);
 		actualizaTotales();
@@ -1626,12 +1683,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	public void agregarDocumentosAlDetalleDeRecibo(){
 
 		//gridheader.setText("Listado de Productos a Vender");
+		ListView list = ((ListView)gridDetalleRecibo.findViewById(R.id.data_items));
 		if(adapter==null)
 		{
 			//adapter=new GenericAdapter(this, FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);
 			adapter=new GenericAdapter(this, DocumentoViewHolder.class, documents,R.layout.list_row);
-			((ListView)gridDetalleRecibo.findViewById(R.id.data_items)).setAdapter(adapter);
+			list.setAdapter(adapter);
 			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
+			adapter.setSelectedPosition(0);
 		}
 		else
 		{ 			
@@ -1639,6 +1698,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			adapter.setSelectedPosition(documents.size() - 1);
 			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
 		}
+		list.setOnItemClickListener(new OnItemClickListener() {
+		    @Override
+		    public void onItemClick(AdapterView<?> parent, View view, int position,long arg3) {
+		        view.setSelected(true);		        
+		    }
+		});
 	}
 
 	public void showMenu(final View view) 
@@ -1691,9 +1756,25 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				}
 				++count;
 			}
+			//ACTUALIZAR LA INFORMACION DE LA FACTURA
+			ReciboDetFactura factDetalle = recibo.getFacturasRecibo().get(positionDocument);
+			
+			if(recibo.getId() != 0) {
+				List<ReciboDetFactura> factToUpd = new ArrayList<ReciboDetFactura>();
+				factToUpd.add(factDetalle);
+				ContentResolver cntr = (ContentResolver)NMApp.getContext().getContentResolver();
+				Context cntx = (Context)NMApp.getContext(); 
+				ModelRecibo.updateFacturas(factToUpd, 
+						cntr,
+						cntx);
+				ModelRecibo.deleteDocument(10, factDetalle.getId(), recibo.getId(), cntx);
+			}			
+			
 			facturasRecibo.remove(positionDocument);
 			recibo.getFacturasRecibo().remove(positionDocument);
 			recibo.setTotalFacturas(recibo.getTotalFacturas() - facturaToRemoved.getMonto());
+			// CALCULA NUEVAMENTE LOS DESCUENTOS
+			Cobro.calcularDetFacturasRecibo(contexto,recibo,recibo.getCliente(),true);		
 			
 		} else if (documentRemoved instanceof ReciboDetND) {
 			//SI EL DOCUMENTO SE TRATA DE UNA NOTA DE DEBITO
@@ -1705,6 +1786,21 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				}
 				++count;
 			}
+			
+			//ACTUALIZAR LA INFORMACION DE LA NOTA DE DEBITO
+			ReciboDetND ndDetalle = recibo.getNotasDebitoRecibo().get(positionDocument);
+			
+			if(recibo.getId() != 0) {
+				List<ReciboDetND> ndToUpd = new ArrayList<ReciboDetND>();
+				ndToUpd.add(ndDetalle);
+				ContentResolver cntr = (ContentResolver)NMApp.getContext().getContentResolver();
+				Context cntx = (Context)NMApp.getContext(); 
+				ModelRecibo.updateNotasDebito(ndToUpd, 
+						cntr,
+						cntx);
+				ModelRecibo.deleteDocument(20, ndDetalle.getId(), recibo.getId(), cntx);
+			}	
+			
 			notasDebitoRecibo.remove(positionDocument);
 			recibo.getNotasDebitoRecibo().remove(positionDocument);
 			recibo.setTotalND(recibo.getTotalND() - notaDebitoToRemoved.getMonto());	
@@ -1718,53 +1814,104 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				}
 				++count;
 			}
+			
+			//ACTUALIZAR LA INFORMACION DE LA NOTA DE DEBITO
+			ReciboDetNC ncDetalle = recibo.getNotasCreditoRecibo().get(positionDocument);
+			
+			if(recibo.getId() != 0) {
+				List<ReciboDetNC> ncToUpd = new ArrayList<ReciboDetNC>();
+				ncToUpd.add(ncDetalle);
+				ContentResolver cntr = (ContentResolver)NMApp.getContext().getContentResolver();
+				Context cntx = (Context)NMApp.getContext();
+				ModelRecibo.updateNotasCredito(ncToUpd, 
+						cntr ,
+						cntx);
+				ModelRecibo.deleteDocument(30, ncDetalle.getId(), recibo.getId(), cntx);
+			}	
+			
 			notasCreditoRecibo.remove(positionDocument);
 			recibo.getNotasCreditoRecibo().remove(positionDocument);
 			recibo.setTotalNC(recibo.getTotalNC() - notaCreditoToRemoved.getMonto());
+			// CALCULA NUEVAMENTE LOS DESCUENTOS
+			Cobro.calcularDetFacturasRecibo(contexto,recibo,recibo.getCliente(),true);			
 		}
 
 	}
 
 	private void eliminarDocumento() {
 		if (!"REGISTRADO".equals(recibo.getCodEstado())) return;
-		int posicion = positioncache;
+		final int posicion = positioncache;
 		if (posicion == -1) return;		
+		
+		final String sms = "Confirme si desea eliminar el documento";		
+		
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				// Informar al usuario
+				AppDialog.showMessage(me, "", sms,
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						new AppDialog.OnButtonClickListener() {
+							@Override
+							public void onButtonClick(AlertDialog _dialog,
+									int actionId) {
+								if(actionId == AppDialog.OK_BUTTOM ) {
+									com.panzyma.nm.serviceproxy.Documento documentRemoved;
 
-		com.panzyma.nm.serviceproxy.Documento documentRemoved;
+									//ELIMINAR DE LA LISTA DE DOCUMENTOS
+									documentRemoved = documents.remove(posicion);
 
-		//ELIMINAR DE LA LISTA DE DOCUMENTOS
-		documentRemoved = documents.remove(posicion);
+									//ELIMINAR EL DOCUMENTO DEL RECIBO Y ACTUALIZAR EL TOTAL 
+									removeDocument(documentRemoved);	
+									
+									//ELIMINAR LOS PAGOS, PARA QUE SEAN REALIZADOS NUEVAMENTE
+									for(int i = 0; i < recibo.getFormasPagoRecibo().size(); i++){
+										recibo.getFormasPagoRecibo().remove(i);
+									}									
+									
+									//ACTUALIZA EL TOTAL EN LA PANTALLA Y ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
+									actualizaTotales();
 
-		//ELIMINAR EL DOCUMENTO DEL RECIBO Y ACTUALIZAR EL TOTAL 
-		removeDocument(documentRemoved);
-
-		//ACTUALIZA EL TOTAL EN LA PANTALLA Y ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
-		actualizaTotales();
-
-		if (documents.size() > 0) {
-			if (posicion == 0)
-			{ 
-				positioncache = 0;
-				documento_selected =(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(0);	
-				adapter.setSelectedPosition(0); 
+									// ACTUALIZA LOS MONTOS DEL RECIBO
+									ModelRecibo.updateRecibo(recibo, NMApp.getContext());
+									
+									if (documents.size() > 0) {
+										if (posicion == 0)
+										{ 
+											positioncache = 0;
+											documento_selected =(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(0);	
+											adapter.setSelectedPosition(0); 
+										}
+										else {
+											if (posicion == documents.size())
+											{  
+												positioncache= posicion - 1;
+												documento_selected = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion - 1);	
+												adapter.setSelectedPosition(posicion - 1);
+											}
+											else
+											{
+												positioncache = posicion;
+												documento_selected=(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);	
+												adapter.setSelectedPosition(posicion);                     
+											}
+										}            
+									}		
+									adapter.notifyDataSetChanged();
+									gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
+//Josue, cambie el parametro de boolean a int de guardarRecibo, creo q no t afecte, ya q el condicional
+//lo puse dentro d la funcion, yo hic esto debido a q a veces c necsita guardar el recibo pero no por la misma via.
+									//	if(recibo.getId() != 0)
+//										guardarRecibo(false);
+									guardarRecibo();
+								}							
+								_dialog.dismiss();
+							}
+						});
 			}
-			else {
-				if (posicion == documents.size())
-				{  
-					positioncache= posicion - 1;
-					documento_selected = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion - 1);	
-					adapter.setSelectedPosition(posicion - 1);
-				}
-				else
-				{
-					positioncache = posicion;
-					documento_selected=(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);	
-					adapter.setSelectedPosition(posicion);                     
-				}
-			}            
-		}		
-		adapter.notifyDataSetChanged();
-		gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
+		});
+
+		
 	}
 
 	private Factura getFacturaByID(long id){
@@ -1933,29 +2080,50 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 	
 	private void FINISH_ACTIVITY()
-	{
-		int requescode=0;  
-		if(pd!=null)
-			pd.dismiss();	
-		Log.d(TAG, "Activity quitting");
-
-		Intent intent =null;
-		
-		if( recibo !=null 
-				&& ( recibo.getFacturasRecibo().size() > 0 
-						|| recibo.getNotasCreditoRecibo().size() > 0
-						|| recibo.getNotasDebitoRecibo().size() > 0 ) && recibo.getReferencia()!=0 )
+	{		
+		if(recibo.hasModified(recibo.getOldData()))
 		{
-			intent = new Intent();
-			Bundle b = new Bundle();
-			b.putParcelable("recibo", recibo);
-			intent.putExtras(b);
-		} 
-		if (onEdit)
-			requescode = getIntent().getIntExtra("requestcode", 0);
-		//requescode = getIntent().getIntExtra("requestcode", (onEdit)?1:0);			
-		setResult(requescode,intent);	
-		finish();
+			 
+			AppDialog.showMessage(me, "",
+					"¿Desea guardar la información antes de salir?",
+					AppDialog.DialogType.DIALOGO_CONFIRMACION,
+					new AppDialog.OnButtonClickListener() 
+			{
+						@Override
+						public void onButtonClick(AlertDialog _dialog,
+								int actionId) 
+						{
+
+							if (AppDialog.OK_BUTTOM == actionId) 
+							{
+								try 
+								{ 
+										showStatus("Guardando Recibo...");
+										guardarRecibo(ControllerProtocol.SALVARRECIBOANTESDESALIR); 
+									
+								} catch (Exception e) 
+								{
+									
+								}
+								
+							}else
+								finish();
+							
+							_dialog.dismiss();
+	
+						}
+						
+	
+			}); 
+			
+			
+			
+			
+		}else
+			finish();
+		
+		
+		
 	}
 
 	private void PagarTodo()

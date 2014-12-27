@@ -11,17 +11,21 @@ import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALH
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
 import static com.panzyma.nm.controller.ControllerProtocol.APLICAR_DESCUENTO; 
+
 import java.util.ArrayList;
 import java.util.Arrays; 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
 import org.json.JSONArray; 
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog; 
 import android.os.Bundle;
 import android.os.Parcelable; 
 import android.os.Message;
 import android.util.Log;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
@@ -42,6 +46,7 @@ import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
@@ -69,11 +74,13 @@ public final class BReciboM extends BBaseM {
 	public BReciboM() {}
 	
 	@Override
-	public boolean handleMessage(Message msg) throws Exception {
+	public boolean handleMessage(Message msg) throws Exception 
+	{ 
+		bdl=msg.getData();
 		switch (msg.what) 
 		{
 			case SAVE_DATA_FROM_LOCALHOST:
-			    bdl=msg.getData();
+			   
 				Parcelable [] arrayParcelable = bdl.getParcelableArray("facturasToUpdate");			
 				ArrayList<Factura> facturasToUpdate = new ArrayList<Factura>();				
 				Object [] list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , Factura[].class);
@@ -107,7 +114,7 @@ public final class BReciboM extends BBaseM {
 				break;
 			case C_FACTURACLIENTE:
 				bdl = msg.getData();				
-				onLoadDocumentosClienteFromLocalhost(bdl.getLong("sucursalID"));
+				onLoadDocumentosClienteFromLocalhost(bdl.getLong("sucursalID"),bdl.getLong("reciboID"));
 				break; 
 			case LOAD_DATA_FROM_SERVER:
 				// onLoadALLData_From_LocalHost();
@@ -149,6 +156,33 @@ public final class BReciboM extends BBaseM {
 			case ControllerProtocol.IMPRIMIR:
 				bdl=msg.getData();
 				ImprimirReciboColector((ReciboColector)bdl.getParcelable("recibo"),false); 
+				break;
+				
+			case ControllerProtocol.SALVARRECIBOANTESDESALIR:
+				ReciboColector recibo=(ReciboColector)bdl.getParcelable("recibo");
+				 
+				bdl=msg.getData();
+				Parcelable [] arrayParcelable22 = bdl.getParcelableArray("facturasToUpdate");			
+				ArrayList<Factura> facturasToUpdate22 = new ArrayList<Factura>();
+				Object [] list22 = Arrays.copyOf(arrayParcelable22, arrayParcelable22.length , Factura[].class);
+				for(Object obj: list22){
+					facturasToUpdate22.add((Factura)obj);
+				}	
+				arrayParcelable = bdl.getParcelableArray("notasDebitoToUpdate");	
+				ArrayList<CCNotaDebito> notasDebitoToUpdate22 = new ArrayList<CCNotaDebito>();
+				list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , CCNotaDebito[].class);
+				for(Object obj: list){
+					notasDebitoToUpdate22.add((CCNotaDebito)obj);
+				}
+				arrayParcelable = bdl.getParcelableArray("notasCreditoToUpdate");	
+				ArrayList<CCNotaCredito> notasCreditoToUpdate22 = new ArrayList<CCNotaCredito>();
+				list = Arrays.copyOf(arrayParcelable, arrayParcelable.length , CCNotaCredito[].class);
+				for(Object obj: list){
+					notasCreditoToUpdate22.add((CCNotaCredito)obj);
+				}
+
+				
+				guardarRecibo(recibo, facturasToUpdate22, notasDebitoToUpdate22, notasCreditoToUpdate22, ControllerProtocol.SALVARRECIBOANTESDESALIR);
 				break;
 		}
 		
@@ -281,7 +315,8 @@ public final class BReciboM extends BBaseM {
 					
 					try 
 					{ 
-						saveRecibo(recibo, facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);	 
+						saveRecibo(recibo, facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);	
+						 
 						Processor.notifyToView(
 											getController(),
 											ControllerProtocol.NOTIFICATION,
@@ -329,6 +364,65 @@ public final class BReciboM extends BBaseM {
 		}		
 	}
 
+	private void guardarRecibo(final ReciboColector recibo, final ArrayList<Factura> facturasToUpdate, final ArrayList<CCNotaDebito> notasDebitoToUpdate, final ArrayList<CCNotaCredito> notasCreditoToUpdate, final int...arg1) 
+	{
+		try 
+		{
+			getPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					
+					try 
+					{ 
+						saveRecibo(recibo, facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);	
+						 
+						Processor.notifyToView(
+											getController(),
+											ControllerProtocol.NOTIFICATION,
+											arg1.length != 0 ? arg1[0] : SAVE_DATA_FROM_LOCALHOST,
+											0, 
+											recibo
+											);
+					} catch (Exception e) 
+					{ 
+						Log.e(TAG, "Error in the update thread", e);
+						try {
+							Processor
+									.notifyToView(
+											getController(),
+											ERROR,
+											0,
+											0,
+											ErrorMessage.newInstance(
+													"Error interno",
+													e.getMessage(), "\n Causa: "
+															+ e.getCause()));
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					}				
+					
+				}
+			});
+		}catch(Exception e){
+			Log.e(logger, "Error in the update thread", e);
+			try {
+				Processor
+						.notifyToView(
+								getController(),
+								ERROR,
+								0,
+								0,
+								new ErrorMessage(
+										"Error interno en el registro de recibo",
+										e.toString(), "\n Causa: "
+												+ e.getCause()));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}		
+	}
+	
 	private void onLoadItemFromLocalHost(final Integer idrecibo) {
 		try {
 			getPool().execute(new Runnable() {
@@ -439,7 +533,7 @@ public final class BReciboM extends BBaseM {
 
 	}
 
-	private void onLoadDocumentosClienteFromLocalhost(final Long sucursalID) {
+	private void onLoadDocumentosClienteFromLocalhost(final Long sucursalID, final long reciboId) {
 		try {
 			this.getPool().execute(new Runnable() {
 				@Override
@@ -450,7 +544,7 @@ public final class BReciboM extends BBaseM {
 								ModelCliente.getClienteBySucursalID(
 										getResolver(),
 										sucursalID,
-										0), getController());
+										reciboId), getController());
 
 					} catch (Exception e) {
 						e.printStackTrace();

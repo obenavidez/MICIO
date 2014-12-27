@@ -46,8 +46,8 @@ public class Cobro
             {
                 //Ver si factura ya está vencida
                 long fechaVence = fac.getFechaAplicaDescPP();
-                long fechaNoAplicaDescPP = DateUtil.addDays(fechaVence, diasAplicaMora);
-                if (fechaNoAplicaDescPP < DateUtil.getTime())
+                long fechaNoAplicaDescPP = DateUtil.addDay(fechaVence, diasAplicaMora);
+                if (fechaNoAplicaDescPP < DateUtil.getFecha())
                 {
                     puedeAplicarDescOca = true;
                     break;
@@ -706,12 +706,12 @@ public class Cobro
             out.setMtoTotalFacturasCancelar(out.getMtoTotalFacturasCancelar() + reciboDetFactura.getSubTotal());
             
             //Calculando fecha de vencimiento más el tiempo de gracia para aplicar descuento PP
-            long fechavencePP = DateUtil.getTime(reciboDetFactura.getFechaAplicaDescPP());
+            long fechavencePP = reciboDetFactura.getFechaAplicaDescPP();
             String days=cnt.getApplicationContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("HolguraDiasAplicarDescPP", "0");
             int HolgDiasAPp = Integer.parseInt(days);
-            fechavencePP = DateUtil.addDays(fechavencePP, HolgDiasAPp); //Agregar tiempo de gracia
+            fechavencePP = DateUtil.addDay(fechavencePP, HolgDiasAPp); //Agregar tiempo de gracia
             //Si la fecha no se ha pasado, se toma en cuenta
-            if (fechavencePP >= DateUtil.getTime()) {
+            if (fechavencePP >= DateUtil.getFecha()) {
             	//Validar que no tenga promoción aplicada o
                 //si tiene promoción aplicada que ésta indique
                 //que se debe aplicar descuento PP                
