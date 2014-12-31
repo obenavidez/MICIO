@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.panzyma.nm.Main; 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.NMApp.Modulo;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener; 
 import com.panzyma.nm.model.ModelConfiguracion;
@@ -199,6 +200,26 @@ public class SessionManager
 		return errormessage;	
 	}
 	
+	public synchronized static boolean SignInForce()
+    {
+		isOK=true; 
+		if(SessionManager.getLoginUser()!=null || NMApp.modulo == NMApp.Modulo.CONFIGURACION)
+		{
+			while( isOK || ( !SessionManager.isAdmin() && isOK && !(NMApp.getController().getView() instanceof Main)) )
+			{
+				if(hasError)
+					break;
+				isOK=false;
+				SessionManager.bloque1(false);
+				SessionManager.bloque2(false);  			
+			}
+		}
+		else
+			sendErrorMessage(ErrorMessage.newInstance("Error en inicio de Session","El no hay usuario configurado para este dispositivo, favor asigne un usuario en el modulo de Configuración",""));
+		SessionManager.hasError=false;
+        return SessionManager.isLogged();
+    } 
+	
 	public synchronized static boolean SignIn(final boolean admin)
     {
 		isOK=true; 
@@ -321,55 +342,84 @@ public class SessionManager
 									{ 										
 										LoginUserResult res;
 										
+										Usuario user = SessionManager.getLoginUser();
+																				
+										if( NMApp.modulo == Modulo.HOME && user != null && user.getPassword().trim().length() > 0  ) {
+											NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+										}
+										
 										try 
 										{
-											res =ModelConfiguracion.verifyLogin(url2,(nombreusuario+"-"+password+"-"+empresa),"ADMIN");
-											
-											if (res.getAuntenticateRS() == AUT_EXITOSA )
-											{				
-												if(!(NMApp.getContext() instanceof Main) && NMApp.modulo != NMApp.Modulo.CONFIGURACION &&  res.IsAdmin())
-												{
-													sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario no es valido para realizar esta operación",""));
-													return;
-												}
-												else
-												{
-													Usuario user=SessionManager.getLoginUser();
-													if (user!=null && (!user.getLogin().trim().toString().equals(nombreusuario.trim().toString())) && (NMApp.modulo != NMApp.Modulo.CONFIGURACION) && !(NMApp.getContext() instanceof Main))
+											if( NMApp.tipoAutenticacion == AutenticationType.REMOTE) {
+												// AUTENTICACION REMOTA
+												res =ModelConfiguracion.verifyLogin(url2,(nombreusuario+"-"+password+"-"+empresa),"ADMIN");
+												
+												if (res.getAuntenticateRS() == AUT_EXITOSA )
+												{				
+													if(!(NMApp.getContext() instanceof Main) && NMApp.modulo != NMApp.Modulo.CONFIGURACION &&  res.IsAdmin())
 													{
-														sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario "+nombreusuario+" no esta configurado localmente, asigne este usuario en el modulo de Configuración",""));
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario no es valido para realizar esta operación",""));
 														return;
 													}
 													else
-													{ 
-														if(user==null && NMApp.modulo== NMApp.Modulo.CONFIGURACION)
+													{
+														user = SessionManager.getLoginUser();
+														if (user!=null && (!user.getLogin().trim().toString().equals(nombreusuario.trim().toString())) && (NMApp.modulo != NMApp.Modulo.CONFIGURACION) && !(NMApp.getContext() instanceof Main))
 														{
-															BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, 
-																									nombreusuario+"-"+password+"-"+empresa,
-																									((ViewConfiguracion)SessionManager.getContext()).getTBoxUserName(),
-																									NMNetWork.getDeviceId(context),getImpresora());
-														}														
-														_esAdmin=res.IsAdmin();
-														SessionManager.setEmpresa(empresa);
-														SessionManager.setNameUser(nombreusuario);
-														SessionManager.setPassword(password);
-														SessionManager.setLogged(true);
+															sendErrorMessage(new ErrorMessage("Error en la Autenticación","El Usuario "+nombreusuario+" no esta configurado localmente, asigne este usuario en el modulo de Configuración",""));
+															return;
+														}
+														else
+														{ 
+															if(user==null && NMApp.modulo== NMApp.Modulo.CONFIGURACION)
+															{
+																BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, 
+																										nombreusuario+"-"+password+"-"+empresa,
+																										((ViewConfiguracion)SessionManager.getContext()).getTBoxUserName(),
+																										NMNetWork.getDeviceId(context),getImpresora());
+															}														
+															_esAdmin=res.IsAdmin();
+															SessionManager.setEmpresa(empresa);
+															SessionManager.setNameUser(nombreusuario);
+															SessionManager.setPassword(password);
+															SessionManager.setLogged(true);
+															if( ( user != null ) &&
+																( user.getPassword() == null ||
+																  ( user.getPassword() != null &&
+																    user.getPassword().trim().length() == 0) 
+																  )
+															   ) {
+																user.setPassword(password);
+																Usuario.guardarInfoUsuario(SessionManager.getContext(), user);
+																NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+															}														
+														}
 													}
+													unlock();
+												}
+												else
+												{
+													if(res.getAuntenticateRS() == AUT_USER_NO_EXIST)
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Usuario desconocido.","")); 
+													else if (res.getAuntenticateRS() == AUT_PWD_INVALIDO) 
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Contraseña inválida.","")); 
+													else if (res.getAuntenticateRS() == AUT_FALLIDA)
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Fallo de autenticación.","")); 
+													else
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo en la conexión con el servidor de aplicaciones.\r\n",""));
+													unlock();											
+												}
+												
+											} else {
+												// NOS AUTENTICAREMOS DE FORMA LOCAL
+												user=SessionManager.getLoginUser();
+												if(!dl.getPassword().equals(user.getPassword())) {
+													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Contraseña inválida.",""));
+												} else {
+													SessionManager.setLogged(true);
 												}
 												unlock();
-											}
-											else
-											{
-												if(res.getAuntenticateRS() == AUT_USER_NO_EXIST)
-													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Usuario desconocido.","")); 
-												else if (res.getAuntenticateRS() == AUT_PWD_INVALIDO) 
-													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Contraseña inválida.","")); 
-												else if (res.getAuntenticateRS() == AUT_FALLIDA)
-													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Fallo de autenticación.","")); 
-												else
-													sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo en la conexión con el servidor de aplicaciones.\r\n",""));
-												unlock();											
-											}
+											}								
 											
 										}catch (Exception e) {
 											sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo la comunicación con el servidor de aplicaciones.\r\n",e.toString()));
@@ -402,6 +452,7 @@ public class SessionManager
 	 
 	public static void unlock()
 	{
+		NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
 		context.runOnUiThread(new Runnable()
 	     {
 	            @Override

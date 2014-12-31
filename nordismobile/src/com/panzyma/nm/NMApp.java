@@ -1,6 +1,7 @@
 package com.panzyma.nm;
  
 
+import com.panzyma.nm.auxiliar.AutenticationType;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.controller.Controller;
 
@@ -12,6 +13,7 @@ public class NMApp extends Application{
 	
 	public static  Controller controller;
 	private static ThreadPool pool;
+	public static AutenticationType tipoAutenticacion = AutenticationType.REMOTE;
 	
 	public enum Modulo {
 		HOME,

@@ -76,8 +76,9 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	}
 
 	public void verifyLogin() {
-		if (SessionManager.getLoginUser() != null) {
-			callDialogLogin();
+		if (SessionManager.getLoginUser() != null ) {
+			if( !SessionManager.isLogged())
+				dialogLogin();
 		} else {
 			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 			intent = new Intent(this, ViewConfiguracion.class);
@@ -167,6 +168,36 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			FINISH_COMPONENT();
 		}
 	}
+	
+	public void dialogLogin(){
+		try 
+		{
+			NMApp.getThreadPool().execute(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					try 
+					{
+						NMApp.modulo = NMApp.Modulo.HOME;
+						if(!SessionManager.SignIn(false))
+							if(!SessionManager.hasError){
+								NMApp.killApp(true);
+							}
+					} catch (Exception e) {
+						NMApp.modulo = NMApp.Modulo.HOME;
+						e.printStackTrace();
+						dialog("", SessionManager.getErrorAuntentication(),
+								ALERT_DIALOG);
+					}
+
+				}
+
+			});
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@SuppressLint("ParserError")
 	public void callDialogLogin() {
@@ -176,7 +207,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				public void run() {
 					try {
 						Usuario user = SessionManager.getLoginUser();
-						if (user != null && SessionManager.SignIn(false)) {
+						if (user != null && SessionManager.SignInForce()) {
 							NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 							intent = new Intent(context,
 									ViewConfiguracion.class);

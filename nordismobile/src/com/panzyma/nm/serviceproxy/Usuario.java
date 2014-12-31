@@ -11,6 +11,7 @@ import org.ksoap2.serialization.PropertyInfo;
 
 import android.content.Context;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.model.ModelConfiguracion;
  
@@ -60,6 +61,10 @@ public class Usuario implements KvmSerializable
     public static Usuario get(Context cnt)
     {
     	return ModelConfiguracion.getUser(cnt);
+    }
+    
+    public static void guardarInfoUsuario(Context cntx,Usuario user) throws Exception{
+    	ModelConfiguracion.saveUser(cntx, user);
     }
     
     public Usuario(	long id, 
