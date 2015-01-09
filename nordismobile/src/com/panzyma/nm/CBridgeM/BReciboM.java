@@ -266,7 +266,7 @@ public final class BReciboM extends BBaseM {
 									ControllerProtocol.NOTIFICATION,
 									0,
 									0,
-									NotificationMessage.newInstance("","La solicitud descuento fue enviada a la central con exito",""));
+									"La solicitud descuento fue enviada a la central con exito");
 								ModelConfiguracion.guardarSolicitudDescuentoRec(getContext(),
 										recibo.getReferencia(), 
 										notas);
@@ -327,7 +327,8 @@ public final class BReciboM extends BBaseM {
 					} catch (Exception e) 
 					{ 
 						Log.e(TAG, "Error in the update thread", e);
-						try {
+						try 
+						{
 							Processor
 									.notifyToView(
 											getController(),
@@ -378,8 +379,8 @@ public final class BReciboM extends BBaseM {
 						 
 						Processor.notifyToView(
 											getController(),
-											ControllerProtocol.NOTIFICATION,
-											arg1.length != 0 ? arg1[0] : SAVE_DATA_FROM_LOCALHOST,
+											ControllerProtocol.SALVARRECIBOANTESDESALIR,
+											0,
 											0, 
 											recibo
 											);

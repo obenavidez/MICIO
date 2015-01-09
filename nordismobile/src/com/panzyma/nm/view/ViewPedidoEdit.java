@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -143,6 +144,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	private boolean onNew;
 	int requescode = 0;
 	Intent intent = null;
+	private String msg;
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -183,7 +185,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			initComponent();
 
 		} catch (Exception e) {
-			showStatus(e.getMessage() + "\nCausa: " + e.getCause(), true);
+			showStatus(e.getMessage() + "" + e.getCause(), true);
 		}
 
 	}
@@ -474,7 +476,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 									}
 								} catch (Exception e) {
 									showStatus(
-											e.getMessage() + "\nCausa: "
+											e.getMessage() + ""
 													+ e.getCause(), true);
 								}
 							}
@@ -660,7 +662,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 		final String sms = (pedido.getCodEstado().compareTo("FACTURADO") == 0) ? "El pedido ha sido enviado y facturado \n¿Desea imprimir el recibo?"
 				: "El pedido ha sido enviado.Estado: " + pedido.getDescEstado()
-						+ "\r\nCausa: " + pedido.getDescCausaEstado();
+						+ "\r" + pedido.getDescCausaEstado();
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -712,16 +714,13 @@ public class ViewPedidoEdit extends FragmentActivity implements
 							{
 								try 
 								{
-									if(isDataValid())
-									{ 
-										showStatus("Guardando Pedido...");
-										salvarPedido(ControllerProtocol.SALVARPEDIDOANTESDESALIR); 
-										
-									}
-									
+									showStatus("Guardando Pedido...");
+									salvarPedido(ControllerProtocol.SALVARPEDIDOANTESDESALIR); 									
 								} catch (Exception e) 
 								{
-									
+									NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+											"Error guardando pedido",
+											e.getMessage(),e.getMessage()));
 								}
 								
 							}else
@@ -737,6 +736,17 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			
 			
 			
+		}else
+		{
+			if(!onEdit)
+				NMApp.getController()._notifyOutboxHandlers(
+						ControllerProtocol.SALVARPEDIDOANTESDESALIR,
+						0,
+						0, 
+						pedido
+						);
+			else
+				finish();
 		}
 		
 	}
@@ -805,7 +815,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 		if (cliente == null) 
 		{
-			showStatus("Seleccione primero el cliente del pedido.", true);
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Seleccione primero el cliente del pedido.",
+					"Seleccione primero el cliente del pedido.","")); 
 			return;
 		}
 
@@ -899,7 +911,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			dp.getWindow().setLayout(display.getWidth() - 30,display.getHeight() - 50);
 			dp.show();
 		} catch (Exception e) {
-			showStatus(e.getMessage() + "\nCausa: " + e.getCause(), true);
+			showStatus(e.getMessage() + "" + e.getCause(), true);
 			e.printStackTrace();
 		}
 
@@ -1016,17 +1028,22 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 					.getCodEstado().compareTo("APROBADO") == 0)))
 			{	
-				showStatus("No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado());
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"Error aplicando promociones.",
+						"No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado(),""));  
 				return;
 			}
-			if (cliente == null) {
-				showStatus("Seleccione primero el cliente del pedido.", true);
+			if (cliente == null) 
+			{
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"Error aplicando promociones.",
+						"Seleccione primero el cliente del pedido.",""));   
 				return;
 			}
 			if ((Lvmpproducto == null) || (Lvmpproducto.size() == 0)) {
-				AppDialog.showMessage(me,
-						"El pedido no tiene detalle.",
-						DialogType.DIALOGO_ALERTA);
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"Error aplicando promociones.",
+						"El pedido no tiene detalle.",""));   
 				return;
 			}
 
@@ -1041,9 +1058,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					.getPromocionesAplican(pedido, getContentResolver());
 
 			if (promociones == null || (promociones!=null && promociones.size() == 0))  
-			{			AppDialog.showMessage(me,
-					"No hay Promomociones pendientes que aplicar...",
-					DialogType.DIALOGO_ALERTA);
+			{			
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"Error aplicando promociones.",
+						"No hay Promomociones pendientes que aplicar...",""));  
 				return;
 			}
 			DialogPromociones dprom = new DialogPromociones(
@@ -1072,10 +1090,11 @@ public class ViewPedidoEdit extends FragmentActivity implements
 											.getString(
 													"CantMaximaPromocionesAplicar",
 													"0"));
-							if (pproms.length >= maxPromos) {
-								showStatus(
-										"La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.",
-										true);
+							if (pproms.length >= maxPromos) 
+							{
+								NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+										"Error aplicando promociones.",
+										"La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.",""));   
 								return;
 							}
 						}
@@ -1089,11 +1108,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 						salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES); 
 						
 					} else
-						AppDialog
-								.showMessage(
-										me,
-										"No hay Promomociones pendientes que aplicar...",
-										DialogType.DIALOGO_ALERTA);
+						NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+								"Error aplicando promociones.",
+								"No hay Promomociones pendientes que aplicar...",""));    
 
 				}
 			});
@@ -1106,9 +1123,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			
 
 		} catch (Exception e) {
-			AppDialog.showMessage(me,
-					e.getMessage() + "\nCausa: " + e.getCause(),
-					DialogType.DIALOGO_ALERTA);
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error aplicando promociones.",
+					e.getMessage(), "" + e.getCause()));  
 		}
 
 	}
@@ -1121,17 +1138,18 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0)))
 			{
-				showStatus("No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado(),true);
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"Error desaplicando promociones.",
+						"No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado(), ""));   
 				return;
 			}
 
 			if (pedido.getPromocionesAplicadas() == null || 
 				(pedido.getPromocionesAplicadas() != null && pedido.getPromocionesAplicadas().length == 0)) 
 			{
-
-				AppDialog.showMessage(me,
-						"El pedido no tiene promociones aplicadas.",
-						DialogType.DIALOGO_ALERTA);
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"Error desaplicando promociones.",
+						"El pedido no tiene promociones aplicadas.", ""));    
 				return;
 			}
 
@@ -1146,9 +1164,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			
 		} catch (Exception e) 
 		{ 
-			AppDialog.showMessage(me,
-					e.getMessage() + "\nCausa: " + e.getCause(),
-					DialogType.DIALOGO_ALERTA);
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error desaplicando promociones.",
+					e.getMessage(), "" + e.getCause()));    
 		}
 
 		
@@ -1197,15 +1215,17 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	
 	
 	public void agregarCondicionesYNotas() {
-		if (pedido.getObjClienteID() == 0) {
-			AppDialog.showMessage(me, "Debe agregar primero el cliente",
-					DialogType.DIALOGO_ALERTA);
+		if (pedido.getObjClienteID() == 0) 
+		{
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error agreando condiciones y notas.",
+					"Debe agregar primero el cliente", ""));  
 			return;
 		}
 		if (pedido.getDetalles() == null) {
-			AppDialog.showMessage(me,
-					"Debe agregar primero los productos a facturar",
-					DialogType.DIALOGO_ALERTA);
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error agreando condiciones y notas.",
+					"Debe agregar primero los productos a facturar", ""));  
 			return;
 		}
 		DialogCondicionesNotas cn = new DialogCondicionesNotas(me, pedido,
@@ -1298,9 +1318,10 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					display.getHeight() - 280);
 			ei.show();
 		} catch (Exception e) {
-			AppDialog.showMessage(me,
-					e.getMessage() + "\nCausa: " + e.getCause(),
-					DialogType.DIALOGO_ALERTA);
+			
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al exonerar de impuesto.",
+					e.getMessage() , "" + e.getCause()));   
 		}
 	}
 
@@ -1370,8 +1391,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	}
 
 	public boolean isDataValid() throws Exception {
-		String msg = "";
 
+		msg="";
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		formatter.setCalendar(Calendar.getInstance());
 		Date d = formatter.parse(DateUtil.idateToStrYY(DateUtil.dt2i(Calendar
@@ -1393,10 +1414,15 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				msg = "El pedido no tiene detalle de productos.";
 		}
 
-		if (msg != "") {
-			AppDialog.showMessage(me, msg, DialogType.DIALOGO_ALERTA);
+		if (msg != "") 
+		{			
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, ErrorMessage.newInstance(
+					"Error validando la información",
+					msg, ""));
 			return false;
 		}
+		
+		
 
 		return comprobarPromociones();
 	}
@@ -1418,10 +1444,11 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 			if (apo.toUpperCase().compareTo("FALSE") == 0) {
 				if (Promociones.getPromocionesAplican(pedido,
-						me.getContentResolver()).size() > 0) {
-					AppDialog.showMessage(me,
-							"Debe aplicarse al menos una promoción al pedido.",
-							DialogType.DIALOGO_ALERTA);
+						me.getContentResolver()).size() > 0) 
+				{
+					NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+							"Error comprobando promociones en el pedido.",
+							"Debe aplicarse al menos una promoción al pedido.", ""));   
 					return false;
 				}
 			}
@@ -1451,9 +1478,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 
 		} catch (Exception e) {
-			AppDialog.showMessage(me,
-					e.getMessage() + "\nCausa: " + e.getCause(),
-					DialogType.DIALOGO_ALERTA);
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error salvando el pedido.",
+					"" + e.getCause(), ""));   
 		}
 	}
 
@@ -1465,8 +1492,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			SessionManager.setContext(me);
 			com.panzyma.nm.NMApp.getController().setView(this);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error restaurando pedido.",
+					"" + e.getCause(), ""));   
 		}
 
 		super.onResume();
@@ -1481,9 +1509,12 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				return;
 
 			if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) {
-				if (pedido.getNumeroCentral() > 0) {
-					AppDialog.showMessage(me, "El pedido ya fue enviado.",
-							DialogType.DIALOGO_ALERTA);
+				if (pedido.getNumeroCentral() > 0) 
+				{
+					
+					NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+							"Notificación al enviar pedido",
+							"El pedido ya fue enviado.", ""));   
 					return;
 				}
 			}
@@ -1502,9 +1533,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 
 		} catch (Exception e) {
-			AppDialog.showMessage(me,
-					e.getMessage() + "\nCausa: " + e.getCause(),
-					DialogType.DIALOGO_ALERTA);
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al enviar pedido",
+					e.getMessage() , "" + e.getCause()));    
 		}
 
 	}

@@ -41,6 +41,7 @@ import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente; 
+import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
@@ -92,6 +93,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 @InvokeBridge(bridgeName = "BReciboM")
 @SuppressLint("ShowToast")
@@ -251,7 +253,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			initComponent();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error cargando Recibo",
+					e.getMessage(),e.getMessage()));
 		}
 
 	}
@@ -307,6 +311,23 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		txtTotalDescuento = (TextView) findViewById(R.id.txtTotalDescuento);
 		txtTotal = (TextView) findViewById(R.id.txtTotal);
 
+		item_document.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				if ((parent.getChildAt(positioncache)) != null)
+					(parent.getChildAt(positioncache))
+							.setBackgroundResource(android.R.color.transparent);
+				positioncache = position;
+				documento_selected=(com.panzyma.nm.serviceproxy.Documento) adapter.getItem(position);	 
+				adapter.setSelectedPosition(position);  
+				view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));	
+				
+			}
+
+		});
 		item_document.setOnItemLongClickListener(new OnItemLongClickListener() {
  
 			@Override
@@ -561,6 +582,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		} 
 		else if (keyCode == KeyEvent.KEYCODE_BACK) {        	
 			FINISH_ACTIVITY();
+			return true;
 		}
 		return super.onKeyUp(keyCode, event);
 	}
@@ -593,15 +615,18 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				{	
 					recibo = (ReciboColector)msg.obj;
 					recibo.setOldData(recibo);
+					recibo.getOldData();
 					actualizarOnUINumRef(recibo); 				
 					salvado=true;
 					showStatus("El Recibo fue registrado con exito", true);
 				}
 				else
-					showStatus(msg.obj.toString(), true);
+					if(msg.obj instanceof String)
+						showStatus(msg.obj.toString(), true);
 				break;
 			case ControllerProtocol.NOTIFICATION_DIALOG2:
-				showStatus(msg.obj.toString());
+				if(msg.obj instanceof String)
+					showStatus(msg.obj.toString());
 				break;
 			case ControllerProtocol.ERROR: 
 				AppDialog.showMessage(me,((ErrorMessage)msg.obj).getTittle(),((ErrorMessage)msg.obj).getMessage(),DialogType.DIALOGO_ALERTA);
@@ -666,8 +691,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		    						_dialog.dismiss();
 		    						
 								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+											"Error al intentar Imprimir el Recibo",
+											e.getMessage(),e.getMessage()));
 								}
 		    				}	 
 		    			}
@@ -810,7 +836,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 						NMApp.getController().getInboxHandler().sendMessage(msg); 
 					} catch (Exception e) 
 					{ 
-						e.printStackTrace();
+						NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+								"Error al solicitar descuento",
+								e.getMessage(),e.getMessage()));
 					} 					
 				}
 			}
@@ -821,13 +849,13 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	private void guardarRecibo(int...arg)  
 	{
 
-		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
-				.trim().equals("") ? "0" : tbxNumRecibo.getText().toString())));
-
-		if(recibo.getId() != 0) 		
-				recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
-						.toString().trim().equals("")) ? "0" : tbxNumReferencia
-								.getText().toString()));
+//		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
+//				.trim().equals("") ? "0" : tbxNumRecibo.getText().toString())));
+//
+//		if(recibo.getId() != 0) 		
+//				recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
+//						.toString().trim().equals("")) ? "0" : tbxNumReferencia
+//								.getText().toString()));
  
 //		if(bs != null && bs.length == 0) 		
 //			recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
@@ -888,7 +916,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				msg.what = arg.length != 0 ? arg[0] : SAVE_DATA_FROM_LOCALHOST; 	
 				NMApp.getController().getInboxHandler().sendMessage(msg);  	   			
 			} catch (Exception e) {				
-				e.printStackTrace();
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"Error al guardar el recibo",
+						e.getMessage(),e.getMessage()));
 			}
 		}
 
@@ -1029,7 +1059,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			NMApp.getController().getInboxHandler().sendMessage(msg);  	 
 
 		} catch (Exception e) {			
-			e.printStackTrace();
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al enviar el recibo",
+					e.getMessage(),e.getMessage()));
 		}
 
 	}
@@ -1044,20 +1076,18 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			long d =(DateUtil.strTimeToLong(tbxFecha.getText().toString()));            
 			if (d > DateUtil.d2i(Calendar.getInstance().getTime())) 
 			{
-				showStatusOnUI(
-						new ErrorMessage(
-								"Error en el proceso de enviar el recibo al servidor",
-								"Fecha invalida", "\nCausa: "+"La fecha del recibo no debe ser mayor a la fecha actual."));				
-
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"Fecha invalida",
+						""+"La fecha del recibo no debe ser mayor a la fecha actual.", ""));
+				
 				return false;
 			}
 
 			if (recibo.getNombreCliente().trim() == "") 
 			{            
-				showStatusOnUI(
-						new ErrorMessage(
-								"Error en el proceso de enviar el recibo al servidor",
-								"El cliente del recibo no ha sido ingresado.", "")); 
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+						"Cliente invalido",
+						""+"El cliente del recibo no ha sido ingresado.", ""));
 				return false;
 			}
 
@@ -1066,10 +1096,10 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			int cantND = Cobro.cantNDs(recibo);
 			if (cantFac == 0) {
 				if(cantND == 0) {
-					showStatusOnUI(
-							new ErrorMessage(
-									"Error en el proceso de enviar el recibo al servidor",
-									"Problemas con las Facturas.", "Debe incluir al menos una factura o nota de débito."));
+					
+					NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+							"Error en Facturas.",
+							""+"Debe incluir al menos una factura o nota de débito.", ""));
 
 					return false;
 				}
@@ -1078,10 +1108,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			//Validar que la cantidad de facturas incluidas no sea mayor que el valor del parámetro CantMaxFacturasEnRecibo.
 			int max = Integer.parseInt(Cobro.getParametro(me,"CantMaxFacturasEnRecibo")+"");
 			if (cantFac > max) {
-				showStatusOnUI(
-						new ErrorMessage(
-								"Error en el proceso de enviar el recibo al servidor",
-								"Problemas con los Documentos.", "La cantidad de facturas no debe ser mayor que "+max));             
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+						"Error en detalle del Recibo",
+						""+"La cantidad de facturas no debe ser mayor que "+max+ " .", "")); 
 
 				return false;
 			}
@@ -1091,10 +1120,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			max = Integer.parseInt(Cobro.getParametro(me,"CantMaxNotasDebitoEnRecibo")+"");
 			if (cantND > max) {
 
-				showStatusOnUI(
-						new ErrorMessage(
-								"Error en el proceso de enviar el recibo al servidor",
-								"Problemas con los Documentos.", "La cantidad de notas de débito no debe ser mayor que "+max + "."));             
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+						"Error en detalle del Recibo",
+						""+"La cantidad de notas de débito no debe ser mayor que "+max + " .", ""));            
 				return false;
 			}
 
@@ -1102,20 +1130,18 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			//que el valor del parámetro CantMaxNotasCreditoEnRecibo        
 			max = Integer.parseInt(Cobro.getParametro(me,"CantMaxNotasCreditoEnRecibo")+"");
 			if (Cobro.cantNCs(recibo) > max) {
-				showStatusOnUI(
-						new ErrorMessage(
-								"Error al Validar el Recibo",
-								"Problemas con los Documentos.", "La cantidad de notas de crédito no debe ser mayor que " + max + "."));
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+						"Error en detalle del Recibo",
+						""+"La cantidad de notas de crédito no debe ser mayor que " + max + " .", ""));   
 				//Dialog.alert("La cantidad de notas de crédito no debe ser mayor que " + max + ".");
 				return false;
 			}
 
 			//Validar que se haya ingresado al menos un pago
 			if (Cobro.cantFPs(recibo) == 0) {
-				showStatusOnUI(
-						new ErrorMessage(
-								"Error al Validar el Recibo",
-								"No se ha agregado ningun pago.", ""));
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+						"Error validando Recibo",
+						""+"No se ha agregado ningun pago.", ""));   
 
 				//Dialog.alert("Detalle de pagos no ingresado.");
 				return false; 
@@ -1148,19 +1174,18 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 				} //Ver si todas las facturas aplicadas son vencidas
 
 				if (todasVencidas && (recibo.getTotalNC() > recibo.getTotalFacturas()))  {
-					showStatusOnUI(
-							new ErrorMessage(
-									"Error al Validar el Recibo",
-									"Problemas con los Documentos.", "El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas." + max + "."));
-					// Dialog.alert("El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas.");
+					
+					NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+							"Error en detalle del Recibo",
+							""+"El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas." + max + " .", "")); 
+					 					// Dialog.alert("El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas.");
 					return false;
 				}
 
 				if (todasVencidas && (recibo.getTotalNC() >= recibo.getTotalFacturas()))  {
-					showStatusOnUI(
-							new ErrorMessage(
-									"Error al Validar el Recibo",
-									"Problemas con los Documentos.", "El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas."));
+					NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+							"Error en detalle del Recibo",
+							""+"El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas.", ""));  
 
 					// Dialog.alert("El total de notas de crédito a aplicar debe ser menor al total a pagar en facturas.");
 					return false;
@@ -1192,19 +1217,17 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			if ((recibo.getTotalRecibo() < montoMinimoRecibo) && ValidarMontoAplicaDpp) {
 				//Recalcular detalles del recibo sin aplicar DescPP
 				Cobro.calcularDetFacturasRecibo(me,recibo, recibo.getCliente(), false);
-				actualizaTotales();            
-				showStatusOnUI(
-						new ErrorMessage(
-								"Error al Validar el Recibo",
-								"Problemas el Descuento PP.","Para aplicar descuento pronto pago \r\nel monto del recibo no debe ser menor que " + StringUtil.formatReal(montoMinimoRecibo) + "."));
+				actualizaTotales();       
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+						"Error validando Recibo",
+						""+"Para aplicar descuento pronto pago \rel monto del recibo no debe ser menor que " + StringUtil.formatReal(montoMinimoRecibo) + ".", ""));  
 
-				return false;
+								return false;
 			}              
 			if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) {
-				showStatusOnUI(
-						new ErrorMessage(
-								"Error al Validar el Recibo",
-								"Problema con el Monto Total del Recibo","El monto pagado no cuadra con el total del recibo."));
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, new ErrorMessage(
+						"Problema con el Monto Total del Recibo",
+						""+"El monto pagado no cuadra con el total del recibo.", ""));   
 
 				// Dialog.alert("El monto pagado no cuadra con el total del recibo.");
 				return false;
@@ -1214,12 +1237,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 		} catch (Exception e) 
 		{
-			try {
-				showStatusOnUI(
-						new ErrorMessage(
-								"Error al Validar el Recibo",
-								e.getMessage(),e.getMessage()));
-			} catch (InterruptedException e1) {}
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al Validar el Recibo",
+					e.getMessage(),e.getMessage()));
 
 		}
 		return false;
@@ -1366,15 +1386,11 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 						montoDescuento = ammount.getValue();
 						factura.setDescontado(montoDescuento);
 						factura.setDescuentoFactura(factura.getDescuentoFactura() + montoDescuento);					
-						if ( montoDescuento > facturaDetalle.getMontoDescEspecificoCalc() ) {
-							try {
-								showStatusOnUI(
-										new ErrorMessage(
-												          "Error al editar descuento",
-												          "El nuevo descuento no debe ser mayor que " + StringUtil.formatReal(facturaDetalle.getMontoDescEspecificoCalc()) + ".", ""));
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}	                          
+						if ( montoDescuento > facturaDetalle.getMontoDescEspecificoCalc() ) { 
+								NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+										"Error al editar descuento",
+										"El nuevo descuento no debe ser mayor que " + StringUtil.formatReal(facturaDetalle.getMontoDescEspecificoCalc()) + ".", ""));
+							                         
 				            return;
 				        }
 						//Recalcular monto neto
@@ -1625,36 +1641,29 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	}
 
 	private void agregarPago() {
-		if (recibo != null && recibo.getTotalRecibo() == 0) {
-			AppDialog
-					.showMessage(
-							me,
-							"Información",
-							"No es posible agregar pago, monto pendiente igual a cero.",
-							DialogType.DIALOGO_ALERTA);
+		if (recibo != null && recibo.getTotalRecibo() == 0) 
+		{
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al agregar pago",
+					"No es posible agregar pago, monto pendiente igual a cero." + ".", "")); 
 
 			return;
 		}
         
 		if ("REGISTRADO".compareTo(recibo.getCodEstado()) != 0) {
-			AppDialog
-					.showMessage(
-							me,
-							"Información",
-							String.format("El estado %s del recibo, no permite agregar pagos",recibo.getDescEstado()),
-							DialogType.DIALOGO_ALERTA);
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al agregar pago",
+					String.format("El estado %s del recibo, no permite agregar pagos",recibo.getDescEstado())+ ".", ""));  
 			return;
 		}
         
         //Validar que haya pendiente por pagar
         float montoPorPagar = StringUtil.round(recibo.getTotalRecibo() - Cobro.getTotalPagoRecibo(recibo), 2);
-        if (montoPorPagar <= 0) {
-        	AppDialog
-			.showMessage(
-					me,
-					"Información",
-					"No hay monto pendiente de pago.",
-					DialogType.DIALOGO_ALERTA);            
+        if (montoPorPagar <= 0) 
+        {
+        	NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Error al agregar pago",
+					"No hay monto pendiente de pago.", ""));             
             return;
         }
         
@@ -2004,63 +2013,37 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		return pagarOnLine;
 	}
 
-	public void showStatusOnUI(Object msg) throws InterruptedException{
+	public void showStatusOnUI(Object msg) throws InterruptedException
+	{
 
 		final String titulo=""+((ErrorMessage)msg).getTittle();
 		final String mensaje=""+((ErrorMessage)msg).getMessage();
-
-
-		NMApp.getThreadPool().execute(new Runnable()
-		{ 
+ 
+		runOnUiThread(new Runnable() 
+		{
 			@Override
-			public void run()
-			{
-
-				try 
-				{
-
-					runOnUiThread(new Runnable() 
-					{
-						@Override
-						public void run() 
-						{ 
-							AppDialog.showMessage(me,titulo,mensaje,AppDialog.DialogType.DIALOGO_CONFIRMACION,new AppDialog.OnButtonClickListener() 
-							{						 
-								@Override
-								public void onButtonClick(AlertDialog _dialog, int actionId) 
-								{ 
-									synchronized(lock)
-									{
-										lock.notify();
-									}
-								}
-							}); 
-						}
-					});
-
-					synchronized(lock)
-					{
-						try {
-							lock.wait();
-						} catch (InterruptedException e) { 
-							e.printStackTrace();
-						}
+			public void run() 
+			{ 
+				AppDialog.showMessage(me,titulo,mensaje,AppDialog.DialogType.DIALOGO_ALERTA,new AppDialog.OnButtonClickListener() 
+				{						 
+					@Override
+					public void onButtonClick(AlertDialog _dialog, int actionId) 
+					{  
+						_dialog.dismiss();
 					}
-
-				} catch (Exception e) 
-				{ 
-				}
+				}); 
 			}
-		}); 
+		});  
 
 	}
 	
 	private void FINISH_ACTIVITY()
 	{		
+		recibo.setNotas(tbxNotas.getText().toString());
 		if(recibo.hasModified(recibo.getOldData()))
 		{
 			 
-			AppDialog.showMessage(me, "",
+			AppDialog.showMessage(getContext(), "",
 					"¿Desea guardar la información antes de salir?",
 					AppDialog.DialogType.DIALOGO_CONFIRMACION,
 					new AppDialog.OnButtonClickListener() 
@@ -2073,18 +2056,26 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 							if (AppDialog.OK_BUTTOM == actionId) 
 							{
 								try 
-								{ 
-										showStatus("Guardando Recibo...");
-										guardarRecibo(ControllerProtocol.SALVARRECIBOANTESDESALIR); 
+								{  
+									guardarRecibo(ControllerProtocol.SALVARRECIBOANTESDESALIR); 
 									
 								} catch (Exception e) 
 								{
-									
+									NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+											"Error guardando recibo",
+											e.getMessage(), ""+ e.getCause()));    
 								}
 								
 							}else
-								finish();
-							
+							{ 
+									NMApp.getController()._notifyOutboxHandlers(
+											ControllerProtocol.SALVARRECIBOANTESDESALIR,
+											0,
+											0, 
+											recibo.getOldData()
+											);
+								
+							}							
 							_dialog.dismiss();
 	
 						}
@@ -2096,7 +2087,17 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			
 			
 		}else
-			finish();
+		{
+			if(!onEdit)
+				NMApp.getController()._notifyOutboxHandlers(
+						ControllerProtocol.SALVARRECIBOANTESDESALIR,
+						0,
+						0, 
+						recibo
+						);
+			else
+				finish();
+		}
 		
 		
 		
