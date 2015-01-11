@@ -103,14 +103,15 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
     CharSequence tituloSeccion;
     CharSequence tituloApp;
     private static final int SALVAR_CONFIGURACION =0;
-	    private static final int SINCRONIZAR_PARAMETROS =1;
-	    private static final int SINCRONIZAR_CATALOGOS=2;
-	    private static final int SINCRONIZAR_CLIENTES=3;
-	    private static final int SINCRONIZAR_PRODUCTOS=4;
-	    private static final int SINCRONIZAR_PROMOCIONES =5;
-	    private static final int SINCRONIZAR_TODO=6;
-	    private static final int CONFIGURAR_IMPRESORA=7;
-	    private static final int CERRAR  =8;
+    private static final int SINCRONIZAR_PARAMETROS =1;
+    private static final int SINCRONIZAR_CATALOGOS=2;
+    private static final int SINCRONIZAR_CLIENTES=3;
+    private static final int SINCRONIZAR_PRODUCTOS=4;
+    private static final int SINCRONIZAR_PROMOCIONES =5;
+    private static final int SINCRONIZAR_TODO=6;
+    private static final int CONFIGURAR_IMPRESORA=7;
+    private static final int LOGIN_WITH_ADMIN  = 8;
+    private static final int CERRAR  = 9;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -338,6 +339,8 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 		quickAction.addActionItem(null);
 		quickAction.addActionItem((new ActionItem(ID_SETTING_BLUETOOTHDEVICE,
 				"Configurar Impresora")));
+		quickAction.addActionItem(null);
+		quickAction.addActionItem((new ActionItem(LOGIN_WITH_ADMIN, "Conectar como Admin.")));
 		quickAction.addActionItem(null);
 		quickAction.addActionItem((new ActionItem(ID_CERRAR, "Cerrar")));
 

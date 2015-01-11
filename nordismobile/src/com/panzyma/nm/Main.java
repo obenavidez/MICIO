@@ -44,7 +44,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	public static String TAG = Main.class.getSimpleName();
 	private ThreadPool pool;
 	private boolean onRestart;
-	private boolean onPause;
+	private boolean onPause;	
 	public int buttonActive;
 	private static CustomDialog dlg;
 	Intent intent;
@@ -72,13 +72,21 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			// callDialogLogin();
 
 			NMApp.modulo = NMApp.Modulo.HOME;
-		verifyLogin();
+		//verifyLogin();
 	}
 
 	public void verifyLogin() {
 		if (SessionManager.getLoginUser() != null ) {
-			if( !SessionManager.isLogged())
-				dialogLogin();
+			Usuario user = SessionManager.getLoginUser();
+			if( !SessionManager.isLogged() )
+			/*if (user.getPassword() == null
+					|| (user.getPassword() != null 
+							&& user.getPassword().trim().length() == 0)
+				) */
+			{
+				
+					dialogLogin();
+			}				
 		} else {
 			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 			intent = new Intent(this, ViewConfiguracion.class);

@@ -378,7 +378,7 @@ public class SessionManager
 																										((ViewConfiguracion)SessionManager.getContext()).getTBoxUserName(),
 																										NMNetWork.getDeviceId(context),getImpresora());
 															}														
-															_esAdmin=res.IsAdmin();
+															_esAdmin=res.IsAdmin();															
 															SessionManager.setEmpresa(empresa);
 															SessionManager.setNameUser(nombreusuario);
 															SessionManager.setPassword(password);
@@ -389,6 +389,7 @@ public class SessionManager
 																    user.getPassword().trim().length() == 0) 
 																  )
 															   ) {
+																//SessionManager.setLogged(true);
 																user.setPassword(password);
 																Usuario.guardarInfoUsuario(SessionManager.getContext(), user);
 																NMApp.tipoAutenticacion = AutenticationType.LOCAL;
