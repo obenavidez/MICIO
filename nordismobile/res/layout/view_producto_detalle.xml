@@ -42,8 +42,8 @@
 			                android:id="@+id/txt_view_product_producto"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
-			                android:textColor="@color/DarkGray" 
 			                android:isScrollContainer="true"
+			                android:textColor="@color/Blue" 
 							android:gravity="top"
 			                />
 	          <!-- Segunda FIlA -->
@@ -58,7 +58,7 @@
 			            android:id="@+id/txt_view_product_proveedor"
 			            android:layout_width="wrap_content"
 			            android:layout_height="wrap_content"
-			            android:textColor="@color/DarkGray" />
+						android:textColor="@color/Blue"  />
 	          
 	          <!-- Tercera FILA -->
 	          <TextView
@@ -70,9 +70,9 @@
 			        android:id="@+id/txt_view_product_nombre_generico"
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"
-			         android:textColor="@color/DarkGray"
-			         >
-			   </TextView>
+			        android:textColor="@color/Blue" />   
+			        
+			   
 	           
 	          <!-- CUARTA FILA -->
 	            <TextView
@@ -84,7 +84,7 @@
 			                android:id="@+id/txt_view_product_forma"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue"/>
 	              
 	             <!-- Quinta fila -->
 	             
@@ -98,7 +98,8 @@
 			                android:id="@+id/txt_view_product_accion"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" 
+			                 />
     	          <!-- Sexta fila -->
     	          <TextView
 			                android:id="@+id/lblproducttipo"
@@ -110,7 +111,8 @@
 			                android:id="@+id/txt_view_product_tipo"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" 
+			                 />
     	          
     	          <!-- -Septima FILA -->
     	          
@@ -126,7 +128,8 @@
 			                android:id="@+id/txt_view_product_categoria"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" 
+			                 />
     	          
     	          <!-- OCTAVA FILA -->
     	          
@@ -144,7 +147,8 @@
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
 			                android:paddingBottom="5dip"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" 
+			                 />
 	             
 		    </LinearLayout>
 		</ScrollView>
