@@ -21,6 +21,7 @@ import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
@@ -117,7 +118,7 @@ public class ModelRecibo {
 				estado = "Autorizada";
 				codEstado = "AUTORIZADA";
 			}
-			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.Monto, abonado);
+//			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.Monto, abonado);
 			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.Estado, estado);
 			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.CodEstado, codEstado);
 			
@@ -155,6 +156,77 @@ public class ModelRecibo {
 			
 		}
 	}
+	
+	public synchronized static void updateRecibo(ReciboColector recibo, Context cnt) {
+		SQLiteDatabase bdd = null;
+		try 
+		{	
+			// OBTENER LA REFERENCIA A LA BASE DE DATOS
+			bdd = Helper.getDatabase(cnt);
+			// ABRIENDO LA CONEXION
+			bdd.beginTransaction();
+			// DEFINIENDO LA CONSULTA
+			StringBuilder sQuery = new StringBuilder();
+			sQuery.append("UPDATE Recibo ");
+			sQuery.append(String.format("	SET totalRecibo     = %s, ", recibo.getTotalRecibo() ) );
+			sQuery.append(String.format("	    totalFacturas   = %s, ", recibo.getTotalFacturas()));
+			sQuery.append(String.format("	    totalND         =  %s , ", recibo.getTotalND()));
+			sQuery.append(String.format("	    totalInteres    =  %s , ", recibo.getTotalInteres()));
+			sQuery.append(String.format("	    subTotal        =  %s , ", recibo.getSubTotal()));
+			sQuery.append(String.format("	    totalDesc       =  %s , ", recibo.getTotalDesc()));
+			sQuery.append(String.format("	    totalRetenido   =  %s , ", recibo.getTotalRetenido()));
+			sQuery.append(String.format("	    totalOtrasDed   =  %s , ", recibo.getTotalOtrasDed()));
+			sQuery.append(String.format("	    totalNC   =  %s , ", recibo.getTotalNC()));
+			sQuery.append(String.format("	    aplicaDescOca   =  %s , ", recibo.isAplicaDescOca() ? 255 : 0));
+			sQuery.append(String.format("	    porcDescOcaColector   =  %s , ", recibo.getPorcDescOcaColector()));
+			sQuery.append(String.format("	    totalDescOca   =  %s , ", recibo.getTotalDescOca()));
+			sQuery.append(String.format("	    totalDescPromo   =  %s , ", recibo.getTotalDescPromo()));
+			sQuery.append(String.format("	    totalDescPP   =  %s , ", recibo.getTotalDescPP()));
+			sQuery.append(String.format("	    totalImpuestoProporcional   =  %s , ", recibo.getTotalImpuestoProporcional()));
+			sQuery.append(String.format("	    totalImpuestoExonerado   =  %s , ", recibo.getTotalImpuestoExonerado()));
+			sQuery.append(String.format("	    exento   =  %s  ", recibo.isExento() ? 255 : 0));			
+			sQuery.append(String.format("	WHERE Id       =  %d  ", recibo.getId() ));
+			// EJECUTAR LA CONSULTA
+			bdd.execSQL(sQuery.toString());
+			// CONFIRMAR LA TRANSACCION
+			bdd.setTransactionSuccessful();
+			if (bdd != null || (bdd.isOpen())) {
+				//CERRAR LA CONEXION
+				bdd.endTransaction();
+				bdd.close();
+			}
+			
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public synchronized static void deleteDocument(int type, long l, long reciboId, Context context){
+		String[] projection = new String[] {};
+		String tabla = "";
+		String where = "id = " + l;
+		switch(type) {
+		case 10: tabla = DatabaseProvider.TABLA_RECIBO_DETALLE_FACTURA; break;
+		case 20: tabla = DatabaseProvider.TABLA_RECIBO_DETALLE_NOTA_DEBITO; break;
+		case 30: tabla = DatabaseProvider.TABLA_RECIBO_DETALLE_NOTA_CREDITO; break;
+		}
+		SQLiteDatabase bdd = null;
+		try {
+			bdd = Helper.getDatabase(context);
+			bdd.beginTransaction();
+			//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
+			bdd.delete(tabla, where ,null);
+			bdd.delete(DatabaseProvider.TABLA_RECIBO_DETALLE_FORMA_PAGO, NMConfig.Recibo.DetalleFactura.RECIBO_ID +" = "+ reciboId ,null);
+			bdd.setTransactionSuccessful();
+			if (bdd != null || (bdd.isOpen())) {
+				bdd.endTransaction();
+				bdd.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	} 
+	
 	public synchronized static int borraReciboByID (ContentResolver content,int reciboID, Context context){
 		String[] projection = new String[] {};
 		

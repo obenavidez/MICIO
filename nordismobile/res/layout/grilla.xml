@@ -20,6 +20,7 @@
 			    android:id="@+id/data_items"  
 			    android:layout_width="fill_parent"
 			    android:layout_height="fill_parent"	
+			    android:background="@drawable/bg_key"
 			    android:divider="@color/DarkGray"
 			    android:dividerHeight="0.3sp"
 			    android:scrollingCache="false" 

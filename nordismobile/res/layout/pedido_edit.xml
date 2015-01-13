@@ -176,6 +176,7 @@
 				    android:layout_height="280dp"
 				    android:layout_below="@+id/pddtextv_detalletotales"
 				    android:layout_marginTop="5dp"
+				    android:layout_margin="5dp"
 				    layout="@layout/grilla" /> 
 
             </RelativeLayout> 

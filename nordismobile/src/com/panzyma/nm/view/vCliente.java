@@ -281,8 +281,8 @@ public class vCliente extends ActionBarActivity implements
 										int actionId) {
 
 									if (AppDialog.OK_BUTTOM == actionId) {
-										_dialog.dismiss();
 										Load_Data(LOAD_DATA_FROM_LOCALHOST);
+										_dialog.dismiss();
 									}
 								}
 							});

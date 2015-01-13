@@ -18,6 +18,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.ActionType;
 import com.panzyma.nm.auxiliar.Ammount;
+import com.panzyma.nm.auxiliar.AmmountType;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -88,6 +89,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -420,7 +422,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 					for (Factura fac : cliente.getFacturasPendientes()) 
 					{
 						if (fac.getId() == factura.getObjFacturaID()) {
-							fac.setAbonado(factura.getMonto());
+							//fac.setAbonado(factura.getMonto());
 							factura.setTotalFactura(fac.getTotalFacturado());
 							getFacturasRecibo().add(fac);
 						}
@@ -440,7 +442,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			// AGREGAR LAS NOTAS DE CREDITO DEL RECIBO A LA GRILLA
 			if(recibo.getNotasCreditoRecibo()!=null && recibo.getNotasCreditoRecibo().size()!=0)
 			for (ReciboDetNC nc : recibo.getNotasCreditoRecibo()) {
-				if(cliente.getNotasDebitoPendientes()!=null)
+				if(cliente.getNotasCreditoPendientes()!=null)
 					for (CCNotaCredito ncp : cliente.getNotasCreditoPendientes()) {
 						if (nc.getObjNotaCreditoID() == ncp.getId()) {						
 							getNotasCreditoRecibo().add(ncp);
@@ -844,23 +846,36 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			}
 		});   
 	}  
-	
-   
+	  
 	private void guardarRecibo(int...arg)  
 	{
 
+//<<<<<<< HEAD
+////		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
+////				.trim().equals("") ? "0" : tbxNumRecibo.getText().toString())));
+////
+////		if(recibo.getId() != 0) 		
+////				recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
+////						.toString().trim().equals("")) ? "0" : tbxNumReferencia
+////								.getText().toString()));
+//=======
 //		recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
 //				.trim().equals("") ? "0" : tbxNumRecibo.getText().toString())));
+//
+//
+//		recibo.setReferencia(Integer.valueOf(recibo.getId()+""));
 //
 //		if(recibo.getId() != 0) 		
 //				recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
 //						.toString().trim().equals("")) ? "0" : tbxNumReferencia
 //								.getText().toString()));
+//>>>>>>> origin/master
  
 //		if(bs != null && bs.length == 0) 		
 //			recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
 //					.toString().trim().equals("")) ? "0" : tbxNumReferencia
 //							.getText().toString()));
+
 
 		recibo.setNotas((tbxNotas.getText().toString().trim().equals("") ? "0"
 				: tbxNotas.getText().toString()));
@@ -1640,6 +1655,7 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	}
 
+	 
 	private void agregarPago() {
 		if (recibo != null && recibo.getTotalRecibo() == 0) 
 		{
@@ -1688,12 +1704,14 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 	public void agregarDocumentosAlDetalleDeRecibo(){
 
 		//gridheader.setText("Listado de Productos a Vender");
+		ListView list = ((ListView)gridDetalleRecibo.findViewById(R.id.data_items));
 		if(adapter==null)
 		{
 			//adapter=new GenericAdapter(this, FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);
 			adapter=new GenericAdapter(this, DocumentoViewHolder.class, documents,R.layout.list_row);
-			((ListView)gridDetalleRecibo.findViewById(R.id.data_items)).setAdapter(adapter);
+			list.setAdapter(adapter);
 			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
+			adapter.setSelectedPosition(0);
 		}
 		else
 		{ 			
@@ -1701,6 +1719,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			adapter.setSelectedPosition(documents.size() - 1);
 			gridheader.setText("Documentos a Pagar ("+adapter.getCount()+")");
 		}
+//		list.setOnItemClickListener(new OnItemClickListener() {
+//		    @Override
+//		    public void onItemClick(AdapterView<?> parent, View view, int position,long arg3) {
+//		        view.setSelected(true);		        
+//		    }
+//		});
 	}
 
 	public void showMenu(final View view) 
@@ -1759,9 +1783,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			if(recibo.getId() != 0) {
 				List<ReciboDetFactura> factToUpd = new ArrayList<ReciboDetFactura>();
 				factToUpd.add(factDetalle);
+				ContentResolver cntr = (ContentResolver)NMApp.getContext().getContentResolver();
+				Context cntx = (Context)NMApp.getContext(); 
 				ModelRecibo.updateFacturas(factToUpd, 
-						(ContentResolver)NMApp.getContext().getContentResolver() ,
-						(Context)NMApp.getContext());
+						cntr,
+						cntx);
+				ModelRecibo.deleteDocument(10, factDetalle.getId(), recibo.getId(), cntx);
 			}			
 			
 			facturasRecibo.remove(positionDocument);
@@ -1787,9 +1814,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			if(recibo.getId() != 0) {
 				List<ReciboDetND> ndToUpd = new ArrayList<ReciboDetND>();
 				ndToUpd.add(ndDetalle);
+				ContentResolver cntr = (ContentResolver)NMApp.getContext().getContentResolver();
+				Context cntx = (Context)NMApp.getContext(); 
 				ModelRecibo.updateNotasDebito(ndToUpd, 
-						(ContentResolver)NMApp.getContext().getContentResolver() ,
-						(Context)NMApp.getContext());
+						cntr,
+						cntx);
+				ModelRecibo.deleteDocument(20, ndDetalle.getId(), recibo.getId(), cntx);
 			}	
 			
 			notasDebitoRecibo.remove(positionDocument);
@@ -1812,9 +1842,12 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 			if(recibo.getId() != 0) {
 				List<ReciboDetNC> ncToUpd = new ArrayList<ReciboDetNC>();
 				ncToUpd.add(ncDetalle);
+				ContentResolver cntr = (ContentResolver)NMApp.getContext().getContentResolver();
+				Context cntx = (Context)NMApp.getContext();
 				ModelRecibo.updateNotasCredito(ncToUpd, 
-						(ContentResolver)NMApp.getContext().getContentResolver() ,
-						(Context)NMApp.getContext());
+						cntr ,
+						cntx);
+				ModelRecibo.deleteDocument(30, ncDetalle.getId(), recibo.getId(), cntx);
 			}	
 			
 			notasCreditoRecibo.remove(positionDocument);
@@ -1860,6 +1893,9 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 									//ACTUALIZA EL TOTAL EN LA PANTALLA Y ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
 									actualizaTotales();
 
+									// ACTUALIZA LOS MONTOS DEL RECIBO
+									ModelRecibo.updateRecibo(recibo, NMApp.getContext());
+									
 									if (documents.size() > 0) {
 										if (posicion == 0)
 										{ 
@@ -2105,128 +2141,181 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 
 	private void PagarTodo()
 	{
-		recibo.getFacturasRecibo().clear();
-		recibo.getNotasDebitoRecibo().clear();
-		ArrayList<ReciboDetFactura> _facSeleccionadas = new ArrayList<ReciboDetFactura>();
-		ArrayList<ReciboDetND> _ndsSeleccionadas = new ArrayList<ReciboDetND>();
+		List<CCNotaDebito> ndr=new ArrayList<CCNotaDebito>(notasDebitoRecibo);
+		List<Factura> fr=new ArrayList<Factura>(facturasRecibo);
+		List<com.panzyma.nm.serviceproxy.Documento> d=new ArrayList<com.panzyma.nm.serviceproxy.Documento>(documents);
+		ArrayList<ReciboDetFactura> rdf=new ArrayList<ReciboDetFactura>(recibo.getFacturasRecibo());
+		ArrayList<ReciboDetND> rdnd=new ArrayList<ReciboDetND>(recibo.getNotasDebitoRecibo());
+		ArrayList<ReciboDetNC> rdnc=new ArrayList<ReciboDetNC>(recibo.getNotasCreditoRecibo());
+		try 
+		{ 
+			
+			
+			
+			ArrayList<ReciboDetFactura> _facSeleccionadas = new ArrayList<ReciboDetFactura>();
+			ArrayList<ReciboDetND> _ndsSeleccionadas = new ArrayList<ReciboDetND>();
 
-		ArrayList<Factura> facturas = new ArrayList<Factura>();
-		//Traer las facturas del cliente
-		Factura[] facturaspendientes = cliente.getFacturasPendientes();
-		if(facturaspendientes!=null){
-			if (facturaspendientes.length > 0)
-			{
-				for(int i=0; i< facturaspendientes.length; i++) {
-					Factura fac = facturaspendientes[i];
-					//Si la factura no está en otro recibo
-					if(Cobro.FacturaEstaEnOtroRecibo(getApplicationContext().getContentResolver(),fac.getId(),true) ==0){
-						facturas.add(fac);
+			ArrayList<Factura> facturas = new ArrayList<Factura>();
+			//Traer las facturas del cliente
+			Factura[] facturaspendientes = cliente.getFacturasPendientes();
+			if(facturaspendientes!=null){
+				if (facturaspendientes.length > 0)
+				{
+					for(int i=0; i< facturaspendientes.length; i++) {
+						Factura fac = facturaspendientes[i];
+						//Si la factura no está en otro recibo
+						if(Cobro.FacturaEstaEnOtroRecibo(getApplicationContext().getContentResolver(),fac.getId(),true) ==0){
+							facturas.add(fac);
+						}
 					}
 				}
 			}
-		}
-		//Traer las notas de débito del cliente
-		ArrayList<CCNotaDebito> notas= new ArrayList<CCNotaDebito>();
-		CCNotaDebito[] NotasDebitoPendientes= cliente.getNotasDebitoPendientes();
-		if(NotasDebitoPendientes!=null){
-			if(NotasDebitoPendientes.length>0){
-				for(int i=0; i<NotasDebitoPendientes.length; i++) {
-					if (Cobro.NDEstaEnOtroRecibo(getApplicationContext().getContentResolver(),NotasDebitoPendientes[i].getId(), true) == 0)
-						notas.add(NotasDebitoPendientes[i]);
+			//Traer las notas de débito del cliente
+			ArrayList<CCNotaDebito> notas= new ArrayList<CCNotaDebito>();
+			CCNotaDebito[] NotasDebitoPendientes= cliente.getNotasDebitoPendientes();
+			if(NotasDebitoPendientes!=null){
+				if(NotasDebitoPendientes.length>0){
+					for(int i=0; i<NotasDebitoPendientes.length; i++) {
+						if (Cobro.NDEstaEnOtroRecibo(getApplicationContext().getContentResolver(),NotasDebitoPendientes[i].getId(), true) == 0)
+							notas.add(NotasDebitoPendientes[i]);
+					}
 				}
 			}
-		}
 
-		if (((facturas == null) || (facturas.size() == 0)) && ((notas == null) || (notas.size() == 0))) return;
+			if (((facturas == null) || (facturas.size() == 0)) && ((notas == null) || (notas.size() == 0))) return;
 
-		String interes= getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcInteresMoratorio", "0");
-		//Facturas
-		if ((facturas != null) && (facturas.size() > 0)) {   
-			for(int i = 0; i < facturas.size(); i++) {
-				Factura _fac = facturas.get(i);
-				ReciboDetFactura _facRecibo = new ReciboDetFactura();
-				_facRecibo.setId(0);
-				_facRecibo.setObjFacturaID(_fac.getId());
-				_facRecibo.setNumero(_fac.getNoFactura());
-				_facRecibo.setFecha(_fac.getFecha());
-				_facRecibo.setFechaVence(_fac.getFechaVencimiento());
-				_facRecibo.setFechaAplicaDescPP(_fac.getFechaAppDescPP());
-				_facRecibo.setEsAbono(false);                
-				_facRecibo.setImpuesto(_fac.getImpuestoFactura()); 
-				_facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional                
-				//Calcular el interés moratorio de la factura si está en mora
-				_facRecibo.setInteresMoratorio(Float.parseFloat(interes));
-				_facRecibo.setMontoInteres(Cobro.getInteresMoratorio(this, _fac.getFechaVencimiento(), _fac.getSaldo()));                
-				_facRecibo.setMontoDescEspecifico(0.0F);                
-				_facRecibo.setPorcDescPromo(0.0F);
-				_facRecibo.setMontoDescPromocion(0.0F);                
-				_facRecibo.setPorcDescOcasional(0.0F);
-				_facRecibo.setMontoDescOcasional(0.0F);                        
-				_facRecibo.setMontoNeto(0.0F);
-				_facRecibo.setMontoOtrasDeducciones(0.0F);
-				_facRecibo.setMontoRetencion(0.0F);                
-				_facRecibo.setSaldoFactura(_fac.getSaldo());
-				_facRecibo.setSaldoTotal(_fac.getSaldo() + _facRecibo.getMontoInteres());                
-				_facRecibo.setMonto(_facRecibo.getSaldoTotal()); //Se pagará el saldo total de la factura                
-				_facRecibo.setSubTotal(_fac.getSubtotalFactura() - _fac.getDescuentoFactura());
-				_facRecibo.setTotalFactura(_fac.getTotalFacturado());
+			
+			
+			
+			
+			String interes= getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcInteresMoratorio", "0");
+			//Facturas
+			
+			notasDebitoRecibo.clear();
+			notasCreditoRecibo.clear();
+			facturasRecibo.clear();
+			documents.clear();
+			
+			recibo.getFacturasRecibo().clear();
+			recibo.getNotasDebitoRecibo().clear();
+			recibo.getNotasCreditoRecibo().clear();
+			
+			if ((facturas != null) && (facturas.size() > 0)) {   
+				for(int i = 0; i < facturas.size(); i++) {
+					Factura _fac = facturas.get(i);
+					ReciboDetFactura _facRecibo = new ReciboDetFactura();
+					_facRecibo.setId(0);
+					_facRecibo.setObjFacturaID(_fac.getId());
+					_facRecibo.setNumero(_fac.getNoFactura());
+					_facRecibo.setFecha(_fac.getFecha());
+					_facRecibo.setFechaVence(_fac.getFechaVencimiento());
+					_facRecibo.setFechaAplicaDescPP(_fac.getFechaAppDescPP());
+					_facRecibo.setEsAbono(false);                
+					_facRecibo.setImpuesto(_fac.getImpuestoFactura()); 
+					_facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional                
+					//Calcular el interés moratorio de la factura si está en mora
+					_facRecibo.setInteresMoratorio(Float.parseFloat(interes));
+					_facRecibo.setMontoInteres(Cobro.getInteresMoratorio(this, _fac.getFechaVencimiento(), _fac.getSaldo()));                
+					_facRecibo.setMontoDescEspecifico(0.0F);                
+					_facRecibo.setPorcDescPromo(0.0F);
+					_facRecibo.setMontoDescPromocion(0.0F);                
+					_facRecibo.setPorcDescOcasional(0.0F);
+					_facRecibo.setMontoDescOcasional(0.0F);                        
+					_facRecibo.setMontoNeto(0.0F);
+					_facRecibo.setMontoOtrasDeducciones(0.0F);
+					_facRecibo.setMontoRetencion(0.0F);                
+					_facRecibo.setSaldoFactura(_fac.getSaldo());
+					_facRecibo.setSaldoTotal(_fac.getSaldo() + _facRecibo.getMontoInteres());                
+					_facRecibo.setMonto(_facRecibo.getSaldoTotal()); //Se pagará el saldo total de la factura                
+					_facRecibo.setSubTotal(_fac.getSubtotalFactura() - _fac.getDescuentoFactura());
+					_facRecibo.setTotalFactura(_fac.getTotalFacturado());
 
-				//Agregarla a facturas seleccionadas
-				_facSeleccionadas.add(_facRecibo);      
+					//Agregarla a facturas seleccionadas
+					_facSeleccionadas.add(_facRecibo);  
+					List<Ammount> montos= new ArrayList<Ammount>();
+					montos.add(new Ammount(AmmountType.ABONADO,_facRecibo.getSaldoTotal(),true));
+					procesaFactura(_facRecibo, _fac,montos, true);    
 
+				}
+			}//Facturas
+			if ((notas != null) && (notas.size() >0)) 
+			{  
+				for(int i = 0; i < notas.size(); i++) {
+					CCNotaDebito _nd = notas.get(i);
+					ReciboDetND _ndRecibo = new ReciboDetND();
+					_ndRecibo.setId(0);
+					_ndRecibo.setObjNotaDebitoID(_nd.getId());
+					_ndRecibo.setNumero(_nd.getNumero());
+					_ndRecibo.setFecha(_nd.getFecha());
+					_ndRecibo.setFechaVence(_nd.getFechaVence());        
+					_ndRecibo.setEsAbono(false);
+					_ndRecibo.setMontoInteres(Cobro.getInteresMoratorio( this,_nd.getFechaVence(), _nd.getSaldo()));
+					_ndRecibo.setInteresMoratorio(Float.parseFloat(interes));
+					_ndRecibo.setMontoND(_nd.getMonto());
+					_ndRecibo.setSaldoND(_nd.getSaldo());
+					_ndRecibo.setMontoNeto(0.0F);
+					_ndRecibo.setSaldoTotal(_ndRecibo.getSaldoND() + _ndRecibo.getMontoInteres()); 
+					_ndRecibo.setMontoPagar(_ndRecibo.getSaldoTotal());  
+					List<Ammount> montos= new ArrayList<Ammount>();
+					montos.add(new Ammount(AmmountType.ABONADO,_ndRecibo.getSaldoTotal(),true));
+					procesaNotaDebito(_ndRecibo,_nd, montos, true);
+					_ndsSeleccionadas.add(_ndRecibo);                 
+				}
 			}
-		}//Facturas
-		if ((notas != null) && (notas.size() >0)) {  
-			for(int i = 0; i < notas.size(); i++) {
-				CCNotaDebito _nd = notas.get(i);
-				ReciboDetND _ndRecibo = new ReciboDetND();
-				_ndRecibo.setId(0);
-				_ndRecibo.setObjNotaDebitoID(_nd.getId());
-				_ndRecibo.setNumero(_nd.getNumero());
-				_ndRecibo.setFecha(_nd.getFecha());
-				_ndRecibo.setFechaVence(_nd.getFechaVence());        
-				_ndRecibo.setEsAbono(false);
-				_ndRecibo.setMontoInteres(Cobro.getInteresMoratorio( this,_nd.getFechaVence(), _nd.getSaldo()));
-				_ndRecibo.setInteresMoratorio(Float.parseFloat(interes));
-				_ndRecibo.setMontoND(_nd.getMonto());
-				_ndRecibo.setSaldoND(_nd.getSaldo());
-				_ndRecibo.setMontoNeto(0.0F);
-				_ndRecibo.setSaldoTotal(_ndRecibo.getSaldoND() + _ndRecibo.getMontoInteres()); 
-				_ndRecibo.setMontoPagar(_ndRecibo.getSaldoTotal());  
 
-				_ndsSeleccionadas.add(_ndRecibo);                 
-			}
+//			if (_facSeleccionadas.size() > 0) {
+//				//Insertar nuevas facturas en el detalle de facturas del recibo    
+//				ArrayList<ReciboDetFactura> fff = new ArrayList<ReciboDetFactura>();
+//				//Copiar facturas seleccionadas
+//				for(int i = 0; i < _facSeleccionadas.size(); i++){
+//					fff.add(_facSeleccionadas.get(i));
+//					float totalfactura = recibo.getTotalFacturas();
+//					recibo.setTotalFacturas(totalfactura + _facSeleccionadas.get(i).getTotalfactura());
+//				}
+//				//Actualizar detalle de facturas
+//				recibo.setFacturasRecibo(fff);
+	//
+//				documents.addAll(fff);
+//			}
+//			if (_ndsSeleccionadas.size() > 0) {
+//				//Insertar nuevas ncs en el detalle de ncs del recibo
+//				ArrayList<ReciboDetND> ccc = new ArrayList<ReciboDetND>();
+	//
+//				//Copiar notas de crédito seleccionadas
+//				for(int i = 0; i < _ndsSeleccionadas.size(); i++)
+//					ccc.add(_ndsSeleccionadas.get(i));
+	//
+//				//Actualizar detalle de facturas
+//				recibo.setNotasDebitoRecibo(ccc);
+//				documents.addAll(ccc);
+//			}
+//			adapter = null;
+//			agregarDocumentosAlDetalleDeRecibo();
+//			actualizaTotales(); 
+			
+		} catch (Exception e) 
+		{ 
+			notasDebitoRecibo=ndr;
+			facturasRecibo=fr;
+			documents=d;  
+				
+			notasDebitoRecibo.clear();
+			notasCreditoRecibo.clear();
+			facturasRecibo.clear();
+			documents.clear();
+			recibo.setFacturasRecibo(rdf);
+			recibo.setNotasDebitoRecibo(rdnd);
+			recibo.setNotasCreditoRecibo(rdnc); 	
+			adapter = null;
+			
+			Cobro.calcularDetFacturasRecibo(contexto,recibo,recibo.getCliente(),true);
+			agregarDocumentosAlDetalleDeRecibo();
+			Cobro.ActualizaTotalFacturas(recibo);
+			Cobro.ActualizaTotalNotasCredito(recibo);
+			Cobro.ActualizaTotalNotasDebito(recibo);
+			actualizaTotales(); 
 		}
-
-		if (_facSeleccionadas.size() > 0) {
-			//Insertar nuevas facturas en el detalle de facturas del recibo    
-			ArrayList<ReciboDetFactura> fff = new ArrayList<ReciboDetFactura>();
-			//Copiar facturas seleccionadas
-			for(int i = 0; i < _facSeleccionadas.size(); i++){
-				fff.add(_facSeleccionadas.get(i));
-				float totalfactura = recibo.getTotalFacturas();
-				recibo.setTotalFacturas(totalfactura + _facSeleccionadas.get(i).getTotalfactura());
-			}
-			//Actualizar detalle de facturas
-			recibo.setFacturasRecibo(fff);
-
-			documents.addAll(fff);
-		}
-		if (_ndsSeleccionadas.size() > 0) {
-			//Insertar nuevas ncs en el detalle de ncs del recibo
-			ArrayList<ReciboDetND> ccc = new ArrayList<ReciboDetND>();
-
-			//Copiar notas de crédito seleccionadas
-			for(int i = 0; i < _ndsSeleccionadas.size(); i++)
-				ccc.add(_ndsSeleccionadas.get(i));
-
-			//Actualizar detalle de facturas
-			recibo.setNotasDebitoRecibo(ccc);
-			documents.addAll(ccc);
-		}
-		adapter = null;
-		agregarDocumentosAlDetalleDeRecibo();
-		actualizaTotales(); 
+		
 	}
 
 	private void PagarMonto() {
@@ -2249,165 +2338,224 @@ public class ViewReciboEdit extends FragmentActivity implements Handler.Callback
 		float mtoOrig = mto;   
 		boolean seguir = true;
 		boolean primeraPasada = true;
-		while (seguir) {
-			documents.clear();
-			recibo.getFacturasRecibo().clear();
-			recibo.getNotasDebitoRecibo().clear();
-			// Declaración de las listas principales
-			ArrayList<ReciboDetFactura> _facSeleccionadas = new ArrayList<ReciboDetFactura>();
-			ArrayList<ReciboDetND> _ndsSeleccionadas = new ArrayList<ReciboDetND>();
-			ArrayList<Factura> facturas = new ArrayList<Factura>();
+		ArrayList<ReciboDetFactura> _facSeleccionadas = new ArrayList<ReciboDetFactura>();
+		ArrayList<ReciboDetND> _ndsSeleccionadas = new ArrayList<ReciboDetND>();
+		ArrayList<Factura> facturas = new ArrayList<Factura>();
+		ArrayList<CCNotaDebito> notas= new ArrayList<CCNotaDebito>();
+		
+		List<CCNotaDebito> ndr=new ArrayList<CCNotaDebito>(notasDebitoRecibo);
+		List<Factura> fr=new ArrayList<Factura>(facturasRecibo);
+		List<com.panzyma.nm.serviceproxy.Documento> d=new ArrayList<com.panzyma.nm.serviceproxy.Documento>(documents);
+		ArrayList<ReciboDetFactura> rdf=new ArrayList<ReciboDetFactura>(recibo.getFacturasRecibo());
+		ArrayList<ReciboDetND> rdnd=new ArrayList<ReciboDetND>(recibo.getNotasDebitoRecibo());
+		ArrayList<ReciboDetNC> rdnc=new ArrayList<ReciboDetNC>(recibo.getNotasCreditoRecibo());
+		
+		try 
+		{
+			
+			while (seguir) 
+			{
+				// Declaración de las listas principales
+				
 
-			Factura[] facturaspendientes = cliente.getFacturasPendientes();
-			if((facturaspendientes!=null) && (facturaspendientes.length>0)){
-				for(int i=0; i<facturaspendientes.length; i++) {
-					if(Cobro.FacturaEstaEnOtroRecibo(me.getContentResolver(),facturaspendientes[i].Id, true)==0){
-						facturas.add(facturaspendientes[i]);
+				Factura[] facturaspendientes = cliente.getFacturasPendientes();
+				if((facturaspendientes!=null) && (facturaspendientes.length>0)){
+					for(int i=0; i<facturaspendientes.length; i++) {
+						if(Cobro.FacturaEstaEnOtroRecibo(me.getContentResolver(),facturaspendientes[i].Id, true)==0){
+							facturas.add(facturaspendientes[i]);  
+						}
 					}
 				}
-			}
 
-			ArrayList<CCNotaDebito> notas= new ArrayList<CCNotaDebito>();
-			CCNotaDebito[] notaspendientes = cliente.getNotasDebitoPendientes(); 
-			if ((notaspendientes != null) && (notaspendientes.length > 0)) {
-				for(int i=0; i<notaspendientes.length; i++) {
-					if (Cobro.NDEstaEnOtroRecibo(me.getContentResolver(),notaspendientes[i].getId(), true) == 0){
-						notas.add(notaspendientes[i]);
+				
+				CCNotaDebito[] notaspendientes = cliente.getNotasDebitoPendientes(); 
+				if ((notaspendientes != null) && (notaspendientes.length > 0)) {
+					for(int i=0; i<notaspendientes.length; i++) {
+						if (Cobro.NDEstaEnOtroRecibo(me.getContentResolver(),notaspendientes[i].getId(), true) == 0){
+							notas.add(notaspendientes[i]);
+						}
 					}
 				}
-			}
 
-			if (((facturas == null) || (facturas.size() == 0)) && ((notas == null) || (notas.size() == 0))) return;
-			//Añadimos a la lista
-			ArrayList<FacND> list = new ArrayList<FacND>();
-			for (Factura factura : facturas) {
-				FacND fnd = new FacND();
-				fnd.fac = factura;
-				fnd.fechaVence= factura.getFechaVencimiento();
-				fnd.tipo="FAC";
-				list.add(fnd);
-			}
-			//Añadimos la Lista
-			for (CCNotaDebito nota : notas) {
-				FacND fnd = new FacND();
-				fnd.nd = nota;
-				fnd.fechaVence= nota.getFechaVence();
-				fnd.tipo="ND";
-				list.add(fnd);
-			}
-			//ordenando vector por fecha de vencimiento (descendente)
-			Collections.sort(list, new Comparator<FacND>() {
-				@Override
-				public int compare(FacND  item1, FacND  item2){
-					return  String.valueOf(item1.fechaVence).compareTo(String.valueOf(item2.fechaVence));
+				if (((facturas == null) || (facturas.size() == 0)) && ((notas == null) || (notas.size() == 0))) return;
+				//Añadimos a la lista
+				
+				notasDebitoRecibo.clear();
+				notasCreditoRecibo.clear();
+				facturasRecibo.clear();
+				documents.clear();
+				
+				recibo.getFacturasRecibo().clear();
+				recibo.getNotasDebitoRecibo().clear();
+				recibo.getNotasCreditoRecibo().clear();
+				
+				ArrayList<FacND> list = new ArrayList<FacND>();
+				for (Factura factura : facturas) {
+					FacND fnd = new FacND();
+					fnd.fac = factura;
+					fnd.fechaVence= factura.getFechaVencimiento();
+					fnd.tipo="FAC";
+					list.add(fnd);
 				}
-			});
-			String interes= getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcInteresMoratorio", "0");
-			//Procesando documentos ordenados
-			for (FacND fnd : list) {
-				if(fnd.tipo=="FAC"){
-					Factura _fac = fnd.fac;
-					float mtoInteres = Cobro.getInteresMoratorio(me,_fac.getFechaVencimiento(), _fac.getSaldo());
-					float saldoTotalFac = _fac.getSaldo() + mtoInteres;
-					float mtoFac = (saldoTotalFac <= mto) ? saldoTotalFac : mto;
-					mto -= mtoFac;
-
-					ReciboDetFactura _facRecibo = new ReciboDetFactura();
-					_facRecibo.setId(0);
-					_facRecibo.setObjFacturaID(_fac.getId());
-					_facRecibo.setNumero(_fac.getNoFactura());
-					_facRecibo.setFecha(_fac.getFecha());
-					_facRecibo.setFechaVence(_fac.getFechaVencimiento());
-					_facRecibo.setFechaAplicaDescPP(_fac.getFechaAppDescPP());
-					_facRecibo.setImpuesto(_fac.getImpuestoFactura()); 
-					_facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional  
-					//Calcular el interés moratorio de la factura si está en mora
-					_facRecibo.setInteresMoratorio(Float.parseFloat(interes));
-					_facRecibo.setMontoInteres(mtoInteres);                
-					_facRecibo.setMontoDescEspecifico(0.0F);                
-					_facRecibo.setPorcDescPromo(0.0F);
-					_facRecibo.setMontoDescPromocion(0.0F);                
-					_facRecibo.setPorcDescOcasional(0.0F);
-					_facRecibo.setMontoDescOcasional(0.0F);                        
-					_facRecibo.setMontoNeto(0.0F);
-					_facRecibo.setMontoOtrasDeducciones(0.0F);
-					_facRecibo.setMontoRetencion(0.0F);                
-					_facRecibo.setSaldoFactura(_fac.getSaldo());
-					_facRecibo.setSaldoTotal(saldoTotalFac);                
-					_facRecibo.setMonto(mtoFac);       
-					_facRecibo.setSubTotal(_fac.getSubtotalFactura() - _fac.getDescuentoFactura());
-					_facRecibo.setTotalFactura(_fac.getTotalFacturado());            
-					_facRecibo.setEsAbono(_facRecibo.getMonto() < _facRecibo.getSaldoTotal());        
-					//Agregarla a facturas seleccionadasha
-					_facSeleccionadas.add(_facRecibo);                         
-
-					if (mto <= 0) break;                
-					continue;                    					
-				} // FAC
-				if (fnd.tipo == "ND") {
-					CCNotaDebito _nd = fnd.nd;
-					float mtoInteres = Cobro.getInteresMoratorio(me,_nd.getFechaVence(), _nd.getSaldo());
-					float saldoTotalND = _nd.getSaldo() + mtoInteres;
-					float mtoND = (saldoTotalND <= mto) ? saldoTotalND : mto;
-					mto -= mtoND;
-
-					ReciboDetND _ndRecibo = new ReciboDetND();
-					_ndRecibo.setId(0);
-					_ndRecibo.setObjNotaDebitoID(_nd.getId());
-					_ndRecibo.setNumero(_nd.getNumero());
-					_ndRecibo.setFecha(_nd.getFecha());
-					_ndRecibo.setFechaVence(_nd.getFechaVence());
-					_ndRecibo.setMontoInteres(mtoInteres);
-					_ndRecibo.setInteresMoratorio(Float.parseFloat(interes));
-					_ndRecibo.setMontoND(_nd.getMonto());
-					_ndRecibo.setSaldoND(_nd.getSaldo());                    
-					_ndRecibo.setSaldoTotal(saldoTotalND); 
-					_ndRecibo.setMontoPagar(mtoND);  
-					_ndRecibo.setMontoNeto(_ndRecibo.getMontoPagar() - _ndRecibo.getMontoInteres());
-					_ndRecibo.setEsAbono(_ndRecibo.getMontoPagar() < _ndRecibo.getSaldoTotal());
-
-					_ndsSeleccionadas.add(_ndRecibo);
-					if (mto <= 0) break;  
-				}// FIn ND
-			}
-			if (_facSeleccionadas.size() > 0) {
-				//Insertar nuevas facturas en el detalle de facturas del recibo
-				ArrayList<ReciboDetFactura> fff = new ArrayList<ReciboDetFactura>();
-				for (ReciboDetFactura facturaseleccionada : _facSeleccionadas) {
-					fff.add(facturaseleccionada);
+				//Añadimos la Lista
+				for (CCNotaDebito nota : notas) {
+					FacND fnd = new FacND();
+					fnd.nd = nota;
+					fnd.fechaVence= nota.getFechaVence();
+					fnd.tipo="ND";
+					list.add(fnd);
 				}
-				//Actualizar detalle de facturas
-				recibo.setFacturasRecibo(fff);
-				//documents.addAll(fff);
+				//ordenando vector por fecha de vencimiento (descendente)
+				Collections.sort(list, new Comparator<FacND>() {
+					@Override
+					public int compare(FacND  item1, FacND  item2){
+						return  String.valueOf(item1.fechaVence).compareTo(String.valueOf(item2.fechaVence));
+					}
+				});
+				String interes= getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcInteresMoratorio", "0");
+				//Procesando documentos ordenados
+				for (FacND fnd : list) 
+				{
+					if(fnd.tipo=="FAC"){
+						Factura _fac = fnd.fac;
+						float mtoInteres = Cobro.getInteresMoratorio(me,_fac.getFechaVencimiento(), _fac.getSaldo());
+						float saldoTotalFac = _fac.getSaldo() + mtoInteres;
+						float mtoFac = (saldoTotalFac <= mto) ? saldoTotalFac : mto;
+						mto -= mtoFac;
 
-			}
-			if (_ndsSeleccionadas.size() > 0) {
-				//Insertar nuevas ncs en el detalle de ncs del recibo            
-				ArrayList<ReciboDetND> ccc = new ArrayList<ReciboDetND>();
-				for (ReciboDetND ndseleccionada : _ndsSeleccionadas) {
-					ccc.add(ndseleccionada);
+						ReciboDetFactura _facRecibo = new ReciboDetFactura();
+						_facRecibo.setId(0);
+						_facRecibo.setObjFacturaID(_fac.getId());
+						_facRecibo.setNumero(_fac.getNoFactura());
+						_facRecibo.setFecha(_fac.getFecha());
+						_facRecibo.setFechaVence(_fac.getFechaVencimiento());
+						_facRecibo.setFechaAplicaDescPP(_fac.getFechaAppDescPP());
+						_facRecibo.setImpuesto(_fac.getImpuestoFactura()); 
+						_facRecibo.setMontoImpuesto(0.0F); //Este es el impuesto proporcional  
+						//Calcular el interés moratorio de la factura si está en mora
+						_facRecibo.setInteresMoratorio(Float.parseFloat(interes));
+						_facRecibo.setMontoInteres(mtoInteres);                
+						_facRecibo.setMontoDescEspecifico(0.0F);                
+						_facRecibo.setPorcDescPromo(0.0F);
+						_facRecibo.setMontoDescPromocion(0.0F);                
+						_facRecibo.setPorcDescOcasional(0.0F);
+						_facRecibo.setMontoDescOcasional(0.0F);                        
+						_facRecibo.setMontoNeto(0.0F);
+						_facRecibo.setMontoOtrasDeducciones(0.0F);
+						_facRecibo.setMontoRetencion(0.0F);                
+						_facRecibo.setSaldoFactura(_fac.getSaldo());
+						_facRecibo.setSaldoTotal(saldoTotalFac);                
+						_facRecibo.setMonto(mtoFac);       
+						_facRecibo.setSubTotal(_fac.getSubtotalFactura() - _fac.getDescuentoFactura());
+						_facRecibo.setTotalFactura(_fac.getTotalFacturado());            
+						_facRecibo.setEsAbono(_facRecibo.getMonto() < _facRecibo.getSaldoTotal());        
+						//Agregarla a facturas seleccionadasha
+						_facSeleccionadas.add(_facRecibo);         
+						List<Ammount> montos= new ArrayList<Ammount>();
+						montos.add(new Ammount(AmmountType.ABONADO,mtoFac,true));
+						procesaFactura(_facRecibo, fnd.fac,montos, true); 
+
+						if (mto <= 0) break;    
+						           
+						continue;                    					
+					} // FAC
+					if (fnd.tipo == "ND") {
+						CCNotaDebito _nd = fnd.nd;
+						float mtoInteres = Cobro.getInteresMoratorio(me,_nd.getFechaVence(), _nd.getSaldo());
+						float saldoTotalND = _nd.getSaldo() + mtoInteres;
+						float mtoND = (saldoTotalND <= mto) ? saldoTotalND : mto;
+						mto -= mtoND;
+
+						ReciboDetND _ndRecibo = new ReciboDetND();
+						_ndRecibo.setId(0);
+						_ndRecibo.setObjNotaDebitoID(_nd.getId());
+						_ndRecibo.setNumero(_nd.getNumero());
+						_ndRecibo.setFecha(_nd.getFecha());
+						_ndRecibo.setFechaVence(_nd.getFechaVence());
+						_ndRecibo.setMontoInteres(mtoInteres);
+						_ndRecibo.setInteresMoratorio(Float.parseFloat(interes));
+						_ndRecibo.setMontoND(_nd.getMonto());
+						_ndRecibo.setSaldoND(_nd.getSaldo());                    
+						_ndRecibo.setSaldoTotal(saldoTotalND); 
+						_ndRecibo.setMontoPagar(mtoND);  
+						_ndRecibo.setMontoNeto(_ndRecibo.getMontoPagar() - _ndRecibo.getMontoInteres());
+						_ndRecibo.setEsAbono(_ndRecibo.getMontoPagar() < _ndRecibo.getSaldoTotal());
+						List<Ammount> montos= new ArrayList<Ammount>();
+						montos.add(new Ammount(AmmountType.ABONADO,mtoND,true));
+						procesaNotaDebito(_ndRecibo, fnd.nd, montos, true);
+						_ndsSeleccionadas.add(_ndRecibo);
+						if (mto <= 0) break; 
+						
+					}// FIn ND
 				}
-				recibo.setNotasDebitoRecibo(ccc);
-				//documents.addAll(ccc);
-			}
+//				if (_facSeleccionadas.size() > 0) {
+//					//Insertar nuevas facturas en el detalle de facturas del recibo
+//					ArrayList<ReciboDetFactura> fff = new ArrayList<ReciboDetFactura>();
+//					for (ReciboDetFactura facturaseleccionada : _facSeleccionadas) {
+//						fff.add(facturaseleccionada);
+//					}
+//					//Actualizar detalle de facturas
+//					recibo.setFacturasRecibo(fff);
+//					//documents.addAll(fff);
+	//
+//				}
+//				if (_ndsSeleccionadas.size() > 0) {
+//					//Insertar nuevas ncs en el detalle de ncs del recibo            
+//					ArrayList<ReciboDetND> ccc = new ArrayList<ReciboDetND>();
+//					for (ReciboDetND ndseleccionada : _ndsSeleccionadas) {
+//						ccc.add(ndseleccionada);
+//					}
+//					recibo.setNotasDebitoRecibo(ccc);
+//					//documents.addAll(ccc);
+//				}
 
-			Cobro.calcularDetFacturasRecibo(me,recibo, cliente, true);
-			CalculaTotales(); 
+//				Cobro.calcularDetFacturasRecibo(me,recibo, cliente, true);
+//				CalculaTotales(); 
 
-			//Ver si hay monto de descuento que quede de remanente
-			seguir = false;
-			if (primeraPasada && (recibo.getTotalDesc() > 0)) {
-				mto = mtoOrig + recibo.getTotalDesc();
-				seguir = true;
-				primeraPasada = false;
+				//Ver si hay monto de descuento que quede de remanente
+				seguir = false;
+				if (primeraPasada && (recibo.getTotalDesc() > 0)) {
+					mto = mtoOrig + recibo.getTotalDesc();
+					seguir = true;
+					primeraPasada = false;
+				} 
+
 			} 
-
+			
+//			notasDebitoRecibo.addAll(notas);
+//			facturasRecibo.addAll(facturas); 		
+//			documents.addAll(recibo.getNotasDebitoRecibo());
+//			documents.addAll(recibo.getFacturasRecibo());
+//			adapter = null;
+//			agregarDocumentosAlDetalleDeRecibo();
+//			actualizaTotales();
+			
+		} catch (Exception e) { 
+			
+			
+			notasDebitoRecibo=ndr;
+			facturasRecibo=fr;
+			documents=d;  
+				
+			notasDebitoRecibo.clear();
+			notasCreditoRecibo.clear();
+			facturasRecibo.clear();
+			documents.clear();
+			recibo.setFacturasRecibo(rdf);
+			recibo.setNotasDebitoRecibo(rdnd);
+			recibo.setNotasCreditoRecibo(rdnc); 	
+			adapter = null;
+			agregarDocumentosAlDetalleDeRecibo();
+			Cobro.ActualizaTotalFacturas(recibo);
+			Cobro.ActualizaTotalNotasCredito(recibo);
+			Cobro.ActualizaTotalNotasDebito(recibo);
+			actualizaTotales(); 
+			
 		}
-		documents.addAll(recibo.getNotasDebitoRecibo());
-		documents.addAll(recibo.getFacturasRecibo());
-		adapter = null;
-		agregarDocumentosAlDetalleDeRecibo();
-		actualizaTotales();
+		
+		
+		
+	
 	}
 
 	private void CalculaTotales() 

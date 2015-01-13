@@ -105,6 +105,8 @@ public class ModelLogic {
 				sQuery.append("       AND _nd.objNotaDebitoID = " + objDocumentId);	
 				sQuery.append(" ORDER BY 1 DESC ");				
 			}			
+			else
+				return 0.0F;
 			Cursor c = DatabaseProvider.query(bd, sQuery.toString());
 			// Nos aseguramos de que existe al menos un registro
 			montoAbonado = 0.0F;
