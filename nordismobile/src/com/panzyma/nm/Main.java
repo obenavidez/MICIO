@@ -44,7 +44,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	public static String TAG = Main.class.getSimpleName();
 	private ThreadPool pool;
 	private boolean onRestart;
-	private boolean onPause;
+	private boolean onPause;	
 	public int buttonActive;
 	private static CustomDialog dlg;
 	Intent intent;
@@ -69,18 +69,25 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		NMApp.getController().addOutboxHandler(new Handler(this));
 		if ((savedInstanceState != null) ? savedInstanceState
 				.getBoolean("dl_visible") : false)
-			// callDialogLogin();
 
 			NMApp.modulo = NMApp.Modulo.HOME;
-//		verifyLogin();
 	}
 
 	public void verifyLogin() {
 		if (SessionManager.getLoginUser() != null ) 
 		{
-			if( !SessionManager.isLogged())
-				dialogLogin();
-		} else {
+			 Usuario user = SessionManager.getLoginUser();
+			 if( !SessionManager.isLogged() )
+				if (user.getPassword() == null
+					|| (user.getPassword() != null
+					&& user.getPassword().trim().length() == 0)
+					)
+				 {
+				
+				 dialogLogin();
+				 }
+		}  else 
+		{
 			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 			intent = new Intent(this, ViewConfiguracion.class);
 			intent.putExtra("isEditActive", true);
@@ -342,17 +349,17 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		// TODO Auto-generated method stub
 		ocultarDialogos();
 		if (onPause && !onRestart)
-			initController();
+		initController();
 		try {
-			NMApp.getController().setEntities(this, null);
+		NMApp.getController().setEntities(this, null);
 		} catch (Exception e) {
-			e.printStackTrace();
+		e.printStackTrace();
 		}
 		SessionManager.setContext(this);
 		NMApp.modulo = NMApp.Modulo.HOME;
 		onRestart = false;
 		onPause = false;
-//		verifyLogin();
+		verifyLogin();
 		super.onResume();
 	}
 
