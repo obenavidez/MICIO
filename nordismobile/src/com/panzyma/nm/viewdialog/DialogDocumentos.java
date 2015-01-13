@@ -95,7 +95,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	}	
 	
 	@SuppressWarnings("static-access")
-	public DialogDocumentos(ViewReciboEdit me, int theme, Cliente cliente, Documento document) 
+	public DialogDocumentos(ViewReciboEdit me, int theme, Cliente cliente, Documento document,List<com.panzyma.nm.serviceproxy.Documento>... documents) 
 	{
 		super(me.getContext(), theme);
 		try {

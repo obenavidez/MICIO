@@ -21,6 +21,7 @@ import org.json.JSONArray;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog; 
+import android.content.ContentResolver;
 import android.os.Bundle;
 import android.os.Parcelable; 
 import android.os.Message;
@@ -534,6 +535,10 @@ public final class BReciboM extends BBaseM {
 
 	}
 
+	public static Cliente getClienteBySucursalID(ContentResolver content,long objSucursalID)throws Exception{
+		 return ModelCliente.getClienteBySucursalID(content,objSucursalID,0);
+	}
+	
 	private void onLoadDocumentosClienteFromLocalhost(final Long sucursalID, final long reciboId) {
 		try {
 			this.getPool().execute(new Runnable() {
