@@ -49,7 +49,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="Detalle Cliente"                   
-                    android:textColor="@color/DarkGray" />
+                    android:textColor="@color/Blue" />
                 
             </TableRow>
 
@@ -70,7 +70,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="Detalle Saldo"
-                    android:textColor="@color/DarkGray" />
+                    android:textColor="@color/Blue" />
                 
                 
                
@@ -94,7 +94,7 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"  
                     android:hint="Limite Crédito"                  
-                    android:textColor="@color/DarkGray" />
+                    android:textColor="@color/Blue" />
  			    
             </TableRow>
             <TableRow
@@ -114,7 +114,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"  
                     android:hint="Detalle Disponible"
-                    android:textColor="@color/DarkGray" />
+                    android:textColor="@color/Blue" />
             </TableRow>
         </TableLayout>       
 
