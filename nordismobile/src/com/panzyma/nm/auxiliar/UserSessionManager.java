@@ -2,12 +2,10 @@ package com.panzyma.nm.auxiliar;
 
 import java.util.HashMap;
 
-import com.panzyma.nm.LoginScreen;
-import com.panzyma.nm.Main;
+import com.panzyma.nm.LoginScreen; 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.serviceproxy.Usuario;
-
-import android.app.LauncherActivity;
+ 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;

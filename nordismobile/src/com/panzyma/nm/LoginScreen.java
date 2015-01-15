@@ -62,18 +62,7 @@ public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
 		} 
 		else if(UserSessionManager.isUserLoggedIn())
 		{
-			NMApp.modulo = NMApp.Modulo.HOME;
-			 // user is not logged in redirect him to Login Activity
-			intent = new Intent(this, Main.class);
-             
-            // Closing all the Activities from stack
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-             
-            // Add new Flag to start new Activity
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-             
-            // Staring Login Activity
-            startActivity(intent); 
+			goHome();
 		}
 		else
 		{ 
@@ -84,6 +73,23 @@ public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
 		
 		
 	}
+	
+	public void goHome()
+	{
+		NMApp.modulo = NMApp.Modulo.HOME;
+		 // user is not logged in redirect him to Login Activity
+		intent = new Intent(this, Main.class);
+        
+       // Closing all the Activities from stack
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        
+       // Add new Flag to start new Activity
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        
+       // Staring Login Activity
+       startActivity(intent); 
+	}
+	
 	
 	@Override
 	public boolean handleMessage(Message msg) {
@@ -136,7 +142,8 @@ public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
 	    		if(isValidInformation())
     	    	{     	    	 
 	    			UserSessionManager.guardarSession(new Session(UserSessionManager.getLoginUser(),true));
-	    			
+	    			if(UserSessionManager.isUserLoggedIn())
+	    				goHome();
 				} 
 			} 
 		}
