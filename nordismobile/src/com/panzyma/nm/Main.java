@@ -25,6 +25,7 @@ import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewConfiguracion;
@@ -77,16 +78,26 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 
 	public void verifyLogin() {
 		if (SessionManager.getLoginUser() != null ) {
-			Usuario user = SessionManager.getLoginUser();
-			if( !SessionManager.isLogged() )
-			/*if (user.getPassword() == null
+			Usuario user = ModelConfiguracion.getUser(NMApp.getContext());
+			if( user != null && SessionManager.getLoginUser().getLogin().equals(user.getLogin()) ){
+				if(user.getPassword().trim().length() == 0) {
+					dialogLogin();
+				} else {
+					if(!SessionManager.isLogged())
+						dialogLogin();
+				}				
+			} else {
+				dialogLogin();
+			}
+			/*//if( !SessionManager.isLogged() )
+			if (user.getPassword() == null
 					|| (user.getPassword() != null 
 							&& user.getPassword().trim().length() == 0)
-				) */
+				)
 			{
 				
 					dialogLogin();
-			}				
+			}	*/			
 		} else {
 			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 			intent = new Intent(this, ViewConfiguracion.class);
@@ -188,7 +199,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 					try 
 					{
 						NMApp.modulo = NMApp.Modulo.HOME;
-						if(!SessionManager.SignIn(false))
+						if(!SessionManager.SignIn(false, false))
 							if(!SessionManager.hasError){
 								NMApp.killApp(true);
 							}
@@ -215,7 +226,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				public void run() {
 					try {
 						Usuario user = SessionManager.getLoginUser();
-						if (user != null && SessionManager.SignInForce()) {
+						//if (user != null && SessionManager.SignInForce()) {
+						if (user != null && SessionManager.isLogged()) {
 							NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 							intent = new Intent(context,
 									ViewConfiguracion.class);
@@ -355,10 +367,10 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		SessionManager.setContext(this);
+		SessionManager.setContext(this);		
 		NMApp.modulo = NMApp.Modulo.HOME;
 		onRestart = false;
-		onPause = false;
+		onPause = false;	
 		verifyLogin();
 		super.onResume();
 	}

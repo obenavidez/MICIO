@@ -87,6 +87,7 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 	private String deviceid;
 	private boolean onRestart;
 	private boolean onPause;
+	private boolean loginAsAdmin = false;
 	private DataConfigurationResult settingdata;
 	private static CustomDialog dlg;
 	static Object lockC = new Object();
@@ -340,7 +341,7 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 		quickAction.addActionItem((new ActionItem(ID_SETTING_BLUETOOTHDEVICE,
 				"Configurar Impresora")));
 		quickAction.addActionItem(null);
-		quickAction.addActionItem((new ActionItem(LOGIN_WITH_ADMIN, "Conectar como Admin.")));
+		quickAction.addActionItem((new ActionItem(LOGIN_WITH_ADMIN, "Autenticar como Admin.")));
 		quickAction.addActionItem(null);
 		quickAction.addActionItem((new ActionItem(ID_CERRAR, "Cerrar")));
 
@@ -389,6 +390,9 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 						{
 							intento = new Intent(ViewConfiguracion.this,ConfigurarDispositivosBluetooth.class);
 							startActivityForResult(intento, 0);
+						} else if( actionId == LOGIN_WITH_ADMIN) {
+							loginAsAdmin = true;
+							dialogLoginAdmin();							
 						} else if (actionId == ID_CERRAR)
 							FINISH_ACTIVITY();
 
@@ -401,6 +405,36 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 			}
 		});
 
+	}
+	
+	public void dialogLoginAdmin(){
+		try 
+		{
+			NMApp.getThreadPool().execute(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					try 
+					{
+						NMApp.modulo = NMApp.Modulo.CONFIGURACION;
+						if(SessionManager.SignIn(true))
+						{
+							loginAsAdmin = true;
+						}
+					} catch (Exception e) {
+						NMApp.modulo = NMApp.Modulo.HOME;
+						e.printStackTrace();
+						dialog("", SessionManager.getErrorAuntentication(),
+								ALERT_DIALOG);
+					}
+
+				}
+
+			});
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private boolean salvarConfiguracion() 
@@ -699,6 +733,9 @@ public class ViewConfiguracion extends ActionBarActivity implements Handler.Call
 		       			     	break;
 		       			    case CONFIGURAR_IMPRESORA :
 		       			    	Set_BlueTooth();
+		       			    	break;
+		       			    case LOGIN_WITH_ADMIN:
+		       			    	dialogLoginAdmin();
 		       			    	break;
 		       			    case CERRAR  :
 		       			    	FINISH_ACTIVITY();

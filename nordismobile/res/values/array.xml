@@ -40,6 +40,7 @@
         <item >Sincronizar Promociones</item>
         <item >Sincronizar Todo</item>
         <item >Configurar Impresora</item>
-       <item >Cerrar</item> 
+        <item >Autenticar como Admin</item>
+        <item >Cerrar</item> 
     </string-array>
 </resources>
