@@ -25,160 +25,136 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
- 
+public class LoginScreen extends DashBoardActivity implements Handler.Callback {
+
 	private EditText txtenterprise;
 	private EditText txtusername;
 	private EditText txtpassword;
-	private Button signin; 
-	private Button cancel;  
+	private Button signin;
+	private Button cancel;
 	private Controller controller;
 	private OnButtonClickListener mButtonClickListener;
-	private String TAG=DialogLogin.class.getSimpleName();
-	private Context mycontext; 
+	private String TAG = DialogLogin.class.getSimpleName();
+	private Context mycontext;
 	boolean admin;
-	private Intent intent; 
-	
+	private Intent intent;
+
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(boolean btn);
 	}
-	
-    public void setOnDialogLoginButtonClickListener(OnButtonClickListener listener) {
+
+	public void setOnDialogLoginButtonClickListener(
+			OnButtonClickListener listener) {
 		mButtonClickListener = listener;
-	} 
-	
+	}
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) 
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if (UserSessionManager.getLoginUser() == null )
-		{
+
+		if (UserSessionManager.getLoginUser() == null) {
 			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 			intent = new Intent(this, ViewConfiguracion.class);
 			intent.putExtra("isEditActive", true);
-			startActivity(intent); 
-		} 
-		else if(UserSessionManager.isUserLoggedIn())
-		{
+			startActivity(intent);
+		} else if (UserSessionManager.isUserLoggedIn()) {
 			NMApp.modulo = NMApp.Modulo.HOME;
-			 // user is not logged in redirect him to Login Activity
+			// user is not logged in redirect him to Login Activity
 			intent = new Intent(this, Main.class);
-             
-            // Closing all the Activities from stack
+
+			// Closing all the Activities from stack
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-             
-            // Add new Flag to start new Activity
+
+			// Add new Flag to start new Activity
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-             
-            // Staring Login Activity
-            startActivity(intent); 
-		}
-		else
-		{ 
+
+			// Staring Login Activity
+			startActivity(intent);
+		} else {
 			setContentView(R.layout.screen_login);
 			NMApp.getController().setView(this);
 			initComponents();
 		}
-		
-		
+
 	}
-	
+
 	@Override
 	public boolean handleMessage(Message msg) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	
-	public void clean()
-	{
+
+	public void clean() {
 		txtenterprise.setText("");
 		txtusername.setText("");
-		txtpassword.setText("");  
+		txtpassword.setText("");
 	}
 
-	public  String getNameUser()
-	{ 
+	public String getNameUser() {
 		return txtusername.getText().toString();
-	} 
-	
-	public  String getPassword()
-	{
-		return txtpassword.getText().toString();
-	} 
-	
-	public  String getEmpresa()
-	{
-		return txtenterprise.getText().toString();
-	} 
-	 
-	public void setContentViewToDialog(int layout)
-	{
-		setContentView(layout); 
-	 
 	}
-	 
-	public void initComponents()
-	{	      
-	    View layout=(View)findViewById(R.id.loggin);
-	    signin=((Button)layout.findViewById(R.id.btnsignin)); 
-	    cancel=((Button)layout.findViewById(R.id.btncancel));  
-	    txtusername=((EditText)layout.findViewById(R.id.etusername)); 
-	    txtpassword=((EditText)layout.findViewById(R.id.etpassword));   	 
-	    
-	    signin.setOnClickListener(new View.OnClickListener() 
-		{ 
-    	    @Override
-			public void onClick(View v) 
-			{   
-	    		if(isValidInformation())
-    	    	{     	    	 
-			 	    try 
-			 	    { 		 
-			 	    	mButtonClickListener.onButtonClick(true);
-			 	    } catch (Exception e) { 
+
+	public String getPassword() {
+		return txtpassword.getText().toString();
+	}
+
+	public String getEmpresa() {
+		return txtenterprise.getText().toString();
+	}
+
+	public void setContentViewToDialog(int layout) {
+		setContentView(layout);
+
+	}
+
+	public void initComponents() {
+		View layout = (View) findViewById(R.id.loggin);
+		signin = ((Button) layout.findViewById(R.id.btnsignin));
+		cancel = ((Button) layout.findViewById(R.id.btncancel));
+		txtusername = ((EditText) layout.findViewById(R.id.etusername));
+		txtpassword = ((EditText) layout.findViewById(R.id.etpassword));
+
+		signin.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (isValidInformation()) {
+					try {
+						mButtonClickListener.onButtonClick(true);
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				} 
-			} 
-		}
-	    );
-	    cancel.setOnClickListener(new View.OnClickListener() 
-		{				
+				}
+			}
+		});
+		cancel.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) 
-			{ 
+			public void onClick(View v) {
 				mButtonClickListener.onButtonClick(false);
 				FINISH_ACTIVITY();
-			} 
-		}
-	    );
-  
-	} 
-	
-	public boolean isValidInformation()
-	{
-		String msg = ""; 
-		if (txtusername.getText().toString().trim().length()==0){
-                msg = "Ingrese un usuario válido.";
-                txtusername.setError(msg);
-                txtusername.requestFocus();
-                return false;
-	    }
-        else if (txtpassword.getText().toString().trim().length()==0){
-                msg = "La contraseña invalida";     
-                txtpassword.setError(msg);
-                txtpassword.requestFocus();
-                return false;
-        }  
-        
-		return true;
-	} 
+			}
+		});
 
-	private void FINISH_ACTIVITY()
-	{  
-		Log.d(TAG, "Activity quitting"); 
 	}
+
+	public boolean isValidInformation() {
+		String msg = "";
+		if (txtusername.getText().toString().trim().length() == 0) {
+			msg = "Ingrese un usuario válido.";
+			txtusername.setError(msg);
+			txtusername.requestFocus();
+			return false;
+		} else if (txtpassword.getText().toString().trim().length() == 0) {
+			msg = "La contraseña invalida";
+			txtpassword.setError(msg);
+			txtpassword.requestFocus();
+			return false;
+		}
+
+		return true;
+	}
+
+	private void FINISH_ACTIVITY() {
+		Log.d(TAG, "Activity quitting");
+	}	
 
 }
