@@ -55,28 +55,29 @@ public class UserSessionManager {
 		return session;
 	}
     
+    public static Session getSession(){ 
+    	
+    	if(pref.getLong("USER_ID",0)==0)
+    		return null;
+    	Session session=new Session(); 
+    	session.setLoged(pref.getBoolean("IS_LOGGED_IN",false));
+    	session.setStarted_session(pref.getLong("START_SESSION_AT",0)); 
+		return session;
+    }
+    
+    
+    
     /**
      * Check login method will check user login status
      * If false it will redirect user to login page
      * Else do anything
      * */
-    public boolean checkLogin(){
+    public static  boolean checkLogin(String username,String password){
         // Check login status
-        if(isUserLoggedIn()){
-             
-            // user is not logged in redirect him to Login Activity
-            Intent i = new Intent(_context, Main.class);
-             
-            // Closing all the Activities from stack
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-             
-            // Add new Flag to start new Activity
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-             
-            // Staring Login Activity
-            _context.startActivity(i);
-             
-            return true;
+        if(userinfo!=null || getLoginUser()!=null)
+        {
+        	if(userinfo.getLogin()==username && userinfo.getPassword()==password)
+        		return true;
         }
         return false;
     }

@@ -1,5 +1,6 @@
 package com.panzyma.nm;
 
+import com.panzyma.nm.auxiliar.Session;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.Controller;
@@ -134,12 +135,8 @@ public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
 			{   
 	    		if(isValidInformation())
     	    	{     	    	 
-			 	    try 
-			 	    { 		 
-			 	    	mButtonClickListener.onButtonClick(true);
-			 	    } catch (Exception e) { 
-						e.printStackTrace();
-					}
+	    			UserSessionManager.guardarSession(new Session(UserSessionManager.getLoginUser(),true));
+	    			
 				} 
 			} 
 		}
@@ -172,7 +169,8 @@ public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
                 txtpassword.requestFocus();
                 return false;
         }  
-        
+        else if(!(UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim())))
+        	return false;
 		return true;
 	} 
 

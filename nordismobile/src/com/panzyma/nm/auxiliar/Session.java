@@ -10,10 +10,21 @@ public class Session {
 		this.loged = loged;
 		this.started_session = started_session;
 	}
+	
+	public Session() {
+		super(); 
+	}
+	
+	public Session(Usuario usuario, boolean loged) {
+		super();
+		this.usuario = usuario; 
+	}
 	/**
 	 * @return the usuario
 	 */
 	public Usuario getUsuario() {
+		if(usuario==null)
+			Usuario.get();
 		return usuario;
 	}
 	/**
