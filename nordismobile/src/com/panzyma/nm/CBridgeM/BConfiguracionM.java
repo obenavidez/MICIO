@@ -24,6 +24,7 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;

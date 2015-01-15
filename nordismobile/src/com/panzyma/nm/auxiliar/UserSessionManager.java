@@ -1,10 +1,18 @@
 package com.panzyma.nm.auxiliar;
 
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
+
 import java.util.HashMap;
 
 import com.panzyma.nm.LoginScreen; 
+import com.panzyma.nm.Main;
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BConfiguracionM;
+import com.panzyma.nm.NMApp.Modulo;
+import com.panzyma.nm.model.ModelConfiguracion;
+import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
+import com.panzyma.nm.view.ViewConfiguracion;
  
 import android.content.Context;
 import android.content.Intent;
@@ -45,6 +53,7 @@ public class UserSessionManager {
 	{ 
 		Usuario user=session.getUsuario();
 		session.setStarted_session(System.currentTimeMillis());
+		editor = pref.edit();
 		editor.putLong("USER_ID", user.getId());
 		editor.putBoolean("IS_LOGGED_IN",session.isLoged());
 		editor.putLong("START_SESSION_AT",session.getStarted_session()); 
@@ -71,12 +80,118 @@ public class UserSessionManager {
     public static  boolean checkLogin(String username,String password){
         // Check login status
         if(userinfo!=null || getLoginUser()!=null)
-        {
-        	if(userinfo.getLogin()==username && userinfo.getPassword()==password)
+        {        	
+        	if(userinfo.getLogin().equals(username) && userinfo.getPassword().equals(password))
         		return true;
+        } else {
+        	return UserSessionManager.login(false, new String[]{username,password});
         }
         return false;
     } 
+    
+    public  static boolean login(final boolean admin, String... credentials)
+	{
+		final String empresa= SessionManager.getEmpresa();
+		String errormessage="";
+		final String nombreUsuario = credentials[0] ;
+		final int AUT_EXITOSA = 1;
+		final String password = credentials[1];  
+		SessionManager.setLogged(false); 
+		SessionManager.setErrorAuntentication("");		
+		final String url= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer():NMConfig.URL; 
+		final String url2= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer2():NMConfig.URL2; 
+		boolean hasError=false;
+		final Usuario user = SessionManager.getLoginUser();
+		try 
+		{ 							
+			NMApp.getThreadPool().execute(new Runnable()
+			{
+				@Override
+				public void run() 
+				{ 
+								
+					if((NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url)))			
+					{
+						try 
+						{
+							NMApp.getThreadPool().execute(new Runnable()
+								{
+									@Override
+									public void run()
+									{ 										
+										LoginUserResult res;
+										
+
+										
+																				
+										if( NMApp.modulo == Modulo.HOME && user != null && user.getPassword().trim().length() > 0 && !admin ) {
+											NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+										}
+
+										
+										try 
+										{
+											if( NMApp.tipoAutenticacion == AutenticationType.REMOTE) {
+												// AUTENTICACION REMOTA
+												res =ModelConfiguracion.verifyLogin(url2,(nombreUsuario+"-"+password+"-"+empresa),"ADMIN");
+												
+												if (res.getAuntenticateRS() == AUT_EXITOSA )
+												{				
+													BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, 
+															nombreUsuario+"-"+password+"-"+empresa,
+															nombreUsuario,
+															NMNetWork.getDeviceId(NMApp.getContext()),
+															SessionManager.getImpresora());
+															
+															boolean _esAdmin=res.IsAdmin();															
+															SessionManager.setEmpresa(empresa);
+															SessionManager.setNameUser(nombreUsuario);
+															SessionManager.setPassword(password);															
+															SessionManager.setLogged(true);	
+															
+															Usuario user = SessionManager.getLoginUser();
+															if( ( user != null ) &&
+																( user.getPassword() == null ||
+																  ( user.getPassword() != null &&
+																    user.getPassword().trim().length() == 0) 
+																  )
+															   ) {
+																
+																//SessionManager.setLogged(true);
+																user.setPassword(password);
+																user.setIsAdmin(admin);
+																Usuario.guardarInfoUsuario(NMApp.getContext(), user);
+																NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+															}														
+														}
+													}
+											
+										}catch (Exception e) {
+											
+											e.printStackTrace();
+										}
+									}
+									
+								});
+								
+						} catch (InterruptedException e) { 
+							e.printStackTrace();
+						}  
+						NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, "Validando Credenciales."); 
+							
+					}
+					
+				 }
+			});	  
+			NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0,"Probando Conexión.");   
+
+		}
+	    catch (Exception e) {  
+			e.printStackTrace();			
+		} 
+		return SessionManager.isLogged();
+
+ 	} 
      
     /**
      * Clear session details

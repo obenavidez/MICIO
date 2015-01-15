@@ -48,10 +48,13 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 		super.onCreate(savedInstanceState);
 
 		if (UserSessionManager.getLoginUser() == null) {
-			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
+			/*NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 			intent = new Intent(this, ViewConfiguracion.class);
 			intent.putExtra("isEditActive", true); 
-			startActivity(intent); 
+			startActivity(intent); */
+			setContentView(R.layout.screen_login);
+			NMApp.getController().setView(this);
+			initComponents();
 		} 
 		else if(UserSessionManager.isUserLoggedIn())
 		{

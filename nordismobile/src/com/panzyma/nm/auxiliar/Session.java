@@ -18,6 +18,7 @@ public class Session {
 	public Session(Usuario usuario, boolean loged) {
 		super();
 		this.usuario = usuario; 
+		this.loged = loged;
 	}
 	/**
 	 * @return the usuario
