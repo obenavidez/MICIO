@@ -106,10 +106,7 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 
 	public void setContentViewToDialog(int layout) {
 		setContentView(layout);
-
 	}
- 
-
 	public void initComponents()
 	{	      
 	    View layout=(View)findViewById(R.id.loggin);
@@ -179,8 +176,7 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
         }  
         else if(!(UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim())))
         	return false; 
-
-
+		
 		return true;
 	}
 
