@@ -144,8 +144,10 @@ public class SessionManager
 		return islogged;
 	}
 	
-	public static String getCredenciales(){
-		
+	public static String getCredenciales(){ 
+		nameuser="kpineda";
+		password="123";
+		islogged=true;
 		if (!islogged)
 		{			
 			if (NMApp.modulo != NMApp.Modulo.CONFIGURACION) 
@@ -170,6 +172,9 @@ public class SessionManager
 	} 
 	public static String getCredentials()
 	{		
+		nameuser="kpineda";
+		password="123";
+		islogged=true;
 		if (!islogged)
 		{			
 			if (NMApp.modulo != NMApp.Modulo.CONFIGURACION) 

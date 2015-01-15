@@ -1555,9 +1555,9 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	}
 
 	public void ocultarDialogos() {
-		if (dlg != null && dlg.isShowing())
+		if (dlg != null )
 			dlg.dismiss();
-		if (pd != null && pd.isShowing())
+		if (pd != null)
 			pd.dismiss();
 	}
 
