@@ -1594,4 +1594,21 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		}
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		outState.putParcelable("cliente", cliente);
+		Log.d(TAG,"onSaveInstanceState");
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
+		cliente = savedInstanceState.getParcelable("cliente");
+		Log.d(TAG,"Restore");
+	}
+
+	
 }
