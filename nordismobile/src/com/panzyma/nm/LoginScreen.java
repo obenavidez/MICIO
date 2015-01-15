@@ -109,26 +109,7 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 
 	}
 
-	public void initComponents() {
-		View layout = (View) findViewById(R.id.loggin);
-		signin = ((Button) layout.findViewById(R.id.btnsignin));
-		cancel = ((Button) layout.findViewById(R.id.btncancel));
-		txtusername = ((EditText) layout.findViewById(R.id.etusername));
-		txtpassword = ((EditText) layout.findViewById(R.id.etpassword));
-
-		signin.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (isValidInformation()) {
-					try {
-						mButtonClickListener.onButtonClick(true);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		cancel.setOnClickListener(new View.OnClickListener() {
+	
 
 	public void initComponents()
 	{	      
@@ -201,9 +182,6 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 		return true;
 	} 
 
-
-		return true;
-	}
 
 	private void FINISH_ACTIVITY() {
 		Log.d(TAG, "Activity quitting");
