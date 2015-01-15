@@ -174,6 +174,7 @@ public class SessionManager
 	{		
 		nameuser="kpineda";
 		password="123";
+		empresa="dp";
 		islogged=true;
 		if (!islogged)
 		{			

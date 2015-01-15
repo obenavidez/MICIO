@@ -38,8 +38,7 @@ import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Producto; 
 import com.panzyma.nm.serviceproxy.Ventas;
 
-@SuppressLint("SimpleDateFormat") @SuppressWarnings({"rawtypes"})
-
+@SuppressLint("SimpleDateFormat") 
 public class BPedidoM extends BBaseM {
 
 	String credenciales; 
@@ -91,7 +90,7 @@ public class BPedidoM extends BBaseM {
 				case ControllerProtocol.APLICARPEDIDOPROMOCIONES:
 				case ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES: 
 					
-						String mensaje="";
+						String mensaje=new String();
 						int arg1=msg.what; 
 						mensaje=(ControllerProtocol.SALVARPEDIDOANTESDEPROMOCIONES==msg.what)?"Aplicando promociones...":
 							(ControllerProtocol.APLICARPEDIDOPROMOCIONES==msg.what)?"Las promociones fueron aplicadas exitosamente...":
@@ -368,7 +367,7 @@ public class BPedidoM extends BBaseM {
 					 NMApp.getController(),
 						ControllerProtocol.NOTIFICATION_DIALOG2,
 						0,
-						0,"Guardando pedido localmente");
+						0,new String("Guardando pedido localmente"));
 			
 		} catch (Exception e) 
 		{ 
@@ -430,12 +429,12 @@ public class BPedidoM extends BBaseM {
 							return;
 						
 						Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
-								0,0,"Salvando primero la información en el dispositivo");
+								0,0,new String("Salvando primero la información en el dispositivo"));
 						//guardar primero el pedido localmente 
 						guardar_Pedido(pedido);
 						
 						Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
-								0,0,"Enviando pedido al servidor central");
+								0,0,new String("Enviando pedido al servidor central"));
 						//enviado pedido al servidor central
 						Pedido obj=ModelPedido.enviarPedido(credenciales, pedido);; 
 			    
@@ -445,7 +444,7 @@ public class BPedidoM extends BBaseM {
 						guardar_Pedido(obj);
 						 
 						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
-								0,0,"Actualizando el estado de cuentas del Cliente");
+								0,0,new String("Actualizando el estado de cuentas del Cliente"));
 			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
 			            Cliente cliente= BClienteM.actualizarCliente(NMApp.getContext(),SessionManager.getCredenciales(),obj.getObjSucursalID()); 
 			           
@@ -504,7 +503,7 @@ public class BPedidoM extends BBaseM {
 			    {					 
 					try 
 					{
-						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"Conectando con el servidor central.");
+						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,0,0,new String("Conectando con el servidor central."));
 						
 						Pedido pedido= ModelPedido.anularPedido(credenciales, pedidoid);
 						
