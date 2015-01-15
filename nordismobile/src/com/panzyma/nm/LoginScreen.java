@@ -1,5 +1,6 @@
 package com.panzyma.nm;
 
+import com.panzyma.nm.auxiliar.Session;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.Controller;
@@ -102,6 +103,7 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 		return txtenterprise.getText().toString();
 	}
 
+
 	public void setContentViewToDialog(int layout) {
 		setContentView(layout);
 
@@ -127,6 +129,31 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 			}
 		});
 		cancel.setOnClickListener(new View.OnClickListener() {
+
+	public void initComponents()
+	{	      
+	    View layout=(View)findViewById(R.id.loggin);
+	    signin=((Button)layout.findViewById(R.id.btnsignin)); 
+	    cancel=((Button)layout.findViewById(R.id.btncancel));  
+	    txtusername=((EditText)layout.findViewById(R.id.etusername)); 
+	    txtpassword=((EditText)layout.findViewById(R.id.etpassword));   	 
+	    
+	    signin.setOnClickListener(new View.OnClickListener() 
+		{ 
+    	    @Override
+			public void onClick(View v) 
+			{   
+	    		if(isValidInformation())
+    	    	{     	    	 
+	    			UserSessionManager.guardarSession(new Session(UserSessionManager.getLoginUser(),true));
+	    			
+				} 
+			} 
+		}
+	    );
+	    cancel.setOnClickListener(new View.OnClickListener() 
+		{				
+
 			@Override
 			public void onClick(View v) {
 				mButtonClickListener.onButtonClick(false);
@@ -136,7 +163,7 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 
 	}
 
-	public boolean isValidInformation() {
+	/*public boolean isValidInformation() {
 		String msg = "";
 		if (txtusername.getText().toString().trim().length() == 0) {
 			msg = "Ingrese un usuario válido.";
@@ -149,6 +176,31 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 			txtpassword.requestFocus();
 			return false;
 		}
+
+	   
+  
+	} */
+	
+	public boolean isValidInformation()
+	{
+		String msg = ""; 
+		if (txtusername.getText().toString().trim().length()==0){
+                msg = "Ingrese un usuario válido.";
+                txtusername.setError(msg);
+                txtusername.requestFocus();
+                return false;
+	    }
+        else if (txtpassword.getText().toString().trim().length()==0){
+                msg = "La contraseña invalida";     
+                txtpassword.setError(msg);
+                txtpassword.requestFocus();
+                return false;
+        }  
+        else if(!(UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim())))
+        	return false;
+		return true;
+	} 
+
 
 		return true;
 	}

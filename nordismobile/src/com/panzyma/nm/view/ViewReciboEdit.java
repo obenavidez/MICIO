@@ -49,6 +49,7 @@ import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
+import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
@@ -225,7 +226,12 @@ public class ViewReciboEdit extends FragmentActivity implements
 			 * NMApp.getController().addOutboxHandler(handler=new
 			 * Handler(this));
 			 */
-
+			if (getIntent().hasExtra("cliente")) {
+				long IdCliente = getIntent().getLongExtra("cliente", 0);
+				cliente = Ventas.getClienteBySucursalID(IdCliente,me.getContentResolver());
+			}
+			
+			
 			facturasRecibo = new ArrayList<Factura>();
 			notasDebitoRecibo = new ArrayList<CCNotaDebito>();
 			notasCreditoRecibo = new ArrayList<CCNotaCredito>();
@@ -369,6 +375,9 @@ public class ViewReciboEdit extends FragmentActivity implements
 
 		loadData();
 		initMenu();
+		if (getIntent().hasExtra("cliente")) {
+			SetCliente();
+		}
 	}
 
 	private void addWithoutRepeating(Object obj) {
@@ -418,13 +427,16 @@ public class ViewReciboEdit extends FragmentActivity implements
 			// NUEVO RECIBO
 			recibo = new ReciboColector();
 			recibo.setId(0);
-			cliente = null;
+			
+			if (!getIntent().hasExtra("cliente")) {
+				cliente = null;	
+				recibo.setNombreCliente("");
+			}
 			recibo.setCodEstado("REGISTRADO");
 			recibo.setReferencia(0);
 			recibo.setFecha(date);
 			recibo.setExento(false);
 			recibo.setAutorizacionDGI("");
-			recibo.setNombreCliente("");
 			recibo.setNotas("");
 			recibo.setTotalFacturas(0.00f);
 			recibo.setTotalND(0.00f);
@@ -762,14 +774,15 @@ public class ViewReciboEdit extends FragmentActivity implements
 			@Override
 			public void onButtonClick(Cliente _cliente) {
 				cliente = _cliente;
-				tbxNombreDelCliente.setText(cliente.getNombreCliente());
-
-				String[] nomClie = StringUtil.split(cliente.getNombreCliente(),
-						"/");
-				// establecer valores de recibo
-				recibo.setObjClienteID(cliente.getIdCliente());
-				recibo.setObjSucursalID(cliente.getIdSucursal());
-				recibo.setNombreCliente(nomClie[1]);
+				SetCliente();
+//				tbxNombreDelCliente.setText(cliente.getNombreCliente());
+//
+//				String[] nomClie = StringUtil.split(cliente.getNombreCliente(),
+//						"/");
+//				// establecer valores de recibo
+//				recibo.setObjClienteID(cliente.getIdCliente());
+//				recibo.setObjSucursalID(cliente.getIdSucursal());
+//				recibo.setNombreCliente(nomClie[1]);
 			}
 		});
 		Window window = dc.getWindow();
@@ -777,7 +790,19 @@ public class ViewReciboEdit extends FragmentActivity implements
 		window.setLayout(display.getWidth() - 40, display.getHeight() - 110);
 		dc.show();
 	}
+	
+	private void SetCliente ()
+	{
+		tbxNombreDelCliente.setText(cliente.getNombreCliente());
 
+		String[] nomClie = StringUtil.split(cliente.getNombreCliente(),
+				"/");
+		// establecer valores de recibo
+		recibo.setObjClienteID(cliente.getIdCliente());
+		recibo.setObjSucursalID(cliente.getIdSucursal());
+		recibo.setNombreCliente(nomClie[1]);
+	}
+	
 	private void aplicardescuento() {
 
 		boolean aplicandoDescOca = ((recibo.getClaveAutorizaDescOca() != null) && (recibo

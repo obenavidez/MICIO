@@ -453,7 +453,7 @@ public class vCliente extends ActionBarActivity implements
 					}
 					intent = new Intent(vCliente.this, ViewReciboEdit.class);
 					intent.putExtra(RECIBO_ID, 0);
-					intent.putExtra(CLIENTE, cliente_selected.getIdCliente());
+					intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
 					startActivity(intent);
 					break;
 				case NUEVO_DEVOLUCION:
