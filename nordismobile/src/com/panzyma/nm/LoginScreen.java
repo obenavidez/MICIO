@@ -15,64 +15,54 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.view.ViewStub;
+import android.util.Log; 
+import android.view.View; 
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.widget.EditText; 
 
-public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
- 
+public class LoginScreen extends DashBoardActivity implements Handler.Callback {
+
 	private EditText txtenterprise;
 	private EditText txtusername;
 	private EditText txtpassword;
-	private Button signin; 
-	private Button cancel;  
+	private Button signin;
+	private Button cancel;
 	private Controller controller;
 	private OnButtonClickListener mButtonClickListener;
-	private String TAG=DialogLogin.class.getSimpleName();
-	private Context mycontext; 
+	private String TAG = DialogLogin.class.getSimpleName();
+	private Context mycontext;
 	boolean admin;
-	private Intent intent; 
-	
+	private Intent intent;
+
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(boolean btn);
 	}
-	
-    public void setOnDialogLoginButtonClickListener(OnButtonClickListener listener) {
+
+	public void setOnDialogLoginButtonClickListener(
+			OnButtonClickListener listener) {
 		mButtonClickListener = listener;
-	} 
-	
+	}
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) 
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if (UserSessionManager.getLoginUser() == null )
-		{
+
+		if (UserSessionManager.getLoginUser() == null) {
 			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 			intent = new Intent(this, ViewConfiguracion.class);
-			intent.putExtra("isEditActive", true);
+			intent.putExtra("isEditActive", true); 
 			startActivity(intent); 
 		} 
 		else if(UserSessionManager.isUserLoggedIn())
 		{
-			goHome();
-		}
-		else
-		{ 
+			goHome();  
+		} else { 
 			setContentView(R.layout.screen_login);
 			NMApp.getController().setView(this);
 			initComponents();
 		}
-		
-		
-	}
+
+	} 
 	
 	public void goHome()
 	{
@@ -88,44 +78,38 @@ public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
         
        // Staring Login Activity
        startActivity(intent); 
-	}
-	
-	
+	} 
 	@Override
 	public boolean handleMessage(Message msg) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	
-	public void clean()
-	{
+
+	public void clean() {
 		txtenterprise.setText("");
 		txtusername.setText("");
-		txtpassword.setText("");  
+		txtpassword.setText("");
 	}
 
-	public  String getNameUser()
-	{ 
+	public String getNameUser() {
 		return txtusername.getText().toString();
-	} 
-	
-	public  String getPassword()
-	{
-		return txtpassword.getText().toString();
-	} 
-	
-	public  String getEmpresa()
-	{
-		return txtenterprise.getText().toString();
-	} 
-	 
-	public void setContentViewToDialog(int layout)
-	{
-		setContentView(layout); 
-	 
 	}
-	 
+
+	public String getPassword() {
+		return txtpassword.getText().toString();
+	}
+
+	public String getEmpresa() {
+		return txtenterprise.getText().toString();
+	}
+
+
+	public void setContentViewToDialog(int layout) {
+		setContentView(layout);
+
+	}
+ 
+
 	public void initComponents()
 	{	      
 	    View layout=(View)findViewById(R.id.loggin);
@@ -150,16 +134,33 @@ public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
 	    );
 	    cancel.setOnClickListener(new View.OnClickListener() 
 		{				
+
 			@Override
-			public void onClick(View v) 
-			{ 
+			public void onClick(View v) {
 				mButtonClickListener.onButtonClick(false);
 				FINISH_ACTIVITY();
-			} 
+			}
+		});
+
+	}
+
+	/*public boolean isValidInformation() {
+		String msg = "";
+		if (txtusername.getText().toString().trim().length() == 0) {
+			msg = "Ingrese un usuario válido.";
+			txtusername.setError(msg);
+			txtusername.requestFocus();
+			return false;
+		} else if (txtpassword.getText().toString().trim().length() == 0) {
+			msg = "La contraseña invalida";
+			txtpassword.setError(msg);
+			txtpassword.requestFocus();
+			return false;
 		}
-	    );
+
+	   
   
-	} 
+	} */
 	
 	public boolean isValidInformation()
 	{
@@ -177,13 +178,14 @@ public class LoginScreen  extends DashBoardActivity implements Handler.Callback{
                 return false;
         }  
         else if(!(UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim())))
-        	return false;
-		return true;
-	} 
+        	return false; 
 
-	private void FINISH_ACTIVITY()
-	{  
-		Log.d(TAG, "Activity quitting"); 
+
+		return true;
 	}
+
+	private void FINISH_ACTIVITY() {
+		Log.d(TAG, "Activity quitting");
+	}	
 
 }

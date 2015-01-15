@@ -343,7 +343,7 @@ public class SessionManager
 						NMApp.tipoAutenticacion = AutenticationType.LOCAL;
 					}
 										
-					if((NMApp.tipoAutenticacion == AutenticationType.LOCAL) || (NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url)))			
+					if((NMApp.tipoAutenticacion == AutenticationType.REMOTE) || (NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url)))			
 					{
 						try 
 						{
