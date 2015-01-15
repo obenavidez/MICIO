@@ -26,7 +26,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 @SuppressLint("ParserError") 
 public class SessionManager
 {
-	private static  String empresa;
+	private static  String empresa = "dp";
 	private static  String nameuser; 
 	private static  String password; 
 	private static  boolean islogged;
@@ -102,7 +102,7 @@ public class SessionManager
 	@SuppressWarnings("static-access")
 	public static Impresora getImpresora(){
 		if(impresora==null || (impresora!=null && Impresora.obtenerMac().trim()==""))
-			impresora=Impresora.get(context);
+			impresora=Impresora.get(NMApp.getContext());
 		return impresora;
 	}
 	
@@ -174,6 +174,7 @@ public class SessionManager
 	{		
 		nameuser="kpineda";
 		password="123";
+		empresa="dp";
 		islogged=true;
 		if (!islogged)
 		{			
@@ -323,12 +324,12 @@ public class SessionManager
 		return NMNetWork.isPhoneConnected(context);		
 	}
 	
-	public  static boolean login(final boolean admin)
+	public  static boolean login(final boolean admin, String... credentials)
 	{
-		final String empresa=dl.getEmpresa();
+		final String empresa= ( ( dl == null || dl.getEmpresa() == null ) ? SessionManager.empresa : dl.getEmpresa() );
 		errormessage="";
-		nombreusuario= dl.getNameUser();
-		final String password=dl.getPassword();  
+		nombreusuario = ( ( dl == null || dl.getNameUser() == null ) ? credentials[0] : dl.getNameUser() );
+		final String password = ( ( dl == null || dl.getPassword() == null ) ? credentials[1] : dl.getPassword() );  
 		SessionManager.setLogged(false); 
 		SessionManager.setErrorAuntentication("");		
 		final String url= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer():NMConfig.URL; 
@@ -396,7 +397,16 @@ public class SessionManager
 																										nombreusuario+"-"+password+"-"+empresa,
 																										((ViewConfiguracion)SessionManager.getContext()).getTBoxUserName(),
 																										NMNetWork.getDeviceId(context),getImpresora());
-															}														
+															} else if(user != null 
+																	&& ( user.getPassword() == null 
+																		|| ( user.getPassword() != null && user.getPassword().trim().length() == 0 ) ) ){
+																
+																BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, 
+																		nombreusuario+"-"+password+"-"+empresa,
+																		nombreusuario,
+																		NMNetWork.getDeviceId(NMApp.getContext()),getImpresora());
+															}	
+															
 															_esAdmin=res.IsAdmin();															
 															SessionManager.setEmpresa(empresa);
 															SessionManager.setNameUser(nombreusuario);
@@ -412,7 +422,7 @@ public class SessionManager
 																//SessionManager.setLogged(true);
 																user.setPassword(password);
 																user.setIsAdmin(admin);
-																Usuario.guardarInfoUsuario(SessionManager.getContext(), user);
+																Usuario.guardarInfoUsuario(NMApp.getContext(), user);
 																NMApp.tipoAutenticacion = AutenticationType.LOCAL;
 															}else {
 																usuarioDeSincronizacion = true;

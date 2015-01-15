@@ -264,7 +264,7 @@ public class ModelConfiguracion {
 
 	public static Usuario getUser(Context view) 
 	{
-		pref = view.getSharedPreferences("LoginUser", Context.MODE_PRIVATE);
+		pref = (view == null ? NMApp.getContext() : view).getSharedPreferences("LoginUser", Context.MODE_PRIVATE);
 		if (pref.getLong("id", 0) == 0)
 			return null;
 		else

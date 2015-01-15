@@ -589,22 +589,29 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				return true;
 	
 			case ControllerProtocol.NOTIFICATION:
+				String message="";
+				if(msg.obj!=null && msg.obj instanceof Pedido)
+				{
+					pedido=(Pedido) msg.obj;
+					
+				}
+				else if (msg.obj!=null &&  msg.obj instanceof String) 
+					message=msg.obj.toString();
 				if (
 					 ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1 ||
 					 ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES==msg.arg1 ||
 					 ControllerProtocol.APLICARPEDIDOPROMOCIONES==msg.arg1
 				   ) 
 				{ 
-					if(msg.obj!=null && msg.obj instanceof Pedido)
-						pedido=(Pedido) msg.obj;					
+										
 					pedido.setOldData(pedido);
 					actualizarOnUINumRef(); 
 					actualizarDetallePedido();
 					salvado = true;
-				}
-				
+				}				
+				if((!message.equals("")) || ControllerProtocol.SAVE_DATA_FROM_LOCALHOST==msg.arg1)
 				showStatus((ControllerProtocol.SAVE_DATA_FROM_LOCALHOST==msg.arg1)?"El pedido fue guardado satisfactoriamente..."
-						:msg.obj.toString(), true);
+						:message, true);
 				break;
 			case ControllerProtocol.NOTIFICATION_DIALOG2:
 				showStatus(msg.obj.toString());
@@ -787,6 +794,15 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	}
 
 	private void seleccionarCliente() {
+		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
+				.getCodEstado().compareTo("APROBADO") == 0))){
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"No puede modificar el pedido en estado "+pedido
+					.getCodEstado(),
+					"No puede modificar el pedido en estado "+pedido
+					.getCodEstado(),"")); 
+			return;
+		}
 		DialogCliente dc = new DialogCliente(me,
 				android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 		dc.setOnDialogClientButtonClickListener(new OnButtonClickListener() {
@@ -811,7 +827,14 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		invActualizado = true;
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 				.getCodEstado().compareTo("APROBADO") == 0)))
+		{
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"No puede modificar el pedido en estado "+pedido
+					.getCodEstado(),
+					"No puede modificar el pedido en estado "+pedido
+					.getCodEstado(),"")); 
 			return;
+		}
 
 		if (cliente == null) 
 		{
@@ -864,9 +887,16 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		try {
 
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
-					.getCodEstado().compareTo("APROBADO") == 0)))
-				return;
+					.getCodEstado().compareTo("APROBADO") == 0))) 
 
+			{
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"No puede modificar el pedido en estado "+pedido
+						.getCodEstado(),
+						"No puede modificar el pedido en estado "+pedido
+						.getCodEstado(),"")); 
+				return;
+			}
 			int idx = grid_dp.getCheckedItemPosition();
 			
 			if (idx == -1)
@@ -919,8 +949,15 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	public void eliminarProducto() {
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
-				.getCodEstado().compareTo("APROBADO") == 0)))
+				.getCodEstado().compareTo("APROBADO") == 0))) 
+		{
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"No puede modificar el pedido en estado "+pedido
+					.getCodEstado(),
+					"No puede modificar el pedido en estado "+pedido
+					.getCodEstado(),"")); 
 			return;
+		}
 		final int idx = grid_dp.getCheckedItemPosition();
 
 		if (idx == -1)
@@ -1215,6 +1252,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	
 	
 	public void agregarCondicionesYNotas() {
+		
 		if (pedido.getObjClienteID() == 0) 
 		{
 			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
@@ -1505,8 +1543,15 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		try {
 
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
-					.getCodEstado().compareTo("APROBADO") == 0)))
+					.getCodEstado().compareTo("APROBADO") == 0))) 
+			{
+				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						"No puede modificar el pedido en estado "+pedido
+						.getCodEstado(),
+						"No puede modificar el pedido en estado "+pedido
+						.getCodEstado(),"")); 
 				return;
+			}
 
 			if (pedido.getCodEstado().compareTo("REGISTRADO") == 0) {
 				if (pedido.getNumeroCentral() > 0) 
