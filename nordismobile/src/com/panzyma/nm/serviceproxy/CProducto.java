@@ -1,6 +1,13 @@
 package com.panzyma.nm.serviceproxy;
 
-public class CProducto {
+import java.util.Arrays;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.panzyma.nm.interfaces.Item;
+
+public class CProducto implements Parcelable, Item {
 	
 //	protected com.panzyma.nm.serviceproxy.ArrayOfCNota Notas;
 
@@ -31,7 +38,44 @@ public class CProducto {
 		    this.TipoProducto="";
 		    this.Especialidades="";
 	 }
-	 
+	 public CProducto(Parcel parcel) {
+			readFromParcel(parcel);
+	}
+	private void readFromParcel(Parcel parcel) {
+		Id =parcel.readLong();
+	   	Codigo =parcel.readString();
+		Nombre =parcel.readString();
+	   	Registro =parcel.readString();
+	   	NombreComercial =parcel.readString();
+	   	NombreGenerico =parcel.readString();
+	   	Proveedor =parcel.readString();
+	   	Categoria =parcel.readString();
+	   	FormaFarmaceutica =parcel.readString();
+	   	AccionFarmacologica =parcel.readString();
+	   	TipoProducto =parcel.readString();
+	   	Especialidades =parcel.readString();
+		
+		Parcelable[] parcelableArray = parcel.readParcelableArray(CNota.class
+				.getClassLoader());
+		if (parcelableArray != null) {
+			Notas = new CNota[parcelableArray.length];
+			Notas = Arrays.copyOf(parcelableArray, parcelableArray.length,
+					CNota[].class);
+		}
+	}
+	
+	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+			@Override
+			public CProducto createFromParcel(Parcel parcel) {
+				return new CProducto(parcel);
+			}
+
+			@Override
+			public CProducto[] newArray(int size) {
+				return new CProducto[size];
+			}
+	 };
 	 
 	 public long getId() {
 	        return Id;
@@ -133,6 +177,58 @@ public class CProducto {
 		}
 		public void setNotas(CNota[] notas) {
 			Notas = notas;
+		}
+
+
+		@Override
+		public Object isMatch(CharSequence constraint) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
+		@Override
+		public String getItemName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
+		@Override
+		public String getItemDescription() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
+		@Override
+		public String getItemCode() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
+		@Override
+		public int describeContents() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public void writeToParcel(Parcel parcel, int flags) {
+			parcel.writeLong(Id);
+			parcel.writeString(Codigo);
+			parcel.writeString(Nombre);
+			parcel.writeString(Registro);
+			parcel.writeString(NombreComercial);
+			parcel.writeString(NombreGenerico);
+			parcel.writeString(Proveedor);
+			parcel.writeString(Categoria);
+			parcel.writeString(FormaFarmaceutica);
+			parcel.writeString(AccionFarmacologica);
+			parcel.writeString(TipoProducto);
+			parcel.writeString(Especialidades);
+			parcel.writeParcelableArray(Notas,flags);
 		}
 		
 }

@@ -70,13 +70,12 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		NMApp.getController().addOutboxHandler(new Handler(this));
 		if ((savedInstanceState != null) ? savedInstanceState
 				.getBoolean("dl_visible") : false)
-			// callDialogLogin();
 
 			NMApp.modulo = NMApp.Modulo.HOME;
-		//verifyLogin();
 	}
 
-	public void verifyLogin() {
+	/*public void verifyLogin() {
+
 		if (SessionManager.getLoginUser() != null ) {
 			Usuario user = ModelConfiguracion.getUser(NMApp.getContext());
 			if( user != null && SessionManager.getLoginUser().getLogin().equals(user.getLogin()) ){
@@ -89,7 +88,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			} else {
 				dialogLogin();
 			}
-			/*//if( !SessionManager.isLogged() )
+			//if( !SessionManager.isLogged() )
 			if (user.getPassword() == null
 					|| (user.getPassword() != null 
 							&& user.getPassword().trim().length() == 0)
@@ -97,15 +96,31 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			{
 				
 					dialogLogin();
-			}	*/			
+			}				
 		} else {
+
+//		if (SessionManager.getLoginUser() != null ) 
+//		{
+//			 Usuario user = SessionManager.getLoginUser();
+//			 if( !SessionManager.isLogged() )
+//				if (user.getPassword() == null
+//					|| (user.getPassword() != null
+//					&& user.getPassword().trim().length() == 0)
+//					)
+//				 {
+//				
+//				 dialogLogin();
+//				 }
+//		}  else 
+//		{
+
 			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 			intent = new Intent(this, ViewConfiguracion.class);
 			intent.putExtra("isEditActive", true);
 			startActivity(intent);
 			FINISH_COMPONENT();
-		}
-	}
+//		}
+	}*/
 
 	@Override
 	protected void onDestroy() {
@@ -146,7 +161,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 
 		NMApp.modulo = NMApp.Modulo.HOME;
 		buttonActive = v.getId();
-		if (SessionManager.getLoginUser() != null) {
+//		if (SessionManager.getLoginUser() != null) {
 			switch (v.getId()) {
 
 			case R.id.hbtnpedido:
@@ -179,13 +194,13 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			default:
 				break;
 			}
-		} else {
-			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
-			intent = new Intent(this, ViewConfiguracion.class);
-			intent.putExtra("isEditActive", true);
-			startActivity(intent);
-			FINISH_COMPONENT();
-		}
+//		} else {
+//			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
+//			intent = new Intent(this, ViewConfiguracion.class);
+//			intent.putExtra("isEditActive", true);
+//			startActivity(intent);
+//			FINISH_COMPONENT();
+//		}
 	}
 	
 	public void dialogLogin(){
@@ -361,17 +376,17 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		// TODO Auto-generated method stub
 		ocultarDialogos();
 		if (onPause && !onRestart)
-			initController();
+		initController();
 		try {
-			NMApp.getController().setEntities(this, null);
+		NMApp.getController().setEntities(this, null);
 		} catch (Exception e) {
-			e.printStackTrace();
+		e.printStackTrace();
 		}
 		SessionManager.setContext(this);		
 		NMApp.modulo = NMApp.Modulo.HOME;
 		onRestart = false;
 		onPause = false;	
-		verifyLogin();
+		//verifyLogin();
 		super.onResume();
 	}
 

@@ -3,6 +3,7 @@ package com.panzyma.nm.viewdialog;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,10 +23,12 @@ import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
+import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,6 +45,7 @@ import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -91,7 +95,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 	}	
 	
 	@SuppressWarnings("static-access")
-	public DialogDocumentos(ViewReciboEdit me, int theme, Cliente cliente, Documento document) 
+	public DialogDocumentos(ViewReciboEdit me, int theme, Cliente cliente, Documento document,List<com.panzyma.nm.serviceproxy.Documento>... documents) 
 	{
 		super(me.getContext(), theme);
 		try {
@@ -294,19 +298,43 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				gridheader.setText("Listado de Facturas Pendientes ("+_facturas.size()+")");				
 				adapter = new GenericAdapter<Factura, FacturaViewHolder>(mcontext,FacturaViewHolder.class,_facturas,R.layout.detalle_factura);				 
 				lvfacturas.setAdapter(adapter);
-				lvfacturas.setOnItemClickListener(new OnItemClickListener() {
+				lvfacturas.setOnItemClickListener(new OnItemClickListener() 
+				{
 					@Override
-					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
+					{
 						if((parent.getChildAt(positioncache)) != null)						            							            		
 		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 		            	positioncache=position;				            	
-		            	factura_selected = (Factura) adapter.getItem(position);		            	
+		            	factura_selected = (Factura) adapter.getItem(position);	
 		            	adapter.setSelectedPosition(position); 
-		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);					            	 
-		            	mButtonClickListener.onButtonClick(factura_selected);
+		            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));	
+		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);	
+		            	
 		            	//FINISH_ACTIVITY();						
 					}					
 				});
+				
+				
+				
+				lvfacturas.setOnItemLongClickListener(new OnItemLongClickListener()
+			    {
+					@Override
+					public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) 
+					{  											 
+						if((parent.getChildAt(positioncache)) != null)						            							            		
+		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+		            	positioncache=position;				            	
+		            	factura_selected = (Factura) adapter.getItem(position);	
+		            	adapter.setSelectedPosition(position); 
+		            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));	
+		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);					            	 
+		            	mButtonClickListener.onButtonClick(factura_selected);
+						return true;
+					}
+			        	
+			    });
+				
 			}
 			lvfacturas.setVisibility(View.VISIBLE);
 		} catch (Exception e) {
@@ -341,12 +369,30 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 		            	positioncache=position;				            	
 		            	nota_debito_selected = (CCNotaDebito) adapter2.getItem(position);		            	
 		            	adapter2.setSelectedPosition(position); 
-		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);					            	 
+		            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));	
+		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);		
+					}					
+				});
+				
+				
+				lvnotasd.setOnItemLongClickListener(new OnItemLongClickListener()
+			    {
+					@Override
+					public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) 
+					{  											 
+						if((parent.getChildAt(positioncache)) != null)						            							            		
+		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+		            	positioncache=position;				            	
+		            	nota_debito_selected = (CCNotaDebito) adapter2.getItem(position);		            	
+		            	adapter2.setSelectedPosition(position); 				            	 
 		            	mButtonClickListener.onButtonClick(nota_debito_selected);
 		            	//FINISH_ACTIVITY();
 		            	dismiss();
-					}					
-				});
+		            	return true;
+					}
+			        	
+			    });
+				
 				lvnotasd.setVisibility(View.VISIBLE);
 				lvfacturas.setVisibility(View.GONE);
 			}
@@ -376,22 +422,41 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 				}
 				gridheader.setText("Listado Notas Crédito Pendientes (" + notasCredito.length + ")");				
 				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,_notasCredito,R.layout.detalle_nota_credito);				 
-				lvnotasd.setAdapter(adapter3);
-				lvnotasd.setOnItemClickListener(new OnItemClickListener() 
-				{
+				lvnotasd.setAdapter(adapter3); 
+				
+				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
+
 					@Override
-					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) { 
+						
 						if((parent.getChildAt(positioncache)) != null)						            							            		
 		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 		            	positioncache=position;				            	
 		            	nota_credito_selected = (CCNotaCredito) adapter3.getItem(position);		            	
 		            	adapter3.setSelectedPosition(position); 
-		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);					            	 
-		            	mButtonClickListener.onButtonClick(nota_credito_selected);
-		            	//FINISH_ACTIVITY();
+		            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));	
+		            	mcontext.getResources().getDrawable(R.drawable.action_item_selected);
+						
+					}
+				}); 
+				
+				lvnotasd.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+					@Override
+					public boolean onItemLongClick(AdapterView<?> parent,
+							View view, int position, long id) { 
+						if((parent.getChildAt(positioncache)) != null)						            							            		
+		            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+		            	positioncache=position;				            	
+		            	nota_credito_selected = (CCNotaCredito) adapter3.getItem(position);		            	
+		            	adapter3.setSelectedPosition(position);  					            	 
+		            	mButtonClickListener.onButtonClick(nota_credito_selected); 
 		            	dismiss();
-					}					
-				});
+						return true;
+					}
+				}); 
+				
 				lvnotasd.setVisibility(View.VISIBLE);
 				lvfacturas.setVisibility(View.GONE);
 			}

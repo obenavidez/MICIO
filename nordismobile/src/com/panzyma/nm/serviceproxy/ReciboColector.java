@@ -91,6 +91,10 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 		this.TotalImpuestoExonerado = rc.getTotalImpuestoExonerado();
 		this.Exento = rc.isExento();
 		this.AutorizacionDGI = rc.getAutorizacionDGI();
+		this.DetalleFacturas=rc.getFacturasRecibo();
+		this.DetalleNotasCredito=rc.getNotasCreditoRecibo();
+		this.DetalleNotasDebito=rc.getNotasDebitoRecibo();
+		this.DetalleFormasPago=rc.getFormasPagoRecibo(); 
 	}
 
 	public ReciboColector(long id, int numero, long fecha, String notas,
@@ -148,16 +152,13 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 		return oldata;
 	}
 	
-	@SuppressWarnings("unused")
 	public boolean hasModified(Object obj) 
     { 
-		if (obj == null)
-			return false;
+		if(obj==null && this!=null)
+			return true; 
 		if (getClass() != obj.getClass())
 			return false;
-		ReciboColector other = (ReciboColector) obj;
-		if(other==null && this!=null)
-			return true;	 
+		ReciboColector other = (ReciboColector) obj; 
 		
 		if(getObjSucursalID()!=other.getObjSucursalID())
 			return true;
@@ -191,7 +192,7 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 			return true;	
 		if(dnp.size()!=dnp.size())
 			return true;	
-		if(getNotas()!=other.getNotas())
+		if(!(getNotas().trim().equals(other.getNotas().trim())))
 			return true;
 		return false;
     }

@@ -169,6 +169,13 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 							e.printStackTrace();
 						} 
                      }
+                     
+                    if (results==null || (results!=null && results.values==null) || (results!=null &&  results.values!=null && ((List<E>)results.values).size()==0))
+                    {
+                    	// setear los valores originales a returnar  
+                        results.count = mOriginalValues.size();
+                        results.values = mOriginalValues;
+            		}
                  }
                  
 			   return results;

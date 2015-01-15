@@ -118,7 +118,7 @@ public class ModelRecibo {
 				estado = "Autorizada";
 				codEstado = "AUTORIZADA";
 			}
-			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.Monto, abonado);
+//			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.Monto, abonado);
 			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.Estado, estado);
 			mUpdateValues.put(NMConfig.Cliente.CCNotaCredito.CodEstado, codEstado);
 			

@@ -327,9 +327,6 @@ public class Controller<T, U>
 		if (outboxHandlers.isEmpty()) {
 			Log.w(TAG, String.format("No outbox  handler to handle outgoing message (%d)", what));
 		} else {
-			
-//			ActivityManager am = (ActivityManager)NMApp.getContext().getSystemService(Context.ACTIVITY_SERVICE);
-//			ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
 		    Object viewL=getView();
 			Handler handler;
 			if(viewL!=null) 

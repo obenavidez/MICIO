@@ -52,7 +52,7 @@ public class SessionManager
     public static boolean hasError=false;
     static String nombreusuario="";
 	public SessionManager(){};
-	
+	private static Usuario user;
 	private static Impresora impresora;
 	
 	public static String getNameUser()
@@ -329,6 +329,7 @@ public class SessionManager
 		final String url= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer():NMConfig.URL; 
 		final String url2= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer2():NMConfig.URL2; 
 		hasError=false;
+		user = SessionManager.getLoginUser();
 		try 
 		{ 							
 			NMApp.getThreadPool().execute(new Runnable()
@@ -336,7 +337,13 @@ public class SessionManager
 				@Override
 				public void run() 
 				{ 
-					if(NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url))			
+					
+																				
+					if( NMApp.modulo == Modulo.HOME && user != null && user.getPassword().trim().length() > 0  ) {
+						NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+					}
+										
+					if((NMApp.tipoAutenticacion == AutenticationType.LOCAL) || (NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url)))			
 					{
 						try 
 						{
@@ -347,11 +354,13 @@ public class SessionManager
 									{ 										
 										LoginUserResult res;
 										
+
 										Usuario user = SessionManager.getLoginUser();
 																				
 										if( NMApp.modulo == Modulo.HOME && user != null && user.getPassword().trim().length() > 0 && !admin ) {
 											NMApp.tipoAutenticacion = AutenticationType.LOCAL;
 										}
+
 										
 										try 
 										{

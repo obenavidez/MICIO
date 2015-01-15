@@ -396,8 +396,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable{
     @SuppressWarnings("unused")
 	public boolean hasModified(Object obj) 
     { 
-		if (obj == null)
-			return false;
+    	if(obj==null && this!=null)
+			return true;
 		if (getClass() != obj.getClass())
 			return false;
 		Pedido other = (Pedido) obj;
