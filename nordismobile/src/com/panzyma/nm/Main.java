@@ -74,26 +74,26 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	}
 
 	public void verifyLogin() {
-		if (SessionManager.getLoginUser() != null ) 
-		{
-			 Usuario user = SessionManager.getLoginUser();
-			 if( !SessionManager.isLogged() )
-				if (user.getPassword() == null
-					|| (user.getPassword() != null
-					&& user.getPassword().trim().length() == 0)
-					)
-				 {
-				
-				 dialogLogin();
-				 }
-		}  else 
-		{
+//		if (SessionManager.getLoginUser() != null ) 
+//		{
+//			 Usuario user = SessionManager.getLoginUser();
+//			 if( !SessionManager.isLogged() )
+//				if (user.getPassword() == null
+//					|| (user.getPassword() != null
+//					&& user.getPassword().trim().length() == 0)
+//					)
+//				 {
+//				
+//				 dialogLogin();
+//				 }
+//		}  else 
+//		{
 			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 			intent = new Intent(this, ViewConfiguracion.class);
 			intent.putExtra("isEditActive", true);
 			startActivity(intent);
 			FINISH_COMPONENT();
-		}
+//		}
 	}
 
 	@Override
