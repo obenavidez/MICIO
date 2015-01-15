@@ -17,9 +17,11 @@ import android.util.Log;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters; 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate; 
+import com.panzyma.nm.auxiliar.Session;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
@@ -71,8 +73,8 @@ public class ModelConfiguracion {
 		vmConfiguracion config=vmConfiguracion.setConfiguration( 
 //				pref.getString("url_server", "http://www.panzyma.com/nordisserverprod/MobileService.asmx"), 
 //				pref.getString("url_server2", "http://www.panzyma.com/SimfacProd/SimfacService.svc/"),
-				pref.getString("url_server", "http://192.168.1.100/NordisServer/MobileService.asmx"), 
-				pref.getString("url_server2","http://192.168.1.96:8081/SIMFAC/SimfacService.svc/"),
+				pref.getString("url_server", "http://192.168.186.128/NordisServer/MobileService.asmx"), 
+				pref.getString("url_server2","http://192.168.0.12:8080/SIMFAC/SimfacService.svc/"),
 				pref.getString("device_id", ""),
 				pref.getString("enterprise", "dp"),
 				pref.getString("name_user", ""),
@@ -310,6 +312,19 @@ public class ModelConfiguracion {
 		edit.commit();
 	}
 
+	public static Session guardarSession(Session session)
+	{
+		pref = NMApp.getContext().getSharedPreferences("LoginUser", Context.MODE_PRIVATE);
+		edit = pref.edit();
+		Usuario user=session.getUsuario();
+		session.setStarted_session(System.currentTimeMillis());
+		edit.putLong("userID", user.getId());
+		edit.putBoolean("loged",session.isLoged());
+		edit.putLong("started_session",session.getStarted_session()); 
+		edit.commit();
+		return session;
+	}
+	
 	public static JSONArray getSystemPerams(String Credentials)
 			throws Exception {
 		return AppNMComunication.InvokeService2(NMConfig.URL2

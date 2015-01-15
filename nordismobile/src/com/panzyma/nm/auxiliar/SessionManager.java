@@ -30,6 +30,7 @@ public class SessionManager
 	private static  String nameuser; 
 	private static  String password; 
 	private static  boolean islogged;
+	public static boolean usuarioDeSincronizacion = false;
 	
 	private static  Activity context;
 	
@@ -51,7 +52,7 @@ public class SessionManager
     public static boolean hasError=false;
     static String nombreusuario="";
 	public SessionManager(){};
-	
+	private static Usuario user;
 	private static Impresora impresora;
 	
 	public static String getNameUser()
@@ -220,18 +221,22 @@ public class SessionManager
         return SessionManager.isLogged();
     } 
 	
-	public synchronized static boolean SignIn(final boolean admin)
+	public synchronized static boolean SignIn(final boolean admin, final boolean... logged)
     {
 		isOK=true; 
+		boolean logueado = false;
 		if(SessionManager.getLoginUser()!=null || NMApp.modulo == NMApp.Modulo.CONFIGURACION)
 		{
-			while( ((!SessionManager.isLogged()) && isOK) || (admin && !SessionManager.isAdmin() && isOK && !(NMApp.getController().getView() instanceof Main)) )
+			logueado = (logged.length == 0) ? SessionManager.isLogged() : logged[0];
+			//(!SessionManager.isLogged())
+			while( ((!logueado) && isOK) || (admin && !SessionManager.isAdmin() && isOK && !(NMApp.getController().getView() instanceof Main)) )
 			{
 				if(hasError)
 					break;
 				isOK=false;
 				SessionManager.bloque1(admin);
-				SessionManager.bloque2(admin);  			
+				SessionManager.bloque2(admin); 
+				logueado = (logged.length == 0) ? SessionManager.isLogged() : logged[0];
 			}
 		}
 		else
@@ -313,17 +318,18 @@ public class SessionManager
 		return NMNetWork.isPhoneConnected(context);		
 	}
 	
-	public  static boolean  login(final boolean admin)
+	public  static boolean login(final boolean admin)
 	{
 		final String empresa=dl.getEmpresa();
 		errormessage="";
-		nombreusuario=dl.getNameUser();
+		nombreusuario= dl.getNameUser();
 		final String password=dl.getPassword();  
 		SessionManager.setLogged(false); 
 		SessionManager.setErrorAuntentication("");		
 		final String url= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer():NMConfig.URL; 
 		final String url2= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer2():NMConfig.URL2; 
 		hasError=false;
+		user = SessionManager.getLoginUser();
 		try 
 		{ 							
 			NMApp.getThreadPool().execute(new Runnable()
@@ -331,7 +337,13 @@ public class SessionManager
 				@Override
 				public void run() 
 				{ 
-					if(NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url))			
+					
+																				
+					if( NMApp.modulo == Modulo.HOME && user != null && user.getPassword().trim().length() > 0  ) {
+						NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+					}
+										
+					if((NMApp.tipoAutenticacion == AutenticationType.LOCAL) || (NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url)))			
 					{
 						try 
 						{
@@ -342,11 +354,13 @@ public class SessionManager
 									{ 										
 										LoginUserResult res;
 										
+
 										Usuario user = SessionManager.getLoginUser();
 																				
-										if( NMApp.modulo == Modulo.HOME && user != null && user.getPassword().trim().length() > 0  ) {
+										if( NMApp.modulo == Modulo.HOME && user != null && user.getPassword().trim().length() > 0 && !admin ) {
 											NMApp.tipoAutenticacion = AutenticationType.LOCAL;
 										}
+
 										
 										try 
 										{
@@ -381,18 +395,22 @@ public class SessionManager
 															_esAdmin=res.IsAdmin();															
 															SessionManager.setEmpresa(empresa);
 															SessionManager.setNameUser(nombreusuario);
-															SessionManager.setPassword(password);
-															SessionManager.setLogged(true);
+															SessionManager.setPassword(password);															
+															SessionManager.setLogged(true);															
 															if( ( user != null ) &&
 																( user.getPassword() == null ||
 																  ( user.getPassword() != null &&
 																    user.getPassword().trim().length() == 0) 
 																  )
 															   ) {
+																usuarioDeSincronizacion = false;
 																//SessionManager.setLogged(true);
 																user.setPassword(password);
+																user.setIsAdmin(admin);
 																Usuario.guardarInfoUsuario(SessionManager.getContext(), user);
 																NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+															}else {
+																usuarioDeSincronizacion = true;
 															}														
 														}
 													}

@@ -110,17 +110,26 @@ public class DialogLogin extends Dialog
 			{
 				txtenterprise.setText(session[0]);
 		    	txtenterprise.setEnabled(true);  
-		    	txtusername.setText(session[1]);
-		    	txtusername.setEnabled(true); 
-		    	txtpassword.requestFocus();
+		    	txtusername.setText((admin?"":session[1]));
+		    	txtusername.setEnabled(!admin);
+		    	if(admin) {
+		    		txtusername.requestFocus();
+		    	} else {
+		    		txtpassword.requestFocus();
+		    	}
 			}
 			else
 			{
 		    	txtenterprise.setText(session[0]);
 		    	txtenterprise.setEnabled(false);  
-		    	txtusername.setText(session[1]);
-		    	txtusername.setEnabled(false); 
-		    	txtpassword.requestFocus();
+		    	txtusername.setText((admin?"":session[1]));		    	
+		    	txtusername.setEnabled(!admin); 
+		    	if(admin) {
+		    		txtusername.requestFocus();
+		    	} else {
+		    		txtpassword.requestFocus();
+		    	}
+		    	
 	    	}
 	    }
 	    signin.setOnClickListener(new View.OnClickListener() 
