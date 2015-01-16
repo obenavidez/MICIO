@@ -21,9 +21,11 @@ import android.widget.Toast;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.Session;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.Usuario;
@@ -134,7 +136,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			FINISH_ACTIVITY();
+			FINISH_ACTIVITY(); 
 			return true;
 		}
 		return super.onKeyUp(keyCode, event);
@@ -161,7 +163,9 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 
 		NMApp.modulo = NMApp.Modulo.HOME;
 		buttonActive = v.getId();
-//		if (SessionManager.getLoginUser() != null) {
+		Session session=UserSessionManager.getSession();
+		if (session!=null && session.isLoged()) 
+		{
 			switch (v.getId()) {
 
 			case R.id.hbtnpedido:
@@ -189,18 +193,29 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				break;
 
 			case R.id.hbtnconfiguracion:
-				callDialogLogin();
+				NMApp.modulo = NMApp.Modulo.CONFIGURACION;
+				intent = new Intent(context,ViewConfiguracion.class);
+				intent.putExtra("isEditActive",true);
+				startActivity(intent);
+				FINISH_COMPONENT();
 				break;
 			default:
 				break;
 			}
-//		} else {
-//			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
-//			intent = new Intent(this, ViewConfiguracion.class);
-//			intent.putExtra("isEditActive", true);
-//			startActivity(intent);
-//			FINISH_COMPONENT();
-//		}
+		} else { 			 
+			 // user is not logged in redirect him to Login Activity
+			intent = new Intent(this, LoginScreen.class);
+	        
+	       // Closing all the Activities from stack
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        
+	       // Add new Flag to start new Activity
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	        
+	       // Staring Login Activity
+	        startActivity(intent);  
+			FINISH_COMPONENT();
+		}
 	}
 	
 	public void dialogLogin(){
@@ -404,14 +419,12 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		Log.d(TAG, "Activity quitting");
 	}
 
-	private void FINISH_ACTIVITY() {
-		NMApp.getController().clearOutboxHandler();
+	private void FINISH_ACTIVITY() { 
 		if (cd != null && cd.isShowing())
-			cd.dismiss();
-		NMApp.getController().dispose();
+			cd.dismiss(); 
 		Log.d(TAG, "Activity quitting");
 		SessionManager.clean();
-		NMApp.killApp(false);
+		UserSessionManager.logoutUser();		
 		finish();
 	}
 

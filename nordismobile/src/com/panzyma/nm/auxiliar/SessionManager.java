@@ -145,7 +145,7 @@ public class SessionManager
 	}
 	
 	public static String getCredenciales(){ 
-		nameuser="kpineda";
+		/*nameuser="kpineda";
 		password="123";
 		islogged=true;
 		if (!islogged)
@@ -168,11 +168,12 @@ public class SessionManager
         		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
         	return "";
         else
-        	return nameuser + "-" + password + "-" + empresa; 
+        	return nameuser + "-" + password + "-" + empresa; */
+		return UserSessionManager.getCredenciales();
 	} 
 	public static String getCredentials()
 	{		
-		nameuser="kpineda";
+		/*nameuser="kpineda";
 		password="123";
 		empresa="dp";
 		islogged=true;
@@ -196,7 +197,8 @@ public class SessionManager
         		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
         	return "";
         else
-        	return nameuser + "||" + password + "||" + empresa;
+        	return nameuser + "||" + password + "||" + empresa;*/
+		return UserSessionManager.getCredentials();
 	}
 	
 	public static void setErrorAuntentication(String _error){

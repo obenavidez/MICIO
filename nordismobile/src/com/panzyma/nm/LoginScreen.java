@@ -1,26 +1,38 @@
 package com.panzyma.nm;
 
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+
+import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Session;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.viewdialog.DialogLogin;
 import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;
 import com.panzyma.nordismobile.R;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.YuvImage;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log; 
+import android.view.KeyEvent;
 import android.view.View; 
 import android.widget.Button;
 import android.widget.EditText; 
 
-public class LoginScreen extends DashBoardActivity implements Handler.Callback {
+public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 
 	private EditText txtenterprise;
 	private EditText txtusername;
@@ -32,7 +44,9 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 	private String TAG = DialogLogin.class.getSimpleName();
 	private Context mycontext;
 	boolean admin;
-	private Intent intent;
+	private CustomDialog cd;
+	private Intent intent;	
+	private static CustomDialog dlg;
 
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(boolean btn);
@@ -42,35 +56,18 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 			OnButtonClickListener listener) {
 		mButtonClickListener = listener;
 	}
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-//		if (UserSessionManager.getLoginUser() == null) {
-//			/*NMApp.modulo = NMApp.Modulo.CONFIGURACION;
-//			intent = new Intent(this, ViewConfiguracion.class);
-//			intent.putExtra("isEditActive", true); 
-//			startActivity(intent); */
-//			setContentView(R.layout.screen_login);
-//			NMApp.getController().setView(this);
-//			initComponents();
-//		} 
-//		else if(UserSessionManager.isUserLoggedIn())
-//		{
-//			goHome();  
-//		} else { 
-//			setContentView(R.layout.screen_login);
-//			NMApp.getController().setView(this);
-//			initComponents();
-//		}
-
+		mycontext = this; 
 		
 		if(UserSessionManager.isUserLoggedIn())
 				goHome();  
 		else{ 
 				setContentView(R.layout.screen_login);
 				NMApp.getController().setView(this);
+				UserSessionManager._context = this;
 				initComponents();
 			}
 		
@@ -91,11 +88,67 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
        // Staring Login Activity
        startActivity(intent); 
 	} 
+	
 	@Override
 	public boolean handleMessage(Message msg) {
-		// TODO Auto-generated method stub
+		ocultarDialogos();
+		switch (msg.what) {
+
+		case ControllerProtocol.NOTIFICATION:
+			showStatus(msg.obj.toString(), true);
+			break;
+		case ControllerProtocol.NOTIFICATION_DIALOG2:
+			showStatus(msg.obj.toString());
+			break;
+		case ERROR:
+			AppDialog.showMessage(this,
+					((ErrorMessage) msg.obj).getTittle(),
+					((ErrorMessage) msg.obj).getMessage(),
+					DialogType.DIALOGO_ALERTA);
+			break;
+		}
 		return false;
 	}
+	
+	public void ocultarDialogos() {
+		if (cd != null && cd.isShowing())
+			cd.dismiss();
+		if (dlg != null && dlg.isShowing())
+			dlg.dismiss();
+	}
+	
+	public void showStatus(final String mensaje, boolean... confirmacion) {
+		ocultarDialogos();
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(mycontext, "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					dlg = new CustomDialog(mycontext, mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		}
+	}
+
 
 	public void clean() {
 		txtenterprise.setText("");
@@ -134,9 +187,26 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
 			{   
 	    		if(isValidInformation())
     	    	{     	    	 
-	    			UserSessionManager.guardarSession(new Session(UserSessionManager.getLoginUser(),true));
-	    			if(UserSessionManager.isUserLoggedIn())
-	    				goHome();
+	    			try 
+	    			{
+						NMApp.getThreadPool().execute(new Runnable() 
+						{
+							public void run() 
+							{
+								if(UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim()))
+								{
+									UserSessionManager.guardarSession(new Session(UserSessionManager.getLoginUser(),true));
+									if(UserSessionManager.isUserLoggedIn())
+										goHome();
+								}
+								
+							}
+						});
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	    			
 				} 
 			} 
 		}
@@ -171,6 +241,15 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
   
 	} */
 	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			FINISH_ACTIVITY();
+			return true;
+		}
+		return super.onKeyUp(keyCode, event);
+	}
+	
 	public boolean isValidInformation()
 	{
 		String msg = ""; 
@@ -186,14 +265,13 @@ public class LoginScreen extends DashBoardActivity implements Handler.Callback {
                 txtpassword.requestFocus();
                 return false;
         }  
-        else if(!(UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim())))
-        	return false; 
 		
 		return true;
 	}
 
 	private void FINISH_ACTIVITY() {
 		Log.d(TAG, "Activity quitting");
+		NMApp.killApp(false);
 	}	
 
 }
