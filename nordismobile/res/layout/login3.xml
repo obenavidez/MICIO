@@ -3,8 +3,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@drawable/bgdialog" 
-    android:orientation="vertical" >
+    android:background="@drawable/bgdialog"
+    android:orientation="vertical" >    
 
     <RelativeLayout
         android:id="@+id/rl_login"
@@ -13,82 +13,95 @@
         android:layout_margin="5dp"
         android:background="#d3d3d3" >
 
-        <TextView
-            android:id="@+id/tvsign"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_margin="10dp"
-            android:shadowColor="@color/Black"
-            android:text="Sign in"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#005D7A" />
+        <TableLayout
+            android:id="@+id/tblLayout1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
 
-        <LinearLayout
-            android:id="@+id/lg_body1"
+            <TableRow
+                android:id="@+id/tableRow0"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" 
+                android:gravity="right">
+
+                <TextView
+                    android:id="@+id/tvsign"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"                    
+                    android:layout_margin="10dp"
+                    
+                    android:shadowColor="@color/Black"
+                    android:text="Sign in"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#005D7A" />
+            </TableRow>
+        </TableLayout>
+
+        <TableLayout
+            android:id="@+id/tblLayout2"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/tvsign" 
-            android:layout_marginLeft="10dp"  >
+            android:layout_below="@id/tblLayout1" >
 
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:src="@drawable/user" />
-
-            <EditText
-                android:id="@+id/etusername"
+            <TableRow
+                android:id="@+id/tableRow1"
                 android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:layout_below="@+id/tvusername"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:inputType="none"
-                android:nextFocusDown="@+id/tvpassword"
-                android:singleLine="true" />
-        </LinearLayout>
+                android:layout_height="wrap_content" >
 
-        <LinearLayout
-            android:id="@+id/lg_body2"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" 
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/lg_body1" 
-            android:layout_marginLeft="10dp">
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/user" />
 
-            <ImageView
-                android:id="@+id/imageView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:src="@drawable/lock" />
+                <EditText
+                    android:id="@+id/etusername"
+                    android:layout_height="40dp"
+                    android:layout_below="@+id/tvusername"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="3"
+                    android:inputType="none"
+                    android:nextFocusDown="@+id/tvpassword"
+                    android:singleLine="true" />
+            </TableRow>
 
-            <EditText
-                android:id="@+id/etpassword"
+            <TableRow
+                android:id="@+id/tableRow2"
                 android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:layout_below="@+id/tvpassword"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:inputType="textPassword"
-                android:nextFocusDown="@+id/btnsignin"
-                android:nextFocusRight="@+id/btnsignin"
-                android:singleLine="true" />
-        </LinearLayout>
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/lock" />
+
+                <EditText
+                    android:id="@+id/etpassword"
+                    android:layout_height="40dp"
+                    android:layout_below="@+id/tvpassword"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="3"
+                    android:inputType="textPassword"
+                    android:nextFocusDown="@+id/btnsignin"
+                    android:nextFocusRight="@+id/btnsignin"
+                    android:singleLine="true" />
+            </TableRow>
+        </TableLayout>
 
         <TableRow
             android:id="@+id/layoutbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/lg_body2"
-            android:layout_centerHorizontal="true" >
+            android:layout_below="@id/tblLayout2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp" >
 
             <Button
                 android:id="@+id/btnsignin"
@@ -125,7 +138,6 @@
             android:id="@+id/txtnotificacion"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/layoutbutton"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/Red"
             android:visibility="gone" />
