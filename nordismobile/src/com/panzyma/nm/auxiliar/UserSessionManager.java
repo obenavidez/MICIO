@@ -3,43 +3,24 @@ package com.panzyma.nm.auxiliar;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
+import java.util.Calendar; 
 
-import com.panzyma.nm.LoginScreen; 
-import com.panzyma.nm.Main;
+import com.panzyma.nm.LoginScreen;  
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
-import com.panzyma.nm.NMApp.Modulo;
-import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
-import com.panzyma.nm.view.ViewConfiguracion;
- 
-
-
-
-
-
-
-
-
-
-
-
-
+import com.panzyma.nm.view.ViewConfiguracion; 
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.SyncResult;
-import android.view.View;
- 
+import android.content.SharedPreferences.Editor; 
+@SuppressWarnings("unused")
 public class UserSessionManager 
 {
 	
@@ -79,7 +60,7 @@ public class UserSessionManager
     private static final String PREFER_NAME = "SIMFAC_SESSION";
     
     // KEY SESSION
-    private static final String USER_ID = "USER_ID";
+	private static final String USER_ID = "USER_ID";
     
     static Object lock=new Object();
     
@@ -122,6 +103,7 @@ public class UserSessionManager
 	}    
     
     // CREATE LONGIN SESSION
+    @SuppressLint("SimpleDateFormat") 
     public static Session guardarSession(Session session)
 	{ 
 		Usuario user=session.getUsuario();  
@@ -133,7 +115,8 @@ public class UserSessionManager
 		return session;
 	}
      
-    public static Session getSession(){ 
+    public static Session getSession()
+    { 
     	
     	if(pref.getLong("USER_ID",0)==0)
     		return null;

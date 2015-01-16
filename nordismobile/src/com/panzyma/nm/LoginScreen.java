@@ -269,7 +269,7 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 
 	private void FINISH_ACTIVITY() {
 		Log.d(TAG, "Activity quitting");
-		NMApp.killApp(true);
+		NMApp.killApp(false);
 	}	
 
 }
