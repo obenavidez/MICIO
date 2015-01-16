@@ -198,8 +198,7 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 									UserSessionManager.guardarSession(new Session(UserSessionManager.getLoginUser(),true));
 									if(UserSessionManager.isUserLoggedIn())
 										goHome();
-								}
-								
+								} 
 							}
 						});
 					} catch (InterruptedException e) {
@@ -215,8 +214,7 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 		{				
 
 			@Override
-			public void onClick(View v) {
-				mButtonClickListener.onButtonClick(false);
+			public void onClick(View v) { 
 				FINISH_ACTIVITY();
 			}
 		});
@@ -271,7 +269,7 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 
 	private void FINISH_ACTIVITY() {
 		Log.d(TAG, "Activity quitting");
-		NMApp.killApp(false);
+		NMApp.killApp(true);
 	}	
 
 }

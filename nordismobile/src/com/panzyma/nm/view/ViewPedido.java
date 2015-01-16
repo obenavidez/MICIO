@@ -4,6 +4,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +66,7 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.Promociones;
+import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
@@ -815,7 +817,10 @@ public class ViewPedido extends ActionBarActivity implements
 				transaction = getSupportFragmentManager().beginTransaction();
 				transaction.replace(R.id.fragment_container, firstFragment);
 				transaction.commit();
-			} else
+			} 
+			if(fragment instanceof ConsultaVentasFragment)
+				getSupportActionBar().show();
+			else
 				FINISH_ACTIVITY();
 
 			return true;
@@ -836,8 +841,7 @@ public class ViewPedido extends ActionBarActivity implements
 		return super.onKeyUp(keyCode, event);
 	}
 
-	private void FINISH_ACTIVITY() {
-		NMApp.getController().setView((Callback) getParent());
+	private void FINISH_ACTIVITY() {  
 		Log.d(TAG, "Activity quitting");
 		finish();
 	}

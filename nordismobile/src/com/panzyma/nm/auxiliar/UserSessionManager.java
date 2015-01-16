@@ -1,19 +1,32 @@
 package com.panzyma.nm.auxiliar;
 
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+
 import com.panzyma.nm.LoginScreen; 
 import com.panzyma.nm.Main;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
 import com.panzyma.nm.NMApp.Modulo;
+import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ViewConfiguracion;
  
+
+
+
+
+
+
+
+
+
 
 
 
@@ -25,6 +38,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SyncResult;
+import android.view.View;
  
 public class UserSessionManager 
 {
@@ -40,13 +54,13 @@ public class UserSessionManager
     private static final int AUT_PWD_INVALIDO = 3;  
 	
 	//EMPRESA
-	private static  String empresa = "dp";
+	private static  String EMPRESA = "dp";
 	
 	//NOMBRE DE USUARIO DEL SISTEMA
-	private static  String nameuser; 
+	private static  String NAMEUSER; 
 	
 	//PASSWORD DEL USUARIO DEL SISTEMA
-	private static  String password;  
+	private static  String PASSWORD;  
 	
 	 // SESSION STATUS
     private static final String IS_LOGGED_IN= "IS_LOGGED_IN"; 
@@ -80,30 +94,31 @@ public class UserSessionManager
     
     private static Usuario userinfo;
     
+    public static boolean HAS_ERROR=false;
     
     public static String getNameUser()
 	{
-		return nameuser;
+		return NAMEUSER;
 	}
 	
 	public static void setNameUser(String _nameuser)
 	{
-		nameuser=_nameuser;
+		NAMEUSER=_nameuser;
 	}
 	
 	public static String getPassword()
 	{
-		return password;
+		return PASSWORD;
 	}
 	
 	public static void setPassword(String _password)
 	{
-		password=_password;
+		PASSWORD=_password;
 	}
 	
 	public static String getEmpresa()
 	{
-		return empresa;
+		return EMPRESA;
 	}    
     
     // CREATE LONGIN SESSION
@@ -130,26 +145,26 @@ public class UserSessionManager
     
     public static String getCredenciales(){ 
 		Usuario user = UserSessionManager.getLoginUser(); 
-		nameuser = user.getLogin();
-		password = user.getPassword();
-		empresa = SessionManager.getEmpresa();
-		if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
-        		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
+		NAMEUSER = user.getLogin();
+		PASSWORD = user.getPassword();
+		EMPRESA = SessionManager.getEmpresa();
+		if(NAMEUSER==null || PASSWORD==null || EMPRESA==null ||(NAMEUSER!=null && NAMEUSER.trim()=="") 
+        		|| (PASSWORD!=null && PASSWORD.trim()=="") || (EMPRESA!=null && EMPRESA.trim()==""))
         	return "";
         else
-        	return nameuser + "-" + password + "-" + empresa; 
+        	return NAMEUSER + "-" + PASSWORD + "-" + EMPRESA; 
 	} 
 	public static String getCredentials()
 	{		
 		Usuario user = UserSessionManager.getLoginUser(); 
-		nameuser = user.getLogin();
-		password = user.getPassword();
-		empresa = SessionManager.getEmpresa();
-        if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
-        		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
+		NAMEUSER = user.getLogin();
+		PASSWORD = user.getPassword();
+		EMPRESA = SessionManager.getEmpresa();
+        if(NAMEUSER==null || PASSWORD==null || EMPRESA==null ||(NAMEUSER!=null && NAMEUSER.trim()=="") 
+        		|| (PASSWORD!=null && PASSWORD.trim()=="") || (EMPRESA!=null && EMPRESA.trim()==""))
         	return "";
         else
-        	return nameuser + "||" + password + "||" + empresa;
+        	return NAMEUSER + "||" + PASSWORD + "||" + EMPRESA;
 	}
 
     
@@ -165,11 +180,15 @@ public class UserSessionManager
         {        	
         	if(userinfo.getLogin().equals(username) && userinfo.getPassword().equals(_password))
         		return UserSessionManager.isValidCredentials=true;
+        	else
+        		sendErrorMessage(new ErrorMessage("Error en la Autenticación","Error en la Autenticación\n"+"Usuario o Password desconocidos.",""));
         } else 
         {
 
-			while(!UserSessionManager.isValidCredentials)
+        	UserSessionManager.HAS_ERROR=false;
+			while(!UserSessionManager.isValidCredentials && !UserSessionManager.HAS_ERROR)
 			{
+				
 	    		((Activity) _context).runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -218,58 +237,69 @@ public class UserSessionManager
 									@Override
 									public void run()
 									{ 										
-										LoginUserResult res; 
+										LoginUserResult res = null; 
 										
 										try 
-										{
-											if( NMApp.tipoAutenticacion == AutenticationType.REMOTE) 
-											{
-												// AUTENTICACION REMOTA
+										{ 
 												res =ModelConfiguracion.verifyLogin(url2,(nombreUsuario+"-"+password+"-"+empresa),"ADMIN");
 												
 												if (res.getAuntenticateRS() == AUT_EXITOSA )
 												{				
 													BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, 
-															nombreUsuario+"-"+password+"-"+empresa,
-															nombreUsuario,
-															NMNetWork.getDeviceId(NMApp.getContext()),
-															SessionManager.getImpresora());
-															
-															boolean _esAdmin=res.IsAdmin();															
-															
-															UserSessionManager.setNameUser(nombreUsuario);
-															UserSessionManager.setPassword(password);															
-															UserSessionManager.isValidCredentials = true;	
-															
-															Usuario user = SessionManager.getLoginUser();
-															if( ( user != null ) &&
-																( user.getPassword() == null ||
-																  ( user.getPassword() != null &&
-																    user.getPassword().trim().length() == 0) 
-																  )
-															   ) {
-																
-																//SessionManager.setLogged(true);
-																user.setPassword(password);
-																user.setIsAdmin(admin);
-																Usuario.guardarInfoUsuario(NMApp.getContext(), user);
-																NMApp.tipoAutenticacion = AutenticationType.LOCAL;
-															
-															}														
-														}
+													nombreUsuario+"-"+password+"-"+empresa,
+													nombreUsuario,
+													NMNetWork.getDeviceId(NMApp.getContext()),
+													SessionManager.getImpresora());
+													
+													boolean _esAdmin=res.IsAdmin();															
+													
+													UserSessionManager.setNameUser(nombreUsuario);
+													UserSessionManager.setPassword(password);															
+													
+													Usuario user = SessionManager.getLoginUser();
+													if( ( user != null ) &&
+														( user.getPassword() == null ||
+														  ( user.getPassword() != null &&
+														    user.getPassword().trim().length() == 0) 
+														  )
+													   ) {
+														 
+														user.setPassword(password);
+														user.setIsAdmin(admin);
+														Usuario.guardarInfoUsuario(NMApp.getContext(), user);
+														NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+													
 													}
+													
+													UserSessionManager.isValidCredentials = true;	
+															
+												}else
+												{
+													if(res.getAuntenticateRS() == AUT_USER_NO_EXIST)
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Usuario desconocido.","")); 
+													else if (res.getAuntenticateRS() == AUT_PWD_INVALIDO) 
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Contraseña inválida.","")); 
+													else if (res.getAuntenticateRS() == AUT_FALLIDA)
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login:Fallo de autenticación.","")); 
+													else
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo en la conexión con el servidor de aplicaciones.\r\n",""));
+												} 
+											
+											
 											unlock();
 											
-										}catch (Exception e) {
-											
+										}catch (Exception e) 
+										{
+											sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo la comunicación con el servidor de aplicaciones.\r\n",e.toString()));
 											e.printStackTrace();
+		
 										}
 									}
 									
 								});
 								
 						} catch (InterruptedException e) { 
-							e.printStackTrace();
+							NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage("Error en la autenticación",e.getMessage(),(e.getCause()==null)?"":e.getCause().toString()));
 						}  
 						NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, "Validando Credenciales."); 
 							
@@ -279,11 +309,19 @@ public class UserSessionManager
 			});	  
 			NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0,"Probando Conexión.");   
 		} catch (Exception e) {  
-			e.printStackTrace();			
+			e.printStackTrace();
+			sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo en la conexión con el servidor de aplicaciones.\r\n",e.toString()));			
 		} 
-		return SessionManager.isLogged();
+		return UserSessionManager.isValidCredentials;
 
  	} 
+    
+    public static void sendErrorMessage(final ErrorMessage error)
+	{
+    	UserSessionManager.HAS_ERROR=true; 
+		UserSessionManager.isValidCredentials=false;
+		NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,error);
+	}
     
     public static void unlock()
 	{

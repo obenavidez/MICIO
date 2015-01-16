@@ -24,17 +24,22 @@
         android:id="@+id/scroll_dialog"
         android:layout_width="wrap_content"
         android:layout_height="70dp"
-        android:layout_toRightOf="@+id/icon_dialog_alert" >
-
+        android:layout_toRightOf="@+id/icon_dialog_alert" 
+        android:scrollbars="vertical">
+ 
+        
         <TextView
-            android:id="@+id/bodymessage_dialog_alert"
-            android:layout_width="210dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:padding="5dp"
-            android:text="mensaje aviso sdfsdflsdfsdf sfdosif sdfisadifasdiofsadf safasdfasdfasdfasdf"
-            android:textColor="@color/White"
-            android:textSize="14dip" />
+	    android:id="@+id/bodymessage_dialog_alert"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" 
+	    android:layout_gravity="center"
+	    android:layout_marginTop="5dp" 
+	    android:minLines="2" 
+	    android:maxLines="10" 
+	    android:textColor="@color/White"
+        android:textSize="14dip" 
+        android:scrollbars="vertical"/>
+         
     </ScrollView>
 
     <TableRow
