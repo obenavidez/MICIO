@@ -1,9 +1,9 @@
 package com.panzyma.nm.auxiliar;
 
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
-
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
-
 import com.panzyma.nm.LoginScreen; 
 import com.panzyma.nm.Main;
 import com.panzyma.nm.NMApp;
@@ -14,18 +14,45 @@ import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ViewConfiguracion;
  
+
+
+
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
  
-public class UserSessionManager {
+public class UserSessionManager 
+{
+	
+	private static final int AUT_EXPIRES=60;
         
+	private static final int AUT_FALLIDA = 0; 
+	
+    private static final int AUT_EXITOSA = 1; 
+    
+    private static final int AUT_USER_NO_EXIST = 2; 
+    
+    private static final int AUT_PWD_INVALIDO = 3;  
+	
+	//EMPRESA
+	private static  String empresa = "dp";
+	
+	//NOMBRE DE USUARIO DEL SISTEMA
+	private static  String nameuser; 
+	
+	//PASSWORD DEL USUARIO DEL SISTEMA
+	private static  String password;  
+	
+	 // SESSION STATUS
+    private static final String IS_LOGGED_IN= "IS_LOGGED_IN"; 
     // EDITO REFERENCE FOR SHARED PREF 
 	static Editor editor;
      
     // CONTEXT
-    Context _context=NMApp.getContext();
+    static Context _context=NMApp.getContext();
      
      // SHARED PREF MODE
     static int PRIVATE_MODE = 0;
@@ -37,8 +64,7 @@ public class UserSessionManager {
     // KEY SESSION
     private static final String USER_ID = "USER_ID";
     
-    // SESSION STATUS
-    private static final String IS_LOGGED_IN= "IS_LOGGED_IN"; 
+   
     
     // TIEMPO INICIO DE SESSION
     private static final String START_SESSION_AT = "START_SESSION_AT";
@@ -47,6 +73,32 @@ public class UserSessionManager {
     static SharedPreferences pref=NMApp.getContext().getSharedPreferences(PREFER_NAME, PRIVATE_MODE); 
     
     private static Usuario userinfo;
+    
+    
+    public static String getNameUser()
+	{
+		return nameuser;
+	}
+	
+	public static void setNameUser(String _nameuser)
+	{
+		nameuser=_nameuser;
+	}
+	
+	public static String getPassword()
+	{
+		return password;
+	}
+	
+	public static void setPassword(String _password)
+	{
+		password=_password;
+	}
+	
+	public static String getEmpresa()
+	{
+		return empresa;
+	}    
     
     // CREATE LONGIN SESSION
     public static Session guardarSession(Session session)
@@ -60,7 +112,7 @@ public class UserSessionManager {
 		editor.commit();
 		return session;
 	}
-    
+     
     public static Session getSession(){ 
     	
     	if(pref.getLong("USER_ID",0)==0)
@@ -70,6 +122,28 @@ public class UserSessionManager {
     	session.setStarted_session(pref.getLong("START_SESSION_AT",0)); 
 		return session;
     }
+    
+    public static String getCredenciales(){ 
+		nameuser="kpineda";
+		password="123";      
+		if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
+        		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
+        	return "";
+        else
+        	return nameuser + "-" + password + "-" + empresa; 
+	} 
+	public static String getCredentials()
+	{		
+		nameuser="kpineda";
+		password="123";
+		empresa="dp";
+
+        if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
+        		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
+        	return "";
+        else
+        	return nameuser + "||" + password + "||" + empresa;
+	}
 
     
     /**
@@ -91,17 +165,15 @@ public class UserSessionManager {
     
     public  static boolean login(final boolean admin, String... credentials)
 	{
-		final String empresa= SessionManager.getEmpresa();
+		final String empresa=getEmpresa();
 		String errormessage="";
 		final String nombreUsuario = credentials[0] ;
-		final int AUT_EXITOSA = 1;
-		final String password = credentials[1];  
-		SessionManager.setLogged(false); 
-		SessionManager.setErrorAuntentication("");		
+		final String password = credentials[1];   
+		
 		final String url= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer():NMConfig.URL; 
 		final String url2= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer2():NMConfig.URL2; 
-		boolean hasError=false;
-		final Usuario user = SessionManager.getLoginUser();
+		
+		boolean hasError=false; 
 		try 
 		{ 							
 			NMApp.getThreadPool().execute(new Runnable()
@@ -119,19 +191,12 @@ public class UserSessionManager {
 									@Override
 									public void run()
 									{ 										
-										LoginUserResult res;
-										
-
-										
-																				
-										if( NMApp.modulo == Modulo.HOME && user != null && user.getPassword().trim().length() > 0 && !admin ) {
-											NMApp.tipoAutenticacion = AutenticationType.LOCAL;
-										}
-
+										LoginUserResult res; 
 										
 										try 
 										{
-											if( NMApp.tipoAutenticacion == AutenticationType.REMOTE) {
+											if( NMApp.tipoAutenticacion == AutenticationType.REMOTE) 
+											{
 												// AUTENTICACION REMOTA
 												res =ModelConfiguracion.verifyLogin(url2,(nombreUsuario+"-"+password+"-"+empresa),"ADMIN");
 												
@@ -196,7 +261,7 @@ public class UserSessionManager {
     /**
      * Clear session details
      * */
-    public void logoutUser(){
+    public static void logoutUser(){
          
         // Clearing all user data from Shared Preferences
         editor.clear();
@@ -226,4 +291,20 @@ public class UserSessionManager {
     {
         return pref.getBoolean(IS_LOGGED_IN, false);
     }
+    
+    // Check for login
+    @SuppressLint("SimpleDateFormat") 
+    public static boolean isSessionExpires()
+    {
+    	long initTime=pref.getLong(START_SESSION_AT, 0);
+    	long endTime=Long.valueOf(new SimpleDateFormat("hhmmss").format(Calendar.getInstance().getTime())); 
+    	if(initTime-endTime>AUT_EXPIRES)
+    		return true;
+
+    	return false;
+    }
+    
+    
+    
+    
 }
