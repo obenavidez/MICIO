@@ -277,13 +277,15 @@ public class Controller<T, U>
 	
 	public final void addOutboxHandler(Callback _view) 
 	{
-		if(getView()==null)
+		/*if(getView()==null)
 			outboxHandlers.put(Main.TAG,new Handler(_view));
 		else
 		{
 			outboxHandlers.remove(_view.getClass().getSimpleName());
 			outboxHandlers.put(this.getView().getClass().getSimpleName(),new Handler(_view));
-		}
+		}*/
+		outboxHandlers.remove(_view.getClass().getSimpleName());
+		outboxHandlers.put(this.getView().getClass().getSimpleName(),new Handler(_view));
 	}	
 	
 	public final void removeOutboxHandler(String handler) {

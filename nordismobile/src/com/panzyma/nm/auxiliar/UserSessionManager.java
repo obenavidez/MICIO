@@ -19,10 +19,12 @@ import com.panzyma.nm.view.ViewConfiguracion;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.SyncResult;
  
 public class UserSessionManager 
 {
@@ -48,14 +50,15 @@ public class UserSessionManager
 	
 	 // SESSION STATUS
     private static final String IS_LOGGED_IN= "IS_LOGGED_IN"; 
-    // EDITO REFERENCE FOR SHARED PREF 
-	static Editor editor;
+    
      
     // CONTEXT
-    static Context _context=NMApp.getContext();
+    public static Context _context = NMApp.getContext();
      
      // SHARED PREF MODE
     static int PRIVATE_MODE = 0;
+    
+    public static boolean isValidCredentials = false;
     
     
     // SHARED PREF FILE NAME
@@ -64,13 +67,16 @@ public class UserSessionManager
     // KEY SESSION
     private static final String USER_ID = "USER_ID";
     
-   
+    static Object lock=new Object();
     
     // TIEMPO INICIO DE SESSION
     private static final String START_SESSION_AT = "START_SESSION_AT";
     
     // SHARED PREF REFERENCES
     static SharedPreferences pref=NMApp.getContext().getSharedPreferences(PREFER_NAME, PRIVATE_MODE); 
+    
+ // EDITO REFERENCE FOR SHARED PREF 
+ 	static Editor editor=pref.edit();
     
     private static Usuario userinfo;
     
@@ -103,9 +109,8 @@ public class UserSessionManager
     // CREATE LONGIN SESSION
     public static Session guardarSession(Session session)
 	{ 
-		Usuario user=session.getUsuario();
-		session.setStarted_session(System.currentTimeMillis());
-		editor = pref.edit();
+		Usuario user=session.getUsuario();  
+		session.setStarted_session(Long.valueOf(new SimpleDateFormat("hhmmss").format(Calendar.getInstance().getTime())));
 		editor.putLong("USER_ID", user.getId());
 		editor.putBoolean("IS_LOGGED_IN",session.isLoged());
 		editor.putLong("START_SESSION_AT",session.getStarted_session()); 
@@ -124,8 +129,10 @@ public class UserSessionManager
     }
     
     public static String getCredenciales(){ 
-		nameuser="kpineda";
-		password="123";      
+		Usuario user = UserSessionManager.getLoginUser(); 
+		nameuser = user.getLogin();
+		password = user.getPassword();
+		empresa = SessionManager.getEmpresa();
 		if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
         		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
         	return "";
@@ -134,10 +141,10 @@ public class UserSessionManager
 	} 
 	public static String getCredentials()
 	{		
-		nameuser="kpineda";
-		password="123";
-		empresa="dp";
-
+		Usuario user = UserSessionManager.getLoginUser(); 
+		nameuser = user.getLogin();
+		password = user.getPassword();
+		empresa = SessionManager.getEmpresa();
         if(nameuser==null || password==null || empresa==null ||(nameuser!=null && nameuser.trim()=="") 
         		|| (password!=null && password.trim()=="") || (empresa!=null && empresa.trim()==""))
         	return "";
@@ -151,25 +158,45 @@ public class UserSessionManager
      * If false it will redirect user to login page
      * Else do anything
      * */
-    public static  boolean checkLogin(String username,String password){
+    public static  boolean checkLogin(final String username,final String _password){
         // Check login status
+    	UserSessionManager.isValidCredentials=false;
         if(userinfo!=null || getLoginUser()!=null)
         {        	
-        	if(userinfo.getLogin().equals(username) && userinfo.getPassword().equals(password))
-        		return true;
-        } else {
-        	return UserSessionManager.login(false, new String[]{username,password});
+        	if(userinfo.getLogin().equals(username) && userinfo.getPassword().equals(_password))
+        		return UserSessionManager.isValidCredentials=true;
+        } else 
+        {
+
+			while(!UserSessionManager.isValidCredentials)
+			{
+	    		((Activity) _context).runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						UserSessionManager.login(false, new String[]{username,_password});
+					}
+				});
+				synchronized(lock)
+	            {
+	                try {
+	                	lock.wait();
+	    			} catch (InterruptedException e) { 
+	    				e.printStackTrace();
+	    			}
+	            }  
+			}        	
+			      	
         }
-        return false;
+        return UserSessionManager.isValidCredentials;
     } 
     
-    public  static boolean login(final boolean admin, String... credentials)
+    public synchronized static boolean login(final boolean admin, String... credentials)
 	{
 		final String empresa=getEmpresa();
 		String errormessage="";
 		final String nombreUsuario = credentials[0] ;
 		final String password = credentials[1];   
-		
+		UserSessionManager.isValidCredentials = false;
 		final String url= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer():NMConfig.URL; 
 		final String url2= (NMApp.modulo== NMApp.Modulo.CONFIGURACION)?((ViewConfiguracion)SessionManager.getContext()).getTBoxUrlServer2():NMConfig.URL2; 
 		
@@ -209,10 +236,10 @@ public class UserSessionManager
 															SessionManager.getImpresora());
 															
 															boolean _esAdmin=res.IsAdmin();															
-															SessionManager.setEmpresa(empresa);
-															SessionManager.setNameUser(nombreUsuario);
-															SessionManager.setPassword(password);															
-															SessionManager.setLogged(true);	
+															
+															UserSessionManager.setNameUser(nombreUsuario);
+															UserSessionManager.setPassword(password);															
+															UserSessionManager.isValidCredentials = true;	
 															
 															Usuario user = SessionManager.getLoginUser();
 															if( ( user != null ) &&
@@ -227,9 +254,11 @@ public class UserSessionManager
 																user.setIsAdmin(admin);
 																Usuario.guardarInfoUsuario(NMApp.getContext(), user);
 																NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+															
 															}														
 														}
 													}
+											unlock();
 											
 										}catch (Exception e) {
 											
@@ -249,14 +278,28 @@ public class UserSessionManager
 				 }
 			});	  
 			NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0,"Probando Conexión.");   
-
-		}
-	    catch (Exception e) {  
+		} catch (Exception e) {  
 			e.printStackTrace();			
 		} 
 		return SessionManager.isLogged();
 
  	} 
+    
+    public static void unlock()
+	{
+		NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
+		((Activity) _context).runOnUiThread(new Runnable()
+	     {
+	            @Override
+				public void run()
+	            {
+	            	synchronized(lock)
+	            	{                             
+	            			lock.notify();
+                    }
+	            }
+	      }); 
+	} 
      
     /**
      * Clear session details
