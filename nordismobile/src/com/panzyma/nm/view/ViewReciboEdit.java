@@ -220,30 +220,26 @@ public class ViewReciboEdit extends FragmentActivity implements
 			reciboId = (Integer) bundle.get(ViewRecibo.RECIBO_ID);
 			SessionManager.setContext(this);
 			me = this;
-			/*
-			 * NMApp.getController().removeBridgeByName(BReciboM.class.toString()
-			 * ); NMApp.getController().setEntities(this, brm = new BReciboM());
-			 * NMApp.getController().addOutboxHandler(handler=new
-			 * Handler(this));
-			 */
+
 			if (getIntent().hasExtra("cliente")) {
 				long IdCliente = getIntent().getLongExtra("cliente", 0);
 				cliente = Ventas.getClienteBySucursalID(IdCliente,me.getContentResolver());
 			}
 			
+			if(facturasRecibo==null)
+				facturasRecibo = new ArrayList<Factura>();
+			if(notasDebitoRecibo==null)
+				notasDebitoRecibo = new ArrayList<CCNotaDebito>();
+			if(notasCreditoRecibo==null)
+				notasCreditoRecibo = new ArrayList<CCNotaCredito>();
 			
-			facturasRecibo = new ArrayList<Factura>();
-			notasDebitoRecibo = new ArrayList<CCNotaDebito>();
-			notasCreditoRecibo = new ArrayList<CCNotaCredito>();
 			if (savedInstanceState != null) {
-				Parcelable[] docs = savedInstanceState
-						.getParcelableArray("documentos");
-				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>(
-						(Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays
-								.asList(docs));
+				Parcelable[] docs = savedInstanceState.getParcelableArray("documentos");
+				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>((Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays.asList(docs));
 				recibo = savedInstanceState.getParcelable("recibo");
 				recibo.setOldData(recibo);
-			} else {
+			} 
+			else {
 				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
 			}
 
@@ -266,7 +262,8 @@ public class ViewReciboEdit extends FragmentActivity implements
 			display = wm.getDefaultDisplay();
 			initComponent();
 
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
 					0,
@@ -287,6 +284,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 		documents.toArray(objects);
 		savedInstanceState.putParcelableArray("documentos", objects);
 		savedInstanceState.putParcelable("recibo", recibo);
+		savedInstanceState.putParcelable("cliente", cliente);
 		// etc.
 	}
 
@@ -296,14 +294,12 @@ public class ViewReciboEdit extends FragmentActivity implements
 		super.onRestoreInstanceState(savedInstanceState);
 		// Restore UI state from the savedInstanceState.
 		// This bundle has also been passed to onCreate.
-		Parcelable[] objects = savedInstanceState
-				.getParcelableArray("documentos");
-		documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>(
-				(Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays
-						.asList(objects));
-		gridheader.setText(String.format("Documentos a Pagar (%s)",
-				documents.size()));
+		Parcelable[] objects = savedInstanceState.getParcelableArray("documentos");
+		documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>((Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays.asList(objects));
+		cliente = savedInstanceState.getParcelable("cliente");
+		gridheader.setText(String.format("Documentos a Pagar (%s)",documents.size()));
 		recibo = savedInstanceState.getParcelable("recibo");
+		agregarDocumentosAlDetalleDeRecibo();
 		// setList();
 	}
 
@@ -424,26 +420,28 @@ public class ViewReciboEdit extends FragmentActivity implements
 		if (_onEdit != null && _onEdit.length != 0)
 			onEdit = true;
 		if (recibo == null || !onEdit) {
+			if (recibo == null){
 			// NUEVO RECIBO
-			recibo = new ReciboColector();
-			recibo.setId(0);
-			
-			if (!getIntent().hasExtra("cliente")) {
-				cliente = null;	
-				recibo.setNombreCliente("");
+				recibo = new ReciboColector();
+				recibo.setId(0);
+				
+				if (!getIntent().hasExtra("cliente")) {
+					cliente = null;	
+					recibo.setNombreCliente("");
+				}
+				recibo.setCodEstado("REGISTRADO");
+				recibo.setReferencia(0);
+				recibo.setFecha(date);
+				recibo.setExento(false);
+				recibo.setAutorizacionDGI("");
+				recibo.setNotas("");
+				recibo.setTotalFacturas(0.00f);
+				recibo.setTotalND(0.00f);
+				recibo.setTotalNC(0.00f);
+				recibo.setSubTotal(0.00f);
+				recibo.setTotalRecibo(0.00f);
+				tbxNumRecibo.setText("");
 			}
-			recibo.setCodEstado("REGISTRADO");
-			recibo.setReferencia(0);
-			recibo.setFecha(date);
-			recibo.setExento(false);
-			recibo.setAutorizacionDGI("");
-			recibo.setNotas("");
-			recibo.setTotalFacturas(0.00f);
-			recibo.setTotalND(0.00f);
-			recibo.setTotalNC(0.00f);
-			recibo.setSubTotal(0.00f);
-			recibo.setTotalRecibo(0.00f);
-			tbxNumRecibo.setText("");
 		} else {
 
 			cliente = recibo.getCliente();
@@ -1745,10 +1743,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 			public void onSeleccionarDocumento(Documento document) 
 			{
 
-				final DialogDocumentos dialog = new DialogDocumentos(
-						me,
-						android.R.style.Theme_Translucent_NoTitleBar_Fullscreen,
-						cliente, document);
+				final DialogDocumentos dialog = new DialogDocumentos(me,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen,cliente, document);
 				dialog.setOnDialogDocumentoButtonClickListener(new OnDocumentoButtonClickListener() {
 					@Override
 					public void onButtonClick(Object documento) 
@@ -1760,26 +1755,18 @@ public class ViewReciboEdit extends FragmentActivity implements
 							final ReciboDetFactura facturaDetalle = new ReciboDetFactura();
 							facturaDetalle.setObjFacturaID(factura.getId());
 							facturaDetalle.setFecha(factura.getFecha());
-							facturaDetalle.setFechaVence(factura
-									.getFechaVencimiento());
-							facturaDetalle.setFechaAplicaDescPP(factura
-									.getFechaAppDescPP());
+							facturaDetalle.setFechaVence(factura.getFechaVencimiento());
+							facturaDetalle.setFechaAplicaDescPP(factura.getFechaAppDescPP());
 							facturaDetalle.setNumero(factura.getNoFactura());
 							facturaDetalle.setMontoRetencion(0.00f);
 							facturaDetalle.setEsAbono(false);
-							facturaDetalle.setImpuesto(factura
-									.getImpuestoFactura());
+							facturaDetalle.setImpuesto(factura.getImpuestoFactura());
 							facturaDetalle.setMontoImpuesto(0.00F);
 							// Calcular el interés moratorio de la factura si
 							// está en mora
-							float porcentajeIntMora = Float
-									.parseFloat((String) Cobro.getParametro(
-											contexto, "PorcInteresMoratorio"));
-							facturaDetalle
-									.setInteresMoratorio(porcentajeIntMora);
-							float interesMoratorio = Cobro.getInteresMoratorio(
-									contexto, factura.getFechaVencimiento(),
-									factura.getSaldo());
+							float porcentajeIntMora = Float.parseFloat((String) Cobro.getParametro(contexto, "PorcInteresMoratorio"));
+							facturaDetalle.setInteresMoratorio(porcentajeIntMora);
+							float interesMoratorio = Cobro.getInteresMoratorio(contexto, factura.getFechaVencimiento(),factura.getSaldo());
 							facturaDetalle.setMontoInteres(interesMoratorio);
 							facturaDetalle.setMontoDescEspecifico(0.0F);
 							facturaDetalle.setPorcDescPromo(0.0F);
@@ -1790,105 +1777,78 @@ public class ViewReciboEdit extends FragmentActivity implements
 							facturaDetalle.setMontoOtrasDeducciones(0.0F);
 							facturaDetalle.setMontoRetencion(0.0F);
 							facturaDetalle.setSaldoFactura(factura.getSaldo());
-							facturaDetalle.setSaldoTotal(factura.getSaldo()
-									+ interesMoratorio);
-							facturaDetalle.setMonto(facturaDetalle
-									.getSaldoTotal());
-							facturaDetalle.setSubTotal(factura
-									.getSubtotalFactura()
-									- factura.getDescuentoFactura());
-							facturaDetalle.setTotalFactura(factura
-									.getTotalFacturado());
+							facturaDetalle.setSaldoTotal(factura.getSaldo()+ interesMoratorio);
+							facturaDetalle.setMonto(facturaDetalle.getSaldoTotal());
+							facturaDetalle.setSubTotal(factura.getSubtotalFactura()- factura.getDescuentoFactura());
+							facturaDetalle.setTotalFactura(factura.getTotalFacturado());
 
-							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(
-									facturaDetalle, recibo, ActionType.ADD);
+							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, recibo, ActionType.ADD);
 							dialogConfirmacion.setActionPago(new Pagable() {
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
-									procesaFactura(facturaDetalle, factura,
-											montos, true);
-									dialog.loadFacturas(
-											cliente.getFacturasPendientes(), 0);
+									procesaFactura(facturaDetalle, factura,montos, true);
+									dialog.loadFacturas(cliente.getFacturasPendientes(), 0);
 								}
 							});
 							FragmentManager fragmentManager = getSupportFragmentManager();
 
 							dialogConfirmacion.show(fragmentManager, "");
 
-						} else if (documento instanceof CCNotaDebito) {
+						} 
+						else if (documento instanceof CCNotaDebito) {
 							// SI EL DOCUMENTO ES UNA NOTA DE DEBITO
 							final CCNotaDebito notaDebito = (CCNotaDebito) documento;
 							// CREAR UN OBJETO DETALLE DE NOTA DEBITO
 							final ReciboDetND notaDebitoDetalle = new ReciboDetND();
 							notaDebitoDetalle.setId(0);
-							notaDebitoDetalle.setObjNotaDebitoID(notaDebito
-									.getId());
+							notaDebitoDetalle.setObjNotaDebitoID(notaDebito.getId());
 							notaDebitoDetalle.setNumero(notaDebito.getNumero());
 							notaDebitoDetalle.setFecha(notaDebito.getFecha());
-							notaDebitoDetalle.setFechaVence(notaDebito
-									.getFechaVence());
+							notaDebitoDetalle.setFechaVence(notaDebito.getFechaVence());
 							notaDebitoDetalle.setEsAbono(false);
 
-							float porcentajeIntMora = Float
-									.parseFloat((String) Cobro.getParametro(
-											contexto, "PorcInteresMoratorio"));
-							float interesMoratorio = Cobro.getInteresMoratorio(
-									contexto, notaDebito.getFechaVence(),
-									notaDebito.getSaldo());
+							float porcentajeIntMora = Float.parseFloat((String) Cobro.getParametro(contexto, "PorcInteresMoratorio"));
+							float interesMoratorio = Cobro.getInteresMoratorio(contexto, notaDebito.getFechaVence(),notaDebito.getSaldo());
 							notaDebitoDetalle.setMontoInteres(interesMoratorio);
 
-							notaDebitoDetalle
-									.setInteresMoratorio(porcentajeIntMora);
+							notaDebitoDetalle.setInteresMoratorio(porcentajeIntMora);
 							notaDebitoDetalle.setMontoND(notaDebito.getMonto());
 							notaDebitoDetalle.setSaldoND(notaDebito.getSaldo());
 							notaDebitoDetalle.setMontoNeto(0.0F);
-							notaDebitoDetalle.setSaldoTotal(notaDebitoDetalle
-									.getSaldoND()
-									+ notaDebitoDetalle.getMontoInteres());
-							notaDebitoDetalle.setMontoPagar(notaDebitoDetalle
-									.getSaldoTotal());
+							notaDebitoDetalle.setSaldoTotal(notaDebitoDetalle.getSaldoND()+ notaDebitoDetalle.getMontoInteres());
+							notaDebitoDetalle.setMontoPagar(notaDebitoDetalle.getSaldoTotal());
 
-							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(
-									notaDebitoDetalle, recibo, ActionType.ADD);
+							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaDebitoDetalle, recibo, ActionType.ADD);
 							dialogConfirmacion.setActionPago(new Pagable() {
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
-									procesaNotaDebito(notaDebitoDetalle,
-											notaDebito, montos, true);
-									dialog.loadNotasDebito(
-											cliente.getNotasDebitoPendientes(),
-											0);
+									procesaNotaDebito(notaDebitoDetalle,notaDebito, montos, true);
+									dialog.loadNotasDebito(cliente.getNotasDebitoPendientes(),0);
 								}
 							});
 							FragmentManager fragmentManager = getSupportFragmentManager();
 
 							dialogConfirmacion.show(fragmentManager, "");
 
-						} else if (documento instanceof CCNotaCredito) {
+						} 
+						else if (documento instanceof CCNotaCredito) {
 							// SI EL DOCUMENTO ES UNA NOTA DE CREDITO
 							final CCNotaCredito notaCredito = (CCNotaCredito) documento;
 							// CREAR UN OBJETO DETALLE DE NOTA CREDITO
 							final ReciboDetNC notaCreditoDetalle = new ReciboDetNC();
 							notaCreditoDetalle.setId(0);
 							notaCreditoDetalle.setFecha(notaCredito.getFecha());
-							notaCreditoDetalle.setFechaVence(notaCredito
-									.getFechaVence());
+							notaCreditoDetalle.setFechaVence(notaCredito.getFechaVence());
 							notaCreditoDetalle.setMonto(notaCredito.getMonto());
-							notaCreditoDetalle.setNumero(notaCredito
-									.getNumero());
-							notaCreditoDetalle.setObjNotaCreditoID(notaCredito
-									.getId());
+							notaCreditoDetalle.setNumero(notaCredito.getNumero());
+							notaCreditoDetalle.setObjNotaCreditoID(notaCredito.getId());
 
-							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(
-									notaCreditoDetalle, recibo, ActionType.ADD);
+							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(notaCreditoDetalle, recibo, ActionType.ADD);
 							dialogConfirmacion.setActionPago(new Pagable() {
 								@Override
 								public void onPagarEvent(List<Ammount> montos) {
-									procesaNotaCredito(notaCreditoDetalle,
-											notaCredito, montos, true);
-									dialog.loadNotasCredito(
-											cliente.getNotasCreditoPendientes(),
-											0);
+									procesaNotaCredito(notaCreditoDetalle,notaCredito, montos, true);
+									dialog.loadNotasCredito(cliente.getNotasCreditoPendientes(),0);
 								}
 							});
 							FragmentManager fragmentManager = getSupportFragmentManager();
@@ -1898,8 +1858,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 				});
 				Window window = dialog.getWindow();
 				window.setGravity(Gravity.CENTER);
-				window.setLayout(display.getWidth() - 40,
-						display.getHeight() - 110);
+				window.setLayout(display.getWidth() - 40,display.getHeight() - 110);
 				dialog.show();
 			}
 		});
