@@ -841,8 +841,7 @@ public class ViewPedido extends ActionBarActivity implements
 		return super.onKeyUp(keyCode, event);
 	}
 
-	private void FINISH_ACTIVITY() {
-		NMApp.getController().setView((Callback) getParent());
+	private void FINISH_ACTIVITY() {  
 		Log.d(TAG, "Activity quitting");
 		finish();
 	}

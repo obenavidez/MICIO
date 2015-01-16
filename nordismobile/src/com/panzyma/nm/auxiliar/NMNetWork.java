@@ -62,7 +62,7 @@ public class NMNetWork {
 	        {
 				try 
 				{ 
-						SessionManager.hasError=true;
+						UserSessionManager.HAS_ERROR=true;
 						SessionManager.setErrorAuntentication(error.getTittle()+"\n"+error.getMessage());
 						Thread.sleep(1000);
 						NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,error); 
@@ -100,6 +100,7 @@ public class NMNetWork {
 	        {
 				try 
 				{ 
+						UserSessionManager.HAS_ERROR=true;
 						SessionManager.hasError=true;
 						SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());
 						Thread.sleep(1000);
@@ -171,11 +172,11 @@ public class NMNetWork {
         		return Boolean.parseBoolean(((SoapPrimitive)AppNMComunication.InvokeMethod(new ArrayList<Parameters>(),url,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());              
         } 
         catch(Exception ex) 
-        {         	 
-        	SessionManager.hasError=true; 
+        {         	  
+        	UserSessionManager.HAS_ERROR=true;
         	try 
 			{				
-				NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,ErrorMessage.newInstance("","error en la comunicación con el servidor de aplicaciones.\n"+ex.toString(),"")); 
+				NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,new ErrorMessage("","error en la comunicación con el servidor de aplicaciones.\n"+ex.toString(),"error en la comunicación con el servidor de aplicaciones.\n"+ex.toString())); 
 			} catch (Exception e) { 
 				e.printStackTrace();
 			}				  
