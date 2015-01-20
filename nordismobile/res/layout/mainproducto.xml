@@ -34,11 +34,11 @@
          	android:id="@+id/p_textv_gridheader"
 			style="StyleFontTextViewActionBar"
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:text="Lista de Productos"
+			android:layout_height="30dp"
+			android:text="LISTA PRODUCTOS"
 			android:gravity="center"
 			android:textColor="@color/White"
-			android:background="@color/Gray"	             
+			 android:background="@drawable/bg_actionbar29" 	             
             />
 		    
      </LinearLayout>	

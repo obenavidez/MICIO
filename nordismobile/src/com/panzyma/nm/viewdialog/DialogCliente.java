@@ -177,7 +177,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 		{			 
 			if(Lcliente.size()!=0)
 			{
-					gridheader.setText("Listado de Clientes("+Lcliente.size()+")");
+					gridheader.setText("LISTA CLIENTE("+Lcliente.size()+")");
 					adapter=new GenericAdapter(NMApp.getContext(),ClienteViewHolder.class,Lcliente,R.layout.gridcliente);				 
 					lvcliente.setAdapter(adapter);
 					lvcliente.setOnItemClickListener(new OnItemClickListener() 

@@ -2,10 +2,8 @@ package com.panzyma.nm.viewmodel;
 
 import com.panzyma.nm.serviceproxy.Impresora;
 
-public class vmConfiguracion implements Comparable<vmConfiguracion> {
-
+public class vmConfiguracion{
 	
-
 	private java.lang.String URL_SERVER;
 	private java.lang.String URL_SERVER2;
 	private java.lang.String DEVICE_ID;
@@ -15,6 +13,17 @@ public class vmConfiguracion implements Comparable<vmConfiguracion> {
 	private int MAX_IDRECIBO;
 	private Impresora impresora;
 
+	vmConfiguracion oldata;
+	/**
+	 * @param uRL_SERVER
+	 * @param uRL_SERVER2
+	 * @param dEVICE_ID
+	 * @param eNTERPRISE
+	 * @param nAME_USER
+	 * @param mAX_IDPEDIDO
+	 * @param mAX_IDRECIBO
+	 * @param impresora
+	 */ 
 	public static vmConfiguracion setConfiguration(java.lang.String url_server,java.lang.String url_server2,
 			java.lang.String device_prefix, java.lang.String enterprise,
 			java.lang.String name_user, int max_idpedido, int max_idrecibo,Impresora _impresora) {
@@ -29,6 +38,49 @@ public class vmConfiguracion implements Comparable<vmConfiguracion> {
 		vmonfig.setImpresora(_impresora);
 		return vmonfig;
 	}
+	
+	public void setOldData(vmConfiguracion config)
+	{
+		oldata=setConfiguration(config);
+	}
+	
+	public vmConfiguracion getOldData()
+	{
+		return oldata;
+	}
+	
+	 @SuppressWarnings("unused")
+	public boolean hasModified(Object obj) 
+    { 
+    	if(obj==null && this!=null)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		vmConfiguracion other = (vmConfiguracion) obj;
+		if(other==null && this!=null)
+			return true;	  
+
+		if(!(getAppServerURL().equals(other.getAppServerURL())))
+				return true;
+		if(!(getAppServerURL2().equals(other.getAppServerURL2())))
+			return true;
+		if(!(getDeviceId().equals(other.getDeviceId())))
+			return true;
+		if(!(getEnterprise().equals(other.getEnterprise())))
+			return true; 		
+		if(!(getNameUser().equals(other.getNameUser())))
+			return true; 		
+		
+		Impresora printer=getImpresora();
+		Impresora _printer=other.getImpresora();
+		 
+		if((printer==null && _printer!=null) || ((printer!=null && _printer==null)))
+			return true;
+		if (printer.obtenerMac()!=_printer.obtenerMac())
+			return true;
+		
+		return false;
+    }
 
 	public static vmConfiguracion setConfiguration(vmConfiguracion obj) 
 	{
@@ -98,18 +150,5 @@ public class vmConfiguracion implements Comparable<vmConfiguracion> {
 
 	public void setImpresora(Impresora impresora) {
 		this.impresora = impresora;
-	}
-	@SuppressWarnings("static-access")
-	@Override
-	public int compareTo(vmConfiguracion obj) {
-		this.getImpresora();
-		obj.getImpresora();
-		if (this.getAppServerURL() == obj.getAppServerURL()
-				&& this.getDeviceId() == obj.getDeviceId()
-				&& this.getNameUser() == obj.getNameUser() 
-				&& Impresora.obtenerMac()==Impresora.obtenerMac())
-			return 0;
-		else
-			return -1;
 	}
 }

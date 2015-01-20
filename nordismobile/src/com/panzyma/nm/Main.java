@@ -52,77 +52,26 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	private static CustomDialog dlg;
 	Intent intent;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		SessionManager.setContext(this);
-		setContentView(R.layout.home);
+		UserSessionManager.setContext(this);
 		NMApp.getController().setView(this);
+		
+		setContentView(R.layout.home);
+		
 		setHeader(getString(R.string.HomeActivityTitle), false, true);
 		WindowManager wm = (WindowManager) this
 				.getSystemService(Context.WINDOW_SERVICE);
 		display = wm.getDefaultDisplay();
 		context = this;
-		try {
-			NMApp.getController().setEntities(this, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		NMApp.getController().addOutboxHandler(new Handler(this));
 		if ((savedInstanceState != null) ? savedInstanceState
 				.getBoolean("dl_visible") : false)
 
 			NMApp.modulo = NMApp.Modulo.HOME;
 	}
 
-	/*public void verifyLogin() {
-
-		if (SessionManager.getLoginUser() != null ) {
-			Usuario user = ModelConfiguracion.getUser(NMApp.getContext());
-			if( user != null && SessionManager.getLoginUser().getLogin().equals(user.getLogin()) ){
-				if(user.getPassword().trim().length() == 0) {
-					dialogLogin();
-				} else {
-					if(!SessionManager.isLogged())
-						dialogLogin();
-				}				
-			} else {
-				dialogLogin();
-			}
-			//if( !SessionManager.isLogged() )
-			if (user.getPassword() == null
-					|| (user.getPassword() != null 
-							&& user.getPassword().trim().length() == 0)
-				)
-			{
-				
-					dialogLogin();
-			}				
-		} else {
-
-//		if (SessionManager.getLoginUser() != null ) 
-//		{
-//			 Usuario user = SessionManager.getLoginUser();
-//			 if( !SessionManager.isLogged() )
-//				if (user.getPassword() == null
-//					|| (user.getPassword() != null
-//					&& user.getPassword().trim().length() == 0)
-//					)
-//				 {
-//				
-//				 dialogLogin();
-//				 }
-//		}  else 
-//		{
-
-			NMApp.modulo = NMApp.Modulo.CONFIGURACION;
-			intent = new Intent(this, ViewConfiguracion.class);
-			intent.putExtra("isEditActive", true);
-			startActivity(intent);
-			FINISH_COMPONENT();
-//		}
-	}*/
 
 	@Override
 	protected void onDestroy() {
@@ -197,24 +146,15 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				intent = new Intent(context,ViewConfiguracion.class);
 				intent.putExtra("isEditActive",true);
 				startActivity(intent);
-				FINISH_COMPONENT();
 				break;
 			default:
 				break;
 			}
 		} else { 			 
 			 // user is not logged in redirect him to Login Activity
-			intent = new Intent(this, LoginScreen.class);
-	        
-	       // Closing all the Activities from stack
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	        
-	       // Add new Flag to start new Activity
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	        
+			intent = new Intent(this, LoginScreen.class);	        
 	       // Staring Login Activity
 	        startActivity(intent);  
-			FINISH_COMPONENT();
 		}
 	}
 	
@@ -362,47 +302,35 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	}
 
 	@Override
+	protected void onResume() {
+		NMApp.modulo = NMApp.Modulo.HOME; 
+		ocultarDialogos();		
+		if(NMApp.ciclo==NMApp.lifecycle.ONPAUSE || NMApp.ciclo==NMApp.lifecycle.ONRESTART)
+		{
+			NMApp.getController().setView(this);
+			SessionManager.setContext(this);
+			UserSessionManager._context = this;
+		}
+		NMApp.ciclo=NMApp.lifecycle.ONRESUME;
+		super.onResume();
+	}
+	
+	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
-		onPause = true;
-		onRestart = false;
+		NMApp.ciclo=NMApp.lifecycle.ONPAUSE;
 		super.onPause();
 	}
-
+	
 	@Override
 	protected void onStop() {
-		// TODO Auto-generated method stub
-		onRestart = false;
-		onPause = false;
+		NMApp.ciclo=NMApp.lifecycle.ONSTOP;
 		super.onStop();
 	}
-
+	
 	@Override
 	protected void onRestart() {
-		initController();
-		onRestart = true;
-		onPause = false;
+		NMApp.ciclo=NMApp.lifecycle.ONRESTART;
 		super.onRestart();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		ocultarDialogos();
-		if (onPause && !onRestart)
-		initController();
-		try {
-		NMApp.getController().setEntities(this, null);
-		} catch (Exception e) {
-		e.printStackTrace();
-		}
-		SessionManager.setContext(this);		
-		NMApp.modulo = NMApp.Modulo.HOME;
-		onRestart = false;
-		onPause = false;	
-		//verifyLogin();
-		super.onResume();
 	}
 
 	private void initController() {

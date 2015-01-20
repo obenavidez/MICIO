@@ -2,6 +2,11 @@ package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_INVETORY_UPDATED;
+import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_CATALOGOSBASICOS;
+import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_CLIENTES;
+import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_PARAMETROS;
+import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_PRODUCTOS;
+import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_TODOS;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
@@ -15,19 +20,27 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -51,7 +64,9 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
@@ -82,8 +97,8 @@ import com.panzyma.nordismobile.R;
 @SuppressLint({ "NewApi", "SimpleDateFormat" })
 @SuppressWarnings({ "unchecked", "rawtypes", "unused", "deprecation","static-access" })
 @InvokeBridge(bridgeName = "BPedidoM")
-public class ViewPedidoEdit extends FragmentActivity implements
-		Handler.Callback, Editable {
+public class ViewPedidoEdit extends ActionBarActivity implements
+		Handler.Callback, Editable{
 	private static CustomDialog dlg;
 	public EditText tbxFecha;
 	public EditText tbxNumReferencia;
@@ -118,21 +133,20 @@ public class ViewPedidoEdit extends FragmentActivity implements
 
 	private NMApp NMApp;
 	private boolean invActualizado;
-	private static final int ID_SELECCIONAR_CLIENTE = 1;
-	private static final int ID_CONSULTAR_CUENTAS_X_COBRAR = 2;
-	private static final int ID_AGREGAR_PRODUCTOS = 3;
-	private static final int ID_EDITAR_PRODUCTO = 4;
-	private static final int ID_ELIMINAR_PRODUCTO = 5;
-	private static final int ID_CONSULTAR_BONIFICACIONES = 6;
-	private static final int ID_CONSULTAR_LISTA_PRECIOS = 7;
-	private static final int ID_CONDICIONES_Y_NOTAS = 8;
-	private static final int ID_APLICAR_PROMOCIONES = 9;
-	private static final int ID_DESAPLICAR_PROMOCIONES = 10;
-	private static final int ID_EXONERAR_IMPUESTO = 11;
-	private static final int ID_GUARDAR = 12;
-	private static final int ID_ENVIAR = 13;
-	private static final int ID_IMPRIMIR_COMPROBANTE = 14;
-	private static final int ID_CERRAR = 15;
+	private static final int ID_SELECCIONAR_CLIENTE = 0; 
+	private static final int ID_AGREGAR_PRODUCTOS = 1;
+	private static final int ID_CONDICIONES_Y_NOTAS =2;
+	private static final int ID_EDITAR_PRODUCTO = 3;
+	private static final int ID_ELIMINAR_PRODUCTO = 4;
+	private static final int ID_CONSULTAR_BONIFICACIONES = 5;
+	private static final int ID_CONSULTAR_LISTA_PRECIOS = 6;	
+	private static final int ID_APLICAR_PROMOCIONES = 7;
+	private static final int ID_DESAPLICAR_PROMOCIONES = 8;
+	private static final int ID_EXONERAR_IMPUESTO = 9;
+	private static final int ID_GUARDAR = 10;
+	private static final int ID_ENVIAR = 11;
+	private static final int ID_IMPRIMIR_COMPROBANTE = 12;
+	private static final int ID_CERRAR = 13;
 	private static String TAG_IMPUESTO = "";
 	BPedidoM bpm;
 	private static Object lock = new Object();
@@ -145,6 +159,14 @@ public class ViewPedidoEdit extends FragmentActivity implements
 	int requescode = 0;
 	Intent intent = null;
 	private String msg;
+	
+	DrawerLayout drawerLayout;
+	ListView drawerList;
+	ActionBarDrawerToggle drawerToggle;
+	String[] opcionesMenu;
+	CharSequence tituloSeccion;
+	CharSequence tituloApp;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -154,6 +176,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		try 
 		{
 			SessionManager.setContext(this);
+			UserSessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
 			aprodselected = new ArrayList<Producto>();
 			me = this;
@@ -183,6 +206,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					.getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
 			initComponent();
+			CreateMenu();
 
 		} catch (Exception e) {
 			showStatus(e.getMessage() + "" + e.getCause(), true);
@@ -198,7 +222,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				.findViewById(R.id.data_items);
 		// LinearLayout grilla=(LinearLayout) findViewById(R.id.pddgrilla);
 		gridheader = (TextView) gridDetallePedido.findViewById(R.id.header);
-		gridheader.setText("Productos a Facturar(0)");
+		gridheader.setText("PRODUCTOS A FACTURAR(0)");
 		tbxFecha = (EditText) findViewById(R.id.pddetextv_detalle_fecha);
 		tbxNumReferencia = (EditText) findViewById(R.id.pdtv_detalle_numref);
 		tbxNumPedido = (EditText) findViewById(R.id.pdddetextv_detalle_num);
@@ -316,7 +340,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		CalculaTotales();
 		setTotales(false);
 
-		gridheader.setText("Productos a Facturar(0)");
+		gridheader.setText("PRODUCTOS A FACTURAR(0)");
 		adapter = new GenericAdapter(this, PProductoViewHolder.class,
 				Lvmpproducto, R.layout.gridproductosavender);
 		grid_dp.setAdapter(adapter);
@@ -324,7 +348,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		
 		if (Lvmpproducto.size() > 0)
 			dpselected = Lvmpproducto.get(0);
-		gridheader.setText("Productos a Facturar(" + adapter.getCount() + ")");
+		gridheader.setText("PRODUCTOS A FACTURAR(" + adapter.getCount() + ")");
 
 		if (pedido != null && !pedido.getCodEstado().equals("REGISTRADO") && !pedido.getCodEstado().equals("APROBADO")) 
 		{
@@ -335,7 +359,17 @@ public class ViewPedidoEdit extends FragmentActivity implements
 			tbxNombreDelCliente.setEnabled(false);
 			tbxTipoVenta.setEnabled(false);
 			tbxTotalFact.setEnabled(false);			
-		}
+		} 
+//		grid_dp.setOnGroupExpandListener (new ExpandableListView.OnGroupExpandListener()
+//	    {
+//
+//	        @Override
+//	        public void onGroupExpand(int groupPosition) {
+//
+//	            expList.setSelectionFromTop(groupPosition, 0);
+//	            //your other code
+//	        }
+//	    });
 		
 		initMenu();
 	}
@@ -375,6 +409,143 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		});
 	}
 
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		drawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		drawerToggle.onConfigurationChanged(newConfig);
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// menu.findItem(R.id.action_search).setVisible(true);
+		super.onPrepareOptionsMenu(menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		if (drawerToggle.onOptionsItemSelected(item)) {
+			item.getItemId();
+			return true;
+		}
+		return true;
+	}
+	
+	public void CreateMenu() {
+		// Obtenemos las opciones desde el recurso
+		opcionesMenu = getResources().getStringArray(
+				R.array.pedidoeditoptions);
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		// Buscamos nuestro menu lateral
+		drawerList = (ListView) findViewById(R.id.left_drawer);
+		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
+				.getThemedContext(), android.R.layout.simple_list_item_1,
+				opcionesMenu));
+
+		// Añadimos Funciones al menú laterak
+		drawerList.setOnItemClickListener(new OnItemClickListener() 
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id)
+			{
+				drawerList.setItemChecked(position, true);
+				drawerLayout.closeDrawers();
+				tituloSeccion = opcionesMenu[position];
+				// Ponemos el titulo del Menú
+				getSupportActionBar().setTitle(tituloSeccion);
+				Controller controller = NMApp.getController();
+				switch (position) 
+				{ 
+				
+				case ID_SELECCIONAR_CLIENTE:
+						seleccionarCliente();
+						break;
+				case ID_AGREGAR_PRODUCTOS:
+						agregarProducto();
+						break;
+				case ID_CONDICIONES_Y_NOTAS:
+						agregarCondicionesYNotas();
+						break;
+				case ID_EDITAR_PRODUCTO:
+						editarProducto();
+						break;
+				case ID_ELIMINAR_PRODUCTO:
+						eliminarProducto();
+						break;
+				case ID_CONSULTAR_BONIFICACIONES:
+						consultarBonificaciones();
+						break;
+				case ID_CONSULTAR_LISTA_PRECIOS:
+						consultarPrecioProducto();
+						break;
+				case ID_APLICAR_PROMOCIONES:
+						aplicarPromociones(true); 
+						break;
+				case ID_DESAPLICAR_PROMOCIONES:
+						desaplicarPromociones();
+						break;
+				case ID_EXONERAR_IMPUESTO:
+						exonerarDeImpuesto();
+						break;
+				case ID_GUARDAR:
+						salvarPedido();
+						break;
+				case ID_ENVIAR:
+						enviarPedido();
+						break;
+				case ID_IMPRIMIR_COMPROBANTE:
+					try {
+						ImprimirComprobante();
+						break;
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				case ID_CERRAR:
+						FINISH_ACTIVITY();
+						break;
+				
+				}
+			}
+		});
+
+		tituloSeccion = getTitle();
+		tituloApp = getTitle();
+
+		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+				R.drawable.ic_navigation_drawer, R.string.drawer_open,
+				R.string.drawer_close) {
+
+			@Override
+			public void onDrawerClosed(View view) {
+				getSupportActionBar().setTitle(tituloSeccion);
+				ActivityCompat.invalidateOptionsMenu(ViewPedidoEdit.this);
+			}
+
+			@Override
+			public void onDrawerOpened(View drawerView) {
+				getSupportActionBar().setTitle(tituloApp);
+				ActivityCompat.invalidateOptionsMenu(ViewPedidoEdit.this);
+
+			}
+		};
+
+		// establecemos el listener para el dragable ....
+		drawerLayout.setDrawerListener(drawerToggle);
+
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
+	}
+	
+	
 	public void initMenu() 
 	{
 		quickAction = new QuickAction(me, QuickAction.VERTICAL, 1);
@@ -549,7 +720,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				@Override
 				public void run() {
 					tbxTotalFact.setText(sb);
-					gridheader.setText("Productos a Facturar("
+					gridheader.setText("PRODUCTOS A FACTURAR("
 							+ adapter.getCount() + ")");
 				}
 			});
@@ -572,6 +743,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		}
 		return super.onKeyUp(keyCode, event);
 	}
+	
+	
 
 	@Override
 	public boolean handleMessage(Message msg) 
@@ -792,6 +965,8 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		}
 
 	}
+	
+	
 
 	private void seleccionarCliente() {
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
@@ -862,9 +1037,13 @@ public class ViewPedidoEdit extends FragmentActivity implements
 				aprodselected.add(prod);
 				Lvmpproducto.add(det_p);
 				CalculaTotales();
-				setTotales(true);
+				setTotales(true); 
+                grid_dp.smoothScrollToPosition(Lvmpproducto.size() - 1);
 				adapter.setSelectedPosition(Lvmpproducto.size() - 1);
+				grid_dp.setSelection(Lvmpproducto.size() - 1);
+				positioncache=Lvmpproducto.size() - 1;
 				adapter.notifyDataSetChanged();
+				
 
 			}
 
@@ -897,7 +1076,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 						.getCodEstado(),"")); 
 				return;
 			}
-			int idx = grid_dp.getCheckedItemPosition();
+			int idx = positioncache;
 			
 			if (idx == -1)
 				return;
@@ -958,7 +1137,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 					.getCodEstado(),"")); 
 			return;
 		}
-		final int idx = grid_dp.getCheckedItemPosition();
+		final int idx =positioncache;
 
 		if (idx == -1)
 			return;
@@ -1528,6 +1707,7 @@ public class ViewPedidoEdit extends FragmentActivity implements
 		try 
 		{
 			SessionManager.setContext(me);
+			UserSessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
 		} catch (Exception e) {
 			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(

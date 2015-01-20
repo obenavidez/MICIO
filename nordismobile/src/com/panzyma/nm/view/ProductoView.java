@@ -42,6 +42,7 @@ import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaProductoFragment;
@@ -103,8 +104,9 @@ public class ProductoView extends ActionBarActivity implements
 		pv=this;
 		CreateMenu();
 		SessionManager.setContext(this); 
-		
+		UserSessionManager.setContext(this); 
 		gridheader.setVisibility(View.VISIBLE);
+		gridheader.setText("LISTA PRODUCTOS(0)");
 		nmapp = (NMApp) this.getApplicationContext();
 		try 
 		{
@@ -302,7 +304,7 @@ public class ProductoView extends ActionBarActivity implements
 				: msg.obj);*/
 		productos = list;
 		gridheader.setVisibility(View.VISIBLE);
-		gridheader.setText(String.format("Listado de Productos (%s)",
+		gridheader.setText(String.format("LISTA PRODUCTOS (%s)",
 				productos.size()));
 		if (productos.size() == 0) {
 			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
@@ -328,13 +330,13 @@ public class ProductoView extends ActionBarActivity implements
 									&& customArrayAdapter != null
 									&& customArrayAdapter.getCount() >= 0) {
 								firstFragment.setItems(data);
-								gridheader.setText("Listado de Productos ("
+								gridheader.setText("LISTA PRODUCTOS ("
 										+ customArrayAdapter.getCount() + ")");
 								footerView.setVisibility(View.VISIBLE);
 							} else {
 								if (what == C_SETTING_DATA)
 									footerView.setVisibility(View.VISIBLE);
-								gridheader.setText("Listado de Productos ("
+								gridheader.setText("LISTA PRODUCTOS ("
 										+ data.size() + ")");
 								firstFragment.setItems(data);
 								customArrayAdapter.setSelectedPosition(0);

@@ -16,9 +16,8 @@
             style="StyleFontTextViewActionBar"
             android:layout_width="fill_parent"
             android:layout_height="30dp"
-            android:background="@color/Gray"
-            android:gravity="center"
-            android:text="@string/txtclient_tittle"
+            android:background="@drawable/bg_actionbar29" 
+            android:gravity="center" 
             android:textColor="@color/White" />
 
         <TextView

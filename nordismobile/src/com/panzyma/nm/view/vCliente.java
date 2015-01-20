@@ -46,6 +46,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
@@ -117,12 +118,14 @@ public class vCliente extends ActionBarActivity implements
 		context = getApplicationContext();
 		setContentView(R.layout.layout_client_fragment);
 		NMApp.getController().setView(this);
+		SessionManager.setContext(this);
+		UserSessionManager.setContext(this);
 		fragmentActive = FragmentActive.LIST;
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
 		footerView = (TextView) findViewById(R.id.ctextv_gridheader);
 		vc = this;
 		CreateMenu();
-		SessionManager.setContext(this);
+		
 		/*
 		try {
 			clientes = (savedInstanceState != null) ? clientes = savedInstanceState
@@ -233,7 +236,7 @@ public class vCliente extends ActionBarActivity implements
 	  clientes = new ArrayList<vmCliente>( (Collection<? extends vmCliente>) Arrays.asList(objects) ); 
 	  positioncache = savedInstanceState.getInt("positioncache");	  
 	  firstFragment = (ListaFragment<vmCliente>) savedInstanceState.getParcelable("fragment");
-	  gridheader.setText(String.format("Listado de Clientes (%s)", clientes.size()));
+	  gridheader.setText(String.format("LISTA CLIENTES (%s)", clientes.size()));
 	  //setList();
 	}
 
@@ -323,18 +326,38 @@ public class vCliente extends ActionBarActivity implements
 	}
 
 	@Override
-	protected void onResume() {
-		NMApp.getController().setView(this);
+	protected void onResume() 
+	{
+		ocultarDialogos();
+		if(NMApp.ciclo==NMApp.lifecycle.ONPAUSE || NMApp.ciclo==NMApp.lifecycle.ONRESTART)
+		{
+			NMApp.getController().setView(this);
+			SessionManager.setContext(this);
+			UserSessionManager.setContext(this);
+		}
 		super.onResume();
 	}
 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
+		NMApp.ciclo=NMApp.lifecycle.ONPAUSE;
 		ocultarDialogos();
 		customArrayAdapter.notifyDataSetChanged();
 		super.onPause();
 	}
+	
+	@Override
+	protected void onStop() {
+		NMApp.ciclo=NMApp.lifecycle.ONSTOP;
+		super.onStop();
+	}
+	
+	@Override
+	protected void onRestart() {
+		NMApp.ciclo=NMApp.lifecycle.ONRESTART;
+		super.onRestart();
+	}
+	
 
 	@SuppressLint("NewApi")
 	@Override
@@ -574,7 +597,7 @@ public class vCliente extends ActionBarActivity implements
 		// ArrayList<vmCliente>(): msg.obj);
 
 		clientes = list;
-		gridheader.setText(String.format("Listado de Clientes (%s)",
+		gridheader.setText(String.format("LISTA CLIENTES (%s)",
 				clientes.size()));
 
 		if (clientes.size() == 0) {
@@ -615,7 +638,7 @@ public class vCliente extends ActionBarActivity implements
 												.AddAllToListViewDataSource(data);
 										firstFragment.setItems(data);
 										gridheader
-												.setText("Listado de Clientes("
+												.setText("LISTA CLIENTES("
 														+ customArrayAdapter
 																.getCount()
 														+ ")");
@@ -629,7 +652,7 @@ public class vCliente extends ActionBarActivity implements
 													.setVisibility(View.VISIBLE);
 
 										gridheader
-												.setText("Listado de Clientes("
+												.setText("LISTA CLIENTES("
 														+ data.size() + ")");
 										firstFragment.setItems(data);
 										customArrayAdapter

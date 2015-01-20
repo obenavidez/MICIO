@@ -185,13 +185,13 @@ public class DialogCuentasPorCobrar extends Dialog implements Handler.Callback
 		        if (estadoFac.compareTo("TODOS") != 0)
 		            s = s + " con estado " + estadoFac + ".";
 		        detalleFact.setText(s);
-		        gridheader.setText("Facturas del Cliente("+data.size()+")"); 
+		        gridheader.setText("FACTURAS CLIENTE("+data.size()+")"); 
 	          
 	            
 			}
 			else
 			{
-				gridheader.setText("Facturas del Cliente(0)");
+				gridheader.setText("FACTURAS CLIENTE(0)");
 				Log.d(TAG,"ViewCliente setData");
 				TextView txtenty=(TextView) findViewById(R.id.cctxtview_enty); 
 	            txtenty.setVisibility(View.VISIBLE);

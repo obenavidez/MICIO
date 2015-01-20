@@ -39,6 +39,7 @@ import android.widget.Toast;
 import com.panzyma.nm.DashBoardActivity;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.CustomDialog.OnActionButtonClickListener;
 import com.panzyma.nm.auxiliar.CustomDialog.OnDismissDialogListener;
 import com.panzyma.nm.menu.ActionItem;
@@ -82,6 +83,7 @@ public class ViewProducto extends DashBoardActivity implements Handler.Callback
 	    {
 	    	mcontext=this;
 	    	nmapp=(NMApp) this.getApplication(); 
+	    	UserSessionManager.setContext(this);
 	        NMApp.getController().setView(this);
 	        NMApp.getController().addOutboxHandler(new Handler(this)); 
 			WindowManager wm = (WindowManager) this.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
@@ -129,7 +131,7 @@ public class ViewProducto extends DashBoardActivity implements Handler.Callback
 	    footerView = ((LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.listfooter, null, false);
 		footerView.setVisibility(View.GONE);
 		lvproducto.addFooterView(footerView);
-		
+		gridheader.setText("LISTA PRODUCTOS(0)");
     	EditText filterEditText = (EditText) findViewById(R.id.p_editextfilter_prod); 
         filterEditText.addTextChangedListener(
         new TextWatcher() 
@@ -224,14 +226,14 @@ public class ViewProducto extends DashBoardActivity implements Handler.Callback
 								    if(what==C_SETTING_DATA && adapter!=null && adapter.getData().size()>=0)
 									{
 										adapter.AddAllToListViewDataSource(objL);
-										gridheader.setText("Listado de Produtos("+adapter.getCount()+")");
+										gridheader.setText("LISTA PRODUCTOS("+adapter.getCount()+")");
 										footerView.setVisibility(View.VISIBLE); 
 									}
 									else
 									{
 										if(what==C_SETTING_DATA)
 											footerView.setVisibility(View.VISIBLE); 										
-										gridheader.setText("Listado de Productos("+objL.size()+")");
+										gridheader.setText("LISTA PRODUCTOS("+objL.size()+")");
 										adapter=new GenericAdapter(mcontext,ProductoViewHolder.class,objL,R.layout.gridproducto);								 
 										positioncache=0;
 										adapter.setSelectedPosition(0);										
@@ -345,7 +347,7 @@ public class ViewProducto extends DashBoardActivity implements Handler.Callback
     @SuppressWarnings("static-access")
 	private void limpiarGrilla()
     {    	
-    	gridheader.setText("Listado de Productos(0)"); 
+    	gridheader.setText("LISTA PRODUCTOS(0)");
 		TextView txtenty=(TextView) findViewById(R.id.p_txtview_enty); 
         txtenty.setVisibility(View.VISIBLE);
         lvproducto.setEmptyView(txtenty); 

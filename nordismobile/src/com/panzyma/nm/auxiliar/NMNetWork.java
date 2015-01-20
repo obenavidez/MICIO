@@ -3,6 +3,8 @@ package com.panzyma.nm.auxiliar;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
 
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.ksoap2.serialization.SoapPrimitive; 
@@ -11,8 +13,11 @@ import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.Controller;
+import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.view.ViewConfiguracion;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
@@ -150,29 +155,6 @@ public class NMNetWork {
         } 
         catch(Exception ex) 
         {         	 
-//        	SessionManager.hasError=true;
-//        	error=new ErrorMessage("Error de conexión","error en la comunicación con el servidor de aplicaciones.\n",ex.toString());
-//        	try 
-//        	{
-//        		SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());
-//        		Processor.notifyToView(controller,ERROR,0,0,error);				 
-//			} catch (Exception e) { 
-//				e.printStackTrace();
-//			}
-        	
-            return false;
-        }  
-    }    
-    
-  //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
-    public static boolean CheckConnection(String url) 
-    {
-    	error=null;    	
-        try { 
-        		return Boolean.parseBoolean(((SoapPrimitive)AppNMComunication.InvokeMethod(new ArrayList<Parameters>(),url,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());              
-        } 
-        catch(Exception ex) 
-        {         	  
         	UserSessionManager.HAS_ERROR=true;
         	try 
 			{				
@@ -181,8 +163,30 @@ public class NMNetWork {
 				e.printStackTrace();
 			}				  
         	
+        	
             return false;
         }  
+    }    
+    
+  //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
+    public static boolean CheckConnection(String url) 
+    {
+    	UserSessionManager.HAS_ERROR=false;
+    	error=null;    	
+        try { 
+        		return Boolean.parseBoolean(((SoapPrimitive)NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),url,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());              
+        } 
+        catch(Exception ex) 
+        {         	  
+        	UserSessionManager.HAS_ERROR=true;
+        	if(UserSessionManager.getLoginUser()==null && !(UserSessionManager._context instanceof ViewConfiguracion))
+        		NMApp.getController()._notifyOutboxHandlers(ControllerProtocol.SETTING_REDIREC, 0, 0,0);
+        	else
+        		NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,new ErrorMessage("","error en la comunicación con el servidor de aplicaciones.\n"+ex.toString(),"error en la comunicación con el servidor de aplicaciones.\n"+ex.toString()));
+			  
+
+        }
+        return false;
     }    
     
     /**

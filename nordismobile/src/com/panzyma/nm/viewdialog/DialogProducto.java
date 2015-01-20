@@ -173,7 +173,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	        }
 	        @Override
 	        public void afterTextChanged(Editable s) {
-	        	gridheader.setText("Listado de Productos("+adapter.getCount()+")");
+	        	gridheader.setText("LISTA PRODUCTOS("+adapter.getCount()+")");
 	        }
 	    });  
 	    
@@ -227,7 +227,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 		{			  
 			if(Lproducto.size()!=0 )
 			{ 
-					gridheader.setText("Listado de Productos("+Lproducto.size()+")");
+					gridheader.setText("LISTA PRODUCTOS("+Lproducto.size()+")");
 					adapter=new GenericAdapter(NMApp.getContext(),ProductoViewHolder.class,Lproducto,R.layout.gridproducto);				 
 					lvproducto.setAdapter(adapter);
 					lvproducto.setOnItemClickListener(new OnItemClickListener() 

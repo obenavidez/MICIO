@@ -1,11 +1,19 @@
 package com.panzyma.nm.fragments;
 
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp; 
 import com.panzyma.nm.CBridgeM.BVentaM.Petition;
+import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CVenta;
@@ -15,6 +23,7 @@ import com.panzyma.nm.view.viewholder.VentaViewHolder;
 import com.panzyma.nordismobile.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -34,6 +43,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 @InvokeBridge(bridgeName = "BVentaM")
 public class ConsultaVentasFragment extends Fragment implements
 		Handler.Callback {
@@ -49,6 +59,7 @@ public class ConsultaVentasFragment extends Fragment implements
 	private static final int MOSTRAR_VENTAS_MES = 3;
 	private static final int IMPRIMIR = 4;
 
+	private static CustomDialog dlg;
 	private boolean delDia = false;
 	private boolean deSemana = true;
 	private boolean delMes = false;
@@ -149,7 +160,7 @@ public class ConsultaVentasFragment extends Fragment implements
 							filterVentas.add(venta);
 						}
 					}					
-					gridheader.setText(String.format("Ventas del dia (%s)", filterVentas.size()));
+					gridheader.setText(String.format("VENTAS DEL DIA (%s)", filterVentas.size()));
 					adapter.setItems(filterVentas);
 					adapter.notifyDataSetChanged();
 				}				
@@ -172,7 +183,7 @@ public class ConsultaVentasFragment extends Fragment implements
 		gridheader = (TextView) actividad.findViewById(R.id.ctextv_gridheader);
 		//gridheader.setVisibility(View.INVISIBLE);
 		
-		gridheader.setText("Ventas del dia (0)");
+		gridheader.setText("VENTAS DEL DIA (0)");
 		
 		WindowManager wm = (WindowManager) getActivity()
 				.getSystemService(Context.WINDOW_SERVICE);
@@ -226,10 +237,10 @@ public class ConsultaVentasFragment extends Fragment implements
 	
 	public void mostrarVentas(ArrayList<CVenta> ventas){
 		
-		String title = "Ventas %s ";
-		if( menuSelected == ActionMenu.VENTAS_DIA ) title = String.format(title, "del día ");
-		else if( menuSelected == ActionMenu.VENTAS_SEMANA ) title = String.format(title, "de semana ");
-		else if( menuSelected == ActionMenu.VENTAS_MES ) title = String.format(title, "del mes ");
+		String title = "VENTAS%s ";
+		if( menuSelected == ActionMenu.VENTAS_DIA ) title = String.format(title, "DEL DIA ");
+		else if( menuSelected == ActionMenu.VENTAS_SEMANA ) title = String.format(title, "DE SEMANA ");
+		else if( menuSelected == ActionMenu.VENTAS_MES ) title = String.format(title, "DEL MES ");
 		
 		title += "(%s)"; 
 		
@@ -317,8 +328,7 @@ public class ConsultaVentasFragment extends Fragment implements
 	@Override
 	public boolean handleMessage(Message msg) 
 	{
-		if(waiting!=null)
-			waiting.dismiss();
+		ocultarDialogos();
 		if( msg.what < 3) {
 			Petition response = Petition.toInt(msg.what);
 			switch (response) {
@@ -328,10 +338,61 @@ public class ConsultaVentasFragment extends Fragment implements
 				mostrarVentas(  ( msg.obj == null ? new ArrayList<CVenta>() :  ((ArrayList<CVenta>)msg.obj) ) );
 				break;		
 			}
-		}		
+		}
+		switch (msg.what) 
+		{
+			case ERROR:
+			ErrorMessage error = ((ErrorMessage) msg.obj);
+			showStatus(error.getMessage()+ error.getCause(), true);  
+			break;
+		}
+	
+		
+		
+		
 		return false;
 	}
 
+	public void ocultarDialogos() {
+		if (dlg != null)
+			dlg.dismiss();
+		if(waiting!=null)
+			waiting.dismiss();
+	}
+	
+	public void showStatus(final String mensaje, boolean... confirmacion) {
+
+		ocultarDialogos();
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(getActivity(), "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					dlg = new CustomDialog(getActivity(), mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		}
+	}
+	
 	public boolean isDelDia() {
 		return delDia;
 	}

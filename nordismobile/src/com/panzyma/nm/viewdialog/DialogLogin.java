@@ -45,7 +45,7 @@ public class DialogLogin extends Dialog
 		{ 
 			mycontext=context;
 			admin=isadmin;
-		    setContentView(R.layout.login);
+		    setContentView(R.layout.login3);
 			initComponents(); 
 			
 		}
@@ -166,13 +166,14 @@ public class DialogLogin extends Dialog
 	{
 		String msg = "";
 		
-		if (txtenterprise.getText().toString().trim().length()==0){
-        		msg = "Ingrese el nombre de la Empresa en la cual labora.";
-        		txtenterprise.setError(msg);
-        		txtenterprise.requestFocus();
-        		return false;
-        }
-        else if (txtusername.getText().toString().trim().length()==0){
+//		if (txtenterprise.getText().toString().trim().length()==0){
+//        		msg = "Ingrese el nombre de la Empresa en la cual labora.";
+//        		txtenterprise.setError(msg);
+//        		txtenterprise.requestFocus();
+//        		return false;
+//        }
+//        else 
+        	if (txtusername.getText().toString().trim().length()==0){
                 msg = "Ingrese un usuario válido.";
                 txtusername.setError(msg);
                 txtusername.requestFocus();

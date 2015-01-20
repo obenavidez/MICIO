@@ -64,6 +64,7 @@ import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
@@ -89,6 +90,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		try 
 		{ 
 			NMApp.getController().setView(this);
+			UserSessionManager.setContext(this);
 			request_code = requestcode;
 			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)	&& data != null)
 				establecer(data.getParcelableExtra("recibo"));
@@ -155,7 +157,7 @@ public class ViewRecibo extends ActionBarActivity implements
 			@Override
 			public void run() {
 				gridheader.setVisibility(View.VISIBLE);
-				gridheader.setText(String.format("Listado de Recibos (%s)",recibos.size()));
+				gridheader.setText(String.format("LISTA RECIBOS (%s)",recibos.size()));
 				if (recibos.size() == 0) {
 					TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);
 					txtenty.setVisibility(View.VISIBLE);
@@ -238,6 +240,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		final ViewRecibo $this = this;
 		
 		context = ViewRecibo.this;
+		UserSessionManager.setContext(this);
 		SessionManager.setContext(this);
 		setContentView(R.layout.layout_client_fragment);		
 
@@ -761,16 +764,41 @@ public class ViewRecibo extends ActionBarActivity implements
 	  recibos = new ArrayList<vmRecibo>( (Collection<? extends vmRecibo>) Arrays.asList(objects) ); 
 	  positioncache = savedInstanceState.getInt("positioncache");	  
 	  firstFragment = (ListaFragment<vmRecibo>) savedInstanceState.getParcelable("fragment");
-	  gridheader.setText(String.format("Listado de Recibos (%s)",recibos.size()));
+	  gridheader.setText(String.format("LISTA RECIBOS (%s)",recibos.size()));
 	  //setList();
 	}
 		
+	
 	@Override
-	protected void onResume() {
-		NMApp.getController().setView(this);
+	protected void onPause() {
+		NMApp.ciclo=NMApp.lifecycle.ONPAUSE;
+		super.onPause();
+	}
+	
+	@Override
+	protected void onStop() {
+		NMApp.ciclo=NMApp.lifecycle.ONSTOP;
+		super.onStop();
+	}
+	
+	@Override
+	protected void onRestart() {
+		NMApp.ciclo=NMApp.lifecycle.ONRESTART;
+		super.onRestart();
+	}
+	
+	@Override
+	protected void onResume() 
+	{
+		if(NMApp.ciclo==NMApp.lifecycle.ONPAUSE || NMApp.ciclo==NMApp.lifecycle.ONRESTART)
+		{
+			NMApp.getController().setView(this);
+			SessionManager.setContext(this);
+			UserSessionManager.setContext(this);
+		}
 		super.onResume();
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private void cargarRecibos() {
 		try {
@@ -878,7 +906,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	@SuppressLint("CutPasteId")
 	private void initComponent() {
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
-		gridheader.setText("Listado de Recibos (0) ");
+		gridheader.setText("LISTA RECIBOS (0) ");
 		footerView = (TextView) findViewById(R.id.ctxtview_enty);
 		footerView.setVisibility(View.VISIBLE);
 		//initMenu();
@@ -897,7 +925,7 @@ public class ViewRecibo extends ActionBarActivity implements
 				public void run() 
 				{
 					gridheader.setVisibility(View.VISIBLE);
-					gridheader.setText(String.format("Listado de Recibos (%s)",recibos.size()));
+					gridheader.setText(String.format("LISTA RECIBOS (%s)",recibos.size()));
 					if(recibos!=null && recibos.size()!=0)
 						recibos.remove(recibo_selected);
 					if (recibos.size() == 0) 
@@ -1014,13 +1042,13 @@ public class ViewRecibo extends ActionBarActivity implements
 									&& customArrayAdapter != null
 									&& customArrayAdapter.getCount() >= 0) {
 								firstFragment.setItems(data);
-								gridheader.setText("Listado de Recibos ("
+								gridheader.setText("LISTA RECIBOS ("
 										+ customArrayAdapter.getCount() + ")");
 								footerView.setVisibility(View.VISIBLE);
 							} else {
 								if (what == C_SETTING_DATA)
 									footerView.setVisibility(View.VISIBLE);
-								gridheader.setText("Listado de Recibos ("
+								gridheader.setText("LISTA RECIBOS ("
 										+ data.size() + ")");
 								firstFragment.setItems(data);
 								customArrayAdapter.setSelectedPosition(0);

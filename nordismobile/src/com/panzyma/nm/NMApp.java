@@ -6,6 +6,7 @@ import com.panzyma.nm.auxiliar.ThreadPool;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.Controller;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -16,6 +17,17 @@ public class NMApp extends Application{
 	private static ThreadPool pool;
 	public static AutenticationType tipoAutenticacion = AutenticationType.REMOTE;
 	
+	public static lifecycle ciclo;
+	
+	public enum lifecycle  {
+		ONCREATE,
+		ONSTART,
+		ONRESUME,
+		ONPAUSE,
+		ONSTOP,
+		ONRESTART;
+	}
+	
 	public enum Modulo {
 		HOME,
 		CLIENTE,
@@ -24,7 +36,7 @@ public class NMApp extends Application{
 		RECIBO,
 		CONFIGURACION,
 		DEVOLUCION
-	}
+	} 
 	
 	public static Context ctx;
 	
@@ -34,12 +46,17 @@ public class NMApp extends Application{
 	public void onCreate() {
 		super.onCreate();
 		controller = new Controller();
-		pool = new ThreadPool(5);
+		pool = new ThreadPool(5);  
 		setContext(this);
 	}
 	
+	public static void setContext(Activity... actividad) {
+		if(actividad!=null && actividad.length!=0)
+				ctx=actividad[0];
+	}
+	
 	public static Context setContext(NMApp app) {
-		return ctx = app.getApplicationContext();
+		return ctx =app;
 	}
 	
 	public static Context getContext() {

@@ -84,7 +84,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 		view = inflater.inflate(R.layout.layout_consultapreciosprod, null);
 		lvprecios=(ListView) view.findViewById(R.id.bnflv_detalleprecios);
 		nombre_prod=(EditText) view.findViewById(R.id.etProducto);
-		builder.setTitle("Consulta Precios Producto");
+		builder.setTitle("PRODUCTO PRECIOS");
 		builder.setView(view);
 		builder.setPositiveButton("ACEPTAR", new OnClickListener() {
 			@Override

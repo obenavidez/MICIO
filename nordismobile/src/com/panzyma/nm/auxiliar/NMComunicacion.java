@@ -118,8 +118,7 @@ public class NMComunicacion {
     { 
         SoapObject request =new SoapObject(NAME_SPACE,METHOD_NAME); 
         for(PropertyInfo pinfo:params) 
-        	request.addProperty(pinfo);   
-        
+        	request.addProperty(pinfo);           
         SoapSerializationEnvelope envelope = GetEnvelope(request);
         return  MakeCall(URL,envelope,NAME_SPACE,METHOD_NAME);
     } 
@@ -175,10 +174,18 @@ public class NMComunicacion {
     } 
     
 	public static synchronized Object MakeCall(String URL, SoapSerializationEnvelope Envelope, String NAMESPACE, String METHOD_NAME)throws Exception
-    {   
-	        HttpTransportSE ht = new HttpTransportSE(URL); 
-	        ht.debug = true; 
-	        ht.call(NAMESPACE+METHOD_NAME, Envelope); 
+    {  
+		HttpTransportSE ht = new HttpTransportSE(URL); 
+		try 
+		{		
+			ht.debug = true; 
+		    ht.call(NAMESPACE+METHOD_NAME, Envelope); 
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			ht.getConnection().disconnect();
+		}
+	       
         return  Envelope.getResponse(); 
     }
 	

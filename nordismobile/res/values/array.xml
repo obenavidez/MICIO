@@ -43,4 +43,20 @@
         <item >Autenticar como Admin</item>
         <item >Cerrar</item> 
     </string-array>
+    <string-array name="pedidoeditoptions">
+        <item >Seleccionar Cliente</item>
+        <item >Agregar Productos</item>
+        <item >Agregar Condiciones y Notas</item>
+        <item >Editar Productos</item>
+        <item >Eliminar Productos</item>
+        <item >Consultar Bonificaciones</item>
+        <item >Consultar Precios</item>
+        <item >Aplicar Promociones</item>
+        <item >Desaplicar Promociones</item>
+        <item >Exonerar de Impuesto</item>
+        <item >Guardar</item>
+        <item >Enviar</item>
+        <item >Imprimir Comprobante</item>
+        <item >Cerrar</item> 
+    </string-array>
 </resources>

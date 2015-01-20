@@ -158,7 +158,7 @@ public class ViewCliente extends DashBoardActivity implements Handler.Callback
 	    footerView = ((LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.listfooter, null, false);
 		footerView.setVisibility(View.GONE);
 		lvcliente.addFooterView(footerView);
-    	
+		gridheader.setText("LISTA CLIENTES(0)");
     	EditText filterEditText = (EditText) findViewById(R.id.EditText_Client); 
         filterEditText.addTextChangedListener(
         new TextWatcher() 
@@ -284,14 +284,14 @@ public class ViewCliente extends DashBoardActivity implements Handler.Callback
 								if(what==C_SETTING_DATA && adapter!=null && adapter.getData().size()>=0)
 								{
 									adapter.AddAllToListViewDataSource(data);
-									gridheader.setText("Listado de Clientes("+adapter.getCount()+")");
+									gridheader.setText("LISTA CLIENTES("+adapter.getCount()+")");
 									footerView.setVisibility(View.VISIBLE); 
 								}
 								else
 								{
 									if(what==C_SETTING_DATA)
 										footerView.setVisibility(View.VISIBLE); 
-									gridheader.setText("Listado de Clientes("+data.size()+")");
+									gridheader.setText("LISTA CLIENTES("+data.size()+")");
 									adapter=new GenericAdapter(mcontext,ClienteViewHolder.class,data,R.layout.gridcliente);								 
 									adapter.setSelectedPosition(0); 
 									positioncache=0;
