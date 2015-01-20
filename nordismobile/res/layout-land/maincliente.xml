@@ -3,6 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
+    android:id="@+id/lmaincliente"
     android:background="@color/White"> 
      
     <!-- Included header.xml here -->
@@ -13,6 +14,7 @@
 		android:layout="@layout/header" />
 	
    	<LinearLayout
+   	        android:id="@+id/llheader"
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
 		    android:layout_marginTop="10dp"
@@ -46,8 +48,10 @@
      
 	    
       <LinearLayout  
+            android:id="@+id/llbody"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
+			android:background="@color/White" 
 			android:orientation="vertical">
 			
 			<ListView 
