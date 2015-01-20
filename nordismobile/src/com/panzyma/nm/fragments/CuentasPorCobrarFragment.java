@@ -93,7 +93,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	private List<GenericDocument> documentos = new ArrayList<GenericDocument>();
 	private Display display;
 	private Button btnMenu;
-	private String title = "Listado de Facturas (%s)";
+	private String title = "LISTA FACTURAS (%s)";
 	
 	private int fechaFinFac = 0;
 	private int fechaInicFac = 0;
@@ -193,8 +193,10 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean handleMessage(final Message msg) {
+	public boolean handleMessage(final Message msg) 
+	{
 		
+		ocultarDialogos();	
 		if(msg.what == ControllerProtocol.ERROR)
 		{ 
 			
@@ -215,7 +217,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			});
 		}
 
-		ocultarDialogos();	
+		
 		if(msg.what < 6) {
 			
 			Result resultado = Result.toInt(msg.what);
@@ -578,7 +580,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 
 	private void mostrarFacturas(ArrayList<Factura> facturas) {	
-		title = "Listado de Facturas (%s)";
+		title = "LISTA FACTURAS (%s)";
 		if (facturas != null && facturas.size() > 0) {
 			addDocuments(facturas.toArray());
 			adapter = new GenericAdapter<Factura, FacturaViewHolder>(
@@ -604,7 +606,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 	
 	private void mostrarNotasDebito(ArrayList<CCNotaDebito> notasDebito) {
-		title = "Listado de Notas Débito (%s)";
+		title = "LISTA NOTAS DEBITO (%s)";
 		if (notasDebito != null && notasDebito.size() > 0) {
 			addDocuments(notasDebito.toArray());
 			adapter = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(
@@ -630,7 +632,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 	
 	private void mostrarNotasCredito(ArrayList<CCNotaCredito> notasCredito) {
-		title = "Listado de Notas Crédito (%s)";
+		title = "LISTA NOTAS CREDITO (%s)";
 		if (notasCredito != null && notasCredito.size() > 0) {
 			addDocuments(notasCredito.toArray());
 			adapter = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(
@@ -656,7 +658,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 	
 	private void mostrarPedidos(ArrayList<CCPedido> pedidos) {
-		title = "Listado de Pedidos (%s)";
+		title = "LISTA PEDIDOS (%s)";
 		if (pedidos != null && pedidos.size() > 0) {
 			addDocuments(pedidos.toArray());
 			adapter = new GenericAdapter<CCPedido, PedidoViewHolder>(
@@ -682,7 +684,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	}
 	
 	private void mostrarRecibosColector(ArrayList<CCReciboColector> recibos) {
-		title = "Listado de Recibos (%s)";
+		title = "LISTA RECIBO (%s)";
 		if (recibos != null && recibos.size() > 0) {
 			addDocuments(recibos.toArray());
 			adapter = new GenericAdapter<CCReciboColector, ReciboViewHolder>(

@@ -4,6 +4,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar; 
+import java.util.Date;
 
 import com.panzyma.nm.LoginScreen;  
 import com.panzyma.nm.NMApp;
@@ -13,12 +14,16 @@ import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.LoginUserResult;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ViewConfiguracion; 
+import com.panzyma.nm.viewdialog.DialogLogin;
+import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences.Editor; 
 @SuppressWarnings("unused")
 public class UserSessionManager 
@@ -48,7 +53,7 @@ public class UserSessionManager
     
      
     // CONTEXT
-    public static Context _context = NMApp.getContext();
+    public static Activity _context ;
      
      // SHARED PREF MODE
     static int PRIVATE_MODE = 0;
@@ -76,6 +81,23 @@ public class UserSessionManager
     private static Usuario userinfo;
     
     public static boolean HAS_ERROR=false;
+    
+    
+    private static boolean isOK;
+
+    static Object lock2=new Object(); 
+    
+    public static DialogLogin  dl;
+    
+    public static void setContext(Activity cnt)
+    { 
+    	_context=cnt;
+    }
+    
+    public static Context getContext()
+    { 
+    	return _context;
+    }
     
     public static String getNameUser()
 	{
@@ -106,6 +128,7 @@ public class UserSessionManager
     @SuppressLint("SimpleDateFormat") 
     public static Session guardarSession(Session session)
 	{ 
+    	new Date();
 		Usuario user=session.getUsuario();  
 		session.setStarted_session(Long.valueOf(new SimpleDateFormat("hhmmss").format(Calendar.getInstance().getTime())));
 		editor.putLong("USER_ID", user.getId());
@@ -128,27 +151,82 @@ public class UserSessionManager
     
     public static String getCredenciales(){ 
 		Usuario user = UserSessionManager.getLoginUser(); 
-		NAMEUSER = user.getLogin();
-		PASSWORD = user.getPassword();
-		EMPRESA = SessionManager.getEmpresa();
+		if(user!=null){
+			NAMEUSER = user.getLogin();
+			PASSWORD = user.getPassword();
+			EMPRESA =  getEmpresa();
+		} else{
+			bloque1(false); 
+		}
 		if(NAMEUSER==null || PASSWORD==null || EMPRESA==null ||(NAMEUSER!=null && NAMEUSER.trim()=="") 
         		|| (PASSWORD!=null && PASSWORD.trim()=="") || (EMPRESA!=null && EMPRESA.trim()==""))
         	return "";
         else
         	return NAMEUSER + "-" + PASSWORD + "-" + EMPRESA; 
 	} 
-	public static String getCredentials()
+    
+    public static String getCredentials()
 	{		
 		Usuario user = UserSessionManager.getLoginUser(); 
-		NAMEUSER = user.getLogin();
-		PASSWORD = user.getPassword();
-		EMPRESA = SessionManager.getEmpresa();
+		if(user!=null){
+			NAMEUSER = user.getLogin();
+			PASSWORD = user.getPassword();
+			EMPRESA =  getEmpresa();
+		} else{
+			bloque1(false); 
+		} 
         if(NAMEUSER==null || PASSWORD==null || EMPRESA==null ||(NAMEUSER!=null && NAMEUSER.trim()=="") 
         		|| (PASSWORD!=null && PASSWORD.trim()=="") || (EMPRESA!=null && EMPRESA.trim()==""))
         	return "";
         else
         	return NAMEUSER + "||" + PASSWORD + "||" + EMPRESA;
 	}
+    
+    public static void bloque1(final boolean admin)
+	{
+        _context.runOnUiThread(new Runnable()
+        {
+            @Override
+			public void run()
+            { 
+        		dl=new DialogLogin(_context,false);
+        		dl.setOnDialogLoginButtonClickListener(new OnButtonClickListener(){
+				@Override
+				public void onButtonClick(boolean btn) 
+				{ 
+					isOK=btn;  
+					dl.dismiss();   
+				}}); 
+        		dl.setOnDismissListener(new OnDismissListener()
+                {
+                    @Override
+					public void onDismiss(DialogInterface dialog)
+                    {
+                        synchronized(lock){                            
+                        	lock.notify();
+                        }
+                    }
+                });    
+            	dl.show(); 
+            }
+        });
+
+        synchronized(lock)
+        {
+            try {
+            	lock.wait();
+			} catch (InterruptedException e) { 
+				e.printStackTrace();
+			}
+        }
+        if(isOK)
+        	NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
+        checkLogin(dl.getNameUser(), dl.getPassword());
+	}
+    
+    
+    
+	
 
     
     /**
@@ -156,13 +234,19 @@ public class UserSessionManager
      * If false it will redirect user to login page
      * Else do anything
      * */
-    public static  boolean checkLogin(final String username,final String _password){
+    public static  boolean checkLogin(final String username,final String _password, boolean... OK){
         // Check login status
     	UserSessionManager.isValidCredentials=false;
+    	
+    	if(OK!=null && OK.length!=0 && !OK[0])
+    		return false;
+    	
         if(userinfo!=null || getLoginUser()!=null)
         {        	
         	if(userinfo.getLogin().equals(username) && userinfo.getPassword().equals(_password))
         		return UserSessionManager.isValidCredentials=true;
+        	else if(userinfo.getPassword().equals("") && !(UserSessionManager._context instanceof ViewConfiguracion))
+        		NMApp.getController()._notifyOutboxHandlers(ControllerProtocol.SETTING_REDIREC, 0, 0,0);
         	else
         		sendErrorMessage(new ErrorMessage("Error en la Autenticación","Error en la Autenticación\n"+"Usuario o Password desconocidos.",""));
         } else 
@@ -287,7 +371,8 @@ public class UserSessionManager
 						NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0, "Validando Credenciales."); 
 							
 					}
-					
+					else
+						unlock();
 				 }
 			});	  
 			NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2, 0, 0,"Probando Conexión.");   

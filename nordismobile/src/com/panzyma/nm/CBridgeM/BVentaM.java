@@ -4,6 +4,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import android.os.Message;
 import android.util.Log;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
@@ -65,7 +66,8 @@ public class BVentaM extends BBaseM{
 		{
 			final String credentials = SessionManager.getCredentials(); 
 
-			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) {
+			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) 
+			{
 				getPool().execute(new Runnable() {
 
 					@Override
@@ -107,6 +109,9 @@ public class BVentaM extends BBaseM{
 					}
 				});
 			}
+			else
+				NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
+				
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

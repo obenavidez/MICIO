@@ -56,6 +56,7 @@ import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
@@ -81,6 +82,7 @@ public class ViewPedido extends ActionBarActivity implements
 		super.onActivityResult(requestcode, resultcode, data);
 		try {
 			SessionManager.setContext(this);
+			UserSessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
 			if ((NUEVO_PEDIDO == request_code || ABRIR_PEDIDO == request_code)
@@ -107,19 +109,40 @@ public class ViewPedido extends ActionBarActivity implements
 		super.startActivityFromFragment(fragment, intent, requestCode);
 	}
 
+	
 	@Override
-	protected void onResume() {
-		try {
+	protected void onResume() 
+	{
+		ocultarDialogos();
+		if(NMApp.ciclo==NMApp.lifecycle.ONPAUSE || NMApp.ciclo==NMApp.lifecycle.ONRESTART)
+		{
+			NMApp.getController().setView(this);
 			SessionManager.setContext(this);
-			com.panzyma.nm.NMApp.getController().setView(this);
+			UserSessionManager.setContext(this);
 			if(firstFragment.getAdapter() != null)
 				firstFragment.getAdapter().notifyDataSetChanged();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		super.onResume();
-
 	}
+
+	@Override
+	protected void onPause() {
+		NMApp.ciclo=NMApp.lifecycle.ONPAUSE;
+		super.onPause();
+	}
+	
+	@Override
+	protected void onStop() {
+		NMApp.ciclo=NMApp.lifecycle.ONSTOP;
+		super.onStop();
+	}
+	
+	@Override
+	protected void onRestart() {
+		NMApp.ciclo=NMApp.lifecycle.ONRESTART;
+		super.onRestart();
+	}
+	
 
 	public enum FragmentActive {
 		LIST(1), ITEM(2), CUENTAS_POR_COBRAR(3), CONSULTA_VENTAS(4);
@@ -182,7 +205,7 @@ public class ViewPedido extends ActionBarActivity implements
 	@SuppressLint("CutPasteId")
 	private void initComponent() {
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
-		gridheader.setText("Listado de Pedidos (0) ");
+		gridheader.setText("LISTA PEDIDOS (0) ");
 		footerView = (TextView) findViewById(R.id.ctxtview_enty);
 		footerView.setVisibility(View.VISIBLE);
 	}
@@ -193,6 +216,7 @@ public class ViewPedido extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 
 		SessionManager.setContext(this);
+		UserSessionManager.setContext(this);
 		context = getApplicationContext();
 
 		setContentView(R.layout.layout_client_fragment);
@@ -482,8 +506,7 @@ public class ViewPedido extends ActionBarActivity implements
 		positioncache = savedInstanceState.getInt("positioncache");
 		firstFragment = (ListaFragment<vmEntity>) savedInstanceState
 				.getParcelable("fragment");
-		gridheader.setText(String.format("Listado de Pedidos (%s)",
-				pedidos.size()));
+		gridheader.setText(String.format("LISTA PEDIDOS (%s)",pedidos.size())); 
 		// setList();
 	}
 
@@ -627,7 +650,7 @@ public class ViewPedido extends ActionBarActivity implements
 							if (removed) {
 								firstFragment.getAdapter().notifyDataSetChanged();
 								gridheader.setText(String.format(
-										"Listado de Pedidos (%s)", pedidos.size()));
+										"LISTA PEDIDOS (%s)", pedidos.size()));
 								customArrayAdapter.remove(pedido_selected);
 	
 								if (pedidos.size() > 0) {
@@ -785,7 +808,7 @@ public class ViewPedido extends ActionBarActivity implements
 
 	public synchronized void setList() {
 		gridheader.setVisibility(View.VISIBLE);
-		gridheader.setText(String.format("Listado de Pedidos (%s)",
+		gridheader.setText(String.format("LISTA PEDIDOS (%s)",
 				pedidos.size()));
 		if (pedidos.size() == 0) {
 			TextView txtenty = (TextView) findViewById(R.id.ctxtview_enty);

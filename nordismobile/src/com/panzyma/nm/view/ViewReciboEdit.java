@@ -29,6 +29,7 @@ import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.VentasUtil;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
@@ -218,7 +219,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 			Bundle bundle = getIntent().getExtras();
 			// OBTENER EL ID DEL RECIBO
 			reciboId = (Integer) bundle.get(ViewRecibo.RECIBO_ID);
-			SessionManager.setContext(this);
+			SessionManager.setContext(this);UserSessionManager.setContext(this);
 			me = this;
 
 			if (getIntent().hasExtra("cliente")) {
@@ -297,7 +298,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 		Parcelable[] objects = savedInstanceState.getParcelableArray("documentos");
 		documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>((Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays.asList(objects));
 		cliente = savedInstanceState.getParcelable("cliente");
-		gridheader.setText(String.format("Documentos a Pagar (%s)",documents.size()));
+		gridheader.setText(String.format("DOCUMENTOS A PAGAR (%s)",documents.size()));
 		recibo = savedInstanceState.getParcelable("recibo");
 		agregarDocumentosAlDetalleDeRecibo();
 		// setList();
@@ -315,7 +316,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 		item_document = (ListView) (gridDetalleRecibo)
 				.findViewById(R.id.data_items);
 		gridheader = (TextView) gridDetalleRecibo.findViewById(R.id.header);
-		gridheader.setText("Documentos a Pagar (0)");
+		gridheader.setText("DOCUMENTOS A PAGAR (0)");
 		tbxFecha = (EditText) findViewById(R.id.pddetextv_detalle_fecha);
 		tbxNumReferencia = (EditText) findViewById(R.id.pdddetextv_detalle_numref);
 		tbxNumRecibo = (EditText) findViewById(R.id.pddtextv_detallenumero);
@@ -1929,21 +1930,24 @@ public class ViewReciboEdit extends FragmentActivity implements
 	public void agregarDocumentosAlDetalleDeRecibo() {
 
 		// gridheader.setText("Listado de Productos a Vender");
-		ListView list = ((ListView) gridDetalleRecibo
-				.findViewById(R.id.data_items));
+//		ListView list = ((ListView) gridDetalleRecibo
+//				.findViewById(R.id.data_items));
+		
 		if (adapter == null) {
 			// adapter=new GenericAdapter(this,
 			// FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);
 			adapter = new GenericAdapter(this, DocumentoViewHolder.class,
 					documents, R.layout.list_row);
-			list.setAdapter(adapter);
-			gridheader.setText("Documentos a Pagar (" + adapter.getCount()
+			item_document.setAdapter(adapter);
+			gridheader.setText("DOCUMENTOS A PAGAR (" + adapter.getCount()
 					+ ")");
 			adapter.setSelectedPosition(0);
 		} else {
 			adapter.notifyDataSetChanged();
-			adapter.setSelectedPosition(documents.size() - 1);
-			gridheader.setText("Documentos a Pagar (" + adapter.getCount()
+			positioncache=documents.size() - 1;
+			item_document.smoothScrollToPosition(positioncache);
+			adapter.setSelectedPosition(documents.size() - 1); 
+			gridheader.setText("DOCUMENTOS A PAGAR (" + adapter.getCount()
 					+ ")");
 		}
 		// list.setOnItemClickListener(new OnItemClickListener() {
@@ -2169,7 +2173,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 										}
 									}
 									adapter.notifyDataSetChanged();
-									gridheader.setText("Documentos a Pagar ("
+									gridheader.setText("DOCUMENTOS A PAGAR ("
 											+ adapter.getCount() + ")");
 									// Josue, cambie el parametro de boolean a
 									// int de guardarRecibo, creo q no t afecte,

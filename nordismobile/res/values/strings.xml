@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello everyone, Nordis Mobile!</string>
-    <string name="app_name">Nordis Mobile</string>
+    <string name="hello">Hello everyone, SIMFAC!</string>
+    <string name="app_name">SIMFAC</string>
     <string name="tipoped">selecione tipo pedido</string>
-    <string name="txtDemo">Nordis Mobile by Osmar David Benavidez Zelaya | osmar.benavidez@panzyma.com.ni/obenavidez@panzyma.com.ni </string>
+    <string name="txtDemo">SIMFAC by Osmar David Benavidez Zelaya | osmar.benavidez@gmail.com</string>
 
     <!-- Activity Titles -->
-    <string name="HomeActivityTitle">Nordis Mobile | Panzyma Lab</string>
+    <string name="HomeActivityTitle">PANZYMA LAB</string>
     <string name="FeedbackActivityTitle">Feedback</string>
-    <string name="ClientActivityTitle">Nordis Mobile | Modulo de Cliente</string>
-    <string name="ProductoActivityTitle">Nordis Mobile | Productos</string>
-    <string name="PedidoActivityTitle">Nordis Mobile | Pedidos</string>
-    <string name="ReciboCollActivityTitle">Nordis Mobile | Recibos Colector</string>
-    <string name="DevolucionActivityTitle">Nordis Mobile | Devoluciones</string>
-    <string name="ConfiguracionActivityTitle">Nordis Mobile | Configuración</string>
+    <string name="ClientActivityTitle">SIMFAC | CLIENTE</string>
+    <string name="ProductoActivityTitle">SIMFAC | PRODUCTO</string>
+    <string name="PedidoActivityTitle">SIMFAC | PEDIDO</string>
+    <string name="ReciboCollActivityTitle">SIMFAC | RECIBO COLECTOR</string>
+    <string name="DevolucionActivityTitle">SIMFAC | DEVOLUCION</string>
+    <string name="ConfiguracionActivityTitle">SIMFAC | CONFIGURACIÓN</string>
 
     <!-- Dialogs Titles -->
-    <string name="FichaClienteDialogTitle">Nordis Mobile | Ficha del Cliente</string>
+    <string name="FichaClienteDialogTitle">SIMFAC | FICHA CLIENTE</string>
 
     <!-- cliente.xml titles -->
-    <string name="txtclient_tittle">Lista de Registros</string>
+    <string name="txtclient_tittle">LISTA CLIENTE</string>
     <string name="txtclient_entymessage">No hay Registros</string>
      
     
@@ -49,13 +49,13 @@
     <string name="view_product_tipo">Tipo:</string>
     <string name="view_product_categoria">Categoría:</string>
     <string name="view_product_especialidades">Especialidades:</string>
-    <string name="txtdocumentos_title">Lista de Documentos</string>
+    <string name="txtdocumentos_title">LISTA DE DOCUMENTOS</string>
     <string name="message_pay_amount">Ingrese el monto</string>
     <string name="message_ocational_discount">Aplicar Descuento Ocasional</string>
     <string name="txt_collectorpercent">% Vendedor</string>
     <string name="txt_ocational_discount_key">Clave</string>
     <string name="text_scan_devices">Buscar Dispositivos</string>
-    <string name="txtbluetoothdevice_title">Lista de Dispositivos</string>
+    <string name="txtbluetoothdevice_title">LISTA DISPOSITIVOS</string>
     <string name="title_listaproducto">Datos del Producto</string>
     <string name="notasproducto">Notas del Producto</string>
 </resources>

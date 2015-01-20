@@ -122,7 +122,7 @@ public class DialogFormasPago extends Dialog {
 					return;
 				}
 				//FINISH_ACTIVITY();
-				gridheader.setText("Listado de Formas de Pago (" + formasPago.size() + ")");				
+				gridheader.setText("FORMAS DE PAGO (" + formasPago.size() + ")");				
 				adapter = new GenericAdapter<ReciboDetFormaPago, FormaPagoViewHolder>(parent.getContext(),FormaPagoViewHolder.class,formasPago,R.layout.detalle_forma_pago);				 
 				lvfacturas.setAdapter(adapter);
 				lvfacturas.setOnItemClickListener(new OnItemClickListener() {

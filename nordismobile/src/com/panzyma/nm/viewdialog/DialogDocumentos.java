@@ -295,7 +295,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 					Util.Message.buildToastMessage(parent, "No existen facturas pendientes", 1000).show();
 					return;
 				}
-				gridheader.setText("Listado de Facturas Pendientes ("+_facturas.size()+")");				
+				gridheader.setText("FACTURAS PENDIENTES ("+_facturas.size()+")");				
 				adapter = new GenericAdapter<Factura, FacturaViewHolder>(mcontext,FacturaViewHolder.class,_facturas,R.layout.detalle_factura);				 
 				lvfacturas.setAdapter(adapter);
 				lvfacturas.setOnItemClickListener(new OnItemClickListener() 
@@ -358,7 +358,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 					Util.Message.buildToastMessage(parent, "No existen notas de débito pendientes", 1000).show();
 					return;
 				}
-				gridheader.setText("Listado Notas Debito Pendientes ("+notasDebito.length+")");				
+				gridheader.setText("NOTAS DEBITO PENDIENTES ("+notasDebito.length+")");				
 				adapter2 = new GenericAdapter<CCNotaDebito, NotaDebitoViewHolder>(mcontext,NotaDebitoViewHolder.class,_notasDebito,R.layout.detalle_nota_debito);				 
 				lvnotasd.setAdapter(adapter2);
 				lvnotasd.setOnItemClickListener(new OnItemClickListener() {
@@ -420,7 +420,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 					Util.Message.buildToastMessage(parent, "No existen notas de crédito pendientes", 1000).show();
 					return;
 				}
-				gridheader.setText("Listado Notas Crédito Pendientes (" + notasCredito.length + ")");				
+				gridheader.setText("NOTAS CREDITO PENDIENTES (" + notasCredito.length + ")");				
 				adapter3 = new GenericAdapter<CCNotaCredito, NotaCreditoViewHolder>(mcontext,NotaCreditoViewHolder.class,_notasCredito,R.layout.detalle_nota_credito);				 
 				lvnotasd.setAdapter(adapter3); 
 				

@@ -75,7 +75,7 @@ public class DialogFichaCliente extends Dialog
 			
 				if(objL.getNotas()!=null)
 				{  
-					gridheader.setText("Notas del Cliente("+objL.getNotas().length+")");
+					gridheader.setText("NOTAS CLIENTE("+objL.getNotas().length+")");
 					adapter=new GenericAdapter(mcontext,CNotaViewHolder.class,Arrays.asList(objL.getNotas()),R.layout.grid_cnota);
 					lvcnotas.setAdapter(adapter);
 					adapter.setSelectedPosition(positioncache=0); 
@@ -94,7 +94,7 @@ public class DialogFichaCliente extends Dialog
 				}
 				else
 			    {
-					gridheader.setText("Notas del Cliente(0)");
+					gridheader.setText("NOTAS CLIENTE(0)");
 					Log.d(TAG,"ViewCliente setData enty"); 
 					TextView txtenty=(TextView) findViewById(R.id.fctxtview_enty);
 		            txtenty.setVisibility(View.VISIBLE); 

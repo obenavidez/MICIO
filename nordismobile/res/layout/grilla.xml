@@ -9,11 +9,11 @@
          	android:id="@+id/header"
 			style="StyleFontTextViewActionBar"
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="30dp"
 			android:text="Encabezado de la Lista"
 			android:gravity="center"
 			android:textColor="@color/White"
-			android:background="@color/Gray"	             
+			android:background="@drawable/bg_actionbar29" 	             
       	    />
     	           
 			<ListView 

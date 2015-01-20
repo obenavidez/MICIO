@@ -83,8 +83,8 @@ public class BConfiguracionM extends BBaseM {
 						b.get("Credentials").toString(),
 						b.get("LoginUsuario").toString(),
 						b.get("PIN").toString(),
-						(b.getParcelable("impresora")!=null)?(Impresora)b.getParcelable("impresora"):null
-						);
+						(b.getParcelable("impresora")!=null)?(Impresora)b.getParcelable("impresora"):null,
+						b.getBoolean("confirm",true));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -108,6 +108,16 @@ public class BConfiguracionM extends BBaseM {
 			break;
 		case ID_SINCRONIZE_TODOS:
 			SINCRONIZE_TODOS();
+			break;
+		case ControllerProtocol.SALVARCONFIGURACIONANTESDESALIR:
+			SAVEBEFORE(b.get("URL").toString(),
+					b.get("URL2").toString(),
+					b.get("Empresa").toString(),
+					b.get("Credentials").toString(),
+					b.get("LoginUsuario").toString(),
+					b.get("PIN").toString(),
+					(b.getParcelable("impresora")!=null)?(Impresora)b.getParcelable("impresora"):null);
+			
 			break;
 		}
 		return false;
@@ -242,93 +252,8 @@ public class BConfiguracionM extends BBaseM {
 
 	}
 
-	//	public  void GET_DATACONFIGURATION(final String Credentials,
-	//			final String LoginUsuario, final String PIN, final Impresora dispositivo) 
-	//	{
-	//		try {
-	//			NMApp.getThreadPool().execute(
-	//					new Runnable() {
-	//						@Override
-	//						public void run() {
-	//							try {
-	//								DataConfigurationResult res = ModelConfiguracion.getDataConfiguration
-	//																(
-	//																		Credentials,
-	//																		LoginUsuario, 
-	//																		PIN
-	//																);
-	//								if (res.get_error() == null) 
-	//								{
-	//									Processor.notifyToView(getController(),
-	//											ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
-	//													"Salvando configuración.");
-	//									vmConfiguracion setting = vmConfiguracion.setConfiguration
-	//											(
-	//												view.getUrlServer(),
-	//												view.getUrlServer2(),
-	//												String.valueOf(res.get_devicePrefix()), 
-	//												view.getEnterprise(), 
-	//												res.get_userInfo().getLogin(), 
-	//												res.get_maxIdPedido(), 
-	//												res.get_maxIdRecibo(),
-	//												dispositivo
-	//											);
-	//									ModelConfiguracion.saveConfiguration(getContext(),setting);
-	//									ModelConfiguracion.saveUser(getContext(), res.get_userInfo());
-	//									SessionManager.setImpresora(dispositivo);
-	//									SessionManager.setLoguedUser(res.userInfo);
-	//
-	//									Processor
-	//											.notifyToView(
-	//													getController(),
-	//													ControllerProtocol.NOTIFICATION,
-	//													res.get_devicePrefix(),
-	//													1,"Configuración registrada con exito." );
-	//								} else
-	//									Processor
-	//											.notifyToView(
-	//													getController(),
-	//													ERROR,
-	//													0,
-	//													1,
-	//													new ErrorMessage(
-	//															"error en la comunicacion con el servidor",
-	//															res.get_error()
-	//																	+ "\r\n",
-	//															""));
-	//
-	//							} catch (Exception e) {
-	//								e.printStackTrace();
-	//								try {
-	//									Processor
-	//											.notifyToView(
-	//													getController(),
-	//													ERROR,
-	//													0,
-	//													1,
-	//													new ErrorMessage(
-	//															"error en la comunicacion con el servidor",
-	//															e.getMessage()
-	//																	+ "\r\n",
-	//															""));
-	//								} catch (Exception e1) {
-	//									// TODO Auto-generated catch block
-	//									e1.printStackTrace();
-	//								}
-	//							}
-	//						}
-	//					});
-	//			Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
-	//							"Validando información con el servidor.");
-	//		} catch (Exception e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		}
-	//	}
-
-
-	public static  void GET_DATACONFIGURATION(final String Url,final String Url2,final String Empresa,final String Credentials,
-			final String LoginUsuario, final String PIN, final Impresora dispositivo, boolean... mode) throws Exception 
+	public static  void SAVEBEFORE(final String Url,final String Url2,final String Empresa,final String Credentials,
+			final String LoginUsuario, final String PIN, final Impresora dispositivo)
 	{
 
 		try 
@@ -362,8 +287,77 @@ public class BConfiguracionM extends BBaseM {
 				ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
 				SessionManager.setImpresora(dispositivo);
 				SessionManager.setLoguedUser(res.userInfo); 
+                Processor.notifyToView(NMApp.getController(),ControllerProtocol.SALVARCONFIGURACIONANTESDESALIR,0, 0,0);
+	 
+			} else
+				throw new Exception(res.get_error()); 
+			
+		} catch (Exception e) 
+		{
+			try 
+			{
+				Processor
+						.notifyToView(NMApp.getController(),
+								ERROR,
+								0,
+								1,
+								new ErrorMessage(
+										"error en la comunicacion con el servidor",
+										e.getMessage()
+												+ "\r\n",
+										""));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		} 
+		
+	}
+	
+	public static  void GET_DATACONFIGURATION(final String Url,final String Url2,final String Empresa,final String Credentials,
+			final String LoginUsuario, final String PIN, final Impresora dispositivo, boolean... mode)
+	{
+
+		try 
+		{
+			
+			DataConfigurationResult res = ModelConfiguracion.getDataConfiguration
+			(	
+					Url2,
+					Credentials,
+					LoginUsuario, 
+					PIN
+			);
+			
+			if (res.get_error() == null) 
+			{
+				Processor.notifyToView(NMApp.getController(),
+						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
+						"Salvando configuración.");
+				vmConfiguracion setting = vmConfiguracion.setConfiguration
+						(
+								Url,
+								Url2,
+								String.valueOf(res.get_devicePrefix()), 
+								Empresa, 
+								res.get_userInfo().getLogin(), 
+								res.get_maxIdPedido(), 
+								res.get_maxIdRecibo(),
+								dispositivo
+						);
+				ModelConfiguracion.saveConfiguration(NMApp.getContext(),setting);
+				ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
+				SessionManager.setImpresora(dispositivo);
+				SessionManager.setLoguedUser(res.userInfo); 
+				Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATE_OBJ_VIEW, 0,0, setting);
 				if(mode==null || (mode!=null && mode.length==0))
-					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Configuracion guardada exitosamente...");
+					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Configuración guardada exitosamente...");
+				else
+				Processor.notifyToView(
+								NMApp.getController(),
+								ControllerProtocol.NOTIFICATION,
+								0,
+								0,"Configuración guardada exitosamente.");
  
 
 			} else
@@ -391,7 +385,6 @@ public class BConfiguracionM extends BBaseM {
 		
 	}
 
-
 	private void SINCRONIZE_CLIENTES() {
 		try {
 			final String credentials = SessionManager.getCredenciales();
@@ -403,10 +396,7 @@ public class BConfiguracionM extends BBaseM {
 							@Override
 							public void run() {
 								try {
-									if (NMNetWork.isPhoneConnected(getContext())
-											&& NMNetWork
-											.CheckConnection(getController())) 
-									{
+									
 										Integer page = 1;
 										while (true) 
 										{
@@ -444,8 +434,6 @@ public class BConfiguracionM extends BBaseM {
 													ControllerProtocol.NOTIFICATION,
 													0,
 													1,"Los clientes han sido sincronizados exitosamente");
-
-									}
 
 								} catch (Exception e) {
 									e.printStackTrace();

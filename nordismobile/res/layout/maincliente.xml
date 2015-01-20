@@ -32,11 +32,11 @@
 			         	android:id="@+id/ctextv_gridheader"
 						style="StyleFontTextViewActionBar"
 						android:layout_width="fill_parent"
-						android:layout_height="wrap_content"
+						android:layout_height="30dp"
 						android:text="@string/txtclient_tittle"
 						android:gravity="center"
 						android:textColor="@color/White"
-						android:background="@color/Gray"              
+						android:background="@drawable/bg_actionbar29"             
 		      />
 		     </LinearLayout>	
 			    

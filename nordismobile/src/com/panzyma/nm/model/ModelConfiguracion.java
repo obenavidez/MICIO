@@ -22,6 +22,7 @@ import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate; 
 import com.panzyma.nm.auxiliar.Session;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
@@ -65,21 +66,21 @@ public class ModelConfiguracion {
 	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		//return pref.getString("url_server2", "http://www.panzyma.com/SimfacProd/SimfacService.svc/");
-		return pref.getString("url_server2", "http://192.168.1.98:8081/simfac/SimfacService.svc/");		
+		return pref.getString("url_server2", "http://192.168.1.98:8081/Simfac/SimfacService.svc/");		
 	}
 
 	public static vmConfiguracion getVMConfiguration(Context cnt) 
 	{
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		vmConfiguracion config=vmConfiguracion.setConfiguration( 
-//				pref.getString("url_server", "http://www.panzyma.com/nordisserverprod/MobileService.asmx"), 
-//				pref.getString("url_server2", "http://www.panzyma.com/SimfacProd/SimfacService.svc/"),
 				pref.getString("url_server", "http://192.168.1.100/NordisServer/MobileService.asmx"), 
-				pref.getString("url_server2","http://192.168.1.98:8081/SIMFAC/SimfacService.svc/"),
+				pref.getString("url_server2","http://192.168.1.98:8081/Simfac/SimfacService.svc/"),
 				pref.getString("device_id", ""),
 				pref.getString("enterprise", "dp"),
 				pref.getString("name_user", ""),
-				pref.getInt("max_idpedido", 0), pref.getInt("max_idrecibo", 0),null);
+				pref.getInt("max_idpedido", 0), 
+				pref.getInt("max_idrecibo", 0),
+				null);
 		config.setImpresora(Impresora.get(cnt));
 		return config;
 	} 
@@ -292,7 +293,8 @@ public class ModelConfiguracion {
 		edit = pref.edit();
 		edit.putString("codigo", user.getCodigo());
 		edit.putString("login", user.getLogin());
-		edit.putString("password", user.getPassword());
+		String password=(user.getPassword()==null || (user.getPassword()!=null && user.getPassword().equals("")))?UserSessionManager.getPassword():user.getPassword();
+		edit.putString("password", password);
 		edit.putString("nombre", user.getNombre());
 		edit.putString("sexo", user.getSexo());
 		edit.putLong("id", user.getId());

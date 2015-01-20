@@ -88,7 +88,7 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
     	//AlertDialog.Builder builder = new AlertDialog.Builder(parent); 
     	//LayoutInflater inflater = parent.getLayoutInflater();
 		view = inflater.inflate(R.layout.layout_consultabonificacionesprod, null);
-		builder.setTitle("Consulta de Bonificaciones");
+		builder.setTitle("BONIFICACIONES");
 		builder.setView(view);
 		builder.setPositiveButton("ACEPTAR", new OnClickListener() {
 			@Override
