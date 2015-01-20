@@ -12,7 +12,9 @@ import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALH
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import android.annotation.SuppressLint;
@@ -25,6 +27,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -68,6 +71,7 @@ import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
@@ -92,6 +96,7 @@ import com.panzyma.nm.viewdialog.DialogCondicionesNotas;
 import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewdialog.DialogPromociones;
 import com.panzyma.nm.viewdialog.ExonerarImpuesto;
+import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint({ "NewApi", "SimpleDateFormat" })
@@ -852,9 +857,11 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 						new AppDialog.OnButtonClickListener() {
 							@Override
 							public void onButtonClick(AlertDialog _dialog,
-									int actionId) {
+									int actionId) 
+							{
 
-								if (pedido.getCodEstado().compareTo("FACTURADO") == 0) {
+								if (pedido.getCodEstado().compareTo("FACTURADO") == 0) 
+								{
 									Message msg = new Message();
 									Bundle b = new Bundle();
 									b.putParcelable("pedido", pedido);
@@ -1823,15 +1830,26 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 	protected void onSaveInstanceState(Bundle outState) {
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
-		outState.putParcelable("cliente", cliente);
+		Parcelable[] objects = new Parcelable[Lvmpproducto.size()];
+		Lvmpproducto.toArray(objects);
+		outState.putParcelableArray("detallepedido", objects);
+		outState.putInt("positioncache", positioncache); 
+		outState.putParcelable("pedido", pedido);  
 		Log.d(TAG,"onSaveInstanceState");
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		super.onRestoreInstanceState(savedInstanceState);
-		cliente = savedInstanceState.getParcelable("cliente");
+		super.onRestoreInstanceState(savedInstanceState);  
+		
+		 Parcelable [] objects = savedInstanceState.getParcelableArray("detallepedido");
+		 Lvmpproducto = new ArrayList<DetallePedido>((Collection<? extends DetallePedido>) Arrays.asList(objects) ); 
+		 positioncache = savedInstanceState.getInt("positioncache");	
+		 pedido=savedInstanceState.getParcelable("pedido");  
+		 gridheader.setText(String.format("PRODUCTOS A FACTURAR (%s)", Lvmpproducto.size()));
+		 
+		
 		Log.d(TAG,"Restore");
 	}
 

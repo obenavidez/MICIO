@@ -221,7 +221,7 @@ public class UserSessionManager
         }
         if(isOK)
         	NMApp.getController()._notifyOutboxHandlers(0,0,0,0);
-        checkLogin(dl.getNameUser(), dl.getPassword());
+        checkLogin(dl.getNameUser(), dl.getPassword(),isOK);
 	}
     
     
@@ -234,11 +234,11 @@ public class UserSessionManager
      * If false it will redirect user to login page
      * Else do anything
      * */
-    public static  boolean checkLogin(final String username,final String _password, boolean... OK){
+    public static  boolean checkLogin(final String username,final String _password, boolean... isOK){
         // Check login status
     	UserSessionManager.isValidCredentials=false;
     	
-    	if(OK!=null && OK.length!=0 && !OK[0])
+    	if(isOK!=null && isOK.length!=0 && !isOK[0])
     		return false;
     	
         if(userinfo!=null || getLoginUser()!=null)
