@@ -224,7 +224,6 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			pd.dismiss();
 		com.panzyma.nm.NMApp.getController().setView((parent==null)?parent2:parent);			
 		Log.d(TAG, "Activity quitting");  
-		dismiss();
 	}
 
 	public ViewPedidoEdit getParent(){
