@@ -3,28 +3,37 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/White" >
-    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/White"
+        android:orientation="vertical" >
+        
 	    <!-- Included header.xml here -->
 		<ViewStub android:id="@+id/vsHeader" 
 		    android:inflatedId="@+id/header" 
 			android:layout_width="fill_parent" 
 			android:layout_height="wrap_content" 
 			android:layout="@layout/header" />
-		
-		
-		<RelativeLayout
+
+
+		 <ScrollView
+                android:id="@+id/ScrollView01"
+                android:layout_width="fill_parent"
+                android:layout_height="170dp">
+
+ 				<HorizontalScrollView
+                android:id="@+id/HorizontalScrollView01"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent" >
+                
+               	<RelativeLayout
 				android:id="@+id/rl1"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"  
-				android:layout_marginTop="10dp"
-				 > 
-			 
-			    <TextView
+				android:layout_marginTop="10dp">
+                
+				<TextView
 			    android:id="@+id/pddlbl_fecha"
 			    android:layout_width="55dp"
 			    android:layout_height="wrap_content" 
@@ -62,14 +71,14 @@
 				
 				
 				<TextView
-                    android:id="@+id/pddlbl_num"
-                    android:layout_width="55dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/pdtv_detalle_numref"
-                    android:text="#Pedido :"
-                    android:textColor="@color/Black"
-                    android:textSize="12dp"
-                    android:textStyle="bold" />
+                android:id="@+id/pddlbl_num"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/pdtv_detalle_numref"
+                android:text="#Pedido :"
+                android:textColor="@color/Black"
+                android:textSize="12dp"
+                android:textStyle="bold" />
 
 				<EditText
 			    android:id="@+id/pdddetextv_detalle_num"
@@ -104,7 +113,7 @@
 			    android:paddingTop="10dp"
 			    android:scrollHorizontally="true" >
 
-					<requestFocus />
+				<requestFocus />
 
 				</EditText>
 				
@@ -149,17 +158,22 @@
 			    android:paddingTop="10dp"
 			    android:background="@drawable/style_textbox"
 				 />    
-				
-	   </RelativeLayout> 
-		<include
+
+
+
+
+                </RelativeLayout>
+           </HorizontalScrollView>
+ 		</ScrollView>
+
+ 		<include
 		    android:id="@+id/pddgrilla"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:layout_marginTop="5dp"
+		    android:layout_marginTop="2dp"
 		    layout="@layout/grilla" />
-    
-</LinearLayout>
-<ListView
+
+		<ListView
         android:id="@+id/left_drawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
@@ -168,4 +182,5 @@
         android:choiceMode="singleChoice"
         android:scrollingCache="false" />
 
+    </LinearLayout>
 </android.support.v4.widget.DrawerLayout>
