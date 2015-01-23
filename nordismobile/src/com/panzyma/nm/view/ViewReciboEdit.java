@@ -78,16 +78,20 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -189,6 +193,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 	List<CCNotaDebito> notasDebitoRecibo;
 	List<CCNotaCredito> notasCreditoRecibo;
 	private List<com.panzyma.nm.serviceproxy.Documento> documents;
+	View _view;
 
 	boolean imprimir = false;
 	boolean pagarOnLine = false;
@@ -273,6 +278,12 @@ public class ViewReciboEdit extends FragmentActivity implements
 							.getMessage()));
 		}
 
+	}
+
+	@Override
+	public View onCreateView(String name, Context context, AttributeSet attrs) {
+		_view = super.onCreateView(name, context, attrs);
+		return _view;
 	}
 
 	@Override
@@ -3041,4 +3052,18 @@ public class ViewReciboEdit extends FragmentActivity implements
 		}
 	}
 
+	 @Override
+	 public void onConfigurationChanged(Configuration newConfig) {
+	        super.onConfigurationChanged(newConfig);
+	        LayoutInflater inflater = LayoutInflater.from(this);
+	        populateViewForOrientation(inflater, (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
+	 }
+	 
+	 private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+	        viewGroup.removeAllViewsInLayout();
+	        _view= inflater.inflate(R.layout.recibo_edit, viewGroup);
+	        initComponent();
+	        
+	}
+	
 }

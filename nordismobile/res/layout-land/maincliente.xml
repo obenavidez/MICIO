@@ -21,8 +21,8 @@
 		    android:orientation="horizontal">
 		    
 		    <EditText android:id="@+id/EditText_Client"
-				android:layout_height="25dp"
-				android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:layout_width="fill_parent"
 				android:inputType="textPersonName"
 				android:singleLine="true" 
 				android:textSize="13dp" 
@@ -39,7 +39,7 @@
          	android:id="@+id/ctextv_gridheader"
 			style="StyleFontTextViewActionBar"
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="30dp"
 			android:text="@string/txtclient_tittle"
 			android:gravity="center"
 			android:textColor="@color/White"
