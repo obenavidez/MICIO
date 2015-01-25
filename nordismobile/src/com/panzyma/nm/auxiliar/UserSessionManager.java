@@ -1,5 +1,6 @@
 package com.panzyma.nm.auxiliar;
 
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 import java.text.SimpleDateFormat;
@@ -295,7 +296,7 @@ public class UserSessionManager
 				public void run() 
 				{ 
 								
-					if((NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url)))			
+					if((NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url,url2)))			
 					{
 						try 
 						{
@@ -355,10 +356,13 @@ public class UserSessionManager
 											
 											unlock();
 											
-										}catch (Exception e) 
+										}catch (Exception ex) 
 										{
-											sendErrorMessage(new ErrorMessage("Error en la Autenticación","Login: Fallo la comunicación con el servidor de aplicaciones.\r\n",e.toString()));
-											e.printStackTrace();
+								        	if(UserSessionManager.getLoginUser()==null && !(UserSessionManager._context instanceof ViewConfiguracion))
+								        		NMApp.getController()._notifyOutboxHandlers(ControllerProtocol.SETTING_REDIREC, 0, 0,0);
+								        	else 
+								        		sendErrorMessage(new ErrorMessage("","error en la comunicación con el servidor de aplicaciones.\n"+ex.toString(),"error en la comunicación con el servidor de aplicaciones.\n"+ex.toString()));
+										 
 		
 										}
 									}

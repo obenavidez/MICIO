@@ -59,4 +59,19 @@
         <item >Imprimir Comprobante</item>
         <item >Cerrar</item> 
     </string-array>
+    <string-array name="reciboeditoptions">
+        <item >Seleccionar Cliente</item>
+        <item >Agregar Documentos</item>
+        <item >Agregar Pagos</item>
+        <item >Editar Pagos</item>
+        <item >Editar Notas</item>
+        <item >Pagar Todo</item>
+        <item >Pagar Monto</item>
+        <item >Editar Descuento </item>
+        <item >Guardar Recibo</item>
+        <item >Enviar Recibo</item>
+        <item >Solicitar Descuento Ocasional</item>
+        <item >Aplicar Descuento Ocasional</item> 
+        <item >Cerrar</item> 
+    </string-array>
 </resources>

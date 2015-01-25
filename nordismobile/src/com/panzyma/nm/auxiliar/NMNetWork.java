@@ -169,24 +169,26 @@ public class NMNetWork {
     }    
     
   //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
-    public static boolean CheckConnection(String url) 
+    public static boolean CheckConnection(String url,String...url2) 
     {
     	UserSessionManager.HAS_ERROR=false;
+    	boolean rs=false;
     	error=null;    	
-        try { 
-        		return Boolean.parseBoolean(((SoapPrimitive)NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),url,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());              
+        try 
+        { 
+        		rs= Boolean.parseBoolean(((SoapPrimitive)NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),url,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());
+        		        
         } 
         catch(Exception ex) 
-        {         	  
+        {         
+        	rs=false;
         	UserSessionManager.HAS_ERROR=true;
         	if(UserSessionManager.getLoginUser()==null && !(UserSessionManager._context instanceof ViewConfiguracion))
         		NMApp.getController()._notifyOutboxHandlers(ControllerProtocol.SETTING_REDIREC, 0, 0,0);
         	else
         		NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,new ErrorMessage("","error en la comunicación con el servidor de aplicaciones.\n"+ex.toString(),"error en la comunicación con el servidor de aplicaciones.\n"+ex.toString()));
-			  
-
         }
-        return false;
+        return rs;
     }    
     
     /**

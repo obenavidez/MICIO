@@ -70,6 +70,8 @@ import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
 import com.panzyma.nm.viewdialog.EditFormaPago;
 import com.panzyma.nordismobile.R;
 
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.annotation.SuppressLint;
@@ -78,20 +80,26 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -103,7 +111,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 @InvokeBridge(bridgeName = "BReciboM")
 @SuppressLint("ShowToast")
 @SuppressWarnings({ "unused", "rawtypes", "deprecation", "unchecked" })
-public class ViewReciboEdit extends FragmentActivity implements
+public class ViewReciboEdit extends ActionBarActivity implements
 		Handler.Callback, Editable {
 
 	private static CustomDialog dlg;
@@ -154,14 +162,18 @@ public class ViewReciboEdit extends FragmentActivity implements
 	private static final int ID_SELECCIONAR_CLIENTE = 0;
 	private static final int ID_AGREGAR_DOCUMENTOS = 1;
 	private static final int ID_AGREGAR_PAGOS = 2;
-	private static final int ID_EDITAR_NOTAS = 3;
-	private static final int ID_PAGAR_TODO = 4;
-	private static final int ID_PAGAR_MONTO = 5;
-	private static final int ID_EDITAR_DESCUENTO = 6;
-	private static final int ID_SALVAR_RECIBO = 7;
-	private static final int ID_ENVIAR_RECIBO = 8;
-	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 9;
-	private static final int ID_APLICAR_DESCUENTO_OCASIONAL = 10;
+	private static final int ID_EDITAR_PAGOS = 3;
+	private static final int ID_EDITAR_NOTAS = 4;
+	private static final int ID_PAGAR_TODO = 5;
+	private static final int ID_PAGAR_MONTO = 6;
+	private static final int ID_EDITAR_DESCUENTO = 7;
+	private static final int ID_SALVAR_RECIBO = 8;
+	private static final int ID_ENVIAR_RECIBO = 9;
+	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 10;
+	private static final int ID_APLICAR_DESCUENTO_OCASIONAL = 11;
+	private static final int ID_CERRAR = 12;
+	
+	
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit";
 	public static final String OBJECT_RECIBO = "recibo";
@@ -171,8 +183,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
 	private static final int VER_DETALLE_DOCUMENTO = 2;
-	private static final int ID_CERRAR = 11;
-	private static final int ID_EDITAR_PAGOS = 12;
+	
 	private ViewReciboEdit me;
 	private Cliente cliente;
 	private ReciboColector recibo = null;
@@ -189,6 +200,12 @@ public class ViewReciboEdit extends FragmentActivity implements
 	List<CCNotaDebito> notasDebitoRecibo;
 	List<CCNotaCredito> notasCreditoRecibo;
 	private List<com.panzyma.nm.serviceproxy.Documento> documents;
+	DrawerLayout drawerLayout;
+	ListView drawerList;
+	ActionBarDrawerToggle drawerToggle;
+	String[] opcionesMenu;
+	CharSequence tituloSeccion;
+	CharSequence tituloApp;
 
 	boolean imprimir = false;
 	boolean pagarOnLine = false;
@@ -305,6 +322,150 @@ public class ViewReciboEdit extends FragmentActivity implements
 	}
 
 	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		drawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		drawerToggle.onConfigurationChanged(newConfig);
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// menu.findItem(R.id.action_search).setVisible(true);
+		super.onPrepareOptionsMenu(menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		if (drawerToggle.onOptionsItemSelected(item)) {
+			item.getItemId();
+			return true;
+		}
+		return true;
+	}
+	
+	public void CreateMenu() {
+		// Obtenemos las opciones desde el recurso
+		opcionesMenu = getResources().getStringArray(
+				R.array.pedidoeditoptions);
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		// Buscamos nuestro menu lateral
+		drawerList = (ListView) findViewById(R.id.left_drawer);
+		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
+				.getThemedContext(), android.R.layout.simple_list_item_1,
+				opcionesMenu));
+
+		// Añadimos Funciones al menú laterak
+		drawerList.setOnItemClickListener(new OnItemClickListener() 
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id)
+			{
+				drawerList.setItemChecked(position, true);
+				drawerLayout.closeDrawers();
+				tituloSeccion = opcionesMenu[position];
+				// Ponemos el titulo del Menú
+				getSupportActionBar().setTitle(tituloSeccion);
+				Controller controller = NMApp.getController();
+				switch (position) 
+				{   
+				case ID_SELECCIONAR_CLIENTE:
+					seleccionarCliente();
+					break;
+				case ID_AGREGAR_DOCUMENTOS:
+					agregarDocumentosPendientesCliente();
+					break;
+				case ID_AGREGAR_PAGOS:
+					agregarPago();
+					break;
+				case ID_EDITAR_PAGOS:
+					editarPagos();
+					break;
+				case ID_EDITAR_DESCUENTO:
+					editarDescuento();
+					break;
+				case ID_PAGAR_TODO:
+					if (cliente == null) {
+						AppDialog
+								.showMessage(
+										me,
+										"Información",
+										"Por favor seleccione un cliente.",
+										DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					PagarTodo();
+					break;
+				case ID_PAGAR_MONTO:
+					if (cliente == null) {
+						AppDialog
+								.showMessage(
+										me,
+										"Información",
+										"Por favor seleccione un cliente.",
+										DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					PagarMonto();
+
+					break;
+				case ID_SOLICITAR_DESCUENTO_OCASIONAL:
+					solicitardescuento();
+					break;
+				case ID_APLICAR_DESCUENTO_OCASIONAL:
+					aplicardescuento();
+					break;
+				case ID_SALVAR_RECIBO:
+					guardarRecibo();
+					salvado = true;
+					break;
+				case ID_ENVIAR_RECIBO:
+					enviarRecibo();
+					break;
+				case ID_CERRAR:
+					// finalizarvidad();
+					break; 
+				
+				}
+			}
+		});
+
+		tituloSeccion = getTitle();
+		tituloApp = getTitle();
+
+		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+				R.drawable.ic_navigation_drawer, R.string.drawer_open,
+				R.string.drawer_close) {
+
+			@Override
+			public void onDrawerClosed(View view) {
+				getSupportActionBar().setTitle(tituloSeccion);
+				ActivityCompat.invalidateOptionsMenu(ViewReciboEdit.this);
+			}
+
+			@Override
+			public void onDrawerOpened(View drawerView) {
+				getSupportActionBar().setTitle(tituloApp);
+				ActivityCompat.invalidateOptionsMenu(ViewReciboEdit.this);
+
+			}
+		};
+
+		// establecemos el listener para el dragable ....
+		drawerLayout.setDrawerListener(drawerToggle);
+
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
+	}
+	
+	@Override
 	protected void onResume() {
 		NMApp.getController().setView(this);
 		super.onResume();
@@ -372,6 +533,7 @@ public class ViewReciboEdit extends FragmentActivity implements
 
 		loadData();
 		initMenu();
+		CreateMenu();
 		if (getIntent().hasExtra("cliente")) {
 			SetCliente();
 		}
