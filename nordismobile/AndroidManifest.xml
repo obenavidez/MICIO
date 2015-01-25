@@ -59,7 +59,7 @@
         <activity
             android:name="com.panzyma.nm.view.ViewReciboEdit"
             android:label="@string/app_name"  
-            android:configChanges="orientation"
+           android:configChanges="orientation|screenSize|keyboardHidden"
            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
         
@@ -92,7 +92,7 @@
         <activity
             android:name="com.panzyma.nm.view.vCliente"
             android:label="@string/app_name"   
- android:configChanges="orientation|screenSize|keyboardHidden"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
         

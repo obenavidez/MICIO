@@ -88,13 +88,16 @@ import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -206,6 +209,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	String[] opcionesMenu;
 	CharSequence tituloSeccion;
 	CharSequence tituloApp;
+	View _view;
 
 	boolean imprimir = false;
 	boolean pagarOnLine = false;
@@ -293,6 +297,12 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	}
 
 	@Override
+	public View onCreateView(String name, Context context, AttributeSet attrs) {
+		_view = super.onCreateView(name, context, attrs);
+		return _view;
+	}
+
+	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 		// Save UI state changes to the savedInstanceState.
@@ -327,11 +337,11 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		drawerToggle.syncState();
 	}
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		drawerToggle.onConfigurationChanged(newConfig);
-	}
+//	@Override
+//	public void onConfigurationChanged(Configuration newConfig) {
+//		super.onConfigurationChanged(newConfig);
+//		drawerToggle.onConfigurationChanged(newConfig);
+//	}
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
@@ -3203,4 +3213,19 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		}
 	}
 
+	 @Override
+	 public void onConfigurationChanged(Configuration newConfig) {
+	        super.onConfigurationChanged(newConfig);
+	        drawerToggle.onConfigurationChanged(newConfig);
+	        LayoutInflater inflater = LayoutInflater.from(this);
+	        populateViewForOrientation(inflater, (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
+	 }
+	 
+	 private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+	        viewGroup.removeAllViewsInLayout();
+	        _view= inflater.inflate(R.layout.recibo_edit, viewGroup);
+	        initComponent();
+	        
+	}
+	
 }

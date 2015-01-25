@@ -36,13 +36,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
@@ -171,6 +174,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 	String[] opcionesMenu;
 	CharSequence tituloSeccion;
 	CharSequence tituloApp;
+	View _view;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -421,11 +425,11 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		drawerToggle.onConfigurationChanged(newConfig);
+	public View onCreateView(String name, Context context, AttributeSet attrs) {
+		_view = super.onCreateView(name, context, attrs);
+		return _view;
 	}
-	
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// menu.findItem(R.id.action_search).setVisible(true);
@@ -1853,5 +1857,18 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 		Log.d(TAG,"Restore");
 	}
 
+	 @Override
+	 public void onConfigurationChanged(Configuration newConfig) {
+	        super.onConfigurationChanged(newConfig);
+	        LayoutInflater inflater = LayoutInflater.from(this);
+	        populateViewForOrientation(inflater, (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
+	 }
+	 
+	 private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+	        viewGroup.removeAllViewsInLayout();
+	        _view= inflater.inflate(R.layout.pedido_edit, viewGroup);
+	        initComponent();
+	        
+	}
 	
 }
