@@ -1079,6 +1079,9 @@ public class ViewRecibo extends ActionBarActivity implements
 	public void onItemSelected(Object obj, int position) {
 		recibo_selected = firstFragment.getAdapter().getItem(position);
 		positioncache = position;
+		ListView lista=firstFragment.getListView();
+		if(lista!=null)
+			firstFragment.getListView().smoothScrollToPosition(positioncache);	
 	}
 		
 	@Override

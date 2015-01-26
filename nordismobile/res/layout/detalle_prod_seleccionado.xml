@@ -78,6 +78,7 @@
                 android:nextFocusDown="@+id/tvcantidad"
                 android:nextFocusRight="@+id/tvcantidad"
                 android:singleLine="true"
+                android:inputType="number"
                 android:visibility="gone" />
 
             <TextView
@@ -154,6 +155,7 @@
                 android:enabled="false"
                 android:nextFocusDown="@+id/tvcantidad"
                 android:nextFocusRight="@+id/tvcantidad"
+                android:inputType="number"
                 android:singleLine="true"
                 android:visibility="gone" />
 

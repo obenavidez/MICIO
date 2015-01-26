@@ -267,15 +267,14 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 								@Override
 								public void onButtonClick(DetallePedido det_p,boolean btn) {
 									if(btn)
-									{ 
-										
+									{ 										
 										mButtonClickListener.onButtonClick(det_p,product_selected);
 										Lproducto.remove(positioncache);
+										adapter.getData().remove(positioncache);
 										adapter.notifyDataSetChanged(); 
 										filterEditText.setText("");
 										
-									}
-																		
+									}																		
 									
 								} 
 								

@@ -766,6 +766,9 @@ public class ViewPedido extends ActionBarActivity implements
 	public void onItemSelected(Object obj, int position) {
 		pedido_selected = firstFragment.getAdapter().getItem(position);
 		positioncache = position;
+		ListView lista=firstFragment.getListView();
+		if(lista!=null)
+			firstFragment.getListView().smoothScrollToPosition(positioncache);	
 	}
 
 	private void establecer(Object _obj, boolean thread,int...what) {
@@ -777,14 +780,17 @@ public class ViewPedido extends ActionBarActivity implements
 			pedidos = (ArrayList<vmEntity>) ((msg.obj == null) ? new ArrayList<vmEntity>()
 					: msg.obj);
 			positioncache = 0;
-		} else if (_obj instanceof Pedido) {
+		} else if (_obj instanceof Pedido) 
+		{
 			Pedido p = (Pedido) _obj;
 			if (ABRIR_PEDIDO == request_code || (what!=null && what.length!=0 && ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER==what[0])) {
+				
 				pedidos.set(positioncache,
 						new vmEntity(p.getId(), p.getNumeroMovil(), p
 								.getFecha(), p.getTotal(),
 								p.getNombreCliente(), p.getDescEstado(), p
 										.getCodEstado()));
+				
 
 			} else if (NUEVO_PEDIDO == request_code) {
 				pedidos.add(new vmEntity(p.getId(), p.getNumeroMovil(), p
@@ -806,7 +812,8 @@ public class ViewPedido extends ActionBarActivity implements
 
 	}
 
-	public synchronized void setList() {
+	public synchronized void setList() 
+	{
 		gridheader.setVisibility(View.VISIBLE);
 		gridheader.setText(String.format("LISTA PEDIDOS (%s)",
 				pedidos.size()));
@@ -816,7 +823,7 @@ public class ViewPedido extends ActionBarActivity implements
 		} else {
 			firstFragment.setItems(pedidos);
 			firstFragment.getAdapter().setSelectedPosition(positioncache);
-			pedido_selected = firstFragment.getAdapter().getItem(positioncache);
+			pedido_selected = firstFragment.getAdapter().getItem(positioncache); 
 		}
 	}
 

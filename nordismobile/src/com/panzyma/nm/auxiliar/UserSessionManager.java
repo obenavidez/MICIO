@@ -296,7 +296,7 @@ public class UserSessionManager
 				public void run() 
 				{ 
 								
-					if((NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url,url2)))			
+					if((NMNetWork.isPhoneConnected() && NMNetWork.CheckConnection(url)))			
 					{
 						try 
 						{
@@ -313,6 +313,9 @@ public class UserSessionManager
 												
 												if (res.getAuntenticateRS() == AUT_EXITOSA )
 												{				
+													NMConfig.URL=url;
+													NMConfig.URL2=url2;
+//													ModelConfiguracion.saveURL(url, url2);
 													BConfiguracionM.GET_DATACONFIGURATION(url,url2,empresa, 
 													nombreUsuario+"-"+password+"-"+empresa,
 													nombreUsuario,

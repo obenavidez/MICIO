@@ -183,7 +183,8 @@ public class NMComunicacion {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			ht.getConnection().disconnect();
+			if(ht.getConnection()!=null)
+				ht.getConnection().disconnect();
 		}
 	       
         return  Envelope.getResponse(); 

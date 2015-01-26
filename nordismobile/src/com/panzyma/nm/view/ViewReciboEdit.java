@@ -481,8 +481,8 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		super.onResume();
 	}
 
-	private void initComponent() {
-
+	private void initComponent() 
+	{ 
 		gridDetalleRecibo = findViewById(R.id.pddgrilla);
 		item_document = (ListView) (gridDetalleRecibo)
 				.findViewById(R.id.data_items);
@@ -590,10 +590,15 @@ public class ViewReciboEdit extends ActionBarActivity implements
 
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
 		salvado = false;
+	
+		
 		if (_onEdit != null && _onEdit.length != 0)
 			onEdit = true;
-		if (recibo == null || !onEdit) {
-			if (recibo == null){
+		if (recibo == null || !onEdit) 
+		{
+			
+			if (recibo == null)
+			{
 			// NUEVO RECIBO
 				recibo = new ReciboColector();
 				recibo.setId(0);
@@ -611,9 +616,24 @@ public class ViewReciboEdit extends ActionBarActivity implements
 				recibo.setTotalFacturas(0.00f);
 				recibo.setTotalND(0.00f);
 				recibo.setTotalNC(0.00f);
-				recibo.setSubTotal(0.00f);
-				recibo.setTotalRecibo(0.00f);
+				recibo.setSubTotal(0.00f);   
+				recibo.setTotalDesc(0.00F);
+				recibo.setTotalImpuestoExonerado(0.00F);
+				recibo.setTotalRetenido(0.00F);
+				recibo.setTotalOtrasDed(0.00F);
+				recibo.setTotalInteres(0.00F);
+				recibo.setTotalRecibo(0.00F);
 				tbxNumRecibo.setText("");
+				
+				notasDebitoRecibo.clear();
+				notasCreditoRecibo.clear();
+				facturasRecibo.clear();
+				documents.clear();
+				recibo.getFormasPagoRecibo().clear(); 
+				
+				recibo.getFacturasRecibo().clear();
+				recibo.getNotasDebitoRecibo().clear();
+				recibo.getNotasCreditoRecibo().clear();
 			}
 		} else {
 
@@ -938,28 +958,36 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		});
 	}
 
-	private void seleccionarCliente() {
-		DialogCliente dc = new DialogCliente(me,
-				android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-		dc.setOnDialogClientButtonClickListener(new OnButtonClickListener() {
-			@Override
-			public void onButtonClick(Cliente _cliente) {
-				cliente = _cliente;
-				SetCliente();
-//				tbxNombreDelCliente.setText(cliente.getNombreCliente());
-//
-//				String[] nomClie = StringUtil.split(cliente.getNombreCliente(),
-//						"/");
-//				// establecer valores de recibo
-//				recibo.setObjClienteID(cliente.getIdCliente());
-//				recibo.setObjSucursalID(cliente.getIdSucursal());
-//				recibo.setNombreCliente(nomClie[1]);
-			}
-		});
-		Window window = dc.getWindow();
-		window.setGravity(Gravity.CENTER);
-		window.setLayout(display.getWidth() - 40, display.getHeight() - 110);
-		dc.show();
+	private void seleccionarCliente() 
+	{ 		
+		  if (cliente != null && documents != null && documents.size()!=0) 
+		  {
+				AppDialog.showMessage(me, "", "Si cambia el cliente se eliminarán los detalles del recibo.\n\n¿Desea continuar?",
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						new AppDialog.OnButtonClickListener() 
+				{
+							@Override
+							public void onButtonClick(AlertDialog _dialog,
+									int actionId) 
+							{
+	
+								if (AppDialog.OK_BUTTOM == actionId) 
+								{
+									recibo=null;  
+									initComponent();
+									showClientDialog(_dialog);
+								}
+								else
+									_dialog.dismiss();
+							}
+				});
+	
+	      }	
+		  else 
+			  showClientDialog();
+		
+		
+		
 	}
 	
 	private void SetCliente ()
@@ -1599,7 +1627,8 @@ public class ViewReciboEdit extends ActionBarActivity implements
 
 				return false;
 			}
-			if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) {
+			
+			if (Cobro.getTotalPagoRecibo(recibo) != StringUtil.round(recibo.getTotalRecibo(),2)){
 				NMApp.getController()
 						.notifyOutboxHandlers(
 								ControllerProtocol.ERROR,
@@ -2561,6 +2590,31 @@ public class ViewReciboEdit extends ActionBarActivity implements
 				finish();
 		}
 
+	}
+	
+	public void showClientDialog(final AlertDialog... _dialog)
+	{
+		DialogCliente dc = new DialogCliente(me,
+				android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+		dc.setOnDialogClientButtonClickListener(new OnButtonClickListener() 
+		{
+
+			@Override
+			public void onButtonClick(Cliente _cliente) 
+			{
+				com.panzyma.nm.NMApp.getController().setView(me);
+				if (recibo.getCodEstado().compareTo("REGISTRADO") != 0)
+					return;
+				cliente = _cliente;
+				SetCliente();
+				if(_dialog!=null && _dialog.length!=0)
+					_dialog[0].dismiss();
+			}
+		});
+		Window window = dc.getWindow();
+		window.setGravity(Gravity.CENTER);
+		window.setLayout(display.getWidth() - 40, display.getHeight() - 110);
+		dc.show();
 	}
 
 	private void PagarTodo() {

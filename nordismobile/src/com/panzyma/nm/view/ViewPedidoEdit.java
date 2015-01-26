@@ -199,6 +199,9 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 				for (int i = 0; i < detPed.length; i++)
 					Lvmpproducto.add(detPed[i]);
 				onEdit = true;
+				positioncache=0;
+				if(Lvmpproducto!=null && Lvmpproducto.size()!=0)
+					dpselected = Lvmpproducto.get(positioncache);
 				cliente = Ventas.getClienteBySucursalID(
 						pedido.getObjSucursalID(), me.getContentResolver());
 				pedido.setOldData(pedido);
@@ -369,16 +372,6 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			tbxTipoVenta.setEnabled(false);
 			tbxTotalFact.setEnabled(false);			
 		} 
-//		grid_dp.setOnGroupExpandListener (new ExpandableListView.OnGroupExpandListener()
-//	    {
-//
-//	        @Override
-//	        public void onGroupExpand(int groupPosition) {
-//
-//	            expList.setSelectionFromTop(groupPosition, 0);
-//	            //your other code
-//	        }
-//	    });
 		
 		initMenu();
 	}
@@ -989,9 +982,42 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 					.getCodEstado(),"")); 
 			return;
 		}
+		
+		  if (cliente != null && Lvmpproducto != null && Lvmpproducto.size()!=0) 
+		  {
+				AppDialog.showMessage(me, "", "Si cambia el cliente se eliminarán los detalles del pedido.\n\n¿Desea continuar?",
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						new AppDialog.OnButtonClickListener() 
+				{
+							@Override
+							public void onButtonClick(AlertDialog _dialog,
+									int actionId) 
+							{
+
+								if (AppDialog.OK_BUTTOM == actionId) 
+								{
+									pedido=null;
+									cliente=new Cliente();
+									Lvmpproducto=new ArrayList<DetallePedido>();
+									initComponent();
+									showClientDialog(_dialog);
+								}
+								else
+									_dialog.dismiss();
+							}
+				});
+
+	      }	
+		  else 
+			  showClientDialog();
+	}
+	
+	public void showClientDialog(final AlertDialog... _dialog)
+	{
 		DialogCliente dc = new DialogCliente(me,
 				android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-		dc.setOnDialogClientButtonClickListener(new OnButtonClickListener() {
+		dc.setOnDialogClientButtonClickListener(new OnButtonClickListener() 
+		{
 
 			@Override
 			public void onButtonClick(Cliente _cliente) 
@@ -1001,6 +1027,8 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 					return;
 				cliente = _cliente;
 				setInformacionCliente();
+				if(_dialog!=null && _dialog.length!=0)
+					_dialog[0].dismiss();
 			}
 		});
 		Window window = dc.getWindow();
@@ -1053,8 +1081,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 				adapter.setSelectedPosition(Lvmpproducto.size() - 1);
 				grid_dp.setSelection(Lvmpproducto.size() - 1);
 				positioncache=Lvmpproducto.size() - 1;
-				adapter.notifyDataSetChanged();
-				
+				adapter.notifyDataSetChanged();	  				
 
 			}
 

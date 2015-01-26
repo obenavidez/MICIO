@@ -117,7 +117,15 @@ public class DetalleProducto extends Dialog{
 		tboxCantBonificada = ((EditText) findViewById(R.id.etbonif));
 		((TextView) findViewById(R.id.tv_precio)).setVisibility(View.VISIBLE);
 		tboxPrecio = ((EditText) findViewById(R.id.et_precio));
-		
+		tboxPrecio.setVisibility(View.VISIBLE);
+		tboxPrecio.setEnabled(false);
+		// Recalcular precio
+		long idTP = _idTipoPrecio;
+		if ((chkViaPrecio != null) && (!chkViaPrecio.isChecked()))
+			idTP = parent.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getLong("IdTipoPrecioGeneral", 0);
+
+		float precio = getPrecioProducto(_producto, idTP,0); 
+		tboxPrecio.setText(precio+"");
 		if(_det!=null)
 		{
 			tboxcantidad.setText(""+_det.getCantidadOrdenada());
@@ -165,6 +173,7 @@ public class DetalleProducto extends Dialog{
 			{
 
 				int nuevaCantidadOrdenada = Integer.parseInt(tboxcantidad.getText().toString());
+				 
 				if (_nuevo) 
 				{
 					_det = new DetallePedido();
@@ -528,12 +537,17 @@ public class DetalleProducto extends Dialog{
 					.setError("Debe haber primero seleccionado un producto.");
 			tboxproducto.requestFocus();
 			return false;
-		} else if (tboxcantidad.getText().toString().trim().length() == 0) {
+		} else if (tboxcantidad.getText().toString().trim().length() == 0 || Integer.parseInt(tboxcantidad.getText().toString().trim())== 0) {
 			tboxcantidad
 					.setError("La Cantidad a comprar debe ser mayor que cero");
 			tboxcantidad.requestFocus();
 			return false;
-		}
+		}else if (Integer.parseInt(tboxcantidad.getText().toString())>_producto.Disponible) {
+			tboxcantidad.setError("La cantidad a ordernar debe ser menor a la cantidad existente("+_producto.Disponible+")");
+			tboxcantidad.requestFocus();
+			return false;
+		} 
+		
 		return true;
 	}
 

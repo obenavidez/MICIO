@@ -169,7 +169,7 @@ public class NMNetWork {
     }    
     
   //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
-    public static boolean CheckConnection(String url,String...url2) 
+    public static boolean CheckConnection(String url) 
     {
     	UserSessionManager.HAS_ERROR=false;
     	boolean rs=false;

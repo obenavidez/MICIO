@@ -180,6 +180,15 @@ public class ModelConfiguracion {
 					new DataConfigurationResult()
 				);
 	}
+	
+	public static void saveURL(String URL1,String URL2){
+		
+		pref = NMApp.getContext().getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
+		edit = pref.edit();
+		edit.putString("url_server", URL1);
+		edit.putString("url_server2",URL2);
+		edit.commit();
+	}
 
 	public static void saveConfiguration(Context view, vmConfiguracion setting)throws Exception 
 	{
