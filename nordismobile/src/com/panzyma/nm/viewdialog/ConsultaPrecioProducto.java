@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -84,7 +85,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 		view = inflater.inflate(R.layout.layout_consultapreciosprod, null);
 		lvprecios=(ListView) view.findViewById(R.id.bnflv_detalleprecios);
 		nombre_prod=(EditText) view.findViewById(R.id.etProducto);
-		builder.setTitle("PRODUCTO PRECIOS");
+		//builder.setTitle("PRODUCTO PRECIOS");
 		builder.setView(view);
 		builder.setPositiveButton("ACEPTAR", new OnClickListener() {
 			@Override
@@ -96,7 +97,9 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 		});
 		builder.setOnKeyListener(keyListener);
 		mandar_A_TraerDatos();
-        return builder.create();
+		AlertDialog dialog = builder.create();
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
     	/*
     	parent=(ViewPedidoEdit) this.getActivity();
     	AlertDialog.Builder builder = new AlertDialog.Builder(parent); 
@@ -211,7 +214,8 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
             		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
             	positioncache=position;				            	 			
             	adapter.setSelectedPosition(position); 
-            	view.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));					            	 
+            	view.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_item_selected));		
+            	//view.setBackgroundColor(view.getResources().getColor(R.color.Gold));
             	
             }
         }); 		
