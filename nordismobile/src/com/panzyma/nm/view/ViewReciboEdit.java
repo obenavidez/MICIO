@@ -54,6 +54,7 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
+import com.panzyma.nm.view.viewholder.PProductoViewHolder;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
 import com.panzyma.nm.viewdialog.DialogCliente;
@@ -2137,34 +2138,13 @@ public class ViewReciboEdit extends ActionBarActivity implements
 
 	public void agregarDocumentosAlDetalleDeRecibo() {
 
-		// gridheader.setText("Listado de Productos a Vender");
-//		ListView list = ((ListView) gridDetalleRecibo
-//				.findViewById(R.id.data_items));
+		adapter = new GenericAdapter(this, DocumentoViewHolder.class,documents,  R.layout.list_row);
+		item_document.setAdapter(adapter);
+		adapter.setSelectedPosition(0);
 		
-		if (adapter == null) {
-			// adapter=new GenericAdapter(this,
-			// FacturaViewHolder.class,facturasRecibo,R.layout.detalle_factura);
-			adapter = new GenericAdapter(this, DocumentoViewHolder.class,
-					documents, R.layout.list_row);
-			item_document.setAdapter(adapter);
-			gridheader.setText("DOCUMENTOS A PAGAR (" + adapter.getCount()
-					+ ")");
-			adapter.setSelectedPosition(0);
-		} else {
-			adapter.notifyDataSetChanged();
-			positioncache=documents.size() - 1;
-			item_document.smoothScrollToPosition(positioncache);
-			adapter.setSelectedPosition(documents.size() - 1); 
-			gridheader.setText("DOCUMENTOS A PAGAR (" + adapter.getCount()
-					+ ")");
-		}
-		// list.setOnItemClickListener(new OnItemClickListener() {
-		// @Override
-		// public void onItemClick(AdapterView<?> parent, View view, int
-		// position,long arg3) {
-		// view.setSelected(true);
-		// }
-		// });
+		if (documents.size() > 0)
+			documento_selected = documents.get(0);
+		gridheader.setText("PRODUCTOS A PAGAR(" + adapter.getCount() + ")");
 	}
 
 	public void showMenu(final View view) {
@@ -3277,7 +3257,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	 @Override
 	 public void onConfigurationChanged(Configuration newConfig) {
 	        super.onConfigurationChanged(newConfig);
-	        drawerToggle.onConfigurationChanged(newConfig);
+	        //drawerToggle.onConfigurationChanged(newConfig);
 	        LayoutInflater inflater = LayoutInflater.from(this);
 	        populateViewForOrientation(inflater, (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
 	 }
@@ -3286,7 +3266,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	        viewGroup.removeAllViewsInLayout();
 	        _view= inflater.inflate(R.layout.recibo_edit, viewGroup);
 	        initComponent();
-	        
+	        agregarDocumentosAlDetalleDeRecibo();
 	}
 	
 }
