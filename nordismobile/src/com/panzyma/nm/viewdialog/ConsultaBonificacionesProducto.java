@@ -35,6 +35,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -88,7 +89,6 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
     	//AlertDialog.Builder builder = new AlertDialog.Builder(parent); 
     	//LayoutInflater inflater = parent.getLayoutInflater();
 		view = inflater.inflate(R.layout.layout_consultabonificacionesprod, null);
-		builder.setTitle("BONIFICACIONES");
 		builder.setView(view);
 		builder.setPositiveButton("ACEPTAR", new OnClickListener() {
 			@Override
@@ -98,7 +98,9 @@ public class ConsultaBonificacionesProducto extends DialogFragment implements Ha
 		}); 
 		builder.setOnKeyListener(keyListener); 
 		mandar_A_TraerDatos(); 
-        return builder.create();
+		Dialog dialog = builder.create();
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
     }
     
     OnKeyListener keyListener = new OnKeyListener() 

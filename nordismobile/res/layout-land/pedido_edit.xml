@@ -173,7 +173,11 @@
 		    android:layout_marginTop="2dp"
 		    layout="@layout/grilla" />
 
-		<ListView
+
+
+    </LinearLayout>
+    
+    <ListView
         android:id="@+id/left_drawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
@@ -181,6 +185,4 @@
         android:background="#111"
         android:choiceMode="singleChoice"
         android:scrollingCache="false" />
-
-    </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

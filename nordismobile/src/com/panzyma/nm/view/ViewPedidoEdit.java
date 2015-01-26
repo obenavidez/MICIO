@@ -1076,12 +1076,19 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 				aprodselected.add(prod);
 				Lvmpproducto.add(det_p);
 				CalculaTotales();
-				setTotales(true); 
+				setTotales(true);  
                 grid_dp.smoothScrollToPosition(Lvmpproducto.size() - 1);
 				adapter.setSelectedPosition(Lvmpproducto.size() - 1);
 				grid_dp.setSelection(Lvmpproducto.size() - 1);
 				positioncache=Lvmpproducto.size() - 1;
-				adapter.notifyDataSetChanged();	  				
+				adapter.notifyDataSetChanged();	  
+				SetDetalle(Lvmpproducto);
+//                grid_dp.smoothScrollToPosition(Lvmpproducto.size() - 1);
+//				adapter.setSelectedPosition(Lvmpproducto.size() - 1);
+//				grid_dp.setSelection(Lvmpproducto.size() - 1);
+//				positioncache=Lvmpproducto.size() - 1;
+//				adapter.notifyDataSetChanged();
+				 
 
 			}
 
@@ -1884,18 +1891,29 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 		Log.d(TAG,"Restore");
 	}
 
-	 @Override
-	 public void onConfigurationChanged(Configuration newConfig) {
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
 	        super.onConfigurationChanged(newConfig);
 	        LayoutInflater inflater = LayoutInflater.from(this);
 	        populateViewForOrientation(inflater, (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
 	 }
 	 
-	 private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+	private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
 	        viewGroup.removeAllViewsInLayout();
 	        _view= inflater.inflate(R.layout.pedido_edit, viewGroup);
 	        initComponent();
-	        
+	        CreateMenu();
+	        SetDetalle(Lvmpproducto);
 	}
 	
+	
+	private void SetDetalle(ArrayList<DetallePedido> detalle){
+        grid_dp.smoothScrollToPosition(detalle.size() - 1);
+		adapter.setSelectedPosition(detalle.size() - 1);
+		grid_dp.setSelection(detalle.size() - 1);
+		positioncache=detalle.size() - 1;
+		adapter.notifyDataSetChanged();
+	}
+	 
+	 
 }

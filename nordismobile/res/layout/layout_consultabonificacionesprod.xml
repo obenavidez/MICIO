@@ -2,9 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/LightSkyBlue"
+    android:background="@color/White"
     android:orientation="vertical" >  
 
+    <TextView 
+         	android:id="@+id/header"
+			style="StyleFontTextViewActionBar"
+			android:layout_width="fill_parent"
+			android:layout_height="30dp"
+			android:text="BONIFICACIONES"
+			android:gravity="center"
+			android:textColor="@color/White"
+			android:background="@drawable/bg_actionbar29" 	             
+      	    />
+    
+    
     <EditText
         android:id="@+id/etProducto"
         android:layout_width="fill_parent"
@@ -22,7 +34,7 @@
 
         <TextView
             android:id="@+id/bnflbl_catcliente"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
             android:layout_weight="1"
@@ -32,7 +44,7 @@
 
        <TextView
            android:id="@+id/bnglbl_cantidad"
-           android:layout_width="wrap_content"
+           android:layout_width="0dp"
            android:layout_height="wrap_content"
            android:layout_marginLeft="3dp"
            android:layout_weight="1"
@@ -42,7 +54,7 @@
 
        <TextView
            android:id="@+id/bnflbl_cantbonificacion"
-           android:layout_width="wrap_content"
+           android:layout_width="0dp"
            android:layout_height="wrap_content"
            android:layout_weight="1"
            android:text="Cant. Bonificación"
