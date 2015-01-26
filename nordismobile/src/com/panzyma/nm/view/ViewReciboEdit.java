@@ -363,7 +363,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	public void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
 		opcionesMenu = getResources().getStringArray(
-				R.array.pedidoeditoptions);
+				R.array.reciboeditoptions);
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// Buscamos nuestro menu lateral
 		drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -1044,6 +1044,13 @@ public class ViewReciboEdit extends ActionBarActivity implements
 							String clave) {
 						recibo.setClaveAutorizaDescOca(clave);
 						recibo.setPorcDescOcaColector(percentcollector);
+						for(ReciboDetFactura rec: recibo.getFacturasRecibo()){
+							rec.setPorcDescOcasional(percentcollector);
+						}
+						Cobro.calcularDetFacturasRecibo(NMApp.getContext(), recibo, cliente, true);
+						CalculaTotales();
+						actualizaTotales();
+						recibo.getFormasPagoRecibo().clear();
 					}
 				});
 

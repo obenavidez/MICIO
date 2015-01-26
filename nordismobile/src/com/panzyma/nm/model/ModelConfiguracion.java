@@ -66,7 +66,7 @@ public class ModelConfiguracion {
 	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		//return pref.getString("url_server2", "http://www.panzyma.com/SimfacProd/SimfacService.svc/");
-		return pref.getString("url_server2", "http://192.168.1.98:8081/Simfac/SimfacService.svc/");		
+		return pref.getString("url_server2", "http://192.168.1.101:8081/Simfac/SimfacService.svc/");		
 	}
 
 	public static vmConfiguracion getVMConfiguration(Context cnt) 
@@ -74,7 +74,7 @@ public class ModelConfiguracion {
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		vmConfiguracion config=vmConfiguracion.setConfiguration( 
 				pref.getString("url_server", "http://192.168.1.100/NordisServer/MobileService.asmx"), 
-				pref.getString("url_server2","http://192.168.1.98:8081/Simfac/SimfacService.svc/"),
+				pref.getString("url_server2","http://192.168.1.101:8081/Simfac/SimfacService.svc/"),
 				pref.getString("device_id", ""),
 				pref.getString("enterprise", "dp"),
 				pref.getString("name_user", ""),

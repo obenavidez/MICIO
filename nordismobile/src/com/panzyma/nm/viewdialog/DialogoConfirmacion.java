@@ -184,6 +184,7 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 				titulo.setText("Editando descuento");
 				monto.setEnabled(false);
 				retencion.setEnabled(false);
+				descuento.setText("" +((ReciboDetFactura)document.getObject()).getPorcDescOcasional() );
 			}			
 		} else if( document instanceof ReciboDetND ) {
 			rowRetencion.setVisibility(View.GONE);
