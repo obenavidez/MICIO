@@ -8,15 +8,16 @@
          
          <TextView
              android:id="@+id/bnftextv_detalle_tipoprecio"
-             android:layout_width="wrap_content"
+             android:layout_width="0dp"
              android:layout_height="wrap_content"
              android:layout_weight="1"
              android:textColor="@color/Black"
+             android:layout_marginRight="5dp"
              android:textSize="10dp" />
 
         <TextView
             android:id="@+id/bnftextv_detalle_preciomin"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -24,11 +25,12 @@
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:textColor="@color/Black"
+            android:layout_marginLeft="5dp"
             android:textSize="10dp" />
 
         <TextView
             android:id="@+id/bnftextv_detalle_preciomax"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -40,7 +42,7 @@
         
          <TextView
             android:id="@+id/bnftextv_detalle_precio"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"

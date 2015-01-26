@@ -5,6 +5,18 @@
     android:background="@color/LightGrey"
     android:orientation="vertical" >  
 
+        <TextView 
+         	android:id="@+id/header"
+			style="StyleFontTextViewActionBar"
+			android:layout_width="fill_parent"
+			android:layout_height="30dp"
+			android:text="PRODUCTOS PRECIOS"
+			android:gravity="center"
+			android:textColor="@color/White"
+			android:background="@drawable/bg_actionbar29" 	             
+      	    />
+    
+    
     <EditText
         android:id="@+id/etProducto"
         android:layout_width="fill_parent"
@@ -22,7 +34,7 @@
 
         <TextView
             android:id="@+id/bnflbl_tipoprecio"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
             android:layout_weight="1"
@@ -32,7 +44,7 @@
 
        <TextView
            android:id="@+id/bnglbl_preciominimo"
-           android:layout_width="wrap_content"
+           android:layout_width="0dp"
            android:layout_height="wrap_content"
            android:layout_marginLeft="3dp"
            android:layout_weight="1"
@@ -42,7 +54,7 @@
 
        <TextView
            android:id="@+id/bnflbl_preciomax"
-           android:layout_width="wrap_content"
+           android:layout_width="0dp"
            android:layout_height="wrap_content"
            android:layout_weight="1"
            android:text="Máximo"
@@ -51,7 +63,7 @@
        
        <TextView
            android:id="@+id/bnflbl_precio"
-           android:layout_width="wrap_content"
+           android:layout_width="0dp"
            android:layout_height="wrap_content"
            android:layout_weight="1"
            android:text="Precio"
