@@ -70,14 +70,7 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 	public void goHome() {
 		NMApp.modulo = NMApp.Modulo.HOME;
 		// user is not logged in redirect him to Login Activity
-		intent = new Intent(this, Main.class);
-
-		// Closing all the Activities from stack
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-		// Add new Flag to start new Activity
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
+		intent = new Intent(this, Main.class); 
 		// Staring Login Activity
 		startActivity(intent);
 	}

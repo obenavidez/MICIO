@@ -150,12 +150,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			default:
 				break;
 			}
-		} else { 			 
-			 // user is not logged in redirect him to Login Activity
-			intent = new Intent(this, LoginScreen.class);	        
-	       // Staring Login Activity
-	        startActivity(intent);  
-		}
+		} else 	FINISH_ACTIVITY(); 
 	}
 	
 	public void dialogLogin(){
