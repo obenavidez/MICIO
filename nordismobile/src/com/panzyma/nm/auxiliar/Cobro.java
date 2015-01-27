@@ -58,6 +58,38 @@ public class Cobro
         return puedeAplicarDescOca;//quitar true
     } //ValidaAplicDescOca
 	
+	public static boolean validaAplicDescOca(Context cnt,ReciboColector recibo, long facturaID)
+    {
+        //Validar que de las facturas marcadas y que se están cancelando (no es abono)
+        //exista al menos una vencida
+        if (recibo.getFacturasRecibo() == null || recibo.getFacturasRecibo().size()==0) return false;
+        
+        ArrayList<ReciboDetFactura> _ff = recibo.getFacturasRecibo();
+        if ((_ff == null) || (_ff.size() == 0)) return false;
+        
+        boolean puedeAplicarDescOca = false;
+        int diasAplicaMora = Integer.parseInt((String) Cobro.getParametro(cnt,"HolguraDiasAplicarDescPP"));
+        for(int i = 0; i < _ff.size(); i++) 
+        {
+            ReciboDetFactura fac = _ff.get(i);  
+            if(fac.getId() != facturaID) continue;
+            //Tiene que estar seleccionada y cancelándose
+            if (!fac.isEsAbono()) 
+            {
+                //Ver si factura ya está vencida
+                long fechaVence = fac.getFechaAplicaDescPP();
+                long fechaNoAplicaDescPP = DateUtil.addDay(fechaVence, diasAplicaMora);
+                if (fechaNoAplicaDescPP < DateUtil.getFecha())
+                {
+                    puedeAplicarDescOca = true;
+                    break;
+                }
+            }
+        }
+        
+        return puedeAplicarDescOca;//quitar true
+    } //ValidaAplicDescOca
+	
 	public static float getTotalPagoRecibo(ReciboColector rcol) 
 	{
         if (rcol.getFormasPagoRecibo().size() == 0) return 0;

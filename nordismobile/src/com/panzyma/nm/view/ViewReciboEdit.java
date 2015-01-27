@@ -1046,7 +1046,10 @@ public class ViewReciboEdit extends ActionBarActivity implements
 						recibo.setClaveAutorizaDescOca(clave);
 						recibo.setPorcDescOcaColector(percentcollector);
 						for(ReciboDetFactura rec: recibo.getFacturasRecibo()){
-							rec.setPorcDescOcasional(percentcollector);
+							if(Cobro.validaAplicDescOca(NMApp.getContext(), recibo, rec.getId())){
+								//SOLO SI LA FACTURA APLICA PARA DESCUENTO OCASIONAL
+								rec.setPorcDescOcasional(percentcollector);
+							}							
 						}
 						Cobro.calcularDetFacturasRecibo(NMApp.getContext(), recibo, cliente, true);
 						CalculaTotales();
