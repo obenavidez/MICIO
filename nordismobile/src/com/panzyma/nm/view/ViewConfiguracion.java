@@ -546,6 +546,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 
 	@Override
 	protected void onResume() {
+		NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 		ocultarDialogos();
 		if (NMApp.ciclo == NMApp.lifecycle.ONPAUSE
 				|| NMApp.ciclo == NMApp.lifecycle.ONRESTART) {

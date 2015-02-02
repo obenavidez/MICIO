@@ -69,7 +69,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		if ((savedInstanceState != null) ? savedInstanceState
 				.getBoolean("dl_visible") : false)
 
-			NMApp.modulo = NMApp.Modulo.HOME;
+		NMApp.modulo = NMApp.Modulo.HOME;
 	}
 
 

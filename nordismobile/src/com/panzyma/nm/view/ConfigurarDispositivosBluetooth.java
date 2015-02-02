@@ -3,6 +3,7 @@ package com.panzyma.nm.view;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
  
+
 import com.panzyma.nm.auxiliar.AppDialog; 
 import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.view.adapter.GenericAdapter;
@@ -112,8 +113,10 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 				});
 		if (mBluetoothAdapter == null) {
 			showUnsupported();
-		} else {
-			mActivateBtn.setOnClickListener(new View.OnClickListener() {
+		} else 
+		{
+			mActivateBtn.setOnClickListener(new View.OnClickListener() 
+			{
 				@Override
 				public void onClick(View v) {
 					if (mBluetoothAdapter.isEnabled()) {
@@ -246,6 +249,7 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void desvincularDispositivo(BluetoothDevice device) {
 		try {
 			mProgressDlg.setMessage("desvinculando dispositivo");
@@ -315,22 +319,25 @@ public class ConfigurarDispositivosBluetooth extends Activity implements
 		runOnUiThread(new Runnable() 
 		{
 			@Override
-			public void run() {
+			public void run() 
+			{
 				AppDialog.showMessage(context, "", mensaje,
 						AppDialog.DialogType.DIALOGO_CONFIRMACION,
-						new AppDialog.OnButtonClickListener() {
-							@Override
-							public void onButtonClick(AlertDialog _dialog,
-									int actionId) {
+						new AppDialog.OnButtonClickListener() 
+				{
+						@Override
+						public void onButtonClick(AlertDialog _dialog,
+								int actionId) 
+						{
 
-								if (AppDialog.OK_BUTTOM == actionId) 
-								{
-									if (!(device != null && device.getBondState() == BluetoothDevice.BOND_BONDED))
-										vincularDispositivo(device);
-									else
-										FINISH_ACTIVITY(device.getBondState() == BluetoothDevice.BOND_BONDED);
-								}
-					}
+							if (AppDialog.OK_BUTTOM == actionId) 
+							{
+								if (!(device != null && device.getBondState() == BluetoothDevice.BOND_BONDED))
+									vincularDispositivo(device);
+								else
+									FINISH_ACTIVITY(device.getBondState() == BluetoothDevice.BOND_BONDED);
+							}
+						}
 				});
 			}
 		});

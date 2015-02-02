@@ -27,7 +27,9 @@ import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.bluetooth.BluetoothConnection;
+import com.panzyma.nm.bluetooth.BluetoothManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelPedido;
@@ -247,7 +249,23 @@ public class BPedidoM extends BBaseM {
  
 					try 
 					{ 
-						NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER, 0, 0,guardar_Pedido(ModelPedido.refrescarPedido(credenciales, refPedido)));
+						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
+								0,0,new String("Actualizando Pedido..."));
+						Pedido obj =ModelPedido.refrescarPedido(credenciales, refPedido);			          
+			            
+			            if (obj == null) return; 
+						
+					    //guardando de nuevo localmente el pedido ya actualizado  
+						guardar_Pedido(obj);
+						 
+						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
+								0,0,new String("Actualizando el estado de cuentas del Cliente"));
+			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
+			            Cliente cliente= BClienteM.actualizarCliente(NMApp.getContext(),SessionManager.getCredenciales(),obj.getObjSucursalID()); 
+			           
+			            //Notificar al Usuario el resultado del envio del Pedido.
+			            NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER, 0, 0,obj);
+			            
 					} catch (Exception e) { 
 						Log.e(TAG, "Error in the update thread", e);
 						try {
@@ -411,9 +429,9 @@ public class BPedidoM extends BBaseM {
 	public void enviarPedido(final Pedido pedido)  
 	{
 		try 
-		{
+		{			
 			
-			
+//			com.panzyma.nm.bluetooth.BluetoothManager.getInstace().activateBluetooth();		  
 			getPool().execute(new Runnable()
 			{ 
 				
@@ -473,7 +491,20 @@ public class BPedidoM extends BBaseM {
 			});
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(TAG, "Error in the update thread", e);
+			try {
+				Processor.notifyToView(
+								NMApp.getController(),
+								ERROR,
+								0,
+								0,
+								ErrorMessage.newInstance(
+										"Error en el envio del pedido",
+										e.getMessage(), ""+
+										(e.getCause() != null?"\n Causa: "+e.getCause():"")  ));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		}
 	} 
 
