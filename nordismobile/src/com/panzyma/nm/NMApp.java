@@ -47,7 +47,7 @@ public class NMApp extends Application{
 	public void onCreate() {
 		super.onCreate();
 		controller = new Controller();
-		pool = new ThreadPool(5);  
+		pool = new ThreadPool(5);
 		setContext(this);
 		NMNetWork.getDeviceId(this);
 	}
