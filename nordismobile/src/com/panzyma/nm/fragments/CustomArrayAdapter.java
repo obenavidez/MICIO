@@ -13,7 +13,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.Item;
+import com.panzyma.nm.view.ProductoView;
+import com.panzyma.nm.view.vCliente;
+import com.panzyma.nm.viewdialog.DialogCliente;
+import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("DefaultLocale") 
@@ -43,6 +49,14 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 	public List<E> getItems() {
 		return items;
 	}
+	
+	 @Override
+	 public void notifyDataSetChanged() 
+	 {
+	    super.notifyDataSetChanged();  
+	    if(NMApp.getController().getView()!=null && (NMApp.getController().getView() instanceof vCliente || NMApp.getController().getView() instanceof ProductoView))
+	    	NMApp.getController().notifyOutboxHandlers(ControllerProtocol.UPDATE_LISTVIEW_HEADER, 0, 0,1); 
+	 }
 
 	public CustomArrayAdapter(Context context, int textViewResourceId, List<E> objects) {
 		super(context, textViewResourceId, objects = (objects==null)? new ArrayList<E>():objects);		
@@ -151,7 +165,7 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 				FilterResults results = new FilterResults();
 				List<E> FilteredArrList = new ArrayList<E>();
 
-				if (mOriginalValues == null)
+				if (mOriginalValues == null && items!=null)
 					mOriginalValues = new ArrayList<E>(items); 
 				if (constraint == null || constraint.length() == 0) {
 					// setear los valores originales a regresar
@@ -159,8 +173,10 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 					results.values = mOriginalValues;
 				} else {
 					constraint = constraint.toString().toLowerCase();
-					for (int i = 0; i < mOriginalValues.size(); i++) {
-						try {
+					for (int i = 0; i < mOriginalValues.size(); i++) 
+					{
+						try 
+						{
 							E data = mOriginalValues.get(i);
 							Object obj = ((Item) data).isMatch(constraint); 
 							if (Boolean.valueOf(obj.toString()))
@@ -172,6 +188,12 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 							e.printStackTrace();
 						}
 					}
+					if (results==null || (results!=null && results.values==null) || (results!=null &&  results.values!=null && ((List<E>)results.values).size()==0))
+                    {
+                    	// setear los valores originales a returnar  
+                        results.count = mOriginalValues.size();
+                        results.values = mOriginalValues;
+            		}
 				}
 
 				return results;
@@ -180,16 +202,21 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 			@SuppressWarnings("unchecked")
 			@Override
 			protected void publishResults(CharSequence constraint,
-					FilterResults results) {
-				items = (List<E>) results.values;
+					FilterResults results) 
+			{
+//				items = (List<E>) results.values;
+//				
+//				notifyDataSetChanged(); // notificar al base adapter que hay
+//										// nuevo valores que han sido filtrados
+//				clear();
+//				for (int i = 0; i < items.size(); i++) {
+//					add(items.get(i));
+//				}
+//				notifyDataSetInvalidated();
 				
-				notifyDataSetChanged(); // notificar al base adapter que hay
-										// nuevo valores que han sido filtrados
-				clear();
-				for (int i = 0; i < items.size(); i++) {
-					add(items.get(i));
-				}
-				notifyDataSetInvalidated();
+				 items =  (results!=null && results.values!=null)?(List<E>)results.values:new ArrayList<E>(); //contiene los datos filtrados				 
+                 notifyDataSetChanged();  //notificar al base adapter que hay nuevo valores que han sido filtrados
+				
 			}
 
 		};

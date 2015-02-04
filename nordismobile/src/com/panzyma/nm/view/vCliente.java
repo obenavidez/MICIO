@@ -314,6 +314,9 @@ public class vCliente extends ActionBarActivity implements
 			});
 			result = true;
 			break;
+		case ControllerProtocol.UPDATE_LISTVIEW_HEADER:
+			updateListViewHeader();
+			break;
 		}
 		return result;
 	}
@@ -394,6 +397,20 @@ public class vCliente extends ActionBarActivity implements
 		return true;
 	}
 
+	public void updateListViewHeader()
+	{ 
+		runOnUiThread(new Runnable() 
+		{				
+			@Override
+			public void run() { 
+				if(firstFragment!=null && gridheader!=null)
+					gridheader.setText("LISTA CLIENTES("+firstFragment.getAdapter().getCount()+")");
+				
+			}
+		});		 
+		
+	}
+	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.findItem(R.id.action_search).setVisible(true);
@@ -678,7 +695,7 @@ public class vCliente extends ActionBarActivity implements
 			e.printStackTrace();
 		}
 	}
-
+	
 	private void ShowCustomerDetails() {
 		Bundle args = new Bundle();
 		args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);

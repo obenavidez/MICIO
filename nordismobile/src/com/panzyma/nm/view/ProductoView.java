@@ -183,6 +183,20 @@ public class ProductoView extends ActionBarActivity implements
 		}
 		return true;
 	}
+	
+	public void updateListViewHeader()
+	{ 
+		runOnUiThread(new Runnable() 
+	    {				
+			@Override
+			public void run() { 
+				if(firstFragment!=null && gridheader!=null)
+					gridheader.setText("LISTA PRODUCTOS("+firstFragment.getAdapter().getCount()+")");
+				
+			}
+		});		 
+		
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
