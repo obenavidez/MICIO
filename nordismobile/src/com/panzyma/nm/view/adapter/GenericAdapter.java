@@ -28,6 +28,7 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 	private List<E> mOriginalValues;
 	private Context context;
 	private int selectedPos=0; 
+	private int positionCache;
 	
 	public GenericAdapter(Context c,Class<V> viewclass,List<E> items,int... layoutid) { 		 
 		this.context=c;
@@ -77,7 +78,16 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 	}	
     public int getSelectedPosition(){
 		return selectedPos;
-	}    
+	}   
+    
+    public void setPositionCache(int posicion){
+    	this.positionCache = posicion;
+    }
+    
+    public int getPositionCache() {
+    	return this.positionCache;
+    }
+    
 	@Override
 	public Object getItem(int position) {
 		return items.get(position);
@@ -122,10 +132,11 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 			else
 				viewHolder=(V)convertview.getTag();
 			
-			if(getSelectedPosition()==position)
-				convertview.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.action_item_selected));			 
-			else
+			if(getSelectedPosition() == position) {
+				convertview.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.action_item_selected));
+			} else {
 				convertview.setBackgroundResource(android.R.color.transparent); 
+			}				
 		    
 		    viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,items.get(position));
 		

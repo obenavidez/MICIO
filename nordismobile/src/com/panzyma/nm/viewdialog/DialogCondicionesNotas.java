@@ -88,7 +88,7 @@ public class DialogCondicionesNotas extends Dialog
     	        if (cliente.getPermiteBonifEspecial()) 
     	        {    	           
     	            if (etbespecial.getText().toString().trim().compareTo("") != 0) 
-    	            	pedido.setBonificacionEspecial(false);
+    	            	pedido.setBonificacionEspecial(true);
     	            pedido.setBonificacionSolicitada(etbespecial.getText().toString().trim());
     	        }
     	        

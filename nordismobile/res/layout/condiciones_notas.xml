@@ -110,7 +110,7 @@
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/et_pcondicionado" 
             android:layout_marginLeft="10dp"
-            android:text="Bonificación :"
+            android:text="Precio Especial :"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#005D7A" 
             android:shadowColor="@color/Black"  

@@ -169,7 +169,8 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 				((ViewPedidoEdit)getLayoutInflater().getFactory()).runOnUiThread(new Runnable() 
 				{				
 					@Override
-					public void run() { 
+					public void run() 
+					{ 
 						if(adapter!=null && gridheader!=null)
 							gridheader.setText("LISTA CLIENTES("+adapter.getCount()+")");
 						
@@ -218,7 +219,8 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			            	if(positioncache < 0 && adapter != null && adapter.getCount() > 0)
 			            		positioncache = 0;
 			            	if((parent.getChildAt(positioncache))!=null)						            							            		
-			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);	
+			            	adapter.setPositionCache(positioncache);
 			            	positioncache=position;				            	
 			            	cliente_selected=(vmCliente) adapter.getItem(position);	
 			            	try {
@@ -229,6 +231,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 								e.printStackTrace();
 							}
 			            	adapter.setSelectedPosition(position); 
+			            	adapter.notifyDataSetChanged();
 			            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));					            	 
 			             
 			            }
@@ -241,7 +244,8 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 							if(positioncache < 0 && adapter != null && adapter.getCount() > 0)
 			            		positioncache = 0;
 							if((parent.getChildAt(positioncache))!=null)						            							            		
-			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
+			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);
+							adapter.setPositionCache(positioncache);
 			            	positioncache=position;				            	
 			            	cliente_selected=(vmCliente) adapter.getItem(position);	
 			            	try { 
@@ -251,8 +255,9 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 								e.printStackTrace();
 							}
 			            	adapter.setSelectedPosition(position); 
+			            	adapter.notifyDataSetChanged();
 			            	view.setBackgroundDrawable(NMApp.getContext().getResources().getDrawable(R.drawable.action_item_selected));					            	 
-			            	mButtonClickListener.onButtonClick(cliente);
+			            	mButtonClickListener.onButtonClick(cliente);			            	
 			            	dismiss();
 							return true;
 						}
