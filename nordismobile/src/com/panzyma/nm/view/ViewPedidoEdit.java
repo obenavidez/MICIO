@@ -842,7 +842,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 		
 		actualizarOnUINumRef(pedido);
 
-		final String sms = (pedido.getCodEstado().compareTo("FACTURADO") == 0) ? "El pedido ha sido enviado y facturado \n¿Desea imprimir el recibo?"
+		final String sms = (pedido.getCodEstado().compareTo("FACTURADO") == 0) ? "El pedido ha sido enviado y facturado \n¿Desea imprimir el Pedido?"
 				: "El pedido ha sido enviado.Estado: " + pedido.getDescEstado()
 						+ "\r" + pedido.getDescCausaEstado();
 		runOnUiThread(new Runnable() {
