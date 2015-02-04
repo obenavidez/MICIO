@@ -306,8 +306,11 @@ public class ProductoView extends ActionBarActivity implements
 				result=true;
 				break;
 			case ERROR:
-	
-				return true;			
+				break;
+			case ControllerProtocol.UPDATE_LISTVIEW_HEADER:
+				updateListViewHeader();
+				break;
+			
 		}
 		return false;
 
