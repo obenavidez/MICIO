@@ -19,6 +19,7 @@ import org.json.JSONArray;
 
 import android.os.Bundle;
 import android.os.Message;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
@@ -315,53 +316,76 @@ public class BConfiguracionM extends BBaseM {
 	}
 	
 	public static  void GET_DATACONFIGURATION(final String Url,final String Url2,final String Empresa,final String Credentials,
-			final String LoginUsuario, final String PIN, final Impresora dispositivo, boolean... mode)
+			final String LoginUsuario, final String PIN, final Impresora dispositivo,final boolean... mode)
 	{
-
 		try 
 		{
 			
-			DataConfigurationResult res = ModelConfiguracion.getDataConfiguration
-			(	
-					Url2,
-					Credentials,
-					LoginUsuario, 
-					PIN
-			);
-			
-			if (res.get_error() == null) 
+			final String credenciales =(Credentials!=null && Credentials!="") ?Credentials:SessionManager.getCredenciales();
+			if (credenciales.trim() != "") 
 			{
-				Processor.notifyToView(NMApp.getController(),
-						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
-						"Salvando configuración.");
-				vmConfiguracion setting = vmConfiguracion.setConfiguration
-						(
-								Url,
-								Url2,
-								String.valueOf(res.get_devicePrefix()), 
-								Empresa, 
-								res.get_userInfo().getLogin(), 
-								res.get_maxIdPedido(), 
-								res.get_maxIdRecibo(),
-								dispositivo
-						);
-				ModelConfiguracion.saveConfiguration(NMApp.getContext(),setting);
-				ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
-				SessionManager.setImpresora(dispositivo);
-				SessionManager.setLoguedUser(res.userInfo); 
-				Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATE_OBJ_VIEW, 0,0, setting);
-				if(mode==null || (mode!=null && mode.length==0))
-					Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Configuración guardada exitosamente...");
-				else
-				Processor.notifyToView(
-								NMApp.getController(),
-								ControllerProtocol.NOTIFICATION,
-								0,
-								0,"Configuración guardada exitosamente.");
- 
+				NMApp.getThreadPool().execute
+				(
+						new Runnable() 
+						{
+							@Override
+							public void run() 
+							{
+								DataConfigurationResult res;
+								try {
+									res = ModelConfiguracion.getDataConfiguration
+											(	
+													Url2,
+													Credentials,
+													LoginUsuario, 
+													PIN
+											);
+								
+										
+										if (res.get_error() == null) 
+										{
+											Processor.notifyToView(NMApp.getController(),
+													ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
+													"Salvando configuración.");
+											vmConfiguracion setting = vmConfiguracion.setConfiguration
+													(
+															Url,
+															Url2,
+															String.valueOf(res.get_devicePrefix()), 
+															Empresa, 
+															res.get_userInfo().getLogin(), 
+															res.get_maxIdPedido(), 
+															res.get_maxIdRecibo(),
+															dispositivo
+													);
+											ModelConfiguracion.saveConfiguration(NMApp.getContext(),setting);
+											ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
+											SessionManager.setImpresora(dispositivo);
+											SessionManager.setLoguedUser(res.userInfo); 
+											Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATE_OBJ_VIEW, 0,0, setting);
+											if(mode==null || (mode!=null && mode.length==0))
+												Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Configuración guardada exitosamente...");
+											else
+											Processor.notifyToView(
+															NMApp.getController(),
+															ControllerProtocol.NOTIFICATION,
+															0,
+															0,"Configuración guardada exitosamente.");
+							 
 
-			} else
-				throw new Exception(res.get_error()); 
+										} else
+											throw new Exception(res.get_error()); 
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+				);
+			}		
+			
+			
+			
 			
 		} catch (Exception e) 
 		{

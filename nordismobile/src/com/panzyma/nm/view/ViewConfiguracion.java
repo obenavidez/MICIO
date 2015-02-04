@@ -480,7 +480,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 			b.putString("URL", txtURL.getText().toString());
 			b.putString("URL2", txtURL2.getText().toString());
 			b.putString("Empresa", txtEmpresa.getText().toString());
-			b.putString("Credentials", UserSessionManager.getCredenciales());
+			b.putString("Credentials", "");
 			b.putString("LoginUsuario", txtUsuario.getText().toString());
 			b.putParcelable("impresora", getImpresora());
 			b.putString("PIN", NMNetWork.getDeviceId(context));
