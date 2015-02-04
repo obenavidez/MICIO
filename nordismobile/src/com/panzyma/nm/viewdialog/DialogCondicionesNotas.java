@@ -86,9 +86,8 @@ public class DialogCondicionesNotas extends Dialog
     	        pedido.setBonificacionEspecial(false);
     	        pedido.setBonificacionSolicitada("");            
     	        if (cliente.getPermiteBonifEspecial()) 
-    	        {
-    	            pedido.setBonificacionEspecial(true);
-    	            if (etbespecial.getText().toString().trim().compareTo("") == 0) 
+    	        {    	           
+    	            if (etbespecial.getText().toString().trim().compareTo("") != 0) 
     	            	pedido.setBonificacionEspecial(false);
     	            pedido.setBonificacionSolicitada(etbespecial.getText().toString().trim());
     	        }
@@ -101,9 +100,8 @@ public class DialogCondicionesNotas extends Dialog
     	        
     	        pedido.setPrecioEspecial(false);
     	        pedido.setPrecioSolicitado("");
-    	        if (cliente.getPermitePrecioEspecial()) {  
-    	            pedido.setPrecioEspecial(true);    
-    	            if (etpespecial.getText().toString().trim().compareTo("") == 0) 
+    	        if (cliente.getPermitePrecioEspecial()) {    	             
+    	            if (etpespecial.getText().toString().trim().compareTo("") != 0) 
     	            	pedido.setPrecioEspecial(false);
     	            pedido.setPrecioSolicitado(etpespecial.getText().toString().trim());
     	        }
@@ -113,7 +111,7 @@ public class DialogCondicionesNotas extends Dialog
 		}
 	    );
         
-        btnok.setOnClickListener(new View.OnClickListener() 
+       /* btnok.setOnClickListener(new View.OnClickListener() 
 		{ 
     	    @Override
 			public void onClick(View v) 
@@ -121,7 +119,7 @@ public class DialogCondicionesNotas extends Dialog
     	    	dismiss();
 			}
 		}
-        );
+        );*/
 	}	 
 	
 	@Override

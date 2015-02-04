@@ -235,7 +235,9 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			            @SuppressLint("NewApi")
 						@Override
 			            public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
-			            { 		  
+			            { 		 
+			            	if(positioncache < 0 && adapter != null && adapter.getCount() > 0)
+			            		positioncache = 0;
 			            	if((parent.getChildAt(positioncache))!=null)						            							            		
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
@@ -251,7 +253,9 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 						@SuppressLint("NewApi")
 						@Override
 						public boolean onItemLongClick(AdapterView<?> _parent, View view,int position, long id) 
-						{  											 
+						{  				
+							if(positioncache < 0 && adapter != null && adapter.getCount() > 0)
+			            		positioncache = 0;
 							if((_parent.getChildAt(positioncache))!=null)						            							            		
 			            		(_parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
