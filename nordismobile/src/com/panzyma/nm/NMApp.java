@@ -62,7 +62,10 @@ public class NMApp extends Application{
 	}
 	
 	public static Context getContext() {
-		return ctx;
+//		if(controller!=null && controller.getView()!=null)
+//			return (Context) controller.getView();
+//		else
+			return ctx;
 	}
 	
 	@Override

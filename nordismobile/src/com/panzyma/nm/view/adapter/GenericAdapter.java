@@ -12,6 +12,10 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import com.panzyma.nm.NMApp;
+import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.viewdialog.DialogCliente;
+import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("unused")
@@ -132,6 +136,16 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 		} 
 		return convertview;
 	} 
+	
+	 @Override
+	 public void notifyDataSetChanged() 
+	 {
+	    super.notifyDataSetChanged();  
+	    if(NMApp.getController().getView()!=null && (NMApp.getController().getView() instanceof DialogCliente || NMApp.getController().getView() instanceof DialogProducto))
+	    	NMApp.getController().notifyOutboxHandlers(ControllerProtocol.UPDATE_LISTVIEW_HEADER, 0, 0,1); 
+	 }
+	
+	
 	@Override
 	public Filter getFilter() {
 
@@ -186,6 +200,7 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 			protected void publishResults(CharSequence constraint, FilterResults results) 
 			{				
 				 items =  (results!=null && results.values!=null)?(List<E>)results.values:new ArrayList<E>(); //contiene los datos filtrados
+				 
                  notifyDataSetChanged();  //notificar al base adapter que hay nuevo valores que han sido filtrados
 			}
 			

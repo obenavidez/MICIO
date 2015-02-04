@@ -95,5 +95,6 @@ public interface ControllerProtocol {
 	int SETTING_REDIREC=1024;
 	
 	int UPDATE_OBJ_VIEW=777;
+	int UPDATE_LISTVIEW_HEADER=888;
     
 }

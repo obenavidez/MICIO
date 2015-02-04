@@ -468,7 +468,8 @@ public class ViewConfiguracion extends ActionBarActivity implements
 	}
 
 	private boolean salvarConfiguracion(int... _what) {
-		if (validar()) {
+		if (validar()) 
+		{
 			setEnterprise(txtEmpresa.getText().toString());
 			setUserName(txtUsuario.getText().toString());
 			setUrlServer(txtURL.getText().toString());

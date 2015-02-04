@@ -41,8 +41,10 @@ import android.widget.Toast;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.ClienteViewHolder;
@@ -89,7 +91,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			pd = ProgressDialog.show((Context)vpe, "Espere por favor", "Trayendo Info...", true, false); 
 			Toast.makeText(this.getContext(), "TestersterexdsafADFASDF", Toast.LENGTH_LONG);
 			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST); 
-	        initComponents();
+	        initComponents(); 
 	        
         }catch (Exception e) { 
 			e.printStackTrace();
@@ -144,15 +146,39 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	        @Override
 	        public void onTextChanged(CharSequence s, int start, int before, int count) 
 	        {
-	            adapter.getFilter().filter(s.toString());
+	        	if(adapter!=null && gridheader!=null)
+	        		adapter.getFilter().filter(s.toString()); 
+
 	        }
 	        @Override
-	        public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
+	        public void beforeTextChanged(CharSequence s, int start, int count,int after) {
+	         
+	        }
 	        @Override
-	        public void afterTextChanged(android.text.Editable s) {}
+	        public void afterTextChanged(android.text.Editable s) {	 
+//	        	if(adapter!=null && gridheader!=null && adapter.getCount()!=0)
+//	        		NMApp.getController().notifyOutboxHandlers(ControllerProtocol.UPDATE_LISTVIEW_HEADER, 0, 0,1);   
+	        }
 	    });  
 	    
 	}
+	
+	public void updateListViewHeader()
+	{	   
+		if(getLayoutInflater().getFactory() instanceof ViewPedidoEdit){
+				((ViewPedidoEdit)getLayoutInflater().getFactory()).runOnUiThread(new Runnable() 
+				{				
+					@Override
+					public void run() { 
+						if(adapter!=null && gridheader!=null)
+							gridheader.setText("LISTA CLIENTES("+adapter.getCount()+")");
+						
+					}
+				});			
+		}
+		
+	}
+	
 		
 	@Override
 	public boolean handleMessage(Message msg) 
@@ -168,6 +194,9 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 				ErrorMessage error=((ErrorMessage)msg.obj);
 				buildCustomDialog(error.getTittle(),error.getMessage()+error.getCause(),ALERT_DIALOG).show();				 
 				return true;		
+			case ControllerProtocol.UPDATE_LISTVIEW_HEADER:
+				updateListViewHeader();
+				break;
 		}
 		return false;
 	}

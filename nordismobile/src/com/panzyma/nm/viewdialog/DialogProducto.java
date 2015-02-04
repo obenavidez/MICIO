@@ -34,6 +34,7 @@ import android.widget.TextView;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Producto;
@@ -133,6 +134,23 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	}
 	
     
+    public void updateListViewHeader()
+	{	   
+		if(getLayoutInflater().getFactory() instanceof ViewPedidoEdit){
+				((ViewPedidoEdit)getLayoutInflater().getFactory()).runOnUiThread(new Runnable() 
+				{				
+					@Override
+					public void run() { 
+						if(adapter!=null && gridheader!=null)
+							gridheader.setText("LISTA PRODUCTO("+adapter.getCount()+")");
+						
+					}
+				});			
+		}
+		
+	}
+    
+    
 	public void initComponents()
 	{
 		LinearLayout.LayoutParams layoutParams;
@@ -161,19 +179,16 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	        @Override
 	        public void onTextChanged(CharSequence s, int start, int before, int count) 
 	        {
-	        	if(adapter!=null)
-	        	{
-	        		adapter.getFilter().filter(s.toString());
-	        		
-	        	}
+	        	if(adapter!=null) 
+	        		adapter.getFilter().filter(s.toString()); 
 	        }
 	        @Override
-	        public void beforeTextChanged(CharSequence s, int start, int count,int after) {
-	        	
+	        public void beforeTextChanged(CharSequence s, int start, int count,int after) { 
 	        }
 	        @Override
 	        public void afterTextChanged(Editable s) {
-	        	gridheader.setText("LISTA PRODUCTOS("+adapter.getCount()+")");
+//	        	if(adapter!=null && gridheader!=null && adapter.getCount()!=0)
+//	        		NMApp.getController().notifyOutboxHandlers(ControllerProtocol.UPDATE_LISTVIEW_HEADER, 0, 0,1);   
 	        }
 	    });  
 	    
@@ -193,7 +208,10 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 				return true;
 			case ERROR: 
 				ErrorMessage error=((ErrorMessage)msg.obj);			 
-				return true;		
+				return true;	
+			case ControllerProtocol.UPDATE_LISTVIEW_HEADER:
+				updateListViewHeader();
+				break;
 		}
 		return false;
 		
