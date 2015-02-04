@@ -345,7 +345,8 @@ public class ViewPedido extends ActionBarActivity implements
 						pedido_selected = customArrayAdapter.getItem(pos);
 						if (pedido_selected != null) {
 							// OBTENER EL ESTADO DEL REGISTRO
-							state = pedido_selected.getCodEstado();
+							state = ( pedido_selected.getCodEstado() == null) ? "" : pedido_selected.getCodEstado() ;
+							
 							// VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
 							 if ("FACTURADO".compareTo(state) != 0)
 							 {
