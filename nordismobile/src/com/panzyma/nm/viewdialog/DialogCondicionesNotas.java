@@ -87,24 +87,21 @@ public class DialogCondicionesNotas extends Dialog
     	        pedido.setBonificacionSolicitada("");            
     	        if (cliente.getPermiteBonifEspecial()) 
     	        {
-    	            pedido.setBonificacionEspecial(true);
-    	            if (etbespecial.getText().toString().trim().compareTo("") == 0) 
-    	            	pedido.setBonificacionEspecial(false);
+    	            if (etbespecial.getText().toString().trim().compareTo("") != 0) 
+    	            	pedido.setBonificacionEspecial(true);
     	            pedido.setBonificacionSolicitada(etbespecial.getText().toString().trim());
-    	        }
-    	        
-    	        pedido.setPedidoCondicionado(true);
+    	        } 
+    	        pedido.setPedidoCondicionado(false);
     	        pedido.setCondicion("");
-    	        if (etpcondicionado.getText().toString().trim().compareTo("") == 0) 
-    	        	pedido.setPedidoCondicionado(false);
+    	        if (etpcondicionado.getText().toString().trim().compareTo("") != 0) 
+    	        	pedido.setPedidoCondicionado(true);
     	        pedido.setCondicion(etpcondicionado.getText().toString().trim());
     	        
     	        pedido.setPrecioEspecial(false);
     	        pedido.setPrecioSolicitado("");
-    	        if (cliente.getPermitePrecioEspecial()) {  
-    	            pedido.setPrecioEspecial(true);    
-    	            if (etpespecial.getText().toString().trim().compareTo("") == 0) 
-    	            	pedido.setPrecioEspecial(false);
+    	        if (cliente.getPermitePrecioEspecial()) {   
+    	            if (etpespecial.getText().toString().trim().compareTo("") != 0) 
+    	            	pedido.setPrecioEspecial(true);
     	            pedido.setPrecioSolicitado(etpespecial.getText().toString().trim());
     	        }
 	    		mButtonClickListener.onButtonClick(pedido);  
@@ -113,15 +110,15 @@ public class DialogCondicionesNotas extends Dialog
 		}
 	    );
         
-        btnok.setOnClickListener(new View.OnClickListener() 
-		{ 
-    	    @Override
-			public void onClick(View v) 
-			{
-    	    	dismiss();
-			}
-		}
-        );
+//        btnok.setOnClickListener(new View.OnClickListener() 
+//		{ 
+//    	    @Override
+//			public void onClick(View v) 
+//			{
+//    	    	dismiss();
+//			}
+//		}
+//        );
 	}	 
 	
 	@Override

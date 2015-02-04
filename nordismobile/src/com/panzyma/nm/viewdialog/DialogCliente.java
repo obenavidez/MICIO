@@ -186,7 +186,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			            @Override
 			            public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
 			            { 		
-			            	if(positioncache < 0 && adapter.getCount() > 0)
+			            	if(positioncache < 0 && adapter != null && adapter.getCount() > 0)
 			            		positioncache = 0;
 			            	if((parent.getChildAt(positioncache))!=null)						            							            		
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
@@ -208,7 +208,9 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 				    {
 						@Override
 						public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) 
-						{  											 
+						{  			
+							if(positioncache < 0 && adapter != null && adapter.getCount() > 0)
+			            		positioncache = 0;
 							if((parent.getChildAt(positioncache))!=null)						            							            		
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
