@@ -324,13 +324,7 @@ public class BConfiguracionM extends BBaseM {
 			final String credenciales =(Credentials!=null && Credentials!="") ?Credentials:SessionManager.getCredenciales();
 			if (credenciales.trim() != "") 
 			{
-				NMApp.getThreadPool().execute
-				(
-						new Runnable() 
-						{
-							@Override
-							public void run() 
-							{
+				
 								DataConfigurationResult res;
 								try {
 									res = ModelConfiguracion.getDataConfiguration
@@ -379,9 +373,7 @@ public class BConfiguracionM extends BBaseM {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-							}
-						}
-				);
+							
 			}		
 			
 			

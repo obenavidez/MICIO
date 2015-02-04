@@ -73,6 +73,7 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 		intent = new Intent(this, Main.class); 
 		// Staring Login Activity
 		startActivity(intent);
+		finish();
 	}
 
 	@Override
@@ -179,15 +180,8 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 					try {
 						NMApp.getThreadPool().execute(new Runnable() {
 							public void run() {
-								if (UserSessionManager
-										.checkLogin(txtusername.getText()
-												.toString().trim(), txtpassword
-												.getText().toString().trim())) {
-									UserSessionManager
-											.guardarSession(new Session(
-													UserSessionManager
-															.getLoginUser(),
-													true));
+								if (UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim())) {
+									UserSessionManager.guardarSession(new Session(UserSessionManager.getLoginUser(),true));
 									if (UserSessionManager.isUserLoggedIn())
 										goHome();
 								}

@@ -365,8 +365,7 @@ public class UserSessionManager
 								        		NMApp.getController()._notifyOutboxHandlers(ControllerProtocol.SETTING_REDIREC, 0, 0,0);
 								        	else 
 								        		sendErrorMessage(new ErrorMessage("","error en la comunicación con el servidor de aplicaciones.\n"+ex.toString(),"error en la comunicación con el servidor de aplicaciones.\n"+ex.toString()));
-										 
-		
+
 										}
 									}
 									

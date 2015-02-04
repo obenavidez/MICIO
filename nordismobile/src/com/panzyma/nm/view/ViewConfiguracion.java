@@ -488,7 +488,6 @@ public class ViewConfiguracion extends ActionBarActivity implements
 			msg.setData(b);
 			msg.what = _what.length != 0 ? _what[0] : LOAD_SETTING;
 			NMApp.getController().getInboxHandler().sendMessage(msg);
-
 		}
 		return false;
 	}
