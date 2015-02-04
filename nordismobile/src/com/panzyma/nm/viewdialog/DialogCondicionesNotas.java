@@ -102,7 +102,7 @@ public class DialogCondicionesNotas extends Dialog
     	        pedido.setPrecioSolicitado("");
     	        if (cliente.getPermitePrecioEspecial()) {    	             
     	            if (etpespecial.getText().toString().trim().compareTo("") != 0) 
-    	            	pedido.setPrecioEspecial(false);
+    	            	pedido.setPrecioEspecial(true);
     	            pedido.setPrecioSolicitado(etpespecial.getText().toString().trim());
     	        }
 	    		mButtonClickListener.onButtonClick(pedido);  
