@@ -131,7 +131,8 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	    llbody.setLayoutParams(layoutParams);
 	    
 	    
-	    lvcliente = (ListView) findViewById(R.id.lvcliente);	
+	    lvcliente = (ListView) findViewById(R.id.lvcliente);
+	    lvcliente.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 	    gridheader=(TextView) findViewById(R.id.ctextv_gridheader); 
 	    ViewStub stub = (ViewStub) findViewById(R.id.vsHeader);
 	    ((ViewGroup) lvcliente.getParent()).removeView(stub);
@@ -184,7 +185,9 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 			        {
 			            @Override
 			            public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
-			            { 		  
+			            { 		
+			            	if(positioncache < 0 && adapter.getCount() > 0)
+			            		positioncache = 0;
 			            	if((parent.getChildAt(positioncache))!=null)						            							            		
 			            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
 			            	positioncache=position;				            	
