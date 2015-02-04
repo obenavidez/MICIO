@@ -11,10 +11,16 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 {
 	private static  String DATABASE_NAME = "SIMFAC";
 	Context mycontext;
-    String sqlCliente=       "CREATE TABLE IF NOT EXISTS Cliente (IdCliente BLOB PRIMARY KEY  NOT NULL  UNIQUE , NombreCliente TEXT, IdSucursal BLOB NOT NULL,"+ 
-						 	 "Codigo TEXT, CodTipoPrecio TEXT, DesTipoPrecio TEXT, objPrecioVentaID BLOB,  objCategoriaClienteID BLOB,"+
-						     "objTipoClienteID BLOB, AplicaBonificacion INTEGER, PermiteBonifEspecial INTEGER, PermitePrecioEspecial INTEGER, UG TEXT,"+
-						     "Ubicacion TEXT, NombreLegalCliente TEXT, AplicaOtrasDeducciones INTEGER, MontoMinimoAbono FLOAT, PlazoDescuento INTEGER, PermiteDevolucion INTEGER);";
+//    String sqlCliente=       "CREATE TABLE IF NOT EXISTS Cliente (IdCliente BLOB PRIMARY KEY  NOT NULL  UNIQUE , NombreCliente TEXT, IdSucursal BLOB NOT NULL,"+ 
+//						 	 "Codigo TEXT, CodTipoPrecio TEXT, DesTipoPrecio TEXT, objPrecioVentaID BLOB,  objCategoriaClienteID BLOB,"+
+//						     "objTipoClienteID BLOB, AplicaBonificacion INTEGER, PermiteBonifEspecial INTEGER, PermitePrecioEspecial INTEGER, UG TEXT,"+
+//						     "Ubicacion TEXT, NombreLegalCliente TEXT, AplicaOtrasDeducciones INTEGER, MontoMinimoAbono FLOAT, PlazoDescuento INTEGER, PermiteDevolucion INTEGER);";
+//    
+    String sqlCliente=       "CREATE TABLE IF NOT EXISTS Cliente (IdCliente BLOB , NombreCliente TEXT, IdSucursal BLOB PRIMARY KEY  NOT NULL  UNIQUE ,"+ 
+		 	 "Codigo TEXT, CodTipoPrecio TEXT, DesTipoPrecio TEXT, objPrecioVentaID BLOB,  objCategoriaClienteID BLOB,"+
+		     "objTipoClienteID BLOB, AplicaBonificacion INTEGER, PermiteBonifEspecial INTEGER, PermitePrecioEspecial INTEGER, UG TEXT,"+
+		     "Ubicacion TEXT, NombreLegalCliente TEXT, AplicaOtrasDeducciones INTEGER, MontoMinimoAbono FLOAT, PlazoDescuento INTEGER, PermiteDevolucion INTEGER);";
+
     
 	    String sqlFactura=   "CREATE TABLE IF NOT EXISTS Factura (Id BLOB PRIMARY KEY  NOT NULL UNIQUE,NombreSucursal TEXT,"+
 	                         "NoFactura TEXT,Tipo TEXT,NoPedido TEXT,CodEstado TEXT,"+
