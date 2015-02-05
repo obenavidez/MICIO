@@ -16,6 +16,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.comunicator.Parameters;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
@@ -68,6 +69,36 @@ public class ModelRecibo {
 				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.STRING_CLASS}));		
 		SoapPrimitive rs=(SoapPrimitive) NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
 		return Long.parseLong(rs.toString()); 
+	}
+	
+	public static Factura [] getFacturasByReciboDetalleFacturasList(List<ReciboDetFactura> list){
+		Factura [] resultList = new Factura [list.size()];
+		int c = 0;
+		for(ReciboDetFactura rdf: list) {
+			Factura f = ModelDocumento.getFacturaByID(NMApp.getContext().getContentResolver(), rdf.getObjFacturaID());
+			resultList[c++] = f;
+		}
+		return resultList;
+	}
+	
+	public static CCNotaCredito [] getNotasCreditoByReciboDetalleNCSList(List<ReciboDetNC> list){
+		CCNotaCredito [] resultList = new CCNotaCredito [list.size()];
+		int c = 0;
+		for(ReciboDetNC rdf: list) {
+			CCNotaCredito f = ModelDocumento.getNotaCreditoByID(NMApp.getContext().getContentResolver(), rdf.getObjNotaCreditoID());
+			resultList[c++] = f;
+		}
+		return resultList;
+	}
+	
+	public static CCNotaDebito [] getNotasDebitoByReciboDetalleNDSList(List<ReciboDetND> list){
+		CCNotaDebito [] resultList = new CCNotaDebito [list.size()];
+		int c = 0;
+		for(ReciboDetND rdf: list) {
+			CCNotaDebito f = ModelDocumento.getNotasDebitoByID(NMApp.getContext().getContentResolver(), rdf.getObjNotaDebitoID());
+			resultList[c++] = f;
+		}
+		return resultList;
 	}
 	
 	public static void updateFacturas(List<ReciboDetFactura> facturas, ContentResolver content,Context context){

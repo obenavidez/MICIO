@@ -480,7 +480,8 @@ public class ViewRecibo extends ActionBarActivity implements
 		{
 			
 			//Validar fecha del pedido
-			long d = recibo.getFecha();            
+			//long d = DateUtil.d2i(recibo.getFecha());  
+			long d = DateUtil.strDateToLong(DateUtil.idateToStr(recibo.getFecha()));
 			if (d > DateUtil.d2i(Calendar.getInstance().getTime())) 
 			{
 				showStatusOnUI(
@@ -728,9 +729,14 @@ public class ViewRecibo extends ActionBarActivity implements
 			Message msg = new Message();
 			Bundle b = new Bundle();
 			b.putParcelable("recibo", recibo); 
+			/*
 			b.putParcelableArray("facturasToUpdate", (Parcelable[]) recibo.getFacturasRecibo().toArray() ); //getArrayOfFacturas()
 			b.putParcelableArray("notasDebitoToUpdate", (Parcelable[]) recibo.getNotasDebitoRecibo().toArray() ); // getArrayOfNotasDebito()
 			b.putParcelableArray("notasCreditoToUpdate",  (Parcelable[]) recibo.getNotasCreditoRecibo().toArray()); // getArrayOfNotasCredito()
+			*/
+			b.putParcelableArray("facturasToUpdate", (Parcelable[])ModelRecibo.getFacturasByReciboDetalleFacturasList(recibo.getFacturasRecibo()) ); //getArrayOfFacturas()
+			b.putParcelableArray("notasDebitoToUpdate", (Parcelable[])ModelRecibo.getNotasDebitoByReciboDetalleNDSList(recibo.getNotasDebitoRecibo()) ); // getArrayOfNotasDebito()
+			b.putParcelableArray("notasCreditoToUpdate",  (Parcelable[]) ModelRecibo.getNotasCreditoByReciboDetalleNCSList(recibo.getNotasCreditoRecibo())); // getArrayOfNotasCredito()
 			msg.setData(b);
 			msg.what=SEND_DATA_FROM_SERVER;
 			NMApp.getController().getInboxHandler().sendMessage(msg);  	 

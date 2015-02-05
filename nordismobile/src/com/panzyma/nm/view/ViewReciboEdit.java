@@ -129,6 +129,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	private TextView txtTotalAbonadoNC;
 	private TextView txtSubTotal;
 	private TextView txtTotal;
+	private TextView txtTotalRetencion;
 	private TextView txtTotalDescuento;
 
 	private float totalRecibo = 0.00f;
@@ -513,6 +514,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		txtTotalAbonadoND = (TextView) findViewById(R.id.txtTotalNotasDebito);
 		txtTotalAbonadoNC = (TextView) findViewById(R.id.txtTotalNotaCredito);
 		txtSubTotal = (TextView) findViewById(R.id.txtSubTotal);
+		txtTotalRetencion = (TextView) findViewById(R.id.txtTotalRetencion);
 		txtTotalDescuento = (TextView) findViewById(R.id.txtTotalDescuento);
 		txtTotal = (TextView) findViewById(R.id.txtTotal);
 
@@ -725,6 +727,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		txtTotalAbonadoND.setText("" + recibo.getTotalND());
 		txtTotalAbonadoNC.setText("" + recibo.getTotalNC());
 		txtSubTotal.setText("" + recibo.getSubTotal());
+		txtTotalRetencion.setText(""+ recibo.getTotalRetenido());
 		txtTotalDescuento.setText("" + recibo.getTotalDesc());
 		txtTotal.setText("" + recibo.getTotalRecibo());
 		CalculaTotales();
@@ -1810,6 +1813,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		txtSubTotal.setText(StringUtil.formatReal(recibo.getSubTotal()));
 		txtTotalDescuento.setText(StringUtil.formatReal(recibo.getTotalDesc()));
 		txtTotal.setText(StringUtil.formatReal(recibo.getTotalRecibo()));
+		txtTotalRetencion.setText(StringUtil.formatReal(recibo.getTotalRetenido()));
 	}
 
 	private void procesaFactura(ReciboDetFactura facturaDetalle,
