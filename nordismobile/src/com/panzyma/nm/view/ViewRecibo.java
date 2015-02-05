@@ -136,8 +136,8 @@ public class ViewRecibo extends ActionBarActivity implements
 						p.getDescEstado(),p.getCodEstado(),
 						p.getObjSucursalID());				
 				
-			}else if (NUEVO_RECIBO == request_code) {
-				recibos.add(
+			}else if (NUEVO_RECIBO == request_code) {				
+				recibos.add( 0, 
 						new vmRecibo(Integer.parseInt(String.valueOf(p.getId())),
 								p.getReferencia(),
 								p.getFecha(),
@@ -146,7 +146,8 @@ public class ViewRecibo extends ActionBarActivity implements
 								p.getDescEstado(),p.getCodEstado(),
 								p.getObjSucursalID())	
 				);
-				positioncache = recibos.size() - 1;
+				positioncache = 0;
+				//positioncache = recibos.size() - 1;
 			}
 		}
 		setList();

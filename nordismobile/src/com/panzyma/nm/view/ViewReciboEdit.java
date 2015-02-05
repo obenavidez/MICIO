@@ -846,7 +846,8 @@ public class ViewReciboEdit extends ActionBarActivity implements
 				cliente = recibo.getCliente();
 				actualizarOnUINumRef(recibo);
 				if (msg.arg1 == 1)
-					enviarImprimirRecibo(recibo);
+					if(recibo != null  && "PAGADO".equals(recibo.getCodEstado()) )
+						enviarImprimirRecibo(recibo);
 			}
 			break;
 		case ControllerProtocol.NOTIFICATION:

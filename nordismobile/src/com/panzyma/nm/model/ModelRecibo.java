@@ -593,7 +593,7 @@ public class ModelRecibo {
 				projection, // Columnas a devolver
 				null, // Condición de la query
 				null, // Argumentos variables de la query
-				null);
+				NMConfig.Recibo.ID+" DESC");
 		if (cur.moveToFirst()) {
 			do {
 
