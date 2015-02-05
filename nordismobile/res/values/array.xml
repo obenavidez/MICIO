@@ -72,6 +72,7 @@
         <item >Enviar Recibo</item>
         <item >Solicitar Descuento Ocasional</item>
         <item >Aplicar Descuento Ocasional</item> 
+         <item >Imprimir Recibo</item>
         <item >Cerrar</item> 
     </string-array>
 </resources>

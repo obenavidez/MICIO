@@ -63,7 +63,7 @@
 					    android:scrollingCache="false" 
 					    android:choiceMode="singleChoice"
 					    android:listSelector="@drawable/statelist"
-					    android:visibility="gone"> 
+					    > 
 					    
 					</ListView>					
 					
@@ -76,7 +76,7 @@
 					    android:scrollingCache="false" 
 					    android:choiceMode="singleChoice"
 					    android:listSelector="@drawable/statelist"
-					    android:visibility="gone">
+					    >
 				    </ListView>
 					    
 					<ListView 
@@ -88,7 +88,7 @@
 					    android:scrollingCache="false" 
 					    android:choiceMode="singleChoice"
 					    android:listSelector="@drawable/statelist"
-					    android:visibility="gone"> 
+					    > 
 					    
 					</ListView>
 											 
@@ -100,7 +100,7 @@
 					 android:layout_height="wrap_content"
 					 android:gravity="center"
 					 android:text="@string/txtclient_entymessage"
-					 android:visibility="gone"
+					 
 					 />
 		        
 			   </LinearLayout>

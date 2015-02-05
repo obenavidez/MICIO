@@ -176,7 +176,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 10;
 	private static final int ID_APLICAR_DESCUENTO_OCASIONAL = 11;
 	private static final int ID_CERRAR = 12;
-	
+	private static final int ID_IMPRIMIR_COMPROBANTE = 13;
 	
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit";
@@ -187,6 +187,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
 	private static final int VER_DETALLE_DOCUMENTO = 2;
+	
 	
 	private ViewReciboEdit me;
 	private Cliente cliente;
@@ -365,13 +366,23 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		// Obtenemos las opciones desde el recurso
 		opcionesMenu = getResources().getStringArray(
 				R.array.reciboeditoptions);
+		String[] copy=new String[opcionesMenu.length];
+		if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+			if(opcionesMenu.length!=0 && opcionesMenu.length>2)
+		{
+			copy[0]=opcionesMenu[opcionesMenu.length-2];
+			copy[1]=opcionesMenu[opcionesMenu.length-1];
+		}
+		else
+			copy=opcionesMenu.clone();
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// Buscamos nuestro menu lateral
 		drawerList = (ListView) findViewById(R.id.left_drawer);
 		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
 				.getThemedContext(), android.R.layout.simple_list_item_1,
-				opcionesMenu));
-
+				copy));
+		
+		 
 		// Añadimos Funciones al menú laterak
 		drawerList.setOnItemClickListener(new OnItemClickListener() 
 		{
@@ -440,8 +451,11 @@ public class ViewReciboEdit extends ActionBarActivity implements
 				case ID_ENVIAR_RECIBO:
 					enviarRecibo();
 					break;
+				case ID_IMPRIMIR_COMPROBANTE:
+					enviarImprimirRecibo(recibo);
+					break;
 				case ID_CERRAR:
-					// finalizarvidad();
+						finish();
 					break; 
 				
 				}
@@ -502,6 +516,22 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		txtTotalDescuento = (TextView) findViewById(R.id.txtTotalDescuento);
 		txtTotal = (TextView) findViewById(R.id.txtTotal);
 
+		if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+		{
+			item_document.setEnabled(false);
+			tbxFecha.setEnabled(false);
+			tbxNumReferencia.setEnabled(false);
+			tbxNumRecibo.setEnabled(false); 
+			tbxNombreDelCliente.setEnabled(false);
+			tbxNotas.setEnabled(false);
+			txtTotalAbonadoFacturas.setEnabled(false);
+			txtTotalAbonadoND.setEnabled(false);	
+			txtTotalAbonadoNC.setEnabled(false);	
+			txtSubTotal.setEnabled(false);	
+			txtTotalDescuento.setEnabled(false);	
+			txtTotal.setEnabled(false);				
+		} 
+		
 		item_document.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -545,6 +575,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		loadData();
 		initMenu();
 		CreateMenu();
+				
 		if (getIntent().hasExtra("cliente")) {
 			SetCliente();
 		}
@@ -700,41 +731,52 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		actualizaTotales();
 	}
 
-	private void initMenu() {
-		quickAction = new QuickAction(this, QuickAction.VERTICAL, 1);
-		quickAction.addActionItem(new ActionItem(ID_SELECCIONAR_CLIENTE,
-				"Seleccionar Cliente"));
-		quickAction.addActionItem(new ActionItem(ID_AGREGAR_DOCUMENTOS,
-				"Agregar Documentos"));
-		quickAction.addActionItem(new ActionItem(ID_AGREGAR_PAGOS,
-				"Agregar Pagos"));
-		quickAction.addActionItem(new ActionItem(ID_EDITAR_PAGOS,
-				"Editar Pagos"));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(ID_EDITAR_NOTAS,
-				"Editar Notas"));
-		quickAction.addActionItem(new ActionItem(ID_PAGAR_TODO,
-				"Pagar Todo (Facturas + ND)"));
-		quickAction.addActionItem(null);
+	private void initMenu() 
+	{
+		
+		if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+		{
+			quickAction.addActionItem(new ActionItem(ID_IMPRIMIR_COMPROBANTE,
+					"Imprimir Comprobante"));
+			quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
+		} 
+		else 
+		{ 
+			quickAction = new QuickAction(this, QuickAction.VERTICAL, 1);
+			quickAction.addActionItem(new ActionItem(ID_SELECCIONAR_CLIENTE,
+					"Seleccionar Cliente"));
+			quickAction.addActionItem(new ActionItem(ID_AGREGAR_DOCUMENTOS,
+					"Agregar Documentos"));
+			quickAction.addActionItem(new ActionItem(ID_AGREGAR_PAGOS,
+					"Agregar Pagos"));
+			quickAction.addActionItem(new ActionItem(ID_EDITAR_PAGOS,
+					"Editar Pagos"));
+			quickAction.addActionItem(null);
+			quickAction.addActionItem(new ActionItem(ID_EDITAR_NOTAS,
+					"Editar Notas"));
+			quickAction.addActionItem(new ActionItem(ID_PAGAR_TODO,
+					"Pagar Todo (Facturas + ND)"));
+			quickAction.addActionItem(null);
+			quickAction
+					.addActionItem(new ActionItem(ID_PAGAR_MONTO, "Pagar Monto"));
+			quickAction.addActionItem(new ActionItem(ID_EDITAR_DESCUENTO,
+					"Editar Descuento"));
+			quickAction.addActionItem(null);
+			quickAction.addActionItem(new ActionItem(ID_SALVAR_RECIBO,
+					"Guardar Recibo"));
+			quickAction.addActionItem(new ActionItem(ID_ENVIAR_RECIBO,
+					"Enviar Recibo"));
+			quickAction.addActionItem(new ActionItem(
+					ID_SOLICITAR_DESCUENTO_OCASIONAL,
+					"Solicitar Descuento Ocasional"));
+			quickAction.addActionItem(new ActionItem(
+					ID_APLICAR_DESCUENTO_OCASIONAL, "Aplicar Descuento Ocasional"));
+			quickAction.addActionItem(null);
+			quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
+		}
 		quickAction
-				.addActionItem(new ActionItem(ID_PAGAR_MONTO, "Pagar Monto"));
-		quickAction.addActionItem(new ActionItem(ID_EDITAR_DESCUENTO,
-				"Editar Descuento"));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(ID_SALVAR_RECIBO,
-				"Guardar Recibo"));
-		quickAction.addActionItem(new ActionItem(ID_ENVIAR_RECIBO,
-				"Enviar Recibo"));
-		quickAction.addActionItem(new ActionItem(
-				ID_SOLICITAR_DESCUENTO_OCASIONAL,
-				"Solicitar Descuento Ocasional"));
-		quickAction.addActionItem(new ActionItem(
-				ID_APLICAR_DESCUENTO_OCASIONAL, "Aplicar Descuento Ocasional"));
-		quickAction.addActionItem(null);
-		quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
-
-		quickAction
-				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+				.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() 
+				{
 					@Override
 					public void onItemClick(QuickAction source, final int pos,
 							int actionId) {
@@ -905,7 +947,15 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		return false;
 	}
 
-	private void enviarImprimirRecibo(final ReciboColector recibo) {
+	private void enviarImprimirRecibo(final ReciboColector recibo) 
+	{
+		
+		if (recibo != null && !recibo.getCodEstado().equals("PAGADO")) 
+		{
+			showStatus("No se puede imprimir recibos en estado "+ recibo.getCodEstado(), true);
+			return;
+		}
+		
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -2148,7 +2198,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		
 		if (documents.size() > 0)
 			documento_selected = documents.get(0);
-		gridheader.setText("PRODUCTOS A PAGAR(" + adapter.getCount() + ")");
+		gridheader.setText("DOCUMENTOS A PAGAR(" + adapter.getCount() + ")");
 	}
 
 	public void showMenu(final View view) {
