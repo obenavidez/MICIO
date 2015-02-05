@@ -253,7 +253,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		gridheader.setVisibility(View.VISIBLE);
 
-		opcionesMenu = new String[] { "Nuevo Recibo", "Editar Recibo",
+		opcionesMenu = new String[] { "Nuevo Recibo", "Abrir Recibo",
 				"Borrar Recibo", "Enviar Recibo", "Imprimir Recibo",
 				"Ficha del Cliente", "Cuentas por Cobrar", "Cerrar" };
 
