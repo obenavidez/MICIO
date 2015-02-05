@@ -647,12 +647,14 @@ public class EditFormaPago extends DialogFragment {
 						this.getActivity(), "MaxDiasFechaCheque").toString());
 
 				long hoy = DateUtil.getTime(DateUtil.getToday());
-				int minFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy,
+				/*int minFechaCheque = DateUtil.time2int(DateUtil.addDay(hoy,
 						-minDiasFechaCheque));
-				int maxFechaCheque = DateUtil.time2int(DateUtil.addDays(hoy,
-						maxDiasFechaCheque));
-
-				long fechaCK = DateUtil.strTimeToLong(fecha.getText()
+				int maxFechaCheque = DateUtil.time2int(DateUtil.addDay(hoy,
+						maxDiasFechaCheque));*/
+				long minFechaCheque = DateUtil.addDay(DateUtil.getToday(), -minDiasFechaCheque );
+				long maxFechaCheque = DateUtil.addDay(DateUtil.getToday(), maxDiasFechaCheque );
+				
+				long fechaCK = DateUtil.strDateToLong(fecha.getText()
 						.toString());
 				if (fechaCK < minFechaCheque) {
 					Date d = new Date(minFechaCheque);
