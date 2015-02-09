@@ -20,14 +20,14 @@
 
     <EditText
         android:id="@+id/txtpayamount"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/title_pay_amount"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
        	android:layout_marginBottom="8dp"
         android:ems="10"
-        android:inputType="numberDecimal" >
+        android:inputType="textMultiLine">
         <requestFocus />
     </EditText>
 

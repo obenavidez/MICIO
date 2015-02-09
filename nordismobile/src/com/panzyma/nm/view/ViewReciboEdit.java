@@ -731,6 +731,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		txtTotalRetencion.setText(""+ recibo.getTotalRetenido());
 		txtTotalDescuento.setText("" + recibo.getTotalDesc());
 		txtTotal.setText("" + recibo.getTotalRecibo());
+		txtmonto.setText("" +recibo.getFormasPagoMonto());
 		CalculaTotales();
 		actualizaTotales();
 	}
@@ -1815,6 +1816,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		txtTotalDescuento.setText(StringUtil.formatReal(recibo.getTotalDesc()));
 		txtTotal.setText(StringUtil.formatReal(recibo.getTotalRecibo()));
 		txtTotalRetencion.setText(StringUtil.formatReal(recibo.getTotalRetenido()));
+		txtmonto.setText(StringUtil.formatReal(recibo.getFormasPagoMonto()));
 	}
 
 	private void procesaFactura(ReciboDetFactura facturaDetalle,

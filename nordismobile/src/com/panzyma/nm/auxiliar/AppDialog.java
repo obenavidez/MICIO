@@ -296,7 +296,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 			@Override
 			public void onClick(View v) {
 				if(txtpayamount.getText().length()>0){
-					if(txtpayamount.getText().toString().compareTo("0")!=0){
+					if(txtpayamount.getText().length()>0){
 						if(mylistener!=null)
 							mylistener.onButtonClick(alert, OK_BUTTOM); 
 						alert.dismiss();

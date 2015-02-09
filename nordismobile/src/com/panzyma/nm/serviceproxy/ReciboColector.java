@@ -480,6 +480,13 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 	public void setFormasPagoRecibo(ArrayList<ReciboDetFormaPago> formasPagoRecibo) {
 		this.DetalleFormasPago = formasPagoRecibo;
 	}
+	public float getFormasPagoMonto(){
+		float montoformapago =0;
+		for (ReciboDetFormaPago detalle : this.DetalleFormasPago) {
+			montoformapago+= detalle.Monto;
+		}
+		return montoformapago;
+	}
  
 	private void readFromParcel(Parcel parcel) {
 		this.Id = parcel.readLong(  );
