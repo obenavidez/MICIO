@@ -547,6 +547,14 @@ public class Cobro
         	count += recibo.getNotasCreditoRecibo().size(); 
         return count;
     }
+    
+    public static boolean sinNecesidadFormaPago(ReciboColector recibo){
+    	if( cantNCs(recibo) > 0 && recibo.getTotalRecibo() == 0 && (cantNDs(recibo) > 0 || cantFacturas(recibo) > 0 ) ) {
+    		recibo.getFormasPagoRecibo().clear();
+    		return true;
+    	}    		
+    	return false;
+    }
 
 
     public static int FacturaEstaEnOtroRecibo(ContentResolver content,long idFactura, boolean agregando) {

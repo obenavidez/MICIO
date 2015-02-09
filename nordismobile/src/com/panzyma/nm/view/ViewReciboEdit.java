@@ -1568,15 +1568,18 @@ public class ViewReciboEdit extends ActionBarActivity implements
 
 			// Validar que se haya ingresado al menos un pago
 			if (Cobro.cantFPs(recibo) == 0) {
-				NMApp.getController().notifyOutboxHandlers(
-						ControllerProtocol.ERROR,
-						0,
-						0,
-						new ErrorMessage("Error validando Recibo", ""
-								+ "No se ha agregado ningun pago.", ""));
+				if( !Cobro.sinNecesidadFormaPago(recibo) ) {
+					NMApp.getController().notifyOutboxHandlers(
+							ControllerProtocol.ERROR,
+							0,
+							0,
+							new ErrorMessage("Error validando Recibo", ""
+									+ "No se ha agregado ningun pago.", ""));
 
-				// Dialog.alert("Detalle de pagos no ingresado.");
-				return false;
+					// Dialog.alert("Detalle de pagos no ingresado.");
+					return false;
+				}
+				
 			}
 
 			// Validar que la sumatoria de los montos de las NC seleccionadas no
