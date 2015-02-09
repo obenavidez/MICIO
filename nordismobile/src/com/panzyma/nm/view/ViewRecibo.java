@@ -192,6 +192,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int EDITAR_RECIBO = 1;
 	private static final int BORRAR_RECIBO = 2;
 	protected static final int ENVIAR_RECIBO = 3;
+	private static final int IMPRIMIR_RECIBO = 4;
 	private static final int FICHA_CLIENTE = 5;
 	private static final int CUENTAS_POR_COBRAR = 6;
 	private static final int CERRAR = 7;
@@ -330,6 +331,12 @@ public class ViewRecibo extends ActionBarActivity implements
 					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
 					if ("REGISTRADO".equals(recibo_selected.getCodEstado())) {
 						enviarRecibo(recibo_selected);
+					}					
+					break;
+				case IMPRIMIR_RECIBO:
+					if( recibo_selected != null ){
+						ReciboColector recibo = ModelRecibo.getReciboByID(NMApp.getContext().getContentResolver(), recibo_selected.getId());
+						enviarImprimirRecibo(recibo);
 					}					
 					break;
 				case FICHA_CLIENTE :			
@@ -1143,6 +1150,54 @@ public class ViewRecibo extends ActionBarActivity implements
 	public Context getContext()
 	{
 		return this.context;
+	}
+	
+	private  void enviarImprimirRecibo(final ReciboColector recibo) 
+	{
+		
+		if (recibo != null && !recibo.getCodEstado().equals("PAGADO")) 
+		{
+			showStatus("No se puede imprimir recibos en estado "+ recibo.getCodEstado(), true);
+			return;
+		}
+		
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				AppDialog.showMessage(context, "", "Desea Imprimir el Recibo?",
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						new AppDialog.OnButtonClickListener() {
+							@Override
+							public void onButtonClick(AlertDialog _dialog,
+									int actionId) {
+								if (actionId == AppDialog.OK_BUTTOM) {
+									try {
+										Message msg = new Message();
+										Bundle b = new Bundle();
+										b.putParcelable("recibo", recibo);
+										msg.setData(b);
+										msg.what = ControllerProtocol.IMPRIMIR;
+										NMApp.getController().getInboxHandler()
+												.sendMessage(msg);
+										_dialog.dismiss();
+
+									} catch (Exception e) {
+										NMApp.getController()
+												.notifyOutboxHandlers(
+														ControllerProtocol.ERROR,
+														0,
+														0,
+														new ErrorMessage(
+																"Error al intentar Imprimir el Recibo",
+																e.getMessage(),
+																e.getMessage()));
+									}
+								}
+							}
+						});
+			}
+		});
+
 	}
 }
 
