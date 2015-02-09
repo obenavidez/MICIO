@@ -369,7 +369,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		opcionesMenu = getResources().getStringArray(
 				R.array.reciboeditoptions);
 		String[] copy=new String[opcionesMenu.length];
-		if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+		if (recibo != null && recibo.getCodEstado().equals("PAGADO")) 
 			
 		{	if(opcionesMenu.length!=0 && opcionesMenu.length>2)
 				copy[0]=opcionesMenu[opcionesMenu.length-2];
