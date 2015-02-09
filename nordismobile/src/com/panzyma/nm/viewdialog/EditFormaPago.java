@@ -1,5 +1,7 @@
 package com.panzyma.nm.viewdialog;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -682,16 +684,31 @@ public class EditFormaPago extends DialogFragment {
 			} else {
 				// Si es otro tipo de documento validar que la fecha no sea
 				// mayor que la actual
-				long hoy = DateUtil.getTime(DateUtil.getToday());
-				long fechaDoc = DateUtil.strTimeToLong(fecha.getText()
-						.toString());
-				if (fechaDoc > hoy) {
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+				Date strDate = new Date();
+				try {
+					strDate = sdf.parse(fecha.getText().toString());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (strDate.after(new Date())) {
 					showStatusOnUI(new ErrorMessage(
 							"Error de validación",
 							"La fecha del documento no debe ser mayor a la fecha actual.",
 							""));					
 					return false;
 				}
+//				long hoy = DateUtil.getTime(DateUtil.getToday());
+//				long fechaDoc = DateUtil.strDateToLong(fecha.getText().toString());
+//				
+//				if (fechaDoc > hoy) {
+//					showStatusOnUI(new ErrorMessage(
+//							"Error de validación",
+//							"La fecha del documento no debe ser mayor a la fecha actual.",
+//							""));					
+//					return false;
+//				}
 			}
 		}
 
