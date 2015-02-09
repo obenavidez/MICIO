@@ -951,7 +951,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		return false;
 	}
 
-	private void enviarImprimirRecibo(final ReciboColector recibo) 
+	private  void enviarImprimirRecibo(final ReciboColector recibo) 
 	{
 		
 		if (recibo != null && !recibo.getCodEstado().equals("PAGADO")) 
@@ -3282,7 +3282,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		});
 	}
 
-	public void showStatus(final String mensaje, boolean... confirmacion) {
+	public  void showStatus(final String mensaje, boolean... confirmacion) {
 
 		if (confirmacion.length != 0 && confirmacion[0]) {
 			runOnUiThread(new Runnable() {
