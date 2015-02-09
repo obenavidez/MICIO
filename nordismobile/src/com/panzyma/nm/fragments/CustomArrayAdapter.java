@@ -54,7 +54,7 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 	 public void notifyDataSetChanged() 
 	 {
 	    super.notifyDataSetChanged();  
-	    if(NMApp.getController().getView()!=null && (NMApp.getController().getView() instanceof vCliente || NMApp.getController().getView() instanceof ProductoView))
+//	    if(NMApp.getController().getView()!=null && (NMApp.getController().getView() instanceof vCliente || NMApp.getController().getView() instanceof ProductoView))
 	    	NMApp.getController().notifyOutboxHandlers(ControllerProtocol.UPDATE_LISTVIEW_HEADER, 0, 0,1); 
 	 }
 
