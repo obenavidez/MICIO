@@ -152,7 +152,7 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 	 public void notifyDataSetChanged() 
 	 {
 	    super.notifyDataSetChanged();  
-	    if(NMApp.getController().getView()!=null && (NMApp.getController().getView() instanceof DialogCliente || NMApp.getController().getView() instanceof DialogProducto))
+//	    if(NMApp.getController().getView()!=null && (NMApp.getController().getView() instanceof DialogCliente || NMApp.getController().getView() instanceof DialogProducto))
 	    	NMApp.getController().notifyOutboxHandlers(ControllerProtocol.UPDATE_LISTVIEW_HEADER, 0, 0,1); 
 	 }
 	

@@ -369,11 +369,11 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		opcionesMenu = getResources().getStringArray(
 				R.array.reciboeditoptions);
 		String[] copy=new String[opcionesMenu.length];
-		if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
-			if(opcionesMenu.length!=0 && opcionesMenu.length>2)
-		{
-			copy[0]=opcionesMenu[opcionesMenu.length-2];
-			copy[1]=opcionesMenu[opcionesMenu.length-1];
+		if (recibo != null && recibo.getCodEstado().equals("PAGADO")) 
+			
+		{	if(opcionesMenu.length!=0 && opcionesMenu.length>2)
+				copy[0]=opcionesMenu[opcionesMenu.length-2];
+				copy[1]=opcionesMenu[opcionesMenu.length-1];
 		}
 		else
 			copy=opcionesMenu.clone();
@@ -1330,7 +1330,8 @@ public class ViewReciboEdit extends ActionBarActivity implements
 				.getItem(posicion);
 
 		if (documentToEdit instanceof ReciboDetFactura
-				|| documentToEdit instanceof ReciboDetND) {
+				|| documentToEdit instanceof ReciboDetND) 
+		{
 
 			FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -1569,15 +1570,18 @@ public class ViewReciboEdit extends ActionBarActivity implements
 
 			// Validar que se haya ingresado al menos un pago
 			if (Cobro.cantFPs(recibo) == 0) {
-				NMApp.getController().notifyOutboxHandlers(
-						ControllerProtocol.ERROR,
-						0,
-						0,
-						new ErrorMessage("Error validando Recibo", ""
-								+ "No se ha agregado ningun pago.", ""));
+				if( !Cobro.sinNecesidadFormaPago(recibo) ) {
+					NMApp.getController().notifyOutboxHandlers(
+							ControllerProtocol.ERROR,
+							0,
+							0,
+							new ErrorMessage("Error validando Recibo", ""
+									+ "No se ha agregado ningun pago.", ""));
 
-				// Dialog.alert("Detalle de pagos no ingresado.");
-				return false;
+					// Dialog.alert("Detalle de pagos no ingresado.");
+					return false;
+				}
+				
 			}
 
 			// Validar que la sumatoria de los montos de las NC seleccionadas no
@@ -1865,14 +1869,14 @@ public class ViewReciboEdit extends ActionBarActivity implements
 				}
 				break;
 			case DESCONTADO:
-				if (ammount.isEvaluar()) {
+				if (ammount.isEvaluar()) 
+				{
 					float montoDescuento = 0.00F;
 					montoDescuento = ammount.getValue();
 					factura.setDescontado(montoDescuento);
-					factura.setDescuentoFactura(factura.getDescuentoFactura()
-							+ montoDescuento);
-					if (montoDescuento > facturaDetalle
-							.getMontoDescEspecificoCalc()) {
+					factura.setDescuentoFactura(factura.getDescuentoFactura()+ montoDescuento);
+					if (montoDescuento > facturaDetalle.getMontoDescEspecificoCalc()) 
+					{
 						NMApp.getController()
 								.notifyOutboxHandlers(
 										ControllerProtocol.ERROR,
@@ -2032,7 +2036,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 							facturaDetalle.setMontoRetencion(0.00f);
 							facturaDetalle.setEsAbono(false);
 							facturaDetalle.setImpuesto(factura.getImpuestoFactura());
-							facturaDetalle.setMontoImpuesto(0.00F);
+							facturaDetalle.setMontoImpuesto(0.00F); 
 							// Calcular el interés moratorio de la factura si
 							// está en mora
 							float porcentajeIntMora = Float.parseFloat((String) Cobro.getParametro(contexto, "PorcInteresMoratorio"));
@@ -2484,8 +2488,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 
 		final com.panzyma.nm.serviceproxy.Documento documentToEdit;
 
-		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter
-				.getItem(posicion);
+		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);
 
 		final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(
 				documentToEdit, recibo, ActionType.EDIT);

@@ -1,19 +1,29 @@
 package com.panzyma.nm.viewdialog;
 
+import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Util;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
+import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FormaPagoViewHolder;
+import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -33,7 +43,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 @SuppressWarnings("unused")
-public class DialogFormasPago extends Dialog {
+public class DialogFormasPago extends Dialog implements  Handler.Callback {
 
 	private static final String TAG = DialogFormasPago.class.getSimpleName();
 	private List<ReciboDetFormaPago> lista = null;
@@ -88,8 +98,10 @@ public class DialogFormasPago extends Dialog {
 		filterEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
-				adapter.getFilter().filter(s.toString());
+					int count) 
+			{
+				if(adapter!=null && gridheader!=null)
+	        		adapter.getFilter().filter(s.toString());  
 			}
 
 			@Override
@@ -101,6 +113,23 @@ public class DialogFormasPago extends Dialog {
 			public void afterTextChanged(Editable s) {
 			}
 		});
+	}
+	
+	public void updateListViewHeader()
+	{	   
+		if(getLayoutInflater().getFactory() instanceof ViewReciboEdit){
+				((ViewPedidoEdit)getLayoutInflater().getFactory()).runOnUiThread(new Runnable() 
+				{				
+					@Override
+					public void run() 
+					{ 
+						if(adapter!=null && gridheader!=null)
+							gridheader.setText("LISTA FORMAS PAGO("+adapter.getCount()+")");
+						
+					}
+				});			
+		}
+		
 	}
 	
 	public interface OnFormaPagoButtonClickListener {
@@ -168,6 +197,17 @@ public class DialogFormasPago extends Dialog {
 		Log.d(TAG, "Activity quitting"); 
 		pd = null;	
 		this.dismiss();
+	}
+
+	@Override
+	public boolean handleMessage(Message msg) { 
+		switch (msg.what) 
+		{		  
+			case ControllerProtocol.UPDATE_LISTVIEW_HEADER:
+				updateListViewHeader();
+				break;
+		}
+		return false;
 	}
 
 }
