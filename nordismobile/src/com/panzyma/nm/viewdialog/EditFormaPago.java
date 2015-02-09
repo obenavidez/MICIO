@@ -14,6 +14,7 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.ValorCatalogoUtil;
+import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener;
 import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.serviceproxy.Catalogo;
@@ -85,6 +86,8 @@ public class EditFormaPago extends DialogFragment {
 	private Activity activityMain = null; 
 	private Dialog dialog = null;		
 	private NMApp nmApp;	
+
+	
 	
 	public class LoadDataToUI extends AsyncTask<Void, Void, Map<String,List<Object>> > {
 
@@ -181,6 +184,7 @@ public class EditFormaPago extends DialogFragment {
 					try {
 						if( validarDatos() ){
 							accept();
+							SetMontoPagado();// Establecer la cantidad de Monto Pagado.
 							dismiss();
 						}						
 					} catch (InterruptedException e) {						
@@ -812,5 +816,16 @@ public class EditFormaPago extends DialogFragment {
 	public NMApp getNMApp() {
 		return nmApp;
 	}
-
+	public void SetMontoPagado (){
+		EditDialogListener activity = (EditDialogListener) getActivity();
+		float MontoFormasPago = 0;
+		ArrayList<ReciboDetFormaPago> MONTOS = _recibo.getFormasPagoRecibo();
+		for (ReciboDetFormaPago reciboDetFormaPago : MONTOS) {
+			MontoFormasPago+= reciboDetFormaPago.getMonto();
+		}
+		activity.updateResult(StringUtil.formatReal(MontoFormasPago));
+	}
+	public interface EditDialogListener {
+        void updateResult(String inputText);
+    }
 }

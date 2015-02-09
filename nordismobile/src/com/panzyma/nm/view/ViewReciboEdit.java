@@ -69,6 +69,7 @@ import com.panzyma.nm.viewdialog.DialogDocumentos.OnDocumentoButtonClickListener
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
 import com.panzyma.nm.viewdialog.DialogoConfirmacion.Pagable;
 import com.panzyma.nm.viewdialog.EditFormaPago;
+import com.panzyma.nm.viewdialog.EditFormaPago.EditDialogListener;
 import com.panzyma.nordismobile.R;
 
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -116,7 +117,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 @SuppressLint("ShowToast")
 @SuppressWarnings({ "unused", "rawtypes", "deprecation", "unchecked" })
 public class ViewReciboEdit extends ActionBarActivity implements
-		Handler.Callback, Editable {
+		Handler.Callback, Editable ,EditDialogListener{
 
 	private static CustomDialog dlg;
 	private EditText tbxFecha;
@@ -131,7 +132,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	private TextView txtTotal;
 	private TextView txtTotalRetencion;
 	private TextView txtTotalDescuento;
-
+	private TextView txtmonto;
 	private float totalRecibo = 0.00f;
 	private float totalFacturas = 0.00f;
 	private float totalNotasCredito = 0.00f;
@@ -517,7 +518,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		txtTotalRetencion = (TextView) findViewById(R.id.txtTotalRetencion);
 		txtTotalDescuento = (TextView) findViewById(R.id.txtTotalDescuento);
 		txtTotal = (TextView) findViewById(R.id.txtTotal);
-
+		txtmonto = (TextView)findViewById(R.id.txtmontopagado);
 		if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
 		{
 			item_document.setEnabled(false);
@@ -2429,7 +2430,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 									// recibo pero no por la misma via.
 									// if(recibo.getId() != 0)
 									// guardarRecibo(false);
-									guardarRecibo();
+									guardarRecibo();									
 								}
 								_dialog.dismiss();
 							}
@@ -3325,6 +3326,12 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	        _view= inflater.inflate(R.layout.recibo_edit, viewGroup);
 	        initComponent();
 	        agregarDocumentosAlDetalleDeRecibo();
+	}
+	 
+	 public void updateResult(String montopagado) {
+		 
+		 txtmonto.setText(montopagado);
+		  
 	}
 	
 }
