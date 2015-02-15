@@ -302,7 +302,7 @@ public class ViewRecibo extends ActionBarActivity implements
 				case BORRAR_RECIBO:
 					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
 					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
-					if ("REGISTRADO".equals(recibo_selected.getCodEstado())) 
+					if ("registrado".compareTo(recibo_selected.getCodEstado().toLowerCase()) == 0) 
 					{
 						Message msg = new Message();
 						Bundle b = new Bundle();
@@ -939,7 +939,6 @@ public class ViewRecibo extends ActionBarActivity implements
 				public void run() 
 				{
 					gridheader.setVisibility(View.VISIBLE);
-					gridheader.setText(String.format("LISTA RECIBOS (%s)",recibos.size()));
 					if(recibos!=null && recibos.size()!=0)
 						recibos.remove(recibo_selected);
 					if (recibos.size() == 0) 
@@ -958,6 +957,7 @@ public class ViewRecibo extends ActionBarActivity implements
 						recibo_selected = firstFragment.getAdapter().getItem(positioncache);
 						firstFragment.getAdapter().notifyDataSetChanged();
 					}
+					gridheader.setText(String.format("LISTA RECIBOS (%s)",recibos.size()));
 				}
 			});
 			//CERRAR EL MENU DEL DRAWER

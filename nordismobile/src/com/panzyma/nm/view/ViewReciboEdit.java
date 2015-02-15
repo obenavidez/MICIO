@@ -1124,12 +1124,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	private void solicitardescuento() {
 		// Si se está fuera de covertura, salir
 		if (!SessionManager.isPhoneConnected()) {
-			AppDialog
-					.showMessage(
-							me,
-							"",
-							"La operación no puede ser realizada ya que está fuera de cobertura.",
-							DialogType.DIALOGO_ALERTA);
+			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
 			return;
 		}
 		if (!Cobro.validaAplicDescOca(me.getContext(), recibo)) {
@@ -2154,7 +2149,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 			return;
 		}
 
-		if ("REGISTRADO".compareTo(recibo.getCodEstado()) != 0) {
+		if ("registrado".compareTo(recibo.getCodEstado().toLowerCase()) != 0) {
 			NMApp.getController()
 					.notifyOutboxHandlers(
 							ControllerProtocol.ERROR,
