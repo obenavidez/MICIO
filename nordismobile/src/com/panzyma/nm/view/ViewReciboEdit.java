@@ -1148,7 +1148,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 					DialogType.DIALOGO_ALERTA);
 			return;
 		}
-		AppDialog.showMessage(me, "Ingrese el Descuento Ocosional a solicitar",
+		AppDialog.showMessage(me, "Enviar solicitud de descuento ocasional",
 				"", DialogType.DIALOGO_INPUT,
 				new AppDialog.OnButtonClickListener() {
 					@Override

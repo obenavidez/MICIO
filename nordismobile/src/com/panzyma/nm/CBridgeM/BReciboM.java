@@ -666,7 +666,7 @@ public final class BReciboM extends BBaseM {
 				                saveRecibo(recibo,facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate); 
 				                
 				                Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
-										0,0,"Actualindo estado de cuenta del cliente");
+										0,0,"Actualizando estado de cuenta del cliente");
 				                //Trayendo información del Cliente actualizada desde el servidor y guadarla localmente automaticamente 
 								Cliente cliente=BClienteM.actualizarCliente(getContext(), SessionManager.getCredenciales(),recibo.getObjSucursalID());
 								//actualizando el cliente en el hilo principal
