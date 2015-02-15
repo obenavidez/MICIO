@@ -314,7 +314,12 @@ public class ViewPedido extends ActionBarActivity implements
 						break;
 	
 					case CUENTAS_POR_COBRAR:
-						mostrarCuentasPorCobrar(true);
+						
+						if (NMNetWork.isPhoneConnected(NMApp.getContext())){
+							mandarObtenerPedido(CUENTAS_POR_COBRAR);
+						}
+						
+						//mostrarCuentasPorCobrar(true);
 						break;
 					case CONSULTA_VENTAS:
 						fragmentActive = FragmentActive.CONSULTA_VENTAS;
@@ -910,17 +915,17 @@ public class ViewPedido extends ActionBarActivity implements
 		if (pedido_selected == null)
 			return;
 		
-		if (obtener!=null && obtener.length != 0 && obtener[0]) 
-		{ 
-			mandarObtenerPedido(CUENTAS_POR_COBRAR);		
-			return;
-		}	 
+//		if (obtener!=null && obtener.length != 0 && obtener[0]) 
+//		{ 
+//			mandarObtenerPedido(CUENTAS_POR_COBRAR);		
+//			return;
+//		}	 
 		if (pedido== null) 
 		{
-			AppDialog.showMessage(vp, "Información",
-					"Error al obtener el pedido localmente...", DialogType.DIALOGO_ALERTA);
+			AppDialog.showMessage(vp, "Información","Error al obtener el pedido localmente...", DialogType.DIALOGO_ALERTA);
 			return;
 		}
+		
 		fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
 		if (findViewById(R.id.fragment_container) != null) 
 		{ 			
@@ -928,8 +933,7 @@ public class ViewPedido extends ActionBarActivity implements
 			cuentasPorCobrar = new CuentasPorCobrarFragment();
 			Bundle bundle = new Bundle();
 			bundle.putInt(CuentasPorCobrarFragment.ARG_POSITION,positioncache);
-			bundle.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
-					pedido.getObjSucursalID());
+			bundle.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,pedido.getObjSucursalID());
 			cuentasPorCobrar.setArguments(bundle);
 			transaction.replace(R.id.fragment_container,cuentasPorCobrar);
 			transaction.addToBackStack(null);
