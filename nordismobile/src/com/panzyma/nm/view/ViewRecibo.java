@@ -466,7 +466,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		if ( savedInstanceState != null ) {
 			Parcelable[] objects = savedInstanceState.getParcelableArray("recibos");	
 			recibos = new ArrayList<vmRecibo>((Collection<? extends vmRecibo>) Arrays.asList(objects));
-			//recibos = vmRecibo.arrayParcelToArrayRecibo(objects);			
+			//Recipes = vmRecibo.arrayParcelToArrayRecibo(objects);			
 		} else {
 			recibos = null;
 		} 
@@ -584,29 +584,46 @@ public class ViewRecibo extends ActionBarActivity implements
 			//Validar que la sumatoria de los montos de las NC seleccionadas no sea mayor ni igual que la sumatoria
 			//de los montos a pagar de las facturas incluidas en el recibo, a excepción de que solamente se estén
 			//pagando facturas vencidas en cuyo caso SÍ se permite un monto igual
-			if (recibo.getTotalNC() > 0) { //Si hay NC aplicadas
+			if (recibo.getTotalNC() > 0) 
+			{ //Si hay NC aplicadas
 
 				//Ver si todas las facturas aplicadas son vencidas
 				boolean todasVencidas = true;
 				int diasAplicaMora = Integer.parseInt(Cobro.getParametro(this.getContext(), "DiasDespuesVenceCalculaMora")+"");
 				long fechaHoy = DateUtil.getTime(DateUtil.getToday());
-				if (recibo.getFacturasRecibo().size() != 0) {
-					ReciboDetFactura[] ff = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray();
-					if (ff != null) {
-						for(int i=0; i<ff.length; i++) {
+				if (recibo.getFacturasRecibo().size() != 0) 
+				{
+					ReciboDetFactura[] ff = (ReciboDetFactura[]) recibo.getFacturasRecibo().toArray(); 
+					if (ff != null) 
+					{
+						for(int i=0; i<ff.length; i++) 
+						{
 							ReciboDetFactura f = ff[i];
 							String s = f.getFechaVence() + "";
 							int fechaVence = Integer.parseInt(s.substring(0, 8));
 							long fechaCaeEnMora = DateUtil.addDays(DateUtil.getTime(fechaVence), diasAplicaMora);
-							if (fechaCaeEnMora > fechaHoy) {
+							if (fechaCaeEnMora > fechaHoy) 
+							{
 								todasVencidas = false;
 								break;
 							}
 						}
 					}
+					if (Cobro.getMontoTotalSoloFacturasAcancelar(recibo)< Cobro.getTotalNC_RCol(recibo)) 
+					{ 
+						showStatusOnUI(
+								new ErrorMessage(
+										"Error al Validar el Recibo",
+										"Problemas con los Documentos.", "No se puede procesasar Recibo ya que, la sumatoria de las facturas a cancelar es menor a la suma a todas las NC ..."));
+						// Dialog.alert("El total de notas de crédito a aplicar debe ser menor o igual al total a pagar en facturas.");
+						return false;
+
+					}
+					
 				} //Ver si todas las facturas aplicadas son vencidas
 
-				if (todasVencidas && (recibo.getTotalNC() > recibo.getTotalFacturas()))  {
+				if (todasVencidas && (recibo.getTotalNC() > recibo.getTotalFacturas()))  
+				{
 					showStatusOnUI(
 							new ErrorMessage(
 									"Error al Validar el Recibo",
@@ -615,7 +632,8 @@ public class ViewRecibo extends ActionBarActivity implements
 					return false;
 				}
 
-				if (todasVencidas && (recibo.getTotalNC() >= recibo.getTotalFacturas()))  {
+				if (todasVencidas && (recibo.getTotalNC() >= recibo.getTotalFacturas()))  
+				{
 					showStatusOnUI(
 							new ErrorMessage(
 									"Error al Validar el Recibo",
@@ -636,9 +654,11 @@ public class ViewRecibo extends ActionBarActivity implements
 			if (recibo.getFacturasRecibo().size() != 0) {
 				ArrayList<ReciboDetFactura> ff =recibo.getFacturasRecibo();
 				if (ff != null) {
-					for(int i=0; i<ff.size(); i++) {
+					for(int i=0; i<ff.size(); i++) 
+					{
 						ReciboDetFactura f = ff.get(i);
-						if (f.getMontoDescEspecifico() != 0) {
+						if (f.getMontoDescEspecifico() != 0) 
+						{
 							ValidarMontoAplicaDpp = true;
 							break;
 						}
@@ -648,7 +668,8 @@ public class ViewRecibo extends ActionBarActivity implements
 
 			//Validando el monto mínimo del recibo
 			float montoMinimoRecibo = Float.parseFloat(Cobro.getParametro(this.getContext(),"MontoMinReciboAplicaDpp")+"");
-			if ((recibo.getTotalRecibo() < montoMinimoRecibo) && ValidarMontoAplicaDpp) {
+			if ((recibo.getTotalRecibo() < montoMinimoRecibo) && ValidarMontoAplicaDpp) 
+			{
 				//Recalcular detalles del recibo sin aplicar DescPP
 				Cobro.calcularDetFacturasRecibo(this.getContext(),recibo, recibo.getCliente(), false);
 				//actualizaTotales();            
@@ -659,13 +680,12 @@ public class ViewRecibo extends ActionBarActivity implements
 
 				return false;
 			}              
-			if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) {
+			if (Cobro.getTotalPagoRecibo(recibo) != recibo.getTotalRecibo()) 
+			{
 				showStatusOnUI(
 						new ErrorMessage(
 								"Error al Validar el Recibo",
 								"Problema con el Monto Total del Recibo","El monto pagado no cuadra con el total del recibo."));
-
-				// Dialog.alert("El monto pagado no cuadra con el total del recibo.");
 				return false;
 			}
 			return true;

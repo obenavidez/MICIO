@@ -59,6 +59,7 @@ import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogFormasPago;
+import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
 import com.panzyma.nm.viewdialog.DialogFormasPago.OnFormaPagoButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Seleccionable;
@@ -116,9 +117,8 @@ import android.widget.AdapterView.OnItemLongClickListener;
 @InvokeBridge(bridgeName = "BReciboM")
 @SuppressLint("ShowToast")
 @SuppressWarnings({ "unused", "rawtypes", "deprecation", "unchecked" })
-public class ViewReciboEdit extends ActionBarActivity implements
-		Handler.Callback, Editable ,EditDialogListener{
-
+public class ViewReciboEdit extends ActionBarActivity implements Handler.Callback, Editable ,EditDialogListener
+{
 	private static CustomDialog dlg;
 	private EditText tbxFecha;
 	private EditText tbxNumReferencia;
@@ -218,7 +218,8 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	boolean imprimir = false;
 	boolean pagarOnLine = false;
 
-	public List<Factura> getFacturasRecibo() {
+	public List<Factura> getFacturasRecibo() 
+	{
 		return facturasRecibo;
 	}
 
@@ -230,16 +231,19 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		return notasCreditoRecibo;
 	}
 
-	public Integer getReciboID() {
+	public Integer getReciboID() 
+	{
 		return reciboId;
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recibo_edit);
 
-		try {
+		try 
+		{
 
 			Bundle bundle = getIntent().getExtras();
 			// OBTENER EL ID DEL RECIBO
@@ -364,7 +368,8 @@ public class ViewReciboEdit extends ActionBarActivity implements
 		return true;
 	}
 	
-	public void CreateMenu() {
+	public void CreateMenu() 
+	{
 		// Obtenemos las opciones desde el recurso
 		opcionesMenu = getResources().getStringArray(
 				R.array.reciboeditoptions);
@@ -1049,14 +1054,20 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	
 	private void SetCliente ()
 	{
-		tbxNombreDelCliente.setText(cliente.getNombreCliente());
-
-		String[] nomClie = StringUtil.split(cliente.getNombreCliente(),
-				"/");
+		String nombreSucursal = "";		
+		if (cliente.getNombreCliente().indexOf("/") != -1) {
+			String[] nomClie = StringUtil
+					.split(cliente.getNombreCliente(), "/");
+			tbxNombreDelCliente.setText(nomClie[0]);
+			recibo.setNombreCliente(nomClie[0]);
+		} else {
+			recibo.setNombreCliente(cliente.getNombreCliente());
+			tbxNombreDelCliente.setText(cliente.getNombreCliente());
+		}
 		// establecer valores de recibo
 		recibo.setObjClienteID(cliente.getIdCliente());
 		recibo.setObjSucursalID(cliente.getIdSucursal());
-		recibo.setNombreCliente(nomClie[1]);
+		
 	}
 	
 	private void aplicardescuento() {
@@ -1122,6 +1133,7 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	}
 
 	private void solicitardescuento() {
+		
 		// Si se está fuera de covertura, salir
 		if (!SessionManager.isPhoneConnected()) {
 			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
@@ -1148,46 +1160,100 @@ public class ViewReciboEdit extends ActionBarActivity implements
 					DialogType.DIALOGO_ALERTA);
 			return;
 		}
-		AppDialog.showMessage(me, "Enviar solicitud de descuento ocasional",
-				"", DialogType.DIALOGO_INPUT,
-				new AppDialog.OnButtonClickListener() {
-					@Override
-					public void onButtonClick(AlertDialog alert, int actionId) {
-						if (actionId == AppDialog.OK_BUTTOM) {
-							try {
-								String nota = "";
-								nota = ((TextView) alert
-										.findViewById(R.id.txtpayamount))
-										.getText().toString();
-								if (nota == "")
-									return;
-								// NMApp.getController().setEntities(this,getBridge()==null?new
-								// BReciboM():getBridge());
-								// NMApp.getController().addOutboxHandler((getHandler()==null)?new
-								// Handler(me):getHandler());
-								Message msg = new Message();
-								Bundle b = new Bundle();
-								b.putParcelable("recibo", recibo);
-								b.putString("notas", nota);
-								msg.setData(b);
-								msg.what = SOLICITAR_DESCUENTO;
-								NMApp.getController().getInboxHandler()
-										.sendMessage(msg);
-							} catch (Exception e) {
-								NMApp.getController()
-										.notifyOutboxHandlers(
-												ControllerProtocol.ERROR,
-												0,
-												0,
-												new ErrorMessage(
-														"Error al solicitar descuento",
-														e.getMessage(), e
-																.getMessage()));
-							}
-						}
-					}
-				});
+		 
+			
+		DialogSolicitudDescuento sd=new DialogSolicitudDescuento(this, getFacturasRecibo(), recibo);
+		sd.setOnDialogSDButtonClickListener(new DialogSolicitudDescuento.OnButtonClickListener() {
+			
+			@Override
+			public void onButtonClick(String notasolicituddescuento) 
+			{ 
+ 
+				if (notasolicituddescuento == "")
+					return; 
+				Message msg = new Message();
+				Bundle b = new Bundle();
+				b.putParcelable("recibo", recibo);
+				b.putString("notas", notasolicituddescuento);
+				msg.setData(b);
+				msg.what = SOLICITAR_DESCUENTO;
+				NMApp.getController().getInboxHandler()
+						.sendMessage(msg);
+			}
+		});
+		Window window =sd.getWindow();
+		window.setGravity(Gravity.CENTER);
+		window.setLayout(display.getWidth() - 10, display.getHeight() - 50);
+		sd.show();
 	}
+	
+//	private void solicitardescuento() {
+//		// Si se está fuera de covertura, salir
+//		if (!SessionManager.isPhoneConnected()) {
+//			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
+//			return;
+//		}
+//		if (!Cobro.validaAplicDescOca(me.getContext(), recibo)) {
+//			AppDialog
+//					.showMessage(
+//							me,
+//							"Alerta",
+//							"Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",
+//							DialogType.DIALOGO_ALERTA);
+//			return;
+//		}
+//		if (cliente == null) {
+//			AppDialog.showMessage(me, "Alerta",
+//					"Por favor seleccione un cliente.",
+//					DialogType.DIALOGO_ALERTA);
+//			return;
+//		}
+//		if (recibo.getReferencia() == 0) {
+//			AppDialog.showMessage(me, "",
+//					"Debe guardar primero el recibo localmente.",
+//					DialogType.DIALOGO_ALERTA);
+//			return;
+//		}
+//		AppDialog.showMessage(me, "Enviar solicitud de descuento ocasional",
+//				"", DialogType.DIALOGO_INPUT,
+//				new AppDialog.OnButtonClickListener() {
+//					@Override
+//					public void onButtonClick(AlertDialog alert, int actionId) {
+//						if (actionId == AppDialog.OK_BUTTOM) {
+//							try {
+//								String nota = "";
+//								nota = ((TextView) alert
+//										.findViewById(R.id.txtpayamount))
+//										.getText().toString();
+//								if (nota == "")
+//									return;
+//								// NMApp.getController().setEntities(this,getBridge()==null?new
+//								// BReciboM():getBridge());
+//								// NMApp.getController().addOutboxHandler((getHandler()==null)?new
+//								// Handler(me):getHandler());
+//								Message msg = new Message();
+//								Bundle b = new Bundle();
+//								b.putParcelable("recibo", recibo);
+//								b.putString("notas", nota);
+//								msg.setData(b);
+//								msg.what = SOLICITAR_DESCUENTO;
+//								NMApp.getController().getInboxHandler()
+//										.sendMessage(msg);
+//							} catch (Exception e) {
+//								NMApp.getController()
+//										.notifyOutboxHandlers(
+//												ControllerProtocol.ERROR,
+//												0,
+//												0,
+//												new ErrorMessage(
+//														"Error al solicitar descuento",
+//														e.getMessage(), e
+//																.getMessage()));
+//							}
+//						}
+//					}
+//				});
+//	}
 
 	private void guardarRecibo(int... arg) {
 
@@ -3293,10 +3359,8 @@ public class ViewReciboEdit extends ActionBarActivity implements
 							new AppDialog.OnButtonClickListener() {
 								@Override
 								public void onButtonClick(AlertDialog _dialog,
-										int actionId) {
-									if (AppDialog.OK_BUTTOM == actionId) {
-										_dialog.dismiss();
-									}
+										int actionId) { 
+										_dialog.dismiss(); 
 								}
 							});
 				}

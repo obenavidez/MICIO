@@ -314,6 +314,17 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
             + " FOREIGN KEY(ProductoID) REFERENCES CProducto(Id) " 
  		    + ");";
     
+    String sqlSolicitudDescuento = "CREATE TABLE IF NOT EXISTS SolicitudDescuento ("
+            + " id INTEGER PRIMARY KEY AUTOINCREMENT,  " 
+            + " objReciboID BLOB,  "
+            + " objFacturaID BLOB,  "
+            + " porcentaje FLOAT, "
+            + " justificacion TEXT, "
+            + " fecha TEXT, "
+            + " FOREIGN KEY(objReciboID)  REFERENCES Recibo(id), "
+            + " FOREIGN KEY(objFacturaID) REFERENCES Factura(Id) "            
+ 		    + ");";
+    
     String sqlDrop_Cliente=			  "DROP TABLE IF EXISTS Cliente";
     String sqlDrop_Factura=			  "DROP TABLE IF EXISTS Factura";
     String sqlDrop_PromocionCobro=	  "DROP TABLE IF EXISTS PromocionCobro";
@@ -333,6 +344,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDrop_ReciboDetalleND = "DROP TABLE IF EXISTS ReciboDetalleNotaDebito";
     String sqlDrop_ReciboDetalleNC = "DROP TABLE IF EXISTS ReciboDetalleNotaCredito";
     String sqlDrop_ReciboDetalleFormaPago = "DROP TABLE IF EXISTS ReciboDetalleFormaPago ";
+    String sqlDrop_SolicitudDescuento = "DROP TABLE IF EXISTS SolicitudDescuento ";
     
     
     String sqlDrop_Pedido = "DROP TABLE IF EXISTS Pedido";
@@ -369,6 +381,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDelete_ReciboDetalleFormaPago = "DROP TABLE IF EXISTS ReciboDetalleFormaPago ";
     String sqlDelete_CProducto = "DELETE FROM  CProducto";
     String sqlDelete_CNota = "DELETE FROM  CNota";
+    String sqlDelete_SolicitudDescuento = "DELETE FROM SolicitudDescuento";
 
     
     public NM_SQLiteHelper(Context contexto, String nombre, CursorFactory factory, int version) 
@@ -433,6 +446,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlReciboDetalleFormaPago);
 			db.execSQL(sqlCProducto);
 			db.execSQL(sqlCNota);
+			db.execSQL(sqlSolicitudDescuento);
         } 
     	catch (SQLException e) 
         {
@@ -474,6 +488,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlDrop_ReciboDetalleFormaPago);
 			db.execSQL(sqlDrop_CProducto);
 			db.execSQL(sqlDrop_CNota);
+			db.execSQL(sqlDrop_SolicitudDescuento);
         } 
     	catch (SQLException e) 
         {
