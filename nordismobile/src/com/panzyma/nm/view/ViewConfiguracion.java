@@ -15,7 +15,6 @@ import static com.panzyma.nm.controller.ControllerProtocol.ID_SETTING_BLUETOOTHD
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_SETTING;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
-import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -54,7 +53,6 @@ import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
-import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.Controller;
@@ -63,7 +61,6 @@ import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
-import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
 import com.panzyma.nordismobile.R;
@@ -390,45 +387,69 @@ public class ViewConfiguracion extends ActionBarActivity implements
 
 						if (actionId == ID_SALVAR_CONFIGURACION)
 							salvarConfiguracion();
-						else if (actionId == ID_SINCRONIZE_PARAMETROS) {
-							controller.getInboxHandler().sendEmptyMessage(
-									ID_SINCRONIZE_PARAMETROS);
+						else if (actionId == ID_SINCRONIZE_PARAMETROS) 
+						{
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+				            {
+								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_PARAMETROS);
+	
+				            }
+							
+						} 
+						else if (actionId == ID_SINCRONIZE_CATALOGOSBASICOS) 
+						{
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+				            {
+								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_CATALOGOSBASICOS);
+				            }
+						} 
+						else if (actionId == ID_SINCRONIZE_CLIENTES)
+						{
+							if(NMNetWork.isPhoneConnected(NMApp.getContext())/*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+				            {
+								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_CLIENTES);
+				            }
 
-						} else if (actionId == ID_SINCRONIZE_CATALOGOSBASICOS) {
-							controller.getInboxHandler().sendEmptyMessage(
-									ID_SINCRONIZE_CATALOGOSBASICOS);
-
-						} else if (actionId == ID_SINCRONIZE_CLIENTES) {
-							controller.getInboxHandler().sendEmptyMessage(
-									ID_SINCRONIZE_CLIENTES);
-
-						} else if (actionId == ID_SINCRONIZE_PRODUCTOS) {
-							controller.getInboxHandler().sendEmptyMessage(
-									ID_SINCRONIZE_PRODUCTOS);
-
-						} else if (actionId == ID_SINCRONIZE_PROMOCIONES) {
-							Message msg = new Message();
-							Bundle b = new Bundle();
-							b.putString("LoginUsuario", txtUsuario.getText()
-									.toString());
-							msg.setData(b);
-							msg.what = ID_SINCRONIZE_PROMOCIONES;
-							controller.getInboxHandler().sendMessage(msg);
-
-						} else if (actionId == ID_SINCRONIZE_TODOS) {
-							setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-							setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-							controller.getInboxHandler().sendEmptyMessage(
-									ID_SINCRONIZE_TODOS);
-
-						} else if (actionId == ID_SETTING_BLUETOOTHDEVICE) {
+						} 
+						else if (actionId == ID_SINCRONIZE_PRODUCTOS) 
+						{
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+				            {
+								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_PRODUCTOS);
+				            }
+						} 
+						else if (actionId == ID_SINCRONIZE_PROMOCIONES) 
+						{
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+				            {
+								Message msg = new Message();
+								Bundle b = new Bundle();
+								b.putString("LoginUsuario", txtUsuario.getText().toString());
+								msg.setData(b);
+								msg.what = ID_SINCRONIZE_PROMOCIONES;
+								controller.getInboxHandler().sendMessage(msg);
+				            }
+						} 
+						else if (actionId == ID_SINCRONIZE_TODOS) 
+						{
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+				            {
+								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS);
+				            }
+						} 
+						else if (actionId == ID_SETTING_BLUETOOTHDEVICE) 
+						{
 							intento = new Intent(ViewConfiguracion.this,
-									ConfigurarDispositivosBluetooth.class);
+							ConfigurarDispositivosBluetooth.class);
 							startActivityForResult(intento, 0);
-						} else if (actionId == LOGIN_WITH_ADMIN) {
+						} 
+						else if (actionId == LOGIN_WITH_ADMIN) 
+						{
 							loginAsAdmin = true;
 							dialogLoginAdmin();
-						} else if (actionId == ID_CERRAR)
+						} 
+						else if (actionId == ID_CERRAR)
 							FINISH_ACTIVITY();
 
 					}
