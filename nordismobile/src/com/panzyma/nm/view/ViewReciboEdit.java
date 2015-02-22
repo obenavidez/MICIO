@@ -116,8 +116,9 @@ import android.widget.AdapterView.OnItemLongClickListener;
 @InvokeBridge(bridgeName = "BReciboM")
 @SuppressLint("ShowToast")
 @SuppressWarnings({ "unused", "rawtypes", "deprecation", "unchecked" })
-public class ViewReciboEdit extends ActionBarActivity implements Handler.Callback, Editable ,EditDialogListener
-{
+public class ViewReciboEdit extends ActionBarActivity implements
+		Handler.Callback, Editable ,EditDialogListener{
+
 	private static CustomDialog dlg;
 	private EditText tbxFecha;
 	private EditText tbxNumReferencia;
@@ -217,8 +218,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	boolean imprimir = false;
 	boolean pagarOnLine = false;
 
-	public List<Factura> getFacturasRecibo() 
-	{
+	public List<Factura> getFacturasRecibo() {
 		return facturasRecibo;
 	}
 
@@ -230,19 +230,16 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		return notasCreditoRecibo;
 	}
 
-	public Integer getReciboID() 
-	{
+	public Integer getReciboID() {
 		return reciboId;
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) 
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recibo_edit);
 
-		try 
-		{
+		try {
 
 			Bundle bundle = getIntent().getExtras();
 			// OBTENER EL ID DEL RECIBO
@@ -367,8 +364,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		return true;
 	}
 	
-	public void CreateMenu() 
-	{
+	public void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
 		opcionesMenu = getResources().getStringArray(
 				R.array.reciboeditoptions);
@@ -3303,8 +3299,10 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 							new AppDialog.OnButtonClickListener() {
 								@Override
 								public void onButtonClick(AlertDialog _dialog,
-										int actionId) { 
-										_dialog.dismiss(); 
+										int actionId) {
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
 								}
 							});
 				}

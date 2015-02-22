@@ -1,6 +1,5 @@
 package com.panzyma.nm.auxiliar;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -487,7 +486,7 @@ public class Cobro
         return 0;
     }
 	
-	public static float getTotalNC_RCol(ReciboColector rcol) {
+	private static float getTotalNC_RCol(ReciboColector rcol) {
         float totalNC = 0;
         
         if (rcol.getNotasCreditoRecibo().size() != 0) {
@@ -516,7 +515,8 @@ public class Cobro
 	
 	public static Object getParametro(Context cnt,String propiedad) 
 	{         
-         return ( (cnt.getApplicationContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE)
+         return ( (cnt.getApplicationContext()
+									.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE)
 									.getString(propiedad, "0"))); 
     }
 	
@@ -526,32 +526,6 @@ public class Cobro
              count +=recibo.getFacturasRecibo().size(); 
         return count;
     } 
-	
-	public static float getMontoTotalSoloFacturasAcancelar(ReciboColector recibo)
-	{	
-		 ArrayList<ReciboDetFactura> fcancelar = getSoloFacturasAcancelar(recibo);
-		 float totalfacturas=0.0f;
-		 if (fcancelar.size() != 0) 
-		 {			 
-			 for(ReciboDetFactura f:fcancelar)
-				 totalfacturas+=f.getMonto();
-		 }    
-		 return totalfacturas;
-	}
-	
-	public static ArrayList<ReciboDetFactura> getSoloFacturasAcancelar(ReciboColector recibo)
-	{	
-		 ArrayList<ReciboDetFactura> fcancelar = null;
-		 if (recibo.getFacturasRecibo().size() != 0) 
-		 {
-			 
-			 for(ReciboDetFactura f:recibo.getFacturasRecibo())
-				 if(!f.isEsAbono())
-					 fcancelar.add(f);
-		 }
-     
-		 return fcancelar;
-	}
 	
     public static int cantFPs(ReciboColector recibo) {
         int count = 0;

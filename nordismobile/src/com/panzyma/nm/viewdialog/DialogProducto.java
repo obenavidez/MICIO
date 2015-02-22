@@ -136,8 +136,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
     
     public void updateListViewHeader()
 	{	   
-		if(getLayoutInflater().getFactory() instanceof ViewPedidoEdit)
-		{
+		if(getLayoutInflater().getFactory() instanceof ViewPedidoEdit){
 				((ViewPedidoEdit)getLayoutInflater().getFactory()).runOnUiThread(new Runnable() 
 				{				
 					@Override
