@@ -28,6 +28,7 @@ import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
+import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 import com.panzyma.nm.serviceproxy.Ventas;
 
 import android.annotation.SuppressLint;
@@ -73,6 +74,8 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_RECIBODETALLEFORMAPAGO = Uri.parse(CONTENT_URI+ "/recibodetalleformapago");
 	public static final Uri CONTENT_URI_CPRODUCTO = Uri.parse(CONTENT_URI+ "/cproducto");
 	public static final Uri CONTENT_URI_CNOTA = Uri.parse(CONTENT_URI+ "/cnota");
+	public static final Uri CONTENT_URI_SOLICITUD_DESCUENTO = Uri.parse(CONTENT_URI+ "/SolicitudDescuento");
+		
 	
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
@@ -132,6 +135,10 @@ public class DatabaseProvider extends ContentProvider
 	
 	private static final int CNOTA = 48;
 	private static final int CNOTA_CPRODUCTOID = 49;
+	
+	private static final int SOLICITUDDESCUENTO = 50;
+	private static final int SOLICITUDDESCUENTO_ID = 51;
+	
 	//Base de datos
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
@@ -163,6 +170,7 @@ public class DatabaseProvider extends ContentProvider
 	public static final String TABLA_PEDIDOPROMOCIONDETALLE = "PedidoPromocionDetalle";	
 	public static final String TABLA_CPRODUCTO = "CProducto";	
 	public static final String TABLA_CNOTA = "CNota";
+	public static final String TABLA_SOLICITUD_DESCUENTO = "SolicitudDescuento";
 	
 	
 	static {
@@ -241,6 +249,9 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "cnota", CNOTA);
 		uriMatcher.addURI(AUTHORITY, "cnota/#", CNOTA_CPRODUCTOID);
+		
+		uriMatcher.addURI(AUTHORITY, "SolicitudDescuento", SOLICITUDDESCUENTO);
+		uriMatcher.addURI(AUTHORITY, "SolicitudDescuento/#", SOLICITUDDESCUENTO_ID);
 		
 	}
 	
@@ -333,8 +344,8 @@ public class DatabaseProvider extends ContentProvider
 			bdd.endTransaction();
 			bdd.close();
 		}  
-	} 
-		
+	}
+			
 	private static void RegistrarTasasDeCambios(JSONArray objL,SQLiteDatabase bdd)throws Exception
 	{
 		JSONObject tsa;
@@ -1209,6 +1220,10 @@ public class DatabaseProvider extends ContentProvider
 	@Override
 	public Uri insert(Uri uri, ContentValues values) { 
 		return null;
+	}
+	
+	public static SolicitudDescuento registrarSolicitudDescuento(SolicitudDescuento solicitud, Context cnt) throws Exception {
+		return null;		
 	}
 	 
 	@SuppressWarnings("null")

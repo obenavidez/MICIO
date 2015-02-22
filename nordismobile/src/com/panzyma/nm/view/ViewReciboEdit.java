@@ -1049,14 +1049,20 @@ public class ViewReciboEdit extends ActionBarActivity implements
 	
 	private void SetCliente ()
 	{
-		tbxNombreDelCliente.setText(cliente.getNombreCliente());
-
-		String[] nomClie = StringUtil.split(cliente.getNombreCliente(),
-				"/");
+		String nombreSucursal = "";		
+		if (cliente.getNombreCliente().indexOf("/") != -1) {
+			String[] nomClie = StringUtil
+					.split(cliente.getNombreCliente(), "/");
+			tbxNombreDelCliente.setText(nomClie[0]);
+			recibo.setNombreCliente(nomClie[0]);
+		} else {
+			recibo.setNombreCliente(cliente.getNombreCliente());
+			tbxNombreDelCliente.setText(cliente.getNombreCliente());
+		}
 		// establecer valores de recibo
 		recibo.setObjClienteID(cliente.getIdCliente());
 		recibo.setObjSucursalID(cliente.getIdSucursal());
-		recibo.setNombreCliente(nomClie[1]);
+		
 	}
 	
 	private void aplicardescuento() {

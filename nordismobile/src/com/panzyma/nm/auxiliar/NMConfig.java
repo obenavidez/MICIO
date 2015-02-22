@@ -469,4 +469,14 @@ public class NMConfig
 		}
 
 	}
+	
+	public static class SolicitudDescuento {		
+		public static final String ID ="id";
+	    public static final java.lang.String OBJ_RECIBO_ID = "objReciboID";
+	    public static final java.lang.String OBJ_FACTURA_ID = "objFacturaID";
+	    public static final java.lang.String PORCENTAJE = "porcentaje";
+	    public static final java.lang.String JUSTIFICACION = "justificacion";
+	    public static final java.lang.String FECHA ="fecha";
+	}
+	
 }
