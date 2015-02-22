@@ -59,6 +59,7 @@ import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogFormasPago;
+import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
 import com.panzyma.nm.viewdialog.DialogFormasPago.OnFormaPagoButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Seleccionable;
@@ -1132,6 +1133,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	}
 
 	private void solicitardescuento() {
+		
 		// Si se está fuera de covertura, salir
 		if (!SessionManager.isPhoneConnected()) {
 			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
@@ -1158,46 +1160,100 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					DialogType.DIALOGO_ALERTA);
 			return;
 		}
-		AppDialog.showMessage(me, "Enviar solicitud de descuento ocasional",
-				"", DialogType.DIALOGO_INPUT,
-				new AppDialog.OnButtonClickListener() {
-					@Override
-					public void onButtonClick(AlertDialog alert, int actionId) {
-						if (actionId == AppDialog.OK_BUTTOM) {
-							try {
-								String nota = "";
-								nota = ((TextView) alert
-										.findViewById(R.id.txtpayamount))
-										.getText().toString();
-								if (nota == "")
-									return;
-								// NMApp.getController().setEntities(this,getBridge()==null?new
-								// BReciboM():getBridge());
-								// NMApp.getController().addOutboxHandler((getHandler()==null)?new
-								// Handler(me):getHandler());
-								Message msg = new Message();
-								Bundle b = new Bundle();
-								b.putParcelable("recibo", recibo);
-								b.putString("notas", nota);
-								msg.setData(b);
-								msg.what = SOLICITAR_DESCUENTO;
-								NMApp.getController().getInboxHandler()
-										.sendMessage(msg);
-							} catch (Exception e) {
-								NMApp.getController()
-										.notifyOutboxHandlers(
-												ControllerProtocol.ERROR,
-												0,
-												0,
-												new ErrorMessage(
-														"Error al solicitar descuento",
-														e.getMessage(), e
-																.getMessage()));
-							}
-						}
-					}
-				});
+		 
+			
+		DialogSolicitudDescuento sd=new DialogSolicitudDescuento(this, getFacturasRecibo(), recibo);
+		sd.setOnDialogSDButtonClickListener(new DialogSolicitudDescuento.OnButtonClickListener() {
+			
+			@Override
+			public void onButtonClick(String notasolicituddescuento) 
+			{ 
+ 
+				if (notasolicituddescuento == "")
+					return; 
+				Message msg = new Message();
+				Bundle b = new Bundle();
+				b.putParcelable("recibo", recibo);
+				b.putString("notas", notasolicituddescuento);
+				msg.setData(b);
+				msg.what = SOLICITAR_DESCUENTO;
+				NMApp.getController().getInboxHandler()
+						.sendMessage(msg);
+			}
+		});
+		Window window =sd.getWindow();
+		window.setGravity(Gravity.CENTER);
+		window.setLayout(display.getWidth() - 10, display.getHeight() - 50);
+		sd.show();
 	}
+	
+//	private void solicitardescuento() {
+//		// Si se está fuera de covertura, salir
+//		if (!SessionManager.isPhoneConnected()) {
+//			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
+//			return;
+//		}
+//		if (!Cobro.validaAplicDescOca(me.getContext(), recibo)) {
+//			AppDialog
+//					.showMessage(
+//							me,
+//							"Alerta",
+//							"Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",
+//							DialogType.DIALOGO_ALERTA);
+//			return;
+//		}
+//		if (cliente == null) {
+//			AppDialog.showMessage(me, "Alerta",
+//					"Por favor seleccione un cliente.",
+//					DialogType.DIALOGO_ALERTA);
+//			return;
+//		}
+//		if (recibo.getReferencia() == 0) {
+//			AppDialog.showMessage(me, "",
+//					"Debe guardar primero el recibo localmente.",
+//					DialogType.DIALOGO_ALERTA);
+//			return;
+//		}
+//		AppDialog.showMessage(me, "Enviar solicitud de descuento ocasional",
+//				"", DialogType.DIALOGO_INPUT,
+//				new AppDialog.OnButtonClickListener() {
+//					@Override
+//					public void onButtonClick(AlertDialog alert, int actionId) {
+//						if (actionId == AppDialog.OK_BUTTOM) {
+//							try {
+//								String nota = "";
+//								nota = ((TextView) alert
+//										.findViewById(R.id.txtpayamount))
+//										.getText().toString();
+//								if (nota == "")
+//									return;
+//								// NMApp.getController().setEntities(this,getBridge()==null?new
+//								// BReciboM():getBridge());
+//								// NMApp.getController().addOutboxHandler((getHandler()==null)?new
+//								// Handler(me):getHandler());
+//								Message msg = new Message();
+//								Bundle b = new Bundle();
+//								b.putParcelable("recibo", recibo);
+//								b.putString("notas", nota);
+//								msg.setData(b);
+//								msg.what = SOLICITAR_DESCUENTO;
+//								NMApp.getController().getInboxHandler()
+//										.sendMessage(msg);
+//							} catch (Exception e) {
+//								NMApp.getController()
+//										.notifyOutboxHandlers(
+//												ControllerProtocol.ERROR,
+//												0,
+//												0,
+//												new ErrorMessage(
+//														"Error al solicitar descuento",
+//														e.getMessage(), e
+//																.getMessage()));
+//							}
+//						}
+//					}
+//				});
+//	}
 
 	private void guardarRecibo(int... arg) {
 

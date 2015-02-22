@@ -453,7 +453,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		if ( savedInstanceState != null ) {
 			Parcelable[] objects = savedInstanceState.getParcelableArray("recibos");	
 			recibos = new ArrayList<vmRecibo>((Collection<? extends vmRecibo>) Arrays.asList(objects));
-			//recibos = vmRecibo.arrayParcelToArrayRecibo(objects);			
+			//Recipes = vmRecibo.arrayParcelToArrayRecibo(objects);			
 		} else {
 			recibos = null;
 		} 
