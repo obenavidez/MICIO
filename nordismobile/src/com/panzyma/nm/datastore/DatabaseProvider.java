@@ -1238,7 +1238,7 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.SolicitudDescuento.FECHA, solicitud.getFecha() );
 			
 			String where = NMConfig.SolicitudDescuento.OBJ_RECIBO_ID + "=" + String.valueOf(solicitud.getReciboId());
-			where += NMConfig.SolicitudDescuento.OBJ_FACTURA_ID + " = " + String.valueOf(solicitud.getFacturaId());
+			where += " AND  " + NMConfig.SolicitudDescuento.OBJ_FACTURA_ID + " = " + String.valueOf(solicitud.getFacturaId());
 			
 			bdd.delete(TABLA_SOLICITUD_DESCUENTO, where ,null);
 			
