@@ -47,7 +47,8 @@ public class NMConfig
 		public static final String GetPedidoByRef="GetPedidoByRef";
 		
 	}
-	
+	 
+    
     public static final class Cliente
 	{  		
 		public static final String Credentials="Credentials";

@@ -19,6 +19,10 @@ public class SolicitudDescuento {
 		this.fecha = fecha;
 	}
 
+	public SolicitudDescuento() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public long getId() {
 		return id;
 	}
