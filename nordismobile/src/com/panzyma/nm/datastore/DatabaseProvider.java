@@ -9,6 +9,7 @@ import java.util.Map;
 import org.json.JSONArray; 
 import org.json.JSONObject;
 
+import com.comunicator.AppNMComunication;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.model.ModelCProducto;
@@ -1222,8 +1223,49 @@ public class DatabaseProvider extends ContentProvider
 		return null;
 	}
 	
-	public static SolicitudDescuento registrarSolicitudDescuento(SolicitudDescuento solicitud, Context cnt) throws Exception {
-		return null;		
+	private static SolicitudDescuento registrarSolicitudDescuento(SolicitudDescuento solicitud, Context cnt) throws Exception {
+		SQLiteDatabase bdd = null;
+		try {
+			ContentValues values;
+			bdd = Helper.getDatabase(cnt);
+			bdd.beginTransaction();
+			values = new ContentValues();
+			
+			values.put(NMConfig.SolicitudDescuento.OBJ_RECIBO_ID, solicitud.getReciboId() );
+			values.put(NMConfig.SolicitudDescuento.OBJ_FACTURA_ID, solicitud.getFacturaId() );
+			values.put(NMConfig.SolicitudDescuento.PORCENTAJE, solicitud.getPorcentaje() );
+			values.put(NMConfig.SolicitudDescuento.JUSTIFICACION, solicitud.getJustificacion() );
+			values.put(NMConfig.SolicitudDescuento.FECHA, solicitud.getFecha() );
+			
+			String where = NMConfig.SolicitudDescuento.OBJ_RECIBO_ID + "=" + String.valueOf(solicitud.getReciboId());
+			where += NMConfig.SolicitudDescuento.OBJ_FACTURA_ID + " = " + String.valueOf(solicitud.getFacturaId());
+			
+			bdd.delete(TABLA_SOLICITUD_DESCUENTO, where ,null);
+			
+			bdd.insert(TABLA_SOLICITUD_DESCUENTO, null, values);
+			
+			bdd.setTransactionSuccessful();
+
+			if (bdd != null || (bdd.isOpen())) {
+				bdd.endTransaction();
+				bdd.close();
+			}
+		} catch (Exception e) {
+			throw new Exception(e);
+		} finally {
+			if ( bdd != null && bdd.isOpen() ) {
+				bdd.endTransaction();
+				bdd.close();
+			}
+		}
+		return solicitud;		
+	}
+	
+		
+	public static void registrarSolicitudesDescuento(List<SolicitudDescuento> solicitudes, Context cnt) throws Exception {
+		for(SolicitudDescuento solicitud: solicitudes){
+			registrarSolicitudDescuento(solicitud, NMApp.ctx);
+		}
 	}
 	 
 	@SuppressWarnings("null")
