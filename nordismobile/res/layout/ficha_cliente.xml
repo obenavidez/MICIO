@@ -243,7 +243,7 @@
 			                android:gravity="left"
 			                android:text="Plazo Descuento :"
 			                android:textColor="@color/Black"
-			                android:width="112dp" />
+			                android:width="114dp" />
 	
 			            <TextView
 			                android:id="@+id/fctextv_detalleplazodescuento"

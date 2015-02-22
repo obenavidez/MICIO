@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
-import android.os.Handler.Callback;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -61,13 +60,13 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
+import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.Promociones;
-import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
@@ -145,7 +144,7 @@ public class ViewPedido extends ActionBarActivity implements
 	
 
 	public enum FragmentActive {
-		LIST(1), ITEM(2), CUENTAS_POR_COBRAR(3), CONSULTA_VENTAS(4);
+		LIST(1), ITEM(2), CUENTAS_POR_COBRAR(3), CONSULTA_VENTAS(4),FICHA_CLIENTE(5);
 		int value;
 		FragmentActive(int _value)
 		{
@@ -180,7 +179,8 @@ public class ViewPedido extends ActionBarActivity implements
 	private static final int ANULAR_PEDIDO = 5;
 	private static final int CUENTAS_POR_COBRAR = 6;
 	protected static final int CONSULTA_VENTAS = 7;
-	protected static final int CERRAR = 8;
+	protected static final int FICHA_CLIENTE = 8;
+	protected static final int CERRAR = 9;
 	private static int request_code;
 	private String[] opcionesMenu;
 	private DrawerLayout drawerLayout;
@@ -234,7 +234,7 @@ public class ViewPedido extends ActionBarActivity implements
 		gridheader.setVisibility(View.VISIBLE);
 		opcionesMenu = new String[] { "Nuevo Pedido", "Abrir Pedido",
 				"Enviar Pedido","Refrescar Pedido", "Borrar Pedido", "Anular Pedido",
-				"Consultar Cuentas X Cobrar", "Consultas de Ventas", "Cerrar" };
+				"Consultar Cuentas X Cobrar", "Consultas de Ventas","Ficha Cliente" ,"Cerrar" };
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		 
 		drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -289,10 +289,8 @@ public class ViewPedido extends ActionBarActivity implements
 						if (pedido_selected != null) {
 							// OBTENER EL ESTADO DEL REGISTRO
 							state = pedido_selected.getDescEstado();
-							if ("PORVALIDAR".equals(state)
-									|| "APROBADO".equals(state)) {
-								AppDialog
-										.showMessage(
+							if ("PORVALIDAR".equals(state) || "APROBADO".equals(state)) {
+								AppDialog.showMessage(
 												vp,
 												"Información",
 												"No puede borrar pedidos por validar o aprobados.",
@@ -322,23 +320,22 @@ public class ViewPedido extends ActionBarActivity implements
 						//mostrarCuentasPorCobrar(true);
 						break;
 					case CONSULTA_VENTAS:
-						fragmentActive = FragmentActive.CONSULTA_VENTAS;
-						// OCULTAR LA BARRA DE ACCION
-						pedido_selected = customArrayAdapter.getItem(positioncache);
-						if (pedido_selected != null) {
-							getSupportActionBar().hide();
-							if (findViewById(R.id.fragment_container) != null) {
-								transaction = getSupportFragmentManager()
-										.beginTransaction();
-								consultasVentas = new ConsultaVentasFragment();
-								bundle = new Bundle();
-								bundle.putInt(CuentasPorCobrarFragment.ARG_POSITION,
-										positioncache);
-								consultasVentas.setArguments(bundle);
-								transaction.replace(R.id.fragment_container,
-										consultasVentas);
-								transaction.addToBackStack(null);
-								transaction.commit();
+						if (NMNetWork.isPhoneConnected(NMApp.getContext())){
+							fragmentActive = FragmentActive.CONSULTA_VENTAS;
+							// OCULTAR LA BARRA DE ACCION
+							pedido_selected = customArrayAdapter.getItem(positioncache);
+							if (pedido_selected != null) {
+								getSupportActionBar().hide();
+								if (findViewById(R.id.fragment_container) != null) {
+									transaction = getSupportFragmentManager().beginTransaction();
+									consultasVentas = new ConsultaVentasFragment();
+									bundle = new Bundle();
+									bundle.putInt(CuentasPorCobrarFragment.ARG_POSITION,positioncache);
+									consultasVentas.setArguments(bundle);
+									transaction.replace(R.id.fragment_container,consultasVentas);
+									transaction.addToBackStack(null);
+									transaction.commit();
+								}
 							}
 						}
 						break;
@@ -371,6 +368,7 @@ public class ViewPedido extends ActionBarActivity implements
 								AppDialog
 										.showMessage(
 												vp,
+							
 												"Información",
 												"La operación no puede ser realizada ya que está fuera de cobertura.",
 												DialogType.DIALOGO_ALERTA);
@@ -402,6 +400,21 @@ public class ViewPedido extends ActionBarActivity implements
 							drawerLayout.closeDrawers();
 							ShowNoRecords();
 						}
+						break;
+					case FICHA_CLIENTE :
+						pos = customArrayAdapter.getSelectedPosition();
+						pedido_selected = customArrayAdapter.getItem(pos);
+						if(pedido_selected!=null)
+						{
+							if (NMNetWork.isPhoneConnected(NMApp.getContext())){
+				            	mandarObtenerPedido(FICHA_CLIENTE);				            	
+				            }
+						}
+						else{
+							ShowNoRecords();
+						}
+						
+						drawerLayout.closeDrawers();
 						break;
 					case CERRAR:
 						drawerLayout.closeDrawers();
@@ -717,12 +730,27 @@ public class ViewPedido extends ActionBarActivity implements
 					if(msg.obj instanceof Pedido)
 					{
 						pedido=(Pedido) msg.obj;	
-						if(ControllerProtocol.SEND_DATA_FROM_SERVER==msg.arg1)
+//						if(ControllerProtocol.SEND_DATA_FROM_SERVER==msg.arg1)
+//							enviarPedido();
+//						if(ABRIR_PEDIDO==msg.arg1)
+//							abrirPedido();
+//						if(CUENTAS_POR_COBRAR==msg.arg1)
+//							mostrarCuentasPorCobrar();
+						switch (msg.arg1) {
+						case ControllerProtocol.SEND_DATA_FROM_SERVER:
 							enviarPedido();
-						if(ABRIR_PEDIDO==msg.arg1)
+							break;
+						case ABRIR_PEDIDO:
 							abrirPedido();
-						if(CUENTAS_POR_COBRAR==msg.arg1)
+							break;
+						case CUENTAS_POR_COBRAR:
 							mostrarCuentasPorCobrar();
+							break;
+						case FICHA_CLIENTE:
+							mostrarFichaCliente();
+							break;
+						}
+						
 					} 
 				break;
 		}
@@ -843,38 +871,68 @@ public class ViewPedido extends ActionBarActivity implements
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			Fragment fragment = getSupportFragmentManager().findFragmentById(
-					R.id.fragment_container);
-			if (fragment instanceof CuentasPorCobrarFragment
-					|| fragment instanceof ConsultaVentasFragment) {
-				fragmentActive = FragmentActive.LIST;
-				gridheader.setVisibility(View.VISIBLE);
-				transaction = getSupportFragmentManager().beginTransaction();
-				transaction.replace(R.id.fragment_container, firstFragment);
-				transaction.commit();
-			} 
-			if(fragment instanceof ConsultaVentasFragment)
-				getSupportActionBar().show();
-			else
-				FINISH_ACTIVITY();
-
-			return true;
-		} else if (keyCode == KeyEvent.KEYCODE_MENU) {
-			switch (fragmentActive) {
-			case CUENTAS_POR_COBRAR:
-				cuentasPorCobrar.mostrarMenu();
-				break;
-			case CONSULTA_VENTAS:
-				consultasVentas.mostrarMenu();
-				break;
-			default:
-				drawerLayout.openDrawer(Gravity.LEFT);
-				break;
+//		if (keyCode == KeyEvent.KEYCODE_BACK) {
+//			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+//			
+//			if (fragment instanceof CuentasPorCobrarFragment || fragment instanceof ConsultaVentasFragment || fragment instanceof FichaClienteFragment ) {
+//				fragmentActive = FragmentActive.LIST;
+//				gridheader.setVisibility(View.VISIBLE);
+//				transaction = getSupportFragmentManager().beginTransaction();
+//				transaction.replace(R.id.fragment_container, firstFragment);
+//				transaction.commit();
+//			} 
+//			if(fragment instanceof ConsultaVentasFragment)
+//				getSupportActionBar().show();
+//			else
+//				FINISH_ACTIVITY();
+//
+//			return true;
+//		} else if (keyCode == KeyEvent.KEYCODE_MENU) {
+//			switch (fragmentActive) {
+//			case CUENTAS_POR_COBRAR:
+//				cuentasPorCobrar.mostrarMenu();
+//				break;
+//			case CONSULTA_VENTAS:
+//				consultasVentas.mostrarMenu();
+//				break;
+//			default:
+//				drawerLayout.openDrawer(Gravity.LEFT);
+//				break;
+//			}
+//
+//		}
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			switch (fragmentActive) 
+			{
+				case CUENTAS_POR_COBRAR:
+					cuentasPorCobrar.mostrarMenu();
+					break;
+				case CONSULTA_VENTAS:
+					consultasVentas.mostrarMenu();
+					break;
+				default:
+					drawerLayout.openDrawer(Gravity.LEFT);
+					break;
 			}
-
 		}
 		return super.onKeyUp(keyCode, event);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		if (fragment instanceof CuentasPorCobrarFragment || fragment instanceof ConsultaVentasFragment || fragment instanceof FichaClienteFragment ) {
+			gridheader.setText(String.format("LISTA PEDIDOS (%s)",pedidos.size())); 
+			getSupportActionBar().show();
+			fragmentActive = FragmentActive.LIST;
+			gridheader.setVisibility(View.VISIBLE);
+			transaction = getSupportFragmentManager().beginTransaction();
+			transaction.replace(R.id.fragment_container, firstFragment);
+			transaction.commit();
+		}
+		else {
+			FINISH_ACTIVITY();
+		}
 	}
 
 	private void FINISH_ACTIVITY() {  
@@ -1130,4 +1188,31 @@ public class ViewPedido extends ActionBarActivity implements
 
 		return true;
 	}
+
+	private void mostrarFichaCliente()
+	{
+		if (pedido== null) 
+		{
+			AppDialog.showMessage(vp, "Información","Error al obtener el pedido localmente...", DialogType.DIALOGO_ALERTA);
+			return;
+		}
+		fragmentActive = FragmentActive.FICHA_CLIENTE;
+		
+		if (findViewById(R.id.fragment_container) != null) 
+		{
+			Bundle args = new Bundle();
+			FichaClienteFragment ficha_cliente;	
+			transaction = getSupportFragmentManager().beginTransaction();
+			gridheader.setText("Ficha del Cliente");
+			args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
+			args.putLong(FichaClienteFragment.ARG_SUCURSAL, pedido.getObjSucursalID());
+			
+			ficha_cliente = new FichaClienteFragment();
+			ficha_cliente.setArguments(args);
+			transaction.addToBackStack(null);
+			transaction.replace(R.id.fragment_container,ficha_cliente);
+			transaction.commit();	
+		}
+	}
+
 }
