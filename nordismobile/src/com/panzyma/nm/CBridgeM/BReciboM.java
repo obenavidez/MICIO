@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays; 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.json.JSONArray; 
 
@@ -43,11 +44,11 @@ import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelRecibo;
+import com.panzyma.nm.model.ModelTasaCambio;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Factura;
-import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
@@ -55,6 +56,7 @@ import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.RespuestaEnviarRecibo;
+import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.viewmodel.vmRecibo;
 
 @SuppressWarnings("rawtypes")
@@ -184,6 +186,9 @@ public final class BReciboM extends BBaseM {
 
 				
 				guardarRecibo(recibo, facturasToUpdate22, notasDebitoToUpdate22, notasCreditoToUpdate22, ControllerProtocol.SALVARRECIBOANTESDESALIR);
+				break;
+			case ControllerProtocol.GET_TASA_CAMBIO :
+				ObtenerTasaCambio();				
 				break;
 		}
 		
@@ -771,6 +776,7 @@ public final class BReciboM extends BBaseM {
         }
 		
 	}
+	
 	@SuppressLint("UseValueOf")
 	@SuppressWarnings({ "unchecked", "unused" })
 	public  void ImprimirReciboColector(ReciboColector rcol,boolean reimpresion) 
@@ -1239,4 +1245,32 @@ public final class BReciboM extends BBaseM {
 		}
     }
 	
+	private void ObtenerTasaCambio() 
+	{
+		try 
+		{
+			getPool().execute(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					try {
+						Processor.notifyToView(getController(),	ControllerProtocol.GET_TASA_CAMBIO,0,0,ModelTasaCambio.getTasaCambio(NMApp.getContext(),DateUtil.getToday()));
+					} catch (Exception e) {
+						Log.e(TAG, "Error en aplicar descuento ocasional", e);
+						try {
+							Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno en la sincronización con la BDD",e.toString(),"\n Causa: "+e.getCause()));
+						} catch (Exception e1) { 
+							e1.printStackTrace();
+						}
+					}
+				}
+			});
+		}
+		catch (Exception e) 
+		{ 
+			 NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,ErrorMessage.newInstance("",e.getMessage(),(e.getCause()==null)?"":e.getCause().toString()));
+			Log.d(TAG,"ERROR al tratar de envia el recibo", e);
+		}
+	}
 }

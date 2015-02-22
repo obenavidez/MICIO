@@ -96,5 +96,6 @@ public interface ControllerProtocol {
 	
 	int UPDATE_OBJ_VIEW=777;
 	int UPDATE_LISTVIEW_HEADER=888;
+	int GET_TASA_CAMBIO = 999;
     
 }

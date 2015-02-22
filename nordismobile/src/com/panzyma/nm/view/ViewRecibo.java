@@ -195,7 +195,8 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int IMPRIMIR_RECIBO = 4;
 	private static final int FICHA_CLIENTE = 5;
 	private static final int CUENTAS_POR_COBRAR = 6;
-	private static final int CERRAR = 7;
+	private static final int TASA_CAMBIO = 7;
+	private static final int CERRAR = 8;
 	public static final String RECIBO_ID = "recibo_id";
 	private FragmentActive fragmentActive = null;
 	private BReciboM bpm;
@@ -256,7 +257,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		opcionesMenu = new String[] { "Nuevo Recibo", "Abrir Recibo",
 				"Borrar Recibo", "Enviar Recibo", "Imprimir Recibo",
-				"Ficha del Cliente", "Cuentas por Cobrar", "Cerrar" };
+				"Ficha del Cliente", "Cuentas por Cobrar","Tasa Cambio" ,"Cerrar" };
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// drawerLayout.openDrawer(Gravity.END);
@@ -328,10 +329,13 @@ public class ViewRecibo extends ActionBarActivity implements
 					} 
 					break;	
 				case ENVIAR_RECIBO: 
-					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
-					if ("REGISTRADO".equals(recibo_selected.getCodEstado())) {
-						enviarRecibo(recibo_selected);
-					}					
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+		            {
+						if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
+						if ("REGISTRADO".equals(recibo_selected.getCodEstado())) {
+							enviarRecibo(recibo_selected);
+						}				
+					}	
 					break;
 				case IMPRIMIR_RECIBO:
 					if( recibo_selected != null ){
@@ -347,30 +351,31 @@ public class ViewRecibo extends ActionBarActivity implements
 						return;
 					}
 					//SI SE ESTÁ FUERA DE LA COBERTURA
-		            if(!NMNetWork.isPhoneConnected(NMApp.getContext()) && !NMNetWork.CheckConnection(NMApp.getController()))
+		            if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 		            {
-		            	AppDialog.showMessage(vr,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-		            	return;
+//		            	AppDialog.showMessage(vr,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+//		            	return;
+		            
+			            long sucursal=recibo_selected.getObjSucursalID();
+			            
+			            args = new Bundle();
+						args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
+						args.putLong(FichaClienteFragment.ARG_SUCURSAL, sucursal);
+			            
+						FichaClienteFragment ficha;	
+			            FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
+			            
+						fragmentActive = FragmentActive.FICHA_CLIENTE;
+						if (findViewById(R.id.dynamic_fragment) != null) {
+						}
+						else{
+							ficha = new FichaClienteFragment();
+							ficha.setArguments(args);
+							mytransaction.addToBackStack(null);
+							mytransaction.replace(R.id.fragment_container,ficha);
+							mytransaction.commit();	
+						}
 		            }
-		            long sucursal=recibo_selected.getObjSucursalID();
-		            
-		            args = new Bundle();
-					args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
-					args.putLong(FichaClienteFragment.ARG_SUCURSAL, sucursal);
-		            
-					FichaClienteFragment ficha;	
-		            FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
-		            
-					fragmentActive = FragmentActive.FICHA_CLIENTE;
-					if (findViewById(R.id.dynamic_fragment) != null) {
-					}
-					else{
-						ficha = new FichaClienteFragment();
-						ficha.setArguments(args);
-						mytransaction.addToBackStack(null);
-						mytransaction.replace(R.id.fragment_container,ficha);
-						mytransaction.commit();	
-					}
 					/*
 					if (findViewById(R.id.fragment_container) != null) 
 					{
@@ -401,6 +406,14 @@ public class ViewRecibo extends ActionBarActivity implements
 					drawerLayout.closeDrawers();
 					//OCULTAR LA BARRA DE ACCION
 					getSupportActionBar().hide();
+					break;
+				case TASA_CAMBIO :
+					
+					
+					
+					
+					//CERRAR EL MENU DEL DRAWER
+					drawerLayout.closeDrawers();
 					break;
 				case CERRAR:
 					FINISH_ACTIVITY();
@@ -741,9 +754,9 @@ public class ViewRecibo extends ActionBarActivity implements
 			b.putParcelableArray("notasDebitoToUpdate", (Parcelable[]) recibo.getNotasDebitoRecibo().toArray() ); // getArrayOfNotasDebito()
 			b.putParcelableArray("notasCreditoToUpdate",  (Parcelable[]) recibo.getNotasCreditoRecibo().toArray()); // getArrayOfNotasCredito()
 			*/
-			b.putParcelableArray("facturasToUpdate", (Parcelable[])ModelRecibo.getFacturasByReciboDetalleFacturasList(recibo.getFacturasRecibo()) ); //getArrayOfFacturas()
-			b.putParcelableArray("notasDebitoToUpdate", (Parcelable[])ModelRecibo.getNotasDebitoByReciboDetalleNDSList(recibo.getNotasDebitoRecibo()) ); // getArrayOfNotasDebito()
-			b.putParcelableArray("notasCreditoToUpdate",  (Parcelable[]) ModelRecibo.getNotasCreditoByReciboDetalleNCSList(recibo.getNotasCreditoRecibo())); // getArrayOfNotasCredito()
+			b.putParcelableArray("facturasToUpdate", ModelRecibo.getFacturasByReciboDetalleFacturasList(recibo.getFacturasRecibo()) ); //getArrayOfFacturas()
+			b.putParcelableArray("notasDebitoToUpdate", ModelRecibo.getNotasDebitoByReciboDetalleNDSList(recibo.getNotasDebitoRecibo()) ); // getArrayOfNotasDebito()
+			b.putParcelableArray("notasCreditoToUpdate",  ModelRecibo.getNotasCreditoByReciboDetalleNCSList(recibo.getNotasCreditoRecibo())); // getArrayOfNotasCredito()
 			msg.setData(b);
 			msg.what=SEND_DATA_FROM_SERVER;
 			NMApp.getController().getInboxHandler().sendMessage(msg);  	 
@@ -985,6 +998,11 @@ public class ViewRecibo extends ActionBarActivity implements
 					((ErrorMessage) msg.obj).getMessage(),
 					DialogType.DIALOGO_ALERTA);
 			return true;
+			
+			
+//		case GET_TASA_CAMBIO:
+//			
+//			break;
 
 		}
 		return false;
