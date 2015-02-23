@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays; 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
-
 import org.json.JSONArray; 
 
 import android.annotation.SuppressLint;
@@ -56,7 +54,6 @@ import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.RespuestaEnviarRecibo;
-import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.viewmodel.vmRecibo;
 
 @SuppressWarnings("rawtypes")
@@ -599,7 +596,7 @@ public final class BReciboM extends BBaseM {
 						if(credenciales!="")
 						{							 
 					        imprimir = true;
-					        pagarOnLine = true;        
+					        pagarOnLine = true;
 					        //Si se está fuera de covertura, salir        
 					        if (recibo.getCodEstado().compareTo("PAGADO_OFFLINE") == 0) 
 					        {
@@ -616,19 +613,20 @@ public final class BReciboM extends BBaseM {
 					                return;
 					            }
 					            
-					        } else 
+					        } 
+					        else 
 					        {                
 					            if (!SessionManager.isPhoneConnected()) 
 					            {	
 					            	pagarOnLine = false;
-					            	Processor.notifyToView(getController(),ERROR,0,0,
-											new ErrorMessage(
-													          "Error en el Modulo Recibo.",
-													          "Error en el proceso de envio del recibo", "\nCausa: "
-															  + "El recibo no será enviado por falta de cobertura\r\nEl recibo será impreso y quedará pendiente de enviarse."
-															 )
-									      );   
-					            
+//					            	Processor.notifyToView(getController(),ERROR,0,0,
+//											new ErrorMessage(
+//													          "Error en el Modulo Recibo.",
+//													          "Error en el proceso de envio del recibo", "\nCausa: "
+//															  + "El recibo no será enviado por falta de cobertura\r\nEl recibo será impreso y quedará pendiente de enviarse."
+//															 )
+//									      );   
+					            	Processor.notifyToView(getController(),ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"El recibo no será enviado por falta de cobertura\r\nEl recibo será impreso y quedará pendiente de enviarse.");
 					            }
 					        } 
 					       

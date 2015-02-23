@@ -176,7 +176,7 @@ public class ViewPedido extends ActionBarActivity implements
 	private static final int ENVIAR_PEDIDO = 2; 
 	private static final int REFRESCAR_PEDIDO = 3;
 	private static final int BORRAR_PEDIDO = 4;
-	private static final int ANULAR_PEDIDO = 5;
+	private static final int IMPRIMIR_COMPROBANTE = 5;
 	private static final int CUENTAS_POR_COBRAR = 6;
 	protected static final int CONSULTA_VENTAS = 7;
 	protected static final int FICHA_CLIENTE = 8;
@@ -233,7 +233,7 @@ public class ViewPedido extends ActionBarActivity implements
 		transaction = getSupportFragmentManager().beginTransaction();
 		gridheader.setVisibility(View.VISIBLE);
 		opcionesMenu = new String[] { "Nuevo Pedido", "Abrir Pedido",
-				"Enviar Pedido","Refrescar Pedido", "Borrar Pedido", "Anular Pedido",
+				"Enviar Pedido","Refrescar Pedido", "Borrar Pedido", "Imprimir Comprobante",
 				"Consultar Cuentas X Cobrar", "Consultas de Ventas","Ficha Cliente" ,"Cerrar" };
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		 
@@ -339,67 +339,78 @@ public class ViewPedido extends ActionBarActivity implements
 							}
 						}
 						break;
-					case ANULAR_PEDIDO:
-						// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO
-						// ACTUALMENTE
-						pos = customArrayAdapter.getSelectedPosition();
-						// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-						pedido_selected = customArrayAdapter.getItem(pos);
-						if (pedido_selected != null) {
-							// OBTENER EL ESTADO DEL REGISTRO
-							state = ( pedido_selected.getCodEstado() == null) ? "" : pedido_selected.getCodEstado() ;
-							
-							// VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
-							 if ("FACTURADO".compareTo(state) != 0)
-							 {
-								 AppDialog.showMessage(vp,"Información","Solo se pueden anular pedidos en estado de APROBADO.",DialogType.DIALOGO_ALERTA);
-								 //CERRAR EL MENU DEL DRAWER
-								 drawerLayout.closeDrawers();
-								 return;
-							 }
-							// SI SE ESTÁ FUERA DE LA COBERTURA
-							if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp
-									.getContext())
-									&& !NMNetWork
-											.CheckConnection(com.panzyma.nm.NMApp
-													.getController())) {
-								// Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.",
-								// Toast.LENGTH_SHORT).show();
-								AppDialog
-										.showMessage(
-												vp,
-							
-												"Información",
-												"La operación no puede ser realizada ya que está fuera de cobertura.",
-												DialogType.DIALOGO_ALERTA);
-								return;
-							}
-							try {
-								// SOLICITAMOS QUE SE ANULE EL PEDIDO
-								msg = new Message();
-								msg.obj = pedido_selected.getId();
-								msg.what = ControllerProtocol.ANULAR_PEDIDO;
-								/*
-								 * NMApp.controller.removeBridgeByName(ViewPedido.class
-								 * .toString());
-								 * com.panzyma.nm.NMApp.getController()
-								 * .setEntities(this, bpm = new BPedidoM());
-								 * com.panzyma
-								 * .nm.NMApp.getController().addOutboxHandler(new
-								 * Handler(vp));
-								 */
-								com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
-								// CERRAR EL MENU DEL DRAWER
-								drawerLayout.closeDrawers();
-							} catch (Exception ex) {
-								ex.printStackTrace();
-								drawerLayout.closeDrawers();
-							}
-						} else {
-							// CERRAR EL MENU DEL DRAWER
-							drawerLayout.closeDrawers();
-							ShowNoRecords();
-						}
+					case IMPRIMIR_COMPROBANTE:
+						
+						Message message = new Message();
+						Bundle b = new Bundle();
+						b.putParcelable("pedido", pedido);
+						b.putParcelable("cliente", cliente);
+						message.setData(b);
+						message.what = ControllerProtocol.IMPRIMIR;
+						com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(message);
+						
+						
+						
+//						// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO
+//						// ACTUALMENTE
+//						pos = customArrayAdapter.getSelectedPosition();
+//						// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+//						pedido_selected = customArrayAdapter.getItem(pos);
+//						if (pedido_selected != null) {
+//							// OBTENER EL ESTADO DEL REGISTRO
+//							state = ( pedido_selected.getCodEstado() == null) ? "" : pedido_selected.getCodEstado() ;
+//							
+//							// VALIDAR QUE EL PEDIDO ESTÉ EN ESTADO NO ES APROBADO
+//							 if ("FACTURADO".compareTo(state) != 0)
+//							 {
+//								 AppDialog.showMessage(vp,"Información","Solo se pueden anular pedidos en estado de APROBADO.",DialogType.DIALOGO_ALERTA);
+//								 //CERRAR EL MENU DEL DRAWER
+//								 drawerLayout.closeDrawers();
+//								 return;
+//							 }
+//							// SI SE ESTÁ FUERA DE LA COBERTURA
+//							if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp
+//									.getContext())
+//									&& !NMNetWork
+//											.CheckConnection(com.panzyma.nm.NMApp
+//													.getController())) {
+//								// Toast.makeText(getApplicationContext(),"La operación no puede ser realizada ya que está fuera de cobertura.",
+//								// Toast.LENGTH_SHORT).show();
+//								AppDialog
+//										.showMessage(
+//												vp,
+//							
+//												"Información",
+//												"La operación no puede ser realizada ya que está fuera de cobertura.",
+//												DialogType.DIALOGO_ALERTA);
+//								return;
+//							}
+//							try {
+//								// SOLICITAMOS QUE SE ANULE EL PEDIDO
+//								msg = new Message();
+//								msg.obj = pedido_selected.getId();
+//								msg.what = ControllerProtocol.ANULAR_PEDIDO;
+//								/*
+//								 * NMApp.controller.removeBridgeByName(ViewPedido.class
+//								 * .toString());
+//								 * com.panzyma.nm.NMApp.getController()
+//								 * .setEntities(this, bpm = new BPedidoM());
+//								 * com.panzyma
+//								 * .nm.NMApp.getController().addOutboxHandler(new
+//								 * Handler(vp));
+//								 */
+//								com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+//								// CERRAR EL MENU DEL DRAWER
+//								drawerLayout.closeDrawers();
+//							} catch (Exception ex) {
+//								ex.printStackTrace();
+//								drawerLayout.closeDrawers();
+//							}
+//						} else {
+//							// CERRAR EL MENU DEL DRAWER
+//							drawerLayout.closeDrawers();
+//							ShowNoRecords();
+//						}
 						break;
 					case FICHA_CLIENTE :
 						pos = customArrayAdapter.getSelectedPosition();
