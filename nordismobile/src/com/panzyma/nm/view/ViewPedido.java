@@ -340,15 +340,31 @@ public class ViewPedido extends ActionBarActivity implements
 						}
 						break;
 					case IMPRIMIR_COMPROBANTE:
+
 						
-						Message message = new Message();
-						Bundle b = new Bundle();
-						b.putParcelable("pedido", pedido);
-						b.putParcelable("cliente", cliente);
-						message.setData(b);
-						message.what = ControllerProtocol.IMPRIMIR;
-						com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(message);
+						if (pedido_selected != null) {
+							if(pedido_selected.getCodEstado().compareTo("FACTURADO")==0){
+								mandarObtenerPedido(IMPRIMIR_COMPROBANTE);
+							}
+							else{
+								AppDialog.showMessage(vp,"Información","Solo se pueden imprimir comprobante en estado facturado",DialogType.DIALOGO_ALERTA);
+								return;
+							}
+						}
+						else {
+							ShowNoRecords();
+						}
 						
+						drawerLayout.closeDrawers();
+						//pedido.getCodEstado().compareTo("FACTURADO")
+//						Message message = new Message();
+//						Bundle b = new Bundle();
+//						b.putParcelable("pedido", pedido);
+//						b.putParcelable("cliente", cliente);
+//						message.setData(b);
+//						message.what = ControllerProtocol.IMPRIMIR;
+//						com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(message);
+//						
 						
 						
 //						// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO
@@ -760,9 +776,22 @@ public class ViewPedido extends ActionBarActivity implements
 						case FICHA_CLIENTE:
 							mostrarFichaCliente();
 							break;
+						case IMPRIMIR_COMPROBANTE :
+							
+							msg = new Message();
+							b = new Bundle();
+							b.putLong("sucursal_Id", pedido.getObjSucursalID());
+							msg.setData(b);
+							msg.what =ControllerProtocol.GET_CLIENTE_POR_ID;
+							NMApp.getController().getInboxHandler().sendMessage(msg);		
+							
+							break;
 						}
 						
 					} 
+				break;
+			case ControllerProtocol.GET_CLIENTE_POR_ID:
+				imprimirComprobante();
 				break;
 		}
 		return val;
@@ -1223,6 +1252,18 @@ public class ViewPedido extends ActionBarActivity implements
 			transaction.addToBackStack(null);
 			transaction.replace(R.id.fragment_container,ficha_cliente);
 			transaction.commit();	
+		}
+	}
+	
+	private void imprimirComprobante(){
+		if(pedido!=null && cliente!=null) {
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putParcelable("pedido", pedido);
+			b.putParcelable("cliente", cliente);
+			msg.setData(b);
+			msg.what = ControllerProtocol.IMPRIMIR;
+			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 		}
 	}
 
