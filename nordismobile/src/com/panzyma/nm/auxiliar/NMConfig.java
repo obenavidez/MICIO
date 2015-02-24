@@ -471,13 +471,22 @@ public class NMConfig
 
 	}
 	
-	public static class SolicitudDescuento {		
+	public static final class EncabezadoSolicitud {
 		public static final String ID ="id";
-	    public static final java.lang.String OBJ_RECIBO_ID = "objReciboID";
-	    public static final java.lang.String OBJ_FACTURA_ID = "objFacturaID";
-	    public static final java.lang.String PORCENTAJE = "porcentaje";
-	    public static final java.lang.String JUSTIFICACION = "justificacion";
-	    public static final java.lang.String FECHA ="fecha";
+		public static final java.lang.String OBJ_RECIBO_ID = "objReciboID";
+		public static final String CODIGO_ESTADO = "codigoEstado";
+		public static final String DESCRIPCION_ESTADO = "descripcionEstado";
+		public static final String FECHA_SOLICITUD = "fechaSolicitud";		
+		public static class SolicitudDescuento {		
+			public static final String ID ="id";
+		    public static final java.lang.String OBJ_ENCABEZADO_SOLICITUD_ID = "objEncabezadoSolicitudID";
+		    public static final java.lang.String OBJ_FACTURA_ID = "objFacturaID";
+		    public static final java.lang.String PORCENTAJE = "porcentaje";
+		    public static final java.lang.String JUSTIFICACION = "justificacion";
+		    public static final java.lang.String FECHA ="fecha";
+		}
 	}
+	
+	
 	
 }

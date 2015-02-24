@@ -43,7 +43,7 @@ public class ModelSolicitudDescuento
 				{	 					
 				   SolicitudDescuento solicitud=new SolicitudDescuento(); 
 				   solicitud.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.ID))));
-				   solicitud.setReciboId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.OBJ_RECIBO_ID))));
+				   solicitud.setReciboId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.OBJ_ENCABEZADO_SOLICITUD_ID))));
 				   solicitud.setFacturaId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.OBJ_FACTURA_ID))));
 				   solicitud.setPorcentaje(Float.parseFloat(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.PORCENTAJE))));
 				   solicitud.setJustificacion(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.JUSTIFICACION)));

@@ -3,7 +3,7 @@ package com.panzyma.nm.serviceproxy;
 public class SolicitudDescuento 
 {
 	private long id;
-	private long reciboId;
+	private long encabezadoSolicitudId;
 	private long facturaId;
 	private float porcentaje;
 	private String justificacion;
@@ -15,7 +15,7 @@ public class SolicitudDescuento
 			float porcentaje, String justificacion, long fecha) {
 		super();
 		this.id = id;
-		this.reciboId = reciboId;
+		this.encabezadoSolicitudId = reciboId;
 		this.facturaId = facturaId;
 		this.porcentaje = porcentaje;
 		this.justificacion = justificacion;
@@ -26,7 +26,7 @@ public class SolicitudDescuento
 			float porcentaje, String justificacion, long fecha,Factura _factura) {
 		super();
 		this.id = id;
-		this.reciboId = reciboId;
+		this.encabezadoSolicitudId = reciboId;
 		this.facturaId = facturaId;
 		this.porcentaje = porcentaje;
 		this.justificacion = justificacion;
@@ -56,12 +56,12 @@ public class SolicitudDescuento
 		this.id = id;
 	}
 
-	public long getReciboId() {
-		return reciboId;
+	public long getEncabezadoSolicitudId() {
+		return encabezadoSolicitudId;
 	}
 
-	public void setReciboId(long reciboId) {
-		this.reciboId = reciboId;
+	public void setEncabezadoSolicitudId(long encabezadoSolicitudId) {
+		this.encabezadoSolicitudId = encabezadoSolicitudId;
 	}
 
 	public long getFacturaId() {
