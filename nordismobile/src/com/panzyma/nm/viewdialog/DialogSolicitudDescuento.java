@@ -162,14 +162,12 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			        	
 			        if(td.equals("") && !tj.equals(""))
 			        {
-			        	d.setError("Debe ingresar el descuento...");
-			        	//adapter.notifyDataSetChanged();
+			        	d.setError("Debe ingresar el descuento..."); 
 			        	break;
 			        } 
 			        else if(!td.equals("") && tj.equals(""))
 			        {
-			        	j.setError("Debe justificar el descuento...");
-			        	//adapter.notifyDataSetChanged();
+			        	j.setError("Debe justificar el descuento..."); 
 			        	break;
 			        } 
 //			        else
@@ -180,10 +178,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 //      		        	solicitudes.add(i, sd);
 //			        }
 			    }
-			 	Message msg = new Message(); 
-				msg.obj=solicitudes;
-				msg.what=ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
-				NMApp.getController().getInboxHandler().sendMessage(msg); 
+			 
 			}
 
 		});
@@ -200,6 +195,13 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	    
 	}
 	
+	private void enviarSolicitud()
+	{
+		Message msg = new Message(); 
+		msg.obj=solicitudes;
+		msg.what=ControllerProtocol.SEND_DATA_FROM_SERVER;
+		NMApp.getController().getInboxHandler().sendMessage(msg); 
+	}
 
 	@Override
 	public boolean handleMessage(Message msg) {
@@ -209,6 +211,8 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			case C_DATA: 
 				establecerDatos((msg.obj!=null)? (List<SolicitudDescuento>) msg.obj:new ArrayList<SolicitudDescuento>());
 				break ;
+			case SEND_DATA_FROM_SERVER:
+				break;
 		}
 		return false;
 	} 
@@ -229,8 +233,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 					{
 						solicitudes.add(s);
 						add=true;
-					}
-					
+					}					
 				}
 			}
 				
