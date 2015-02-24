@@ -2,6 +2,7 @@ package com.panzyma.nm.viewdialog;
  
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
@@ -76,8 +77,8 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		tbox_discoutnkey =(EditText) view.findViewById(R.id.editkey);
 		tbox_collectorpercent =(EditText) view.findViewById(R.id.editpercent);
 		tbox_collectorpercent.setText("0.0");
-		if(SessionManager.isPhoneConnected())
-			tbox_discoutnkey.setVisibility(View.GONE);
+		//if( (recibo.getPorcDescOcaColector()== 100) || SessionManager.isPhoneConnected())
+		tbox_discoutnkey.setVisibility(View.GONE);
 		builder.setTitle("Aplicar Descuento Ocasional");
 		builder.setView(view);
 		builder.setPositiveButton("AGREGAR", new OnClickListener() {
@@ -107,20 +108,22 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
             {
                 @Override
                 public void onClick(View v)
-                {
-                	validar();
+                {                	
+                	if ( isValid() ) {
+                		mylisterner.onButtonClick(percentcollector, tbox_discoutnkey.getText().toString().trim());
+                	}
                 }
             });
 	    }
 	} 
 	
-	private void validar()
+	private boolean isValid()
 	{
 		
 	       //Si el porcentaje es < 100, pedir clave
 	       if (tbox_collectorpercent.getText().toString().trim().equals("")) {
 	    	   AppDialog.showMessage(parent,"","Ingrese porcentaje asumido por colector.",DialogType.DIALOGO_ALERTA);
-	           return;
+	           return false;
 	       }
 	       
 	       percentcollector = Float.parseFloat(tbox_collectorpercent.getText().toString().trim());
@@ -128,40 +131,42 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	       //Validar que prc sea entre 0 y 100
 	       if (percentcollector < 0) {
 	    	   AppDialog.showMessage(parent,"","El porcentaje debe ser mayor o igual a cero.",DialogType.DIALOGO_ALERTA);
-	           return;
+	           return false;
 	       }
 	        
 	       if (percentcollector > 100) {
 	    	   AppDialog.showMessage(parent,"","El porcentaje debe ser menor o igual a 100.",DialogType.DIALOGO_ALERTA);
-	           return;
+	           return false;
 	       }
 	        
 	       //Si el porcentaje es menor de 100, pedir clave
 	       if (percentcollector < 100) 
 	       {
-	           if (tbox_discoutnkey != null && tbox_discoutnkey.isShown()) 
-	           {
-	        	   _clave=tbox_discoutnkey.getText().toString().trim();
-	                if (_clave.compareTo("") == 0) 
-	                {
-	                	_clave="";
-	                	AppDialog.showMessage(parent,"","Favor ingresar clave de autorización.",DialogType.DIALOGO_ALERTA);
-	                    return;
-	                } 
-	            } 
-	           else 
-	           {
-		        	Message msg = new Message();
-		   			Bundle b = new Bundle();
-		   			b.putParcelable("recibo",recibo); 
-		   			msg.setData(b);
-		   			msg.what=ControllerProtocol.APLICAR_DESCUENTO;
-		   			NMApp.getController().getInboxHandler().sendMessage(msg);     		
-	           }
-	            
+	    	   if( SessionManager.isPhoneConnected() ){
+	    		   if ( tbox_discoutnkey != null && tbox_discoutnkey.isShown()) 
+		           {
+		        	   _clave=tbox_discoutnkey.getText().toString().trim();
+		                if (_clave.compareTo("") == 0) 
+		                {
+		                	_clave="";
+		                	AppDialog.showMessage(parent,"","Favor ingresar clave de autorización.",DialogType.DIALOGO_ALERTA);
+		                    return false;
+		                } 
+		            } 
+		           else 
+		           {
+			        	Message msg = new Message();
+			   			Bundle b = new Bundle();
+			   			b.putParcelable("recibo",recibo); 
+			   			msg.setData(b);
+			   			msg.what=ControllerProtocol.APLICAR_DESCUENTO;
+			   			NMApp.getController().getInboxHandler().sendMessage(msg);     		
+		           }
+	    	   } 
 	           //Validar que clave sea válida
 	           //if (verificarClaveDescOca(txtClave.getText().trim()) != 1) return false;
-	       }  
+	       }
+	       return true;
 	}
 	
 	
@@ -221,7 +226,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 				}
 				break;
 			case ControllerProtocol.ERROR:
-				AppDialog.showMessage(parent,"",msg.toString(),DialogType.DIALOGO_ALERTA);
+				AppDialog.showMessage(parent,((ErrorMessage)msg.obj).getTittle(),((ErrorMessage)msg.obj).getMessage()+"\n"+((ErrorMessage)msg.obj).getCause(),DialogType.DIALOGO_ALERTA);
 				break;
 			default:
 				break;

@@ -1936,26 +1936,30 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					montoDescuento = ammount.getValue();
 					factura.setDescontado(montoDescuento);
 					factura.setDescuentoFactura(factura.getDescuentoFactura()+ montoDescuento);
-					if (montoDescuento > facturaDetalle.getMontoDescEspecificoCalc()) 
-					{
-						NMApp.getController()
-								.notifyOutboxHandlers(
-										ControllerProtocol.ERROR,
-										0,
-										0,
-										new ErrorMessage(
-												"Error al editar descuento",
-												"El nuevo descuento no debe ser mayor que "
-														+ StringUtil
-																.formatReal(facturaDetalle
-																		.getMontoDescEspecificoCalc())
-														+ ".", ""));
+					if( !(recibo.getPorcDescOcaColector() == 100) ) {
+						if (montoDescuento > facturaDetalle.getMontoDescEspecificoCalc()) 
+						{
+							NMApp.getController()
+									.notifyOutboxHandlers(
+											ControllerProtocol.ERROR,
+											0,
+											0,
+											new ErrorMessage(
+													"Error al editar descuento",
+													"El nuevo descuento no debe ser mayor que "
+															+ StringUtil
+																	.formatReal(facturaDetalle
+																			.getMontoDescEspecificoCalc())
+															+ ".", ""));
 
-						return;
-					}
+							return;
+						}
+					}					
 					// Recalcular monto neto
-					Cobro.ActualizaMtoNetoFacturasrecibo(recibo);
-					facturaDetalle.setMontoDescEspecificoCalc(montoDescuento);
+					facturaDetalle.setPorcDescOcasional(montoDescuento);
+					Cobro.ActualizaMtoNetoFacturasrecibo(recibo);					
+					
+					//facturaDetalle.setMontoDescEspecificoCalc(montoDescuento);
 				}
 			default:
 				break;
@@ -1970,7 +1974,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					recibo.getCliente(), true);
 			documents.add(facturaDetalle);
 
-		}
+		}		
 		agregarDocumentosAlDetalleDeRecibo();
 		Cobro.ActualizaTotalFacturas(recibo);
 		actualizaTotales();
