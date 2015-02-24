@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="5dip" >
+
+
+    <!-- Menu name -->
+
+    <TextView
+        android:id="@+id/factura"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:text="@string/menu_name"
+        android:textColor="#040404"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+    
+    <!-- Description -->
+
+	 <TextView
+        android:id="@+id/tvdescuento"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/factura"
+        android:layout_marginTop="15dp"  
+        android:text="@string/descuento"
+        android:textColor="#040404"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <EditText
+        android:id="@+id/descuento"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:layout_below="@id/factura" 
+        android:layout_toRightOf="@id/tvdescuento"        
+        android:layout_marginTop="1dip" 
+        android:hint="@string/descuento"
+        android:inputType="number"
+        android:textColor="#343434"
+        android:textSize="10sp" />
+    
+     <TextView
+        android:id="@+id/tvjustificacion"
+       	android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/tvdescuento"
+        android:layout_marginTop="30dp" 
+        android:text="@string/justificacion"
+        android:textColor="#040404"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <!-- Price -->
+
+    <EditText
+        android:id="@+id/justificacion"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"           
+        android:layout_below="@id/tvdescuento" 
+        android:layout_toRightOf="@id/tvjustificacion"
+        android:layout_marginTop="15dp" 
+        android:hint="@string/justificacion"
+        android:textColor="#10bcc9"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

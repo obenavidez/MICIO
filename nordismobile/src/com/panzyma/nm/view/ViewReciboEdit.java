@@ -177,8 +177,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	private static final int ID_ENVIAR_RECIBO = 9;
 	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 10;
 	private static final int ID_APLICAR_DESCUENTO_OCASIONAL = 11;
-	private static final int ID_CERRAR = 12;
-	private static final int ID_IMPRIMIR_COMPROBANTE = 13;
+	private static final int ID_CERRAR = 13;
+	private static final int ID_IMPRIMIR_COMPROBANTE = 12;
 	
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit";

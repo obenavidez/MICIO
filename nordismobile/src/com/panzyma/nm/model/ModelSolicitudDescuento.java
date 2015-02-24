@@ -1,6 +1,7 @@
 package com.panzyma.nm.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -23,7 +24,7 @@ public class ModelSolicitudDescuento
 	 * OBTENER DEL RECIBO LAS SOLICITUDES DE DESCUENTO
 	 * @param idrecibo 
 	 */
-	public synchronized static ArrayList<SolicitudDescuento> obtenerSolicitudes(long idrecibo)
+	public synchronized static List<SolicitudDescuento> obtenerSolicitudes(long idrecibo)
 	{
 		SQLiteDatabase bd = Helper.getDatabase(NMApp.getContext());  
 		Cursor cur;
@@ -57,5 +58,10 @@ public class ModelSolicitudDescuento
 			
 		
 		return null;
+	}
+
+	public synchronized static List<SolicitudDescuento> RegistrarSolicitudes(List<SolicitudDescuento> solicitudes) throws Exception
+	{
+		return DatabaseProvider.registrarSolicitudesDescuento(solicitudes, NMApp.getContext());
 	}
 }

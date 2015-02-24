@@ -1225,7 +1225,8 @@ public class DatabaseProvider extends ContentProvider
 	
 	private static SolicitudDescuento registrarSolicitudDescuento(SolicitudDescuento solicitud, Context cnt) throws Exception {
 		SQLiteDatabase bdd = null;
-		try {
+		try 
+		{
 			ContentValues values;
 			bdd = Helper.getDatabase(cnt);
 			bdd.beginTransaction();
@@ -1241,8 +1242,7 @@ public class DatabaseProvider extends ContentProvider
 			where += " AND  " + NMConfig.SolicitudDescuento.OBJ_FACTURA_ID + " = " + String.valueOf(solicitud.getFacturaId());
 			
 			bdd.delete(TABLA_SOLICITUD_DESCUENTO, where ,null);
-			
-			bdd.insert(TABLA_SOLICITUD_DESCUENTO, null, values);
+			solicitud.setId(bdd.insert(TABLA_SOLICITUD_DESCUENTO, null, values));
 			
 			bdd.setTransactionSuccessful();
 
@@ -1262,10 +1262,15 @@ public class DatabaseProvider extends ContentProvider
 	}
 	
 		
-	public static void registrarSolicitudesDescuento(List<SolicitudDescuento> solicitudes, Context cnt) throws Exception {
-		for(SolicitudDescuento solicitud: solicitudes){
-			registrarSolicitudDescuento(solicitud, NMApp.ctx);
+	public static List<SolicitudDescuento> registrarSolicitudesDescuento(List<SolicitudDescuento> solicitudes, Context cnt) throws Exception {
+		List<SolicitudDescuento> rs=new ArrayList<SolicitudDescuento>();
+		for(SolicitudDescuento solicitud: solicitudes)
+		{
+			SolicitudDescuento sd=registrarSolicitudDescuento(solicitud, NMApp.ctx);
+			if(sd!=null)
+				rs.add(sd);
 		}
+		return rs;
 	}
 	 
 	@SuppressWarnings("null")
