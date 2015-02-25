@@ -18,6 +18,7 @@ import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.model.ModelSolicitudDescuento;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
+import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
@@ -40,7 +41,7 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 		switch (msg.what) 
 		{
 			case SAVE_DATA_FROM_LOCALHOST:
-				onSaveDataToLocalHost((List<SolicitudDescuento>) msg.obj);
+				onSaveDataToLocalHost((EncabezadoSolicitud) msg.obj);
 				return true;
 			case LOAD_DATA_FROM_LOCALHOST: 
 				onLoadALLDataFromLocalHost(bdl.getLong("idrecibo"));
@@ -49,13 +50,13 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 				return true;
 			case SOLICITAR_DESCUENTO:
 				bdl=msg.getData();
-				enviarSolicitudDescuento((List<SolicitudDescuento>) msg.obj);
+				enviarSolicitudDescuento((EncabezadoSolicitud) msg.obj);
 				return true;
 		}				
 		return false;
 	}
 	
-	private void enviarSolicitudDescuento(final List<SolicitudDescuento> solicitudes) 
+	private void enviarSolicitudDescuento(final EncabezadoSolicitud solicitud) 
 	{
 		try 
 		{
@@ -71,19 +72,44 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 						credenciales = SessionManager.getCredentials(); 
 						if(credenciales=="")
 							return;
-						
+						StringBuilder nota=null;
+						List<SolicitudDescuento> solicitudes=solicitud.getDetalles();
+						int cont=0;
 						for(SolicitudDescuento sd:solicitudes)
 						{
-							String textenviar="Solicito aprobación para otorgar descuento para las siguientes facturas";
+							nota = new StringBuilder("Solicito aprobación para otorgar descuento a lo siguiente:\n");
+							
 							if(sd.getPorcentaje()>0.0 && !sd.getJustificacion().equals("")) 
-							{
-								
+							{   
+								cont+=1;
+								if(cont>1)
+									nota.append("** Documento : Factura # ");
+								else
+									nota.append("   Documento : Factura # ");
+								nota.append(sd.getFactura().getNoFactura());
+								nota.append("\t / Justificación: ");
+								nota.append(sd.getJustificacion()+"\n");
 							}
 							else
 								continue; 
 							
+						} 
+						
+						
+						long rs = ModelRecibo.solicitarDescuentoOcacional(credenciales, solicitud.getRecibo(), nota.toString());
+						if(rs!= 0)
+						{
+//							Processor.notifyToView(
+//								getController(),
+//								ControllerProtocol.NOTIFICATION,
+//								0,
+//								0,
+//								"La solicitud descuento fue enviada a la central con exito");
+//							ModelConfiguracion.guardarSolicitudDescuentoRec(getContext(),
+//									recibo.getReferencia(), 
+//									notas);
 						}
-						ModelSolicitudDescuento.RegistrarSolicitudes()
+						
 						
 					} catch (Exception e)
 					{ 
@@ -115,7 +141,7 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 		
 	}
 
-	private void onSaveDataToLocalHost(List<SolicitudDescuento> solicitudes) 
+	private void onSaveDataToLocalHost(EncabezadoSolicitud solicitud) 
 	{		
 		try 
 		{
@@ -123,7 +149,7 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 					ControllerProtocol.SEND_DATA_FROM_SERVER,
 					0,
 					0,
-					ModelSolicitudDescuento.RegistrarSolicitudes(solicitudes)
+					ModelSolicitudDescuento.RegistrarSolicituDescuento(solicitud)
 					);
 		} catch (Exception e) { 
 			Log.e(TAG, "Error interno trayendo datos desde BDD", e);
@@ -137,6 +163,24 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 		
 	}
 	
+	private EncabezadoSolicitud RegistrarSolicituDescuento(EncabezadoSolicitud solicitud) 
+	{		
+		try 
+		{
+			return	ModelSolicitudDescuento.RegistrarSolicituDescuento(solicitud);
+		} catch (Exception e) { 
+			Log.e(TAG, "Error interno trayendo datos desde BDD", e);
+			try {
+				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno trayendo datos desde BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}
+		} 
+		
+		return null;
+	}
+	
+	
 	private void onLoadALLDataFromLocalHost(long idrecibo) 
 	{ 
 		try 
@@ -145,7 +189,7 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 					ControllerProtocol.C_DATA,
 					0,
 					0,
-					ModelSolicitudDescuento.obtenerSolicitudes(idrecibo)
+					ModelSolicitudDescuento.obtenerEncabezadoSolicitud(idrecibo)
 					);
 		} catch (Exception e) { 
 			Log.e(TAG, "Error interno trayendo datos desde BDD", e);

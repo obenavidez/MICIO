@@ -12,6 +12,7 @@ import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 
@@ -21,12 +22,13 @@ public class ModelSolicitudDescuento
 	
 	
 	/**
-	 * OBTENER DEL RECIBO LAS SOLICITUDES DE DESCUENTO
-	 * @param idrecibo 
+	 * OBTENER EL DETALLE DEL ENCABEZADO DE LAS SOLICITUDES DE DESCUENTO
+	 * @param idrecibo
 	 */
-	public synchronized static List<SolicitudDescuento> obtenerSolicitudes(long idrecibo)
+	public synchronized static List<SolicitudDescuento> obtenerDetalleSolicitud(long objEncabezadoSolicitudID)
 	{
 		SQLiteDatabase bd = Helper.getDatabase(NMApp.getContext());  
+		List<SolicitudDescuento> detallesolicitud = null;
 		Cursor cur;
 		try 
 		{
@@ -34,21 +36,21 @@ public class ModelSolicitudDescuento
 			StringBuilder sQuery = new StringBuilder(); 			
 			sQuery.append(" SELECT sd.* ");
 			sQuery.append(" FROM SolicitudDescuento AS sd  ");
-			sQuery.append(" WHERE sd.objReciboID = " + idrecibo); 	
+			sQuery.append(" WHERE sd.objEncabezadoSolicitudID = " + objEncabezadoSolicitudID); 	
 			cur = DatabaseProvider.query(bd, sQuery.toString());
-			ArrayList<SolicitudDescuento> solicitudes=new ArrayList<SolicitudDescuento>();
+			detallesolicitud=new ArrayList<SolicitudDescuento>();
 			if (cur.moveToFirst()) {
 				// Recorremos el cursor hasta que no haya más registros
 				do 
 				{	 					
 				   SolicitudDescuento solicitud=new SolicitudDescuento(); 
-				   solicitud.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.ID))));
-				   solicitud.setReciboId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.OBJ_ENCABEZADO_SOLICITUD_ID))));
-				   solicitud.setFacturaId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.OBJ_FACTURA_ID))));
-				   solicitud.setPorcentaje(Float.parseFloat(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.PORCENTAJE))));
-				   solicitud.setJustificacion(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.JUSTIFICACION)));
-				   solicitud.setFecha((Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.SolicitudDescuento.FECHA)))));
-					
+				   solicitud.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.SolicitudDescuento.ID))));
+				   solicitud.setEncabezadoSolicitudId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_ENCABEZADO_SOLICITUD_ID))));
+				   solicitud.setFacturaId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_FACTURA_ID))));
+				   solicitud.setPorcentaje(Float.parseFloat(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.SolicitudDescuento.PORCENTAJE))));
+				   solicitud.setJustificacion(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.SolicitudDescuento.JUSTIFICACION)));
+				   solicitud.setFecha((Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.SolicitudDescuento.FECHA)))));
+				   detallesolicitud.add(solicitud);
 				} while (cur.moveToNext());
 			}			
 			
@@ -57,11 +59,50 @@ public class ModelSolicitudDescuento
 		}		
 			
 		
-		return null;
+		return detallesolicitud;
 	}
 
-	public synchronized static List<SolicitudDescuento> RegistrarSolicitudes(List<SolicitudDescuento> solicitudes) throws Exception
+	/**
+	 * OBTENER DEL RECIBO LAS SOLICITUDES DE DESCUENTO
+	 * @param idrecibo
+	 */
+	public synchronized static EncabezadoSolicitud obtenerEncabezadoSolicitud(long idrecibo)
 	{
-		return DatabaseProvider.registrarSolicitudesDescuento(solicitudes, NMApp.getContext());
+		SQLiteDatabase bd = Helper.getDatabase(NMApp.getContext());  
+		Cursor cur;
+		ArrayList<SolicitudDescuento> solicitudes=null;
+		EncabezadoSolicitud es=null;
+		try 
+		{
+			StringBuilder sQuery = new StringBuilder(); 			
+			sQuery.append(" SELECT top(1) es.* ");
+			sQuery.append(" FROM EncabezadoSolicitud AS es  ");
+			sQuery.append(" WHERE es.objReciboID = " + idrecibo); 
+			cur = DatabaseProvider.query(bd, sQuery.toString());
+			 
+			if (cur.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registros
+				do 
+				{	 				
+				   es=new EncabezadoSolicitud();
+				   es.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.ID))));
+				   es.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.OBJ_RECIBO_ID))));
+				   es.setCodigoEstado(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.CODIGO_ESTADO)));
+				   es.setDescripcionEstado(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.DESCRIPCION_ESTADO)));
+				   es.setFechaSolicitud(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.FECHA_SOLICITUD))));
+				   es.setDetalles(obtenerDetalleSolicitud(es.getId()));
+				} while (cur.moveToNext());
+			}			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}				
+		return es;
+	}
+ 
+	
+	public synchronized static EncabezadoSolicitud RegistrarSolicituDescuento(EncabezadoSolicitud solicitud) throws Exception
+	{
+		return DatabaseProvider.registrarSolicitudesDescuento(solicitud, NMApp.getContext());
 	}
 }

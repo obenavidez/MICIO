@@ -22,7 +22,7 @@ public class SolicitudDescuento
 		this.fecha = fecha;
 	}
 
-	public SolicitudDescuento(long id, long reciboId, long facturaId,
+	public SolicitudDescuento(long id, long encabezadoSolicitudId,long reciboId, long facturaId,
 			float porcentaje, String justificacion, long fecha,Factura _factura) {
 		super();
 		this.id = id;

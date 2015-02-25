@@ -9,7 +9,8 @@ public class EncabezadoSolicitud {
 	private String descripcionEstado;
 	private long fechaSolicitud;
 	private List<SolicitudDescuento> detalles;
-
+	protected ReciboColector  recibo;
+	
 	public EncabezadoSolicitud() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -25,6 +26,16 @@ public class EncabezadoSolicitud {
 		this.fechaSolicitud = fechaSolicitud;
 	}
 
+	public ReciboColector getRecibo()
+	{
+		return recibo;
+	}
+	
+	public void setRecibo(ReciboColector _recibo)
+	{
+		 this.recibo=_recibo;
+	}
+	
 	public long getId() {
 		return id;
 	}

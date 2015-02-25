@@ -1231,7 +1231,7 @@ public class DatabaseProvider extends ContentProvider
 		return null;
 	}
 	
-	private static EncabezadoSolicitud registrarEncabezadoSolicitud(EncabezadoSolicitud solicitud, Context cnt) throws Exception {
+	private  static EncabezadoSolicitud registrarEncabezadoSolicitud(EncabezadoSolicitud solicitud, Context cnt) throws Exception {
 		SQLiteDatabase bdd = null;
 		try 
 		{
@@ -1310,16 +1310,8 @@ public class DatabaseProvider extends ContentProvider
 		return solicitud;		
 	}
 	
-		
-	public static List<SolicitudDescuento> registrarSolicitudesDescuento(List<SolicitudDescuento> solicitudes, Context cnt) throws Exception {
-		List<SolicitudDescuento> rs=new ArrayList<SolicitudDescuento>();
-		for(SolicitudDescuento solicitud: solicitudes)
-		{
-			SolicitudDescuento sd=registrarSolicitudDescuento(solicitud, NMApp.ctx);
-			if(sd!=null)
-				rs.add(sd);
-		}
-		return rs;
+	public static EncabezadoSolicitud registrarSolicitudesDescuento(EncabezadoSolicitud solicitud, Context cnt) throws Exception {
+			return	registrarEncabezadoSolicitud(solicitud,cnt); 
 	}
 	 
 	@SuppressWarnings("null")

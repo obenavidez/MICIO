@@ -12,6 +12,7 @@ import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ReciboColector;
@@ -48,8 +49,8 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	private ListView lvfacturas;
 	private TextView gridheader;
 	List<Factura> facturas;
-	List<SolicitudDescuento> solicitudes;
-	SolicitudDescuento solicitudseleccionada;
+	EncabezadoSolicitud solicitud;
+	List<SolicitudDescuento> detallesolicitud; 
 	ReciboColector recibo;
 	private GenericAdapter adapter;
 	
@@ -59,6 +60,16 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	private TextView txtentymsg;
 	private Button btnaceptar;
 	private Button btncancelar;
+	
+	private static String DOC_STATUS_REGISTRADO="REGISTRADO";
+	private static String DOC_STATUS_ENVIADO="ENVIADO";	
+	private static String DOC_STATUS_APROBADO="APROBADO";
+	private static String DOC_STATUS_ANULADO="ANULADO";
+	
+	private static String DESC_DOC_STATUS_REGISTRADO="Registrada";
+	private static String DESC_DOC_STATUS_ENVIADO="Enviada";	
+	private static String DESC_DOC_STATUS_APROBADO="Aprobada";
+	private static String DESC_DOC_STATUS_ANULADO="Anulada";
 	
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(String notasolicituddescuento);
@@ -97,48 +108,12 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	{ 	    
 		if(facturas==null)
         	facturas=new ArrayList<Factura>();		
-		solicitudes=new ArrayList<SolicitudDescuento>();
+		detallesolicitud=new ArrayList<SolicitudDescuento>();
+		solicitud=new EncabezadoSolicitud();
 		
 	    lvfacturas = (ListView) findViewById(R.id.sd_lvfacturas);	
-	    gridheader=(TextView) findViewById(R.id.sd_gridheader);  
-	    //txtentymsg=(TextView) findViewById(R.id.sd_txtview_enty);  
-	    gridheader.setText("FACTURAS A SOLICITAR DESCUENTO("+facturas.size()+")");	    
-	    
-//	    lvfacturas.setOnItemClickListener(new OnItemClickListener() 
-//        {
-//            @SuppressLint("NewApi")
-//			@Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
-//            { 		 
-//            	if(positioncache < 0 && adapter != null && adapter.getCount() > 0)
-//            		positioncache = 0;
-//            	if((parent.getChildAt(positioncache))!=null)						            							            		
-//            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
-//            	positioncache=position;				            	
-//            	solicitudseleccionada=(SolicitudDescuento) adapter.getItem(position);	
-//            	adapter.setSelectedPosition(position); 
-//            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));		
-//            	adapter.notifyDataSetChanged();
-//            }
-//        }); 	
-//	    
-//	    lvfacturas.setOnItemLongClickListener(new OnItemLongClickListener() {
-//
-//			@Override
-//			public boolean onItemLongClick(AdapterView<?> parent, View view,
-//					int position, long id) {
-//				if(positioncache < 0 && adapter != null && adapter.getCount() > 0)
-//            		positioncache = 0;
-//            	if((parent.getChildAt(positioncache))!=null)						            							            		
-//            		(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);						            	 
-//            	positioncache=position;				            	
-//            	solicitudseleccionada=(SolicitudDescuento) adapter.getItem(position);	
-//            	adapter.setSelectedPosition(position); 
-//            	view.setBackgroundDrawable(parent.getResources().getDrawable(R.drawable.action_item_selected));		
-//            	adapter.notifyDataSetChanged();
-//				return false;
-//			}
-//		});	
+	    gridheader=(TextView) findViewById(R.id.sd_gridheader);   
+	    gridheader.setText("FACTURAS A SOLICITAR DESCUENTO("+facturas.size()+")");	     
 	    
 	    btnaceptar = ((Button) findViewById(R.id.btn_ok));
 		btnaceptar.setOnClickListener(new android.view.View.OnClickListener() 
@@ -147,7 +122,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			public void onClick(View _v) 
 			{
 				int childCount = lvfacturas.getChildCount();
-
+				boolean enviar=false;
 			    for (int i = 0; i < childCount; i++)
 			    {			    	
 			        View v =lvfacturas.getChildAt(i);
@@ -158,27 +133,26 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			        String tj=j.getText().toString().trim();
 			        
 			        if(td.equals("") && tj.equals(""))
+			        {
+			        	enviar=false;
 			        	continue;
-			        	
+			        }		        	
 			        if(td.equals("") && !tj.equals(""))
 			        {
 			        	d.setError("Debe ingresar el descuento..."); 
+			        	enviar=false;
 			        	break;
 			        } 
 			        else if(!td.equals("") && tj.equals(""))
 			        {
+			        	enviar=false;
 			        	j.setError("Debe justificar el descuento..."); 
 			        	break;
 			        } 
-//			        else
-//			        {
-//			        	SolicitudDescuento sd=(SolicitudDescuento) lvfacturas.getItemAtPosition(i);
-//			        	sd.setPorcentaje(Float.valueOf(td));
-//			        	sd.setJustificacion(tj);
-//      		        	solicitudes.add(i, sd);
-//			        }
+			        enviar=true;
 			    }
-			 
+			 if(enviar)
+				 enviarSolicitud();
 			}
 
 		});
@@ -198,62 +172,72 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	private void enviarSolicitud()
 	{
 		Message msg = new Message(); 
-		msg.obj=solicitudes;
+		msg.obj=solicitud;
 		msg.what=ControllerProtocol.SEND_DATA_FROM_SERVER;
 		NMApp.getController().getInboxHandler().sendMessage(msg); 
 	}
 
 	@Override
-	public boolean handleMessage(Message msg) {
-		 
+	public boolean handleMessage(Message msg) 
+	{		 
 		switch (msg.what) 
 		{
 			case C_DATA: 
-				establecerDatos((msg.obj!=null)? (List<SolicitudDescuento>) msg.obj:new ArrayList<SolicitudDescuento>());
-				break ;
-			case SEND_DATA_FROM_SERVER:
-				break;
+				establecerDatos((msg.obj!=null)? (EncabezadoSolicitud) msg.obj:new EncabezadoSolicitud());
+				break ; 
 		}
 		return false;
 	} 
 	
-	private void establecerDatos(List<SolicitudDescuento> _solicitudes)
-	{
+	private void establecerDatos(EncabezadoSolicitud _solicitud)
+	{		
+		List<SolicitudDescuento> _solicitudes=_solicitud.getDetalles();
 		if(facturas==null || (facturas!=null && facturas.size()==0))
 			return ;
 		boolean add=false;
+		solicitud=_solicitud; 
+			
 		for(Factura f:facturas)
 		{
-			add=false;
-			if(_solicitudes!=null && _solicitudes.size()!=0)
+			add=false;	
+			if(solicitud!=null)
 			{
-				for(SolicitudDescuento s:_solicitudes)
+				if(_solicitudes!=null && _solicitudes.size()!=0)
 				{
-					if(f.getId()==s.getFacturaId())
+					for(SolicitudDescuento s:_solicitudes)
 					{
-						solicitudes.add(s);
-						add=true;
-					}					
-				}
-			}
-				
-			if(!add)
-			{
-				solicitudes.add(new SolicitudDescuento(0,recibo.getId(),f.getId(),0.0f,"",DateUtil.getFecha(),f));
-			}
+						if(f.getId()==s.getFacturaId())
+						{ 
+							detallesolicitud.addAll(_solicitudes);
+							add=true;
+							break;
+						}					
+					}
+				}					
+				if(!add) 
+					detallesolicitud.add(new SolicitudDescuento(0,_solicitud.getId(),recibo.getId(),f.getId(),0.0f,"",DateUtil.getFecha(),f)); 
+			}else
+			{				
+				detallesolicitud.add(new SolicitudDescuento(0,_solicitud.getId(),recibo.getId(),f.getId(),0.0f,"",DateUtil.getFecha(),f));	
+			}	
 			
-		}		 
+		}
+		if(solicitud!=null && solicitud.getId()!=0)
+			solicitud.setDetalles(detallesolicitud);
+		else{ 
+			
+			solicitud=new EncabezadoSolicitud(0,recibo.getId(),DOC_STATUS_REGISTRADO,DESC_DOC_STATUS_REGISTRADO,DateUtil.getFecha());
+			solicitud.setDetalles(detallesolicitud);
+		}
 	    gridheader.setText("FACTURAS A SOLICITAR DESCUENTO("+facturas.size()+")");		
 	    if(adapter==null){
-	    	adapter = new GenericAdapter(parent, SolicitudDescuentoViewHolder.class,solicitudes,  R.layout.list_row2);
+	    	adapter = new GenericAdapter(parent, SolicitudDescuentoViewHolder.class,detallesolicitud,  R.layout.list_row2);
 			lvfacturas.setAdapter(adapter);
 	    }
 	    else
-	    	adapter.notifyDataSetChanged();
-	    	
-		//adapter.setSelectedPosition(0);
-		
-		if (solicitudes.size() ==0) 
+	    	adapter.notifyDataSetChanged(); 
+	    
+		if (detallesolicitud.size() ==0) 
 			txtentymsg.setVisibility(View.VISIBLE);
 		gridheader.setText("DOCUMENTOS A PAGAR(" + adapter.getCount() + ")");
 	}
