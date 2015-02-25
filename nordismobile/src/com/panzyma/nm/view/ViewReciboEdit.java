@@ -1113,15 +1113,15 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 						recibo.setClaveAutorizaDescOca(clave);
 						recibo.setPorcDescOcaColector(percentcollector);
 						for(ReciboDetFactura rec: recibo.getFacturasRecibo()){
-							if(Cobro.validaAplicDescOca(NMApp.getContext(), recibo, rec.getId())){
-								//SOLO SI LA FACTURA APLICA PARA DESCUENTO OCASIONAL
-								rec.setPorcDescOcasional(percentcollector);
+							if(!Cobro.validaAplicDescOca(NMApp.getContext(), recibo, rec.getId())){
+								//SI LA FACTURA NO APLICA PARA DESCUENTO OCASIONAL
+								rec.setPorcDescOcasional(0.00F);
 							}							
 						}
 						Cobro.calcularDetFacturasRecibo(NMApp.getContext(), recibo, cliente, true);
 						CalculaTotales();
 						actualizaTotales();
-						recibo.getFormasPagoRecibo().clear();
+						recibo.getFormasPagoRecibo().clear();						
 					}
 				});
 
@@ -1933,9 +1933,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				if (ammount.isEvaluar()) 
 				{
 					float montoDescuento = 0.00F;
-					montoDescuento = ammount.getValue();
-					factura.setDescontado(montoDescuento);
-					factura.setDescuentoFactura(factura.getDescuentoFactura()+ montoDescuento);
+					montoDescuento = ammount.getValue();					
 					if( !(recibo.getPorcDescOcaColector() == 100) ) {
 						if (montoDescuento > facturaDetalle.getMontoDescEspecificoCalc()) 
 						{
@@ -1957,6 +1955,10 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					}					
 					// Recalcular monto neto
 					facturaDetalle.setPorcDescOcasional(montoDescuento);
+					Cobro.calcularDetFacturasRecibo(contexto, recibo,
+							recibo.getCliente(), true);
+					factura.setDescontado(facturaDetalle.getMontoDescOcasional());
+					factura.setDescuentoFactura(factura.getDescuentoFactura()+ facturaDetalle.getMontoDescOcasional());
 					Cobro.ActualizaMtoNetoFacturasrecibo(recibo);					
 					
 					//facturaDetalle.setMontoDescEspecificoCalc(montoDescuento);

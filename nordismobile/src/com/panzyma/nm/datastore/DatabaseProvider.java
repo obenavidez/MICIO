@@ -1287,7 +1287,7 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.EncabezadoSolicitud.SolicitudDescuento.JUSTIFICACION, solicitud.getJustificacion() );
 			values.put(NMConfig.EncabezadoSolicitud.SolicitudDescuento.FECHA, solicitud.getFecha() );
 			
-			String where = NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_ENCABEZADO_SOLICITUD_ID + "=" + String.valueOf(solicitud.getEncabezadoSolicitudId());
+			String where = NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_ENCABEZADO_SOLICITUD_ID + " = " + String.valueOf(solicitud.getEncabezadoSolicitudId());
 			where += " AND  " + NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_FACTURA_ID + " = " + String.valueOf(solicitud.getFacturaId());
 			
 			bdd.delete(TABLA_SOLICITUD_DESCUENTO, where ,null);

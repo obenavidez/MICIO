@@ -111,6 +111,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
                 {                	
                 	if ( isValid() ) {
                 		mylisterner.onButtonClick(percentcollector, tbox_discoutnkey.getText().toString().trim());
+                		dismiss();
                 	}
                 }
             });
