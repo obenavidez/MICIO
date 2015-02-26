@@ -122,10 +122,11 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			public void onClick(View _v) 
 			{
 				int childCount = lvfacturas.getChildCount();
-				boolean enviar=false;
+				int count=0;
 			    for (int i = 0; i < childCount; i++)
 			    {			    	
 			        View v =lvfacturas.getChildAt(i);
+			        SolicitudDescuento sd=(SolicitudDescuento) lvfacturas.getItemAtPosition(i);
 			        EditText d=((EditText) v.findViewById(R.id.descuento));
 			        EditText j=((EditText) v.findViewById(R.id.justificacion));
 			        
@@ -133,25 +134,24 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			        String tj=j.getText().toString().trim();
 			        
 			        if(td.equals("") && tj.equals(""))
-			        {
-			        	enviar=false;
-			        	continue;
-			        }		        	
+			        	continue;	        	
 			        if(td.equals("") && !tj.equals(""))
 			        {
 			        	d.setError("Debe ingresar el descuento..."); 
-			        	enviar=false;
+			        	d.requestFocus(); 
 			        	break;
 			        } 
 			        else if(!td.equals("") && tj.equals(""))
 			        {
-			        	enviar=false;
 			        	j.setError("Debe justificar el descuento..."); 
+			        	j.requestFocus(); 
 			        	break;
 			        } 
-			        enviar=true;
+			        count+=1;
+			        solicitud.getDetalles().get(i).setPorcentaje(Float.parseFloat(td));
+			        solicitud.getDetalles().get(i).setJustificacion(tj);
 			    }
-			 if(enviar)
+			 if(count>0)
 				 enviarSolicitud();
 			}
 
@@ -173,7 +173,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	{
 		Message msg = new Message(); 
 		msg.obj=solicitud;
-		msg.what=ControllerProtocol.SEND_DATA_FROM_SERVER;
+		msg.what=ControllerProtocol.SOLICITAR_DESCUENTO;
 		NMApp.getController().getInboxHandler().sendMessage(msg); 
 	}
 
@@ -223,11 +223,15 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			
 		}
 		if(solicitud!=null && solicitud.getId()!=0)
+		{
 			solicitud.setDetalles(detallesolicitud);
+			solicitud.setRecibo(recibo);
+		}
 		else{ 
 			
 			solicitud=new EncabezadoSolicitud(0,recibo.getId(),DOC_STATUS_REGISTRADO,DESC_DOC_STATUS_REGISTRADO,DateUtil.getFecha());
 			solicitud.setDetalles(detallesolicitud);
+			solicitud.setRecibo(recibo);
 		}
 	    gridheader.setText("FACTURAS A SOLICITAR DESCUENTO("+facturas.size()+")");		
 	    if(adapter==null){

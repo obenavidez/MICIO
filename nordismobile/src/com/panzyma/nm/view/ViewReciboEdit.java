@@ -1135,10 +1135,10 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	private void solicitardescuento() {
 		
 		// Si se está fuera de covertura, salir
-		if (!SessionManager.isPhoneConnected()) {
-			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
-			return;
-		}
+//		if (!SessionManager.isPhoneConnected()) {
+//			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
+//			return;
+//		}
 		if (!Cobro.validaAplicDescOca(me.getContext(), recibo)) {
 			AppDialog
 					.showMessage(

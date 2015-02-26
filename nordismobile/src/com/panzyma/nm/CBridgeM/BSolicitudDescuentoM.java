@@ -46,8 +46,6 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 			case LOAD_DATA_FROM_LOCALHOST: 
 				onLoadALLDataFromLocalHost(bdl.getLong("idrecibo"));
 				return true;
-			case ControllerProtocol.SEND_DATA_FROM_SERVER: 
-				return true;
 			case SOLICITAR_DESCUENTO:
 				bdl=msg.getData();
 				enviarSolicitudDescuento((EncabezadoSolicitud) msg.obj);
@@ -75,10 +73,9 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 						StringBuilder nota=null;
 						List<SolicitudDescuento> solicitudes=solicitud.getDetalles();
 						int cont=0;
+						nota = new StringBuilder("Solicito aprobación para otorgar descuento a lo siguiente:\n");
 						for(SolicitudDescuento sd:solicitudes)
 						{
-							nota = new StringBuilder("Solicito aprobación para otorgar descuento a lo siguiente:\n");
-							
 							if(sd.getPorcentaje()>0.0 && !sd.getJustificacion().equals("")) 
 							{   
 								cont+=1;
