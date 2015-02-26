@@ -1,7 +1,6 @@
 package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.C_FICHACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.C_SETTING_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_FINISHED;
 import static com.panzyma.nm.controller.ControllerProtocol.C_UPDATE_ITEM_FINISHED;
@@ -76,7 +75,9 @@ import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.view.adapter.InvokeBridge;
+import com.panzyma.nm.viewdialog.TasaCambioFragment;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
 @InvokeBridge(bridgeName = "BReciboM")
@@ -409,10 +410,12 @@ public class ViewRecibo extends ActionBarActivity implements
 					getSupportActionBar().hide();
 					break;
 				case TASA_CAMBIO :
+				
+					transaction = getSupportFragmentManager().beginTransaction();
+					TasaCambioFragment dialog = TasaCambioFragment.newInstance();
+					dialog.show(transaction, "dialog");
 					
-					
-					
-					
+						
 					//CERRAR EL MENU DEL DRAWER
 					drawerLayout.closeDrawers();
 					break;
@@ -997,10 +1000,6 @@ public class ViewRecibo extends ActionBarActivity implements
 			//CERRAR EL MENU DEL DRAWER
 			drawerLayout.closeDrawers();
 			return true;
-		case C_FICHACLIENTE:
-
-			return true;
-
 		case C_UPDATE_STARTED:
 
 			return true;
@@ -1019,11 +1018,6 @@ public class ViewRecibo extends ActionBarActivity implements
 					((ErrorMessage) msg.obj).getMessage(),
 					DialogType.DIALOGO_ALERTA);
 			return true;
-			
-			
-//		case GET_TASA_CAMBIO:
-//			
-//			break;
 
 		}
 		return false;
