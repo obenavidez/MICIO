@@ -2,11 +2,6 @@ package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.C_INVETORY_UPDATED;
-import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_CATALOGOSBASICOS;
-import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_CLIENTES;
-import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_PARAMETROS;
-import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_PRODUCTOS;
-import static com.panzyma.nm.controller.ControllerProtocol.ID_SINCRONIZE_TODOS;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
@@ -30,7 +25,6 @@ import android.os.Message;
 import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -46,7 +40,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -74,7 +67,6 @@ import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
@@ -99,7 +91,6 @@ import com.panzyma.nm.viewdialog.DialogCondicionesNotas;
 import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewdialog.DialogPromociones;
 import com.panzyma.nm.viewdialog.ExonerarImpuesto;
-import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint({ "NewApi", "SimpleDateFormat" })
@@ -463,7 +454,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 				tituloSeccion = opcionesMenu[position];
 				// Ponemos el titulo del Menú
 				getSupportActionBar().setTitle(tituloSeccion);
-				Controller controller = NMApp.getController();
+				Controller controller = com.panzyma.nm.NMApp.getController();
 				switch (position) 
 				{ 
 				
@@ -902,7 +893,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 									salvarPedido(ControllerProtocol.SALVARPEDIDOANTESDESALIR); 									
 								} catch (Exception e) 
 								{
-									NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+									com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 											"Error guardando pedido",
 											e.getMessage(),e.getMessage()));
 								}
@@ -923,7 +914,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 		}else
 		{
 			if(!onEdit)
-				NMApp.getController()._notifyOutboxHandlers(
+				com.panzyma.nm.NMApp.getController()._notifyOutboxHandlers(
 						ControllerProtocol.SALVARPEDIDOANTESDESALIR,
 						0,
 						0, 
@@ -975,7 +966,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 	private void seleccionarCliente() {
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 				.getCodEstado().compareTo("APROBADO") == 0))){
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"No puede modificar el pedido en estado "+pedido
 					.getCodEstado(),
 					"No puede modificar el pedido en estado "+pedido
@@ -1042,7 +1033,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 				.getCodEstado().compareTo("APROBADO") == 0)))
 		{
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"No puede modificar el pedido en estado "+pedido
 					.getCodEstado(),
 					"No puede modificar el pedido en estado "+pedido
@@ -1052,7 +1043,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 
 		if (cliente == null) 
 		{
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Seleccione primero el cliente del pedido.",
 					"Seleccione primero el cliente del pedido.","")); 
 			return;
@@ -1114,7 +1105,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 					.getCodEstado().compareTo("APROBADO") == 0))) 
 
 			{
-				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 						"No puede modificar el pedido en estado "+pedido
 						.getCodEstado(),
 						"No puede modificar el pedido en estado "+pedido
@@ -1175,7 +1166,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 				.getCodEstado().compareTo("APROBADO") == 0))) 
 		{
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"No puede modificar el pedido en estado "+pedido
 					.getCodEstado(),
 					"No puede modificar el pedido en estado "+pedido
@@ -1289,20 +1280,20 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
 					.getCodEstado().compareTo("APROBADO") == 0)))
 			{	
-				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 						"Error aplicando promociones.",
 						"No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado(),""));  
 				return;
 			}
 			if (cliente == null) 
 			{
-				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 						"Error aplicando promociones.",
 						"Seleccione primero el cliente del pedido.",""));   
 				return;
 			}
 			if ((Lvmpproducto == null) || (Lvmpproducto.size() == 0)) {
-				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 						"Error aplicando promociones.",
 						"El pedido no tiene detalle.",""));   
 				return;
@@ -1320,7 +1311,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 
 			if (promociones == null || (promociones!=null && promociones.size() == 0))  
 			{			
-				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 						"Error aplicando promociones.",
 						"No hay Promomociones pendientes que aplicar...",""));  
 				return;
@@ -1353,7 +1344,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 													"0"));
 							if (pproms.length >= maxPromos) 
 							{
-								NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+								com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 										"Error aplicando promociones.",
 										"La promoción no puede aplicarse.\n\rSe ha alcanzado el máximo\n\rde promociones aplicables.",""));   
 								return;
@@ -1369,7 +1360,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 						salvarPedido(ControllerProtocol.APLICARPEDIDOPROMOCIONES); 
 						
 					} else
-						NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+						com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 								"Error aplicando promociones.",
 								"No hay Promomociones pendientes que aplicar...",""));    
 
@@ -1384,7 +1375,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			
 
 		} catch (Exception e) {
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Error aplicando promociones.",
 					e.getMessage(), "" + e.getCause()));  
 		}
@@ -1399,7 +1390,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			
 			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0)))
 			{
-				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 						"Error desaplicando promociones.",
 						"No se puede realizar esta acción cuando el pedido está "+pedido.getCodEstado(), ""));   
 				return;
@@ -1408,7 +1399,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			if (pedido.getPromocionesAplicadas() == null || 
 				(pedido.getPromocionesAplicadas() != null && pedido.getPromocionesAplicadas().length == 0)) 
 			{
-				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 						"Error desaplicando promociones.",
 						"El pedido no tiene promociones aplicadas.", ""));    
 				return;
@@ -1425,7 +1416,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			
 		} catch (Exception e) 
 		{ 
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Error desaplicando promociones.",
 					e.getMessage(), "" + e.getCause()));    
 		}
@@ -1479,13 +1470,13 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 		
 		if (pedido.getObjClienteID() == 0) 
 		{
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Error agreando condiciones y notas.",
 					"Debe agregar primero el cliente", ""));  
 			return;
 		}
 		if (pedido.getDetalles() == null) {
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Error agreando condiciones y notas.",
 					"Debe agregar primero los productos a facturar", ""));  
 			return;
@@ -1581,7 +1572,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			ei.show();
 		} catch (Exception e) {
 			
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Error al exonerar de impuesto.",
 					e.getMessage() , "" + e.getCause()));   
 		}
@@ -1678,7 +1669,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 
 		if (msg != "") 
 		{			
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, ErrorMessage.newInstance(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0, ErrorMessage.newInstance(
 					"Error validando la información",
 					msg, ""));
 			return false;
@@ -1708,7 +1699,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 				if (Promociones.getPromocionesAplican(pedido,
 						me.getContentResolver()).size() > 0) 
 				{
-					NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 							"Error comprobando promociones en el pedido.",
 							"Debe aplicarse al menos una promoción al pedido.", ""));   
 					return false;
@@ -1740,7 +1731,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 
 		} catch (Exception e) {
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Error salvando el pedido.",
 					"" + e.getCause(), ""));   
 		}
@@ -1755,7 +1746,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			UserSessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
 		} catch (Exception e) {
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Error restaurando pedido.",
 					"" + e.getCause(), ""));   
 		}
@@ -1767,10 +1758,9 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 
 		try {
 
-			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido
-					.getCodEstado().compareTo("APROBADO") == 0))) 
+			if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido.getCodEstado().compareTo("APROBADO") == 0))) 
 			{
-				NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 						"No puede modificar el pedido en estado "+pedido
 						.getCodEstado(),
 						"No puede modificar el pedido en estado "+pedido
@@ -1782,28 +1772,41 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 				if (pedido.getNumeroCentral() > 0) 
 				{
 					
-					NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 							"Notificación al enviar pedido",
 							"El pedido ya fue enviado.", ""));   
 					return;
 				}
 			}
 
-			// Si se está fuera de covertura, salir
-			if (!SessionManager.isPhoneConnected())
-				return;
-			if (!isDataValid())
-				return;
-
-			Message msg = new Message();
-			Bundle b = new Bundle();
-			b.putParcelable("pedido", pedido);
-			msg.setData(b);
-			msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
-			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
-
+//			// Si se está fuera de covertura, salir
+//			if (!SessionManager.isPhoneConnected())
+//				return;
+//			if (!isDataValid())
+//				return;
+//
+//			Message msg = new Message();
+//			Bundle b = new Bundle();
+//			b.putParcelable("pedido", pedido);
+//			msg.setData(b);
+//			msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
+//			com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+			
+			if (SessionManager.isPhoneConnected())
+			{
+				
+				if (!isDataValid())
+					return;
+				
+				Message msg = new Message();
+				Bundle b = new Bundle();
+				b.putParcelable("pedido", pedido);
+				msg.setData(b);
+				msg.what = ControllerProtocol.SEND_DATA_FROM_SERVER;
+				com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+			}
 		} catch (Exception e) {
-			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Error al enviar pedido",
 					e.getMessage() , "" + e.getCause()));    
 		}

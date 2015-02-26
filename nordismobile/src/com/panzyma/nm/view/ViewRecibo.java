@@ -329,9 +329,10 @@ public class ViewRecibo extends ActionBarActivity implements
 					} 
 					break;	
 				case ENVIAR_RECIBO: 
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
+					
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
 		            {
-						if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
 						if ("REGISTRADO".equals(recibo_selected.getCodEstado())) {
 							enviarRecibo(recibo_selected);
 						}				

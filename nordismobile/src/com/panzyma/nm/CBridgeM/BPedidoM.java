@@ -27,10 +27,9 @@ import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.bluetooth.BluetoothConnection;
-import com.panzyma.nm.bluetooth.BluetoothManager;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.model.ModelProducto;
@@ -134,6 +133,11 @@ public class BPedidoM extends BBaseM {
 							0,
 							0,
 							pedido); 
+					break;
+				case ControllerProtocol.GET_CLIENTE_POR_ID : 
+					long sucursal_id = b.getLong("sucursal_Id");
+					Cliente cliente=ModelCliente.getClienteBySucursalID(NMApp.getContext().getContentResolver(),sucursal_id,0);
+					Processor.notifyToView(NMApp.getController(),ControllerProtocol.GET_CLIENTE_POR_ID,0,0,cliente);
 					break;
 			}
 			
