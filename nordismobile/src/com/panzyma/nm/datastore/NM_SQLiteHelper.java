@@ -314,14 +314,23 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
             + " FOREIGN KEY(ProductoID) REFERENCES CProducto(Id) " 
  		    + ");";
     
-    String sqlSolicitudDescuento = "CREATE TABLE IF NOT EXISTS SolicitudDescuento ("
+    String sqlEncabezadoSolicitud = "CREATE TABLE IF NOT EXISTS EncabezadoSolicitud ("
             + " id INTEGER PRIMARY KEY AUTOINCREMENT,  " 
             + " objReciboID BLOB,  "
+            + " codigoEstado TEXT,  "
+            + " descripcionEstado TEXT,  "
+            + " fechaSolicitud TEXT, "
+            + " FOREIGN KEY(objReciboID)  REFERENCES Recibo(id) "                        
+ 		    + ");";
+    
+    String sqlSolicitudDescuento = "CREATE TABLE IF NOT EXISTS SolicitudDescuento ("
+            + " id INTEGER PRIMARY KEY AUTOINCREMENT,  " 
+            + " objEncabezadoSolicitudID BLOB,  "
             + " objFacturaID BLOB,  "
             + " porcentaje FLOAT, "
             + " justificacion TEXT, "
             + " fecha TEXT, "
-            + " FOREIGN KEY(objReciboID)  REFERENCES Recibo(id), "
+            + " FOREIGN KEY(objEncabezadoSolicitudID)  REFERENCES EncabezadoSolicitud(id), "
             + " FOREIGN KEY(objFacturaID) REFERENCES Factura(Id) "            
  		    + ");";
     
@@ -345,6 +354,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDrop_ReciboDetalleNC = "DROP TABLE IF EXISTS ReciboDetalleNotaCredito";
     String sqlDrop_ReciboDetalleFormaPago = "DROP TABLE IF EXISTS ReciboDetalleFormaPago ";
     String sqlDrop_SolicitudDescuento = "DROP TABLE IF EXISTS SolicitudDescuento ";
+    String sqlDrop_EncabezadoSolicitud = "DROP TABLE IF EXISTS EncabezadoSolicitud ";
     
     
     String sqlDrop_Pedido = "DROP TABLE IF EXISTS Pedido";
@@ -382,6 +392,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDelete_CProducto = "DELETE FROM  CProducto";
     String sqlDelete_CNota = "DELETE FROM  CNota";
     String sqlDelete_SolicitudDescuento = "DELETE FROM SolicitudDescuento";
+    String sqlDelete_EncabezadoSolicitud = "DELETE FROM EncabezadoSolicitud";
 
     
     public NM_SQLiteHelper(Context contexto, String nombre, CursorFactory factory, int version) 
@@ -446,6 +457,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlReciboDetalleFormaPago);
 			db.execSQL(sqlCProducto);
 			db.execSQL(sqlCNota);
+			db.execSQL(sqlEncabezadoSolicitud);
 			db.execSQL(sqlSolicitudDescuento);
         } 
     	catch (SQLException e) 
@@ -488,6 +500,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlDrop_ReciboDetalleFormaPago);
 			db.execSQL(sqlDrop_CProducto);
 			db.execSQL(sqlDrop_CNota);
+			db.execSQL(sqlDrop_EncabezadoSolicitud);
 			db.execSQL(sqlDrop_SolicitudDescuento);
         } 
     	catch (SQLException e) 

@@ -33,6 +33,8 @@
     <string name="menu_name">Menu Name</string>
     <string name="description">Description</string>
     <string name="price">Price</string>
+    <string name="descuento">% Descuento</string>
+     <string name="justificacion">Justificación</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_search">Buscar</string>
     <string name="fragment1">Fragment 1</string>

@@ -1,6 +1,7 @@
 package com.panzyma.nm.view.viewholder;
 
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.panzyma.nm.auxiliar.DateUtil; 
@@ -10,20 +11,22 @@ import com.panzyma.nordismobile.R;
 
 public class SolicitudDescuentoViewHolder {
 
-	@InvokeView(viewId = R.id.menu_name)
+	@InvokeView(viewId = R.id.factura)
 	public TextView title;
 
-	@InvokeView(viewId = R.id.description)
-	public TextView title2;
+	@InvokeView(viewId = R.id.descuento)
+	public EditText descuento;
 
-	@InvokeView(viewId = R.id.price)
-	public TextView justificacion;
+	@InvokeView(viewId = R.id.justificacion)
+	public EditText justificacion;
 
-	public void mappingData(Object entity) {
+	public void mappingData(Object entity) 
+	{
 		SolicitudDescuento sd = (SolicitudDescuento)entity;
 		title.setText("#"+sd.getFactura().getNoFactura());
-		title2.setText(" FSD: " + DateUtil.idateToStrYY(sd.getFecha())+" % Descuento: "+sd.getPorcentaje());
-		justificacion.setVisibility(View.INVISIBLE);
-		title2.setText(" Justificación: "+sd.getJustificacion());
+		if(sd.getPorcentaje()>0)
+			descuento.setText(""+sd.getPorcentaje()); 
+		if(!sd.getJustificacion().trim().equals(""))
+			justificacion.setText(sd.getJustificacion());
 	}
 }

@@ -20,6 +20,7 @@ import com.panzyma.nm.serviceproxy.CNota;
 import com.panzyma.nm.serviceproxy.CProducto;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.Factura; 
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
@@ -76,8 +77,8 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_CPRODUCTO = Uri.parse(CONTENT_URI+ "/cproducto");
 	public static final Uri CONTENT_URI_CNOTA = Uri.parse(CONTENT_URI+ "/cnota");
 	public static final Uri CONTENT_URI_SOLICITUD_DESCUENTO = Uri.parse(CONTENT_URI+ "/SolicitudDescuento");
+	public static final Uri CONTENT_URI_ENCABEZADO_SOLICITUD = Uri.parse(CONTENT_URI+ "/EncabezadoSolicitud");
 		
-	
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
 	private static final int CLIENTE_ID = 2;
@@ -140,6 +141,9 @@ public class DatabaseProvider extends ContentProvider
 	private static final int SOLICITUDDESCUENTO = 50;
 	private static final int SOLICITUDDESCUENTO_ID = 51;
 	
+	private static final int ENCABEZADOSOLICITUD = 52;
+	private static final int ENCABEZADOSOLICITUD_ID = 53;
+	
 	//Base de datos
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
@@ -172,6 +176,7 @@ public class DatabaseProvider extends ContentProvider
 	public static final String TABLA_CPRODUCTO = "CProducto";	
 	public static final String TABLA_CNOTA = "CNota";
 	public static final String TABLA_SOLICITUD_DESCUENTO = "SolicitudDescuento";
+	public static final String TABLA_ENCABEZADO_SOLICITUD = "EncabezadoSolicitud";
 	
 	
 	static {
@@ -253,6 +258,9 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "SolicitudDescuento", SOLICITUDDESCUENTO);
 		uriMatcher.addURI(AUTHORITY, "SolicitudDescuento/#", SOLICITUDDESCUENTO_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "EncabezadoSolicitud", ENCABEZADOSOLICITUD);
+		uriMatcher.addURI(AUTHORITY, "EncabezadoSolicitud/#", ENCABEZADOSOLICITUD_ID);
 		
 	}
 	
@@ -1223,26 +1231,29 @@ public class DatabaseProvider extends ContentProvider
 		return null;
 	}
 	
-	private static SolicitudDescuento registrarSolicitudDescuento(SolicitudDescuento solicitud, Context cnt) throws Exception {
+	private  static EncabezadoSolicitud registrarEncabezadoSolicitud(EncabezadoSolicitud solicitud, Context cnt) throws Exception {
 		SQLiteDatabase bdd = null;
-		try {
+		try 
+		{
 			ContentValues values;
 			bdd = Helper.getDatabase(cnt);
 			bdd.beginTransaction();
 			values = new ContentValues();
 			
-			values.put(NMConfig.SolicitudDescuento.OBJ_RECIBO_ID, solicitud.getReciboId() );
-			values.put(NMConfig.SolicitudDescuento.OBJ_FACTURA_ID, solicitud.getFacturaId() );
-			values.put(NMConfig.SolicitudDescuento.PORCENTAJE, solicitud.getPorcentaje() );
-			values.put(NMConfig.SolicitudDescuento.JUSTIFICACION, solicitud.getJustificacion() );
-			values.put(NMConfig.SolicitudDescuento.FECHA, solicitud.getFecha() );
+			values.put(NMConfig.EncabezadoSolicitud.OBJ_RECIBO_ID, solicitud.getObjReciboID() );
+			values.put(NMConfig.EncabezadoSolicitud.CODIGO_ESTADO, solicitud.getCodigoEstado() );
+			values.put(NMConfig.EncabezadoSolicitud.DESCRIPCION_ESTADO, solicitud.getDescripcionEstado() );
+			values.put(NMConfig.EncabezadoSolicitud.FECHA_SOLICITUD, solicitud.getFechaSolicitud() );
+		
+			if(solicitud != null && solicitud.getId() == 0) {
+				solicitud.setId(bdd.insert(TABLA_SOLICITUD_DESCUENTO, null, values));
+			} else {
+				solicitud.setId(bdd.update(TABLA_SOLICITUD_DESCUENTO, values, null, null));
+			}
 			
-			String where = NMConfig.SolicitudDescuento.OBJ_RECIBO_ID + "=" + String.valueOf(solicitud.getReciboId());
-			where += " AND  " + NMConfig.SolicitudDescuento.OBJ_FACTURA_ID + " = " + String.valueOf(solicitud.getFacturaId());
-			
-			bdd.delete(TABLA_SOLICITUD_DESCUENTO, where ,null);
-			
-			bdd.insert(TABLA_SOLICITUD_DESCUENTO, null, values);
+			for(SolicitudDescuento detalle : solicitud.getDetalles()) {
+				registrarSolicitudDescuento(detalle, NMApp.getContext());
+			}			
 			
 			bdd.setTransactionSuccessful();
 
@@ -1261,11 +1272,46 @@ public class DatabaseProvider extends ContentProvider
 		return solicitud;		
 	}
 	
-		
-	public static void registrarSolicitudesDescuento(List<SolicitudDescuento> solicitudes, Context cnt) throws Exception {
-		for(SolicitudDescuento solicitud: solicitudes){
-			registrarSolicitudDescuento(solicitud, NMApp.ctx);
+	private static SolicitudDescuento registrarSolicitudDescuento(SolicitudDescuento solicitud, Context cnt) throws Exception {
+		SQLiteDatabase bdd = null;
+		try 
+		{
+			ContentValues values;
+			bdd = Helper.getDatabase(cnt);
+			bdd.beginTransaction();
+			values = new ContentValues();
+			
+			values.put(NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_ENCABEZADO_SOLICITUD_ID, solicitud.getEncabezadoSolicitudId() );
+			values.put(NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_FACTURA_ID, solicitud.getFacturaId() );
+			values.put(NMConfig.EncabezadoSolicitud.SolicitudDescuento.PORCENTAJE, solicitud.getPorcentaje() );
+			values.put(NMConfig.EncabezadoSolicitud.SolicitudDescuento.JUSTIFICACION, solicitud.getJustificacion() );
+			values.put(NMConfig.EncabezadoSolicitud.SolicitudDescuento.FECHA, solicitud.getFecha() );
+			
+			String where = NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_ENCABEZADO_SOLICITUD_ID + " = " + String.valueOf(solicitud.getEncabezadoSolicitudId());
+			where += " AND  " + NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_FACTURA_ID + " = " + String.valueOf(solicitud.getFacturaId());
+			
+			bdd.delete(TABLA_SOLICITUD_DESCUENTO, where ,null);
+			solicitud.setId(bdd.insert(TABLA_SOLICITUD_DESCUENTO, null, values));
+			
+			bdd.setTransactionSuccessful();
+
+			if (bdd != null || (bdd.isOpen())) {
+				bdd.endTransaction();
+				bdd.close();
+			}
+		} catch (Exception e) {
+			throw new Exception(e);
+		} finally {
+			if ( bdd != null && bdd.isOpen() ) {
+				bdd.endTransaction();
+				bdd.close();
+			}
 		}
+		return solicitud;		
+	}
+	
+	public static EncabezadoSolicitud registrarSolicitudesDescuento(EncabezadoSolicitud solicitud, Context cnt) throws Exception {
+			return	registrarEncabezadoSolicitud(solicitud,cnt); 
 	}
 	 
 	@SuppressWarnings("null")

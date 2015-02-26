@@ -16,6 +16,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogProducto;
+import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings("unused")
@@ -133,6 +134,9 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 				viewHolder=(V)convertview.getTag();
 			
 			if(getSelectedPosition() == position) {
+				if( NMApp.getController().getView()!=null && NMApp.getController().getView() instanceof DialogSolicitudDescuento)
+					convertview.setBackgroundResource(android.R.color.transparent); 
+				else
 				convertview.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.action_item_selected));
 			} else {
 				convertview.setBackgroundResource(android.R.color.transparent); 
