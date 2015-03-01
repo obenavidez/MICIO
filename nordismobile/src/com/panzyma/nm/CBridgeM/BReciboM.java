@@ -1253,7 +1253,7 @@ public final class BReciboM extends BBaseM {
 				public void run() 
 				{
 					try {
-						Processor.notifyToView(getController(),	ControllerProtocol.GET_TASA_CAMBIO,0,0,ModelTasaCambio.getTasaCambio(NMApp.getContext(),DateUtil.getToday()));
+						Processor.notifyToView(getController(),	ControllerProtocol.GET_TASA_CAMBIO,0,0,ModelTasaCambio.getTasasDeCambios(NMApp.getContext()));
 					} catch (Exception e) {
 						Log.e(TAG, "Error en aplicar descuento ocasional", e);
 						try {
