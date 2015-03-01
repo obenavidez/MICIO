@@ -389,7 +389,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 							salvarConfiguracion();
 						else if (actionId == ID_SINCRONIZE_PARAMETROS) 
 						{
-							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 				            {
 								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_PARAMETROS);
 	
@@ -398,14 +398,14 @@ public class ViewConfiguracion extends ActionBarActivity implements
 						} 
 						else if (actionId == ID_SINCRONIZE_CATALOGOSBASICOS) 
 						{
-							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 				            {
 								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_CATALOGOSBASICOS);
 				            }
 						} 
 						else if (actionId == ID_SINCRONIZE_CLIENTES)
 						{
-							if(NMNetWork.isPhoneConnected(NMApp.getContext())/*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 				            {
 								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_CLIENTES);
 				            }
@@ -413,14 +413,14 @@ public class ViewConfiguracion extends ActionBarActivity implements
 						} 
 						else if (actionId == ID_SINCRONIZE_PRODUCTOS) 
 						{
-							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 				            {
 								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_PRODUCTOS);
 				            }
 						} 
 						else if (actionId == ID_SINCRONIZE_PROMOCIONES) 
 						{
-							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 				            {
 								Message msg = new Message();
 								Bundle b = new Bundle();
@@ -432,7 +432,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 						} 
 						else if (actionId == ID_SINCRONIZE_TODOS) 
 						{
-							if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+							if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 				            {
 								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_TODOS);

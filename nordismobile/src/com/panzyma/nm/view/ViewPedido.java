@@ -272,15 +272,21 @@ public class ViewPedido extends ActionBarActivity implements
 						abrirPedido(true);
 						break;
 					case ENVIAR_PEDIDO:
-						enviarPedido(true);
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							enviarPedido(true);
+			            }
 						break;
-					case REFRESCAR_PEDIDO:					
-						msg = new Message();
-						b = new Bundle();
-						b.putLong("refpedido", pedido_selected.getNumero());
-						msg.setData(b);
-						msg.what =ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
-						NMApp.getController().getInboxHandler().sendMessage(msg);					
+					case REFRESCAR_PEDIDO:		
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							msg = new Message();
+							b = new Bundle();
+							b.putLong("refpedido", pedido_selected.getNumero());
+							msg.setData(b);
+							msg.what =ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
+							NMApp.getController().getInboxHandler().sendMessage(msg);		
+			            }
 						break;
 					case BORRAR_PEDIDO:
 	
@@ -313,14 +319,16 @@ public class ViewPedido extends ActionBarActivity implements
 	
 					case CUENTAS_POR_COBRAR:
 						
-						if (NMNetWork.isPhoneConnected(NMApp.getContext())){
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
 							mandarObtenerPedido(CUENTAS_POR_COBRAR);
 						}
 						
 						//mostrarCuentasPorCobrar(true);
 						break;
 					case CONSULTA_VENTAS:
-						if (NMNetWork.isPhoneConnected(NMApp.getContext())){
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
 							fragmentActive = FragmentActive.CONSULTA_VENTAS;
 							// OCULTAR LA BARRA DE ACCION
 							pedido_selected = customArrayAdapter.getItem(positioncache);
@@ -429,19 +437,19 @@ public class ViewPedido extends ActionBarActivity implements
 //						}
 						break;
 					case FICHA_CLIENTE :
-						pos = customArrayAdapter.getSelectedPosition();
-						pedido_selected = customArrayAdapter.getItem(pos);
-						if(pedido_selected!=null)
+						if(pedido_selected==null)
 						{
-							if (NMNetWork.isPhoneConnected(NMApp.getContext())){
-				            	mandarObtenerPedido(FICHA_CLIENTE);				            	
-				            }
-						}
-						else{
 							ShowNoRecords();
+							return;
 						}
 						
-						drawerLayout.closeDrawers();
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+				        {
+				          	mandarObtenerPedido(FICHA_CLIENTE);				            	
+				        }
+						
+						
+						
 						break;
 					case CERRAR:
 						drawerLayout.closeDrawers();

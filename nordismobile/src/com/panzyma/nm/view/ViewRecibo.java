@@ -75,7 +75,6 @@ import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
-import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.TasaCambioFragment;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -332,7 +331,7 @@ public class ViewRecibo extends ActionBarActivity implements
 				case ENVIAR_RECIBO: 
 					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
 					
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 		            {
 						if ("REGISTRADO".equals(recibo_selected.getCodEstado())) {
 							enviarRecibo(recibo_selected);
@@ -377,6 +376,7 @@ public class ViewRecibo extends ActionBarActivity implements
 							mytransaction.replace(R.id.fragment_container,ficha);
 							mytransaction.commit();	
 						}
+						gridheader.setVisibility(View.INVISIBLE);
 		            }
 					/*
 					if (findViewById(R.id.fragment_container) != null) 
@@ -385,29 +385,30 @@ public class ViewRecibo extends ActionBarActivity implements
 					}
 					mytransaction.addToBackStack(null);
 					mytransaction.commit();*/	
-					gridheader.setVisibility(View.INVISIBLE);
+					
 					
 					//OCULTAR LA BARRA DE ACCION
 					//getSupportActionBar().hide();
 					break;
 				case CUENTAS_POR_COBRAR:
-					fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
-					if (findViewById(R.id.fragment_container) != null) 
-					{	
-						cuentasPorCobrar = new CuentasPorCobrarFragment();						
-						Bundle msg = new Bundle();
-						msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
-						msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
-						cuentasPorCobrar.setArguments(msg);	
-						transaction = getSupportFragmentManager().beginTransaction();
-						transaction.replace(R.id.fragment_container,cuentasPorCobrar);
-						transaction.addToBackStack(null);
-						transaction.commit();						
-					}
-					//CERRAR EL MENU DEL DRAWER
-					drawerLayout.closeDrawers();
-					//OCULTAR LA BARRA DE ACCION
-					getSupportActionBar().hide();
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+		            {
+						fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
+						if (findViewById(R.id.fragment_container) != null) 
+						{	
+							cuentasPorCobrar = new CuentasPorCobrarFragment();						
+							Bundle msg = new Bundle();
+							msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
+							msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
+							cuentasPorCobrar.setArguments(msg);	
+							transaction = getSupportFragmentManager().beginTransaction();
+							transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+							transaction.addToBackStack(null);
+							transaction.commit();						
+						}
+						//OCULTAR LA BARRA DE ACCION
+						getSupportActionBar().hide();
+		            }
 					break;
 				case TASA_CAMBIO :
 				

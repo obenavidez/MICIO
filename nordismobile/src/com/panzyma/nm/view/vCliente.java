@@ -13,7 +13,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,7 +29,6 @@ import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +43,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
@@ -507,8 +506,12 @@ public class vCliente extends ActionBarActivity implements
 								DialogType.DIALOGO_ALERTA);
 						return;
 					}
-					fragmentActive = FragmentActive.FICHACLIENTE;
-					LOAD_FICHACLIENTE_FROMSERVER();
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+		            {
+						fragmentActive = FragmentActive.FICHACLIENTE;
+						LOAD_FICHACLIENTE_FROMSERVER();
+		            }
+					
 					break;
 				case CONSULTAR_CUENTA_COBRAR:
 					if (cliente_selected == null) {
@@ -517,8 +520,12 @@ public class vCliente extends ActionBarActivity implements
 								DialogType.DIALOGO_ALERTA);
 						return;
 					}
-					fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
-					LOAD_CUENTASXPAGAR();
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+		            {
+						fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+						LOAD_CUENTASXPAGAR();
+		            }
+					
 					break;
 				case SINCRONIZAR_ITEM:
 					if (cliente_selected == null) {
@@ -527,10 +534,18 @@ public class vCliente extends ActionBarActivity implements
 								DialogType.DIALOGO_ALERTA);
 						return;
 					}
-					UPDATE_SELECTEDITEM_FROMSERVER();
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+		            {
+						UPDATE_SELECTEDITEM_FROMSERVER();
+		            }
+					
 					break;
 				case SINCRONIZAR_TODOS:
-					Load_Data(LOAD_DATA_FROM_SERVER);
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+		            {
+						Load_Data(LOAD_DATA_FROM_SERVER);
+		            }
+					
 					break;
 				case CERRAR:
 					FINISH_ACTIVITY();

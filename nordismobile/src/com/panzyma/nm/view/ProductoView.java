@@ -534,6 +534,7 @@ public class ProductoView extends ActionBarActivity implements
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 			drawerList.setItemChecked(position, true);
+			drawerLayout.closeDrawers();
 			tituloSeccion = opcionesMenu[position];
 			getSupportActionBar().setTitle(tituloSeccion);
 			//SELECCIONAR LA POSICION DEL PRODUCTO SELECCIONADO ACTUALMENTE
@@ -542,54 +543,57 @@ public class ProductoView extends ActionBarActivity implements
 			product_selected =customArrayAdapter.getItem(positioncache);
 			switch (position) {
 		    case FICHA_DETALLE :
-			    if(product_selected== null){
+			    if(product_selected== null)
+			    {
 			        drawerLayout.closeDrawers();
 			        AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 			        return;
 			    }
-//			    if (!NMNetWork.isPhoneConnected(com.panzyma.nm.NMApp.getContext())&& !NMNetWork.CheckConnection(com.panzyma.nm.NMApp.getController())) {
-//			     AppDialog.showMessage(pv,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-//			     return;
-//			    }
-			    fragmentActive = FragmentActive.FICHAPRODUCTOFRAGMENT;
-			    Bundle args = new Bundle();
 			    
-			    args.putInt(FichaProductoFragment.ARG_POSITION, position);
-			    args.putLong(FichaProductoFragment.ARG_PRODUCTO, product_selected.Id);
-			    
-			    FichaProductoFragment productFrag;
-			    
-			    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-			    if (findViewById(R.id.dynamic_fragment) != null) {
-			        productFrag = (FichaProductoFragment) getSupportFragmentManager().findFragmentById(R.id.dynamic_fragment);
-			        if (productFrag != null) {
-			            //productFrag.updateArticleView(product_selected, position);
-			        }
-			        else {
-			            productFrag = new FichaProductoFragment();
-			            productFrag.setArguments(args);
-			            transaction.add(R.id.dynamic_fragment, productFrag);
-			            transaction.addToBackStack(null);
-			        }
-			        
-			    }
-			    else {
-			        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-			        gridheader.setVisibility(View.INVISIBLE);
-			        if (fragment instanceof ListaFragment) {
-			            productFrag = new FichaProductoFragment();
-			            productFrag.setArguments(args);
-			            transaction.replace(R.id.fragment_container, productFrag);
-			            transaction.addToBackStack(null);
-			        }
-			    }
-			    //Commit the transaction transaction.commit();
-			    transaction.commit();
-			    drawerLayout.closeDrawers();
-		    break;
+			    if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+	            {
+				    fragmentActive = FragmentActive.FICHAPRODUCTOFRAGMENT;
+				    Bundle args = new Bundle();
+				    
+				    args.putInt(FichaProductoFragment.ARG_POSITION, position);
+				    args.putLong(FichaProductoFragment.ARG_PRODUCTO, product_selected.Id);
+				    
+				    FichaProductoFragment productFrag;
+				    
+				    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+				    if (findViewById(R.id.dynamic_fragment) != null) {
+				        productFrag = (FichaProductoFragment) getSupportFragmentManager().findFragmentById(R.id.dynamic_fragment);
+				        if (productFrag != null) {
+				            //productFrag.updateArticleView(product_selected, position);
+				        }
+				        else 
+				        {
+				            productFrag = new FichaProductoFragment();
+				            productFrag.setArguments(args);
+				            transaction.add(R.id.dynamic_fragment, productFrag);
+				            transaction.addToBackStack(null);
+				        }
+				        
+				    }
+				    else 
+				    {
+				        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+				        gridheader.setVisibility(View.INVISIBLE);
+				        if (fragment instanceof ListaFragment) {
+				            productFrag = new FichaProductoFragment();
+				            productFrag.setArguments(args);
+				            transaction.replace(R.id.fragment_container, productFrag);
+				            transaction.addToBackStack(null);
+				        }
+				    }
+				    //Commit the transaction transaction.commit();
+				    transaction.commit();
+	            }
+
+			break;
 		    case BONIFICACIONES:
-		    if(product_selected== null){
-		        drawerLayout.closeDrawers();
+		    if(product_selected== null)
+		    {
 		        AppDialog.showMessage(pv,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 		        return;
 		    }
@@ -622,14 +626,10 @@ public class ProductoView extends ActionBarActivity implements
 		    drawerLayout.closeDrawers();
 		    break;
 		    case SINCRONIZE_ALL_PRODUCTO :
-		    if(!NMNetWork.isPhoneConnected(NMApp.getContext()) && !NMNetWork.CheckConnection(NMApp.getController())){
-		        drawerLayout.closeDrawers();
-		        AppDialog.showMessage(pv,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-		        return;
+		    if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+	        {
+			    Load_Data(LOAD_DATA_FROM_SERVER);
 		    }
-		    Load_Data(LOAD_DATA_FROM_SERVER);
-		    //SINCRONIZE_PRODUCTOS();
-		    drawerLayout.closeDrawers();
 		    break;
 		    case CERRAR :
 		    drawerLayout.closeDrawers();
