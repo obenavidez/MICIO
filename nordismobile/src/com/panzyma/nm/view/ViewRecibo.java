@@ -1189,11 +1189,15 @@ public class ViewRecibo extends ActionBarActivity implements
 	private  void enviarImprimirRecibo(final ReciboColector recibo) 
 	{
 		
-		if (recibo != null && !recibo.getCodEstado().equals("PAGADO")) 
-		{
-			showStatus("No se puede imprimir recibos en estado "+ recibo.getCodEstado(), true);
-			return;
-		}
+//		if (recibo != null && !recibo.getCodEstado().equals("PAGADO")) 
+//		{
+//			showStatus("No se puede imprimir recibos en estado "+ recibo.getCodEstado(), true);
+//			return;
+//		}
+		if (recibo.getCodEstado().compareTo("REGISTRADO") == 0) {
+			showStatus("El recibo no ha sido enviado.",true);
+            return;
+        }
 		
 		runOnUiThread(new Runnable() {
 			@Override
