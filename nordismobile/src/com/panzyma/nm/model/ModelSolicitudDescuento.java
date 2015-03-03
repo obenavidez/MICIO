@@ -50,7 +50,9 @@ public class ModelSolicitudDescuento
 				   solicitud.setPorcentaje(Float.parseFloat(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.SolicitudDescuento.PORCENTAJE))));
 				   solicitud.setJustificacion(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.SolicitudDescuento.JUSTIFICACION)));
 				   solicitud.setFecha((Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.SolicitudDescuento.FECHA)))));
+				   //solicitud.setFactura(ModelDocumento.getFacturaByID(NMApp.getContext().getContentResolver(),solicitud.getFacturaId()));
 				   detallesolicitud.add(solicitud);
+				   
 				} while (cur.moveToNext());
 			}			
 			
@@ -73,14 +75,19 @@ public class ModelSolicitudDescuento
 		ArrayList<SolicitudDescuento> solicitudes=null;
 		EncabezadoSolicitud es=null;
 		try 
-		{
+		{			
 			StringBuilder sQuery = new StringBuilder(); 			
-			sQuery.append(" SELECT top(1) es.* ");
-			sQuery.append(" FROM EncabezadoSolicitud AS es  ");
+			sQuery.append(" SELECT es.id,");
+			sQuery.append("        es.objReciboID,");
+			sQuery.append("        es.codigoEstado,");
+			sQuery.append("        es.descripcionEstado,");
+			sQuery.append("        es.fechaSolicitud ");
+			sQuery.append(" FROM  EncabezadoSolicitud es  ");
 			sQuery.append(" WHERE es.objReciboID = " + idrecibo); 
 			cur = DatabaseProvider.query(bd, sQuery.toString());
 			 
-			if (cur.moveToFirst()) {
+			if (cur.moveToFirst()) 
+			{
 				// Recorremos el cursor hasta que no haya más registros
 				do 
 				{	 				
@@ -91,11 +98,12 @@ public class ModelSolicitudDescuento
 				   es.setDescripcionEstado(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.DESCRIPCION_ESTADO)));
 				   es.setFechaSolicitud(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.FECHA_SOLICITUD))));
 				   es.setDetalles(obtenerDetalleSolicitud(es.getId()));
+				   break;
 				} while (cur.moveToNext());
 			}			
-			
+		
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}				
 		return es;
 	}

@@ -94,7 +94,8 @@ public class ViewRecibo extends ActionBarActivity implements
 			request_code = requestcode;
 			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)	&& data != null)
 				establecer(data.getParcelableExtra("recibo"));
-		} catch (Exception e) {			
+		} catch (Exception e) 
+		{			
 			e.printStackTrace();
 		}
 		if(drawerLayout!=null && drawerLayout.isShown())drawerLayout.closeDrawers();

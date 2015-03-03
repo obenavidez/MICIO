@@ -1,11 +1,14 @@
 package com.panzyma.nm.viewdialog;
  
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.InvokeBridge;
@@ -24,13 +27,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText; 
+import android.widget.TextView;
 @InvokeBridge(bridgeName = "BReciboM")
 public class AplicarDescuentoOcasional extends DialogFragment implements Handler.Callback
 {
-	
-
-	
 	private static AplicarDescuentoOcasional ado;
+	private EncabezadoSolicitud solicitud;
+	Message msg;
 	public static AplicarDescuentoOcasional newInstance(ReciboColector recibo) 
 	{
 		if(ado==null)
@@ -55,13 +58,19 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	private String _clave;
 	private Float percentcollector=0.0f;
 	private NMApp nmapp;
+	private TextView tview_discoutnkey;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState); 
+		super.onCreate(savedInstanceState);   
+		NMApp.getController().setView(this);
 		recibo=getArguments().getParcelable("recibo");
-		_clave="";
+		_clave=""; 
+        msg = new Message(); 
+		msg.what=ControllerProtocol.OBTENERDESCUENTO;
+		msg.obj=recibo.getId();
+		NMApp.getController().getInboxHandler().sendMessage(msg); 
 	}
 	
 	@SuppressLint("InflateParams") 
@@ -70,15 +79,19 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
     {
 		parent=(ViewReciboEdit) getActivity();
 		NMApp.getController().setView(this);
-    	
     	AlertDialog.Builder builder = new AlertDialog.Builder(parent); 
     	LayoutInflater inflater = parent.getLayoutInflater();
-		view = inflater.inflate(R.layout.oca_discount_dialog, null);
-		tbox_discoutnkey =(EditText) view.findViewById(R.id.editkey);
+		view = inflater.inflate(R.layout.oca_discount_dialog, null); 
 		tbox_collectorpercent =(EditText) view.findViewById(R.id.editpercent);
-		tbox_collectorpercent.setText("0.0");
-		//if( (recibo.getPorcDescOcaColector()== 100) || SessionManager.isPhoneConnected())
-		tbox_discoutnkey.setVisibility(View.GONE);
+		tbox_collectorpercent.setText("0");
+		
+		if(!SessionManager.isPhoneConnected())
+		{
+			tbox_discoutnkey =(EditText) view.findViewById(R.id.editkey);
+			tbox_discoutnkey.setVisibility(View.VISIBLE);
+			tview_discoutnkey =(TextView) view.findViewById(R.id.txtkey);
+			tview_discoutnkey.setVisibility(View.VISIBLE);
+		} 
 		builder.setTitle("Aplicar Descuento Ocasional");
 		builder.setView(view);
 		builder.setPositiveButton("AGREGAR", new OnClickListener() {
@@ -143,29 +156,28 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	       //Si el porcentaje es menor de 100, pedir clave
 	       if (percentcollector < 100) 
 	       {
-	    	   if( SessionManager.isPhoneConnected() ){
-	    		   if ( tbox_discoutnkey != null && tbox_discoutnkey.isShown()) 
+	    	   if(tbox_discoutnkey!=null)
+	    	   {
+	    		   _clave=tbox_discoutnkey.getText().toString().trim();
+	                if (_clave.compareTo("") == 0) 
+	                {
+	                	_clave="";
+	                	AppDialog.showMessage(parent,"","Favor ingresar clave de autorización.",DialogType.DIALOGO_ALERTA);
+	                    return false;
+	                }   
+	    		   
+	    	   } else 
 		           {
-		        	   _clave=tbox_discoutnkey.getText().toString().trim();
-		                if (_clave.compareTo("") == 0) 
-		                {
-		                	_clave="";
-		                	AppDialog.showMessage(parent,"","Favor ingresar clave de autorización.",DialogType.DIALOGO_ALERTA);
-		                    return false;
-		                } 
-		            } 
-		           else 
-		           {
-			        	Message msg = new Message();
+	    		   		if(!SessionManager.isPhoneConnected())
+	    		   			return false;
+			        	msg = new Message();
 			   			Bundle b = new Bundle();
 			   			b.putParcelable("recibo",recibo); 
 			   			msg.setData(b);
 			   			msg.what=ControllerProtocol.APLICAR_DESCUENTO;
-			   			NMApp.getController().getInboxHandler().sendMessage(msg);     		
-		           }
-	    	   } 
-	           //Validar que clave sea válida
-	           //if (verificarClaveDescOca(txtClave.getText().trim()) != 1) return false;
+			   			NMApp.getController().getInboxHandler().sendMessage(msg);  
+			   			return false;
+		           }    	  
 	       }
 	       return true;
 	}
@@ -198,7 +210,17 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
             	AppDialog.showMessage(parent,"","La solicitud ha sido denegada.",DialogType.DIALOGO_ALERTA);
                 return false;
             }
-            
+            if(solicitud!=null)
+            {
+            	solicitud.setCodigoEstado(DialogSolicitudDescuento.DOC_STATUS_APROBADO);
+            	solicitud.setDescripcionEstado(DialogSolicitudDescuento.DESC_DOC_STATUS_APROBADO);
+            	_clave = resp;
+            	msg = new Message();
+	   			msg.what=ControllerProtocol.ACTUALIZARDESCUENTO;
+	   		    msg.obj=solicitud;
+	   			NMApp.getController().getInboxHandler().sendMessage(msg);    
+            	return false;
+            }
             _clave = resp;
             return true;    
         }
@@ -221,6 +243,17 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		{
 			case ControllerProtocol.REQUEST_APLICAR_DESCUENTO:	
 				if(verificarAutorizacionDesc(msg.obj.toString()))
+				{
+					mylisterner.onButtonClick(percentcollector,_clave);
+					dismiss();
+				}
+				break;
+			case ControllerProtocol.OBTENERDESCUENTO:
+				if(msg.obj!=null)
+					solicitud=(EncabezadoSolicitud) (msg.obj);
+				break;
+			case ControllerProtocol.REQUEST_ACTUALIZARDESCUENTO:
+				if(msg.obj!=null && msg.obj instanceof EncabezadoSolicitud)
 				{
 					mylisterner.onButtonClick(percentcollector,_clave);
 					dismiss();

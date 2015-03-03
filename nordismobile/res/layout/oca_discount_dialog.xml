@@ -38,7 +38,7 @@
         android:layout_marginTop="15dp"
        	android:layout_marginBottom="8dp"
         android:ems="10"
-        android:inputType="numberDecimal" />
+        android:inputType="number" />
 
 	<TextView
 	    android:id="@+id/txtkey"
@@ -48,6 +48,7 @@
 	    android:layout_marginBottom="8dp"
 	    android:layout_marginTop="25dp"
 	    android:layout_marginLeft="4dp"
+	    android:visibility="gone"
 	    android:ems="5"
 	    android:text="@string/txt_ocational_discount_key" />
     
@@ -60,6 +61,7 @@
         android:layout_marginTop="16dp"
        	android:layout_marginBottom="8dp"
         android:ems="10"
+        android:visibility="gone"
         android:inputType="text"
         />
  

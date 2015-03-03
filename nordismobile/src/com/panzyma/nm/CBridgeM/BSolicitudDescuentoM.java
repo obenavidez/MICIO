@@ -8,20 +8,15 @@ import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NotificationMessage;
+import com.panzyma.nm.auxiliar.ErrorMessage; 
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.model.ModelConfiguracion;
+import com.panzyma.nm.controller.ControllerProtocol; 
 import com.panzyma.nm.model.ModelRecibo;
-import com.panzyma.nm.model.ModelSolicitudDescuento;
-import com.panzyma.nm.serviceproxy.CCNotaCredito;
-import com.panzyma.nm.serviceproxy.CCNotaDebito;
-import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
-import com.panzyma.nm.serviceproxy.Factura;
-import com.panzyma.nm.serviceproxy.ReciboColector;
+import com.panzyma.nm.model.ModelSolicitudDescuento; 
+import com.panzyma.nm.serviceproxy.EncabezadoSolicitud; 
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
+import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
 
 import android.os.Bundle;
 import android.os.Message;
@@ -66,15 +61,19 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 					
 					try 
 					{   
+						int cont=0;
+						StringBuilder nota=null;
 						String credenciales="";
+						
 						credenciales = SessionManager.getCredentials(); 
 						if(credenciales=="")
 							return;
-						StringBuilder nota=null;
-						List<SolicitudDescuento> solicitudes=solicitud.getDetalles();
-						int cont=0;
-						nota = new StringBuilder("Solicito aprobación para otorgar descuento a lo siguiente:\n");
-						for(SolicitudDescuento sd:solicitudes)
+						 
+						List<SolicitudDescuento> _detalles=solicitud.getDetalles();
+						List<SolicitudDescuento> detalles=new ArrayList<SolicitudDescuento>();
+						nota = new StringBuilder("Solicito aprobación para otorgar descuento a lo siguiente:\n"); 
+						
+						for(SolicitudDescuento sd:_detalles)
 						{
 							if(sd.getPorcentaje()>0.0 && !sd.getJustificacion().equals("")) 
 							{   
@@ -85,26 +84,31 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 									nota.append("   Documento : Factura # ");
 								nota.append(sd.getFactura().getNoFactura());
 								nota.append("\t / Justificación: ");
-								nota.append(sd.getJustificacion()+"\n");
+								nota.append(sd.getJustificacion()+"\n");								
+								detalles.add(sd);
 							}
-							else
-								continue; 
+							  
 							
 						} 
-						
+						solicitud.setDetalles(detalles);
+						if(solicitud!=null && solicitud.getDetalles()!=null && solicitud.getDetalles().size()!=0)
+							RegistrarSolicituDescuento(solicitud);
+						else
+							return;
 						
 						long rs = ModelRecibo.solicitarDescuentoOcacional(credenciales, solicitud.getRecibo(), nota.toString());
 						if(rs!= 0)
 						{
-//							Processor.notifyToView(
-//								getController(),
-//								ControllerProtocol.NOTIFICATION,
-//								0,
-//								0,
-//								"La solicitud descuento fue enviada a la central con exito");
-//							ModelConfiguracion.guardarSolicitudDescuentoRec(getContext(),
-//									recibo.getReferencia(), 
-//									notas);
+							solicitud.setCodigoEstado(DialogSolicitudDescuento.DOC_STATUS_ENVIADO);
+							solicitud.setDescripcionEstado(DialogSolicitudDescuento.DESC_DOC_STATUS_ENVIADO);
+							RegistrarSolicituDescuento(solicitud);
+							
+							Processor.notifyToView(
+								getController(),
+								ControllerProtocol.REQUEST_SOLICITUD_DESCUENTO,
+								0,
+								0,
+								nota.toString()); 
 						}
 						
 						
@@ -131,13 +135,8 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 				e.printStackTrace(); 
 		}		
 		 
-	}	
+	}	  
 	
-	private void onSendDataToServer(List<SolicitudDescuento> solicitudes)
-	{
-		
-	}
-
 	private void onSaveDataToLocalHost(EncabezadoSolicitud solicitud) 
 	{		
 		try 
@@ -158,7 +157,7 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 		} 
 		
 		
-	}
+	} 
 	
 	private EncabezadoSolicitud RegistrarSolicituDescuento(EncabezadoSolicitud solicitud) 
 	{		

@@ -148,7 +148,7 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 11; 
+	private static final int BD_VERSION = 12; 
 	
 	public static final String TABLA_CLIENTE = "Cliente";
 	public static final String TABLA_FACTURA = "Factura";
@@ -302,7 +302,8 @@ public class DatabaseProvider extends ContentProvider
 		return c;
 	}
 	
-	public abstract static class Helper {
+	public abstract static class Helper 
+	{
 		
 		private static SQLiteDatabase db;
 
@@ -1246,14 +1247,16 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.EncabezadoSolicitud.FECHA_SOLICITUD, solicitud.getFechaSolicitud() );
 		
 			if(solicitud != null && solicitud.getId() == 0) {
-				solicitud.setId(bdd.insert(TABLA_SOLICITUD_DESCUENTO, null, values));
+				solicitud.setId(bdd.insert(TABLA_ENCABEZADO_SOLICITUD, null, values));
 			} else {
-				solicitud.setId(bdd.update(TABLA_SOLICITUD_DESCUENTO, values, null, null));
+				solicitud.setId(bdd.update(TABLA_ENCABEZADO_SOLICITUD, values, null, null));
 			}
 			
 			for(SolicitudDescuento detalle : solicitud.getDetalles()) {
-				registrarSolicitudDescuento(detalle, NMApp.getContext());
-			}			
+				detalle.setEncabezadoSolicitudId(solicitud.getId());
+				registrarSolicitudDescuento(detalle, NMApp.getContext(),bdd); 		
+			}
+				
 			
 			bdd.setTransactionSuccessful();
 
@@ -1272,13 +1275,11 @@ public class DatabaseProvider extends ContentProvider
 		return solicitud;		
 	}
 	
-	private static SolicitudDescuento registrarSolicitudDescuento(SolicitudDescuento solicitud, Context cnt) throws Exception {
-		SQLiteDatabase bdd = null;
+	private static SolicitudDescuento registrarSolicitudDescuento(SolicitudDescuento solicitud, Context cnt,SQLiteDatabase bdd) throws Exception {
+		
 		try 
 		{
 			ContentValues values;
-			bdd = Helper.getDatabase(cnt);
-			bdd.beginTransaction();
 			values = new ContentValues();
 			
 			values.put(NMConfig.EncabezadoSolicitud.SolicitudDescuento.OBJ_ENCABEZADO_SOLICITUD_ID, solicitud.getEncabezadoSolicitudId() );
@@ -1293,20 +1294,9 @@ public class DatabaseProvider extends ContentProvider
 			bdd.delete(TABLA_SOLICITUD_DESCUENTO, where ,null);
 			solicitud.setId(bdd.insert(TABLA_SOLICITUD_DESCUENTO, null, values));
 			
-			bdd.setTransactionSuccessful();
-
-			if (bdd != null || (bdd.isOpen())) {
-				bdd.endTransaction();
-				bdd.close();
-			}
 		} catch (Exception e) {
 			throw new Exception(e);
-		} finally {
-			if ( bdd != null && bdd.isOpen() ) {
-				bdd.endTransaction();
-				bdd.close();
-			}
-		}
+		} 
 		return solicitud;		
 	}
 	

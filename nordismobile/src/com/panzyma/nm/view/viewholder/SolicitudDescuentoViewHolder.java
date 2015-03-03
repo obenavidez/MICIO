@@ -7,6 +7,8 @@ import android.widget.TextView;
 import com.panzyma.nm.auxiliar.DateUtil; 
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 import com.panzyma.nm.view.adapter.InvokeView;
+import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
+import com.panzyma.nm.viewdialog.DialogoConfirmacion;
 import com.panzyma.nordismobile.R;
 
 public class SolicitudDescuentoViewHolder {
@@ -28,5 +30,13 @@ public class SolicitudDescuentoViewHolder {
 			descuento.setText(""+sd.getPorcentaje()); 
 		if(!sd.getJustificacion().trim().equals(""))
 			justificacion.setText(sd.getJustificacion());
+		
+		if(DialogSolicitudDescuento.DOC_STATUS_REGISTRADO!=sd.getStatus())
+		{
+			descuento.setEnabled(false);
+			justificacion.setEnabled(false);
+		}
+			
+		
 	}
 }
