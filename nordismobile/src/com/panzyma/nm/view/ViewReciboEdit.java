@@ -2045,7 +2045,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				break;
 			}
 		}
-		if (agregar) {
+		if (agregar) 
+		{
 			facturaDetalle.setFechaAplicaDescPP(factura.getFechaAppDescPP());
 			facturasRecibo.add(factura);
 			recibo.getFacturasRecibo().add(facturaDetalle);
