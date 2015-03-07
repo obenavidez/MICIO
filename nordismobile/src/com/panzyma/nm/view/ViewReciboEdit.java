@@ -422,7 +422,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					editarPagos();
 					break;
 				case ID_EDITAR_DESCUENTO:
-					editarDescuento();
+					editarDescuento(true);
 					break;
 				case ID_PAGAR_TODO:
 					if (cliente == null) {
@@ -679,7 +679,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				recibo.getNotasDebitoRecibo().clear();
 				recibo.getNotasCreditoRecibo().clear();
 			}
-		} else {
+		} else 
+		{
 
 			cliente = recibo.getCliente();
 
@@ -814,7 +815,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 									editarPagos();
 									break;
 								case ID_EDITAR_DESCUENTO:
-									editarDescuento();
+									editarDescuento(true);
 									break;
 								case ID_PAGAR_TODO:
 									if (cliente == null) {
@@ -960,7 +961,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		case ControllerProtocol.OBTENERDESCUENTO:
 			if(msg.obj!=null)
 				solicitud=(EncabezadoSolicitud) (msg.obj);
-				editarDocumento();
+				editarDescuento();
 			break;
 		}
 		return false;
@@ -1400,46 +1401,82 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		return notasCredito;
 	}
 
-	private void editarDescuento() {
+	private void editarDescuento(boolean...otherprocess) 
+	{
 		if (!"REGISTRADO".equals(recibo.getCodEstado()))
+		{
+			AppDialog.showMessage(me, "",
+ 					"No se permite editar descuento con recibo en estado "+recibo.getCodEstado(),
+   				DialogType.DIALOGO_ALERTA);
 			return;
+		}
+			
 		int posicion = positioncache;
 		if (posicion == -1)
 			return;
 
 		final com.panzyma.nm.serviceproxy.Documento documentToEdit;
 
-		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter
-				.getItem(posicion);
+		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);
 
-		if (documentToEdit instanceof ReciboDetFactura
-				|| documentToEdit instanceof ReciboDetND) 
+		if (documentToEdit instanceof ReciboDetFactura || documentToEdit instanceof ReciboDetND) 
 		{
-
 			FragmentManager fragmentManager = getSupportFragmentManager();
 
-			if (documentToEdit instanceof ReciboDetFactura) {
-
-				final ReciboDetFactura facturaDetalle = (ReciboDetFactura) documentToEdit
-						.getObject();
-				final Factura factura = getFacturaByID(facturaDetalle
-						.getObjFacturaID());
-
-				if(recibo.getClaveAutorizaDescOca()=="" && recibo.getPorcDescOcaColector()<1)
-					return;
-				SolicitudDescuento sd= null;  
-				for(SolicitudDescuento _sd:solicitud.getDetalles())
-				{
-					if(facturaDetalle.getId()==_sd.getFacturaId())
-					{
-						sd=_sd;
-						break;
-					}
-				}
+			if (documentToEdit instanceof ReciboDetFactura) 
+			{
+				final ReciboDetFactura facturaDetalle = (ReciboDetFactura) documentToEdit.getObject();
+				final Factura factura = getFacturaByID(facturaDetalle.getObjFacturaID());
 				
-				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(
-						facturaDetalle, recibo, ActionType.EDIT,sd, true);
-				dialogConfirmacion.setActionPago(new Pagable() {
+				if(otherprocess!=null && otherprocess.length!=0 && otherprocess[0])
+				{
+					msg = new Message(); 
+					msg.what=ControllerProtocol.OBTENERDESCUENTO;
+					msg.obj=recibo.getId();
+					NMApp.getController().getInboxHandler().sendMessage(msg); 
+					return;
+				}  
+				
+				SolicitudDescuento sd= null; 
+
+				if((recibo.getClaveAutorizaDescOca().equals("") && recibo.getPorcDescOcaColector()<1 && solicitud==null) )
+				{
+					AppDialog.showMessage(me, "",
+		 					"El recibo no tiene descuento que editar",
+		   				DialogType.DIALOGO_ALERTA);
+					return;
+				}
+				 
+				if(solicitud!=null)
+				{
+					if(!DialogSolicitudDescuento.DOC_STATUS_APROBADO.equals(solicitud.getCodigoEstado().trim()))
+					{
+						AppDialog.showMessage(me, "",
+			 					"No se puede editar descuento, ya que la solicitud esta en estado+ "+solicitud.getCodigoEstado()+", \npor favor Aplicar Descuento primero para verificar la aprobación de esta... ",
+			   				DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					for(SolicitudDescuento _sd:solicitud.getDetalles())
+					{
+						if(facturaDetalle.getObjFacturaID()==_sd.getFacturaId())
+						{
+							sd=_sd;
+							break;
+						}
+					}
+					if(sd==null)
+					{
+						AppDialog.showMessage(me, "",
+			 					"La Factura #"+factura.getNoFactura()+" no fue incorporada en la solicitud de descuento...",
+			   				DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					
+				}	
+				
+				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, recibo, ActionType.EDIT,sd, true);
+				dialogConfirmacion.setActionPago(new Pagable() 
+				{
 					@Override
 					public void onPagarEvent(List<Ammount> montos) {
 						procesaFactura(facturaDetalle, factura, montos, false);
@@ -1477,7 +1514,13 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 	private void editarPagos() {
 		if (!"REGISTRADO".equals(recibo.getCodEstado()))
+		{
+			AppDialog.showMessage(me, "",
+ 					"No se permite editar pagos con recibo en estado "+recibo.getCodEstado(),
+   				DialogType.DIALOGO_ALERTA);
 			return;
+		}
+			
 		final FragmentManager fragmentManager = getSupportFragmentManager();
 		/*
 		 * runOnUiThread(new Runnable() {
@@ -1968,7 +2011,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				{
 					float montoDescuento = 0.00F;
 					montoDescuento = ammount.getValue();					
-					if( !(recibo.getPorcDescOcaColector() == 100) ) {
+					if( !(recibo.getPorcDescOcaColector() == 100) ) 
+					{
 						if (montoDescuento > facturaDetalle.getMontoDescEspecificoCalc()) 
 						{
 							NMApp.getController()
@@ -2001,7 +2045,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				break;
 			}
 		}
-		if (agregar) {
+		if (agregar) 
+		{
 			facturaDetalle.setFechaAplicaDescPP(factura.getFechaAppDescPP());
 			facturasRecibo.add(factura);
 			recibo.getFacturasRecibo().add(facturaDetalle);
@@ -2301,14 +2346,17 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			return Long.valueOf("0");
 	}
 
-	public void agregarDocumentosAlDetalleDeRecibo() {
-
-		adapter = new GenericAdapter(this, DocumentoViewHolder.class,documents,  R.layout.list_row);
-		item_document.setAdapter(adapter);
-		adapter.setSelectedPosition(0);
-		
+	public void agregarDocumentosAlDetalleDeRecibo() 
+	{
+		adapter = new GenericAdapter(this, DocumentoViewHolder.class,documents,  R.layout.list_row);		
 		if (documents.size() > 0)
-			documento_selected = documents.get(0);
+		{
+			if(positioncache==-1)
+				positioncache=0;
+			documento_selected = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(positioncache);
+			adapter.setSelectedPosition(positioncache); 			
+		}
+		item_document.setAdapter(adapter); 
 		gridheader.setText("DOCUMENTOS A PAGAR(" + adapter.getCount() + ")");
 	}
 
@@ -2334,10 +2382,10 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 								switch (actionId) {
 								case ID_EDITAR_DOCUMENTO:
-									editarDocumento(true);
+									editarDocumento();
 									break;
 								case ID_EDITAR_DESCUENTO:
-									editarDescuento();
+									editarDescuento(true);
 									break;
 								case ID_ELIMINAR_DOCUMENTO:
 									eliminarDocumento();
@@ -2579,43 +2627,20 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		return notaCreditoToFound;
 	}
 
-	private void editarDocumento(boolean... otherprocess) {
+	private void editarDocumento() {
 		if (!"REGISTRADO".equals(recibo.getCodEstado()))
 			return;
 		int posicion = positioncache;
 		if (posicion == -1)
 			return;
 
-		if(otherprocess!=null && otherprocess.length!=0 && otherprocess[0])
-		{
-			msg = new Message(); 
-			msg.what=ControllerProtocol.OBTENERDESCUENTO;
-			msg.obj=recibo.getId();
-			NMApp.getController().getInboxHandler().sendMessage(msg); 
-			return;
-		}
 		final com.panzyma.nm.serviceproxy.Documento documentToEdit;
 
 		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);
 
-		SolicitudDescuento sd= null;
-		ReciboDetFactura rf = null;
-		if(documentToEdit.getObject() instanceof ReciboDetFactura)
-		{
-			rf=(ReciboDetFactura) documentToEdit.getObject();
-			
-		}
-		for(SolicitudDescuento _sd:solicitud.getDetalles())
-		{
-			if(rf.getObjFacturaID()==_sd.getFacturaId())
-			{
-				sd=_sd;
-				break;
-			}
-		}
 		
 		final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(
-				documentToEdit, recibo, ActionType.EDIT, sd);
+				documentToEdit, recibo, ActionType.EDIT);
 		dialogConfirmacion.setActionPago(new Pagable() {
 			@Override
 			public void onPagarEvent(List<Ammount> montos) {

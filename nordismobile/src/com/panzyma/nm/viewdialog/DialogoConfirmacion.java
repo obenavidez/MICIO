@@ -35,6 +35,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -93,12 +94,7 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 			@Override
 			public void onClick(DialogInterface dialog, int which) 
 			{
-				List<Ammount> montos = new ArrayList<Ammount>();
-				montos.add(new Ammount(AmmountType.ABONADO_OTROS_RECIBOS,Util.Numero.redondear( montoAbonado , 2), !editDescuento ) );
-				montos.add(new Ammount(AmmountType.ABONADO, Util.Numero.redondear(getMontoAbonado(), 2) , !editDescuento ) );
-				montos.add(new Ammount(AmmountType.RETENIDO,Util.Numero.redondear( getMontoRetenido(), 2) , !editDescuento) );
-				montos.add(new Ammount(AmmountType.DESCONTADO, Util.Numero.redondear(getMontoDescontado(), 2) , editDescuento));
-				eventPago.onPagarEvent(montos);			
+				
 			}
 		});
 		builder.setNegativeButton("CANCELAR", new OnClickListener() {			
@@ -111,6 +107,43 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		initComponents();
 		return builder.create();
 	}
+	
+	@Override
+	public void onStart()
+	{
+	    super.onStart();    
+	    AlertDialog d = (AlertDialog)getDialog();
+	    if(d != null)
+	    {
+	        Button positiveButton = d.getButton(DialogInterface.BUTTON_POSITIVE);
+	        positiveButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {                	
+                	if(editDescuento)
+    				{
+    					if(solicitud!=null)
+    					{						
+    						if(getMontoDescontado()<=solicitud.getPorcentaje()){;;}
+    						else
+    							{
+    								descuento.setError("El descuento debe ser menor o igual a +"+solicitud.getPorcentaje()+"% ..."); 
+    								descuento.requestFocus(); 
+    								return;
+    							}
+    					}
+    				}
+    				List<Ammount> montos = new ArrayList<Ammount>();
+    				montos.add(new Ammount(AmmountType.ABONADO_OTROS_RECIBOS,Util.Numero.redondear( montoAbonado , 2), !editDescuento ) );
+    				montos.add(new Ammount(AmmountType.ABONADO, Util.Numero.redondear(getMontoAbonado(), 2) , !editDescuento ) );
+    				montos.add(new Ammount(AmmountType.RETENIDO,Util.Numero.redondear( getMontoRetenido(), 2) , !editDescuento) );
+    				montos.add(new Ammount(AmmountType.DESCONTADO, Util.Numero.redondear(getMontoDescontado(), 2) , editDescuento));
+    				eventPago.onPagarEvent(montos);			
+                }
+            });
+	    }
+	} 
 
 	@SuppressWarnings({ "unchecked", "static-access" })
 	private void initComponents() {
@@ -199,6 +232,7 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 				monto.setEnabled(false);
 				retencion.setEnabled(false);
 				descuento.setText("" +((ReciboDetFactura)document.getObject()).getPorcDescOcasional() );
+				descuento.requestFocus(); 
 			}			
 		} else if( document instanceof ReciboDetND ) {
 			rowRetencion.setVisibility(View.GONE);
