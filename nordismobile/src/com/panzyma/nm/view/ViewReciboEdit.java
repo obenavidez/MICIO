@@ -2017,8 +2017,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	}
 
 	@SuppressWarnings("incomplete-switch")
-	private void procesaNotaCredito(ReciboDetNC notaCreditoDetalle,
-			CCNotaCredito notaCredito, List<Ammount> montos, boolean agregar) {
+	private void procesaNotaCredito(ReciboDetNC notaCreditoDetalle, CCNotaCredito notaCredito, List<Ammount> montos, boolean agregar) {
 		for (Ammount ammount : montos) {
 			switch (ammount.getAmmountType()) {
 			case ABONADO:

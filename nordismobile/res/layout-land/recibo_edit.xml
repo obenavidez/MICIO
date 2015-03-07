@@ -300,6 +300,24 @@
                        android:text="0.00"
                        android:textColor="@color/Blue"
                        android:textStyle="bold" />
+                     <TextView
+                        android:id="@+id/lblmonto_pago"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="MP:"
+                        android:textColor="@color/Black" />
+
+                    <TextView
+                        android:id="@+id/txtmontopagado"
+                        android:layout_width="63dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:enabled="false"
+                        android:layout_weight="1"
+                        android:text="0.00"
+                        android:textColor="@color/Blue"
+                        android:textStyle="bold" />
                </TableRow>
                 <TableRow
                    android:id="@+id/tableRow4"
