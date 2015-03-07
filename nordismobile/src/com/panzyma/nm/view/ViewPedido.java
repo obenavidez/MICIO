@@ -799,6 +799,7 @@ public class ViewPedido extends ActionBarActivity implements
 					} 
 				break;
 			case ControllerProtocol.GET_CLIENTE_POR_ID:
+				cliente =(Cliente) msg.obj;	
 				imprimirComprobante();
 				break;
 		}
