@@ -44,12 +44,14 @@ import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
+import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
@@ -215,8 +217,10 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	CharSequence tituloApp;
 	View _view;
 
+	EncabezadoSolicitud solicitud;
 	boolean imprimir = false;
 	boolean pagarOnLine = false;
+	private Message msg;
 
 	public List<Factura> getFacturasRecibo() 
 	{
@@ -953,6 +957,11 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			Log.d(TAG, "Activity quitting");
 
 			break;
+		case ControllerProtocol.OBTENERDESCUENTO:
+			if(msg.obj!=null)
+				solicitud=(EncabezadoSolicitud) (msg.obj);
+				editarDocumento();
+			break;
 		}
 		return false;
 	}
@@ -1109,11 +1118,14 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 					@Override
 					public void onButtonClick(Float percentcollector,
-							String clave) {
+							String clave) 
+					{
 						recibo.setClaveAutorizaDescOca(clave);
 						recibo.setPorcDescOcaColector(percentcollector);
-						for(ReciboDetFactura rec: recibo.getFacturasRecibo()){
-							if(!Cobro.validaAplicDescOca(NMApp.getContext(), recibo, rec.getId())){
+						for(ReciboDetFactura rec: recibo.getFacturasRecibo())
+						{
+							if(!Cobro.validaAplicDescOca(NMApp.getContext(), recibo, rec.getId()))
+							{
 								//SI LA FACTURA NO APLICA PARA DESCUENTO OCASIONAL
 								rec.setPorcDescOcasional(0.00F);
 							}							
@@ -1121,7 +1133,21 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 						Cobro.calcularDetFacturasRecibo(NMApp.getContext(), recibo, cliente, true);
 						CalculaTotales();
 						actualizaTotales();
-						recibo.getFormasPagoRecibo().clear();						
+						recibo.getFormasPagoRecibo().clear();	
+						if ((percentcollector == 100) || (!SessionManager.isPhoneConnected()))
+							AppDialog
+							.showMessage(
+									me,
+									"Alerta",
+									"La aplicación de descuento ocasional ha sido habilitada.",
+									DialogType.DIALOGO_ALERTA); 
+				        else
+				        	AppDialog
+							.showMessage(
+									me,
+									"Alerta",
+									"La aplicación de descuento ocasional ha sido autorizada.",
+									DialogType.DIALOGO_ALERTA);  
 					}
 				});
 
@@ -1168,17 +1194,12 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			@Override
 			public void onButtonClick(String notasolicituddescuento) 
 			{ 
- 
 				if (notasolicituddescuento == "")
 					return; 
-				Message msg = new Message();
-				Bundle b = new Bundle();
-				b.putParcelable("recibo", recibo);
-				b.putString("notas", notasolicituddescuento);
-				msg.setData(b);
-				msg.what = SOLICITAR_DESCUENTO;
-				NMApp.getController().getInboxHandler()
-						.sendMessage(msg);
+				recibo.setNotas(notasolicituddescuento);
+				AppDialog.showMessage(me, "",
+						"La Solicitud ha sido enviada...",
+						DialogType.DIALOGO_ALERTA);
 			}
 		});
 		Window window =sd.getWindow();
@@ -1186,6 +1207,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		window.setLayout(display.getWidth() - 10, display.getHeight() - 50);
 		sd.show();
 	}
+	
 	
 //	private void solicitardescuento() {
 //		// Si se está fuera de covertura, salir
@@ -1403,8 +1425,20 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				final Factura factura = getFacturaByID(facturaDetalle
 						.getObjFacturaID());
 
+				if(recibo.getClaveAutorizaDescOca()=="" && recibo.getPorcDescOcaColector()<1)
+					return;
+				SolicitudDescuento sd= null;  
+				for(SolicitudDescuento _sd:solicitud.getDetalles())
+				{
+					if(facturaDetalle.getId()==_sd.getFacturaId())
+					{
+						sd=_sd;
+						break;
+					}
+				}
+				
 				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(
-						facturaDetalle, recibo, ActionType.EDIT, true);
+						facturaDetalle, recibo, ActionType.EDIT,sd, true);
 				dialogConfirmacion.setActionPago(new Pagable() {
 					@Override
 					public void onPagarEvent(List<Ammount> montos) {
@@ -2301,7 +2335,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 								switch (actionId) {
 								case ID_EDITAR_DOCUMENTO:
-									editarDocumento();
+									editarDocumento(true);
 									break;
 								case ID_EDITAR_DESCUENTO:
 									editarDescuento();
@@ -2546,19 +2580,43 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		return notaCreditoToFound;
 	}
 
-	private void editarDocumento() {
+	private void editarDocumento(boolean... otherprocess) {
 		if (!"REGISTRADO".equals(recibo.getCodEstado()))
 			return;
 		int posicion = positioncache;
 		if (posicion == -1)
 			return;
 
+		if(otherprocess!=null && otherprocess.length!=0 && otherprocess[0])
+		{
+			msg = new Message(); 
+			msg.what=ControllerProtocol.OBTENERDESCUENTO;
+			msg.obj=recibo.getId();
+			NMApp.getController().getInboxHandler().sendMessage(msg); 
+			return;
+		}
 		final com.panzyma.nm.serviceproxy.Documento documentToEdit;
 
 		documentToEdit = (com.panzyma.nm.serviceproxy.Documento) adapter.getItem(posicion);
 
+		SolicitudDescuento sd= null;
+		ReciboDetFactura rf = null;
+		if(documentToEdit.getObject() instanceof ReciboDetFactura)
+		{
+			rf=(ReciboDetFactura) documentToEdit.getObject();
+			
+		}
+		for(SolicitudDescuento _sd:solicitud.getDetalles())
+		{
+			if(rf.getObjFacturaID()==_sd.getFacturaId())
+			{
+				sd=_sd;
+				break;
+			}
+		}
+		
 		final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(
-				documentToEdit, recibo, ActionType.EDIT);
+				documentToEdit, recibo, ActionType.EDIT, sd);
 		dialogConfirmacion.setActionPago(new Pagable() {
 			@Override
 			public void onPagarEvent(List<Ammount> montos) {

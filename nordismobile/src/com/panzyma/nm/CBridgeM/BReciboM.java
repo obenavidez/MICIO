@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays; 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
 import org.json.JSONArray; 
 
 import android.annotation.SuppressLint;
@@ -42,10 +43,12 @@ import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelRecibo;
+import com.panzyma.nm.model.ModelSolicitudDescuento;
 import com.panzyma.nm.model.ModelTasaCambio;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ReciboColector;
@@ -187,10 +190,56 @@ public final class BReciboM extends BBaseM {
 			case ControllerProtocol.GET_TASA_CAMBIO :
 				ObtenerTasaCambio();				
 				break;
+			case ControllerProtocol.OBTENERDESCUENTO :
+				obtenerDescuento((Long) msg.obj);				
+				break;
+			case ControllerProtocol.ACTUALIZARDESCUENTO :
+				RegistrarSolicituDescuento((EncabezadoSolicitud) msg.obj);				
+				break;
 		}
 		
 		return false;
 	}
+	
+	private void RegistrarSolicituDescuento(EncabezadoSolicitud solicitud) 
+	{		
+		try 
+		{
+			Processor.notifyToView(getController(),
+					ControllerProtocol.REQUEST_ACTUALIZARDESCUENTO,
+					0,
+					0,
+					ModelSolicitudDescuento.RegistrarSolicituDescuento(solicitud)
+					);
+		} catch (Exception e) { 
+			Log.e(TAG, "Error interno trayendo datos desde BDD", e);
+			try {
+				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno trayendo datos desde BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}
+		} 
+	}
+	
+	private void obtenerDescuento(long reciboid){
+	
+		try 
+		{
+			Processor.notifyToView(getController(),
+					ControllerProtocol.OBTENERDESCUENTO,
+					0,
+					0,
+					ModelSolicitudDescuento.obtenerEncabezadoSolicitud(reciboid)
+					);
+		} catch (Exception e) { 
+			Log.e(TAG, "Error interno trayendo datos desde BDD", e);
+			try {
+				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno trayendo datos desde BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}
+		} 
+	}	
 	
 	private void aplicarDescuentoOcacional(final ReciboColector recibo)
 	{

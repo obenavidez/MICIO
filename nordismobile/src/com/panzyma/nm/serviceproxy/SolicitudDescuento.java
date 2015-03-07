@@ -8,6 +8,7 @@ public class SolicitudDescuento
 	private float porcentaje;
 	private String justificacion;
 	private long fecha;
+	private String docstatus;
 
 	protected Factura factura;
 	
@@ -33,9 +34,32 @@ public class SolicitudDescuento
 		this.fecha = fecha;
 		this.factura = _factura;
 	}
+
+	public SolicitudDescuento(long id, long encabezadoSolicitudId,long reciboId, long facturaId,
+			float porcentaje, String justificacion, long fecha,Factura _factura,String _docstatus) {
+		super();
+		this.id = id;
+		this.encabezadoSolicitudId = reciboId;
+		this.facturaId = facturaId;
+		this.porcentaje = porcentaje;
+		this.justificacion = justificacion;
+		this.fecha = fecha;
+		this.factura = _factura;
+		this.docstatus=_docstatus;
+	}
 	
 	public SolicitudDescuento() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	public void setStatus(String status)
+	{
+		this.docstatus=status;
+	}
+	
+	public String getStatus()
+	{
+		return this.docstatus;
 	}
 	
 	public void setFactura(Factura fact)

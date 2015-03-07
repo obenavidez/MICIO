@@ -74,7 +74,9 @@
                 android:nextFocusRight="@+id/btncancel"
                 android:text="Enviar"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/White" >
+                android:textColor="@color/White" 
+                android:visibility="gone"
+                >
             </Button>
 
             <Button

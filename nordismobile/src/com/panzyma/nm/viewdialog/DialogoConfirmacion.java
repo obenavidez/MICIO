@@ -2,6 +2,7 @@ package com.panzyma.nm.viewdialog;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BLogicM.Result;
 import com.panzyma.nm.auxiliar.ActionType;
@@ -11,10 +12,12 @@ import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.serviceproxy.Documento;
+import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
+import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nordismobile.R;
 
@@ -56,17 +59,27 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 	private float montoAbonado;
 	private NMApp nmapp;
 	private ReciboColector recibo;
+	private SolicitudDescuento solicitud;
 		
 	public interface Pagable {
 		public void onPagarEvent(List<Ammount> montos);
 	}
 
-	public DialogoConfirmacion(Documento documento, ReciboColector recibo, ActionType actionType,boolean... editDescuento) {
+	public DialogoConfirmacion(Documento documento, ReciboColector recibo, ActionType actionType,SolicitudDescuento _sd,boolean... editDescuento) {
 		super();
 		this.document = documento;
 		this.recibo = recibo;
 		this.actionType = actionType;
 		this.editDescuento = editDescuento.length > 0 && editDescuento[0];
+		this.solicitud=_sd;
+	}
+	
+	public DialogoConfirmacion(Documento documento, ReciboColector recibo, ActionType actionType,boolean... editDescuento) {
+		super();
+		this.document = documento;
+		this.recibo = recibo;
+		this.actionType = actionType;
+		this.editDescuento = editDescuento.length > 0 && editDescuento[0]; 
 	}
 
 	@Override
@@ -78,7 +91,8 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		builder.setPositiveButton("ACEPTAR", new OnClickListener() {
 			
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(DialogInterface dialog, int which) 
+			{
 				List<Ammount> montos = new ArrayList<Ammount>();
 				montos.add(new Ammount(AmmountType.ABONADO_OTROS_RECIBOS,Util.Numero.redondear( montoAbonado , 2), !editDescuento ) );
 				montos.add(new Ammount(AmmountType.ABONADO, Util.Numero.redondear(getMontoAbonado(), 2) , !editDescuento ) );
@@ -236,7 +250,8 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		}
 		
 		@Override
-		protected Float doInBackground(Long... params) {			
+		protected Float doInBackground(Long... params) 
+		{			
 			return ModelLogic.getAbonosEnOtrosRecibos(DialogoConfirmacion.this.getActivity(), params[0], params[1], params[2]);
 		}
 
