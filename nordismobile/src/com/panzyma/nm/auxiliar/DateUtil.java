@@ -73,6 +73,26 @@ public class DateUtil {
 
 		return d2i(cal.getTime());
 	}
+	
+	public static int strToIntTime(String fecha) {
+
+		String[] part = fecha.split("/");
+		String anio = part[2];
+		String mes = part[1];
+		mes = (Integer.parseInt(mes)) + "";
+		String dia = part[0];
+
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dia));
+		cal.set(Calendar.MONTH, (Integer.parseInt(mes)-1));
+		cal.set(Calendar.YEAR, Integer.parseInt(anio));
+		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+
+		return d2i(cal.getTime());
+	}
 
 	public static long getNow() {
 		return dt2i(getCalendar().getTime());

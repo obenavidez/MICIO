@@ -477,7 +477,7 @@ public class EditFormaPago extends DialogFragment {
         pagoRecibo.setDescEntidad("");
         if (vcFP.getCodigo().compareTo("EFEC") != 0) {
             pagoRecibo.setNumero(numero.getText().toString().trim());            
-            pagoRecibo.setFecha(DateUtil.strTimeToInt(fecha.getText().toString()));            
+            pagoRecibo.setFecha(DateUtil.strToIntTime(fecha.getText().toString()));            
             ValorCatalogo vcBco = (ValorCatalogo)bancoAdapter.getItem(cmbBanco.getSelectedItemPosition()).getObj();
             pagoRecibo.setObjEntidadID(vcBco.getId());
             pagoRecibo.setCodEntidad(vcBco.getCodigo());
