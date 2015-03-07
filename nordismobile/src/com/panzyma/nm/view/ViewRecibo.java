@@ -55,6 +55,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BReciboM;
 import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener;
 import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
@@ -332,7 +333,7 @@ public class ViewRecibo extends ActionBarActivity implements
 				case ENVIAR_RECIBO: 
 					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
 					
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
 		            {
 						if ("REGISTRADO".equals(recibo_selected.getCodEstado())) {
 							enviarRecibo(recibo_selected);
@@ -969,8 +970,10 @@ public class ViewRecibo extends ActionBarActivity implements
 	public boolean handleMessage(Message msg) {
 		switch (msg.what) {
 		case C_DATA:
+			if (pDialog != null)
+				pDialog.dismiss();
 			establecer(msg);
-			return true;
+			break;
 		case DELETE_ITEM_FINISHED:	
 			Toast.makeText(vr,msg.obj.equals(1)?"Eliminado Satisfactoriamente":"Error al eliminar", Toast.LENGTH_LONG); 
 			runOnUiThread(new Runnable() {
@@ -1001,26 +1004,65 @@ public class ViewRecibo extends ActionBarActivity implements
 			});
 			//CERRAR EL MENU DEL DRAWER
 			drawerLayout.closeDrawers();
-			return true;
+			break;
 		case C_UPDATE_STARTED:
 
-			return true;
+			break;
 		case C_UPDATE_ITEM_FINISHED:
 
-			return true;
+			break;
 		case C_UPDATE_FINISHED:
 			// pDialog.hide();
-			return true;
+			break;
 		case C_SETTING_DATA:
 			setData((ArrayList<vmRecibo>) ((msg.obj == null) ? new ArrayList<vmRecibo>()
 					: msg.obj), C_SETTING_DATA);
-			return true;
+			break;
 		case ERROR:
 			AppDialog.showMessage(context, ((ErrorMessage) msg.obj).getTittle(),
 					((ErrorMessage) msg.obj).getMessage(),
 					DialogType.DIALOGO_ALERTA);
 			return true;
-
+		case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
+			if (dlg != null)
+				dlg.dismiss();
+			
+			if (msg.obj != null) {
+				
+				final ReciboColector recibo = (ReciboColector)msg.obj;
+				AppDialog.showMessage(context,"","Se ha enviado Correctamente.\n¿Desea Imprimir el recibo?",DialogType.DIALOGO_CONFIRMACION, 
+								new OnButtonClickListener() {
+									@Override
+									public void onButtonClick(AlertDialog alert, int actionId) {
+										if(actionId == AppDialog.OK_BUTTOM){
+											
+											Message msg = new Message();
+											Bundle b = new Bundle();
+											b.putParcelable("recibo", recibo);
+											msg.setData(b);
+											msg.what = ControllerProtocol.IMPRIMIR;
+											NMApp.getController().getInboxHandler().sendMessage(msg);
+											alert.dismiss();
+										}
+										else {
+											alert.dismiss();
+											runOnUiThread(new Runnable() {
+												@Override
+												public void run() {
+													pDialog = new ProgressDialog(vr);
+													pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+													pDialog.setMessage("Procesando...");
+													pDialog.setCancelable(true);
+													pDialog.show();
+													cargarRecibos();
+												}
+												
+											});
+										}
+									}
+							});
+			}
+			break;
 		}
 		return false;
 	}
