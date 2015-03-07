@@ -238,7 +238,8 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	}
     
 	@Override
-	public boolean handleMessage(Message msg) { 
+	public boolean handleMessage(Message msg) 
+	{ 
 		switch (msg.what) 
 		{
 			case ControllerProtocol.REQUEST_APLICAR_DESCUENTO:	

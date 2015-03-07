@@ -141,7 +141,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			        
 			        String td=d.getText().toString().trim();
 			        String tj=j.getText().toString().trim();
-			        Integer pd=Integer.parseInt(td);
+			        Integer pd=Integer.parseInt((td=="")?"0":td);
 			        
 			        if(td.equals("") && tj.equals(""))
 			        	continue;	        	
