@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 
 @SuppressWarnings("rawtypes")
@@ -146,12 +147,99 @@ public class NMNetWork {
 //        return false;
 //    }    
     
+    static boolean response = false;
+    static Object lock = new Object();
+	
+	public static synchronized void consultaConeccion() {
+		try {
+			NMApp.getThreadPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						response = Boolean.parseBoolean(((SoapPrimitive)NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					synchronized (lock) {
+						lock.notify();
+					}					
+				}
+			});		
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	static class ConsultaConexionTask extends AsyncTask<Void, Void, Boolean> {
+
+	    private Exception exception;
+	    
+	    @Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+
+	    @Override
+	    protected Boolean doInBackground(Void... params) {
+	        try {
+	        	return Boolean.parseBoolean(((SoapPrimitive)NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());
+	        } catch (Exception e) {
+	            this.exception = e;
+	            return null;
+	        }
+	    }
+
+	    @Override
+	    protected void onPostExecute(Boolean r) {
+	        response = r;
+	        lock.notify();
+	    	super.onPostExecute(r);
+	    }		
+	}
+	
     //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
-    public static boolean CheckConnection(Controller controller) 
+    public static synchronized boolean CheckConnection(Controller controller) 
     {
-    	error=null;    	
-        try { 
-        		return Boolean.parseBoolean(((SoapPrimitive)AppNMComunication.InvokeMethod(new ArrayList<Parameters>(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.CheckConnection)).toString());              
+    	error=null;  
+        try {        
+			Thread t = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						response = Boolean.parseBoolean(((SoapPrimitive) NMComunicacion
+								.InvokeMethod(new ArrayList<Parameters>(),
+										NMConfig.URL, NMConfig.NAME_SPACE,
+										NMConfig.MethodName.CheckConnection))
+								.toString());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+        	t.start(); // spawn thread
+        	try {
+        		t.join();  // wait for thread to finish
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }        	
+			/*NMApp.getThreadPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					consultaConeccion();					
+				}
+			});	
+			NMApp.getThreadPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					synchronized (lock) {
+						try {
+							lock.wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});*/	
         } 
         catch(Exception ex) 
         {         	 
@@ -165,7 +253,8 @@ public class NMNetWork {
         	
         	
             return false;
-        }  
+        }
+		return response;  
     }    
     
   //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
