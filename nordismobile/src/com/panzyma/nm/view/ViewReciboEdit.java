@@ -2222,6 +2222,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 								public void onPagarEvent(List<Ammount> montos) {
 									procesaFactura(facturaDetalle, factura,montos, true);
 									dialog.loadFacturas(cliente.getFacturasPendientes(), 0);
+									dialogConfirmacion.dismiss();
+									
 								}
 							});
 							FragmentManager fragmentManager = getSupportFragmentManager();
@@ -2258,6 +2260,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 								public void onPagarEvent(List<Ammount> montos) {
 									procesaNotaDebito(notaDebitoDetalle,notaDebito, montos, true);
 									dialog.loadNotasDebito(cliente.getNotasDebitoPendientes(),0);
+									dialogConfirmacion.dismiss();
 								}
 							});
 							FragmentManager fragmentManager = getSupportFragmentManager();
@@ -2283,11 +2286,13 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 								public void onPagarEvent(List<Ammount> montos) {
 									procesaNotaCredito(notaCreditoDetalle,notaCredito, montos, true);
 									dialog.loadNotasCredito(cliente.getNotasCreditoPendientes(),0);
+									dialogConfirmacion.dismiss();
 								}
 							});
 							FragmentManager fragmentManager = getSupportFragmentManager();
 							dialogConfirmacion.show(fragmentManager, "");
 						}
+						
 					}
 				});
 				Window window = dialog.getWindow();
