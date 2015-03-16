@@ -455,6 +455,7 @@ public class EditFormaPago extends DialogFragment {
 			sched.setId(valor.getId());
 			sched.setCodigo(valor.getCodigo());
 			sched.setDescripcion(valor.getDescripcion());
+			sched.setDescripcion(valor.getCodigo());
 			sched.setObj(valor);
 
 			/******** Take Model Object in ArrayList **********/

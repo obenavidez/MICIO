@@ -139,7 +139,8 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
     				montos.add(new Ammount(AmmountType.ABONADO, Util.Numero.redondear(getMontoAbonado(), 2) , !editDescuento ) );
     				montos.add(new Ammount(AmmountType.RETENIDO,Util.Numero.redondear( getMontoRetenido(), 2) , !editDescuento) );
     				montos.add(new Ammount(AmmountType.DESCONTADO, Util.Numero.redondear(getMontoDescontado(), 2) , editDescuento));
-    				eventPago.onPagarEvent(montos);			
+    				eventPago.onPagarEvent(montos);		
+    				dismiss();
                 }
             });
 	    }

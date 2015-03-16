@@ -186,7 +186,7 @@ public class ModelCliente
 	    		cliente.setDescuentosProveedor(getDescuentosProveedor(content,cliente.getIdSucursal()));
 			 }  
 		} catch(Exception ex){
-			
+			ex.printStackTrace();
 		}
 		return cliente;
 	}
@@ -241,7 +241,7 @@ public class ModelCliente
 				db = null;
 			}
 		} 
-	    int size = facturasGravadas.size(); 
+	    int size =cur_fact.getCount(); //facturasGravadas.size(); 
 	    Factura[] afact=new Factura[size];
 	    //Factura[] afact=new Factura[cur_fact.getCount() - facturasGravadas.size()];
 	       //Recorremos el cursor
@@ -384,7 +384,8 @@ public class ModelCliente
 				db = null;
 			}
 		} 
-	    int size = notasCreditoGravadas.size();   
+	    //int size = notasCreditoGravadas.size();
+	    int size = cur_nc.getCount();
 		CCNotaCredito[] anc=new CCNotaCredito[size]; 
  	    if (cur_nc.moveToFirst()) 
 		{   	    	   			 
@@ -466,7 +467,8 @@ public class ModelCliente
 				db = null;
 			}
 		} 
-	    int size = notasDebitoGravadas.size();	    
+	   // int size = notasDebitoGravadas.size();
+	    int  size=cur_nd.getCount();
 		CCNotaDebito[] array_nd = new CCNotaDebito[size]; 
  	    if (cur_nd.moveToFirst()) 
 		{   	    	   			 

@@ -9,6 +9,7 @@ import java.util.Vector;
 import android.content.ContentResolver;
 import android.content.Context;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.CalcDescOca_Output;
 import com.panzyma.nm.serviceproxy.CalcDescPP_Output;
@@ -582,7 +583,6 @@ public class Cobro
     	return false;
     }
 
-
     public static int FacturaEstaEnOtroRecibo(ContentResolver content,long idFactura, boolean agregando) {
     	int referencia =0;
     			
@@ -594,7 +594,7 @@ public class Cobro
             ReciboColector rowrecibo = list.get(r);
             if(rowrecibo.getFacturasRecibo()==null) continue;
             
-            if("REGISTRADO".equals(rowrecibo.getDescEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getDescEstado()))) {
+            if("REGISTRADO".equals(rowrecibo.getCodEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getCodEstado()))) {
                 ArrayList<ReciboDetFactura> facturas= rowrecibo.getFacturasRecibo();
                 
                 for(ReciboDetFactura f : facturas) {
@@ -607,6 +607,57 @@ public class Cobro
         }
         return referencia;
     }
+
+    public static int FacturaEstaEnOtroRecibo(int reference,long idFactura, boolean agregando) {
+    	int referencia =0;
+    			
+        ArrayList<ReciboColector> list = ModelRecibo.getRecibosEnEstadoRegistrado(NMApp.getContext().getContentResolver());
+        if(list== null) 
+        	return 0;
+        
+        for(int r=0; r< list.size(); r++) 
+        {
+        	ReciboColector rowrecibo = list.get(r);
+        	if(reference!=0 && reference==rowrecibo.getReferencia())
+        		continue;
+        	
+            if(rowrecibo.getFacturasRecibo()==null) continue;
+            
+            if("REGISTRADO".equals(rowrecibo.getCodEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getCodEstado()))) {
+                ArrayList<ReciboDetFactura> facturas= rowrecibo.getFacturasRecibo();
+                
+                for(ReciboDetFactura f : facturas) {
+                    if (f.getObjFacturaID() == idFactura){ 
+                    	referencia=rowrecibo.getReferencia();
+                    	return referencia;
+                    }
+                }
+            }
+        }
+        return referencia;
+    }
+    
+    //Verifica si una nota de débito ya está incluida en un recibo local    
+    public static int NDEstaEnOtroRecibo(int reference,long idND, boolean agregando) {
+    	int referencia =0;
+    	ArrayList<ReciboColector> list = ModelRecibo.getRecibosEnEstadoRegistrado(NMApp.getContext().getContentResolver());
+        if(list.size()==0) return 0;
+        for(int r=0; r< list.size(); r++) {
+            ReciboColector rowrecibo = list.get(r);
+        	if(reference!=0 && reference==rowrecibo.getReferencia())
+        		continue;
+            if(rowrecibo.getNotasDebitoRecibo()==null) continue;
+            
+            if("REGISTRADO".equals(rowrecibo.getCodEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getCodEstado()))) {
+                ArrayList<ReciboDetND> notasdebito= rowrecibo.getNotasDebitoRecibo();
+                for(ReciboDetND n : notasdebito) {
+                    if (n.getObjNotaDebitoID() == idND) return referencia=rowrecibo.getReferencia();
+                }
+            }
+        }
+    	 return referencia;
+    }
+    
     //Verifica si una nota de débito ya está incluida en un recibo local    
     public static int NDEstaEnOtroRecibo(ContentResolver content,long idND, boolean agregando) {
     	int referencia =0;
@@ -616,7 +667,7 @@ public class Cobro
             ReciboColector rowrecibo = list.get(r);
             if(rowrecibo.getNotasDebitoRecibo()==null) continue;
             
-            if("REGISTRADO".equals(rowrecibo.getDescEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getDescEstado()))) {
+            if("REGISTRADO".equals(rowrecibo.getCodEstado()) || (agregando && "PAGADO_OFFLINE".equals(rowrecibo.getCodEstado()))) {
                 ArrayList<ReciboDetND> notasdebito= rowrecibo.getNotasDebitoRecibo();
                 for(ReciboDetND n : notasdebito) {
                     if (n.getObjNotaDebitoID() == idND) return referencia=rowrecibo.getReferencia();
