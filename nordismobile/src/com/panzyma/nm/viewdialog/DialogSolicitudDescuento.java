@@ -141,7 +141,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			        
 			        String td=d.getText().toString().trim();
 			        String tj=j.getText().toString().trim();
-			        Integer pd=Integer.parseInt((td=="")?"0":td);
+			        Integer pd=Integer.parseInt((td.equals(""))?"0":td);
 			        
 			        if(td.equals("") && tj.equals(""))
 			        	continue;	        	
@@ -184,16 +184,19 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 				dismiss();
 			}
 
-		});
-	    for(DescuentoProveedor _dp:ldp)
-	    {
-	    	if(_dp.getObjProveedorID()==10005)
-	    	{
-	    		dp=_dp;
-	    		break;
-	    	}
-	    	
-	    }
+		});   
+		 
+		DescuentoProveedor _dp;
+		float largest=Float.MIN_VALUE;
+        for(int i =0;i<ldp.length;i++) 
+        {
+        	_dp=new DescuentoProveedor();
+            if(ldp[i].getPrcDescuento() > largest) 
+            {
+            	_dp = ldp[i]; 
+            	largest=_dp.getPrcDescuento();
+            }
+        } 
 	}
 	
 	private void enviarSolicitud()

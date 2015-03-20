@@ -1173,9 +1173,10 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		actualizaTotales();
 	}
 
-	private void solicitardescuento() {
+	private void solicitardescuento() 
+	{
 		
-		// Si se está fuera de covertura, salir
+// Si se está fuera de covertura, salir
 //		if (!SessionManager.isPhoneConnected()) {
 //			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
 //			return;
@@ -2127,7 +2128,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				}
 				break;
 			case ABONADO:
-				if (ammount.isEvaluar()) {
+				if (ammount.isEvaluar()) 
+				{
 					float montoAbonado = 0.00F, saldo = 0.00F;
 					montoAbonado = ammount.getValue();
 					notaDebito.setMontoAbonado(notaDebito.getMontoAbonado()
@@ -2982,18 +2984,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			
 			recibo.getFacturasRecibo().clear();
 			recibo.getNotasDebitoRecibo().clear();
-			recibo.getNotasCreditoRecibo().clear();
-//
-//			recibo.setTotalFacturas(0.00F);
-//			recibo.setTotalNC(0.00F);
-//			recibo.setTotalND(0.00F);
-//			recibo.setSubTotal(0.00F);
-//			recibo.setTotalDesc(0.00F);
-//			recibo.setTotalImpuestoExonerado(0.00F);
-//			recibo.setTotalRetenido(0.00F);
-//			recibo.setTotalOtrasDed(0.00F);
-//			recibo.setTotalInteres(0.00F);
-//			recibo.setTotalRecibo(0.00F);
+			recibo.getNotasCreditoRecibo().clear(); 
 			
 			if ((facturas != null) && (facturas.size() > 0)) 
 			{
@@ -3002,12 +2993,13 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					
 					Factura _fac = facturas.get(i);
 					// CREAR UN OBJETO DETALLE DE FACURA
-					ReciboDetFactura facturaDetalle = new ReciboDetFactura();
+					ReciboDetFactura facturaDetalle =null;
 					
 					for(int e=0;e>rdf.size();e++)
 					{
 						if(rdf.get(e).getObjFacturaID()==_fac.getId() && "CANCELADA".equals(_fac.getCodEstado()))
 						{
+							facturaDetalle= new ReciboDetFactura();
 							facturaDetalle=rdf.get(e);
 							Cobro.ActualizaTotalFacturas(recibo);
 						 
@@ -3022,6 +3014,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 						}
 						
 					}
+					if(facturaDetalle!=null)
+						continue;
 					facturaDetalle.setObjFacturaID(_fac.getId());
 					facturaDetalle.setFecha(_fac.getFecha());
 					facturaDetalle.setFechaVence(_fac.getFechaVencimiento());
