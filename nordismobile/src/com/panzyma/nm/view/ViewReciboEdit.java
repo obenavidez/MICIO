@@ -698,7 +698,14 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		{
 
 			cliente = recibo.getCliente();
-
+			
+			if( recibo.getNotasCreditoRecibo() != null ) {
+				for(ReciboDetNC nc: recibo.getNotasCreditoRecibo()){
+					if(existReceiptedInvoice()){
+						asociarNotaCreditoFactura(nc.getObjNotaCreditoID());
+					}			
+				}
+			}			
 			// EDICION DE RECIBO
 			if ("REGISTRADO".equals(recibo.getDescEstado())) {
 				recibo.setFecha(date);
