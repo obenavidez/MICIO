@@ -652,16 +652,16 @@ public final class BReciboM extends BBaseM {
 					        	imprimir = false;
 					            if (!SessionManager.isPhoneConnected()) 
 					            {
-					            	Processor.notifyToView(getController(),ERROR,0,0,
-											new ErrorMessage(
-													          "Error en el Modulo Recibo.",
-													          "Error en el proceso de envio del recibo", "\nCausa: "
-															  + "Falta de covertura."
-															 )
-									      );  
+//					            	Processor.notifyToView(getController(),ERROR,0,0,
+//											new ErrorMessage(
+//													          "Error en el Modulo Recibo.",
+//													          "Error en el proceso de envio del recibo", "\nCausa: "
+//															  + "Falta de covertura."
+//															 )
+//									      );  
 					                return;
 					            }
-					            
+					        	 
 					        } 
 					        else 
 					        {                
