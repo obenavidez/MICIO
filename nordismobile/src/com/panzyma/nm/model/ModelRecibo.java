@@ -116,20 +116,44 @@ public class ModelRecibo {
 				estado = "Facturada";
 				codEstado = "EMITIDA";
 			}
-			mUpdateValues.put(NMConfig.Cliente.Factura.Abonado, abonado);
+			/*mUpdateValues.put(NMConfig.Cliente.Factura.Abonado, abonado);
 			mUpdateValues.put(NMConfig.Cliente.Factura.Descontado, _factura.getDescontado() - factura.getDescuento());
 			mUpdateValues.put(NMConfig.Cliente.Factura.Retenido, _factura.getRetenido() - factura.getRetencion());
 			mUpdateValues.put(NMConfig.Cliente.Factura.Saldo, _factura.getTotalFacturado() - abonado);
 			mUpdateValues.put(NMConfig.Cliente.Factura.Estado, estado);
-			mUpdateValues.put(NMConfig.Cliente.Factura.CodEstado, codEstado);
-			
-			String uri = DatabaseProvider.CONTENT_URI_FACTURA +"/"+String.valueOf(factura.getObjFacturaID());
+			mUpdateValues.put(NMConfig.Cliente.Factura.CodEstado, codEstado);			
+			String uri = DatabaseProvider.CONTENT_URI_FACTURA +"/"+String.valueOf(factura.getObjFacturaID());*/
 			SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
+			
+			StringBuilder query = new StringBuilder();
+			query.append(" UPDATE Factura ");
+			query.append(" SET Abonado    = %f   , ");
+			query.append(" 	   Descontado = %f   , ");
+			query.append(" 	   Retenido   = %f   , ");
+			query.append(" 	   saldo      = %f   , ");
+			query.append(" 	   Estado     = '%s' , ");
+			query.append(" 	   CodEstado  = '%s' ");
+			query.append(" WHERE id = ( ");
+			query.append(" 				SELECT distinct f.id");
+			query.append(" 				FROM   Factura f");
+			query.append("        				INNER JOIN ReciboDetalleFactura rdf");
+			query.append("        				ON f.Id = rdf.objFacturaID");
+			query.append(" 				WHERE rdf.objReciboID = %d and f.id = %d ");
+			query.append(" ) ");
+			
+			Object[] params = { abonado,
+					(_factura.getDescontado() - factura.getDescuento()),
+					(_factura.getDescontado() - factura.getDescuento()),
+					(_factura.getTotalFacturado() - abonado), estado,
+					codEstado, factura.getObjReciboID(),
+					factura.getObjFacturaID() };
+			
+			db.execSQL(String.format(query.toString(), params));
 			//Actualizar Factura
-			db.update(DatabaseProvider.TABLA_FACTURA, 
+			/*db.update(DatabaseProvider.TABLA_FACTURA, 
 					mUpdateValues,
 					mWhereClause,
-					null);			
+					null);*/			
 			
 		}
 	}
@@ -155,6 +179,7 @@ public class ModelRecibo {
 			
 			String uri = DatabaseProvider.CONTENT_URI_CCNOTACREDITO +"/"+String.valueOf(notaCredito.getObjNotaCreditoID());
 			SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
+			
 			//Actualizar Factura
 			db.update(DatabaseProvider.TABLA_CCNOTACREDITO, 
 					mUpdateValues,
