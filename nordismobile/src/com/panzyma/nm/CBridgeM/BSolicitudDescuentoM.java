@@ -122,8 +122,7 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 									ERROR,
 									0,
 									0,
-									new ErrorMessage("Error interno en el registro de recibo",e.toString(), "\n Causa: "
-													+ e.getCause()));
+									new ErrorMessage("Error interno en el registro de recibo",e.toString(), ""));
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}

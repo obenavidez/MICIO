@@ -166,32 +166,7 @@ public class ConsultaPrecioProducto extends DialogFragment implements Handler.Ca
 			msg.setData(b);
 			msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 			NMApp.getController().getInboxHandler().sendMessage(msg);    
-			//pd = ProgressDialog.show(this.getActivity(), "Espere por favor", "Cargando Información", true, false);			
-
-			/*Message msg = new Message();
-	    	Bundle b = new Bundle();
-	    	
-	    	b.putLong("_idProducto",idProducto); 
-			msg.setData(b);
-			msg.what=ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
 			
-			NMApp.controller.removeBridgeByName(BProductoM.class.toString());
-			NMApp.controller.setEntities(this,new BProductoM());
-			NMApp.controller.addOutboxHandler(new Handler(this));
-			NMApp.controller.getInboxHandler().sendMessage(msg); 
-			
-	    	
-	    	nmapp=(NMApp)this.getActivity().getApplicationContext();
-			NMApp.getController().setEntities(this,new BProductoM());
-			NMApp.getController().addOutboxHandler(new Handler(this));
-			
-			
-			
-			NMApp.getController().getInboxHandler().sendMessage(msg);
-			pd = ProgressDialog.show(this.getActivity(), "Espere por favor", "Cargando Información", true, false);*/
-			
-			//pd = ProgressDialog.show(parent!=null ? parent : parent2  , "Espere por favor", "Cargando Información", true, false);
-
 		} catch (Exception e) {
 		}
 		

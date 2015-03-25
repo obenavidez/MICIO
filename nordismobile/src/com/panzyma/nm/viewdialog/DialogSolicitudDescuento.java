@@ -130,8 +130,8 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			@Override
 			public void onClick(View _v) 
 			{
-				int childCount = lvfacturas.getChildCount();
-				int count=0;
+				int childCount = lvfacturas.getChildCount(); 
+				int error=0;
 			    for (int i = 0; i < childCount; i++)
 			    {			    	
 			        View v =lvfacturas.getChildAt(i);
@@ -141,36 +141,40 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			        
 			        String td=d.getText().toString().trim();
 			        String tj=j.getText().toString().trim();
-			        Integer pd=Integer.parseInt((td.equals(""))?"0":td);
+			        float pd=Float.parseFloat((td.equals(""))?"0.0F":td);
 			        
 			        if(td.equals("") && tj.equals(""))
 			        	continue;	        	
 			        if(td.equals("") && !tj.equals(""))
 			        {
 			        	d.setError("Debe ingresar el descuento..."); 
-			        	d.requestFocus(); 
-			        	break;
+			        	d.requestFocus();			 
+			        	error=1;
+			        	return;
 			        } 
 			        else if(!td.equals("") && tj.equals(""))
 			        {
 			        	j.setError("Debe justificar el descuento..."); 
-			        	j.requestFocus(); 
-			        	break;
+			        	j.requestFocus(); 			
+			        	error=1;
+			        	return;
 			        }else if (pd>dp.getPrcDescuento())
 			        {
-			        	j.setError("El %descuento no debe ser mayor %"+ dp.getPrcDescuento()+" ..."); 
-			        	j.requestFocus(); 
-			        }else if (pd<0)
+			        	d.setError("El %descuento no debe ser mayor %"+ dp.getPrcDescuento()+" ..."); 
+			        	d.requestFocus(); 
+			        	error=1;
+			        	return;
+			        }else if (pd<0.0F)
 			        {
-			        	j.setError("El %descuento debe ser mayor que 0 ..."); 
-			        	j.requestFocus(); 
-			        }
-			        count+=1;
+			        	d.setError("El %descuento debe ser mayor que 0 ..."); 
+			        	d.requestFocus(); 
+			        	error=1;
+			        	return;
+			        } 
 			        solicitud.getDetalles().get(i).setPorcentaje(Float.parseFloat(td));
 			        solicitud.getDetalles().get(i).setJustificacion(tj);
-			    }
-			 if(count>0)
-				 enviarSolicitud();
+			    } 
+				enviarSolicitud();
 			}
 
 		});
@@ -185,23 +189,22 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			}
 
 		});   
-		 
-		DescuentoProveedor _dp;
+		  
 		float largest=Float.MIN_VALUE;
         for(int i =0;i<ldp.length;i++) 
-        {
-        	_dp=new DescuentoProveedor();
+        {        	
             if(ldp[i].getPrcDescuento() > largest) 
-            {
-            	_dp = ldp[i]; 
-            	largest=_dp.getPrcDescuento();
+            {   
+            	dp=new DescuentoProveedor();
+            	dp = ldp[i]; 
+            	largest=dp.getPrcDescuento();
             }
         } 
 	}
 	
 	private void enviarSolicitud()
 	{
-		if(DOC_STATUS_REGISTRADO!=solicitud.getCodigoEstado())
+		if(!DOC_STATUS_REGISTRADO.equals(solicitud.getCodigoEstado()))
 			return;
 		Message msg = new Message(); 
 		msg.obj=solicitud;
@@ -237,10 +240,9 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			return ;
 		boolean add=false;
 		solicitud=_solicitud; 
-		if(solicitud==null){
+		if(solicitud==null) 
 			solicitud=new EncabezadoSolicitud(0,recibo.getId(),DOC_STATUS_REGISTRADO,DESC_DOC_STATUS_REGISTRADO,DateUtil.getFecha());			
-			solicitud.setRecibo(recibo);
-		}
+			 
 		for(Factura f:facturas)
 		{
 			add=false;	
@@ -260,7 +262,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 						}					
 					}
 				}					
-				if(!add && DOC_STATUS_REGISTRADO==solicitud.getCodigoEstado()) 
+				if(!add && DOC_STATUS_REGISTRADO.equals(solicitud.getCodigoEstado())) 
 					detallesolicitud.add(new SolicitudDescuento(0,solicitud.getId(),recibo.getId(),f.getId(),0.0f,"",DateUtil.getFecha(),f,solicitud.getCodigoEstado())); 
 			}else		
 				detallesolicitud.add(new SolicitudDescuento(0,solicitud.getId(),recibo.getId(),f.getId(),0.0f,"",DateUtil.getFecha(),f,solicitud.getCodigoEstado()));
@@ -276,9 +278,9 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	    else
 	    	adapter.notifyDataSetChanged(); 
 	    
-	    if(DOC_STATUS_REGISTRADO!=solicitud.getCodigoEstado())
+	    if(!DOC_STATUS_REGISTRADO.equals(solicitud.getCodigoEstado()))
 	    	btnaceptar.setVisibility(View.GONE);
-	    
+	    solicitud.setRecibo(recibo);
 		gridheader.setText("DOCUMENTOS A PAGAR(" + adapter.getCount() + ")");
 	}
 }

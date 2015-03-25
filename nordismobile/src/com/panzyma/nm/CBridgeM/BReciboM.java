@@ -351,10 +351,10 @@ public final class BReciboM extends BBaseM {
 		 
 	}
 
-	private void saveRecibo( ReciboColector recibo,ArrayList<Factura> facturasToUpdate, ArrayList<CCNotaDebito> notasDebitoToUpdate, ArrayList<CCNotaCredito> notasCreditoToUpdate) throws Exception
+	public static void saveRecibo( ReciboColector recibo,ArrayList<Factura> facturasToUpdate, ArrayList<CCNotaDebito> notasDebitoToUpdate, ArrayList<CCNotaCredito> notasCreditoToUpdate) throws Exception
 	{ 	
 		//Guardando localmente el recibo
-		DatabaseProvider.registrarRecibo(recibo, getContext(), facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);
+		DatabaseProvider.registrarRecibo(recibo,NMApp.getContext(), facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);
 	}
 
 	private void onSaveDataToLocalHost(final ReciboColector recibo, final ArrayList<Factura> facturasToUpdate, final ArrayList<CCNotaDebito> notasDebitoToUpdate, final ArrayList<CCNotaCredito> notasCreditoToUpdate) 
@@ -588,6 +588,14 @@ public final class BReciboM extends BBaseM {
 
 	public static Cliente getClienteBySucursalID(ContentResolver content,long objSucursalID)throws Exception{
 		 return ModelCliente.getClienteBySucursalID(content,objSucursalID,0);
+	}
+	
+	public static Cliente getClienteBySucursalID(long objSucursalID,long reciboID)throws Exception{
+		 return ModelCliente.getClienteBySucursalID(objSucursalID,reciboID);
+	}
+	
+	public static  Factura[] getFacturasRecibo(long reciboID)throws Exception{
+		 return ModelCliente.getFacturasRecibo(reciboID);
 	}
 	
 	private void onLoadDocumentosClienteFromLocalhost(final Long sucursalID, final long reciboId) {

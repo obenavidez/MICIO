@@ -14,7 +14,8 @@
         android:layout_alignParentLeft="true"
         android:text="@string/menu_name"
         android:textColor="#040404"
-        android:textSize="18sp"
+        android:textSize="18sp"        
+        android:background="@drawable/style_textbox"
         android:textStyle="bold"
         android:typeface="sans" />
     

@@ -59,8 +59,11 @@ import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
 import com.panzyma.nm.view.viewholder.PProductoViewHolder;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
+import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogFormasPago;
+import com.panzyma.nm.viewdialog.DialogNotaRecibo;
+import com.panzyma.nm.viewdialog.DialogNotaRecibo.RespuestaNotaRecibo;
 import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
 import com.panzyma.nm.viewdialog.DialogFormasPago.OnFormaPagoButtonClickListener;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento;
@@ -126,7 +129,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	private EditText tbxNumReferencia;
 	private EditText tbxNumRecibo;
 	private EditText tbxNombreDelCliente;
-	private TextView tbxNotas;
+	//private TextView tbxNotas;
 	private TextView txtTotalAbonadoFacturas;
 	private TextView txtTotalAbonadoND;
 	private TextView txtTotalAbonadoNC;
@@ -424,6 +427,11 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				case ID_EDITAR_DESCUENTO:
 					editarDescuento(true);
 					break;
+					
+				case ID_EDITAR_NOTAS:
+					EditarNotaRecibo();
+					break;
+					
 				case ID_PAGAR_TODO:
 					if (cliente == null) {
 						AppDialog
@@ -518,7 +526,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		tbxNumReferencia = (EditText) findViewById(R.id.pdddetextv_detalle_numref);
 		tbxNumRecibo = (EditText) findViewById(R.id.pddtextv_detallenumero);
 		tbxNombreDelCliente = (EditText) findViewById(R.id.pddtextv_detallecliente);
-		tbxNotas = (EditText) findViewById(R.id.pddtextv_detalle_notas);
+//		tbxNotas = (EditText) findViewById(R.id.pddtextv_detalle_notas);
 		// Totales Documentos
 		txtTotalAbonadoFacturas = (TextView) findViewById(R.id.txtTotalFacturas);
 		txtTotalAbonadoND = (TextView) findViewById(R.id.txtTotalNotasDebito);
@@ -535,7 +543,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			tbxNumReferencia.setEnabled(false);
 			tbxNumRecibo.setEnabled(false); 
 			tbxNombreDelCliente.setEnabled(false);
-			tbxNotas.setEnabled(false);
+			//tbxNotas.setEnabled(false);
 			txtTotalAbonadoFacturas.setEnabled(false);
 			txtTotalAbonadoND.setEnabled(false);	
 			txtTotalAbonadoNC.setEnabled(false);	
@@ -591,6 +599,25 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		if (getIntent().hasExtra("cliente")) {
 			SetCliente();
 		}
+	}
+	
+	private void EditarNotaRecibo() { 
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialogNotaRecibo");
+		if (prev != null) {
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		DialogNotaRecibo newFragment = DialogNotaRecibo.newInstance(recibo.getNotas(),this);
+		newFragment.establecerRespuestaNotaRecibo(new RespuestaNotaRecibo() {
+			
+			@Override
+			public void onButtonClick(String nota) { 
+				if("".equals(nota))
+					recibo.setNotas(nota);
+			}
+		});
+		newFragment.show(ft, "dialogNotaRecibo");
 	}
 
 	private void addWithoutRepeating(Object obj) {
@@ -728,7 +755,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		}
 		// ESTABLECER LOS VALORES EN LA VISTA DE EDICION DE RECIBO
 		tbxNumRecibo.setText("" + recibo.getNumero());
-		tbxNotas.setText("" + recibo.getNotas());
+//		tbxNotas.setText("" + recibo.getNotas());
 		tbxNumReferencia.setText(""
 				+ VentasUtil.getNumeroPedido(me, recibo.getReferencia()));
 		tbxNombreDelCliente.setText("" + recibo.getNombreCliente());
@@ -816,6 +843,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 									break;
 								case ID_EDITAR_DESCUENTO:
 									editarDescuento(true);
+								case ID_EDITAR_NOTAS:
+									EditarNotaRecibo();
 									break;
 								case ID_PAGAR_TODO:
 									if (cliente == null) {
@@ -1212,7 +1241,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			{ 
 				if (notasolicituddescuento == "")
 					return; 
-				recibo.setNotas(notasolicituddescuento);
+			//	recibo.setNotas(notasolicituddescuento);
 				AppDialog.showMessage(me, "",
 						"La Solicitud ha sido enviada...",
 						DialogType.DIALOGO_ALERTA);
@@ -1293,39 +1322,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 //				});
 //	}
 
-	private void guardarRecibo(int... arg) {
-
-		// <<<<<<< HEAD
-		// //
-		// recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
-		// // .trim().equals("") ? "0" : tbxNumRecibo.getText().toString())));
-		// //
-		// // if(recibo.getId() != 0)
-		// // recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
-		// // .toString().trim().equals("")) ? "0" : tbxNumReferencia
-		// // .getText().toString()));
-		// =======
-		// recibo.setNumero(Integer.parseInt((tbxNumRecibo.getText().toString()
-		// .trim().equals("") ? "0" : tbxNumRecibo.getText().toString())));
-		//
-		//
-		// recibo.setReferencia(Integer.valueOf(recibo.getId()+""));
-		//
-		// if(recibo.getId() != 0)
-		// recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
-		// .toString().trim().equals("")) ? "0" : tbxNumReferencia
-		// .getText().toString()));
-		// >>>>>>> origin/master
-
-		// if(bs != null && bs.length == 0)
-		// recibo.setReferencia(Integer.parseInt((tbxNumReferencia.getText()
-		// .toString().trim().equals("")) ? "0" : tbxNumReferencia
-		// .getText().toString()));
-
-		recibo.setNotas((tbxNotas.getText().toString().trim().equals("") ? "0"
-				: tbxNotas.getText().toString()));
-		//
-		if (valido()) {
+	private void guardarRecibo(int... arg) 
+	{	  
+		if (valido(true)) {
 
 			CalculaTotales();
 			// colector
@@ -1378,6 +1377,86 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				msg.what = arg.length != 0 ? arg[0] : SAVE_DATA_FROM_LOCALHOST;
 				NMApp.getController().getInboxHandler().sendMessage(msg);
 			} catch (Exception e) {
+				NMApp.getController().notifyOutboxHandlers(
+						ControllerProtocol.ERROR,
+						0,
+						0,
+						new ErrorMessage("Error al guardar el recibo", e
+								.getMessage(), e.getMessage()));
+			}
+		}
+
+	}
+	
+	
+	private void guardarDirectamenteRecibo() 
+	{	  
+		if (valido()) 
+		{
+			CalculaTotales();
+			// colector
+			recibo.setObjColectorID(10);
+			recibo.setAplicaDescOca(false);
+			recibo.setClaveAutorizaDescOca("");
+			recibo.setPorcDescOcaColector(this.porcentajeDescuentoOcasional);
+			// estado
+			recibo.setObjEstadoID(100);
+			recibo.setCodEstado("REGISTRADO");
+			recibo.setDescEstado("Registrado");
+
+			// LIMPIAR LOS DOCUMENTOS DEL RECIBO
+			recibo.getFacturasRecibo().clear();
+			recibo.getNotasDebitoRecibo().clear();
+			recibo.getNotasCreditoRecibo().clear();
+
+			// AGREGAR LOS DOCUMENTOS DE LA GRILLA AL RECIBO
+			for (com.panzyma.nm.serviceproxy.Documento doc : documents) {
+
+				if (doc.getTipo().equals("Factura")) {
+					ReciboDetFactura detalleFactura = (ReciboDetFactura) doc
+							.getObject();
+					// Agregar la factura al detalle del recibo
+					recibo.getFacturasRecibo().add(detalleFactura);
+				} else if (doc.getTipo().equals("Nota Débito")) {
+					ReciboDetND notaDebito = (ReciboDetND) doc.getObject();
+					// Agregar la nota débito al detalle del recibo
+					recibo.getNotasDebitoRecibo().add(notaDebito);
+				} else {
+					ReciboDetNC notaCredito = (ReciboDetNC) doc.getObject();
+					// Agregar la nota débito al detalle del recibo
+					recibo.getNotasCreditoRecibo().add(notaCredito);
+				}
+
+			}
+
+			try
+
+			{					
+				Factura[] fact=getArrayOfFacturas();
+				ArrayList<Factura> facturasToUpdate = new ArrayList<Factura>();				
+				Object [] list = Arrays.copyOf(getArrayOfFacturas(), fact.length , Factura[].class);
+				for(Object obj: list){
+					facturasToUpdate.add((Factura)obj);
+				}	
+				
+				CCNotaDebito[] nd=getArrayOfNotasDebito();
+				ArrayList<CCNotaDebito> notasDebitoToUpdate = new ArrayList<CCNotaDebito>();
+				list = Arrays.copyOf(getArrayOfNotasDebito(), nd.length , CCNotaDebito[].class);
+				for(Object obj: list){
+					notasDebitoToUpdate.add((CCNotaDebito)obj);
+				}
+				
+				CCNotaCredito[] nc=getArrayOfNotasCredito();
+				ArrayList<CCNotaCredito> notasCreditoToUpdate = new ArrayList<CCNotaCredito>();
+				list = Arrays.copyOf(getArrayOfNotasCredito(), nc.length , CCNotaCredito[].class);
+				for(Object obj: list){
+					notasCreditoToUpdate.add((CCNotaCredito)obj);
+				}
+				
+				BReciboM.saveRecibo(recibo, facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate);
+				
+			} catch (Exception e) 
+			{
 				NMApp.getController().notifyOutboxHandlers(
 						ControllerProtocol.ERROR,
 						0,
@@ -1603,13 +1682,15 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 	}
 
-	public boolean valido() {
+	public boolean valido(boolean...saltar) {
 
-		try {
+		try 
+		{
 
 			// Validar fecha del pedido
 			long d = (DateUtil.strTimeToLong(tbxFecha.getText().toString()));
-			if (d > DateUtil.d2i(Calendar.getInstance().getTime())) {
+			if (d > DateUtil.d2i(Calendar.getInstance().getTime())) 
+			{
 				NMApp.getController()
 						.notifyOutboxHandlers(
 								ControllerProtocol.ERROR,
@@ -1624,7 +1705,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				return false;
 			}
 
-			if (recibo.getNombreCliente().trim() == "") {
+			if (recibo.getNombreCliente().trim() == "") 
+			{
 				NMApp.getController()
 						.notifyOutboxHandlers(
 								ControllerProtocol.ERROR,
@@ -1722,6 +1804,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			}
 
 			// Validar que se haya ingresado al menos un pago
+			
+			boolean ok=(saltar!=null && saltar.length!=0 && saltar[0])?true:false;
+			if(!ok)
 			if (Cobro.cantFPs(recibo) == 0) {
 				if( !Cobro.sinNecesidadFormaPago(recibo) ) {
 					NMApp.getController().notifyOutboxHandlers(
@@ -1991,7 +2076,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				break;
 
 			case ABONADO:
-				if (ammount.isEvaluar()) {
+				if (ammount.isEvaluar()) 
+				{
 
 					float montoAbonado = 0.00F, saldo = 0.00F;
 
@@ -2132,10 +2218,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				{
 					float montoAbonado = 0.00F, saldo = 0.00F;
 					montoAbonado = ammount.getValue();
-					notaDebito.setMontoAbonado(notaDebito.getMontoAbonado()
-							+ montoAbonado);
-					saldo = notaDebito.getMonto()
-							- notaDebito.getMontoAbonado();
+					notaDebito.setMontoAbonado(notaDebito.getMontoAbonado() + montoAbonado);
+					saldo = notaDebito.getMonto() - notaDebito.getMontoAbonado();
 					/*
 					 * if ( saldo > 0 ) { notaDebito.setCodEstado("ABONADA");
 					 * notaDebito.setEstado("Abonada"); } else {
@@ -2144,11 +2228,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					 */
 					notaDebito.setSaldo(saldo);
 					notaDebitoDetalle.setMontoPagar(montoAbonado);
-					notaDebitoDetalle.setMontoNeto(notaDebitoDetalle
-							.getMontoPagar()
-							- notaDebitoDetalle.getMontoInteres());
-					if (notaDebitoDetalle.getMontoPagar() < notaDebitoDetalle
-							.getSaldoTotal())
+					notaDebitoDetalle.setMontoNeto(notaDebitoDetalle.getMontoPagar() - notaDebitoDetalle.getMontoInteres());
+					if (notaDebitoDetalle.getMontoPagar() < notaDebitoDetalle.getSaldoTotal())
 						notaDebitoDetalle.setEsAbono(true);
 				}
 				break;
@@ -2429,10 +2510,11 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		if (documentRemoved instanceof ReciboDetFactura) 
 		{
 			// SI EL DOCUMENTO SE TRATA DE UNA FACTURA
-			ReciboDetFactura facturaToRemoved = ((ReciboDetFactura) documentRemoved
-					.getObject());
-			for (Factura fac : getFacturasRecibo()) {
-				if (fac.getId() == facturaToRemoved.getObjFacturaID()) {
+			ReciboDetFactura facturaToRemoved = ((ReciboDetFactura) documentRemoved.getObject());
+			for (Factura fac : getFacturasRecibo()) 
+			{
+				if (fac.getId() == facturaToRemoved.getObjFacturaID()) 
+				{
 					positionDocument = count;
 					break;
 				}
@@ -2442,24 +2524,22 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			ReciboDetFactura factDetalle = recibo.getFacturasRecibo().get(
 					positionDocument);
 
-			if (recibo.getId() != 0) {
+			if (recibo.getId() != 0) 
+			{
 				List<ReciboDetFactura> factToUpd = new ArrayList<ReciboDetFactura>();
 				factToUpd.add(factDetalle);
-				ContentResolver cntr = (ContentResolver) NMApp.getContext()
-						.getContentResolver();
+				ContentResolver cntr = (ContentResolver) NMApp.getContext().getContentResolver();
 				Context cntx = (Context) NMApp.getContext();
-				ModelRecibo.updateFacturas(factToUpd, cntr, cntx);
+				ModelRecibo.updateFacturas(recibo.getId(),factToUpd, cntr, cntx);
 				ModelRecibo.deleteDocument(10, factDetalle.getId(),
 						recibo.getId(), cntx);
 			}
 
 			facturasRecibo.remove(positionDocument);
 			recibo.getFacturasRecibo().remove(positionDocument);
-			recibo.setTotalFacturas(recibo.getTotalFacturas()
-					- facturaToRemoved.getMonto());
+			recibo.setTotalFacturas(recibo.getTotalFacturas()- facturaToRemoved.getMonto());
 			// CALCULA NUEVAMENTE LOS DESCUENTOS
-			Cobro.calcularDetFacturasRecibo(contexto, recibo,
-					recibo.getCliente(), true);
+			Cobro.calcularDetFacturasRecibo(contexto, recibo,recibo.getCliente(), true);
 
 		} else if (documentRemoved instanceof ReciboDetND) {
 			// SI EL DOCUMENTO SE TRATA DE UNA NOTA DE DEBITO
@@ -2604,7 +2684,29 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	}
 	
 	
-	
+	private void eliminarDocumento(int index) 
+	{
+		if (!"REGISTRADO".equals(recibo.getCodEstado()))
+			return; 
+ 
+		com.panzyma.nm.serviceproxy.Documento documentRemoved;
+
+		// ELIMINAR DE LA LISTA DE DOCUMENTOS
+		documentRemoved = documents.remove(index);
+
+		// ELIMINAR EL DOCUMENTO DEL RECIBO Y
+		// ACTUALIZAR EL TOTAL
+		removeDocument(documentRemoved);
+
+		// ELIMINAR LOS PAGOS, PARA QUE SEAN
+		// REALIZADOS NUEVAMENTE
+		for (int i = 0; i < recibo.getFormasPagoRecibo().size(); i++) {
+			recibo.getFormasPagoRecibo().remove(i);
+		}
+		// ACTUALIZA EL TOTAL EN LA PANTALLA Y
+		// ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
+		actualizaTotales(); 
+	}
 	
 
 	private void eliminarDocumento() {
@@ -2843,7 +2945,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	}
 
 	private void FINISH_ACTIVITY() {
-		recibo.setNotas(tbxNotas.getText().toString());
+//		recibo.setNotas(tbxNotas.getText().toString());
 		if (recibo.hasModified(recibo.getOldData())) {
 
 			AppDialog.showMessage(getContext(), "",
@@ -2918,7 +3020,29 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		dc.show();
 	}
 
-	private void PagarTodo() {
+	public static Object[] factEnRecibo(Factura factura,ArrayList<ReciboDetFactura> recfaturas)
+	{
+		Object[] obj = new Object[2];
+		boolean continuar[]=new boolean[2];
+		continuar[0]=false;
+		continuar[1]=false;
+		for(ReciboDetFactura recfact:recfaturas)
+		{
+			if(factura.getId()==recfact.getObjFacturaID()) 
+			{		
+				continuar[0]=true;
+				continuar[1]=recfact.isEsAbono();
+				obj[0]=continuar;
+				obj[1]=recfact;
+				break;
+			}
+		
+		} 
+		return obj;
+	}
+	
+	private void PagarTodo() 
+	{
 		List<CCNotaDebito> ndr = new ArrayList<CCNotaDebito>(notasDebitoRecibo);
 		List<Factura> fr = new ArrayList<Factura>(facturasRecibo);
 		List<com.panzyma.nm.serviceproxy.Documento> d = new ArrayList<com.panzyma.nm.serviceproxy.Documento>(documents);
@@ -2927,15 +3051,22 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		ArrayList<ReciboDetNC> rdnc = new ArrayList<ReciboDetNC>(recibo.getNotasCreditoRecibo());
 		try 
 		{
-//			ArrayList<ReciboDetFactura> _facSeleccionadas = new ArrayList<ReciboDetFactura>();
-//			ArrayList<ReciboDetND> _ndsSeleccionadas = new ArrayList<ReciboDetND>();
 
 			cliente = (Cliente) NMApp
 					.getController()
 					.getBridge()
 					.getClass()
-					.getMethod("getClienteBySucursalID", ContentResolver.class,long.class)
-					.invoke(null, getContentResolver(), cliente.getIdSucursal());
+					.getMethod("getClienteBySucursalID",long.class,long.class)
+					.invoke(null,cliente.getIdSucursal(),recibo.getId());
+			
+//			Object tmpfact=NMApp
+//					.getController()
+//					.getBridge()
+//					.getClass()
+//					.getMethod("getFacturasRecibo",long.class)
+//					.invoke(null,recibo.getId());
+			
+//			Factura[] facturasrecibo= tmpfact!=null?(Factura[])tmpfact:null; 
 			
 			ArrayList<Factura> facturas = new ArrayList<Factura>();
 			// Traer las facturas del cliente
@@ -2975,47 +3106,45 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				return;
 
 			String interes = getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcInteresMoratorio", "0");
-// 			Facturas
-			notasDebitoRecibo.clear();
-			notasCreditoRecibo.clear();
-			facturasRecibo.clear();
-			documents.clear();
-			recibo.getFormasPagoRecibo().clear(); 
-			
-			recibo.getFacturasRecibo().clear();
-			recibo.getNotasDebitoRecibo().clear();
-			recibo.getNotasCreditoRecibo().clear(); 
-			
+// 			Facturas			
 			if ((facturas != null) && (facturas.size() > 0)) 
 			{
 				for (int i = 0; i < facturas.size(); i++) 
 				{
 					
 					Factura _fac = facturas.get(i);
-					// CREAR UN OBJETO DETALLE DE FACURA
-					ReciboDetFactura facturaDetalle =null;
-					
-					for(int e=0;e>rdf.size();e++)
-					{
-						if(rdf.get(e).getObjFacturaID()==_fac.getId() && "CANCELADA".equals(_fac.getCodEstado()))
-						{
-							facturaDetalle= new ReciboDetFactura();
-							facturaDetalle=rdf.get(e);
-							Cobro.ActualizaTotalFacturas(recibo);
-						 
-							facturaDetalle.setFechaAplicaDescPP(_fac.getFechaAppDescPP());
-							facturasRecibo.add(_fac);
-							recibo.getFacturasRecibo().add(facturaDetalle);
-							Cobro.calcularDetFacturasRecibo(contexto, recibo,recibo.getCliente(), true);
-							documents.add(facturaDetalle); 
-							agregarDocumentosAlDetalleDeRecibo();
-							Cobro.ActualizaTotalFacturas(recibo);
-							actualizaTotales(); 							
-						}
-						
-					}
-					if(facturaDetalle!=null)
+					if("CANCELADA".equals(_fac.getCodEstado()))
 						continue;
+					Object[] rs=factEnRecibo(_fac, rdf);
+					boolean[] continuar= rs[0]!=null?(boolean[])rs[0]:null;
+					ReciboDetFactura recfact=rs[1]!=null?(ReciboDetFactura)rs[1]:null;
+					//no borrar el documento de la grilla  siempre y cuando en runtime se este cancelando
+					if((continuar!=null  && continuar[0] && !continuar[1]))
+						continue;
+					 
+					int documentidex=-1;
+					//borrar el documento de la grilla cuando el documento en la vista se esta abonando, borrarlo para dejar el documento de la bdd
+					//pagando todo su saldo, quedando en estado cancelando 
+					if(recfact!=null && continuar!=null && continuar[1])
+					{
+						// SI EL DOCUMENTO SE TRATA DE UNA FACTURA 
+						for (com.panzyma.nm.serviceproxy.Documento doc : documents) 
+						{ 
+							if(doc.getObject() instanceof ReciboDetFactura)
+							{
+								ReciboDetFactura tmpfact=(ReciboDetFactura) doc.getObject();
+								if(recfact.getId()==tmpfact.getId())
+									++documentidex;
+							}							
+						}
+						if(documentidex==-1)
+							continue;
+							
+						eliminarDocumento(documentidex);
+					}
+					
+					// CREAR UN OBJETO DETALLE DE FACURA
+					ReciboDetFactura facturaDetalle = new ReciboDetFactura();				
 					facturaDetalle.setObjFacturaID(_fac.getId());
 					facturaDetalle.setFecha(_fac.getFecha());
 					facturaDetalle.setFechaVence(_fac.getFechaVencimiento());
@@ -3081,64 +3210,11 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					montos.add(new Ammount(AmmountType.ABONADO, _ndRecibo
 							.getSaldoTotal(), true));
 					procesaNotaDebito(_ndRecibo, _nd, montos, true);
-					//_ndsSeleccionadas.add(_ndRecibo);
 				}
 			}
-
-//			if (_facSeleccionadas.size() > 0) {
-//				// Insertar nuevas facturas en el detalle de facturas del recibo
-//				ArrayList<ReciboDetFactura> fff = new ArrayList<ReciboDetFactura>();
-//				// Copiar facturas seleccionadas
-//				for (int i = 0; i < _facSeleccionadas.size(); i++) {
-//					fff.add(_facSeleccionadas.get(i));
-////					float totalfactura = recibo.getTotalFacturas();
-////					recibo.setTotalFacturas(totalfactura
-////							+ _facSeleccionadas.get(i).getTotalfactura());
-//				}
-//				// Actualizar detalle de facturas
-//				recibo.setFacturasRecibo(fff);
-//
-//				// documents.addAll(fff);
-//			}
-//			if (_ndsSeleccionadas.size() > 0) {
-//				// Insertar nuevas ncs en el detalle de ncs del recibo
-//				ArrayList<ReciboDetND> ccc = new ArrayList<ReciboDetND>();
-//
-//				// Copiar notas de crédito seleccionadas
-//				for (int i = 0; i < _ndsSeleccionadas.size(); i++)
-//					ccc.add(_ndsSeleccionadas.get(i));
-//
-//				// Actualizar detalle de facturas
-//				recibo.setNotasDebitoRecibo(ccc);
-//				// documents.addAll(ccc);
-//			}
-			// loadData(true);
-			// CalculaTotales();
-			// actualizaTotales();
-			// adapter = null;
-			// agregarDocumentosAlDetalleDeRecibo();
-			// actualizaTotales();
 		} catch (Exception e) 
 		{
-				notasDebitoRecibo = ndr;
-				facturasRecibo = fr;
-				documents = d;
-	
-				notasDebitoRecibo.clear();
-				notasCreditoRecibo.clear();
-				facturasRecibo.clear();
-				documents.clear();
-				recibo.setFacturasRecibo(rdf);
-				recibo.setNotasDebitoRecibo(rdnd);
-				recibo.setNotasCreditoRecibo(rdnc);
-				adapter = null;
-	
-				Cobro.calcularDetFacturasRecibo(contexto, recibo,recibo.getCliente(), true);
-				agregarDocumentosAlDetalleDeRecibo();
-				Cobro.ActualizaTotalFacturas(recibo);
-				Cobro.ActualizaTotalNotasCredito(recibo);
-				Cobro.ActualizaTotalNotasDebito(recibo);
-				actualizaTotales();
+				
 		}
 
 	}
@@ -3161,7 +3237,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				});
 	}
 
-	private void payamount(float mto) {
+	private void payamount(float mto) 
+	{
 		// Declaracion de variables ;
 		float mtoOrig = mto;
 		boolean seguir = true;
@@ -3182,9 +3259,19 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		ArrayList<ReciboDetNC> rdnc = new ArrayList<ReciboDetNC>(
 				recibo.getNotasCreditoRecibo());
 
-		try {
-
-			while (seguir) {
+		try 
+		{
+			
+			for(int i=d.size()-1;i>=0;i--)
+				eliminarDocumento(i);
+			 
+			// ACTUALIZA LOS MONTOS DEL RECIBO
+			ModelRecibo.updateRecibo(recibo,NMApp.getContext()); 
+			adapter.notifyDataSetChanged(); 
+			gridheader.setText("DOCUMENTOS A PAGAR ("+ adapter.getCount() + ")");
+		
+			while (seguir) 
+			{
 				// Declaración de las listas principales
 				cliente = (Cliente) NMApp
 						.getController()
@@ -3228,18 +3315,10 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				recibo.getNotasDebitoRecibo().clear();
 				recibo.getNotasCreditoRecibo().clear();
 				recibo.getFormasPagoRecibo().clear(); 
-				recibo.setTotalFacturas(0.00F);
-				recibo.setTotalND(0.00F);
-				recibo.setSubTotal(0.00F);
-				recibo.setTotalDesc(0.00F);
-				recibo.setTotalImpuestoExonerado(0.00F);
-				recibo.setTotalRetenido(0.00F);
-				recibo.setTotalOtrasDed(0.00F);
-				recibo.setTotalInteres(0.00F);
-				recibo.setTotalRecibo(0.00F);
 
 				ArrayList<FacND> list = new ArrayList<FacND>();
-				for (Factura factura : facturas) {
+				for (Factura factura : facturas) 
+				{
 					FacND fnd = new FacND();
 					fnd.fac = factura;
 					fnd.fechaVence = factura.getFechaVencimiento();
@@ -3255,9 +3334,11 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					list.add(fnd);
 				}
 				// ordenando vector por fecha de vencimiento (descendente)
-				Collections.sort(list, new Comparator<FacND>() {
+				Collections.sort(list, new Comparator<FacND>() 
+				{
 					@Override
-					public int compare(FacND item1, FacND item2) {
+					public int compare(FacND item1, FacND item2) 
+					{
 						return String.valueOf(item1.fechaVence).compareTo(
 								String.valueOf(item2.fechaVence));
 					}
@@ -3266,8 +3347,10 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 						android.content.Context.MODE_PRIVATE).getString(
 						"PorcInteresMoratorio", "0");
 				// Procesando documentos ordenados
-				for (FacND fnd : list) {
-					if (fnd.tipo == "FAC") {
+				for (FacND fnd : list) 
+				{
+					if (fnd.tipo == "FAC") 
+					{
 						Factura _fac = fnd.fac;
 						float mtoInteres = Cobro.getInteresMoratorio(me,
 								_fac.getFechaVencimiento(), _fac.getSaldo());
@@ -3322,7 +3405,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 						continue;
 					} // FAC
-					if (fnd.tipo == "ND") {
+					if (fnd.tipo == "ND") 
+					{
 						CCNotaDebito _nd = fnd.nd;
 						float mtoInteres = Cobro.getInteresMoratorio(me,
 								_nd.getFechaVence(), _nd.getSaldo());
@@ -3358,33 +3442,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 					}// FIn ND
 				}
-				// if (_facSeleccionadas.size() > 0) {
-				// //Insertar nuevas facturas en el detalle de facturas del
-				// recibo
-				// ArrayList<ReciboDetFactura> fff = new
-				// ArrayList<ReciboDetFactura>();
-				// for (ReciboDetFactura facturaseleccionada :
-				// _facSeleccionadas) {
-				// fff.add(facturaseleccionada);
-				// }
-				// //Actualizar detalle de facturas
-				// recibo.setFacturasRecibo(fff);
-				// //documents.addAll(fff);
-				//
-				// }
-				// if (_ndsSeleccionadas.size() > 0) {
-				// //Insertar nuevas ncs en el detalle de ncs del recibo
-				// ArrayList<ReciboDetND> ccc = new ArrayList<ReciboDetND>();
-				// for (ReciboDetND ndseleccionada : _ndsSeleccionadas) {
-				// ccc.add(ndseleccionada);
-				// }
-				// recibo.setNotasDebitoRecibo(ccc);
-				// //documents.addAll(ccc);
-				// }
-
-				// Cobro.calcularDetFacturasRecibo(me,recibo, cliente, true);
-				// CalculaTotales();
-
+				
 				// Ver si hay monto de descuento que quede de remanente
 				seguir = false;
 				if (primeraPasada && (recibo.getTotalDesc() > 0)) {
@@ -3395,33 +3453,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 			}
 
-			// notasDebitoRecibo.addAll(notas);
-			// facturasRecibo.addAll(facturas);
-			// documents.addAll(recibo.getNotasDebitoRecibo());
-			// documents.addAll(recibo.getFacturasRecibo());
-			// adapter = null;
-			// agregarDocumentosAlDetalleDeRecibo();
-			// actualizaTotales();
-
 		} catch (Exception e) {
-
-			notasDebitoRecibo = ndr;
-			facturasRecibo = fr;
-			documents = d;
-
-			notasDebitoRecibo.clear();
-			notasCreditoRecibo.clear();
-			facturasRecibo.clear();
-			documents.clear();
-			recibo.setFacturasRecibo(rdf);
-			recibo.setNotasDebitoRecibo(rdnd);
-			recibo.setNotasCreditoRecibo(rdnc);
-			adapter = null;
-			agregarDocumentosAlDetalleDeRecibo();
-			Cobro.ActualizaTotalFacturas(recibo);
-			Cobro.ActualizaTotalNotasCredito(recibo);
-			Cobro.ActualizaTotalNotasDebito(recibo);
-			actualizaTotales();
+			e.printStackTrace();
 
 		}
 

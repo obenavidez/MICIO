@@ -120,33 +120,33 @@
                 android:paddingTop="15dp"
                 android:scrollHorizontally="true" />
 
-            <TextView
-                android:id="@+id/pddlbl_notas"
-                android:layout_width="58dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/pddlbl_numero"
-                android:layout_marginLeft="3dp"
-                android:layout_marginTop="10dp"
-                android:text="Notas :"
-                android:textColor="@color/Black"
-                android:textSize="11dp"
-                android:textStyle="bold" />
+<!--             <TextView -->
+<!--                 android:id="@+id/pddlbl_notas" -->
+<!--                 android:layout_width="58dp" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:layout_below="@+id/pddlbl_numero" -->
+<!--                 android:layout_marginLeft="3dp" -->
+<!--                 android:layout_marginTop="10dp" -->
+<!--                 android:text="Notas :" -->
+<!--                 android:textColor="@color/Black" -->
+<!--                 android:textSize="11dp" -->
+<!--                 android:textStyle="bold" /> -->
 
-            <EditText
-                android:id="@+id/pddtextv_detalle_notas"
-                android:layout_width="fill_parent"
-                android:layout_height="60dp"
-                android:layout_below="@+id/pddlbl_numero"
-                android:layout_toRightOf="@+id/pddlbl_notas"
-                android:background="@drawable/style_textbox"
-                android:lines="2"
-                android:paddingTop="10dp" />
+<!--             <EditText -->
+<!--                 android:id="@+id/pddtextv_detalle_notas" -->
+<!--                 android:layout_width="fill_parent" -->
+<!--                 android:layout_height="60dp" -->
+<!--                 android:layout_below="@+id/pddlbl_numero" -->
+<!--                 android:layout_toRightOf="@+id/pddlbl_notas" -->
+<!--                 android:background="@drawable/style_textbox" -->
+<!--                 android:lines="2" -->
+<!--                 android:paddingTop="10dp" /> -->
 
             <TableLayout
                 android:id="@+id/tblInfoTotales"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/pddtextv_detalle_notas"
+                android:layout_below="@+id/pddtextv_detallenumero"
                 android:layout_marginLeft="3dp"
                 android:layout_marginRight="3dp" 
                 android:layout_marginTop="5dp" >

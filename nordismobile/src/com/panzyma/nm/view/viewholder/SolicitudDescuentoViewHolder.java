@@ -25,13 +25,15 @@ public class SolicitudDescuentoViewHolder {
 	public void mappingData(Object entity) 
 	{
 		SolicitudDescuento sd = (SolicitudDescuento)entity;
-		title.setText("#"+sd.getFactura().getNoFactura());
+		title.setText("#"+sd.getFactura().getNoFactura()); 
+		descuento.setText(""); 
+		justificacion.setText("");
 		if(sd.getPorcentaje()>0)
 			descuento.setText(""+sd.getPorcentaje()); 
 		if(!sd.getJustificacion().trim().equals(""))
 			justificacion.setText(sd.getJustificacion());
 		
-		if(DialogSolicitudDescuento.DOC_STATUS_REGISTRADO!=sd.getStatus())
+		if(!DialogSolicitudDescuento.DOC_STATUS_REGISTRADO.equals(sd.getStatus()))
 		{
 			descuento.setEnabled(false);
 			justificacion.setEnabled(false);

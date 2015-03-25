@@ -66,8 +66,9 @@ public class ModelRecibo {
 	{		
 		Parameters params=new Parameters((new String[]{"Credentials","idCliente","idSucursal","referencia","notas"}),
 				 (new Object[]{credenciales,recibo.getObjClienteID(),recibo.getObjSucursalID(),recibo.getReferencia(),notas}),
-				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.STRING_CLASS}));		
-		SoapPrimitive rs=(SoapPrimitive) NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
+				 (new Type[]{PropertyInfo.STRING_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.LONG_CLASS,PropertyInfo.INTEGER_CLASS,PropertyInfo.STRING_CLASS}));
+		Object data=NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.SolicitarDescuento);
+		SoapPrimitive rs=(SoapPrimitive)( (data!=null)?data:0);
 		return Long.parseLong(rs.toString()); 
 	}
 	
@@ -101,8 +102,11 @@ public class ModelRecibo {
 		return resultList;
 	}
 	
-	public static void updateFacturas(List<ReciboDetFactura> facturas, ContentResolver content,Context context){
-		for(ReciboDetFactura factura : facturas){
+	public static void updateFacturas(List<ReciboDetFactura> facturas, ContentResolver content,Context context)
+	{
+		
+		for(ReciboDetFactura factura : facturas)
+		{
 			
 			Factura _factura = ModelDocumento.getFacturaByID(content, factura.getObjFacturaID());		
 			// Filtro de factura
@@ -134,8 +138,67 @@ public class ModelRecibo {
 		}
 	}
 
-	public static void updateNotasCredito(List<ReciboDetNC> notasCredito, ContentResolver content,Context context){
-		for(ReciboDetNC notaCredito : notasCredito){
+	public static boolean factEnRecibo(ReciboDetFactura factura,ArrayList<ReciboDetFactura> recfaturas)
+	{
+		boolean continuar=false;
+		 
+		for(ReciboDetFactura recfact:recfaturas)
+		{
+			if(factura.getObjFacturaID()==recfact.getObjFacturaID()) 
+			{
+				continuar=true;
+				break;
+			}
+		
+		} 
+		return continuar;
+	}
+		
+	public static void updateFacturas(long reciboID,List<ReciboDetFactura> facturas, ContentResolver content,Context context)
+	{
+		ArrayList<ReciboDetFactura> recfaturas=getFacturasDelRecibo(content, reciboID);
+		boolean continuar=false;
+		
+		for(ReciboDetFactura factura : facturas)
+		{ 
+			
+			if(!factEnRecibo(factura,recfaturas))
+				continue;
+				
+			Factura _factura = ModelDocumento.getFacturaByID(content, factura.getObjFacturaID());		
+			// Filtro de factura
+			String mWhereClause = NMConfig.Cliente.Factura.Id +  " = " + factura.getObjFacturaID();				
+			//Columnas a actualizar
+			ContentValues mUpdateValues = new ContentValues();
+			float abonado = _factura.getAbonado() - factura.getMonto();
+			String estado = "";
+			String codEstado = "";
+			if(abonado == 0.00) {
+				estado = "Facturada";
+				codEstado = "EMITIDA";
+			}
+			mUpdateValues.put(NMConfig.Cliente.Factura.Abonado, abonado);
+			mUpdateValues.put(NMConfig.Cliente.Factura.Descontado, _factura.getDescontado() - factura.getDescuento());
+			mUpdateValues.put(NMConfig.Cliente.Factura.Retenido, _factura.getRetenido() - factura.getRetencion());
+			mUpdateValues.put(NMConfig.Cliente.Factura.Saldo, _factura.getTotalFacturado() - abonado);
+			mUpdateValues.put(NMConfig.Cliente.Factura.Estado, estado);
+			mUpdateValues.put(NMConfig.Cliente.Factura.CodEstado, codEstado);
+			
+			String uri = DatabaseProvider.CONTENT_URI_FACTURA +"/"+String.valueOf(factura.getObjFacturaID());
+			SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
+			//Actualizar Factura
+			db.update(DatabaseProvider.TABLA_FACTURA, 
+					mUpdateValues,
+					mWhereClause,
+					null);			
+			continuar=false;
+		}
+	}
+	
+	public static void updateNotasCredito(List<ReciboDetNC> notasCredito, ContentResolver content,Context context)
+	{
+		for(ReciboDetNC notaCredito : notasCredito)
+		{
 			
 			CCNotaCredito _notaCredito = ModelDocumento.getNotaCreditoByID(content, notaCredito.getObjNotaCreditoID());		
 			// Filtro de factura
@@ -235,14 +298,16 @@ public class ModelRecibo {
 	public synchronized static void deleteDocument(int type, long l, long reciboId, Context context){
 		String[] projection = new String[] {};
 		String tabla = "";
-		String where = "id = " + l;
-		switch(type) {
-		case 10: tabla = DatabaseProvider.TABLA_RECIBO_DETALLE_FACTURA; break;
-		case 20: tabla = DatabaseProvider.TABLA_RECIBO_DETALLE_NOTA_DEBITO; break;
-		case 30: tabla = DatabaseProvider.TABLA_RECIBO_DETALLE_NOTA_CREDITO; break;
+		String where = "id = " + l+" and  objReciboID= "+ reciboId;
+		switch(type) 
+		{
+			case 10: tabla = DatabaseProvider.TABLA_RECIBO_DETALLE_FACTURA; break;
+			case 20: tabla = DatabaseProvider.TABLA_RECIBO_DETALLE_NOTA_DEBITO; break;
+			case 30: tabla = DatabaseProvider.TABLA_RECIBO_DETALLE_NOTA_CREDITO; break;
 		}
 		SQLiteDatabase bdd = null;
-		try {
+		try 
+		{
 			bdd = Helper.getDatabase(context);
 			bdd.beginTransaction();
 			//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
@@ -374,7 +439,90 @@ public class ModelRecibo {
 		return recibo;
 	}
 	
-	public synchronized static ArrayList<ReciboDetFactura> getFacturasDelRecibo(ContentResolver content,long reciboID){
+	public synchronized static ReciboDetFactura getFacturaRecibo(ContentResolver content,long facturaID){
+ 
+		String[] projection = new String[] 
+				{
+				NMConfig.Recibo.DetalleFactura.ID,
+				NMConfig.Recibo.DetalleFactura.FACTURA_ID,
+				NMConfig.Recibo.DetalleFactura.RECIBO_ID,
+				NMConfig.Recibo.DetalleFactura.MONTO,
+				NMConfig.Recibo.DetalleFactura.ESABONO,
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO,
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_OCASIONAL,
+				NMConfig.Recibo.DetalleFactura.MONTO_RETENCION,
+				NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO,
+				NMConfig.Recibo.DetalleFactura.MONTO_INTERES,
+				NMConfig.Recibo.DetalleFactura.MONTO_NETO,
+				NMConfig.Recibo.DetalleFactura.MONTO_OTRAS_DEDUCCIONES,
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_PROMOCION,
+				NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_OCASIONAL,
+				NMConfig.Recibo.DetalleFactura.PORCENTAJE_DESCUENTO_PROMOCION,
+				NMConfig.Recibo.DetalleFactura.NUMERO,
+				NMConfig.Recibo.DetalleFactura.FECHA,
+				NMConfig.Recibo.DetalleFactura.FECHA_VENCE,
+				NMConfig.Recibo.DetalleFactura.FECHA_APLICA_DESCUENTO_PRONTO_PAGO,
+				NMConfig.Recibo.DetalleFactura.SUB_TOTAL,
+				NMConfig.Recibo.DetalleFactura.IMPUESTO,
+				NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA,
+				NMConfig.Recibo.DetalleFactura.SALDO_FACTURA,
+				NMConfig.Recibo.DetalleFactura.INTERES_MORATORIO,
+				NMConfig.Recibo.DetalleFactura.SALDO_TOTAL,
+				NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO_EXONERADO,
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO };		
+		ReciboDetFactura detalleFactura = null;
+		try 
+		{	
+			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA.toString() ;
+			Cursor cur = content.query(Uri.parse(uriString),
+					projection, // Columnas a devolver
+					"id = "+String.valueOf(facturaID), // Condición de la query
+					null, // Argumentos variables de la query
+					null);
+			if (cur.moveToFirst()) {				
+				do {
+					detalleFactura = new ReciboDetFactura();
+					detalleFactura.setId(Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))));
+					detalleFactura.setObjFacturaID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[1]))));
+					detalleFactura.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(projection[2]))));
+					detalleFactura.setMonto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[3]))));
+					boolean esAbono = ( Integer.parseInt(cur.getString(cur.getColumnIndex(projection[4]))) == 255 );
+					detalleFactura.setEsAbono(esAbono);
+					detalleFactura.setMontoDescEspecifico(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[5]))));
+					detalleFactura.setMontoDescOcasional(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[6]))));
+					detalleFactura.setMontoRetencion(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[7]))));
+					detalleFactura.setMontoImpuesto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[8]))));
+					detalleFactura.setMontoInteres(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[9]))));
+					detalleFactura.setMontoNeto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[10]))));
+					detalleFactura.setMontoOtrasDeducciones(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[11]))));
+					detalleFactura.setMontoDescPromocion(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[12]))));
+					detalleFactura.setPorcDescOcasional(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[13]))));
+					detalleFactura.setPorcDescPromo(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[14]))));
+					detalleFactura.setNumero(cur.getString(cur.getColumnIndex(projection[15])));
+					detalleFactura.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(projection[16]))));
+					detalleFactura.setFechaVence(Long.parseLong(cur.getString(cur.getColumnIndex(projection[17]))));
+					detalleFactura.setFechaAplicaDescPP(Long.parseLong(cur.getString(cur.getColumnIndex(projection[18]))));
+					detalleFactura.setSubTotal(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[19]))));
+					detalleFactura.setImpuesto(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[20]))));
+					detalleFactura.setTotalFactura(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[21]))));
+					detalleFactura.setSaldoFactura(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[22]))));
+					detalleFactura.setInteresMoratorio(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[23]))));
+					detalleFactura.setSaldoTotal(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[24]))));
+					detalleFactura.setMontoImpuestoExento(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[25]))));
+					//detalleFactura.setMontoImpuestoExento(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[26]))));					
+				 
+				} while (cur.moveToNext());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return detalleFactura;
+	}
+	
+	
+	public synchronized static ArrayList<ReciboDetFactura> getFacturasDelRecibo(ContentResolver content,long reciboID)
+	{
 		ArrayList<ReciboDetFactura> facturas = new ArrayList<ReciboDetFactura>();
 		String[] projection = new String[] {
 				NMConfig.Recibo.DetalleFactura.ID,
@@ -405,7 +553,8 @@ public class ModelRecibo {
 				NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO_EXONERADO,
 				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO };		
 		ReciboDetFactura detalleFactura = null;
-		try {	
+		try 
+		{	
 			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA.toString() ;
 			Cursor cur = content.query(Uri.parse(uriString),
 					projection, // Columnas a devolver

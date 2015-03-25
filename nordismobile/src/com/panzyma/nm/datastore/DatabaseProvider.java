@@ -1249,7 +1249,7 @@ public class DatabaseProvider extends ContentProvider
 			if(solicitud != null && solicitud.getId() == 0) {
 				solicitud.setId(bdd.insert(TABLA_ENCABEZADO_SOLICITUD, null, values));
 			} else {
-				solicitud.setId(bdd.update(TABLA_ENCABEZADO_SOLICITUD, values, null, null));
+				bdd.update(TABLA_ENCABEZADO_SOLICITUD, values, null, null);
 			}
 			
 			for(SolicitudDescuento detalle : solicitud.getDetalles()) {

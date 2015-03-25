@@ -206,8 +206,7 @@ public class NMNetWork {
 				@Override
 				public void run() {
 					try {
-						response = Boolean.parseBoolean(((SoapPrimitive) NMComunicacion
-								.InvokeMethod(new ArrayList<Parameters>(),
+						response = Boolean.parseBoolean(((SoapPrimitive) NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),
 										NMConfig.URL, NMConfig.NAME_SPACE,
 										NMConfig.MethodName.CheckConnection))
 								.toString());

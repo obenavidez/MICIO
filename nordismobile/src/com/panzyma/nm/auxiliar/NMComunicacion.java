@@ -22,6 +22,7 @@ import org.ksoap2.transport.HttpTransportSE;
 
 import com.comunicator.Parameters;
 import com.panzyma.nm.serviceproxy.Pedido;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -183,8 +184,9 @@ public class NMComunicacion {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			if(ht.getConnection()!=null)
-				ht.getConnection().disconnect();
+			if(ht!=null && ht.getConnection()!=null)
+				ht.getConnection().disconnect(); 
+			new Exception(e);
 		}
 	       
         return  Envelope.getResponse(); 

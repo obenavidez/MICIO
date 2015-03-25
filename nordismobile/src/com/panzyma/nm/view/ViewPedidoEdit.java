@@ -1261,8 +1261,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 		if (dpselected == null || cliente == null)
 			return;
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		android.support.v4.app.Fragment prev = getSupportFragmentManager()
-				.findFragmentByTag("dialog");
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
 		if (prev != null) {
 			ft.remove(prev);
 		}
