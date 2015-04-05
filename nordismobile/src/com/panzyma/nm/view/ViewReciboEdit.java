@@ -198,7 +198,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	//
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
-	private static final int VER_DETALLE_DOCUMENTO = 2;
+	private static final int ID_EDITAR_DESCUENTOV2 = 2;
 	
 	
 	private ViewReciboEdit me;
@@ -278,7 +278,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			if(relFacturaNotaCredito == null)
 				relFacturaNotaCredito = new HashMap<Long, Long>();
 			
-			if (savedInstanceState != null) {
+			if (savedInstanceState != null) 
+			{
 				Parcelable[] docs = savedInstanceState.getParcelableArray("documentos");
 				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>((Collection<? extends com.panzyma.nm.serviceproxy.Documento>) Arrays.asList(docs));
 				recibo = savedInstanceState.getParcelable("recibo");
@@ -288,7 +289,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
 			}
 
-			if (reciboId != 0) {
+			if (reciboId != 0) 
+			{
 				onEdit = true;
 				// OBTENER EL RECIBO DESDE LOCALHOST
 				Message msg = new Message();
@@ -693,6 +695,16 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					cliente = null;	
 					recibo.setNombreCliente("");
 				}
+				
+				// colector
+				recibo.setObjColectorID(10);
+				recibo.setAplicaDescOca(false);
+				recibo.setClaveAutorizaDescOca("");
+				recibo.setPorcDescOcaColector(0.0f);
+				// estado
+				recibo.setObjEstadoID(100); 
+				recibo.setDescEstado("Registrado");
+				
 				recibo.setCodEstado("REGISTRADO");
 				recibo.setReferencia(0);
 				recibo.setFecha(date);
@@ -865,6 +877,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 									break;
 								case ID_EDITAR_DESCUENTO:
 									editarDescuento(true);
+									break;
 								case ID_EDITAR_NOTAS:
 									EditarNotaRecibo();
 									break;
@@ -961,8 +974,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		case ControllerProtocol.NOTIFICATION:
 			if (ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1) {
 				recibo = (ReciboColector) msg.obj;
-				recibo.setOldData(recibo);
-				recibo.getOldData();
+				recibo.setOldData(recibo); 
 				actualizarOnUINumRef(recibo);
 				salvado = true;
 				showStatus("El Recibo fue registrado con exito", true);
@@ -985,14 +997,17 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			if (pd != null)
 				pd.dismiss();
 			Log.d(TAG, "Activity quitting");
-
+			if(msg.obj!=null && msg.obj instanceof ReciboColector)
+			{
+				recibo=new ReciboColector();
+				recibo = (ReciboColector) msg.obj;
+				recibo.setOldData((ReciboColector) msg.obj);
+			}
+			
 			Intent intent = null;
 
-			if (recibo != null
-					&& (recibo.getFacturasRecibo().size() > 0
-							|| recibo.getNotasCreditoRecibo().size() > 0 || recibo
-							.getNotasDebitoRecibo().size() > 0)
-					&& recibo.getReferencia() != 0) {
+			if (recibo != null	&& (recibo.getFacturasRecibo().size() > 0  || recibo.getNotasDebitoRecibo().size() > 0) && recibo.getReferencia() != 0) 
+			{
 				intent = new Intent();
 				Bundle b = new Bundle();
 				b.putParcelable("recibo", recibo);
@@ -1173,15 +1188,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 							String clave) 
 					{
 						recibo.setClaveAutorizaDescOca(clave);
-						recibo.setPorcDescOcaColector(percentcollector);
-						for(ReciboDetFactura rec: recibo.getFacturasRecibo())
-						{
-							if(!Cobro.validaAplicDescOca(NMApp.getContext(), recibo, rec.getId()))
-							{
-								//SI LA FACTURA NO APLICA PARA DESCUENTO OCASIONAL
-								rec.setPorcDescOcasional(0.00F);
-							}							
-						}
+						recibo.setPorcDescOcaColector(percentcollector); 
 						Cobro.calcularDetFacturasRecibo(NMApp.getContext(), recibo, cliente, true);
 						CalculaTotales();
 						actualizaTotales();
@@ -1252,8 +1259,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					"Debe guardar primero el recibo localmente.",
 					DialogType.DIALOGO_ALERTA);
 			return;
-		}
-		 
+		}		 
 			
 		DialogSolicitudDescuento sd=new DialogSolicitudDescuento(this, getFacturasRecibo(), recibo);
 		sd.setOnDialogSDButtonClickListener(new DialogSolicitudDescuento.OnButtonClickListener() {
@@ -1262,8 +1268,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			public void onButtonClick(String notasolicituddescuento) 
 			{ 
 				if (notasolicituddescuento == "")
-					return; 
-			//	recibo.setNotas(notasolicituddescuento);
+					return;  
 				AppDialog.showMessage(me, "",
 						"La Solicitud ha sido enviada...",
 						DialogType.DIALOGO_ALERTA);
@@ -1274,91 +1279,13 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		window.setLayout(display.getWidth() - 10, display.getHeight() - 50);
 		sd.show();
 	}
-	
-	
-//	private void solicitardescuento() {
-//		// Si se está fuera de covertura, salir
-//		if (!SessionManager.isPhoneConnected()) {
-//			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
-//			return;
-//		}
-//		if (!Cobro.validaAplicDescOca(me.getContext(), recibo)) {
-//			AppDialog
-//					.showMessage(
-//							me,
-//							"Alerta",
-//							"Debe cancelar al menos una factura vencida para aplicar descuento ocasional.",
-//							DialogType.DIALOGO_ALERTA);
-//			return;
-//		}
-//		if (cliente == null) {
-//			AppDialog.showMessage(me, "Alerta",
-//					"Por favor seleccione un cliente.",
-//					DialogType.DIALOGO_ALERTA);
-//			return;
-//		}
-//		if (recibo.getReferencia() == 0) {
-//			AppDialog.showMessage(me, "",
-//					"Debe guardar primero el recibo localmente.",
-//					DialogType.DIALOGO_ALERTA);
-//			return;
-//		}
-//		AppDialog.showMessage(me, "Enviar solicitud de descuento ocasional",
-//				"", DialogType.DIALOGO_INPUT,
-//				new AppDialog.OnButtonClickListener() {
-//					@Override
-//					public void onButtonClick(AlertDialog alert, int actionId) {
-//						if (actionId == AppDialog.OK_BUTTOM) {
-//							try {
-//								String nota = "";
-//								nota = ((TextView) alert
-//										.findViewById(R.id.txtpayamount))
-//										.getText().toString();
-//								if (nota == "")
-//									return;
-//								// NMApp.getController().setEntities(this,getBridge()==null?new
-//								// BReciboM():getBridge());
-//								// NMApp.getController().addOutboxHandler((getHandler()==null)?new
-//								// Handler(me):getHandler());
-//								Message msg = new Message();
-//								Bundle b = new Bundle();
-//								b.putParcelable("recibo", recibo);
-//								b.putString("notas", nota);
-//								msg.setData(b);
-//								msg.what = SOLICITAR_DESCUENTO;
-//								NMApp.getController().getInboxHandler()
-//										.sendMessage(msg);
-//							} catch (Exception e) {
-//								NMApp.getController()
-//										.notifyOutboxHandlers(
-//												ControllerProtocol.ERROR,
-//												0,
-//												0,
-//												new ErrorMessage(
-//														"Error al solicitar descuento",
-//														e.getMessage(), e
-//																.getMessage()));
-//							}
-//						}
-//					}
-//				});
-//	}
+	 
 
 	private void guardarRecibo(int... arg) 
 	{	  
-		if (valido(true)) {
-
-			CalculaTotales();
-			// colector
-			recibo.setObjColectorID(10);
-			recibo.setAplicaDescOca(false);
-			recibo.setClaveAutorizaDescOca("");
-			recibo.setPorcDescOcaColector(this.porcentajeDescuentoOcasional);
-			// estado
-			recibo.setObjEstadoID(100);
-			recibo.setCodEstado("REGISTRADO");
-			recibo.setDescEstado("Registrado");
-
+		if (valido(true)) 
+		{
+			CalculaTotales(); 
 			// LIMPIAR LOS DOCUMENTOS DEL RECIBO
 			recibo.getFacturasRecibo().clear();
 			recibo.getNotasDebitoRecibo().clear();
@@ -1415,16 +1342,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	{	  
 		if (valido()) 
 		{
-			CalculaTotales();
-			// colector
-			recibo.setObjColectorID(10);
-			recibo.setAplicaDescOca(false);
-			recibo.setClaveAutorizaDescOca("");
-			recibo.setPorcDescOcaColector(this.porcentajeDescuentoOcasional);
-			// estado
-			recibo.setObjEstadoID(100);
-			recibo.setCodEstado("REGISTRADO");
-			recibo.setDescEstado("Registrado");
+			CalculaTotales(); 
 
 			// LIMPIAR LOS DOCUMENTOS DEL RECIBO
 			recibo.getFacturasRecibo().clear();
@@ -1537,8 +1455,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 		if (documentToEdit instanceof ReciboDetFactura || documentToEdit instanceof ReciboDetND) 
 		{
-			FragmentManager fragmentManager = getSupportFragmentManager();
-
+			FragmentManager fragmentManager=null;
 			if (documentToEdit instanceof ReciboDetFactura) 
 			{
 				final ReciboDetFactura facturaDetalle = (ReciboDetFactura) documentToEdit.getObject();
@@ -1556,6 +1473,12 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				SolicitudDescuento sd= null; 
 
 				if((recibo.getClaveAutorizaDescOca().equals("") && recibo.getPorcDescOcaColector()<1 && solicitud==null) )
+				{
+					AppDialog.showMessage(me, "",
+		 					"El recibo no tiene descuento que editar",
+		   				DialogType.DIALOGO_ALERTA);
+					return;
+				}else if(recibo.getPorcDescOcaColector()<1 && solicitud==null)
 				{
 					AppDialog.showMessage(me, "",
 		 					"El recibo no tiene descuento que editar",
@@ -1589,7 +1512,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					}
 					
 				}	
-				
+				fragmentManager = getSupportFragmentManager();
 				final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, recibo, ActionType.EDIT,sd, true);
 				dialogConfirmacion.setActionPago(new Pagable() 
 				{
@@ -1602,7 +1525,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				dialogConfirmacion.show(fragmentManager, "");
 
 			} else {
-
+				fragmentManager = getSupportFragmentManager();
 				final ReciboDetND notaDebitoDetalle = (ReciboDetND) documentToEdit
 						.getObject();
 				final CCNotaDebito nd = getNotaDebitoByID(notaDebitoDetalle
@@ -1687,8 +1610,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			b.putParcelable("recibo", recibo);
 			b.putParcelableArray("facturasToUpdate", getArrayOfFacturas());
 			b.putParcelableArray("notasDebitoToUpdate", getArrayOfNotasDebito());
-			b.putParcelableArray("notasCreditoToUpdate",
-					getArrayOfNotasCredito());
+			b.putParcelableArray("notasCreditoToUpdate",getArrayOfNotasCredito());
 			msg.setData(b);
 			msg.what = SEND_DATA_FROM_SERVER;
 			NMApp.getController().getInboxHandler().sendMessage(msg);
@@ -1706,6 +1628,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 	public boolean valido(boolean...saltar) {
 
+		boolean ok=(saltar!=null && saltar.length!=0 && saltar[0])?true:false;
 		try 
 		{
 
@@ -1827,7 +1750,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 			// Validar que se haya ingresado al menos un pago
 			
-			boolean ok=(saltar!=null && saltar.length!=0 && saltar[0])?true:false;
+			
 			if(!ok)
 			if (Cobro.cantFPs(recibo) == 0) {
 				if( !Cobro.sinNecesidadFormaPago(recibo) ) {
@@ -1959,7 +1882,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				return false;
 			}
 			
-			if (Cobro.getTotalPagoRecibo(recibo) != StringUtil.round(recibo.getTotalRecibo(),2)){
+			if(!ok)
+			if (Cobro.getTotalPagoRecibo(recibo) != StringUtil.round(recibo.getTotalRecibo(),2))
+			{
 				NMApp.getController()
 						.notifyOutboxHandlers(
 								ControllerProtocol.ERROR,
@@ -1969,9 +1894,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 										"Problema con el Monto Total del Recibo",
 										""
 												+ "El monto pagado no cuadra con el total del recibo.",
-										""));
-
-				// Dialog.alert("El monto pagado no cuadra con el total del recibo.");
+										"")); 
 				return false;
 			}
 			return true;
@@ -2164,28 +2087,28 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					montoDescuento = ammount.getValue();					
 					if( !(recibo.getPorcDescOcaColector() == 100) ) 
 					{
-						if (montoDescuento > facturaDetalle.getMontoDescEspecificoCalc()) 
-						{
-							NMApp.getController()
-									.notifyOutboxHandlers(
-											ControllerProtocol.ERROR,
-											0,
-											0,
-											new ErrorMessage(
-													"Error al editar descuento",
-													"El nuevo descuento no debe ser mayor que "
-															+ StringUtil
-																	.formatReal(facturaDetalle
-																			.getMontoDescEspecificoCalc())
-															+ ".", ""));
-
-							return;
-						}
+//						if (montoDescuento > facturaDetalle.getMontoDescEspecificoCalc()) 
+//						{
+//							NMApp.getController()
+//									.notifyOutboxHandlers(
+//											ControllerProtocol.ERROR,
+//											0,
+//											0,
+//											new ErrorMessage(
+//													"Error al editar descuento",
+//													"El nuevo descuento no debe ser mayor que "
+//															+ StringUtil
+//																	.formatReal(facturaDetalle
+//																			.getMontoDescEspecificoCalc())
+//															+ ".", ""));
+//
+//							return;
+//						}
 					}					
 					// Recalcular monto neto
 					facturaDetalle.setPorcDescOcasional(montoDescuento);
-					Cobro.calcularDetFacturasRecibo(contexto, recibo,
-							recibo.getCliente(), true);
+					Cobro.calcularDetFacturasRecibo(contexto, recibo,recibo.getCliente(), true);
+					 
 					factura.setDescontado(facturaDetalle.getMontoDescOcasional());
 					factura.setDescuentoFactura(factura.getDescuentoFactura()+ facturaDetalle.getMontoDescOcasional());
 					Cobro.ActualizaMtoNetoFacturasrecibo(recibo);					
@@ -2529,7 +2452,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				quickAction2.addActionItem(new ActionItem(ID_EDITAR_DOCUMENTO,
 						"Editar Documento"));
 				quickAction2.addActionItem(new ActionItem(
-						VER_DETALLE_DOCUMENTO, "Ver Detalle Documento"));
+						ID_EDITAR_DESCUENTOV2, "Editar Descuento"));
 				quickAction2.addActionItem(new ActionItem(
 						ID_ELIMINAR_DOCUMENTO, "Eliminar Documento"));
 				quickAction2
@@ -2544,7 +2467,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 								case ID_EDITAR_DOCUMENTO:
 									editarDocumento();
 									break;
-								case ID_EDITAR_DESCUENTO:
+								case ID_EDITAR_DESCUENTOV2:
 									editarDescuento(true);
 									break;
 								case ID_ELIMINAR_DOCUMENTO:
@@ -2737,77 +2660,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			Cobro.calcularDetFacturasRecibo(contexto, recibo,
 					recibo.getCliente(), true);
 		}
-	}	
-	
-	private void eliminarTodosLosDocumento() {
-		
-		final String sms = "Al Pagar todo, se eliminaran del detalle del Recibo todos los Documentos.\nConfirme si desea procesder...?";
-
-		runOnUiThread(new Runnable() 
-		{
-			@Override
-			public void run() {
-				// Informar al usuario
-				AppDialog.showMessage(me, "", sms,
-						AppDialog.DialogType.DIALOGO_CONFIRMACION,
-						new AppDialog.OnButtonClickListener() 
-				{
-							@Override
-							public void onButtonClick(AlertDialog _dialog,
-									int actionId) 
-							{
-								if (actionId == AppDialog.OK_BUTTOM) 
-								{
-									com.panzyma.nm.serviceproxy.Documento documentRemoved;
-
-									// ELIMINAR DE LA LISTA DE DOCUMENTOS
-									
-									for(int i=0;i>documents.size();i++)
-									{									
-										
-										documentRemoved = documents.remove(i);
-
-										// ELIMINAR EL DOCUMENTO DEL RECIBO Y
-										// ACTUALIZAR EL TOTAL
-										removeDocument(documentRemoved);
-
-										// ELIMINAR LOS PAGOS, PARA QUE SEAN
-										// REALIZADOS NUEVAMENTE
-										for (int i2 = 0; i2 < recibo.getFormasPagoRecibo().size(); i2++) {
-											recibo.getFormasPagoRecibo().remove(i2);
-										}
-
-										// ACTUALIZA EL TOTAL EN LA PANTALLA Y
-										// ACTUALIZA EL SUBTOTAL Y TOTAL DEL RECIBO
-										actualizaTotales();
-
-										// ACTUALIZA LOS MONTOS DEL RECIBO
-										ModelRecibo.updateRecibo(recibo,
-												NMApp.getContext());
- 
-										adapter.notifyDataSetChanged();
-										gridheader.setText("DOCUMENTOS A PAGAR ("
-												+ adapter.getCount() + ")");
-									
-										
-									}
-									// Josue, cambie el parametro de boolean a
-									// int de guardarRecibo, creo q no t afecte,
-									// ya q el condicional
-									// lo puse dentro d la funcion, yo hic esto
-									// debido a q a veces c necsita guardar el
-									// recibo pero no por la misma via.
-									// if(recibo.getId() != 0)
-									// guardarRecibo(false);
-									guardarRecibo(); 								
-								}
-								_dialog.dismiss();
-							}
-						});
-			}
-		});
-
-	}
+	}	 
 	
 	
 	private void eliminarDocumento(int index) 
@@ -3072,21 +2925,26 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 	private void FINISH_ACTIVITY() {
 //		recibo.setNotas(tbxNotas.getText().toString());
-		if (recibo.hasModified(recibo.getOldData())) {
+		if (recibo.hasModified(recibo.getOldData())) 
+		{
 
 			AppDialog.showMessage(getContext(), "",
 					"¿Desea guardar la información antes de salir?",
 					AppDialog.DialogType.DIALOGO_CONFIRMACION,
-					new AppDialog.OnButtonClickListener() {
+					new AppDialog.OnButtonClickListener() 
+			{
 						@Override
 						public void onButtonClick(AlertDialog _dialog,
 								int actionId) {
 
-							if (AppDialog.OK_BUTTOM == actionId) {
-								try {
+							if (AppDialog.OK_BUTTOM == actionId) 
+							{
+								try 
+								{
 									guardarRecibo(ControllerProtocol.SALVARRECIBOANTESDESALIR);
 
-								} catch (Exception e) {
+								} catch (Exception e) 
+								{
 									NMApp.getController().notifyOutboxHandlers(
 											ControllerProtocol.ERROR,
 											0,
@@ -3097,7 +2955,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 															+ e.getCause()));
 								}
 
-							} else {
+							} else 
+							{
 								NMApp.getController()
 										._notifyOutboxHandlers(
 												ControllerProtocol.SALVARRECIBOANTESDESALIR,
@@ -3110,13 +2969,17 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 					});
 
-		} else {
+		} else 
+		{
 			if (!onEdit)
-				NMApp.getController()._notifyOutboxHandlers(
-						ControllerProtocol.SALVARRECIBOANTESDESALIR, 0, 0,
-						recibo);
+				NMApp.getController()._notifyOutboxHandlers(ControllerProtocol.SALVARRECIBOANTESDESALIR, 0, 0,recibo);
 			else
-				finish();
+			{				
+				Message msg = new Message();
+				msg.obj=recibo;
+				msg.what =ControllerProtocol.SALVARRECIBOANTESDESALIR; 
+				handleMessage(msg);
+			}
 		}
 
 	}

@@ -123,16 +123,15 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
                 {                	
                 	if(editDescuento)
     				{
-    					if(solicitud!=null)
-    					{						
-    						if(getMontoDescontado()<=solicitud.getPorcentaje()){;;}
+    											
+    						if(getMontoDescontado()<=((solicitud!=null)?solicitud.getPorcentaje():recibo.getPorcDescOcaColector())){;;}
     						else
     							{
-    								descuento.setError("El descuento debe ser menor o igual a +"+solicitud.getPorcentaje()+"% ..."); 
+    								descuento.setError("El descuento debe ser menor o igual a "+((solicitud!=null)?solicitud.getPorcentaje():recibo.getPorcDescOcaColector())+"% ..."); 
     								descuento.requestFocus(); 
     								return;
     							}
-    					}
+    					 
     				}
     				List<Ammount> montos = new ArrayList<Ammount>();
     				montos.add(new Ammount(AmmountType.ABONADO_OTROS_RECIBOS,Util.Numero.redondear( montoAbonado , 2), !editDescuento ) );
@@ -219,7 +218,8 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 		retencion.setText(StringUtil.formatReal(document.getRetencion()));
 		descuento.setText(StringUtil.formatReal(document.getRetencion()));
 		//SI ESTAMOS ANTE UNA FACTURA Y ESTAMOS EDITANDO EL ITEM
-		if ( document instanceof ReciboDetFactura ){
+		if ( document instanceof ReciboDetFactura )
+		{
 			if( this.actionType == ActionType.ADD ) {
 				rowRetencion.setVisibility(View.GONE);
 				rowDescuento.setVisibility(View.GONE);
@@ -233,6 +233,7 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 				monto.setEnabled(false);
 				retencion.setEnabled(false);
 				descuento.setText("" +((ReciboDetFactura)document.getObject()).getPorcDescOcasional() );
+				
 				descuento.requestFocus(); 
 			}			
 		} else if( document instanceof ReciboDetND ) {

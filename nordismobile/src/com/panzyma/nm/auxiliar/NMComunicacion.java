@@ -180,8 +180,7 @@ public class NMComunicacion {
 		try 
 		{		
 			ht.debug = true; 
-		    ht.call(NAMESPACE+METHOD_NAME, Envelope); 
-			
+		    ht.call(NAMESPACE+METHOD_NAME, Envelope);  
 		} catch (Exception e) {
 			e.printStackTrace();
 			if(ht!=null && ht.getConnection()!=null)

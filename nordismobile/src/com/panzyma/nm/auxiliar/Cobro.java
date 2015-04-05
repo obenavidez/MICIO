@@ -936,7 +936,8 @@ public class Cobro
         return out;
     }
    
-    public static CalcDescOca_Output calcularDescuentoOcasional(Context cnt,ReciboColector rcol, Cliente cliente) {
+    public static CalcDescOca_Output calcularDescuentoOcasional(Context cnt,ReciboColector rcol, Cliente cliente) 
+    {
     	   CalcDescOca_Output out = new CalcDescOca_Output(0, 0);
     	   if (rcol.getFacturasRecibo() == null) return out;
     	   
@@ -955,7 +956,8 @@ public class Cobro
            //Parámetro para determinar si una factura está vencida y ya pasó el periódo de gracia
            int HolgDiasAPp = Integer.parseInt(days);
            //Calculando montos de facturas
-           for (ReciboDetFactura reciboDetFactura : facturasRCol) {
+           for (ReciboDetFactura reciboDetFactura : facturasRCol) 
+           {
 			
         	   //Tiene que estar seleccionada y cancelándose
                if (reciboDetFactura.isEsAbono()) {
@@ -978,7 +980,8 @@ public class Cobro
                //al momento de cobro, traer lista de promociones aplicadas al pedido de la factura
                Factura fac = getFacturaCliente(cliente, reciboDetFactura.getObjFacturaID());
                //Averiguar si hay descuento por promoción que aplicar
-               if ((fac != null) && (fac.getDetallePromocionCobro() != null) && (fac.getDetallePromocionCobro() != null)) {
+               if ((fac != null) && (fac.getDetallePromocionCobro() != null) && (fac.getDetallePromocionCobro() != null)) 
+               {
             	   PromocionCobro[] promociones = fac.getDetallePromocionCobro();
                    //Para cada promoción
                    for(int j=0; j < promociones.length; j++) {

@@ -34,14 +34,19 @@ import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog; 
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;  
 import android.os.Parcelable;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -52,8 +57,7 @@ import android.widget.Toast;
 public class DialogSolicitudDescuento extends Dialog  implements Handler.Callback{
 
 	ViewReciboEdit parent;
-	private ListView lvfacturas;
-	private TextView gridheader;
+	
 	List<Factura> facturas;
 	EncabezadoSolicitud solicitud;
 	List<SolicitudDescuento> detallesolicitud; 
@@ -65,6 +69,10 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	private int positioncache;
 	
 	private OnButtonClickListener mButtonClickListener;
+	
+	private ListView lvfacturas;
+	private CheckBox cboxall;
+	private TextView gridheader;
 	private Button btnaceptar;
 	private Button btncancelar;
 	
@@ -77,6 +85,11 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	public static String DESC_DOC_STATUS_ENVIADO="Enviada";	
 	public static String DESC_DOC_STATUS_APROBADO="Aprobada";
 	public static String DESC_DOC_STATUS_ANULADO="Anulada";
+	
+	public static String TAG=DialogSolicitudDescuento.class.getSimpleName();
+	
+	public static String justificacionglobal="";
+	public static float porcentajeglobal=0.0f;
 	
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(String notasolicituddescuento);
@@ -120,9 +133,61 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 		detallesolicitud=new ArrayList<SolicitudDescuento>();
 		solicitud=new EncabezadoSolicitud();
 		
+		cboxall=(CheckBox) findViewById(R.id.cbox_all);   
 	    lvfacturas = (ListView) findViewById(R.id.sd_lvfacturas);	
 	    gridheader=(TextView) findViewById(R.id.sd_gridheader);   
 	    gridheader.setText("FACTURAS A SOLICITAR DESCUENTO("+facturas.size()+")");	     
+	    
+	    if(facturas!=null && facturas.size()>1)
+	    {
+	    	cboxall.setVisibility(View.VISIBLE);
+	    	cboxall.setOnClickListener(new View.OnClickListener() 
+	    	{
+				
+				@Override
+				public void onClick(View v) 
+				{ 
+					if (!((CheckBox) v).isChecked()){ 
+					    porcentajeglobal=0.0f;
+					    justificacionglobal="";
+						return;
+					}
+						
+					int childCount = lvfacturas.getChildCount(); 
+					boolean OK=false;
+				    for (int i = 0; i < childCount; i++)
+				    {			    	
+				        View doc =lvfacturas.getChildAt(i);
+				        SolicitudDescuento sd=(SolicitudDescuento) lvfacturas.getItemAtPosition(i);
+				        EditText d=((EditText) doc.findViewById(R.id.descuento));
+				        EditText j=((EditText) doc.findViewById(R.id.justificacion));
+				        
+				        String td=d.getText().toString().trim();
+				        String tj=j.getText().toString().trim();
+				        float pd=Float.parseFloat((td.equals(""))?"0.0F":td);
+				        
+				        if(td.equals("") && tj.equals(""))
+				        	continue;	        	
+				        if(td.equals("") && !tj.equals(""))
+				        	continue;	
+				        else if(!td.equals("") && tj.equals("")) 
+				        	continue;
+				        else if (pd>dp.getPrcDescuento())
+				           	continue;	
+				        else if (pd<0.0F) 
+				        	continue;	
+				       OK= true;
+				       porcentajeglobal=pd;
+				       justificacionglobal=tj;
+				       break;
+				    } 
+					if(!OK)
+						AppDialog.showMessage(parent,"Aviso!!!",
+								"Debe de especificar el % y justificación en cualquiera de item de la lista y este se le aplicara a todos",
+								DialogType.DIALOGO_ALERTA);
+				}
+			});
+	    }    
 	    
 	    btnaceptar = ((Button) findViewById(R.id.btn_ok));
 		btnaceptar.setOnClickListener(new android.view.View.OnClickListener() 
@@ -132,49 +197,57 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			{
 				int childCount = lvfacturas.getChildCount(); 
 				int error=0;
-			    for (int i = 0; i < childCount; i++)
-			    {			    	
-			        View v =lvfacturas.getChildAt(i);
-			        SolicitudDescuento sd=(SolicitudDescuento) lvfacturas.getItemAtPosition(i);
-			        EditText d=((EditText) v.findViewById(R.id.descuento));
-			        EditText j=((EditText) v.findViewById(R.id.justificacion));
-			        
-			        String td=d.getText().toString().trim();
-			        String tj=j.getText().toString().trim();
-			        float pd=Float.parseFloat((td.equals(""))?"0.0F":td);
-			        
-			        if(td.equals("") && tj.equals(""))
-			        	continue;	        	
-			        if(td.equals("") && !tj.equals(""))
-			        {
-			        	d.setError("Debe ingresar el descuento..."); 
-			        	d.requestFocus();			 
-			        	error=1;
-			        	return;
-			        } 
-			        else if(!td.equals("") && tj.equals(""))
-			        {
-			        	j.setError("Debe justificar el descuento..."); 
-			        	j.requestFocus(); 			
-			        	error=1;
-			        	return;
-			        }else if (pd>dp.getPrcDescuento())
-			        {
-			        	d.setError("El %descuento no debe ser mayor %"+ dp.getPrcDescuento()+" ..."); 
-			        	d.requestFocus(); 
-			        	error=1;
-			        	return;
-			        }else if (pd<0.0F)
-			        {
-			        	d.setError("El %descuento debe ser mayor que 0 ..."); 
-			        	d.requestFocus(); 
-			        	error=1;
-			        	return;
-			        } 
-			        solicitud.getDetalles().get(i).setPorcentaje(Float.parseFloat(td));
-			        solicitud.getDetalles().get(i).setJustificacion(tj);
-			    } 
-				enviarSolicitud();
+				
+				if(cboxall.isChecked() && porcentajeglobal>0.0f && (!"".equals(justificacionglobal)))
+					enviarSolicitud(true);		        
+				else
+				{
+					for (int i = 0; i < childCount; i++)
+				    {			    	
+				        View v =lvfacturas.getChildAt(i);
+				        SolicitudDescuento sd=(SolicitudDescuento) lvfacturas.getItemAtPosition(i);
+				        EditText d=((EditText) v.findViewById(R.id.descuento));
+				        EditText j=((EditText) v.findViewById(R.id.justificacion));
+				        
+				        String td=d.getText().toString().trim();
+				        String tj=j.getText().toString().trim();
+				        float pd=Float.parseFloat((td.equals(""))?"0.0F":td);
+				        
+				        if(td.equals("") && tj.equals(""))
+				        	continue;	        	
+				        if(td.equals("") && !tj.equals(""))
+				        {
+				        	d.setError("Debe ingresar el descuento..."); 
+				        	d.requestFocus();			 
+				        	error=1;
+				        	return;
+				        } 
+				        else if(!td.equals("") && tj.equals(""))
+				        {
+				        	j.setError("Debe justificar el descuento..."); 
+				        	j.requestFocus(); 			
+				        	error=1;
+				        	return;
+				        }else if (pd>dp.getPrcDescuento())
+				        {
+				        	d.setError("El %descuento no debe ser mayor %"+ dp.getPrcDescuento()+" ..."); 
+				        	d.requestFocus(); 
+				        	error=1;
+				        	return;
+				        }else if (pd<0.0F)
+				        {
+				        	d.setError("El %descuento debe ser mayor que 0 ..."); 
+				        	d.requestFocus(); 
+				        	error=1;
+				        	return;
+				        } 
+				        solicitud.getDetalles().get(i).setPorcentaje(Float.parseFloat(td));
+				        solicitud.getDetalles().get(i).setJustificacion(tj);
+				    } 
+					enviarSolicitud();
+					
+				}
+			    
 			}
 
 		});
@@ -202,12 +275,20 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
         } 
 	}
 	
-	private void enviarSolicitud()
+	private void enviarSolicitud(boolean...otherprocess)
 	{
 		if(!DOC_STATUS_REGISTRADO.equals(solicitud.getCodigoEstado()))
 			return;
+		ArrayList<Object> data=null;
+		if(otherprocess!=null && otherprocess.length!=0 && otherprocess[0])
+		{
+			data=new ArrayList<Object>();
+			data.add(porcentajeglobal);
+			data.add(justificacionglobal);
+			data.add(solicitud);
+		}		
 		Message msg = new Message(); 
-		msg.obj=solicitud;
+		msg.obj=(data!=null)?data:solicitud;
 		msg.what=ControllerProtocol.SOLICITAR_DESCUENTO;
 		NMApp.getController().getInboxHandler().sendMessage(msg); 
 	}
@@ -283,4 +364,29 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	    solicitud.setRecibo(recibo);
 		gridheader.setText("DOCUMENTOS A PAGAR(" + adapter.getCount() + ")");
 	}
+	
+	@Override
+	public void dismiss() {
+		FINISH_ACTIVITY();
+		super.dismiss();
+	}
+
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {        	
+		  	dismiss();
+	        return true;
+	    }
+	    return super.onKeyUp(keyCode, event); 
+	} 
+	
+	private void FINISH_ACTIVITY()
+	{
+		NMApp.getController().setView(parent);
+		Log.d(TAG, "Activity quitting");  
+	}
+	
+	
 }

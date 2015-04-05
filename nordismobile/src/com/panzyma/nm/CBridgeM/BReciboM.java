@@ -118,13 +118,7 @@ public final class BReciboM extends BBaseM {
 			case C_FACTURACLIENTE:
 				bdl = msg.getData();				
 				onLoadDocumentosClienteFromLocalhost(bdl.getLong("sucursalID"),bdl.getLong("reciboID"));
-				break; 
-			case LOAD_DATA_FROM_SERVER:
-				// onLoadALLData_From_LocalHost();
-				return true;
-			case UPDATE_ITEM_FROM_SERVER:
-				// onUpdateItem_From_Server();
-				return true;
+				break;   
 			case SOLICITAR_DESCUENTO:
 				bdl=msg.getData();
 				solicitarDescuentoOcacional((ReciboColector)bdl.getParcelable("recibo"),bdl.getString("notas"));

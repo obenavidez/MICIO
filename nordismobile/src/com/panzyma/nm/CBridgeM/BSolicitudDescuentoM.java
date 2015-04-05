@@ -41,15 +41,21 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 			case LOAD_DATA_FROM_LOCALHOST: 
 				onLoadALLDataFromLocalHost(bdl.getLong("idrecibo"));
 				return true;
-			case SOLICITAR_DESCUENTO:
-				bdl=msg.getData();
-				enviarSolicitudDescuento((EncabezadoSolicitud) msg.obj);
+			case SOLICITAR_DESCUENTO: 				
+				if(msg!=null && msg.obj instanceof EncabezadoSolicitud)
+					enviarSolicitudDescuento((EncabezadoSolicitud) msg.obj);
+				else
+				{
+					ArrayList<Object> data=(ArrayList<Object>) msg.obj;					
+					enviarSolicitudDescuento((EncabezadoSolicitud)data.get(2),new String[]{(String) data.get(0),(String) data.get(1)});
+				}
+					
 				return true;
 		}				
 		return false;
 	}
 	
-	private void enviarSolicitudDescuento(final EncabezadoSolicitud solicitud) 
+	private void enviarSolicitudDescuento(final EncabezadoSolicitud solicitud,final String...extra) 
 	{
 		try 
 		{
@@ -71,25 +77,38 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 						 
 						List<SolicitudDescuento> _detalles=solicitud.getDetalles();
 						List<SolicitudDescuento> detalles=new ArrayList<SolicitudDescuento>();
-						nota = new StringBuilder("Solicito aprobación para otorgar descuento a lo siguiente:\n"); 
-						
-						for(SolicitudDescuento sd:_detalles)
-						{
-							if(sd.getPorcentaje()>0.0 && !sd.getJustificacion().equals("")) 
-							{   
+						nota = new StringBuilder("** Solicito aprobación para otorgar descuento a lo siguiente:\n"); 
+						 
+						if(extra!=null && extra.length>0)
+						{  
+							nota = new StringBuilder(""); 
+							for(SolicitudDescuento sd:_detalles)
+							{
 								cont+=1;
 								if(cont>1)
-									nota.append("** Documento : Factura # ");
-								else
-									nota.append("   Documento : Factura # ");
-								nota.append(sd.getFactura().getNoFactura());
-								nota.append("\t / Justificación: ");
-								nota.append(sd.getJustificacion()+"\n");								
+									nota.append("** Solicito aprobación para otorgar el %"+extra[0]+ " a las siguientes facturas:\n");
+															
+								nota.append(sd.getFactura().getNoFactura()+",");
+								sd.setPorcentaje(Float.valueOf(extra[0]));
+								sd.setJustificacion(extra[1]);
 								detalles.add(sd);
+								if(cont==_detalles.size())
+									nota.append("\nJustificación: "+extra[1]); 
+								
+							}							
+						}
+						else
+						{
+							for(SolicitudDescuento sd:_detalles)
+							{ 
+								if(sd.getPorcentaje()>0.0 && !sd.getJustificacion().equals("")) 
+								{    												
+									nota.append("Factura: # "+sd.getFactura().getNoFactura()+",Descuento : %"+sd.getPorcentaje()+",  Justificación: "+sd.getJustificacion()+"\n");									  							
+									detalles.add(sd);
+								} 							
 							}
-							  
-							
-						} 
+						}
+						 
 						solicitud.setDetalles(detalles);
 						if(solicitud!=null && solicitud.getDetalles()!=null && solicitud.getDetalles().size()!=0)
 							RegistrarSolicituDescuento(solicitud);
@@ -174,7 +193,6 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 		
 		return null;
 	}
-	
 	
 	private void onLoadALLDataFromLocalHost(long idrecibo) 
 	{ 

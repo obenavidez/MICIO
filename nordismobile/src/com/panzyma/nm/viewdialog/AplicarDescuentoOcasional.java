@@ -136,7 +136,8 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		
 	       //Si el porcentaje es < 100, pedir clave
 	       if (tbox_collectorpercent.getText().toString().trim().equals("")) {
-	    	   AppDialog.showMessage(parent,"","Ingrese porcentaje asumido por colector.",DialogType.DIALOGO_ALERTA);
+	    	   tbox_collectorpercent.setError("Ingrese porcentaje asumido por colector."); 
+	    	   tbox_collectorpercent.requestFocus();
 	           return false;
 	       }
 	       
@@ -144,12 +145,16 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	        
 	       //Validar que prc sea entre 0 y 100
 	       if (percentcollector < 0) {
-	    	   AppDialog.showMessage(parent,"","El porcentaje debe ser mayor o igual a cero.",DialogType.DIALOGO_ALERTA);
+	    	   tbox_collectorpercent.setError("El porcentaje debe ser mayor o igual a cero."); 
+	    	   tbox_collectorpercent.requestFocus();
+	    	//   AppDialog.showMessage(parent,"","El porcentaje debe ser mayor o igual a cero.",DialogType.DIALOGO_ALERTA);
 	           return false;
 	       }
 	        
 	       if (percentcollector > 100) {
-	    	   AppDialog.showMessage(parent,"","El porcentaje debe ser menor o igual a 100.",DialogType.DIALOGO_ALERTA);
+	    	   tbox_collectorpercent.setError("El porcentaje debe ser menor o igual a 100."); 
+	    	   tbox_collectorpercent.requestFocus();
+	    	 //  AppDialog.showMessage(parent,"","El porcentaje debe ser menor o igual a 100.",DialogType.DIALOGO_ALERTA);
 	           return false;
 	       }
 	        
@@ -162,7 +167,9 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	                if (_clave.compareTo("") == 0) 
 	                {
 	                	_clave="";
-	                	AppDialog.showMessage(parent,"","Favor ingresar clave de autorización.",DialogType.DIALOGO_ALERTA);
+	                	tbox_discoutnkey.setError("Favor ingresar clave de autorización.");
+	                	tbox_discoutnkey.requestFocus();
+	                	//AppDialog.showMessage(parent,"","Favor ingresar clave de autorización.",DialogType.DIALOGO_ALERTA);
 	                    return false;
 	                }   
 	    		   
@@ -184,7 +191,8 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	
 	
 	//1: válida, 0: inválida, -1: cancelado
-    private boolean verificarAutorizacionDesc(String resp) { 
+    private boolean verificarAutorizacionDesc(String resp) 
+    { 
         //0: No se ha solicitado autorización
         //1: La solicitud aún no ha sido autorizada
         //2: Error al lado del servidor
@@ -243,11 +251,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		switch (msg.what) 
 		{
 			case ControllerProtocol.REQUEST_APLICAR_DESCUENTO:	
-				if(verificarAutorizacionDesc(msg.obj.toString()))
-				{
-					mylisterner.onButtonClick(percentcollector,_clave);
-					dismiss();
-				}
+					verificarAutorizacionDesc(msg.obj.toString());				
 				break;
 			case ControllerProtocol.OBTENERDESCUENTO:
 				if(msg.obj!=null)

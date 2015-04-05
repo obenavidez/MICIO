@@ -36,7 +36,7 @@ public class ModelSolicitudDescuento
 			StringBuilder sQuery = new StringBuilder(); 			
 			sQuery.append(" SELECT sd.* ");
 			sQuery.append(" FROM SolicitudDescuento AS sd  ");
-			sQuery.append(" WHERE sd.objEncabezadoSolicitudID = " + objEncabezadoSolicitudID); 	
+		    sQuery.append(" WHERE sd.objEncabezadoSolicitudID = " + objEncabezadoSolicitudID); 	
 			cur = DatabaseProvider.query(bd, sQuery.toString());
 			detallesolicitud=new ArrayList<SolicitudDescuento>();
 			if (cur.moveToFirst()) {
@@ -90,7 +90,7 @@ public class ModelSolicitudDescuento
 			{
 				// Recorremos el cursor hasta que no haya más registros
 				do 
-				{	 				
+				{	 				 
 				   es=new EncabezadoSolicitud();
 				   es.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.ID))));
 				   es.setObjReciboID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.OBJ_RECIBO_ID))));
@@ -98,7 +98,7 @@ public class ModelSolicitudDescuento
 				   es.setDescripcionEstado(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.DESCRIPCION_ESTADO)));
 				   es.setFechaSolicitud(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.EncabezadoSolicitud.FECHA_SOLICITUD))));
 				   es.setDetalles(obtenerDetalleSolicitud(es.getId()));
-				   break;
+				   
 				} while (cur.moveToNext());
 			}			
 		
