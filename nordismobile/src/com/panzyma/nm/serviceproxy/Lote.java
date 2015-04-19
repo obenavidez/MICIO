@@ -4,9 +4,12 @@ import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
+
+import android.os.Parcel;
+import android.os.Parcelable;
  
 
-public class Lote implements KvmSerializable 
+public class Lote implements KvmSerializable, Parcelable 
 {
 	
 	 public long Id;
@@ -22,7 +25,17 @@ public class Lote implements KvmSerializable
 	     this.FechaVencimiento = fechaVencimiento;
 	 }
 	 
-	 public long getId() {
+	 public Lote(Parcel parcel) {
+		readFromParcel(parcel);		
+	}
+	 
+	 private void readFromParcel(Parcel parcel) {
+		 Id = parcel.readLong();
+		 NumeroLote =	parcel.readString();
+		 FechaVencimiento =	parcel.readInt();
+	 }
+
+	public long getId() {
 	     return Id;
 	 }
 	 
@@ -88,5 +101,32 @@ public class Lote implements KvmSerializable
 	        case 2:  FechaVencimiento=Integer.parseInt(_obj.toString()); 
         }
 	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(Id);
+		parcel.writeString(NumeroLote);
+		parcel.writeInt(FechaVencimiento);
+	}
+	
+	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+		@Override
+		public Lote createFromParcel(Parcel parcel) {
+			return new Lote(parcel);
+		}
+
+		@Override
+		public Lote[] newArray(int size) {
+			return new Lote[size];
+		}
+	};
+	
 }
 

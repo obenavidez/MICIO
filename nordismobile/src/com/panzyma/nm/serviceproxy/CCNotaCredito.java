@@ -346,5 +346,7 @@ public final class CCNotaCredito implements KvmSerializable, GenericDocument,
 		parcel.writeString(CodConcepto);
 
 	}
+	
+	
 
 }
