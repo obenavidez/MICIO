@@ -42,6 +42,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
+import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.model.ModelSolicitudDescuento;
 import com.panzyma.nm.model.ModelTasaCambio;
@@ -109,8 +110,11 @@ public final class BReciboM extends BBaseM {
 				return true;
 			case LOAD_ITEM_FROM_LOCALHOST: 
 				bdl=msg.getData();
-				onLoadItemFromLocalHost(bdl.getInt("idrecibo"));
+				onLoadItemFromLocalHostV2(bdl.getInt("idrecibo"));
 				return true;
+//			case ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST:
+//				obtenerReciboByRef((Integer)msg.obj,msg.arg1); 
+//				break;
 			case DELETE_DATA_FROM_LOCALHOST:
 				bdl=msg.getData();			
 				onDeleteDataFromLocalHost(bdl.getInt("idrecibo"));
@@ -470,12 +474,39 @@ public final class BReciboM extends BBaseM {
 		}		
 	}
 	
-	private void onLoadItemFromLocalHost(final Integer idrecibo) {
+	public  void obtenerReciboByRef(int numeromovil , int... arg)
+	{ 
+		try 
+		{
+	     
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_LOADITEM_LOCALHOST, (arg!=null)?arg[0]:0, 0, ModelRecibo.getReciboByRef(getResolver(),numeromovil));
+	     
+ 
+		}catch(Exception e){
+			Log.e(TAG, "Error in the update thread", e);
+			try {
+				Processor
+						.notifyToView(
+								getController(),
+								ERROR,
+								0,
+								0,
+								ErrorMessage.newInstance(
+										"Error interno",
+										e.getMessage(), "\n Causa: "
+												+ e.getCause()));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	private void onLoadItemFromLocalHost(final Integer numeromovil) {
 		try {
 			getPool().execute(new Runnable() {
 				@Override
 				public void run() {
-					Processor.send_ViewReciboEditToView(ModelRecibo.getReciboByID(getResolver(),idrecibo), getController());
+ 					Processor.send_ViewReciboEditToView(ModelRecibo.getReciboByRef(getResolver(),numeromovil), getController());
 				}
 			});
 		}catch(Exception e){
@@ -496,6 +527,11 @@ public final class BReciboM extends BBaseM {
 			}
 		}
 		
+	}
+	
+	private void onLoadItemFromLocalHostV2(final Integer numeromovil) {
+		 
+ 	 	Processor.send_ViewReciboEditToView(ModelRecibo.getReciboByRef(getResolver(),numeromovil), getController()); 
 	}
 
 	private void onDeleteDataFromLocalHost(final int reciboID) {

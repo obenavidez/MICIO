@@ -424,7 +424,7 @@ public  class Factura implements KvmSerializable, GenericDocument, Parcelable {
 	    
 	    Parcelable[] parcelableArray = parcel.readParcelableArray(PromocionCobro.class.getClassLoader()); 
 		if (parcelableArray != null) {
-			DetallePromocionCobro = new PromocionCobro[]{};
+			DetallePromocionCobro = new PromocionCobro[parcelableArray.length];
 			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, PromocionCobro[].class);
 			int contador = 0;
 			for(Object obj: list){
@@ -434,7 +434,7 @@ public  class Factura implements KvmSerializable, GenericDocument, Parcelable {
 		
 		parcelableArray = parcel.readParcelableArray(MontoProveedor.class.getClassLoader()); 
 		if (parcelableArray != null) {
-			DetalleMontoProveedor = new MontoProveedor[]{};
+			DetalleMontoProveedor = new MontoProveedor[parcelableArray.length];
 			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, MontoProveedor[].class);
 			int contador = 0;
 			for(Object obj: list){

@@ -386,6 +386,7 @@ public class ReciboDetFormaPago implements KvmSerializable, Parcelable {
 	public void writeToParcel(Parcel parcel, int flags) {
 		// TODO Auto-generated method stub
 		parcel.writeLong(Id);
+		parcel.writeLong(ObjReciboID);
 		parcel.writeLong(ObjFormaPagoID);
 		parcel.writeString(CodFormaPago);
 		parcel.writeString(DescFormaPago);
@@ -405,6 +406,7 @@ public class ReciboDetFormaPago implements KvmSerializable, Parcelable {
 
 	private void readFromParcel(Parcel parcel) {
 		this.Id = parcel.readLong();
+		this.ObjReciboID = parcel.readLong();
 		this.ObjFormaPagoID = parcel.readLong();
 		this.CodFormaPago = parcel.readString();
 		this.DescFormaPago = parcel.readString();

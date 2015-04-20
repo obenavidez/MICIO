@@ -42,6 +42,31 @@ public class NMNetWork {
     {
     	return error;
     }
+    
+    /**
+     * Verificar si hay alguna red activa, ya sea WIFI o MOBILE.
+     * @param parent
+     * @return
+     * @throws Exception 
+     */
+    
+    public static boolean isPhoneConnected3()
+    {
+		try 
+		{	
+	        ConnectivityManager cm = (ConnectivityManager) NMApp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+	        NetworkInfo info = cm.getActiveNetworkInfo(); 
+			 if(info== null) 
+				 return false; 
+	        else if(!info.isConnected())  
+        		return false;  
+		}catch (Exception e) { 
+			e.printStackTrace();
+			return false;
+		}        
+        return true;
+    }  
+    
     /**
      * Verificar si hay alguna red activa, ya sea WIFI o MOBILE.
      * @param parent
@@ -51,7 +76,7 @@ public class NMNetWork {
     
     public static boolean isPhoneConnected()
     {
-		try 
+    	try 
 		{	
     		error=null;
 	        ConnectivityManager cm = (ConnectivityManager) NMApp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -69,10 +94,10 @@ public class NMNetWork {
 				try 
 				{ 
 						UserSessionManager.HAS_ERROR=true;
-						SessionManager.setErrorAuntentication(error.getTittle()+"\n"+error.getMessage());
+						SessionManager.hasError=true;
+						SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());
 						Thread.sleep(1000);
 						NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,error); 
-						
 						return false;
 				} catch (Exception e) { 
 					e.printStackTrace();
@@ -83,8 +108,6 @@ public class NMNetWork {
 		}catch (Exception e) { 
 			e.printStackTrace();
 		}
-       
-        
         return false;
     }  
     

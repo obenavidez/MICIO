@@ -85,7 +85,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		tbox_collectorpercent =(EditText) view.findViewById(R.id.editpercent);
 		tbox_collectorpercent.setText("0");
 		
-		if(!SessionManager.isPhoneConnected())
+		if(!SessionManager.isPhoneConnected3())
 		{
 			tbox_discoutnkey =(EditText) view.findViewById(R.id.editkey);
 			tbox_discoutnkey.setVisibility(View.VISIBLE);
@@ -122,8 +122,8 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
                 @Override
                 public void onClick(View v)
                 {                	
-                	if ( isValid() ) {
-                		mylisterner.onButtonClick(percentcollector, tbox_discoutnkey.getText().toString().trim());
+                	if ( isValid() ) {                		
+                		mylisterner.onButtonClick(percentcollector, (tview_discoutnkey!=null)?tview_discoutnkey.getText().toString().trim():"");
                 		dismiss();
                 	}
                 }
@@ -168,8 +168,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	                {
 	                	_clave="";
 	                	tbox_discoutnkey.setError("Favor ingresar clave de autorización.");
-	                	tbox_discoutnkey.requestFocus();
-	                	//AppDialog.showMessage(parent,"","Favor ingresar clave de autorización.",DialogType.DIALOGO_ALERTA);
+	                	tbox_discoutnkey.requestFocus(); 
 	                    return false;
 	                }   
 	    		   
@@ -242,6 +241,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
     @Override
 	public void onDismiss(DialogInterface dialog) { 
     	NMApp.getController().setView(parent);
+    	SessionManager.setContext(parent);
 		super.onDismiss(dialog);
 	}
     

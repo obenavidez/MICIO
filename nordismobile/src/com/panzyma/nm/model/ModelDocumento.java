@@ -21,13 +21,18 @@ public class ModelDocumento {
 	 * @param objFacturaID Id de la factura a buscar
 	 * @return
 	 */
-	public static Factura getFacturaByID(ContentResolver content, Long objFacturaID) {
+	public static Factura getFacturaByID(SQLiteDatabase db, Long objFacturaID) {
 		String[] proyection = new String[] {};
 		
-		String uri = DatabaseProvider.CONTENT_URI_FACTURA_BY_ID +"/"+String.valueOf(objFacturaID);
+	//	String uri = DatabaseProvider.CONTENT_URI_FACTURA_BY_ID +"/"+String.valueOf(objFacturaID);
 		Factura fact = null;
 		
-		Cursor cur_fact = content.query(Uri.parse(uri), proyection, null, null, null);
+		StringBuilder sQuery = new StringBuilder();
+	    sQuery.append(" SELECT f.* " );		
+	    sQuery.append(" FROM FACTURA AS f "); 			
+		sQuery.append(" WHERE f.Id= "+ String.valueOf(objFacturaID)); 
+		
+		Cursor cur_fact = DatabaseProvider.query(db, sQuery.toString()); 
 		
 		if (cur_fact.moveToFirst()) 
 		{   	    	   			 

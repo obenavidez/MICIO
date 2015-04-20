@@ -138,14 +138,21 @@ public class ModelCliente
 	public synchronized static Cliente getClienteBySucursalID(long objSucursalID, long reciboID)throws Exception
 	{
 		Cliente cliente=new Cliente(); 
-		Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_CLIENTE+"/"+String.valueOf(objSucursalID)); 
-		try{		
-			ContentResolver content=NMApp.getContext().getContentResolver();
-			Cursor cur = content.query(uri,
-			        null, //Columnas a devolver
-			        null,       //Condición de la query
-			        null,       //Argumentos variables de la query
-			        null); 			
+//		Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_CLIENTE+"/"+String.valueOf(objSucursalID)); 
+		SQLiteDatabase db = null;
+		try 
+		{
+			
+			 //OBTENIENDO LAS FACTURAS
+		    db = Helper.getDatabase(NMApp.ctx);
+			StringBuilder sQuery = new StringBuilder();
+		    sQuery.append(" SELECT * " );		
+ 			sQuery.append(" FROM Cliente AS c "); 			
+ 			sQuery.append(" WHERE c.IdSucursal= "+ String.valueOf(objSucursalID)); 
+			
+			Cursor cur = DatabaseProvider.query(db, sQuery.toString()); 
+			if(cur.getCount()!=0)
+				cliente=new Cliente();
 			
 			if (cur.moveToFirst()) 
 			 {  
@@ -181,28 +188,106 @@ public class ModelCliente
 	        		
 	        		
 	        	 }while (cur.moveToNext());
-	            
+	            if (cur!=null)cur.close();
 	            cliente.setFacturasPendientes(getFacturasPendientes(cliente.getIdSucursal(),reciboID) ); 
-	    		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(content,cliente.getIdSucursal(),reciboID) );
+	    		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(db,cliente.getIdSucursal(),reciboID) );
 	    		cliente.setNotasDebitoPendientes(getCCNotasDeDebitoPendiente(cliente.getIdSucursal(),reciboID));
-	    		cliente.setDescuentosProveedor(getDescuentosProveedor(content,cliente.getIdSucursal()));
+	    		cliente.setDescuentosProveedor(getDescuentosProveedor(db,cliente.getIdSucursal()));
+			 }  
+		} catch(Exception ex){
+			ex.printStackTrace();
+		}finally {
+			if( db != null )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		}  
+		return cliente;
+	}	
+	 
+	
+	public synchronized static Cliente getClienteBySucursalID(SQLiteDatabase db,long objSucursalID, long reciboID)throws Exception
+	{
+		Cliente cliente=null;
+		try
+		{		 		
+			StringBuilder sQuery = new StringBuilder();
+		    sQuery.append(" SELECT * " );		
+ 			sQuery.append(" FROM Cliente AS c "); 			
+ 			sQuery.append(" WHERE c.IdSucursal= "+ String.valueOf(objSucursalID)); 
+ 			if(!db.isOpen())
+				db = Helper.getDatabase(NMApp.ctx);
+			Cursor cur = DatabaseProvider.query(db, sQuery.toString()); 
+			if(cur.getCount()!=0)
+				cliente=new Cliente(); 
+			if (cur.moveToFirst()) 
+			 {  
+				 
+	            do{
+	            	
+	            	int value; 
+	            	cliente.setIdCliente(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.IdCliente))));	            	
+				    cliente.setNombreCliente(cur.getString(cur.getColumnIndex(NMConfig.Cliente.NombreCliente)));
+				    cliente.setIdSucursal(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.IdSucursal))));
+	        		cliente.setCodigo(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Codigo)));
+	        		cliente.setCodTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Cliente.CodTipoPrecio)));
+	        		cliente.setDesTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Cliente.DesTipoPrecio)));
+	        		cliente.setObjPrecioVentaID((Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.objPrecioVentaID)))));
+	        		cliente.setObjCategoriaClienteID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.objCategoriaClienteID))));
+	        		cliente.setObjTipoClienteID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Cliente.objTipoClienteID))));            		
+	        	    value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.AplicaBonificacion));            		
+	        		cliente.setAplicaBonificacion(value==1?true:false);
+	                value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PermiteBonifEspecial));
+	        		cliente.setPermiteBonifEspecial(value==1?true:false);
+	                value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PermitePrecioEspecial));
+	        		cliente.setPermitePrecioEspecial(value==1?true:false);            		
+	        		cliente.setUG(cur.getString(cur.getColumnIndex(NMConfig.Cliente.UG)));
+	        		cliente.setUbicacion(cur.getString(cur.getColumnIndex(NMConfig.Cliente.Ubicacion)));
+	        		cliente.setNombreLegalCliente(cur.getString(cur.getColumnIndex(NMConfig.Cliente.NombreLegalCliente)));
+	        	    value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.AplicaOtrasDeducciones));            		
+	        		cliente.setAplicaOtrasDeducciones(value==1?true:false);
+	        		cliente.setMontoMinimoAbono(cur.getFloat(cur.getColumnIndex(NMConfig.Cliente.MontoMinimoAbono)));
+	        		cliente.setPlazoDescuento(cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PlazoDescuento)));
+	        	    value=cur.getInt(cur.getColumnIndex(NMConfig.Cliente.PermiteDevolucion));
+	        		cliente.setPermiteDevolucion(value==1?true:false);
+	        	    
+	        		
+	        		
+	        	 }while (cur.moveToNext());
+	            
+	            cliente.setFacturasPendientes(getDocumentosPendientes(db,cliente.getIdSucursal(),reciboID) ); 
+	    		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(db,cliente.getIdSucursal(),reciboID) );
+	    		cliente.setNotasDebitoPendientes(getCCNotasDeDebito(db,cliente.getIdSucursal(),reciboID));
+	    		cliente.setDescuentosProveedor(getDescuentosProveedor(db,cliente.getIdSucursal()));
 			 }  
 		} catch(Exception ex){
 			ex.printStackTrace();
 		}
 		return cliente;
-	}	
-	 
+	}
+	
+	
 	public synchronized static Cliente getClienteBySucursalID(ContentResolver content,long objSucursalID, long reciboID)throws Exception
 	{
 		Cliente cliente=new Cliente(); 
-		Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_CLIENTE+"/"+String.valueOf(objSucursalID)); 
-		try{		
-			Cursor cur = content.query(uri,
-			        null, //Columnas a devolver
-			        null,       //Condición de la query
-			        null,       //Argumentos variables de la query
-			        null); 			
+		//Uri uri=Uri.parse(DatabaseProvider.CONTENT_URI_CLIENTE+"/"+String.valueOf(objSucursalID)); 
+		SQLiteDatabase db = null;
+		try 
+		{
+			
+			 //OBTENIENDO LAS FACTURAS
+		    db = Helper.getDatabase(NMApp.ctx);		
+
+			StringBuilder sQuery = new StringBuilder();
+		    sQuery.append(" SELECT * " );		
+ 			sQuery.append(" FROM Cliente AS c "); 			
+ 			sQuery.append(" WHERE c.IdSucursal= "+ String.valueOf(objSucursalID)); 
+			
+			Cursor cur = DatabaseProvider.query(db, sQuery.toString()); 
+			if(cur.getCount()!=0)
+				cliente=new Cliente(); 
 			
 			if (cur.moveToFirst()) 
 			 {  
@@ -239,14 +324,21 @@ public class ModelCliente
 	        		
 	        	 }while (cur.moveToNext());
 	            
-	            cliente.setFacturasPendientes(getDocumentosPendientes(content,cliente.getIdSucursal(),reciboID) ); 
-	    		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(content,cliente.getIdSucursal(),reciboID) );
-	    		cliente.setNotasDebitoPendientes(getCCNotasDeDebito(content,cliente.getIdSucursal(),reciboID));
-	    		cliente.setDescuentosProveedor(getDescuentosProveedor(content,cliente.getIdSucursal()));
+	            cliente.setFacturasPendientes(getDocumentosPendientes(db,cliente.getIdSucursal(),reciboID) ); 
+	    		cliente.setNotasCreditoPendientes(getCCNotasDeCredito(db,cliente.getIdSucursal(),reciboID) );
+	    		cliente.setNotasDebitoPendientes(getCCNotasDeDebito(db,cliente.getIdSucursal(),reciboID));
+	    		cliente.setDescuentosProveedor(getDescuentosProveedor(db,cliente.getIdSucursal()));
 			 }  
 		} catch(Exception ex){
 			ex.printStackTrace();
-		}
+		}finally {
+			if( db != null )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		}  
 		return cliente;
 	}
 	
@@ -317,8 +409,8 @@ public class ModelCliente
 	                value=cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.PuedeAplicarDescPP));       	            	
 	        		fact.setPuedeAplicarDescPP(value==1?true:false);       	            	
 	        		
-	        		fact.setDetallePromocionCobro(getPromocionesCobro(content,fact.getId()));
-	        		fact.setDetalleMontoProveedor(getMontosProveedor(content,fact.getId()));
+	        		fact.setDetallePromocionCobro(getPromocionesCobro(db,fact.getId()));
+	        		fact.setDetalleMontoProveedor(getMontosProveedor(db,fact.getId()));
 	        	 
         			afact[cont]=fact; 
                 	cont++;       		
@@ -341,17 +433,84 @@ public class ModelCliente
 	}
 	
 	
-	public static Factura[] getFacturasRecibo(long reciboID)
+	public static Factura[] getFacturasRecibo(SQLiteDatabase db,long reciboID)
 	{
-		int cont=0;
-		ContentResolver content=NMApp.getContext().getContentResolver(); 
-	    SQLiteDatabase db = null;
+		int cont=0;  
 	    Factura[] afact = null; 
 	    try
-	    {
-	    	
-		    //OBTENIENDO LAS FACTURAS
-		    db = Helper.getDatabase(NMApp.ctx);
+	    { 
+		    StringBuilder sQuery = new StringBuilder();
+		     
+		     
+			sQuery.append(" SELECT *" );		
+			sQuery.append(" FROM Recibo r Factura AS f ");
+			sQuery.append("      INNER JOIN ReciboDetalleFactura AS rdf  ON  r.id=rdf.objReciboID " );
+			sQuery.append("      INNER JOIN Factura AS f ON rdf.objFacturaID=f.id  " ); 
+			sQuery.append("      INNER JOIN Recibo r  ON rdf.objReciboID = r.id");			
+			sQuery.append(" WHERE r.id= "+ reciboID);			
+			sQuery.append(" )" ); 
+			if(!db.isOpen())
+				db = Helper.getDatabase(NMApp.ctx);
+			Cursor cur_fact = DatabaseProvider.query(db, sQuery.toString());
+			afact=new Factura[cur_fact.getCount()];
+			if (cur_fact.moveToFirst()) 
+			{
+				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
+				do 
+				{	
+					Factura fact=new Factura();	
+					int value=0;
+	            	fact.setId(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Id))));    	            	
+	            	fact.setNombreSucursal(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NombreSucursal)));
+	            	fact.setNoFactura(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NoFactura)));
+	            	fact.setTipo(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Tipo)));
+	            	fact.setNoPedido(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NoPedido)));
+	            	fact.setCodEstado(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.CodEstado)));
+	            	fact.setEstado(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Estado)));        	            	
+	            	fact.setFecha(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Fecha))));
+	            	fact.setFechaVencimiento(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.FechaVencimiento))));
+	            	fact.setFechaAppDescPP(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.FechaAppDescPP))));
+	            	fact.setDias(cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Dias)));
+	            	fact.setTotalFacturado(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.TotalFacturado)));       	            	
+	            	fact.setAbonado(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Abonado)));
+	            	fact.setDescontado(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Descontado)));
+	            	fact.setRetenido(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Retenido)));
+	            	fact.setOtro(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Otro)));
+	            	fact.setSaldo(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Saldo)));       	            	
+	                value=cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Exenta));       	            	
+	            	fact.setExenta(value==1?true:false);       	            	
+	            	fact.setSubtotalFactura(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.SubtotalFactura)));
+	            	fact.setDescuentoFactura(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.DescuentoFactura)));
+	            	fact.setImpuestoFactura(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.ImpuestoFactura)));       	            	
+	                value=cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.PuedeAplicarDescPP));       	            	
+	        		fact.setPuedeAplicarDescPP(value==1?true:false);       	            	
+	        		
+	        		fact.setDetallePromocionCobro(getPromocionesCobro(db,fact.getId()));
+	        		fact.setDetalleMontoProveedor(getMontosProveedor(db,fact.getId()));
+	        	 
+        			afact[cont]=fact; 
+                	cont++;       		
+
+				} while (cur_fact.moveToNext());
+			}
+			
+		} catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		}  
+ 	    
+		return afact.length==0?null:afact;
+	}
+	
+	public static Factura[] getFacturasRecibo(long reciboID)
+	{
+		int cont=0;  
+	    Factura[] afact = null; 
+	    SQLiteDatabase db = null;
+		try 
+		{
+			
+			 //OBTENIENDO LAS FACTURAS
+		    db = Helper.getDatabase(NMApp.ctx); 
 		    StringBuilder sQuery = new StringBuilder();
 		     
 		     
@@ -397,8 +556,8 @@ public class ModelCliente
 	                value=cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.PuedeAplicarDescPP));       	            	
 	        		fact.setPuedeAplicarDescPP(value==1?true:false);       	            	
 	        		
-	        		fact.setDetallePromocionCobro(getPromocionesCobro(content,fact.getId()));
-	        		fact.setDetalleMontoProveedor(getMontosProveedor(content,fact.getId()));
+	        		fact.setDetallePromocionCobro(getPromocionesCobro(db,fact.getId()));
+	        		fact.setDetalleMontoProveedor(getMontosProveedor(db,fact.getId()));
 	        	 
         			afact[cont]=fact; 
                 	cont++;       		
@@ -421,17 +580,14 @@ public class ModelCliente
 	}
 	
 	
-	private static Factura[] getDocumentosPendientes(ContentResolver content,long objSucursalID, long reciboID)
+	private static Factura[] getDocumentosPendientes(SQLiteDatabase db,long objSucursalID, long reciboID)
 	{
-		int cont=0;
-		Cursor cur_fact=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_FACTURA+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
-	     
-	    SQLiteDatabase db = null;
+		int cont=0;  
+		Factura[] afact=null;
 	    List<Long> facturasGravadas = new ArrayList<Long>();
-	    try{
-	    	
-		    //OBTENIENDO LAS FACTURAS
-		    db = Helper.getDatabase(NMApp.ctx);
+	    try
+	    {
+	    	 
 		    StringBuilder sQuery = new StringBuilder();
 		    
 		    sQuery.append(" SELECT Id ");
@@ -451,6 +607,8 @@ public class ModelCliente
 			sQuery.append("      ON  r.id = rdf.objReciboID ");
 			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);		
 			sQuery.append("       AND r.codEstado <> 'ANULADO' ");*/
+			if(!db.isOpen())
+				db = Helper.getDatabase(NMApp.ctx);
 			Cursor c = DatabaseProvider.query(db, sQuery.toString());
 			
 			if (c.moveToFirst()) {
@@ -460,77 +618,87 @@ public class ModelCliente
 				} while (c.moveToNext());
 			}
 			
+			
+			
+			
+		    //Factura[] afact=new Factura[cur_fact.getCount() - facturasGravadas.size()];
+		       //Recorremos el cursor
+		    sQuery=new StringBuilder();
+		    sQuery.append(" SELECT * ");
+			sQuery.append(" FROM Factura AS f ");
+			sQuery.append(" WHERE f.objSucursalID = " + objSucursalID);
+			Cursor cur_fact = DatabaseProvider.query(db, sQuery.toString());
+			int size =cur_fact.getCount(); //facturasGravadas.size(); 
+		    afact=new Factura[size];
+	 	    if (cur_fact.moveToFirst()) 
+			{   	    	   			 
+	            do
+	            {
+	        	    int value;
+	        	    boolean agregar = true;
+	            	Factura fact=new Factura();		       	            	
+	            	fact.setId(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Id))));   
+	            	
+	            	/*for(Long facturaID : facturasGravadas) {
+	            		if(fact.getId() == facturaID)
+	            			agregar = false;
+	            	}*/
+	            	
+	            	fact.setNombreSucursal(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NombreSucursal)));
+	            	fact.setNoFactura(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NoFactura)));
+	            	fact.setTipo(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Tipo)));
+	            	fact.setNoPedido(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NoPedido)));
+	            	fact.setCodEstado(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.CodEstado)));
+	            	fact.setEstado(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Estado)));        	            	
+	            	fact.setFecha(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Fecha))));
+	            	fact.setFechaVencimiento(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.FechaVencimiento))));
+	            	fact.setFechaAppDescPP(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.FechaAppDescPP))));
+	            	fact.setDias(cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Dias)));
+	            	fact.setTotalFacturado(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.TotalFacturado)));       	            	
+	            	fact.setAbonado(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Abonado)));
+	            	fact.setDescontado(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Descontado)));
+	            	fact.setRetenido(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Retenido)));
+	            	fact.setOtro(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Otro)));
+	            	fact.setSaldo(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Saldo)));       	            	
+	                value=cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Exenta));       	            	
+	            	fact.setExenta(value==1?true:false);       	            	
+	            	fact.setSubtotalFactura(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.SubtotalFactura)));
+	            	fact.setDescuentoFactura(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.DescuentoFactura)));
+	            	fact.setImpuestoFactura(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.ImpuestoFactura)));       	            	
+	                value=cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.PuedeAplicarDescPP));       	            	
+	        		fact.setPuedeAplicarDescPP(value==1?true:false);       	            	
+	        		
+	        		fact.setDetallePromocionCobro(getPromocionesCobro(db,fact.getId()));
+	        		fact.setDetalleMontoProveedor(getMontosProveedor(db,fact.getId()));
+	        	
+	        		if(agregar) {
+	        			afact[cont]=fact; 
+	                	cont++;
+	        		}        		
+	            	
+		            	
+		         }while (cur_fact.moveToNext());
+		      } 	    
+	 	    
+			
+			
 		} catch (Exception e) {
 			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
-		} finally {
-			if( db != null )
-			{	
-				if(db.isOpen())				
-					db.close();
-				db = null;
-			}
 		} 
-	    int size =cur_fact.getCount(); //facturasGravadas.size(); 
-	    Factura[] afact=new Factura[size];
-	    //Factura[] afact=new Factura[cur_fact.getCount() - facturasGravadas.size()];
-	       //Recorremos el cursor
- 	    if (cur_fact.moveToFirst()) 
-		{   	    	   			 
-            do
-            {
-        	    int value;
-        	    boolean agregar = true;
-            	Factura fact=new Factura();		       	            	
-            	fact.setId(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Id))));   
-            	
-            	/*for(Long facturaID : facturasGravadas) {
-            		if(fact.getId() == facturaID)
-            			agregar = false;
-            	}*/
-            	
-            	fact.setNombreSucursal(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NombreSucursal)));
-            	fact.setNoFactura(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NoFactura)));
-            	fact.setTipo(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Tipo)));
-            	fact.setNoPedido(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NoPedido)));
-            	fact.setCodEstado(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.CodEstado)));
-            	fact.setEstado(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Estado)));        	            	
-            	fact.setFecha(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Fecha))));
-            	fact.setFechaVencimiento(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.FechaVencimiento))));
-            	fact.setFechaAppDescPP(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.FechaAppDescPP))));
-            	fact.setDias(cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Dias)));
-            	fact.setTotalFacturado(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.TotalFacturado)));       	            	
-            	fact.setAbonado(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Abonado)));
-            	fact.setDescontado(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Descontado)));
-            	fact.setRetenido(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Retenido)));
-            	fact.setOtro(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Otro)));
-            	fact.setSaldo(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Saldo)));       	            	
-                value=cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Exenta));       	            	
-            	fact.setExenta(value==1?true:false);       	            	
-            	fact.setSubtotalFactura(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.SubtotalFactura)));
-            	fact.setDescuentoFactura(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.DescuentoFactura)));
-            	fact.setImpuestoFactura(cur_fact.getFloat(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.ImpuestoFactura)));       	            	
-                value=cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.PuedeAplicarDescPP));       	            	
-        		fact.setPuedeAplicarDescPP(value==1?true:false);       	            	
-        		
-        		fact.setDetallePromocionCobro(getPromocionesCobro(content,fact.getId()));
-        		fact.setDetalleMontoProveedor(getMontosProveedor(content,fact.getId()));
-        	
-        		if(agregar) {
-        			afact[cont]=fact; 
-                	cont++;
-        		}        		
-            	
-	            	
-	         }while (cur_fact.moveToNext());
-	      } 	    
- 	    
+	    
 		return afact.length==0?null:afact;
 	}
 	
-	private static PromocionCobro[] getPromocionesCobro(ContentResolver content,long objFacturaID)
+	private static PromocionCobro[] getPromocionesCobro(SQLiteDatabase db,long objFacturaID)
 	{
 		int cont=0;
-		Cursor cur_pc=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_PROMOCIONCOBRO+"/"+String.valueOf(objFacturaID)),null, null,null, null);
+		StringBuilder sQuery = new StringBuilder();
+	    sQuery.append(" SELECT * ");
+		sQuery.append(" FROM PromocionCobro AS pc ");
+		sQuery.append(" WHERE pc.objFacturaID = " + objFacturaID);
+		if(!db.isOpen())
+			db = Helper.getDatabase(NMApp.ctx);
+		Cursor cur_pc = DatabaseProvider.query(db, sQuery.toString()); 
 		PromocionCobro[] apc=new PromocionCobro[cur_pc.getCount()];
 		if (cur_pc.moveToFirst()) 
 		{         	
@@ -548,12 +716,17 @@ public class ModelCliente
 		
 	}
 	
-	private static MontoProveedor[] getMontosProveedor(ContentResolver content,long objFacturaID)
+	private static MontoProveedor[] getMontosProveedor(SQLiteDatabase db,long objFacturaID)
 	{
 		int cont=0;
-		
-		Cursor cur_mp=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_MONTOPROVEEDOR+"/"+String.valueOf(objFacturaID)),null, null,null, null);
-        MontoProveedor[] amp=new MontoProveedor[cur_mp.getCount()];
+		StringBuilder sQuery = new StringBuilder();
+	    sQuery.append(" SELECT * ");
+		sQuery.append(" FROM MontoProveedor AS mp ");
+		sQuery.append(" WHERE mp.objFacturaID = " + objFacturaID);
+		if(!db.isOpen())
+			db = Helper.getDatabase(NMApp.ctx);
+		Cursor cur_mp = DatabaseProvider.query(db, sQuery.toString()); 
+		MontoProveedor[] amp=new MontoProveedor[cur_mp.getCount()];
 		if (cur_mp.moveToFirst()) 
 		{ 
 			do
@@ -570,16 +743,13 @@ public class ModelCliente
 		
 	}
 	
-	private static CCNotaCredito[] getCCNotasDeCredito(ContentResolver content,long objSucursalID,long reciboID)
+	private static CCNotaCredito[] getCCNotasDeCredito(SQLiteDatabase db,long objSucursalID,long reciboID)
 	{
-		int cont=0;
-		Cursor cur_nc=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_CCNOTACREDITO+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
-		SQLiteDatabase db = null;
+		int cont=0; 
 	    List<Long> notasCreditoGravadas = new ArrayList<Long>();
+	    CCNotaCredito[] anc=null;
 	    try{
-	    	
-		    //OBTENIENDO LAS FACTURAS
-		    db = Helper.getDatabase(NMApp.ctx);
+	    	 
 		    StringBuilder sQuery = new StringBuilder();
 			
 		    sQuery.append(" SELECT Id ");
@@ -593,7 +763,8 @@ public class ModelCliente
 			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
 			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );
 			sQuery.append("       AND r.id <> " + reciboID );
-			
+			if(!db.isOpen())
+				db = Helper.getDatabase(NMApp.ctx);
 			Cursor c = DatabaseProvider.query(db, sQuery.toString());
 			
 			if (c.moveToFirst()) {
@@ -603,62 +774,66 @@ public class ModelCliente
 				} while (c.moveToNext());
 			}
 			
+			
+			
+			
+			
+			sQuery=new StringBuilder();
+		    sQuery.append(" SELECT * ");
+			sQuery.append(" FROM CCNotaCredito AS nc ");
+			sQuery.append(" WHERE nc.objSucursalID = " + objSucursalID);
+			Cursor cur_nc = DatabaseProvider.query(db, sQuery.toString());
+			 //int size = notasCreditoGravadas.size();
+		    int size = cur_nc.getCount();
+			anc=new CCNotaCredito[size]; 
+			
+	 	    if (cur_nc.moveToFirst()) 
+			{   	    	   			 
+	            do
+	            {
+	            	boolean agregar = true;
+	        	    CCNotaCredito nc=new CCNotaCredito();        	    
+	        	    nc.setId(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Id))));
+
+	        	    /*for(Long id : notasCreditoGravadas) {
+	        	    	if(id == nc.getId() && reciboID != 0) {
+	        	    		agregar = true;
+	        	    	}
+	        	    }*/
+	        	    
+	        	    nc.setNombreSucursal(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.NombreSucursal)));
+	        	    nc.setEstado(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Estado)));
+	        	    nc.setNumero(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Numero)));        	    
+	        	    nc.setFecha(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Fecha))));
+	        	    nc.setFechaVence(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.FechaVence))));
+	        	    nc.setConcepto(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Concepto)));
+	        	    nc.setMonto(cur_nc.getFloat(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Monto)));
+	        	    nc.setNumRColAplic(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.NumRColAplic)));
+	        	    nc.setCodEstado(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.CodEstado)));
+	        	    nc.setDescripcion(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Descripcion)));
+	        	    nc.setReferencia(cur_nc.getInt(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Referencia)));
+	        	    nc.setCodConcepto(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.CodConcepto)));
+	        	    
+	        	    if(agregar) {
+	        	    	anc[cont]=nc;
+	            	    cont++;
+	        	    }        	    
+
+	            }while (cur_nc.moveToNext());
+			}
+			
 		} catch (Exception e) {
 			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
-		} finally {
-			if( db != null )
-			{	
-				if(db.isOpen())				
-					db.close();
-				db = null;
-			}
 		} 
-	    //int size = notasCreditoGravadas.size();
-	    int size = cur_nc.getCount();
-		CCNotaCredito[] anc=new CCNotaCredito[size]; 
- 	    if (cur_nc.moveToFirst()) 
-		{   	    	   			 
-            do
-            {
-            	boolean agregar = true;
-        	    CCNotaCredito nc=new CCNotaCredito();        	    
-        	    nc.setId(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Id))));
-
-        	    /*for(Long id : notasCreditoGravadas) {
-        	    	if(id == nc.getId() && reciboID != 0) {
-        	    		agregar = true;
-        	    	}
-        	    }*/
-        	    
-        	    nc.setNombreSucursal(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.NombreSucursal)));
-        	    nc.setEstado(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Estado)));
-        	    nc.setNumero(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Numero)));        	    
-        	    nc.setFecha(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Fecha))));
-        	    nc.setFechaVence(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.FechaVence))));
-        	    nc.setConcepto(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Concepto)));
-        	    nc.setMonto(cur_nc.getFloat(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Monto)));
-        	    nc.setNumRColAplic(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.NumRColAplic)));
-        	    nc.setCodEstado(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.CodEstado)));
-        	    nc.setDescripcion(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Descripcion)));
-        	    nc.setReferencia(cur_nc.getInt(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Referencia)));
-        	    nc.setCodConcepto(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.CodConcepto)));
-        	    
-        	    if(agregar) {
-        	    	anc[cont]=nc;
-            	    cont++;
-        	    }        	    
-
-            }while (cur_nc.moveToNext());
-		}
+	   
  	    return anc.length==0?null:anc;
 	}
 		
 	private static CCNotaDebito[] getCCNotasDeDebitoPendiente(long objSucursalID,long reciboID)
 	{
-		int cont=0;
-		ContentResolver content=NMApp.getContext().getContentResolver();
-		SQLiteDatabase db = null; 
-		CCNotaDebito[] array_nd =null; 
+		int cont=0; 
+		
+		CCNotaDebito[] array_nd =null; SQLiteDatabase db = null; 
 	    try
 	    {
 	    	
@@ -684,8 +859,7 @@ public class ModelCliente
 			sQuery.append("      INNER JOIN Recibo r  ON  rdnd.objReciboID = r.id   ");
 			sQuery.append(" WHERE nd.objSucursalID = " + objSucursalID );
 			sQuery.append(" 	  AND  r.id <> " + reciboID );
-			sQuery.append("       )");
-			
+			sQuery.append("       )"); 
 			
 			Cursor cur_nd = DatabaseProvider.query(db, sQuery.toString());
 			array_nd=new CCNotaDebito[cur_nd.getCount()];
@@ -729,16 +903,13 @@ public class ModelCliente
  	    return  array_nd.length==0?null:array_nd;
 	}
 	
-	private static CCNotaDebito[] getCCNotasDeDebito(ContentResolver content,long objSucursalID, long reciboID)
+	private static CCNotaDebito[] getCCNotasDeDebito(SQLiteDatabase db,long objSucursalID, long reciboID)
 	{
 		int cont=0;
-		Cursor cur_nd=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_CCNOTADEBITO+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
-		SQLiteDatabase db = null;
-	    List<Long> notasDebitoGravadas = new ArrayList<Long>();
+		  
+	    List<Long> notasDebitoGravadas = new ArrayList<Long>();CCNotaDebito[] array_nd=null;
 	    try{
-	    	
-		    //OBTENIENDO LAS FACTURAS
-		    db = Helper.getDatabase(NMApp.ctx);
+	    	 
 		    StringBuilder sQuery = new StringBuilder();
 		    
 		    sQuery.append(" SELECT nd.Id ");
@@ -752,6 +923,8 @@ public class ModelCliente
 			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
 			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );	
 			sQuery.append("       AND r.id <> " + reciboID );
+			if(!db.isOpen())
+				db = Helper.getDatabase(NMApp.ctx);
 			
 			Cursor c = DatabaseProvider.query(db, sQuery.toString());
 			
@@ -762,61 +935,67 @@ public class ModelCliente
 				} while (c.moveToNext());
 			}
 			
+			sQuery = new StringBuilder();
+			sQuery.append(" SELECT * ");
+			sQuery.append(" FROM CCNotaDebito AS nd ");
+			sQuery.append(" WHERE nd.objSucursalID = " + objSucursalID);
+			Cursor cur_nd= DatabaseProvider.query(db, sQuery.toString());
+		    int  size=cur_nd.getCount();
+			array_nd = new CCNotaDebito[size]; 
+	 	    if (cur_nd.moveToFirst()) 
+			{   	    	   			 
+	            do
+	            {
+	            	boolean agregar = true;
+	            	CCNotaDebito nd=new CCNotaDebito();        	    
+	        	    nd.setId(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Id))));   
+	        	    
+	        	    /*for(Long id : notasDebitoGravadas) {
+	        	    	if(id == nd.getId() && reciboID != 0) {
+	        	    		agregar = true;
+	        	    	}
+	        	    }*/
+	        	    
+	        	    nd.setNombreSucursal(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.NombreSucursal)));
+	        	    nd.setEstado(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Estado)));
+	        	    nd.setNumero(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Numero)));        	    
+	        	    nd.setFecha(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Fecha))));
+	        	    nd.setFechaVence(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.FechaVence))));
+	        	    nd.setDias(cur_nd.getInt(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Dias)));
+	        	    nd.setConcepto(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Concepto)));
+	        	    nd.setMonto(cur_nd.getFloat(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Monto)));
+	        	    nd.setMontoAbonado(cur_nd.getFloat(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.MontoAbonado)));
+	        	    nd.setSaldo(cur_nd.getFloat(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Saldo)));
+	        	    nd.setCodEstado(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.CodEstado)));
+	        	    nd.setDescripcion(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Descripcion)));
+	        	    
+	        	    if(agregar) {
+	        	    	array_nd[cont]=nd;
+	            	    cont++;
+	        	    }
+	        	    
+
+	            }while (cur_nd.moveToNext());
+			}
+			
 		} catch (Exception e) {
 			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
-		} finally {
-			if( db != null )
-			{	
-				if(db.isOpen())				
-					db.close();
-				db = null;
-			}
-		} 
-	   // int size = notasDebitoGravadas.size();
-	    int  size=cur_nd.getCount();
-		CCNotaDebito[] array_nd = new CCNotaDebito[size]; 
- 	    if (cur_nd.moveToFirst()) 
-		{   	    	   			 
-            do
-            {
-            	boolean agregar = true;
-            	CCNotaDebito nd=new CCNotaDebito();        	    
-        	    nd.setId(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Id))));   
-        	    
-        	    /*for(Long id : notasDebitoGravadas) {
-        	    	if(id == nd.getId() && reciboID != 0) {
-        	    		agregar = true;
-        	    	}
-        	    }*/
-        	    
-        	    nd.setNombreSucursal(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.NombreSucursal)));
-        	    nd.setEstado(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Estado)));
-        	    nd.setNumero(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Numero)));        	    
-        	    nd.setFecha(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Fecha))));
-        	    nd.setFechaVence(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.FechaVence))));
-        	    nd.setDias(cur_nd.getInt(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Dias)));
-        	    nd.setConcepto(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Concepto)));
-        	    nd.setMonto(cur_nd.getFloat(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Monto)));
-        	    nd.setMontoAbonado(cur_nd.getFloat(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.MontoAbonado)));
-        	    nd.setSaldo(cur_nd.getFloat(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Saldo)));
-        	    nd.setCodEstado(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.CodEstado)));
-        	    nd.setDescripcion(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Descripcion)));
-        	    
-        	    if(agregar) {
-        	    	array_nd[cont]=nd;
-            	    cont++;
-        	    }
-        	    
-
-            }while (cur_nd.moveToNext());
-		}
+		}  
+	   
  	    return  array_nd.length==0?null:array_nd;
 	}
 	
-	private static DescuentoProveedor[] getDescuentosProveedor(ContentResolver content,long objSucursalID)
+	private static DescuentoProveedor[] getDescuentosProveedor(SQLiteDatabase db,long objSucursalID)
 	{
 		int cont=0;
-		Cursor cur_dp=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_DESCUENTOPROVEEDOR+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
+		StringBuilder sQuery = new StringBuilder();
+	    
+	    sQuery.append(" SELECT * ");
+		sQuery.append(" FROM DescuentoProveedor AS dp ");
+		sQuery.append(" WHERE dp.objSucursalID = " + objSucursalID); 		
+		if(!db.isOpen())
+			db = Helper.getDatabase(NMApp.ctx);
+		Cursor  cur_dp= DatabaseProvider.query(db, sQuery.toString());
 		DescuentoProveedor[] adp=new DescuentoProveedor[cur_dp.getCount()]; 
  	    if (cur_dp.moveToFirst()) 
 		{   	    	   			 
@@ -869,8 +1048,19 @@ public class ModelCliente
 	public static ArrayList<Factura> getFacturasPendientesBySucursal(ContentResolver content,long objSucursalID)
 	{
 		int cont=0;
-		Cursor cur_fact=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_FACTURA+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
+//		Cursor cur_fact=content.query(Uri.parse(DatabaseProvider.CONTENT_URI_FACTURA+"/"+String.valueOf(objSucursalID)),null, null,null, null); 
 		ArrayList<Factura> afact= new ArrayList<Factura>(); 
+		
+		SQLiteDatabase db = null; 
+	    try
+	    { 
+		    db = Helper.getDatabase(NMApp.ctx);
+		    StringBuilder sQuery = new StringBuilder(); 	    
+ 			
+ 			sQuery.append(" SELECT * " );		
+ 			sQuery.append(" FROM Factura AS f "); 			
+ 			sQuery.append(" WHERE f.objSucursalID="+ objSucursalID);
+ 			Cursor  cur_fact= DatabaseProvider.query(db, sQuery.toString());
 	       //Recorremos el cursor
  	    if (cur_fact.moveToFirst()) 
 		{   	    	   			 
@@ -903,14 +1093,24 @@ public class ModelCliente
                 value=cur_fact.getInt(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.PuedeAplicarDescPP));       	            	
         		fact.setPuedeAplicarDescPP(value==1?true:false);       	            	
         		
-        		fact.setDetallePromocionCobro(getPromocionesCobro(content,fact.getId()));
-        		fact.setDetalleMontoProveedor(getMontosProveedor(content,fact.getId()));
+        		fact.setDetallePromocionCobro(getPromocionesCobro(db,fact.getId()));
+        		fact.setDetalleMontoProveedor(getMontosProveedor(db,fact.getId()));
         	
             	afact.add(fact); 
             	cont++;
 	            	
 	         }while (cur_fact.moveToNext());
-	      } 	   
+	      }
+	    } catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if( db != null )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		} 
 		return afact.size()==0?null:afact;
 	}
 	

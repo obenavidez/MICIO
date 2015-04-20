@@ -100,11 +100,18 @@
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
         
-        <activity
+         <activity
+            android:name="com.panzyma.nm.view.ViewDevolucionEdit"
+            android:label="@string/app_name" android:noHistory="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        </activity>
+        
+       <!-- <activi ty
             android:name=".ui.Devolucion_A"
             android:label="@string/app_name"            
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        </activity>
+        </activity> -->
         
         <activity
             android:name="com.panzyma.nm.view.ViewConfiguracion"

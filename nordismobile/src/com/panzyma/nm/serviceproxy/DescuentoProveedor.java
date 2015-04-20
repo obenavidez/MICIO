@@ -1,6 +1,8 @@
 package com.panzyma.nm.serviceproxy;
 
 import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.Hashtable;
 
@@ -8,11 +10,26 @@ import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo; 
 
  
-public final class DescuentoProveedor implements KvmSerializable{
+public final class DescuentoProveedor implements KvmSerializable, Parcelable{
  
 	private long ObjProveedorID;
     private float PrcDescuento;
 
+    public DescuentoProveedor(Parcel parcel){ 	   
+	 	   readFromParcel(parcel);
+	}
+    
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(ObjProveedorID); 
+	    parcel.writeFloat(PrcDescuento);
+	}
+    
+    private void readFromParcel(Parcel parcel) {
+    	ObjProveedorID = parcel.readLong();
+    	PrcDescuento = parcel.readFloat();
+    }
+    
     public DescuentoProveedor() {
     	this.ObjProveedorID=0;
    	    this.PrcDescuento=(float) 0.0;
@@ -76,4 +93,25 @@ public final class DescuentoProveedor implements KvmSerializable{
         }
     }
 
+	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() 
+	{
+
+		@Override
+		public DescuentoProveedor createFromParcel(Parcel parcel) {
+			return new DescuentoProveedor(parcel);
+		}
+
+		@Override
+		public DescuentoProveedor[] newArray(int size) {
+			return new DescuentoProveedor[size];
+		}
+
+	};
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 }

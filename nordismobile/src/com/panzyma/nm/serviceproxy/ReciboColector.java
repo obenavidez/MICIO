@@ -9,6 +9,7 @@ import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
 import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.auxiliar.NMConfig.Recibo.DetalleFormaPago;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -520,6 +521,7 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 		this.TotalImpuestoExonerado = parcel.readFloat(  );
 		this.Exento = parcel.readInt(  ) == 1;
 		this.AutorizacionDGI = parcel.readString(  );
+		this.cliente=parcel.readParcelable(Cliente.class.getClassLoader());
 		
 		Parcelable[] parcelableArray = parcel.readParcelableArray(ReciboDetFactura.class.getClassLoader()); 
 		if (parcelableArray != null) {
@@ -547,9 +549,20 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 				DetalleNotasCredito.add( (ReciboDetNC) obj);
 			}
 		}
+		
+		parcelableArray = parcel.readParcelableArray(ReciboDetFormaPago.class.getClassLoader()); 
+		if (parcelableArray != null) 
+		{
+			DetalleFormasPago.clear();
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length, ReciboDetFormaPago[].class);
+			for(Object obj: list){
+				DetalleFormasPago.add( (ReciboDetFormaPago) obj);
+			}
+		}
 	}
 
-	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() 
+	{
 
         @Override
 		public ReciboColector createFromParcel(Parcel parcel) {
@@ -603,9 +616,11 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 		parcel.writeFloat( TotalImpuestoExonerado );
 		parcel.writeInt( Exento ? 1 : 0 );
 		parcel.writeString( AutorizacionDGI );
+		parcel.writeParcelable(getCliente(), flags);
 		parcel.writeParcelableArray(getArrayFacturas(), flags);
 		parcel.writeParcelableArray(getArrayNotasDebito(), flags);
 		parcel.writeParcelableArray(getArrayNotasCredito(), flags);		
+		parcel.writeParcelableArray(getArrayFormasPago(), flags);	
 	}
 	
 	private ReciboDetFactura [] getArrayFacturas(){
@@ -635,6 +650,15 @@ public class ReciboColector implements KvmSerializable,Parcelable {
 		return notasCredito;
 	}
 
+	private ReciboDetFormaPago [] getArrayFormasPago(){
+		ReciboDetFormaPago [] formaspago = new ReciboDetFormaPago[ DetalleFormasPago.size()]; 
+		int index = 0;
+		for(ReciboDetFormaPago pago : DetalleFormasPago){
+			formaspago[index++] = pago;
+		}
+		return formaspago;
+	}
+	
 	public Cliente getCliente() {
 		return cliente;
 	}

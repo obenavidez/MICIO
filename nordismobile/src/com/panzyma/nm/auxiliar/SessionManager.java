@@ -326,6 +326,16 @@ public class SessionManager
 		return NMNetWork.isPhoneConnected(context);		
 	}
 	
+	public static Boolean isPhoneConnected2()
+	{
+		return NMNetWork.isPhoneConnected();		
+	}
+	
+	public static Boolean isPhoneConnected3()
+	{
+		return NMNetWork.isPhoneConnected3();		
+	}
+	
 	public  static boolean login(final boolean admin, String... credentials)
 	{
 		final String empresa= ( ( dl == null || dl.getEmpresa() == null ) ? SessionManager.empresa : dl.getEmpresa() );

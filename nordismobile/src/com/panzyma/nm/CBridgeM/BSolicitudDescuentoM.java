@@ -29,6 +29,7 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 	
 	public BSolicitudDescuentoM() {}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) throws Exception 
 	{ 
@@ -44,10 +45,10 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 			case SOLICITAR_DESCUENTO: 				
 				if(msg!=null && msg.obj instanceof EncabezadoSolicitud)
 					enviarSolicitudDescuento((EncabezadoSolicitud) msg.obj);
-				else
+				else if(msg!=null)
 				{
 					ArrayList<Object> data=(ArrayList<Object>) msg.obj;					
-					enviarSolicitudDescuento((EncabezadoSolicitud)data.get(2),new String[]{(String) data.get(0),(String) data.get(1)});
+					enviarSolicitudDescuento((EncabezadoSolicitud)data.get(2),new String[]{String.valueOf(data.get(0)),(String) data.get(1)});
 				}
 					
 				return true;
@@ -85,7 +86,7 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 							for(SolicitudDescuento sd:_detalles)
 							{
 								cont+=1;
-								if(cont>1)
+								if(cont==1)
 									nota.append("** Solicito aprobación para otorgar el %"+extra[0]+ " a las siguientes facturas:\n");
 															
 								nota.append(sd.getFactura().getNoFactura()+",");

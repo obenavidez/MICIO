@@ -74,6 +74,7 @@ import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelRecibo;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.view.adapter.InvokeBridge;
@@ -93,7 +94,7 @@ public class ViewRecibo extends ActionBarActivity implements
 			NMApp.getController().setView(this);
 			UserSessionManager.setContext(this);
 			request_code = requestcode;
-			if ((NUEVO_RECIBO == request_code || EDITAR_RECIBO == request_code)	&& data != null)
+			if ((NUEVO_RECIBO == request_code || ABRIR_RECIBO == request_code)	&& data != null)
 				establecer(data.getParcelableExtra("recibo"));
 		} catch (Exception e) 
 		{			
@@ -128,7 +129,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		}
 		if (_obj instanceof ReciboColector) {
 			ReciboColector p = (ReciboColector) _obj;
-			if (EDITAR_RECIBO == request_code) {
+			if (ABRIR_RECIBO == request_code) {
 				vmRecibo recibe = recibos.get(positioncache);
 				recibe.setRecibo(Integer.parseInt(String.valueOf(p.getId())),
 						p.getReferencia(),
@@ -191,7 +192,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final String TAG = ViewRecibo.class.getSimpleName();
 	private static int request_code;
 	private static final int NUEVO_RECIBO = 0;
-	private static final int EDITAR_RECIBO = 1;
+	private static final int ABRIR_RECIBO = 1;
 	private static final int BORRAR_RECIBO = 2;
 	protected static final int ENVIAR_RECIBO = 3;
 	private static final int IMPRIMIR_RECIBO = 4;
@@ -229,6 +230,9 @@ public class ViewRecibo extends ActionBarActivity implements
 	CuentasPorCobrarFragment cuentasPorCobrar;
 	Object lock=new Object();
 	CustomDialog dlg;
+	private ReciboColector recibo;
+	private Intent intent;
+	private Bundle b;
 	
 	private static final int MOSTRAR_FACTURAS = 0;
 	private static final int MOSTRAR_NOTAS_DEBITO = 1;
@@ -289,18 +293,19 @@ public class ViewRecibo extends ActionBarActivity implements
 					//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
 					intento.putExtra(RECIBO_ID, 0);
 					//startActivity(intento);
-					startActivityForResult(intento, NUEVO_RECIBO);
+					startActivityForResult(intento, NUEVO_RECIBO); 
 					break;
-				case EDITAR_RECIBO:
+				case ABRIR_RECIBO:
 					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
 					if(recibo_selected != null) {
 						//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
 						intento.putExtra(RECIBO_ID, recibo_selected.getNumero());
 						//startActivity(intento);	
-						startActivityForResult(intento, EDITAR_RECIBO);
+						startActivityForResult(intento, ABRIR_RECIBO);
 					} else {
 						Toast.makeText(getApplicationContext(), "No existen recibos para editar", Toast.LENGTH_SHORT).show();
-					}					
+					}			
+				    //abrirRecibo(true);
 					break;
 				case BORRAR_RECIBO:
 					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
@@ -342,7 +347,7 @@ public class ViewRecibo extends ActionBarActivity implements
 					break;
 				case IMPRIMIR_RECIBO:
 					if( recibo_selected != null ){
-						ReciboColector recibo = ModelRecibo.getReciboByID(NMApp.getContext().getContentResolver(), recibo_selected.getId());
+						ReciboColector recibo = ModelRecibo.getReciboByRef(NMApp.getContext().getContentResolver(), recibo_selected.getId());
 						enviarImprimirRecibo(recibo);
 					}					
 					break;
@@ -499,6 +504,52 @@ public class ViewRecibo extends ActionBarActivity implements
 					.add(R.id.item_client_fragment, firstFragment).commit();
 		}
 	}
+	
+	public void mandarObtenerRecibo(int arg)
+	{
+		Message msg = new Message(); 
+		msg.obj=recibo_selected.getNumero();
+		msg.arg1=arg;
+		msg.what =ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
+		NMApp.getController().getInboxHandler().sendMessage(msg); 
+	}
+	
+	public void abrirRecibo(boolean... obtener)
+	{
+		
+		try 
+		{ 
+			if (recibo_selected == null) 
+				return;
+			if (obtener!=null && obtener.length != 0 && obtener[0]) 
+			{ 
+				mandarObtenerRecibo(ABRIR_RECIBO);		
+				return;
+			}
+			
+			if (recibo== null) 
+			{
+				AppDialog.showMessage(this, "Información",
+						"Error al obtener el pedido localmente...", DialogType.DIALOGO_ALERTA);
+				return;
+			}
+			
+			positioncache = customArrayAdapter.getSelectedPosition(); 
+			intent = new Intent(ViewRecibo.this,ViewReciboEdit.class);
+			b = new Bundle();
+			b.putParcelable("recibo", recibo);
+			intent.putExtras(b);
+			intent.putExtra("requestcode", ABRIR_RECIBO);
+			startActivityForResult(intent, ABRIR_RECIBO); 
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			AppDialog.showMessage(this, "Información",
+					e.getMessage(), DialogType.DIALOGO_ALERTA);
+		} 
+		
+	}
+	
 	
 	public boolean valido(ReciboColector recibo) 
 	{        
@@ -756,7 +807,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	
 	private void enviarRecibo(vmRecibo recibe)
 	{   
-		ReciboColector recibo = ModelRecibo.getReciboByID(this.getContentResolver(), recibe.getNumero());
+		ReciboColector recibo = ModelRecibo.getReciboByRef(this.getContentResolver(), recibe.getNumero());
 		if(!valido(recibo)) return;  
 		
 		if (recibo.getCodEstado().compareTo("PAGADO") == 0) 
@@ -822,7 +873,6 @@ public class ViewRecibo extends ActionBarActivity implements
 	  //setList();
 	}
 		
-	
 	@Override
 	protected void onPause() {
 		NMApp.ciclo=NMApp.lifecycle.ONPAUSE;
@@ -1063,6 +1113,31 @@ public class ViewRecibo extends ActionBarActivity implements
 							});
 			}
 			break;
+			
+		case ControllerProtocol.ID_REQUEST_LOADITEM_LOCALHOST:  
+			if (msg.obj==null) 
+	        {	 
+				AppDialog.showMessage(this,
+						"Error al obtener pedido localmente....",
+						DialogType.DIALOGO_ALERTA); 
+				return false;
+			}
+			
+			if(msg.obj instanceof ReciboColector)
+			{
+				recibo=(ReciboColector) msg.obj;	 
+				switch (msg.arg1) 
+				{
+					case ABRIR_RECIBO:
+						abrirRecibo();
+						break;
+				 
+				}
+				
+			} 
+		break;
+			
+			
 		}
 		return false;
 	}

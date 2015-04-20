@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;
@@ -13,51 +14,52 @@ import com.panzyma.nm.interfaces.Item;
 
 public final class Cliente implements KvmSerializable, Item, Parcelable {
 
-	private long IdCliente;
+	
+	protected long IdCliente;
 
-	private java.lang.String NombreCliente;
+	protected java.lang.String NombreCliente;
 
-	private long IdSucursal;
+	protected long IdSucursal;
 
-	private java.lang.String Codigo;
+	protected java.lang.String Codigo;
 
-	private java.lang.String CodTipoPrecio;
+	protected java.lang.String CodTipoPrecio;
 
-	private java.lang.String DesTipoPrecio;
+	protected java.lang.String DesTipoPrecio;
 
-	private long objPrecioVentaID;
+	protected long objPrecioVentaID;
 
-	private long objCategoriaClienteID;
+	protected long objCategoriaClienteID;
 
-	private long objTipoClienteID;
+	protected long objTipoClienteID;
 
-	private boolean AplicaBonificacion;
+	protected boolean AplicaBonificacion;
 
-	private boolean PermiteBonifEspecial;
+	protected boolean PermiteBonifEspecial;
 
-	private boolean PermitePrecioEspecial;
+	protected boolean PermitePrecioEspecial;
 
-	private java.lang.String UG;
+	protected java.lang.String UG;
 
-	private java.lang.String Ubicacion;
+	protected java.lang.String Ubicacion;
 
-	private java.lang.String NombreLegalCliente;
+	protected java.lang.String NombreLegalCliente;
 
-	private Factura[] FacturasPendientes;
+	protected Factura[] FacturasPendientes;
 
-	private CCNotaCredito[] NotasCreditoPendientes;
+	protected CCNotaCredito[] NotasCreditoPendientes;
 
-	private CCNotaDebito[] NotasDebitoPendientes;
+	protected CCNotaDebito[] NotasDebitoPendientes;
 
-	private DescuentoProveedor[] DescuentosProveedor;
+	protected DescuentoProveedor[] DescuentosProveedor;
 
-	private boolean AplicaOtrasDeducciones;
+	protected boolean AplicaOtrasDeducciones;
 
-	private float MontoMinimoAbono;
+	protected float MontoMinimoAbono;
 
-	private int PlazoDescuento;
+	protected int PlazoDescuento;
 
-	private boolean PermiteDevolucion;
+	protected boolean PermiteDevolucion;
 
 	// private static final long serialVersionUID = 46543445;
 
@@ -497,9 +499,186 @@ public final class Cliente implements KvmSerializable, Item, Parcelable {
 	}
 
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		// TODO Auto-generated method stub
+	public void writeToParcel(Parcel parcel, int flags) 
+	{
+		parcel.writeLong( IdCliente ); 
+		parcel.writeString( NombreCliente );
+		parcel.writeLong( IdSucursal );
+		parcel.writeString( Codigo );
+		parcel.writeString( CodTipoPrecio );
+		parcel.writeString( DesTipoPrecio );
+		parcel.writeLong( objPrecioVentaID );
+		parcel.writeLong( objCategoriaClienteID );
+		parcel.writeLong( objTipoClienteID );
+		parcel.writeInt( AplicaBonificacion ? 1 : 0 );
+		parcel.writeInt( PermiteBonifEspecial ? 1 : 0 );
+		parcel.writeInt( PermitePrecioEspecial ? 1 : 0 );
+		parcel.writeString( UG );
+		parcel.writeString( Ubicacion );
+		parcel.writeString( NombreLegalCliente );
+		parcel.writeParcelableArray(FacturasPendientes, flags);
+		parcel.writeParcelableArray(NotasCreditoPendientes, flags);
+		parcel.writeParcelableArray(NotasDebitoPendientes, flags);
+		parcel.writeParcelableArray(DescuentosProveedor, flags);	
+		parcel.writeInt( AplicaOtrasDeducciones ? 1 : 0 ); 
+		parcel.writeFloat( MontoMinimoAbono ); 
+		parcel.writeInt( PlazoDescuento ); 
+		parcel.writeInt( PermiteDevolucion ? 1 : 0 );  	
 		
 	}	
+	/**
+	 * @param idCliente
+	 * @param nombreCliente
+	 * @param idSucursal
+	 * @param codigo
+	 * @param codTipoPrecio
+	 * @param desTipoPrecio
+	 * @param objPrecioVentaID
+	 * @param objCategoriaClienteID
+	 * @param objTipoClienteID
+	 * @param aplicaBonificacion
+	 * @param permiteBonifEspecial
+	 * @param permitePrecioEspecial
+	 * @param uG
+	 * @param ubicacion
+	 * @param nombreLegalCliente
+	 * @param facturasPendientes
+	 * @param notasCreditoPendientes
+	 * @param notasDebitoPendientes
+	 * @param descuentosProveedor
+	 * @param aplicaOtrasDeducciones
+	 * @param montoMinimoAbono
+	 * @param plazoDescuento
+	 * @param permiteDevolucion
+	 */
+	
+	public Cliente(long idCliente, String nombreCliente, long idSucursal,
+			String codigo, String codTipoPrecio, String desTipoPrecio,
+			long objPrecioVentaID, long objCategoriaClienteID,
+			long objTipoClienteID, boolean aplicaBonificacion,
+			boolean permiteBonifEspecial, boolean permitePrecioEspecial,
+			String uG, String ubicacion, String nombreLegalCliente,
+			Factura[] facturasPendientes,
+			CCNotaCredito[] notasCreditoPendientes,
+			CCNotaDebito[] notasDebitoPendientes,
+			DescuentoProveedor[] descuentosProveedor,
+			boolean aplicaOtrasDeducciones, float montoMinimoAbono,
+			int plazoDescuento, boolean permiteDevolucion) {
+		super();
+		IdCliente = idCliente;
+		NombreCliente = nombreCliente;
+		IdSucursal = idSucursal;
+		Codigo = codigo;
+		CodTipoPrecio = codTipoPrecio;
+		DesTipoPrecio = desTipoPrecio;
+		this.objPrecioVentaID = objPrecioVentaID;
+		this.objCategoriaClienteID = objCategoriaClienteID;
+		this.objTipoClienteID = objTipoClienteID;
+		AplicaBonificacion = aplicaBonificacion;
+		PermiteBonifEspecial = permiteBonifEspecial;
+		PermitePrecioEspecial = permitePrecioEspecial;
+		UG = uG;
+		Ubicacion = ubicacion;
+		NombreLegalCliente = nombreLegalCliente;
+		FacturasPendientes = facturasPendientes;
+		NotasCreditoPendientes = notasCreditoPendientes;
+		NotasDebitoPendientes = notasDebitoPendientes;
+		DescuentosProveedor = descuentosProveedor;
+		AplicaOtrasDeducciones = aplicaOtrasDeducciones;
+		MontoMinimoAbono = montoMinimoAbono;
+		PlazoDescuento = plazoDescuento;
+		PermiteDevolucion = permiteDevolucion;
+	}
 
+	
+	private void readFromParcel(Parcel parcel) {
+		
+		this.IdCliente = parcel.readLong();
+		this.NombreCliente = parcel.readString(  );
+		this.IdSucursal = parcel.readLong(  );
+		this.Codigo = parcel.readString(  );
+		this.CodTipoPrecio = parcel.readString(  );
+		this.DesTipoPrecio = parcel.readString(  );
+		this.objPrecioVentaID = parcel.readLong(  );
+		this.objCategoriaClienteID = parcel.readLong(  );
+		this.objTipoClienteID = parcel.readLong(  );
+		this.AplicaBonificacion = parcel.readInt(  ) == 1;
+		this.PermiteBonifEspecial = parcel.readInt(  ) == 1;
+		this.PermitePrecioEspecial = parcel.readInt(  ) == 1;
+		this.UG = parcel.readString(  );
+		this.Ubicacion = parcel.readString(  );
+		this.NombreLegalCliente = parcel.readString(  );
+		Parcelable[] parcelableArray = parcel.readParcelableArray(Factura.class.getClassLoader()); 
+		if (parcelableArray != null) 
+		{ 
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length,Factura[].class);
+			FacturasPendientes=new Factura[parcelableArray.length];
+			for(int i=0;i<((list!=null)?list.length:0);i++)
+			{
+				
+				FacturasPendientes[i]=((Factura)list[i]);
+			}
+		}
+		
+		parcelableArray= parcel.readParcelableArray(CCNotaCredito.class.getClassLoader()); 
+		if (parcelableArray != null) 
+		{ 
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length,CCNotaCredito[].class);
+			NotasCreditoPendientes=new CCNotaCredito[parcelableArray.length];
+			for(int i=0;i<((list!=null)?list.length:0);i++)
+			{
+				
+				NotasCreditoPendientes[i]=((CCNotaCredito)list[i]);
+			}
+		} 
+		
+		parcelableArray = parcel.readParcelableArray(CCNotaDebito.class.getClassLoader()); 
+		if (parcelableArray != null) 
+		{ 
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length,CCNotaDebito[].class);
+			NotasDebitoPendientes=new CCNotaDebito[parcelableArray.length];
+			for(int i=0;i<((list!=null)?list.length:0);i++)
+			{
+				
+				NotasDebitoPendientes[i]=((CCNotaDebito)list[i]);
+			}
+		} 
+		
+		parcelableArray = parcel.readParcelableArray(DescuentoProveedor.class.getClassLoader()); 
+		if (parcelableArray != null) 
+		{ 
+			Object [] list = Arrays.copyOf(parcelableArray, parcelableArray.length,DescuentoProveedor[].class);
+			DescuentosProveedor=new DescuentoProveedor[parcelableArray.length];
+			for(int i=0;i<((list!=null)?list.length:0);i++)
+			{
+				
+				DescuentosProveedor[i]=((DescuentoProveedor)list[i]);
+			}
+		}   
+		this.AplicaOtrasDeducciones = parcel.readInt(  ) == 1;
+		this.MontoMinimoAbono = parcel.readFloat(  );
+		this.PlazoDescuento = parcel.readInt(  );
+		this.PermiteDevolucion = parcel.readInt(  ) == 1;		    
+	
+	}
+		
+	public Cliente(Parcel parcel){ 	   
+	 	   readFromParcel(parcel);
+	}
+	
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+
+        @Override
+		public Cliente createFromParcel(Parcel parcel) {
+             return new Cliente(parcel);
+        }
+
+        @Override
+		public Cliente[] newArray(int size) {
+             return new Cliente[size];
+        }
+      	 
+      	 
+   };
+	
 }

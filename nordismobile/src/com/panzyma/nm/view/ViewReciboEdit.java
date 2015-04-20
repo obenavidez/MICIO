@@ -261,6 +261,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			Bundle bundle = getIntent().getExtras();
 			// OBTENER EL ID DEL RECIBO
 			reciboId = (Integer) bundle.get(ViewRecibo.RECIBO_ID);
+//			recibo = (getIntent().getParcelableExtra("recibo") != null) ? (ReciboColector) getIntent()
+//					.getParcelableExtra("recibo") : null;
 			SessionManager.setContext(this);UserSessionManager.setContext(this);
 			me = this;
 
@@ -289,6 +291,12 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				documents = new ArrayList<com.panzyma.nm.serviceproxy.Documento>();
 			}
 
+//			if (recibo != null) 
+//			{
+//				onEdit = true;
+//				recibo.setOldData(recibo);
+//			}
+			
 			if (reciboId != 0) 
 			{
 				onEdit = true;
@@ -427,6 +435,18 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				// Ponemos el titulo del Menú
 				getSupportActionBar().setTitle(tituloSeccion);
 				Controller controller = NMApp.getController();
+				
+				if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+				{
+					AppDialog
+					.showMessage(
+							me,
+							"Aviso",
+							"No se puede editar Recibo en estado "+ recibo.getCodEstado(),
+							DialogType.DIALOGO_ALERTA);
+					return;
+				}
+				
 				switch (position) 
 				{   
 				case ID_SELECCIONAR_CLIENTE:
@@ -678,10 +698,14 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 		long date = DateUtil.dt2i(Calendar.getInstance().getTime());
 		salvado = false;
-	
+//		if (_onEdit != null && _onEdit.length != 0)
+//		{
+//			if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+//			{
+//				initMenu();CreateMenu();
+//			} 
+//		}
 		
-		if (_onEdit != null && _onEdit.length != 0)
-			onEdit = true;
 		if (recibo == null || !onEdit) 
 		{
 			
@@ -805,6 +829,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		txtmonto.setText("" +recibo.getFormasPagoMonto());
 		CalculaTotales();
 		actualizaTotales();
+		
 	}
 
 	private void initMenu() 
@@ -812,6 +837,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		
 		if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
 		{
+			quickAction = new QuickAction(this, QuickAction.VERTICAL, 1);
 			quickAction.addActionItem(new ActionItem(ID_IMPRIMIR_COMPROBANTE,
 					"Imprimir Comprobante"));
 			quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
@@ -859,9 +885,21 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 						runOnUiThread(new Runnable() {
 							@Override
-							public void run() {
+							public void run()
+							{
 								ActionItem actionItem = quickAction
 										.getActionItem(pos);
+								if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+								{
+									AppDialog
+									.showMessage(
+											me,
+											"Aviso",
+											"No se puede editar Recibo en estado "+ recibo.getCodEstado(),
+											DialogType.DIALOGO_ALERTA);
+									return;
+								}
+								
 								switch (actionItem.getActionId()) {
 								case ID_SELECCIONAR_CLIENTE:
 									seleccionarCliente();
@@ -958,7 +996,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		case C_DATA:
 			recibo = (ReciboColector) msg.obj;
 			recibo.setOldData(recibo);
-			loadData();
+			loadData(true);
 			break;
 		case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
 			if (msg.obj != null) {
@@ -1098,6 +1136,17 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 	private void seleccionarCliente() 
 	{ 		
+		if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+		{
+			AppDialog
+			.showMessage(
+					me,
+					"Aviso",
+					"No se puede editar Recibo en estado "+ recibo.getCodEstado(),
+					DialogType.DIALOGO_ALERTA);
+			return;
+		}
+		
 		  if (cliente != null && documents != null && documents.size()!=0) 
 		  {
 				AppDialog.showMessage(me, "", "Si cambia el cliente se eliminarán los detalles del recibo.\n\n¿Desea continuar?",
@@ -1187,26 +1236,19 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					public void onButtonClick(Float percentcollector,
 							String clave) 
 					{
+						NMApp.getController().setView(me);
+				    	SessionManager.setContext(me);
 						recibo.setClaveAutorizaDescOca(clave);
 						recibo.setPorcDescOcaColector(percentcollector); 
 						Cobro.calcularDetFacturasRecibo(NMApp.getContext(), recibo, cliente, true);
 						CalculaTotales();
 						actualizaTotales();
 						recibo.getFormasPagoRecibo().clear();	
-						if ((percentcollector == 100) || (!SessionManager.isPhoneConnected()))
-							AppDialog
-							.showMessage(
-									me,
-									"Alerta",
-									"La aplicación de descuento ocasional ha sido habilitada.",
-									DialogType.DIALOGO_ALERTA); 
-				        else
-				        	AppDialog
-							.showMessage(
-									me,
-									"Alerta",
-									"La aplicación de descuento ocasional ha sido autorizada.",
-									DialogType.DIALOGO_ALERTA);  
+						if ((percentcollector == 100) || (!SessionManager.isPhoneConnected3())) 
+							NMApp.getController()._notifyOutboxHandlers(ControllerProtocol.NOTIFICATION, 0, 0,"La aplicación de descuento ocasional ha sido habilitada."); 
+					    else
+				        	NMApp.getController()._notifyOutboxHandlers(ControllerProtocol.NOTIFICATION, 0, 0,"La aplicación de descuento ocasional ha sido autorizada.");
+ 
 					}
 				});
 
@@ -1232,13 +1274,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	}
 
 	private void solicitardescuento() 
-	{
-		
-// Si se está fuera de covertura, salir
-//		if (!SessionManager.isPhoneConnected()) {
-//			//showStatus("La operación no puede ser realizada ya que está fuera de cobertura.", true);			
-//			return;
-//		}
+	{ 
 		if (!Cobro.validaAplicDescOca(me.getContext(), recibo)) {
 			AppDialog
 					.showMessage(
@@ -1279,8 +1315,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		window.setLayout(display.getWidth() - 10, display.getHeight() - 50);
 		sd.show();
 	}
-	 
-
+ 
 	private void guardarRecibo(int... arg) 
 	{	  
 		if (valido(true)) 
@@ -1336,8 +1371,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		}
 
 	}
-	
-	
+	 
 	private void guardarDirectamenteRecibo() 
 	{	  
 		if (valido()) 
@@ -2219,6 +2253,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 	private void agregarDocumentosPendientesCliente() {
 
+		
+		
 		if (cliente == null) {
 			Toast.makeText(getApplicationContext(),
 					"Debe seleccionar un cliente", Toast.LENGTH_SHORT).show();
@@ -2661,8 +2697,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					recibo.getCliente(), true);
 		}
 	}	 
-	
-	
+
 	private void eliminarDocumento(int index) 
 	{
 		if (!"REGISTRADO".equals(recibo.getCodEstado()))
@@ -2687,7 +2722,6 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		actualizaTotales(); 
 	}
 	
-
 	private void eliminarDocumento() {
 		if (!"REGISTRADO".equals(recibo.getCodEstado()))
 			return;

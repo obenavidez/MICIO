@@ -13,6 +13,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.DescuentoProveedor;
@@ -147,7 +148,8 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 				@Override
 				public void onClick(View v) 
 				{ 
-					if (!((CheckBox) v).isChecked()){ 
+					if (!((CheckBox) v).isChecked())
+					{ 
 					    porcentajeglobal=0.0f;
 					    justificacionglobal="";
 						return;
@@ -173,19 +175,33 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 				        else if(!td.equals("") && tj.equals("")) 
 				        	continue;
 				        else if (pd>dp.getPrcDescuento())
-				           	continue;	
+				        	{
+					        	d.setError("El %descuento no debe ser mayor %"+ dp.getPrcDescuento()+" ..."); 
+					        	d.requestFocus(); 
+					        	((CheckBox) v).setChecked(false);
+					        	return;
+				        	}			        	
 				        else if (pd<0.0F) 
-				        	continue;	
+				        {
+				        	d.setError("El %descuento debe ser mayor que 0 ..."); 
+				        	d.requestFocus();
+				        	((CheckBox) v).setChecked(false);
+				        	return;
+				        } 
 				       OK= true;
 				       porcentajeglobal=pd;
 				       justificacionglobal=tj;
 				       break;
 				    } 
-					if(!OK)
+					if(!OK){
+						((CheckBox) v).setChecked(false);
+						porcentajeglobal=0.0f;
+					    justificacionglobal="";
 						AppDialog.showMessage(parent,"Aviso!!!",
 								"Debe de especificar el % y justificación en cualquiera de item de la lista y este se le aplicara a todos",
 								DialogType.DIALOGO_ALERTA);
-				}
+						}
+					}
 			});
 	    }    
 	    
@@ -202,6 +218,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 					enviarSolicitud(true);		        
 				else
 				{
+					cboxall.setChecked(false);
 					for (int i = 0; i < childCount; i++)
 				    {			    	
 				        View v =lvfacturas.getChildAt(i);
@@ -225,7 +242,8 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 				        else if(!td.equals("") && tj.equals(""))
 				        {
 				        	j.setError("Debe justificar el descuento..."); 
-				        	j.requestFocus(); 			
+				        	j.requestFocus(); 		
+				        	
 				        	error=1;
 				        	return;
 				        }else if (pd>dp.getPrcDescuento())
@@ -277,6 +295,11 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	
 	private void enviarSolicitud(boolean...otherprocess)
 	{
+		if(!SessionManager.isPhoneConnected3())
+		{
+			AppDialog.showMessage(parent,"Error de conexión", " Dispositivo Fuera de linea", DialogType.DIALOGO_ALERTA);
+			return;
+		} 
 		if(!DOC_STATUS_REGISTRADO.equals(solicitud.getCodigoEstado()))
 			return;
 		ArrayList<Object> data=null;

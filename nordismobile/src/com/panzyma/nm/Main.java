@@ -31,6 +31,7 @@ import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewConfiguracion;
+import com.panzyma.nm.view.ViewDevolucionEdit;
 import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.vCliente;
@@ -129,7 +130,9 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				break;
 			case R.id.hbtndevolucion:
 				NMApp.modulo = NMApp.Modulo.DEVOLUCION;
-				break;
+				intent = new Intent(this, ViewDevolucionEdit.class);
+				startActivity(intent);
+				break;  
 			case R.id.hbtncliente:
 				NMApp.modulo = NMApp.Modulo.CLIENTE;
 				intent = new Intent(this, vCliente.class);
@@ -139,8 +142,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				NMApp.modulo = NMApp.Modulo.PRODUCTO;
 				intent = new Intent(this, ProductoView.class);
 				startActivity(intent);
-				break;
-
+				break; 
+			
 			case R.id.hbtnconfiguracion:
 				NMApp.modulo = NMApp.Modulo.CONFIGURACION;
 				intent = new Intent(context,ViewConfiguracion.class);

@@ -14,19 +14,19 @@ import com.panzyma.nm.interfaces.GenericDocument;
 public final class CCNotaDebito implements KvmSerializable, GenericDocument,
 		Parcelable {
 
-	private long Id;
-	private java.lang.String NombreSucursal;
-	private java.lang.String Estado;
-	private java.lang.String Numero;
-	private long Fecha;
-	private long FechaVence;
-	private int Dias;
-	private java.lang.String Concepto;
-	private float Monto;
-	private float MontoAbonado;
-	private float Saldo;
-	private java.lang.String CodEstado;
-	private java.lang.String Descripcion;
+	protected long Id;
+	protected java.lang.String NombreSucursal;
+	protected java.lang.String Estado;
+	protected java.lang.String Numero;
+	protected long Fecha;
+	protected long FechaVence;
+	protected int Dias;
+	protected java.lang.String Concepto;
+	protected float Monto;
+	protected float MontoAbonado;
+	protected float Saldo;
+	protected java.lang.String CodEstado;
+	protected java.lang.String Descripcion;
 
 	public CCNotaDebito() {
 	}

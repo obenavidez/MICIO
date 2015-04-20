@@ -5,6 +5,24 @@
         <item>Contado</item>
         <item>Crédito</item>
     </string-array>
+    
+    <string-array name="motivodevolucion">
+        <item>Producto dañado</item>
+        <item>Producto duplicado</item>
+        <item>Envio de producto equivocado</item>
+        <item>Otro Motivo</item>
+    </string-array>
+    
+    <string-array name="tramite">
+        <item>Reposición</item>
+        <item>Nota de Crédito</item> 
+    </string-array>
+    
+    <string-array name="tipodevolucion">
+        <item>Total</item>
+        <item>Parcial</item> 
+    </string-array>
+    
     <string-array name="valuetipopedido">
         <item>0</item>
         <item>1</item>
