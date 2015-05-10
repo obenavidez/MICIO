@@ -35,6 +35,7 @@ import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog; 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
@@ -58,7 +59,7 @@ import android.widget.Toast;
 public class DialogSolicitudDescuento extends Dialog  implements Handler.Callback{
 
 	ViewReciboEdit parent;
-	
+	ProgressDialog pDialog;
 	List<Factura> facturas;
 	EncabezadoSolicitud solicitud;
 	List<SolicitudDescuento> detallesolicitud; 
@@ -314,6 +315,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 		msg.obj=(data!=null)?data:solicitud;
 		msg.what=ControllerProtocol.SOLICITAR_DESCUENTO;
 		NMApp.getController().getInboxHandler().sendMessage(msg); 
+		showProgress();
 	}
 
 	@Override
@@ -325,6 +327,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 				establecerDatos((msg.obj!=null)? (EncabezadoSolicitud) msg.obj:null);
 				break; 
 			case ControllerProtocol.REQUEST_SOLICITUD_DESCUENTO:
+				pDialog.hide();
 				mButtonClickListener.onButtonClick((String) msg.obj);
 				dismiss();
 				break;
@@ -411,5 +414,12 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 		Log.d(TAG, "Activity quitting");  
 	}
 	
-	
+	private void showProgress()
+	{
+		pDialog = new ProgressDialog(parent);
+		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pDialog.setMessage("Procesando...");
+		pDialog.setCancelable(true);
+		pDialog.show();
+	}
 }
