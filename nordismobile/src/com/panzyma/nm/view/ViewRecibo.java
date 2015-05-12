@@ -340,7 +340,8 @@ public class ViewRecibo extends ActionBarActivity implements
 					
 					if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
 		            {
-						if ("REGISTRADO".equals(recibo_selected.getCodEstado())) {
+						if ( !("PAGADO".compareTo(recibo_selected.getCodEstado()) == 0) ) {
+							// ENVIAR SOLO SI EL ESTADO DEL RECIBO ES DISTINTO A PAGADO
 							enviarRecibo(recibo_selected);
 						}				
 					}	
