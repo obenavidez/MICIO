@@ -94,6 +94,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -247,8 +248,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	public Integer getReciboID() 
 	{
 		return reciboId;
-	}
-
+	}	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -1196,10 +1197,14 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	}
 	
 	private void aplicardescuento() {
-
-		boolean aplicandoDescOca = ((recibo.getClaveAutorizaDescOca() != null) && (recibo
-				.getClaveAutorizaDescOca().length() > 0))
-				|| (recibo.getPorcDescOcaColector() > 0);
+		boolean aplicandoDescOca = false;
+		if(recibo.getPorcDescOcaColector() == 100 ) {
+			if(recibo.getTotalDescOca() > 0) aplicandoDescOca = true;
+		} else {
+			aplicandoDescOca = ((recibo.getClaveAutorizaDescOca() != null) && (recibo
+					.getClaveAutorizaDescOca().length() > 0))
+					|| (recibo.getPorcDescOcaColector() > 0);
+		}			
 		if (aplicandoDescOca)
 			DesaplicarDescuentoOcasional();
 		else
@@ -1318,7 +1323,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
  
 	private void guardarRecibo(int... arg) 
 	{	  
-		if (valido(true)) 
+		if (valido(false)) 
 		{
 			CalculaTotales(); 
 			// LIMPIAR LOS DOCUMENTOS DEL RECIBO
