@@ -114,7 +114,15 @@ public  class BSolicitudDescuentoM  extends BBaseM {
 						if(solicitud!=null && solicitud.getDetalles()!=null && solicitud.getDetalles().size()!=0)
 							RegistrarSolicituDescuento(solicitud);
 						else
+						{//return;
+							Processor.notifyToView(
+									getController(),
+									ControllerProtocol.C_QUIT,
+									0,
+									0,
+									null);
 							return;
+						}
 						
 						long rs = ModelRecibo.solicitarDescuentoOcacional(credenciales, solicitud.getRecibo(), nota.toString());
 						if(rs!= 0)

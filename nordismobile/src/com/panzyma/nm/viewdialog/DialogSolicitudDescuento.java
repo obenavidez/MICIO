@@ -331,6 +331,10 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 				mButtonClickListener.onButtonClick((String) msg.obj);
 				dismiss();
 				break;
+			case ControllerProtocol.C_QUIT :
+				pDialog.hide();
+				dismiss();
+				break;
 			case ControllerProtocol.ERROR:
 				AppDialog.showMessage(parent, ((ErrorMessage) msg.obj).getTittle(),
 						((ErrorMessage) msg.obj).getMessage(),
@@ -419,7 +423,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 		pDialog = new ProgressDialog(parent);
 		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pDialog.setMessage("Procesando...");
-		pDialog.setCancelable(true);
+		pDialog.setCancelable(false);
 		pDialog.show();
 	}
 }

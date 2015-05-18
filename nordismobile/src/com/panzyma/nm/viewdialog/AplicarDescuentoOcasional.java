@@ -17,6 +17,7 @@ import com.panzyma.nordismobile.R;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	private static AplicarDescuentoOcasional ado;
 	private EncabezadoSolicitud solicitud;
 	Message msg;
+	ProgressDialog pDialog;
 	public static AplicarDescuentoOcasional newInstance(ReciboColector recibo) 
 	{
 		if(ado==null)
@@ -182,6 +184,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 			   			msg.setData(b);
 			   			msg.what=ControllerProtocol.APLICAR_DESCUENTO;
 			   			NMApp.getController().getInboxHandler().sendMessage(msg);  
+			   			showProgress();
 			   			return false;
 		           }    	  
 	       }
@@ -273,6 +276,13 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 		return false;
 	}
     
-	
+	private void showProgress()
+	{
+		pDialog = new ProgressDialog(parent);
+		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pDialog.setMessage("Procesando...");
+		pDialog.setCancelable(false);
+		pDialog.show();
+	}
 	
 }
