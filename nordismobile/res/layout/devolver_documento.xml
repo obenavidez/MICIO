@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/White"
+    android:orientation="vertical" > 
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:background="@color/White" >
+        
+        
+        <TextView
+        android:id="@+id/dev_lblPedido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pedido :"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+		android:layout_marginTop="30dp"/>
+
+	    <EditText
+	        android:id="@+id/dev_tboxPedido"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@+id/dev_lblPedido"
+	        android:ems="10"
+	        android:layout_marginTop="5dp" />
+	
+	    <TextView
+	        android:id="@+id/dev_lblFactura"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Factura :"
+	        android:layout_below="@+id/dev_lblPedido"
+	        android:layout_marginTop="40dp"
+	        android:textAppearance="?android:attr/textAppearanceSmall" />
+	
+	    <EditText
+	        android:id="@+id/dev_tboxFactura"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/dev_lblPedido"
+	        android:layout_toRightOf="@+id/dev_lblFactura"
+	        android:layout_marginTop="13dp"
+	        android:ems="10" />
+        
+    </RelativeLayout>
+
+    <TableRow
+        android:id="@+id/devlayoutbutton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal" >
+
+            <Button
+                android:id="@+id/btnOK"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn" 
+                android:text="Agregar"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/White" >
+            </Button>
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn" 
+                android:text="Cancelar"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/White" >
+            </Button>
+        </TableRow>
+</LinearLayout>

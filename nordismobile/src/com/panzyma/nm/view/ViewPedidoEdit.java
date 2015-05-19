@@ -94,7 +94,7 @@ import com.panzyma.nm.viewdialog.ExonerarImpuesto;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint({ "NewApi", "SimpleDateFormat" })
-@SuppressWarnings({ "unchecked", "rawtypes", "unused", "deprecation","static-access" })
+@SuppressWarnings({ "unchecked", "rawtypes", "unused", "deprecation" })
 @InvokeBridge(bridgeName = "BPedidoM")
 public class ViewPedidoEdit extends ActionBarActivity implements
 		Handler.Callback, Editable{

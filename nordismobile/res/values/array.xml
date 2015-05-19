@@ -93,4 +93,17 @@
          <item >Imprimir Recibo</item>
         <item >Cerrar</item> 
     </string-array>
+    
+    <string-array name="devolucioneditoptions">
+        <item >Seleccionar Cliente</item>  
+        <item >Devolver Pedido</item>
+        <item >Agregar Producto</item>
+        <item >Agregar Lote</item>
+        <item >Editar Nota</item>  
+        <item >Ver Costeo</item>
+        <item >Guardar</item>
+        <item >Enviar</item>
+        <item >Cerrar</item> 
+    </string-array>
+    
 </resources>

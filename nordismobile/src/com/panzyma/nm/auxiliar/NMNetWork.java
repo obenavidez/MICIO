@@ -224,25 +224,43 @@ public class NMNetWork {
     public static synchronized boolean CheckConnection(Controller controller) 
     {
     	error=null;  
-        try {        
-			Thread t = new Thread(new Runnable() {
+        try 
+        {        
+			Thread t = new Thread(new Runnable() 
+			{
 				@Override
 				public void run() {
-					try {
+					try 
+					{
 						response = Boolean.parseBoolean(((SoapPrimitive) NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),
 										NMConfig.URL, NMConfig.NAME_SPACE,
 										NMConfig.MethodName.CheckConnection))
 								.toString());
-					} catch (Exception e) {
-						e.printStackTrace();
+					} catch (Exception ex) {
+						ex.printStackTrace();    	 
+		            	UserSessionManager.HAS_ERROR=true;
+		            	try 
+		    			{				
+		    				NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,new ErrorMessage("","error en la comunicación con el servidor de aplicaciones.\n"+((ex!=null)?ex.toString():""),"error en la comunicación con el servidor de aplicaciones.\n"+((ex!=null)?ex.toString():""))); 
+		    			} catch (Exception e) { 
+		    				e.printStackTrace();
+		    			}	  
 					}
 				}
 			});
         	t.start(); // spawn thread
         	try {
         		t.join();  // wait for thread to finish
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ex) {
+            	ex.printStackTrace();    	 
+            	UserSessionManager.HAS_ERROR=true;
+            	try 
+    			{				
+    				NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,new ErrorMessage("","error en la comunicación con el servidor de aplicaciones.\n"+((ex!=null)?ex.toString():""),"error en la comunicación con el servidor de aplicaciones.\n"+((ex!=null)?ex.toString():""))); 
+    			} catch (Exception e) { 
+    				e.printStackTrace();
+    			}	  
+                return false; 
             }        	
 			/*NMApp.getThreadPool().execute(new Runnable() {
 				@Override
@@ -265,15 +283,14 @@ public class NMNetWork {
         } 
         catch(Exception ex) 
         {         	 
+        	ex.printStackTrace();    	 
         	UserSessionManager.HAS_ERROR=true;
         	try 
 			{				
-				NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,new ErrorMessage("","error en la comunicación con el servidor de aplicaciones.\n"+ex.toString(),"error en la comunicación con el servidor de aplicaciones.\n"+ex.toString())); 
+				NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,new ErrorMessage("","error en la comunicación con el servidor de aplicaciones.\n"+((ex!=null)?ex.toString():""),"error en la comunicación con el servidor de aplicaciones.\n"+((ex!=null)?ex.toString():""))); 
 			} catch (Exception e) { 
 				e.printStackTrace();
-			}				  
-        	
-        	
+			}	  
             return false;
         }
 		return response;  

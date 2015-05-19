@@ -20,6 +20,8 @@ public class CustomAdapter extends ArrayAdapter<SpinnerModel> {
 	private ArrayList data;
     SpinnerModel tempValues=null;
     LayoutInflater inflater;
+	private int selectedPos;
+	private int positionCache;
      
     /*************  CustomAdapter Constructor *****************/
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -39,6 +41,30 @@ public class CustomAdapter extends ArrayAdapter<SpinnerModel> {
         inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
          
       }
+    
+    
+    public void setSelectedPosition(int pos)
+	{
+		selectedPos = pos;
+	}	
+    public int getSelectedPosition(){
+		return selectedPos;
+	}   
+    
+    public void setPositionCache(int posicion){
+    	this.positionCache = posicion;
+    }
+    
+    public int getPositionCache() {
+    	return this.positionCache;
+    }
+    
+    
+	@Override
+	public long getItemId(int position) {
+		return ((SpinnerModel) data.get(position)).getId();
+	}
+    
  
     @Override
     public View getDropDownView(int position, View convertView,ViewGroup parent) {

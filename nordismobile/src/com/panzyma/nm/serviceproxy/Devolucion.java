@@ -578,6 +578,8 @@ public class Devolucion {
 	public void setFechaFacturacion(long fechaFacturacion) {
 		this.FechaFacturacion = fechaFacturacion;
 	}
+	
+	public Devolucion(){;;}	
 	/**
 	 * @param id
 	 * @param referencia

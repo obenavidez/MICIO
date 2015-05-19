@@ -3,6 +3,7 @@ package com.panzyma.nm.controller;
 import com.panzyma.nm.CBridgeM.BBaseM;
 import com.panzyma.nm.CBridgeM.BClienteM;
 import com.panzyma.nm.CBridgeM.BConfiguracionM;
+import com.panzyma.nm.CBridgeM.BDevolucionM;
 import com.panzyma.nm.CBridgeM.BLogicM;
 import com.panzyma.nm.CBridgeM.BPedidoM;
 import com.panzyma.nm.CBridgeM.BProductoM;
@@ -22,7 +23,8 @@ public final class BridgeFactory {
 		BLOGICM("BLogicM"),
 		BPRODUCTOM("BProductoM"),
 		BVENTAM("BVentaM"),
-		BSOLICITUDDESCUENTOM("BSolicitudDescuentoM");
+		BSOLICITUDDESCUENTOM("BSolicitudDescuentoM"),
+		BDEVOLUCIONM("BDevolucionM");
 
 		private String name;
 
@@ -74,6 +76,9 @@ public final class BridgeFactory {
 			break;
 		case BSOLICITUDDESCUENTOM:
 			bridge = new BSolicitudDescuentoM();
+			break;
+		case BDEVOLUCIONM:
+			bridge = new BDevolucionM();
 			break;
 		default:
 			break;

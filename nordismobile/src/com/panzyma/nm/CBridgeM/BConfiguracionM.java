@@ -211,16 +211,14 @@ public class BConfiguracionM extends BBaseM {
 							public void run() {
 								try {
 									onSave_From_LocalHost(
-											ModelConfiguracion
-											.getValoresCatalogo(
+											ModelConfiguracion.getValoresCatalogo(
 													credentials,
-													"FormaPago-Moneda-EntidadBancaria"),
+													"FormaPago-Moneda-EntidadBancaria-MotivoDevolucionNoVencidos-EstadoDevolucion-TipoPrecio"),
 													ID_SINCRONIZE_CATALOGOSBASICOS, 0);
 									Processor.notifyToView(getController(),
 											ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
 											"Sincronizando Tasas de Cambio");
-									onSave_From_LocalHost(ModelConfiguracion
-											.getTasasDeCambio(credentials),
+									onSave_From_LocalHost(ModelConfiguracion.getTasasDeCambio(credentials),
 											ID_SINCRONIZE_CATALOGOSBASICOS2, 0);
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -243,7 +241,7 @@ public class BConfiguracionM extends BBaseM {
 							}
 						});
 
-				Processor.notifyToView(getController(), ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Sincronizando FormaPago-Moneda-EntidadBancaria");
+				Processor.notifyToView(getController(), ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Sincronizando Catálogo FormaPago-Moneda-EntidadBancaria-Devoluciones");
 			}else
 				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 

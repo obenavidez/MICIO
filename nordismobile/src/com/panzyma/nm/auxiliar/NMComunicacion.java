@@ -181,13 +181,11 @@ public class NMComunicacion {
 		{		
 			ht.debug = true; 
 		    ht.call(NAMESPACE+METHOD_NAME, Envelope);  
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) { 
 			if(ht!=null && ht.getConnection()!=null)
 				ht.getConnection().disconnect(); 
-			new Exception(e);
-		}
-	       
+			throw new Exception(e);
+		}	       
         return  Envelope.getResponse(); 
     }
 	
