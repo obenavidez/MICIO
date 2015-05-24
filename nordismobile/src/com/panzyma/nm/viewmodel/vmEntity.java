@@ -20,6 +20,7 @@ public class vmEntity implements Item, Parcelable, Serializable {
 		this.fecha = fecha;
 		this.total = total;
 		this.nombre = nombre;
+		this.codEstado = codEstado;
 		this.descEstado = descEstado;
 	}
 
