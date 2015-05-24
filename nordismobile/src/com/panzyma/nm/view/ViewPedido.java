@@ -309,12 +309,12 @@ public class ViewPedido extends ActionBarActivity implements
 						} else {
 							ShowNoRecords();
 						}
-						// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-						if (customArrayAdapter.getCount() != 0)
-							pedido_selected = customArrayAdapter.getItem(0);
-						else
-							pedido_selected = null;
-	
+//						// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+//						if (customArrayAdapter.getCount() != 0)
+//							pedido_selected = customArrayAdapter.getItem(0);
+//						else
+//							pedido_selected = null;
+//	
 						break;
 	
 					case CUENTAS_POR_COBRAR:
@@ -880,6 +880,7 @@ public class ViewPedido extends ActionBarActivity implements
 						.getFecha(), p.getTotal(), p.getNombreCliente(), p
 						.getDescEstado(), p.getCodEstado()));
 				positioncache = pedidos.size() - 1; 
+				customArrayAdapter.setSelectedPosition(positioncache);
 			}
 		}
 		/*if(!thread){
