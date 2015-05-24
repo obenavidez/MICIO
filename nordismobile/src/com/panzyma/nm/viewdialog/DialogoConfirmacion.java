@@ -303,9 +303,9 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 			} else if (document instanceof ReciboDetNC) {
 				nTotalDocumento = ((ReciboDetNC)document).getMonto();
 			}			
-			nSaldo = nTotalDocumento - nAbonadoEnOtrosRecibos;			
+			nSaldo = Util.Numero.redondear(nTotalDocumento,2) -Util.Numero.redondear(nAbonadoEnOtrosRecibos,2); 
 			monto  = ( monto.toString().trim().length() == 0 ? "0" : monto);
-			nSaldo = nSaldo - Float.parseFloat(String.valueOf(monto.replace(",", ""))) ;			
+			nSaldo = Util.Numero.redondear(nSaldo,2) - Util.Numero.redondear(Float.parseFloat(String.valueOf(monto.replace(",", ""))),2) ;			
 			saldo.setText(StringUtil.formatReal(nSaldo));		
 			super.onPostExecute(result);
 		}

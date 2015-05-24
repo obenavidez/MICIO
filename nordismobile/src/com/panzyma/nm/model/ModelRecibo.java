@@ -463,6 +463,13 @@ public class ModelRecibo {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void delete(Context context,String tableName,String field, String id){
+		SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(context);
+        db.execSQL("DELETE FROM "+tableName+" WHERE "+field+" = "+id); //delete all rows in a table
+		db.close();
+	}
+
 
 	public synchronized static int borraReciboByID(ContentResolver content,
 			int reciboID, Context context) {
@@ -477,21 +484,21 @@ public class ModelRecibo {
 			updateNotasCredito(recibo.getNotasCreditoRecibo(), content, context);
 			updateNotasDebito(recibo.getNotasDebitoRecibo(), content, context);
 		}
-		String url = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA + "/"
-				+ String.valueOf(reciboID);
-		content.delete(Uri.parse(url), "", projection);
-		url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO + "/"
-				+ String.valueOf(reciboID);
-		content.delete(Uri.parse(url), "", projection);
-		url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTACREDITO + "/"
-				+ String.valueOf(reciboID);
-		content.delete(Uri.parse(url), "", projection);
-		url = DatabaseProvider.CONTENT_URI_RECIBODETALLEFORMAPAGO + "/"
-				+ String.valueOf(reciboID);
-		content.delete(Uri.parse(url), "", projection);
-		url = DatabaseProvider.CONTENT_URI_RECIBO + "/"
-				+ String.valueOf(reciboID);
-		content.delete(Uri.parse(url), "", projection);
+		//String url = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA + "/"+ String.valueOf(reciboID);
+		delete(context,DatabaseProvider.TABLA_RECIBO_DETALLE_FACTURA, "objReciboID", String.valueOf(reciboID));
+		//content.delete(Uri.parse(url), "", projection);
+		//url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTADEBITO + "/"+ String.valueOf(recib
+		delete(context,DatabaseProvider.TABLA_RECIBO_DETALLE_NOTA_DEBITO, "objReciboID", String.valueOf(reciboID));
+		//content.delete(Uri.parse(url), "", projection);
+		//url = DatabaseProvider.CONTENT_URI_RECIBODETALLENOTACREDITO + "/"+ String.valueOf(reciboID);
+		delete(context,DatabaseProvider.TABLA_RECIBO_DETALLE_NOTA_CREDITO, "objReciboID", String.valueOf(reciboID));
+		//content.delete(Uri.parse(url), "", projection);
+		//url = DatabaseProvider.CONTENT_URI_RECIBODETALLEFORMAPAGO + "/"	+ String.valueOf(reciboID);
+		delete(context,DatabaseProvider.TABLA_RECIBO_DETALLE_FORMA_PAGO, "objReciboID", String.valueOf(reciboID));
+		//content.delete(Uri.parse(url), "", projection);
+		//url = DatabaseProvider.CONTENT_URI_RECIBO + "/"	+ String.valueOf(reciboID);
+		delete(context,DatabaseProvider.TABLA_RECIBO, "id", String.valueOf(reciboID));
+		//content.delete(Uri.parse(url), "", projection);
 		result = 1;
 		return result;
 	}
