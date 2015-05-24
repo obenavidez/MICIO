@@ -37,7 +37,16 @@ public class ReciboDetFactura implements KvmSerializable,Documento, Parcelable {
 	protected float SaldoTotal;
 	protected float MontoImpuestoExento;
 	protected float MontoDescEspecificoCalc;
+	protected float totalFacturaOrigen; 
 	
+	public float getTotalFacturaOrigen() {
+		return totalFacturaOrigen;
+	}
+
+	public void setTotalFacturaOrigen(float totalFacturaOrigen) {
+		this.totalFacturaOrigen = totalFacturaOrigen;
+	}
+
 	public ReciboDetFactura() {
 		super();
 	}

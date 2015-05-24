@@ -2310,9 +2310,11 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 							facturaDetalle.setSaldoFactura(factura.getSaldo());
 							facturaDetalle.setSaldoTotal(factura.getSaldo()+ interesMoratorio);
 							facturaDetalle.setMonto(facturaDetalle.getSaldoTotal());
-							facturaDetalle.setSubTotal(factura.getSubtotalFactura()- factura.getDescuentoFactura());
-							facturaDetalle.setTotalFactura(factura.getTotalFacturado());
-
+							//facturaDetalle.setSubTotal(factura.getSubtotalFactura()- factura.getDescuentoFactura());
+							facturaDetalle.setSubTotal(factura.getSaldo()+ interesMoratorio);
+							//facturaDetalle.setTotalFactura(factura.getTotalFacturado());
+							facturaDetalle.setTotalFactura(facturaDetalle.getSaldo());
+							facturaDetalle.setTotalFacturaOrigen(factura.getTotalFacturado());
 							final DialogoConfirmacion dialogConfirmacion = new DialogoConfirmacion(facturaDetalle, recibo, ActionType.ADD);
 							dialogConfirmacion.setActionPago(new Pagable() {
 								@Override
