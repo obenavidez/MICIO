@@ -297,7 +297,7 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 				  nAbonadoEnOtrosRecibos = result;			
 			montoAbonado = nAbonadoEnOtrosRecibos;
 			if(document instanceof ReciboDetFactura) {
-				nTotalDocumento = ((ReciboDetFactura)document).getTotalfactura();				
+				nTotalDocumento = ((ReciboDetFactura)document).getTotalFacturaOrigen();				
 			} else if (document instanceof ReciboDetND){
 				nTotalDocumento = ((ReciboDetND)document).getMontoND();
 			} else if (document instanceof ReciboDetNC) {
