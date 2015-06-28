@@ -13,14 +13,14 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.ActivityCompat; 
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity; 
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,17 +41,15 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.SessionManager; 
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.custom.model.SpinnerModel;
+import com.panzyma.nm.custom.model.SpinnerModel; 
 import com.panzyma.nm.interfaces.Editable; 
 import com.panzyma.nm.serviceproxy.Catalogo;
-import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.Cliente; 
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
@@ -60,17 +58,14 @@ import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
-import com.panzyma.nm.viewdialog.DialogCliente;
-import com.panzyma.nm.viewdialog.DialogNotaRecibo;
-import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
-import com.panzyma.nm.viewdialog.DialogNotaRecibo.RespuestaNotaRecibo;
+import com.panzyma.nm.viewdialog.DialogCliente; 
+import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener; 
 import com.panzyma.nordismobile.R;
 
 @InvokeBridge(bridgeName = "BDevolucionM")
 public class ViewDevolucionEdit extends ActionBarActivity implements
 Handler.Callback, Editable
-{
-	
+{	
 	private static final int ID_SELECCIONAR_CLIENTE = 0; 
 	private static final int ID_DEVOLVER_PEDIDO = 1; 
 	private static final int ID_AGREGAR_PRODUCTO = 2;
@@ -399,6 +394,13 @@ Handler.Callback, Editable
 		return true;
 	}
 	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) 
+	{
+		if (keyCode == KeyEvent.KEYCODE_MENU) 
+			drawerLayout.openDrawer(Gravity.LEFT);
+		return super.onKeyUp(keyCode, event);
+	}
 	
 	private void seleccionarCliente() 
 	{
@@ -412,33 +414,7 @@ Handler.Callback, Editable
 			return;
 		}
 		
-//		  if (cliente != null && Lvmpproducto != null && Lvmpproducto.size()!=0) 
-//		  {
-//				AppDialog.showMessage(this, "", "Si cambia el cliente se eliminarán los detalles del pedido.\n\n¿Desea continuar?",
-//						AppDialog.DialogType.DIALOGO_CONFIRMACION,
-//						new AppDialog.OnButtonClickListener() 
-//				{
-//							@Override
-//							public void onButtonClick(AlertDialog _dialog,
-//									int actionId) 
-//							{
-//
-//								if (AppDialog.OK_BUTTOM == actionId) 
-//								{
-//									pedido=null;
-//									cliente=new Cliente();
-//									Lvmpproducto=new ArrayList<DetallePedido>();
-//									initComponent();
-//									showClientDialog(_dialog);
-//								}
-//								else
-//									_dialog.dismiss();
-//							}
-//				});
-
-//	      }	
-//		  else 
-			  showClientDialog();
+		showClientDialog();
 	}
 	
 	private void devolverdocumento() 
@@ -457,10 +433,11 @@ Handler.Callback, Editable
 		}
 		ft.addToBackStack(null);
 		DevolverDocumento newFragment =DevolverDocumento.newInstance(this,cliente.getIdSucursal()); 
-		newFragment.setOnDialogClickListener(new DevolverDocumento.DialogListener() {
-			
+		newFragment.setOnDialogClickListener(new DevolverDocumento.DialogListener() 
+		{
 			@Override
-			public void onDialogPositiveClick(Devolucion dev) {
+			public void onDialogPositiveClick(Devolucion dev, long nopedido,
+					Pedido _pedido) { 
 				
 			}
 		});

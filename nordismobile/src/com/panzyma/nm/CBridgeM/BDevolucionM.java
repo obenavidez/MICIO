@@ -10,6 +10,7 @@ import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.model.ModelLogic;
+import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.model.ModelSolicitudDescuento;
 
 import android.os.Message;
@@ -24,10 +25,13 @@ public class BDevolucionM extends BBaseM{
 		switch (msg.what) 
 		{
 			case ControllerProtocol.OBTENERVALORCATALOGO:
-				OtenerValorCatalogo((String[]) msg.obj);
+				ObtenerValorCatalogo((String[]) msg.obj);
 				break;
 			case ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO:
 				BuscarDevolucionDePedido(msg.obj);
+				break;
+			case ControllerProtocol.LOAD_PEDIDOS_FROM_LOCALHOST:
+					ObtenerPedidosLocalmente();
 				break;
 			default:
 				break;
@@ -35,7 +39,7 @@ public class BDevolucionM extends BBaseM{
 		return false;
 	}
 
-	private void OtenerValorCatalogo(String...valores)
+	private void ObtenerValorCatalogo(String...valores)
 	{
 		try 
 		{
@@ -44,6 +48,27 @@ public class BDevolucionM extends BBaseM{
 					0,
 					0,
 					ModelLogic.getValorCatalogo(valores)
+					);
+		} catch (Exception e) 
+		{ 
+			Log.e(TAG, "Error interno trayendo datos desde BDD", e);
+			try {
+				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno trayendo datos desde BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}
+		} 
+	}
+	
+	private void ObtenerPedidosLocalmente()
+	{
+		try 
+		{
+			Processor.notifyToView(getController(),
+					ControllerProtocol.ID_REQUEST_OBTENERPEDIDOS,
+					0,
+					0,
+					ModelPedido.obtenerPedidosFacturados()
 					);
 		} catch (Exception e) 
 		{ 

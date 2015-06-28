@@ -3,17 +3,17 @@ package com.panzyma.nm.model;
 import java.lang.reflect.Type;
 
 import org.ksoap2.serialization.PropertyInfo;
+ 
 
-import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
-import com.panzyma.nm.serviceproxy.Devolucion;
-import com.panzyma.nm.viewmodel.vmFicha;
-
+import com.panzyma.nm.serviceproxy.Devolucion; 
+@SuppressWarnings("unused")
 public class ModelDevolucion {
 
+	
 	static String TAG=ModelDevolucion.class.getSimpleName();
 	 
 	public ModelDevolucion() {} 

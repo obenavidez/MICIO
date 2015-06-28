@@ -13,6 +13,7 @@ import android.net.Uri;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
@@ -199,10 +200,11 @@ public class ModelPedido {
 		return p;
 	}
 	
-	public static Pedido obtenerPedidosLocales(ContentResolver content)
+	public static List<Pedido> obtenerPedidosLocales()
 	{ 
 		List<Pedido> lp=new ArrayList<Pedido>();
-		Cursor cur = content.query(DatabaseProvider.CONTENT_URI_PEDIDO,
+		ContentResolver content = NMApp.getContext().getContentResolver();
+		Cursor cur = NMApp.getContext().getContentResolver().query(DatabaseProvider.CONTENT_URI_PEDIDO,
 		        null, //Columnas a devolver
 		        null,       //Condición de la query
 		        null,       //Argumentos variables de la query
@@ -213,7 +215,7 @@ public class ModelPedido {
 			 
            do{
         	   Pedido p=new Pedido();
-        	   int value;
+        	   int value; 
         	   p.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Id))));
         	   p.setNumeroMovil(cur.getInt(cur.getColumnIndex(NMConfig.Pedido.NumeroMovil)));
         	   p.setNumeroCentral(cur.getInt(cur.getColumnIndex(NMConfig.Pedido.NumeroCentral)));
@@ -254,11 +256,76 @@ public class ModelPedido {
         	   
         	   p.setDetalles(obtenerDetallePedido(content,p.getId()));
         	   p.setPromocionesAplicadas(obtenerPedidoPromocion(content,p.getId()));
-        	   
+        	   lp.add(p);
            }while (cur.moveToNext()); 
 	           
           }
-		return null;
+		return lp;
+	}
+	
+	public static List<Pedido> obtenerPedidosFacturados()
+	{ 
+		List<Pedido> lp=new ArrayList<Pedido>();
+		ContentResolver content = NMApp.getContext().getContentResolver();
+		long objEstado=100306;//Estado Facturado
+		Cursor cur = NMApp.getContext().getContentResolver().query(DatabaseProvider.CONTENT_URI_PEDIDO,
+		        null, //Columnas a devolver
+		       null,// "objEstadoID="+ objEstado,       //Condición de la query
+		        null,       //Argumentos variables de la query
+		        null); 
+		
+		if (cur.moveToFirst()) 
+		 {  
+			 
+           do
+           {
+        	   Pedido p=new Pedido();
+        	   int value; 
+        	   p.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Id))));
+        	   p.setNumeroMovil(cur.getInt(cur.getColumnIndex(NMConfig.Pedido.NumeroMovil)));
+        	   p.setNumeroCentral(cur.getInt(cur.getColumnIndex(NMConfig.Pedido.NumeroCentral)));
+        	   p.setTipo(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Tipo)));
+        	   p.setFecha(cur.getInt(cur.getColumnIndex(NMConfig.Pedido.Fecha)));
+        	   p.setObjClienteID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objClienteID))));
+        	   p.setNombreCliente(cur.getString(cur.getColumnIndex(NMConfig.Pedido.NombreCliente)));
+        	   p.setObjSucursalID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objSucursalID))));
+        	   p.setNombreSucursal(cur.getString(cur.getColumnIndex(NMConfig.Pedido.NombreSucursal)));
+        	   p.setObjTipoPrecioVentaID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objTipoPrecioVentaID))));
+        	   p.setCodTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Pedido.CodTipoPrecio)));
+        	   p.setDescTipoPrecio(cur.getString(cur.getColumnIndex(NMConfig.Pedido.DescTipoPrecio)));
+        	   p.setObjVendedorID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objVendedorID))));
+        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Pedido.BonificacionEspecial)); 
+        	   p.setBonificacionEspecial(value==1?true:false);
+        	   p.setBonificacionSolicitada(cur.getString(cur.getColumnIndex(NMConfig.Pedido.BonificacionSolicitada)));
+        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Pedido.PrecioEspecial));
+        	   p.setPrecioEspecial(value==1?true:false);
+        	   p.setPrecioSolicitado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.PrecioSolicitado)));
+        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Pedido.PedidoCondicionado));
+        	   p.setPedidoCondicionado(value==1?true:false);
+        	   p.setCondicion(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Condicion)));
+        	   p.setSubtotal(cur.getFloat(cur.getColumnIndex(NMConfig.Pedido.Subtotal)));
+        	   p.setDescuento(cur.getFloat(cur.getColumnIndex(NMConfig.Pedido.Descuento)));
+        	   p.setImpuesto(cur.getFloat(cur.getColumnIndex(NMConfig.Pedido.Impuesto)));
+        	   p.setTotal(cur.getFloat(cur.getColumnIndex(NMConfig.Pedido.Total)));
+        	   p.setObjEstadoID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objEstadoID))));
+        	   p.setCodEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.CodEstado)));
+        	   p.setDescEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.DescEstado)));
+        	   p.setObjCausaEstadoID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.objCausaEstadoID))));
+        	   p.setCodCausaEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.CodCausaEstado)));
+        	   p.setDescCausaEstado(cur.getString(cur.getColumnIndex(NMConfig.Pedido.DescCausaEstado)));
+        	   p.setNombreVendedor(cur.getString(cur.getColumnIndex(NMConfig.Pedido.NombreVendedor)));
+        	   p.setNota(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Nota)));
+        	   value=cur.getInt(cur.getColumnIndex(NMConfig.Pedido.Exento));        	   
+        	   p.setExento(value==1?true:false);
+        	   p.setAutorizacionDGI(cur.getString(cur.getColumnIndex(NMConfig.Pedido.AutorizacionDGI)));
+        	   
+        	   p.setDetalles(obtenerDetallePedido(content,p.getId()));
+        	   p.setPromocionesAplicadas(obtenerPedidoPromocion(content,p.getId()));
+        	   lp.add(p);
+           }while (cur.moveToNext()); 
+	           
+          }
+		return lp;
 	}
 	
 	public static DetallePedido[] obtenerDetallePedido(ContentResolver content,long ObjPedidoID)
