@@ -9,6 +9,7 @@ import org.ksoap2.serialization.PropertyInfo;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor; 
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.comunicator.AppNMComunication;
@@ -19,6 +20,7 @@ import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
@@ -263,23 +265,35 @@ public class ModelPedido {
 		return lp;
 	}
 	
-	public static List<Pedido> obtenerPedidosFacturados()
+	public static List<Factura> obtenerPedidosFacturados(long... objSucursalID)
 	{ 
-		List<Pedido> lp=new ArrayList<Pedido>();
+		long id = 0;
+		if(objSucursalID != null && objSucursalID.length > 0) {
+			id = objSucursalID[0];
+		}
+		List<Factura> lp=new ArrayList<Factura>();
 		ContentResolver content = NMApp.getContext().getContentResolver();
 		long objEstado=100306;//Estado Facturado
-		Cursor cur = NMApp.getContext().getContentResolver().query(DatabaseProvider.CONTENT_URI_PEDIDO,
+		/*Cursor cur = NMApp.getContext().getContentResolver().query(DatabaseProvider.CONTENT_URI_PEDIDO,
 		        null, //Columnas a devolver
 		       null,// "objEstadoID="+ objEstado,       //Condición de la query
 		        null,       //Argumentos variables de la query
-		        null); 
+		        null);*/ 
+		String[] tableColumns = new String[] {
+				"cast(Id as INT) as id",
+			    "NoFactura",
+			    "NoPedido"
+        };
+		String whereClause = "objSucursalID = " + String.valueOf(id);			
+		SQLiteDatabase sql = DatabaseProvider.Helper.getDatabase(NMApp.getContext());
+		Cursor cur = sql.query("Factura", tableColumns, whereClause, null, null, null, null);
 		
 		if (cur.moveToFirst()) 
 		 {  
 			 
            do
            {
-        	   Pedido p=new Pedido();
+        	   /*Pedido p=new Pedido();
         	   int value; 
         	   p.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Pedido.Id))));
         	   p.setNumeroMovil(cur.getInt(cur.getColumnIndex(NMConfig.Pedido.NumeroMovil)));
@@ -320,7 +334,11 @@ public class ModelPedido {
         	   p.setAutorizacionDGI(cur.getString(cur.getColumnIndex(NMConfig.Pedido.AutorizacionDGI)));
         	   
         	   p.setDetalles(obtenerDetallePedido(content,p.getId()));
-        	   p.setPromocionesAplicadas(obtenerPedidoPromocion(content,p.getId()));
+        	   p.setPromocionesAplicadas(obtenerPedidoPromocion(content,p.getId()));*/
+        	   Factura p = new Factura();
+        	   p.Id = cur.getInt(cur.getColumnIndex("id"));
+        	   p.NoFactura = cur.getString(cur.getColumnIndex("NoFactura"));
+        	   p.NoPedido = cur.getString(cur.getColumnIndex("NoPedido"));
         	   lp.add(p);
            }while (cur.moveToNext()); 
 	           

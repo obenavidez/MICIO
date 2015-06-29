@@ -39,10 +39,17 @@ public  class Factura implements KvmSerializable, GenericDocument, Parcelable {
 	public PromocionCobro[] DetallePromocionCobro ;
     public MontoProveedor[] DetalleMontoProveedor ;  
 
-    public Factura() {
-         
+    public Factura() {         
     }
-    public void setDetallePromocionCobro(PromocionCobro[] detallePromocionCobro) {
+    
+    public Factura(long id, String noFactura, String noPedido) {
+		super();
+		Id = id;
+		NoFactura = noFactura;
+		NoPedido = noPedido;
+	}
+
+	public void setDetallePromocionCobro(PromocionCobro[] detallePromocionCobro) {
         this.DetallePromocionCobro = detallePromocionCobro;
     }
 

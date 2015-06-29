@@ -19,7 +19,7 @@ import android.util.Log;
 public class BDevolucionM extends BBaseM{
 
 	private String TAG=BDevolucionM.class.getSimpleName();
-
+	
 	@Override
 	public boolean handleMessage(Message msg) throws Exception {
 		switch (msg.what) 
@@ -31,8 +31,8 @@ public class BDevolucionM extends BBaseM{
 				BuscarDevolucionDePedido(msg.obj);
 				break;
 			case ControllerProtocol.LOAD_PEDIDOS_FROM_LOCALHOST:
-					ObtenerPedidosLocalmente();
-				break;
+					ObtenerPedidosLocalmente( Long.valueOf(msg.getData().get("objSucursalID").toString()));
+				break;			
 			default:
 				break;
 		}
@@ -60,7 +60,7 @@ public class BDevolucionM extends BBaseM{
 		} 
 	}
 	
-	private void ObtenerPedidosLocalmente()
+	private void ObtenerPedidosLocalmente(long objSucursalID)
 	{
 		try 
 		{
@@ -68,7 +68,7 @@ public class BDevolucionM extends BBaseM{
 					ControllerProtocol.ID_REQUEST_OBTENERPEDIDOS,
 					0,
 					0,
-					ModelPedido.obtenerPedidosFacturados()
+					ModelPedido.obtenerPedidosFacturados(new long[]{objSucursalID})
 					);
 		} catch (Exception e) 
 		{ 
