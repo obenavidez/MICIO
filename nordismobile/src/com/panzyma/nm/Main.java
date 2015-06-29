@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Session;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.ThreadPool;
@@ -32,6 +33,7 @@ import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.view.ViewDevolucionEdit;
+import com.panzyma.nm.view.ViewDevoluciones;
 import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.vCliente;
@@ -71,6 +73,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				.getBoolean("dl_visible") : false)
 
 		NMApp.modulo = NMApp.Modulo.HOME;
+		String phone_ID = NMNetWork.getDeviceId(this);
 	}
 
 
@@ -130,7 +133,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 				break;
 			case R.id.hbtndevolucion:
 				NMApp.modulo = NMApp.Modulo.DEVOLUCION;
-				intent = new Intent(this, ViewDevolucionEdit.class);
+//				intent = new Intent(this, ViewDevolucionEdit.class);
+				intent = new Intent(this,ViewDevoluciones.class);
 				startActivity(intent);
 				break;  
 			case R.id.hbtncliente:

@@ -20,6 +20,9 @@ import com.panzyma.nm.serviceproxy.CNota;
 import com.panzyma.nm.serviceproxy.CProducto;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
+import com.panzyma.nm.serviceproxy.Devolucion;
+import com.panzyma.nm.serviceproxy.DevolucionProducto;
+import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.Factura; 
 import com.panzyma.nm.serviceproxy.Pedido;
@@ -78,6 +81,9 @@ public class DatabaseProvider extends ContentProvider
 	public static final Uri CONTENT_URI_CNOTA = Uri.parse(CONTENT_URI+ "/cnota");
 	public static final Uri CONTENT_URI_SOLICITUD_DESCUENTO = Uri.parse(CONTENT_URI+ "/SolicitudDescuento");
 	public static final Uri CONTENT_URI_ENCABEZADO_SOLICITUD = Uri.parse(CONTENT_URI+ "/EncabezadoSolicitud");
+	public static final Uri CONTENT_URI_DEVOLUCION = Uri.parse(CONTENT_URI+ "/devolucion");
+	public static final Uri CONTENT_URI_DEVOLUCIONPRODUCTO = Uri.parse(CONTENT_URI+ "/devolucionproducto");
+	public static final Uri CONTENT_URI_DEVOLUCIONPRODUCTOLOTE = Uri.parse(CONTENT_URI+ "/devolucionproductolote");
 		
 	//Necesario para UriMatcher
 	private static final int CLIENTE = 1;
@@ -144,11 +150,21 @@ public class DatabaseProvider extends ContentProvider
 	private static final int ENCABEZADOSOLICITUD = 52;
 	private static final int ENCABEZADOSOLICITUD_ID = 53;
 	
+	private static final int DEVOLUCION  = 54;
+	private static final int DEVOLUCION_ID  = 55;
+	
+	private static final int DEVOLUCIONPRODUCTO  = 56;
+	private static final int DEVOLUCIONPRODUCTO_ID  = 57;
+	
+	private static final int DEVOLUCIONPRODUCTOLOTE  = 58;
+	private static final int DEVOLUCIONPRODUCTOLOTE_ID  = 59;
+//	
+	
 	//Base de datos
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 12; 
+	private static final int BD_VERSION = 13; 
 	
 	public static final String TABLA_CLIENTE = "Cliente";
 	public static final String TABLA_FACTURA = "Factura";
@@ -177,6 +193,9 @@ public class DatabaseProvider extends ContentProvider
 	public static final String TABLA_CNOTA = "CNota";
 	public static final String TABLA_SOLICITUD_DESCUENTO = "SolicitudDescuento";
 	public static final String TABLA_ENCABEZADO_SOLICITUD = "EncabezadoSolicitud";
+	public static final String TABLA_DEVOLUCIONES = "Devolucion";
+	public static final String TABLA_DEVOLUCIONPRODUCTO = "DevolucionProducto"; 
+	public static final String TABLA_DEVOLUCIONPRODUCTOLOTE = "DevolucionProductoLote"; 
 	
 	
 	static {
@@ -261,6 +280,18 @@ public class DatabaseProvider extends ContentProvider
 		
 		uriMatcher.addURI(AUTHORITY, "EncabezadoSolicitud", ENCABEZADOSOLICITUD);
 		uriMatcher.addURI(AUTHORITY, "EncabezadoSolicitud/#", ENCABEZADOSOLICITUD_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "devolucion", DEVOLUCION);
+		uriMatcher.addURI(AUTHORITY, "devolucion/#", DEVOLUCION_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "devolucionproducto", DEVOLUCIONPRODUCTO);
+		uriMatcher.addURI(AUTHORITY, "devolucionproducto/#", DEVOLUCIONPRODUCTO_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "devolucionproducto", DEVOLUCIONPRODUCTO);
+		uriMatcher.addURI(AUTHORITY, "devolucionproducto/#", DEVOLUCIONPRODUCTO_ID);
+		
+		uriMatcher.addURI(AUTHORITY, "devolucionproductolote", DEVOLUCIONPRODUCTOLOTE);
+		uriMatcher.addURI(AUTHORITY, "devolucionproductolote/#", DEVOLUCIONPRODUCTOLOTE_ID);
 		
 	}
 	
@@ -1188,6 +1219,18 @@ public class DatabaseProvider extends ContentProvider
 			case CNOTA_CPRODUCTOID : 	dictionary.put(CPRODUTO, TABLA_CNOTA);
 									 	dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_CNOTA.toString());
 									 	break;
+			case DEVOLUCION:				
+										dictionary.put(DEVOLUCION, TABLA_DEVOLUCIONES);
+										dictionary.put(DEVOLUCION_ID,CONTENT_URI_DEVOLUCION.toString());
+										break;
+			case DEVOLUCIONPRODUCTO:				
+										dictionary.put(DEVOLUCIONPRODUCTO, TABLA_DEVOLUCIONPRODUCTO);
+										dictionary.put(DEVOLUCIONPRODUCTO_ID,CONTENT_URI_DEVOLUCIONPRODUCTO.toString());
+										break;
+			case DEVOLUCIONPRODUCTOLOTE:				
+										dictionary.put(DEVOLUCIONPRODUCTOLOTE, TABLA_DEVOLUCIONPRODUCTOLOTE);
+										dictionary.put(DEVOLUCIONPRODUCTOLOTE_ID,CONTENT_URI_DEVOLUCIONPRODUCTOLOTE.toString());
+										break;
 		} 
 		Iterator it = dictionary.entrySet().iterator();
 		while (it.hasNext()) 
@@ -1759,5 +1802,136 @@ public class DatabaseProvider extends ContentProvider
 			throw new Exception(e);
 		}
 	}
+	
+	public static void RegistrarDevolucion(Devolucion devolucion,Context cnt)throws Exception
+	{
+		long devolucionid = 0;
+		long devolucionproductoid = 0;
+		SQLiteDatabase sdb = null;
+		try 
+		{
+			sdb = Helper.getDatabase(cnt);
+			ContentValues devolucion_value = new ContentValues();
+			ContentValues productos_devueltos_value = new ContentValues();
+			ContentValues productos_devueltoslote_value = new ContentValues();
+			
+			sdb.beginTransaction(); // transaction
+			
+//			devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
+			devolucion_value.put(NMConfig.Devolucion.referencia, devolucion.getReferencia());
+			devolucion_value.put(NMConfig.Devolucion.numeroCentral, devolucion.getNumeroCentral());
+			devolucion_value.put(NMConfig.Devolucion.fecha, devolucion.getFecha());
+			devolucion_value.put(NMConfig.Devolucion.objPedidoDevueltoID, devolucion.getObjCausaEstadoID());
+			devolucion_value.put(NMConfig.Devolucion.numeroPedidoDevuelto, devolucion.getNumeroPedidoDevuelto());
+			devolucion_value.put(NMConfig.Devolucion.numeroFacturaDevuelta, devolucion.getNumeroFacturaDevuelta());
+	        devolucion_value.put(NMConfig.Devolucion.objClienteID , devolucion.getObjClienteID());
+			devolucion_value.put(NMConfig.Devolucion.objSucursalID , devolucion.getObjSucursalID());
+			devolucion_value.put(NMConfig.Devolucion.nombreCliente , devolucion.getNombreCliente());
+			devolucion_value.put(NMConfig.Devolucion.objMotivoID , devolucion.getObjMotivoID());
+			devolucion_value.put(NMConfig.Devolucion.codMotivo , devolucion.getCodMotivo());
+			devolucion_value.put(NMConfig.Devolucion.descMotivo , devolucion.getDescMotivo());
+			devolucion_value.put(NMConfig.Devolucion.tipoTramite , devolucion.getTipoTramite());
+			devolucion_value.put(NMConfig.Devolucion.deVencido , devolucion.isDeVencido());
+			devolucion_value.put(NMConfig.Devolucion.parcial , devolucion.isParcial());
+			devolucion_value.put(NMConfig.Devolucion.aplicacionInmediata , devolucion.isAplicacionInmediata());
+			devolucion_value.put(NMConfig.Devolucion.nota , devolucion.getNota());
+			devolucion_value.put(NMConfig.Devolucion.observacion , devolucion.getObservacion());
+			devolucion_value.put(NMConfig.Devolucion.subtotal , devolucion.getSubtotal());
+			devolucion_value.put(NMConfig.Devolucion.impuesto , devolucion.getImpuesto());
+			devolucion_value.put(NMConfig.Devolucion.montoPromocion , devolucion.getMontoPromocion());
+			devolucion_value.put(NMConfig.Devolucion.montoPromocionVen , devolucion.getMontoPromocionVen());
+			devolucion_value.put(NMConfig.Devolucion.montoCargoAdm , devolucion.getMontoCargoAdm());
+			devolucion_value.put(NMConfig.Devolucion.montoCargoAdmVen , devolucion.getMontoCargoAdmVen());
+			devolucion_value.put(NMConfig.Devolucion.montoVinieta , devolucion.getMontoVinieta());
+			devolucion_value.put(NMConfig.Devolucion.total , devolucion.getTotal());
+			devolucion_value.put(NMConfig.Devolucion.totalVen , devolucion.getTotalVen());
+			devolucion_value.put(NMConfig.Devolucion.objEstadoID , devolucion.getObjEstadoID());
+			devolucion_value.put(NMConfig.Devolucion.descEstado , devolucion.getDescEstado());
+			devolucion_value.put(NMConfig.Devolucion.codEstado , devolucion.getCodEstado());
+			devolucion_value.put(NMConfig.Devolucion.objCausaEstadoID , devolucion.getObjCausaEstadoID());
+			devolucion_value.put(NMConfig.Devolucion.descCausaEstado , devolucion.getDescCausaEstado());
+			devolucion_value.put(NMConfig.Devolucion.especial , devolucion.isEspecial());
+			devolucion_value.put(NMConfig.Devolucion.montoCargoVendedor , devolucion.getMontoCargoVendedor());
+			devolucion_value.put(NMConfig.Devolucion.montoBonif , devolucion.getMontoBonif());
+			devolucion_value.put(NMConfig.Devolucion.montoBonifVen , devolucion.getMontoBonifVen());
+			devolucion_value.put(NMConfig.Devolucion.impuestoVen , devolucion.getImpuestoVen());
+			devolucion_value.put(NMConfig.Devolucion.claveAutorizaAplicacionInmediata , devolucion.getClaveAutorizaAplicacionInmediata());
+			devolucion_value.put(NMConfig.Devolucion.fechaEnviada , devolucion.getFechaEnviada());
+			devolucion_value.put(NMConfig.Devolucion.pedidoTienePromociones , devolucion.isPedidoTienePromociones());
+			devolucion_value.put(NMConfig.Devolucion.pedidoYaDevuelto , devolucion.isPedidoYaDevuelto());
+			devolucion_value.put(NMConfig.Devolucion.referenciaNC , devolucion.getReferenciaNC());
+			devolucion_value.put(NMConfig.Devolucion.preRegistro , devolucion.isPreRegistro());
+			devolucion_value.put(NMConfig.Devolucion.offLine , devolucion.isOffLine());
+			devolucion_value.put(NMConfig.Devolucion.fechaFacturacion , devolucion.getFechaFacturacion());
+			
+			devolucionid = sdb.insert(TABLA_DEVOLUCIONES, null, devolucion_value); // Nueva Devolucion.	
+			devolucion.setId(devolucionid);
+			
+			DevolucionProducto[] productos_devueltos  =  devolucion.getProductosDevueltos();
+			
+			for(DevolucionProducto dp:productos_devueltos)
+			{
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.id , dp.getId());
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.devolucionID , devolucionid); 
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.objProductoID , dp.getObjProductoID() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.nombreProducto , dp.getNombreProducto() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.cantidadDevolver , dp.getCantidadDevolver() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.bonificacion , dp.getBonificacion() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.bonificacionVen , dp.getBonificacionVen() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.precio , dp.getPrecio() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.subtotal , dp.getSubtotal() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.porcImpuesto , dp.getPorcImpuesto() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.impuesto , dp.getImpuesto() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.total , dp.getTotal() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.totalVen , dp.getTotalVen() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.montoBonif , dp.getMontoBonif() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.montoBonifVen , dp.getMontoBonifVen() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.impuestoVen , dp.getImpuestoVen() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.cantidadOrdenada , dp.getCantidadOrdenada() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.cantidadBonificada , dp.getCantidadBonificada() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.cantidadPromocionada , dp.getCantidadPromocionada() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.descuento , dp.getDescuento() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.totalProducto , dp.getTotalProducto() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.gravable , dp.isGravable() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.deleted , dp.isDeleted() );
+				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.objProveedorID , dp.getObjProveedorID() );
+				 devolucionproductoid=sdb.insert(TABLA_DEVOLUCIONPRODUCTO, null, productos_devueltos_value); // Nueva Devolucion.	
+				 
+				 DevolucionProductoLote[] lote= dp.getProductoLotes();
+				 
+				 for(DevolucionProductoLote dpl:lote) {
+
+					 productos_devueltoslote_value = new ContentValues();
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.id , dpl.getId());
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.DevolucionProductoID ,devolucionproductoid );
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.objLoteID , dpl.getObjLoteID());
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.numeroLote , dpl.getNumeroLote());
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.fechaVencimiento , dpl.getFechaVencimiento());
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.cantidadDevuelta , dpl.getCantidadDevuelta());
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.fueraPolitica , dpl.isFueraPolitica());
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.cantidadDespachada , dpl.getCantidadDespachada());
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.deleted , dpl.isDeleted());
+					 sdb.insert(TABLA_DEVOLUCIONPRODUCTOLOTE, null, productos_devueltoslote_value); // Nueva Devolucion.	
+					 
+				 }
+			}
+
+			sdb.setTransactionSuccessful(); // fin transaccion
+			
+		}
+		catch (Exception e) 
+		{
+			throw new Exception(e);
+		}
+		finally
+		{
+			sdb.endTransaction();
+			sdb.close();
+		}
+		
+	}
+	
+	
+	
 	
 }
