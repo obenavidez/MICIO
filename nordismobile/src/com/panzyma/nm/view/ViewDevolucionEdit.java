@@ -432,12 +432,13 @@ Handler.Callback, Editable
 			ft.remove(prev);
 		}
 		ft.addToBackStack(null);
-		DevolverDocumento newFragment =DevolverDocumento.newInstance(this,cliente.getIdSucursal()); 
+		DevolverDocumento newFragment =DevolverDocumento.newInstance(this,cliente.getIdSucursal(), devolucion); 
 		newFragment.setOnDialogClickListener(new DevolverDocumento.DialogListener() 
 		{
 			@Override
 			public void onDialogPositiveClick(Devolucion dev, long nopedido,
 					Pedido _pedido) { 
+				
 				
 			}
 		});
