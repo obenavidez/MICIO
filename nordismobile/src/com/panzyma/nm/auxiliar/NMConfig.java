@@ -488,6 +488,99 @@ public class NMConfig
 		}
 	}
 	
-	
+	public static final class Devolucion
+	{
+		public static final java.lang.String id = "id" ;
+		public static final java.lang.String referencia = "referencia" ;
+		public static final java.lang.String numeroCentral = "numeroCentral" ;
+		public static final java.lang.String fecha = "fecha" ;
+		public static final java.lang.String objPedidoDevueltoID = "objPedidoDevueltoID" ;
+		public static final java.lang.String numeroPedidoDevuelto = "numeroPedidoDevuelto" ;
+		public static final java.lang.String numeroFacturaDevuelta = "numeroFacturaDevuelta" ;
+		public static final java.lang.String objVendedorID = "objVendedorID" ;
+		public static final java.lang.String objClienteID = "objClienteID" ;
+		public static final java.lang.String objSucursalID = "objSucursalID" ;
+		public static final java.lang.String nombreCliente = "nombreCliente" ;
+		public static final java.lang.String objMotivoID = "objMotivoID" ;
+		public static final java.lang.String codMotivo = "codMotivo" ;
+		public static final java.lang.String descMotivo = "descMotivo" ;
+		public static final java.lang.String tipoTramite = "tipoTramite" ;
+		public static final java.lang.String deVencido = "deVencido" ;
+		public static final java.lang.String parcial = "parcial" ;
+		public static final java.lang.String aplicacionInmediata = "aplicacionInmediata" ;
+		public static final java.lang.String nota = "nota" ;
+		public static final java.lang.String observacion = "observacion" ;
+		public static final java.lang.String subtotal = "subtotal" ;
+		public static final java.lang.String impuesto = "impuesto" ;
+		public static final java.lang.String montoPromocion = "montoPromocion" ;
+		public static final java.lang.String montoPromocionVen = "montoPromocionVen" ;
+		public static final java.lang.String montoCargoAdm = "montoCargoAdm" ;
+		public static final java.lang.String montoCargoAdmVen = "montoCargoAdmVen" ;
+		public static final java.lang.String montoVinieta = "montoVinieta" ;
+		public static final java.lang.String total = "total" ;
+		public static final java.lang.String totalVen = "totalVen" ;
+		public static final java.lang.String objEstadoID = "objEstadoID" ;
+		public static final java.lang.String descEstado = "descEstado" ;
+		public static final java.lang.String codEstado = "codEstado" ;
+		public static final java.lang.String objCausaEstadoID = "objCausaEstadoID" ;
+		public static final java.lang.String descCausaEstado = "descCausaEstado" ;
+		public static final java.lang.String especial = "especial" ;
+		public static final java.lang.String montoCargoVendedor = "montoCargoVendedor" ;
+		public static final java.lang.String montoBonif = "montoBonif" ;
+		public static final java.lang.String montoBonifVen = "montoBonifVen" ;
+		public static final java.lang.String impuestoVen = "impuestoVen" ;
+		public static final java.lang.String claveAutorizaAplicacionInmediata = "claveAutorizaAplicacionInmediata" ;
+		public static final java.lang.String fechaEnviada = "fechaEnviada" ;
+		public static final java.lang.String pedidoTienePromociones = "pedidoTienePromociones" ;
+		public static final java.lang.String pedidoYaDevuelto = "pedidoYaDevuelto" ;
+		public static final java.lang.String referenciaNC = "referenciaNC" ;
+		public static final java.lang.String preRegistro = "preRegistro" ;
+		public static final java.lang.String offLine = "offLine" ;
+		public static final java.lang.String fechaFacturacion = "fechaFacturacion" ;
+		
+		public static final class DevolucionProducto
+		{
+			 public static final java.lang.String id ="id " ;
+			 public static final java.lang.String devolucionID ="devolucionID" ;
+			 public static final java.lang.String objProductoID ="objProductoID" ;
+			 public static final java.lang.String nombreProducto ="nombreProducto" ;
+			 public static final java.lang.String cantidadDevolver ="cantidadDevolver " ;
+			 public static final java.lang.String bonificacion ="bonificacion " ;
+			 public static final java.lang.String bonificacionVen ="bonificacionVen " ;
+			 public static final java.lang.String precio ="precio" ;
+			 public static final java.lang.String subtotal ="subtotal" ;
+			 public static final java.lang.String porcImpuesto ="porcImpuesto" ;
+			 public static final java.lang.String impuesto ="impuesto" ;
+			 public static final java.lang.String total ="total" ;
+			 public static final java.lang.String totalVen ="totalVen" ;
+			 public static final java.lang.String montoBonif ="montoBonif" ;
+			 public static final java.lang.String montoBonifVen ="montoBonifVen" ;
+			 public static final java.lang.String impuestoVen ="impuestoVen" ;
+			 public static final java.lang.String cantidadOrdenada ="cantidadOrdenada" ;
+			 public static final java.lang.String cantidadBonificada ="cantidadBonificada" ;
+			 public static final java.lang.String cantidadPromocionada ="cantidadPromocionada" ;
+			 public static final java.lang.String descuento ="descuento" ;
+			 public static final java.lang.String totalProducto ="totalProducto" ;
+			 public static final java.lang.String gravable ="gravable" ;
+			 public static final java.lang.String deleted ="deleted" ;
+			 public static final java.lang.String objProveedorID ="objProveedorID" ;
+			 
+			 public static final class DevolucionProductoLote
+			 {
+			     public static final java.lang.String id ="id" ;
+			     public static final java.lang.String DevolucionProductoID ="DevolucionProductoID" ;
+				 public static final java.lang.String objLoteID ="objLoteID" ;
+				 public static final java.lang.String numeroLote ="numeroLote" ;
+				 public static final java.lang.String fechaVencimiento ="fechaVencimiento" ;
+				 public static final java.lang.String cantidadDevuelta ="cantidadDevuelta" ;
+				 public static final java.lang.String fueraPolitica ="fueraPolitica" ;
+				 public static final java.lang.String cantidadDespachada ="cantidadDespachada" ;
+				 public static final java.lang.String deleted ="deleted" ;
+				 
+			 }
+			
+		}
+		
+	}
 	
 }
