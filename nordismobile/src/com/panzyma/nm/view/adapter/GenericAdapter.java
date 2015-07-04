@@ -125,10 +125,7 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 				convertview=this.inflater.inflate(layoutid,null);
 				viewHolder=viewclass.newInstance(); 
 				invokeView(convertview,viewHolder);
-				convertview.setTag(viewHolder);
-				//if(viewHolder.getClass().getSimpleName()==ProductoViewHolder.class.getSimpleName())
-				//viewHolder.getClass().getMethod("setListItemEventHandler",Object.class).invoke(viewHolder,items.get(position));
-				
+				convertview.setTag(viewHolder);				
 			}
 			else
 				viewHolder=(V)convertview.getTag();

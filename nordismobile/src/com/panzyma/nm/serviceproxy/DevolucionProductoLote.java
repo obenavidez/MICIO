@@ -2,6 +2,9 @@ package com.panzyma.nm.serviceproxy;
 
 public class DevolucionProductoLote
 {
+	
+	public DevolucionProductoLote(){}
+	
 	/**
 	 * @return the id
 	 */

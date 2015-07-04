@@ -12,6 +12,7 @@ import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.model.ModelSolicitudDescuento;
+import com.panzyma.nm.serviceproxy.Devolucion;
 
 import android.os.Message;
 import android.util.Log;
@@ -97,12 +98,23 @@ public class BDevolucionM extends BBaseM{
 			return;
 		try 
 		{
-			ModelDevolucion.BuscarDevolucionDePedido(credenciales, idsucursal, nopedido, nofactura);
+			Processor.notifyToView(getController(),
+					ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO,
+					0,
+					0,
+					ModelDevolucion.BuscarDevolucionDePedido(credenciales, idsucursal, nopedido, nofactura)
+					);
+			  
 			
 		} catch (Exception e) 
 		{ 
-			e.printStackTrace();
-		}
+			Log.e(TAG, "Error interno trayendo datos desde el servidor", e);
+			try {
+				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno trayendo datos desde el servidor",""+((e!=null && e.toString()!=null)?e.toString():""),"\n Causa: "+""+((e!=null && e.getCause()!=null)?e.getCause():"")));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}
+		} 
 		  
     }
 }

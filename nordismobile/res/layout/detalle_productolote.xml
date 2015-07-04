@@ -1,40 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
     android:layout_alignParentTop="true" >
 
+    <TableRow
+        android:id="@+id/tableRowheader"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"        
+        android:layout_gravity="center"
+        android:background="@drawable/bgdialog2"  >
+
+        <TextView
+            android:id="@+id/dpl_producto"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="5"
+            android:text="Producto :"
+            android:textColor="@color/White"
+            android:textSize="10dp" />
+        <TextView
+            android:id="@+id/dpl_tboxproducto"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"            
+            android:layout_weight="95" 
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
+    
+    <View android:layout_width="fill_parent"
+          android:layout_height="1dp"
+          android:background="@color/Black"
+        />
+    
     <TableRow
         android:id="@+id/tableRow1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/cxclbl_sucursal"
+            android:id="@+id/dpllbl_cantord"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
             android:layout_weight="1"
-            android:text="Sucursal :"
+            android:text="Cant.Ord:"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctextv_detalle_sucursal"
+            android:id="@+id/dpltextv_cantord"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/White"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxclbl_nofactura"
+            android:id="@+id/dpllbl_cantbonif"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="No Factura :"
+            android:text="Cant.Bonif :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctextv_detalle_nofactura"
+            android:id="@+id/dpltextv_cantbonif"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/Black"
@@ -47,16 +77,16 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/cxclbl_tipo"
+            android:id="@+id/dpllbl_cantprom"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
             android:layout_weight="1"
-            android:text="Tipo :"
+            android:text="Cant.Prom :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctextv_detalle_tipo"
+            android:id="@+id/dpltextv_cantprom"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -67,15 +97,15 @@
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxclbl_fecha"
+            android:id="@+id/dpllbl_descuento"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Fecha :"
+            android:text="Descuento :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctextv_detalle_fecha"
+            android:id="@+id/dpltextv_descuento"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -92,18 +122,18 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/cxclbl_nopedido"
+            android:id="@+id/dpllbl_totalprod"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="No.Pedido :"
+            android:layout_weight="10"
+            android:text="Total Prod :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctextv_detalle_nopedido"
+            android:id="@+id/dpltextv_totalprod"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="90"
             android:ellipsize="marquee"
             android:lines="1"
             android:marqueeRepeatLimit="marquee_forever"
@@ -111,40 +141,30 @@
             android:textColor="@color/Black"
             android:textSize="10dp" />
 
-        <TextView
-            android:id="@+id/cxclbl_estado"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentTop="false"
-            android:layout_weight="1"
-            android:text="Estado :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctextv_detalle_estado"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
+   
     </TableRow>
-
+	<View android:layout_width="fill_parent"
+          android:layout_height="1dp"
+          android:background="@color/Black"
+          android:layout_marginLeft="10dp"
+          android:layout_marginRight="10dp"
+        />
     <TableRow
         android:id="@+id/tableRow4"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/cxclbl_dias"
+            android:id="@+id/dpllbl_cantdev"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
             android:layout_weight="1"
-            android:text="Dias :"
+            android:text="Cant.Devolver :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctext_detalle_dias"
+            android:id="@+id/dpltext_cantdev"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -155,15 +175,15 @@
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxclbl_descontado"
+            android:id="@+id/dpllbl_bonifdev"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Descontado :"
+            android:text="Bonif.Devolver :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctext_detalle_descontado"
+            android:id="@+id/dpltext_bonifdev"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -180,16 +200,16 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/cxclbl_fechavence"
+            android:id="@+id/dpllbl_precioprod"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
             android:layout_weight="1"
-            android:text="Fecha Vence :"
+            android:text="Precio Unitario :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctextv_detalle_fechavence"
+            android:id="@+id/dpltextv_preciounitario"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -200,15 +220,15 @@
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxclbl_fechadescpp"
+            android:id="@+id/dpllbl_subtotal"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Fecha DescPP :"
+            android:text="SubTotal :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctextv_detallefechadescpp"
+            android:id="@+id/dpltextv_subtotal"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/Black"
@@ -221,31 +241,31 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/cxclbl_totalfact"
+            android:id="@+id/dpllbl_montobonif"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
             android:layout_weight="1"
-            android:text="Total Factura :"
+            android:text="Monto Bonif :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctext_detalle_totalfact"
+            android:id="@+id/dpltext_montobonif"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/Black"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxclbl_abonado"
+            android:id="@+id/dpllbl_impuesto"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Abonado :"
+            android:text="Impuesto :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctext_detalle_abonado"
+            android:id="@+id/dpltext_impuesto"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="marquee"
@@ -260,83 +280,29 @@
         android:id="@+id/tableRow7"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
-
+        
         <TextView
-            android:id="@+id/cxclbl_retenido"
+            android:id="@+id/dpllbl_totaldev"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Retenido :"
+            android:layout_weight="10"
+            android:text="Total :"
             android:textColor="@color/Teal"
             android:textSize="10dp" />
 
         <TextView
-            android:id="@+id/cxctext_detalle_retenido"
+            android:id="@+id/dpltext_totaldev"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="90"
             android:textColor="@color/Black"
             android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxclbl_otro"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Otro :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctext_detalle_otro"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
+        
     </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow8"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/cxclbl_saldo"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Saldo :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxctext_detalle_saldo"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxclbl_empty1"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text=""
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/cxclbl_empty2"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text=""
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-    </TableRow>
+    <View android:layout_width="fill_parent"
+          android:layout_height="3dp"
+          android:background="@color/Black"
+          android:layout_marginLeft="10dp"
+          android:layout_marginRight="10dp"
+        />
 
 </TableLayout>

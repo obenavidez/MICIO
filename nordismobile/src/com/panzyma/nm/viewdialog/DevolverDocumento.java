@@ -10,6 +10,7 @@ import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.Pedido; 
 import com.panzyma.nm.view.adapter.CustomAdapter;
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nordismobile.R; 
 
 import android.app.AlertDialog;
@@ -30,7 +31,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
-
+@InvokeBridge(bridgeName = "BDevolucionM")
 public class DevolverDocumento extends DialogFragment implements Handler.Callback
 {	
 	private static final String TAG = DevolverDocumento.class.getSimpleName();
@@ -151,6 +152,10 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 				adapter_pedidos = new CustomAdapter(this.getActivity(),
 						R.layout.spinner_rows, setListData(pedidos=(ArrayList<Pedido>) msg.obj));
 				cboxreciborec.setAdapter(adapter_pedidos);  
+				break;
+			case ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO:
+				Devolucion dev=(msg.obj instanceof Devolucion)?(Devolucion)msg.obj:new Devolucion();
+				
 				break;
 		}
 		return false;

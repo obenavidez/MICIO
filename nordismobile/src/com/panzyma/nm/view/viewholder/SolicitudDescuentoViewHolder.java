@@ -1,14 +1,11 @@
 package com.panzyma.nm.view.viewholder;
-
-import android.view.View;
+ 
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.panzyma.nm.auxiliar.DateUtil; 
+ 
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 import com.panzyma.nm.view.adapter.InvokeView;
-import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
-import com.panzyma.nm.viewdialog.DialogoConfirmacion;
+import com.panzyma.nm.viewdialog.DialogSolicitudDescuento; 
 import com.panzyma.nordismobile.R;
 
 public class SolicitudDescuentoViewHolder {

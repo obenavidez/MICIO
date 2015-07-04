@@ -1,6 +1,9 @@
 package com.panzyma.nm.serviceproxy;
 
 public class Devolucion {
+	
+	public Devolucion(){}
+	
 	/**
 	 * @return the id
 	 */
@@ -578,8 +581,7 @@ public class Devolucion {
 	public void setFechaFacturacion(long fechaFacturacion) {
 		this.FechaFacturacion = fechaFacturacion;
 	}
-	
-	public Devolucion(){;;}	
+	 
 	/**
 	 * @param id
 	 * @param referencia

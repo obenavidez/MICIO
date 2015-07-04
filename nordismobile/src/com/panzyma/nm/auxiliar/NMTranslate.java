@@ -4,11 +4,10 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field; 
 import java.lang.reflect.Type; 
 import java.util.ArrayList;
-
 import org.json.JSONObject;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
-
+import android.annotation.SuppressLint;
 import com.google.gson.Gson;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 
@@ -34,6 +33,7 @@ public class NMTranslate
 		//return (ArrayList<U>) unknowclass.getClass().getMethod("ParseArrayJSON_To_Entity",JSONArray.class).invoke(unknowclass,json);	
 	}
 	
+	@SuppressLint("DefaultLocale") 
 	public synchronized static <U, T> U ToObject(Object obj,U unknowclass) throws Exception 
 	{	    	 
     	Field[] fields; 
@@ -52,10 +52,14 @@ public class NMTranslate
 					       continue; 
 				        fields[i].setAccessible(true); 
 				        Object value=null;
-				       
-				        boolean exists=objsoap.hasProperty(fields[i].getName()); 
+				        String fieldname=((fields[i].getName().charAt(0)+"").toUpperCase())+""+(fields[i].getName().substring(1, fields[i].getName().length()));
+//				        boolean exists=objsoap.hasProperty(fields[i].getName()); 
+//				        if(exists)
+//					        value=objsoap.getProperty(fields[i].getName()); 
+				        
+				        boolean exists=objsoap.hasProperty(fieldname); 
 				        if(exists)
-					        value=objsoap.getProperty(fields[i].getName()); 
+					        value=objsoap.getProperty(fieldname); 
 				        
 					    if(value!=null)
 					    {
@@ -80,8 +84,8 @@ public class NMTranslate
 								    			fields[i].set(unknowclass,objrs);
 								    		}
 								    		else
-								    		{
-										    	ArrayList<?> o=ToCollection(soap,c);
+								    		{ 
+								    			ArrayList<?> o=ToCollection(soap,c);
 										        objrs =(T[]) Array.newInstance(c, o.size());  
 										    	objrs=o.toArray(objrs); 
 										    	fields[i].set(unknowclass,objrs); 	
@@ -117,7 +121,7 @@ public class NMTranslate
 	    	field.set(unknowclass,(Long.valueOf(value.toString())));
 	}
 	
-	public synchronized static <U, T> ArrayList<T> ToCollection(Object object,Class<T> unKnowClass) throws Exception 
+	@SuppressLint("DefaultLocale") public synchronized static <U, T> ArrayList<T> ToCollection(Object object,Class<T> unKnowClass) throws Exception 
 	{ 
     	Field[] fields;
     	SoapObject obj=(SoapObject) object;
@@ -141,9 +145,10 @@ public class NMTranslate
 		        
                 fields[i].setAccessible(true); 
 		        Object value=null;
-		        boolean exists=obj2.hasProperty(fields[i].getName()); 
+		        String fieldname=((fields[i].getName().charAt(0)+"").toUpperCase())+""+(fields[i].getName().substring(1, fields[i].getName().length()));
+		        boolean exists=obj2.hasProperty(fieldname); 
 		        if(exists)
-			        value= obj2.getProperty(fields[i].getName()); 
+			        value= obj2.getProperty(fieldname); 
 			     
                 if(value!=null)
                 {

@@ -36,9 +36,9 @@ public class DevolucionProducto
 			int cantidadBonificada, int cantidadPromocionada, long descuento,
 			int totalProducto, boolean gravable, boolean deleted,
 			long objProveedorID, DevolucionProductoLote[] productoLotes) {
-		this.id = id;
-		this.objProductoID = objProductoID;
-		this.nombreProducto = nombreProducto;
+		this.Id = id;
+		this.OjProductoID = objProductoID;
+		this.NombreProducto = nombreProducto;
 		this.cantidadDevolver = cantidadDevolver;
 		this.bonificacion = bonificacion;
 		this.bonificacionVen = bonificacionVen;
@@ -65,37 +65,37 @@ public class DevolucionProducto
 	 * @return the id
 	 */
 	public long getId() {
-		return id;
+		return Id;
 	}
 	/**
 	 * @param id the id to set
 	 */
 	public void setId(long id) {
-		this.id = id;
+		this.Id = id;
 	}
 	/**
 	 * @return the objProductoID
 	 */
 	public long getObjProductoID() {
-		return objProductoID;
+		return OjProductoID;
 	}
 	/**
 	 * @param objProductoID the objProductoID to set
 	 */
 	public void setObjProductoID(long objProductoID) {
-		this.objProductoID = objProductoID;
+		this.OjProductoID = objProductoID;
 	}
 	/**
 	 * @return the nombreProducto
 	 */
 	public String getNombreProducto() {
-		return nombreProducto;
+		return NombreProducto;
 	}
 	/**
 	 * @param nombreProducto the nombreProducto to set
 	 */
 	public void setNombreProducto(String nombreProducto) {
-		this.nombreProducto = nombreProducto;
+		this.NombreProducto = nombreProducto;
 	}
 	/**
 	 * @return the cantidadDevolver
@@ -349,9 +349,9 @@ public class DevolucionProducto
 	public void setProductoLotes(DevolucionProductoLote[] productoLotes) {
 		this.productoLotes = productoLotes;
 	}
-	private long id;
-	private long objProductoID;
-	private String nombreProducto;
+	private long Id;
+	private long OjProductoID;
+	private String NombreProducto;
 	private int cantidadDevolver;
 	private int bonificacion;
 	private int bonificacionVen;
@@ -373,4 +373,6 @@ public class DevolucionProducto
 	private boolean deleted;
 	private long objProveedorID;
 	private DevolucionProductoLote[] productoLotes;
+	
+	public DevolucionProducto(){}
 }
