@@ -334,6 +334,57 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
             + " FOREIGN KEY(objFacturaID) REFERENCES Factura(Id) "            
  		    + ");";
     
+    String sqlDevolucion = "CREATE TABLE IF NOT EXISTS Devolucion ("
+    		+ " id Integer PRIMARY KEY  NOT NULL  UNIQUE  , "
+    		+ " referencia   Integer , "
+    		+ " numeroCentral   Integer , "
+    		+ " fecha   Integer , "
+    		+ " objPedidoDevueltoID   Integer , "
+    		+ " numeroPedidoDevuelto   Integer , "
+    		+ " numeroFacturaDevuelta   Integer , "
+    		+ " objVendedorID   Integer , "
+    		+ " objClienteID   Integer , "
+    		+ " objSucursalID   Integer , "
+    		+ " nombreCliente  TEXT, " 
+    		+ " objMotivoID   Integer , "
+    		+ " codMotivo  TEXT, " 
+    		+ " descMotivo  TEXT, " 
+    		+ " tipoTramite  TEXT, " 
+    		+ " deVencido   Integer , "
+    		+ " parcial   Integer , "
+    		+ " aplicacionInmediata   Integer , "
+    		+ " nota  TEXT, " 
+    		+ " observacion  TEXT, " 
+    		+ " subtotal   Integer , "
+    		+ " impuesto   Integer , "
+    		+ " montoPromocion   Integer , "
+    		+ " montoPromocionVen   Integer , "
+    		+ " montoCargoAdm   Integer , "
+    		+ " montoCargoAdmVen   Integer , "
+    		+ " montoVinieta   Integer , "
+    		+ " total   Integer , "
+    		+ " totalVen   Integer , "
+    		+ " objEstadoID   Integer , "
+    		+ " descEstado  TEXT, " 
+    		+ " codEstado  TEXT, " 
+    		+ " objCausaEstadoID   Integer , "
+    		+ " descCausaEstado  TEXT, " 
+    		+ " especial   Integer , "
+    		+ " montoCargoVendedor   Integer , "
+    		+ " montoBonif   Integer , "
+    		+ " montoBonifVen   Integer , "
+    		+ " impuestoVen   Integer , "
+    		+ " claveAutorizaAplicacionInmediata  TEXT, " 
+    		+ " fechaEnviada   Integer , "
+    		+ " pedidoTienePromociones   Integer , "
+    		+ " pedidoYaDevuelto   Integer , "
+    		+ " referenciaNC   Integer , "
+    		+ " preRegistro   Integer , "
+    		+ " offLine   Integer , "
+    		+ " fechaFacturacion  Integer , "
+    	    + ");" ;
+    
+    
     String sqlDrop_Cliente=			  "DROP TABLE IF EXISTS Cliente";
     String sqlDrop_Factura=			  "DROP TABLE IF EXISTS Factura";
     String sqlDrop_PromocionCobro=	  "DROP TABLE IF EXISTS PromocionCobro";
@@ -363,6 +414,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDrop_PedidoPromocionDetalle = "DROP TABLE IF EXISTS PedidoPromocionDetalle";
     String sqlDrop_CProducto = "DROP TABLE IF EXISTS CProducto";
     String sqlDrop_CNota = "DROP TABLE IF EXISTS CNotas";
+    String sqlDrop_Devolucion = "DROP TABLE IF EXISTS Devolucion";
 	
     String sqlDeleteDesProv=  		"DELETE FROM DescuentoProveedor";
     String sqlDeleteND=       		"DELETE FROM CCNotaDebito";
@@ -459,6 +511,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlCNota);
 			db.execSQL(sqlEncabezadoSolicitud);
 			db.execSQL(sqlSolicitudDescuento);
+			db.execSQL(sqlDevolucion);
         } 
     	catch (SQLException e) 
         {
@@ -502,6 +555,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlDrop_CNota);
 			db.execSQL(sqlDrop_EncabezadoSolicitud);
 			db.execSQL(sqlDrop_SolicitudDescuento);
+			db.execSQL(sqlDrop_Devolucion);
         } 
     	catch (SQLException e) 
         {
