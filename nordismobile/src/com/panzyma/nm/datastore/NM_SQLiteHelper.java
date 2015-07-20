@@ -357,23 +357,23 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     		+ " observacion  TEXT, " 
     		+ " subtotal   Integer , "
     		+ " impuesto   Integer , "
-    		+ " montoPromocion   Integer , "
-    		+ " montoPromocionVen   Integer , "
-    		+ " montoCargoAdm   Integer , "
-    		+ " montoCargoAdmVen   Integer , "
-    		+ " montoVinieta   Integer , "
-    		+ " total   Integer , "
-    		+ " totalVen   Integer , "
+    		+ " montoPromocion   FLOAT , "
+    		+ " montoPromocionVen   FLOAT , "
+    		+ " montoCargoAdm   FLOAT , "
+    		+ " montoCargoAdmVen   FLOAT , "
+    		+ " montoVinieta   FLOAT , "
+    		+ " total   FLOAT , "
+    		+ " totalVen   FLOAT , "
     		+ " objEstadoID   Integer , "
     		+ " descEstado  TEXT, " 
     		+ " codEstado  TEXT, " 
     		+ " objCausaEstadoID   Integer , "
     		+ " descCausaEstado  TEXT, " 
     		+ " especial   Integer , "
-    		+ " montoCargoVendedor   Integer , "
-    		+ " montoBonif   Integer , "
-    		+ " montoBonifVen   Integer , "
-    		+ " impuestoVen   Integer , "
+    		+ " montoCargoVendedor   FLOAT , "
+    		+ " montoBonif   FLOAT , "
+    		+ " montoBonifVen   FLOAT , "
+    		+ " impuestoVen   FLOAT , "
     		+ " claveAutorizaAplicacionInmediata  TEXT, " 
     		+ " fechaEnviada   Integer , "
     		+ " pedidoTienePromociones   Integer , "
@@ -383,6 +383,46 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     		+ " offLine   Integer , "
     		+ " fechaFacturacion  Integer , "
     	    + ");" ;
+    
+    String sqlDevolucionProducto = "CREATE TABLE IF NOT EXISTS DevolucionProducto ("
+    		+ "id Integer PRIMARY KEY  NOT NULL  UNIQUE, "
+			+ "devolucionID  Integer, "
+			+ "objProductoID Integer, "
+			+ "nombreProducto  TEXT, "
+			+ "cantidadDevolver  Integer, "
+			+ "bonificacion  Integer, "
+			+ "bonificacionVen  Integer, "
+			+ "precio  FLOAT , "
+			+ "subtotal  FLOAT , "
+			+ "porcImpuesto  FLOAT , "
+			+ "impuesto  FLOAT , "
+			+ "total  FLOAT , "
+			+ "totalVen  FLOAT , "
+			+ "montoBonif  FLOAT , "
+			+ "montoBonifVen  FLOAT , "
+			+ "impuestoVen  FLOAT , "
+			+ "cantidadOrdenada  Integer, "
+			+ "cantidadBonificada  Integer, "
+			+ "cantidadPromocionada  Integer, "
+			+ "descuento  FLOAT , "
+			+ "totalProducto  Integer, "
+			+ "gravable  Integer, "
+			+ "deleted  Integer, "
+			+ "objProveedorID Integer "
+			+ ");";
+    
+    
+    String sqlDevolucionProductoLote =  "CREATE TABLE IF NOT EXISTS DevolucionProductoLote ("
+				    + " id Integer PRIMARY KEY  NOT NULL  UNIQUE , "
+				    + " devolucionproductoID Integer,"
+				    + " objLoteID  Integer, "
+				    + " numeroLote  Text, "
+				    + " fechaVencimiento Integer , "
+				    + " cantidadDevuelta Integer , "
+				    + " fueraPolitica Integer , "
+				    + " cantidadDespachada Integer , "
+				    + " deleted Integer"
+				    + ");";
     
     
     String sqlDrop_Cliente=			  "DROP TABLE IF EXISTS Cliente";
@@ -415,6 +455,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDrop_CProducto = "DROP TABLE IF EXISTS CProducto";
     String sqlDrop_CNota = "DROP TABLE IF EXISTS CNotas";
     String sqlDrop_Devolucion = "DROP TABLE IF EXISTS Devolucion";
+    String sqlDrop_DevolucionProducto= "DROP TABLE IF EXISTS DevolucionProducto";
+    String sqlDrop_DevolucionProductoLote = "DROP TABLE IF EXISTS DevolucionProductoLote";
 	
     String sqlDeleteDesProv=  		"DELETE FROM DescuentoProveedor";
     String sqlDeleteND=       		"DELETE FROM CCNotaDebito";
@@ -445,7 +487,9 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDelete_CNota = "DELETE FROM  CNota";
     String sqlDelete_SolicitudDescuento = "DELETE FROM SolicitudDescuento";
     String sqlDelete_EncabezadoSolicitud = "DELETE FROM EncabezadoSolicitud";
-
+    String sqlDelete_Devolucion = "DELETE FROM Devolucion";
+    String sqlDelete_DevolucionProducto= "DELETE FROM DevolucionProducto";
+    String sqlDelete_DevolucionProductoLote = "DELETE FROM DevolucionProductoLote";
     
     public NM_SQLiteHelper(Context contexto, String nombre, CursorFactory factory, int version) 
     { 
@@ -512,6 +556,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlEncabezadoSolicitud);
 			db.execSQL(sqlSolicitudDescuento);
 			db.execSQL(sqlDevolucion);
+			db.execSQL(sqlDevolucionProducto);
+			db.execSQL(sqlDevolucionProductoLote);
         } 
     	catch (SQLException e) 
         {
@@ -556,6 +602,8 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			db.execSQL(sqlDrop_EncabezadoSolicitud);
 			db.execSQL(sqlDrop_SolicitudDescuento);
 			db.execSQL(sqlDrop_Devolucion);
+			db.execSQL(sqlDrop_DevolucionProducto);
+			db.execSQL(sqlDrop_DevolucionProductoLote);
         } 
     	catch (SQLException e) 
         {
