@@ -5,6 +5,18 @@ public class DevolucionProductoLote
 	
 	public DevolucionProductoLote(){}
 	
+	public DevolucionProductoLote(DevolucionProductoLote lote)
+	{		
+		this.id = lote.getId();
+		this.objLoteID = lote.getObjLoteID();
+		this.numeroLote = lote.getNumeroLote();
+		this.fechaVencimiento = lote.getFechaVencimiento();
+		this.cantidadDevuelta = lote.getCantidadDevuelta();
+		this.fueraPolitica = lote.isFueraPolitica();
+		this.cantidadDespachada =lote.getCantidadDespachada();
+		this.deleted = lote.isDeleted();
+	}
+	
 	/**
 	 * @return the id
 	 */

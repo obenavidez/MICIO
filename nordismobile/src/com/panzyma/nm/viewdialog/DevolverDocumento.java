@@ -1,28 +1,38 @@
 package com.panzyma.nm.viewdialog;
       
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;  
 import java.util.List;
 import java.util.Map;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BDevolucionM;
+import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.NMNetWork; 
+import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.custom.model.SpinnerModel; 
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Devolucion;
+import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Pedido; 
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
+import com.panzyma.nm.view.ViewDevolucionEdit;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nordismobile.R; 
 
 import android.app.AlertDialog;
 import android.app.Dialog; 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.AsyncTask;
@@ -30,6 +40,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;  
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -59,12 +70,17 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 	private Pedido pedido;
 	private ArrayList<Pedido> pedidos;	
 	private DevolverDocumento $this;
-	private boolean offline;
+	private static boolean offline=false;
 	private static Devolucion devolucion;
+	
+	private ProgressDialog pdialog=null;
+	
+	private long numpedido;
+	private long numfactura;
 	
 	public interface DialogListener 
 	{ 
-		public void onDialogPositiveClick(Devolucion dev,long nopedido,Pedido _pedido);
+		public abstract void onDialogPositiveClick(Devolucion dev); 
 	} 
  
 	public static DevolverDocumento newInstance(Handler.Callback _parent,long _objSucursalID,Devolucion dev) 
@@ -74,6 +90,17 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 		parent=_parent;
 		objSucursalID=_objSucursalID;
 		devolucion = dev; 
+	    return dd;
+	}
+	
+	public static DevolverDocumento newInstance(Handler.Callback _parent,long _objSucursalID,Devolucion dev,boolean _offline ) 
+	{
+		if(dd==null)
+			dd = new DevolverDocumento(); 
+		parent=_parent;
+		objSucursalID=_objSucursalID;
+		devolucion = dev; 
+		offline=_offline;
 	    return dd;
 	}
 
@@ -99,9 +126,14 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 		builder.setView(view); 
 		btnagregar=(Button) row.findViewById(R.id.btnOK);
 		btncancelar=(Button) row.findViewById(R.id.btnCancel);
-		if(NMNetWork.CheckConnection() && !UserSessionManager.HAS_ERROR) {
+		visible=View.GONE; 
+		
+		((ViewDevolucionEdit)parent).hideProgress();
+		
+		if(offline /* (!NMNetWork.CheckConnection()) && !UserSessionManager.HAS_ERROR*/) 
+		{
 			offline = true;
-			visible=View.GONE; 
+			visible=View.VISIBLE;  
 		}			
 		btnagregar.setOnClickListener(new OnClickListener() {
 			
@@ -112,17 +144,21 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 				devolucion.setOffLine(offline);
 				if( offline ) {					
 					nopedido = (long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0);					
-				} else {
+				} else 
+				{
 					HashMap<String,Long> parametros = new HashMap<String,Long>();				
 					Message m=new Message();
 					m.what=ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO;
 					parametros.put("idsucursal",objSucursalID);
-					parametros.put("nopedido",(long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0));
-					parametros.put("nofactura",(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0));
+					numpedido=(long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0);
+					numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
+					parametros.put("nopedido",numpedido);
+					parametros.put("nofactura",numfactura);
 					m.obj=parametros;
 					NMApp.getController().getInboxHandler().sendMessage(m);
+					pdialog=ProgressDialog.show(getActivity(), "Buscando productos lotes para el pedido",""+(long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0));
 				}
-				listener.onDialogPositiveClick(devolucion, nopedido, null);
+				//listener.onDialogPositiveClick(devolucion, nopedido, null);
 			}
 		});
 		
@@ -164,8 +200,9 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 		data.putLong("objSucursalID", objSucursalID);
 		m.setData(data);
 		NMApp.getController().getInboxHandler().sendMessage(m);*/
-		
-		new LoadDataToUI().execute();
+		initComponent();
+		if(offline)
+			new LoadDataToUI().execute();
 		
 		return mydialog;
 	}
@@ -184,14 +221,22 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
    		  } 
    	};
 	private CustomAdapter adapter_pedidos;
+	protected CustomDialog dlg;
    	
    	public void initComponent()
    	{   		 
 		com.panzyma.nm.NMApp.getController().setView(this);
+		SessionManager.setContext(this.getActivity());
+		UserSessionManager.setContext(this.getActivity());
+		com.panzyma.nm.NMApp.getController().setView(this);
    	} 
    	
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean handleMessage(Message msg) { 
+	public boolean handleMessage(Message msg) 
+	{
+		if(pdialog!=null)
+			pdialog.dismiss();
 		switch (msg.what) 
 		{
 			case ControllerProtocol.ID_REQUEST_OBTENERPEDIDOS:				
@@ -201,6 +246,12 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 				break;
 			case ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO:
 				Devolucion dev=(msg.obj instanceof Devolucion)?(Devolucion)msg.obj:new Devolucion();
+				if(dev!=null && dev.getProductosDevueltos()!=null && dev.getProductosDevueltos().length!=0)
+				{
+					listener.onDialogPositiveClick(dev); 
+					dismiss();
+				}else
+					showStatus("El pedido/factura "+ numpedido+"/"+numfactura+" no se encontro en el servidor central...",true);
 				
 				break;
 		}
@@ -210,6 +261,7 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 	@Override
 	public void onDismiss(DialogInterface dialog) 
    	{   		
+		
    		FINISH_ACTIVITY();
 		super.onDismiss(dialog);
 	}
@@ -234,11 +286,14 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 	
 	private void FINISH_ACTIVITY()
 	{
-		com.panzyma.nm.NMApp.getController().setView(parent);		 
+		com.panzyma.nm.NMApp.getController().setView(parent);	 
+		SessionManager.setContext(this.getActivity());
+		UserSessionManager.setContext(this.getActivity()); 
 		Log.d(TAG, "Quitting"+ TAG); 
 	}
 	
-	public class LoadDataToUI extends AsyncTask<Void, Void, List<Factura> > {
+	public class LoadDataToUI extends AsyncTask<Void, Void, List<Factura> > 
+	{
 		
 		@Override
 		protected List<Factura> doInBackground(Void... params) {
@@ -247,7 +302,8 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 		}
 		
 		@Override
-		protected void onPostExecute(List<Factura> facturas) {
+		protected void onPostExecute(List<Factura> facturas) 
+		{
 			facturas.add(0, new Factura(-1,"",""));
 			adapter_pedidos = new CustomAdapter($this.getActivity(),
 					R.layout.spinner_rows, setListData(facturas));
@@ -256,6 +312,49 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 		
 	}
 	
+	@SuppressWarnings("unused")
+	private void productoloteDevolucion(List<DevolucionProducto> dp) 
+	{ 
+		FragmentTransaction ft =((ViewDevolucionEdit) parent).getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = ((ViewDevolucionEdit) parent).getSupportFragmentManager().findFragmentByTag("dialogPL");
+		if (prev != null) {
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		ProductoDevolucion newFragment =ProductoDevolucion.newInstance(parent,dp);  
+		newFragment.show(ft, "dialogPL");
+		
+	}
 	
-	
+	public void showStatus(final String mensaje, boolean... confirmacion) {
+
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			((ViewDevolucionEdit)parent).runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(((ViewDevolucionEdit)parent), "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else {
+			((ViewDevolucionEdit)parent).runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					dlg = new CustomDialog(((ViewDevolucionEdit)parent), mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		}
+	}
 }

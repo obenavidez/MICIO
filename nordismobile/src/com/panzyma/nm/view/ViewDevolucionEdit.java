@@ -1,12 +1,15 @@
 package com.panzyma.nm.view;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections; 
 import java.util.LinkedHashMap;  
+import java.util.List;
 import java.util.Map;  
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,12 +31,15 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView; 
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.Spinner; 
 import android.widget.TextView;
 
@@ -41,6 +47,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager; 
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
@@ -51,17 +58,29 @@ import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Cliente; 
 import com.panzyma.nm.serviceproxy.Devolucion;
+import com.panzyma.nm.serviceproxy.DevolucionProducto;
+import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.view.adapter.CustomAdapter;
+import com.panzyma.nm.view.adapter.ExpandListAdapter;
+import com.panzyma.nm.view.adapter.ExpandListChild;
+import com.panzyma.nm.view.adapter.ExpandListGroup;
 import com.panzyma.nm.view.adapter.InvokeBridge;
+import com.panzyma.nm.view.adapter.SetViewHolderWLayout;
+import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
+import com.panzyma.nm.view.viewholder.ProductoLoteViewHolder;
+import com.panzyma.nm.viewdialog.DevolucionProductoCantidad;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewdialog.DialogCliente; 
+import com.panzyma.nm.viewdialog.ProductoDevolucion;
+import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener; 
 import com.panzyma.nordismobile.R;
 
+@SuppressWarnings({ "unchecked", "rawtypes","deprecation","unused" })
 @InvokeBridge(bridgeName = "BDevolucionM")
 public class ViewDevolucionEdit extends ActionBarActivity implements
 Handler.Callback, Editable
@@ -95,6 +114,16 @@ Handler.Callback, Editable
 	CustomAdapter adapter_tipodev;
 	ArrayList<Catalogo> catalogos;
 	
+	public static ProductoDevolucion pd;
+	List<DevolucionProducto> dev_prod;
+	private Devolucion dev;
+	private ExpandableListView lvdevproducto; 
+	private ExpandListAdapter adapter;
+	protected int[] childpositioncache = new int[2];
+	protected ExpandListGroup dvselected;
+	private ExpandListChild childselected;
+	
+	
 	
 	DrawerLayout drawerLayout;
 	ListView drawerList;
@@ -115,6 +144,7 @@ Handler.Callback, Editable
 	Devolucion devolucion;
 	
 	Context context;
+	private ProgressDialog pdialog;
 	
 	public static final Display display;
 	
@@ -158,6 +188,7 @@ Handler.Callback, Editable
 		initComponent();
 	}
 	
+	
 	public void initComponent() 
 	{
 		ckboxnovencidodev=(CheckBox) findViewById(R.id.devchk_typodevolucion);
@@ -166,6 +197,8 @@ Handler.Callback, Editable
 		cboxtramitedev=(Spinner) findViewById(R.id.devcombox_tramite);
 		cboxtipodev=(Spinner) findViewById(R.id.devcombox_tipo);
 		tbxNombreDelCliente=(TextView) findViewById(R.id.devtextv_detallecliente); 
+		View include=findViewById(R.id.pdevgrilla);
+		lvdevproducto = (ExpandableListView)include.findViewById(R.id.ExpList); 
 		
 		adapter_tramite = new CustomAdapter(getContext(),
 				R.layout.spinner_rows, setListData(hmtramite));
@@ -196,14 +229,12 @@ Handler.Callback, Editable
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
 				
 			}
 		});
 		
 		cboxtramitedev.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) 
@@ -220,7 +251,6 @@ Handler.Callback, Editable
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
 				
 			} 
  
@@ -253,6 +283,188 @@ Handler.Callback, Editable
 		
 		CreateMenu();
 		
+	}
+	
+	public void initExpandableListView()
+	{		
+		if (adapter == null) 
+		{
+			ArrayList<SetViewHolderWLayout> layouts = new ArrayList<SetViewHolderWLayout>();
+			layouts.add(new SetViewHolderWLayout(R.layout.detalle_productolote,
+					ProductoLoteViewHolder.class, true));
+			layouts.add(new SetViewHolderWLayout(R.layout.detalle_loteproducto,
+					ProductoLoteDetalleViewHolder.class, false));
+			try 
+			{
+				adapter = new ExpandListAdapter(context,SetStandardGroups(), layouts);
+				lvdevproducto.setAdapter(adapter);
+				lvdevproducto.expandGroup(0);
+				lvdevproducto.expandGroup(1);
+				lvdevproducto.setOnChildClickListener(new OnChildClickListener() {
+
+							
+							@Override
+							public boolean onChildClick(
+									ExpandableListView _parent, View v,
+									int groupPosition, int childPosition,
+									long id) {
+								int flatpost;
+								int ajustPos;
+								if (_parent == null)
+									return false;
+
+								if (childpositioncache != null
+										&& childpositioncache.length != 0) 
+								{
+									long value = ExpandableListView
+											.getPackedPositionForChild(
+													childpositioncache[0],
+													childpositioncache[1]);
+									flatpost = _parent
+											.getFlatListPosition(value);
+									ajustPos = flatpost
+											- _parent.getFirstVisiblePosition();
+									View oldview = _parent.getChildAt(ajustPos);
+									if (oldview != null
+											&& oldview.getTag() != null
+											&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder)
+									{
+										oldview.setBackgroundDrawable(context
+												.getResources().getDrawable(
+														R.color.Terracota));
+										oldview.setSelected(false);
+									}
+										
+								}
+								v.setSelected(true);
+								v.setBackgroundDrawable(context
+										.getResources().getDrawable(
+												R.color.LighBlueMarine));
+								childpositioncache[0] = groupPosition;
+								childpositioncache[1] = childPosition;
+								
+								childselected=(ExpandListChild) adapter.getChild(childpositioncache[0], childpositioncache[1]);
+								
+								return true;
+							}
+						});
+
+				lvdevproducto.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+							@Override
+							public boolean onItemLongClick(
+									AdapterView<?> _parent, View view,
+									int position, long id) 
+							{
+								ExpandableListView elv;
+								if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) 
+								{
+
+									if (view.getTag() instanceof ProductoLoteDetalleViewHolder) 
+									{
+
+										elv = (ExpandableListView) _parent;
+										ProductoLoteDetalleViewHolder pld = (ProductoLoteDetalleViewHolder) view.getTag();
+
+										int flatpost;
+										int ajustPos;
+										if (elv == null)
+											return false;
+
+										if (childpositioncache != null && childpositioncache.length != 0) 
+										{
+											long value = ExpandableListView
+													.getPackedPositionForChild(
+															childpositioncache[0],
+															childpositioncache[1]);
+											flatpost = elv
+													.getFlatListPosition(value);
+											ajustPos = flatpost - elv.getFirstVisiblePosition();
+											View oldview = elv.getChildAt(ajustPos);
+											if (oldview != null
+													&& oldview.getTag() != null
+													&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder)
+											{
+												oldview.setBackgroundDrawable(context
+														.getResources()
+														.getDrawable(
+																R.color.Terracota));
+												oldview.setSelected(false);
+											}
+												
+
+										}
+										view.setSelected(true);
+										view.setBackgroundDrawable(context
+												.getResources().getDrawable(
+														R.color.LighBlueMarine));
+
+										childpositioncache[0] = ExpandableListView.getPackedPositionGroup(id);
+										childpositioncache[1] = ExpandableListView.getPackedPositionChild(id);
+										 
+										childselected=(ExpandListChild) adapter.getChild(childpositioncache[0], childpositioncache[1]);
+										ExpandListGroup groupselected=(ExpandListGroup) adapter.getGroup(childpositioncache[0]);
+										EditarProductoLote(groupselected.getName(),childselected);
+										
+									}
+
+									return true;
+								}
+								return false;
+							}
+						});
+
+			} catch (Exception e) {
+			}
+		} else
+			adapter.notifyDataSetChanged();
+		
+		
+	}
+	
+	private void EditarProductoLote(String productname,ExpandListChild _childselected) { 
+		FragmentTransaction ft =getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialogNotaRecibo");
+		if (prev != null) 
+		{
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		DevolucionProductoCantidad newFragment = DevolucionProductoCantidad.newInstance(productname,(DevolucionProductoLote) _childselected.getObject());
+		newFragment.obtenerProductoLoteModificado(new escucharModificacionProductoLote() {
+			
+			@Override
+			public void onButtonClick(DevolucionProductoLote plote) 
+			{ 
+				DevolucionProductoLote lote=plote;
+			}
+		});
+		newFragment.show(ft, "dialogDevolucionProductoCantidad");
+	}
+	
+	public List<ExpandListGroup> SetStandardGroups() 
+	{
+		List<ExpandListGroup> lgroups = new ArrayList<ExpandListGroup>();
+		
+		ArrayList<ExpandListChild> groupchild;
+
+		for (DevolucionProducto dp : dev_prod) 
+		{
+			ExpandListGroup group = new ExpandListGroup();
+			groupchild = new ArrayList<ExpandListChild>();
+			group.setName(dp.getNombreProducto());
+			group.setObject(dp);
+			for (DevolucionProductoLote dpl : dp.getProductoLotes()) 
+			{
+				ExpandListChild ch = new ExpandListChild();
+				ch.setName(dpl.getNumeroLote());
+				ch.setObject(dpl);
+				groupchild.add(ch);
+			}
+			group.setItems(groupchild);
+			lgroups.add(group);
+		}
+		return lgroups;
 	}
 	
 	public void CreateMenu() {
@@ -323,7 +535,6 @@ Handler.Callback, Editable
 //						ImprimirComprobante();
 //						break;
 //					} catch (Exception e) {
-//						// TODO Auto-generated catch block
 //						e.printStackTrace();
 //					}
 				case ID_CERRAR:
@@ -363,7 +574,6 @@ Handler.Callback, Editable
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
-	
 	
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
@@ -418,27 +628,37 @@ Handler.Callback, Editable
 	}
 	
 	private void devolverdocumento() 
-	{
-		
-		if (cliente == null) {
+	{		
+		if (cliente == null) 
+		{
 			AppDialog.showMessage(this, "Alerta",
 					"Por favor seleccione un cliente primero.",
 					DialogType.DIALOGO_ALERTA);
 			return;
-		}
+		}		
+		
+		boolean isoffline=false;
+		pdialog=ProgressDialog.show(this, "Probando conexión","");
+		if( (!NMNetWork.CheckConnection()) && !UserSessionManager.HAS_ERROR)  
+			isoffline=true; 
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialogNotaRecibo");
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("DialogDevolverDocumento");
 		if (prev != null) {
 			ft.remove(prev);
 		}
 		ft.addToBackStack(null);
-		DevolverDocumento newFragment =DevolverDocumento.newInstance(this,cliente.getIdSucursal(), devolucion); 
+		DevolverDocumento newFragment =DevolverDocumento.newInstance(this,cliente.getIdSucursal(), devolucion,isoffline); 
 		newFragment.setOnDialogClickListener(new DevolverDocumento.DialogListener() 
-		{
+		{ 
 			@Override
-			public void onDialogPositiveClick(Devolucion dev, long nopedido,
-					Pedido _pedido) { 
-				
+			public void onDialogPositiveClick(Devolucion  _dev) 
+			{ 
+				if(_dev!=null && _dev.getProductosDevueltos()!=null && _dev.getProductosDevueltos().length!=0)
+				{
+					dev=_dev;
+					dev_prod=Arrays.asList(dev.getProductosDevueltos());
+					initExpandableListView();
+				}
 				
 			}
 		});
@@ -521,14 +741,25 @@ Handler.Callback, Editable
 	
 	@Override
 	public Object getBridge() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Context getContext() {
-		// TODO Auto-generated method stub
+	public Context getContext() 
+	{
 		return this;
+	}
+	
+	public void hideProgress(){
+		runOnUiThread(new Runnable() 
+		{
+			
+			@Override
+			public void run() {
+				if(pdialog!=null)
+					pdialog.dismiss();				
+			}
+		});
 	}
 
 	@Override

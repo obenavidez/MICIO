@@ -2,307 +2,327 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_alignParentTop="true" >
+    android:layout_alignParentTop="true"
+     android:background="@color/DarkGray" >
 
     <TableRow
-        android:id="@+id/tableRowheader"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"        
-        android:layout_gravity="center"
-        android:background="@drawable/bgdialog2"  >
+           android:id="@+id/tableRowheader"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center" >
 
-        <TextView
-            android:id="@+id/dpl_producto"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_marginTop="5dp"
-            android:layout_weight="5"
-            android:text="Producto :"
-            android:textColor="@color/White"
-            android:textSize="10dp" />
-        <TextView
-            android:id="@+id/dpl_tboxproducto"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"            
-            android:layout_weight="95" 
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
+           <TextView
+               android:id="@+id/dpl_producto"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="3dp"
+               android:layout_marginTop="5dp"
+               android:layout_weight="5"
+               android:text="Producto :"
+               android:textColor="@color/Black"
+               android:textSize="10dp" />
+
+           <TextView
+               android:id="@+id/dpl_tboxproducto"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="5dp"
+               android:layout_weight="95"
+               android:textColor="@color/White"
+               android:textSize="10dp" />
     </TableRow>
     
-    <View android:layout_width="fill_parent"
-          android:layout_height="1dp"
-          android:background="@color/Black"
-        />
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#e9b44c" >
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/Black" />
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/dpllbl_cantord"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="1"
+                android:text="Cant.Ord:"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltextv_cantord"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/White"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpllbl_cantbonif"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cant.Bonif :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltextv_cantbonif"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/dpllbl_cantprom"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="1"
+                android:text="Cant.Prom :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltextv_cantprom"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpllbl_descuento"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Descuento :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltextv_descuento"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/dpllbl_totalprod"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="10"
+                android:text="Total Prod :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltextv_totalprod"
+                android:layout_height="wrap_content"
+                android:layout_weight="90"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+        </TableRow>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/Black" />
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/dpllbl_cantdev"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="1"
+                android:text="Cant.Devolver :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltext_cantdev"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpllbl_bonifdev"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Bonif.Devolver :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltext_bonifdev"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/dpllbl_precioprod"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="1"
+                android:text="Precio Unitario :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltextv_preciounitario"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpllbl_subtotal"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SubTotal :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltextv_subtotal"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/dpllbl_montobonif"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="1"
+                android:text="Monto Bonif :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltext_montobonif"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpllbl_impuesto"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Impuesto :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltext_impuesto"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/dpllbl_totaldev"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="10"
+                android:text="Total :"
+                android:textColor="@color/Teal"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/dpltext_totaldev"
+                android:layout_height="wrap_content"
+                android:layout_weight="90"
+                android:textColor="@color/Black"
+                android:textSize="10dp" />
+        </TableRow>
+
+       
+        
+        <TextView
+	       android:id="@+id/dpllbl_lote"
+	       android:layout_height="wrap_content"
+	       android:layout_width="fill_parent"
+	       android:gravity="center_horizontal"
+	       android:text="LOTES"
+	       android:textColor="@color/Black"
+	       android:layout_marginLeft="3dp"
+	       android:textSize="20dp" />
+        
+         <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@color/Black" />
+        
+    </TableLayout>
     
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/dpllbl_cantord"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Cant.Ord:"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltextv_cantord"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/White"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpllbl_cantbonif"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Cant.Bonif :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltextv_cantbonif"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/dpllbl_cantprom"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Cant.Prom :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltextv_cantprom"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpllbl_descuento"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Descuento :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltextv_descuento"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow3"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/dpllbl_totalprod"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="10"
-            android:text="Total Prod :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltextv_totalprod"
-            android:layout_height="wrap_content"
-            android:layout_weight="90"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-
-   
-    </TableRow>
-	<View android:layout_width="fill_parent"
-          android:layout_height="1dp"
-          android:background="@color/Black"
-          android:layout_marginLeft="10dp"
-          android:layout_marginRight="10dp"
-        />
-    <TableRow
-        android:id="@+id/tableRow4"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/dpllbl_cantdev"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Cant.Devolver :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltext_cantdev"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpllbl_bonifdev"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Bonif.Devolver :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltext_bonifdev"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow5"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/dpllbl_precioprod"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Precio Unitario :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltextv_preciounitario"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpllbl_subtotal"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="SubTotal :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltextv_subtotal"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow6"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/dpllbl_montobonif"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:text="Monto Bonif :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltext_montobonif"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpllbl_impuesto"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Impuesto :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltext_impuesto"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow7"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-        
-        <TextView
-            android:id="@+id/dpllbl_totaldev"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="10"
-            android:text="Total :"
-            android:textColor="@color/Teal"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/dpltext_totaldev"
-            android:layout_height="wrap_content"
-            android:layout_weight="90"
-            android:textColor="@color/Black"
-            android:textSize="10dp" />
-        
-    </TableRow>
-    <View android:layout_width="fill_parent"
-          android:layout_height="3dp"
-          android:background="@color/Black"
-          android:layout_marginLeft="10dp"
-          android:layout_marginRight="10dp"
-        />
-
 </TableLayout>

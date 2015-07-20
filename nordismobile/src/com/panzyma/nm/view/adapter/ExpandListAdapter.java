@@ -1,23 +1,37 @@
 package com.panzyma.nm.view.adapter;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList; 
- 
-
+import java.util.ArrayList;
+import java.util.List;
+import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
+import com.panzyma.nordismobile.R;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter; 
+import android.view.ViewParent;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.Toast;
 
 public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 
 	private Context context; 
-	private ArrayList<E> groups;//List<E> items;	
+	private List<E> groups;//List<E> items;	
 	private ArrayList<SetViewHolderWLayout> holderloyout;//layoutchild  
 	SetViewHolderWLayout parentlayout;
-	SetViewHolderWLayout childlayout;
-	public ExpandListAdapter(Context _context, ArrayList<E> _groups,ArrayList<SetViewHolderWLayout> ... _holderloyout) 
+	SetViewHolderWLayout childlayout; 
+	int grouposition;
+	int childposition; 
+	
+	public ExpandListAdapter(Context _context, List<E> _groups,ArrayList<SetViewHolderWLayout> ... _holderloyout) 
 	{
 		this.context = _context; 
 		this.groups = _groups;
@@ -26,47 +40,58 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		getChildView();
 	}    
 	
+	
+	
+	
+	@Override
+	public Object getChild(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+		ArrayList<ExpandListChild> chList = ((ExpandListGroup)groups.get(groupPosition)).getItems();
+		return chList.get(childPosition);
+	}
+	
 	@Override
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
 		return groups.size();
 	}
-
+	
+	@Override
+	public long getChildId(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+	    return childPosition;
+	}
+	
 	@Override
 	public int getChildrenCount(int groupPosition) {
 		// TODO Auto-generated method stub
-		return 0;
+		ArrayList<ExpandListChild> chList = ((ExpandListGroup)groups.get(groupPosition)).getItems();
+
+		return chList.size();
 	}
 
 	@Override
 	public Object getGroup(int groupPosition) {
 		// TODO Auto-generated method stub
 		return  groups.get(groupPosition);
-	}
-
-	@Override
-	public Object getChild(int groupPosition, int childPosition) {
+	} 
+	public Object getData() {
 		// TODO Auto-generated method stub
-		//ArrayList<ExpandListChild> chList = groups.get(groupPosition).getItems();
-		return null;
+		return  groups;
 	}
 
 	@Override
 	public long getGroupId(int groupPosition) {
 		// TODO Auto-generated method stub
-		return 0;
+		return groupPosition;
 	}
 
-	@Override
-	public long getChildId(int groupPosition, int childPosition) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
 
 	@Override
 	public boolean hasStableIds() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 	
 	protected void invokeView(View v,V viewHolder){
@@ -86,15 +111,16 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		}
 	}	
 	
-
-	@SuppressWarnings("unchecked")
+ 
+	@SuppressLint("ShowToast") @SuppressWarnings("unchecked")
 	public View getGroupView(int groupPosition, boolean isLastChild, View view,
 			ViewGroup parent) 
 	{
 		V viewHolder = null; 
 		try 
 		{
-			
+			ExpandListGroup _group = (ExpandListGroup) getGroup(groupPosition);
+
 			if (view == null) { 
 				LayoutInflater inf = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 				view = inf.inflate(parentlayout.getLayoutid(), null);
@@ -104,9 +130,9 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 				
 			}
 			else
-				viewHolder=(V)view.getTag();
+				viewHolder=(V)view.getTag(); 
 			
-			 viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,groups.get(groupPosition));
+			 viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,_group);
 
 			 
 		} catch (Exception e) {
@@ -114,34 +140,46 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		}				
 		return view;
 	}
-	
+	 
 	@SuppressWarnings("unchecked")
-	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View view, ViewGroup parent) {
 		
 		V viewHolder = null; 
+		final ViewGroup _parent;
 		try 
 		{			
-			if (view == null) { 
+			
+			_parent=parent;
+			ExpandListChild child = (ExpandListChild) getChild(groupPosition, childPosition);
+			if (view == null) 
+			{ 
+				 
 				LayoutInflater inf = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 				view = inf.inflate(childlayout.getLayoutid(), null); 
 				viewHolder=(V) (childlayout.getViewHoder().newInstance()); 
-				invokeView(view,viewHolder);
-				view.setTag(viewHolder);				
-			}
+				invokeView(view,viewHolder);    		
+				view.setTag(viewHolder);	
+				
+				if(view.isSelected()) 
+					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.LighBlueMarine)); 
+				else
+					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.Terracota));
+				
+				
+			} 
 			else
 				viewHolder=(V)view.getTag();
 			
-			 viewHolder.getClass().getMethod("mappingData",Object.class,int.class).invoke(viewHolder,groups.get(groupPosition),childPosition);
-			 
+			viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,child);
+			grouposition=groupPosition;
+			childposition=childPosition;
 		} catch (Exception e) {
 			// TODO: handle exception
 		}				
 		return view;
 	}
 	
-
 	public SetViewHolderWLayout getParentView()
 	{
 		if( parentlayout==null){
@@ -166,14 +204,15 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		} 
 		return childlayout; 
 	}
-	
-	
-	 
-
+ 
 	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
+	}
+
+	public void setSelectedPosition(int position) {
+		
 	}
 	 
 

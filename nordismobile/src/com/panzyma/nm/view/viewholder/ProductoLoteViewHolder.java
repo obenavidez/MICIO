@@ -1,10 +1,9 @@
 package com.panzyma.nm.view.viewholder;
-
-import android.widget.ListView;
+ 
 import android.widget.TextView;
 
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
-import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.adapter.ExpandListGroup; 
 import com.panzyma.nm.view.adapter.InvokeView;
 import com.panzyma.nordismobile.R;
 
@@ -39,15 +38,19 @@ public class ProductoLoteViewHolder {
 	
 	public void mappingData(Object entity)
 	{
-		DevolucionProducto dp=(DevolucionProducto) entity;
+		ExpandListGroup grp=(ExpandListGroup)entity;
 		
-		tboxproducto.setText(dp.getNombreProducto());
+		DevolucionProducto dp=(DevolucionProducto) grp.getObject();
+		
+		tboxproducto.setText(""+dp.getNombreProducto());
 		tboxcantord.setText(""+dp.getCantidadOrdenada());
-		tboxcantbonif.setText(""+dp.getBonificacion());
-		tboxcantprom.setText(""+dp.getCantidadBonificada());
+		tboxcantbonif.setText(""+dp.getCantidadBonificada());
+		tboxcantprom.setText(""+dp.getCantidadPromocionada());
 		tboxdescuento.setText(""+dp.getDescuento());
 		tboxtotalprod.setText(""+dp.getTotalProducto());
-		tboxdevbonif.setText(""+dp.getCantidadBonificada());
+		
+		tboxcantdev.setText(""+dp.getCantidadDevolver());
+		tboxdevbonif.setText(""+dp.getBonificacion());
 		tboxpreciounit.setText(""+dp.getPrecio());
 		tboxsubtotal.setText(""+dp.getSubtotal());
 		tboxmontobonif.setText(""+dp.getMontoBonif());

@@ -250,7 +250,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		return reciboId;
 	}	
 	
-	@Override
+	@SuppressLint("UseSparseArrays") @Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -349,8 +349,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		savedInstanceState.putParcelable("cliente", cliente);		
 		// etc.
 	}
-
-	@SuppressWarnings("unchecked")
+ 
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
@@ -2412,7 +2411,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 	}
 
-	private void agregarPago() {
+	@SuppressLint("DefaultLocale") private void agregarPago() {
 		if (recibo != null && recibo.getTotalRecibo() == 0) {
 			NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"  
+    android:background="@drawable/bgdialog2"  >
+    
+     
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"  
+        android:weightSum="100">
+        
+        <ViewStub
+            android:id="@+id/vsHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/header"
+            android:layout="@layout/header" 
+            android:layout_weight="10" />
+        
+        <TextView
+            android:id="@+id/dev_headergrid"
+            style="StyleFontTextViewActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_actionbar29"
+            android:gravity="center"
+            android:text="Productos a Devolver"
+            android:textColor="@color/White"
+            android:layout_weight="90" />
+    </LinearLayout>    
+    
+</LinearLayout>

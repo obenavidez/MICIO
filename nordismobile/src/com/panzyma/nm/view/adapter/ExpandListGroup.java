@@ -6,6 +6,7 @@ public class ExpandListGroup {
  
 	private String Name;
 	private ArrayList<ExpandListChild> Items;
+	private Object obj;
 	
 	public String getName() {
 		return Name;
@@ -20,5 +21,10 @@ public class ExpandListGroup {
 		this.Items = Items;
 	}
 	
-	
+	public Object getObject() {
+		return this.obj;
+	}
+	public void setObject(Object _obj) {
+		this.obj = _obj;
+	}
 }

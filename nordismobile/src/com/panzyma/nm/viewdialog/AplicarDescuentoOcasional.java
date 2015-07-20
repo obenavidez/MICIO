@@ -1,6 +1,4 @@
 package com.panzyma.nm.viewdialog;
- 
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
