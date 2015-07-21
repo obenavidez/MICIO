@@ -164,7 +164,7 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 13; 
+	private static final int BD_VERSION = 14; 
 	
 	public static final String TABLA_CLIENTE = "Cliente";
 	public static final String TABLA_FACTURA = "Factura";
@@ -1262,9 +1262,49 @@ public class DatabaseProvider extends ContentProvider
 	 
 		switch(uriMatcher.match(uri))
 		{		 
-			case CLIENTE:case FACTURA:case PROMOCIONCOBRO:case MONTOPROVEEDOR:case CCNOTACREDITO:case CCNOTADEBITO:case DESCUENTOPROVEEDOR:case PRODUCTO:case LOTE:case CATALOGO:case PROMOCION:case USUARIO:case PEDIDO:case PEDIDODETALLE: case PEDIDOPROMOCION:case PEDIDOPROMOCIONDETALLE: case CPRODUTO :case CNOTA:
-				 return "vnd.android.cursor.dir/vnd"+AUTHORITY;
-			case CLIENTE_ID:case FACTURA_ID:case PROMOCIONCOBRO_ID:case MONTOPROVEEDOR_ID:case CCNOTACREDITO_ID:case CCNOTADEBITO_ID:case DESCUENTOPROVEEDOR_ID:case PRODUCTO_ID:case LOTE_ID:case CATALOGO_ID:case PROMOCION_ID:case USUARIO_ID:case PEDIDO_ID:case PEDIDODETALLE_ID:case PEDIDOPROMOCION_ID:case PEDIDOPROMOCIONDETALLE_ID:case CPRODUTO_ID: case CNOTA_CPRODUCTOID:
+			case CLIENTE:
+			case FACTURA:
+			case PROMOCIONCOBRO:
+			case MONTOPROVEEDOR:
+			case CCNOTACREDITO:
+			case CCNOTADEBITO:
+			case DESCUENTOPROVEEDOR:
+			case PRODUCTO:
+			case LOTE:
+			case CATALOGO:
+			case PROMOCION:
+			case USUARIO:
+			case PEDIDO:
+			case PEDIDODETALLE: 
+			case PEDIDOPROMOCION:
+			case PEDIDOPROMOCIONDETALLE: 
+			case CPRODUTO :
+			case CNOTA: 
+			case DEVOLUCION : 
+			case DEVOLUCIONPRODUCTOLOTE : 
+			case DEVOLUCIONPRODUCTO :
+			return "vnd.android.cursor.dir/vnd"+AUTHORITY;
+			case CLIENTE_ID:
+			case FACTURA_ID:
+			case PROMOCIONCOBRO_ID:
+			case MONTOPROVEEDOR_ID:
+			case CCNOTACREDITO_ID:
+			case CCNOTADEBITO_ID:
+			case DESCUENTOPROVEEDOR_ID:
+			case PRODUCTO_ID:
+			case LOTE_ID:
+			case CATALOGO_ID:
+			case PROMOCION_ID:
+			case USUARIO_ID:
+			case PEDIDO_ID:
+			case PEDIDODETALLE_ID:
+			case PEDIDOPROMOCION_ID:
+			case PEDIDOPROMOCIONDETALLE_ID:
+			case CPRODUTO_ID: 
+			case CNOTA_CPRODUCTOID:
+			case DEVOLUCION_ID:
+			case DEVOLUCIONPRODUCTO_ID:
+			case DEVOLUCIONPRODUCTOLOTE_ID:
 				 return "vnd.android.cursor.item/vnd"+AUTHORITY; 									
 		    default:throw new IllegalArgumentException("Invalid Uri: "+ uri);
 		}  
@@ -1930,8 +1970,5 @@ public class DatabaseProvider extends ContentProvider
 		}
 		
 	}
-	
-	
-	
 	
 }

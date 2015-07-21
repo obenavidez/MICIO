@@ -56,13 +56,13 @@ public class DevolucionProductoLote
 	/**
 	 * @return the fechaVencimiento
 	 */
-	public int getFechaVencimiento() {
+	public long getFechaVencimiento() {
 		return fechaVencimiento;
 	}
 	/**
 	 * @param fechaVencimiento the fechaVencimiento to set
 	 */
-	public void setFechaVencimiento(int fechaVencimiento) {
+	public void setFechaVencimiento(long fechaVencimiento) {
 		this.fechaVencimiento = fechaVencimiento;
 	}
 	/**
@@ -139,7 +139,7 @@ public class DevolucionProductoLote
 	private long id;
 	private long objLoteID;
 	private String numeroLote;
-	private int fechaVencimiento;
+	private long fechaVencimiento;
 	private int cantidadDevuelta;
 	private boolean fueraPolitica;
 	private int cantidadDespachada;
