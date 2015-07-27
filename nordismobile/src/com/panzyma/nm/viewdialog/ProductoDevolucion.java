@@ -1,6 +1,7 @@
 package com.panzyma.nm.viewdialog;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
@@ -239,28 +240,17 @@ public class ProductoDevolucion extends DialogFragment
 		});
 		newFragment.show(ft, "dialogDevolucionProductoCantidad");
 	}
-	
-
-	public void updateAdapter() 
-	{
-		
-		List<ExpandListGroup> lgroups =(List<ExpandListGroup>) adapter.getData();
-
-		ExpandListGroup group=lgroups.get(childpositioncache[0]); 
-		 
-		
-	}
-	
+	 
 	public List<ExpandListGroup> SetStandardGroups() 
 	{
 		List<ExpandListGroup> lgroups = new ArrayList<ExpandListGroup>();
 		
-		ArrayList<ExpandListChild> groupchild;
+		LinkedList<ExpandListChild> groupchild;
 
 		for (DevolucionProducto dp : dev_prod) 
 		{
 			ExpandListGroup group = new ExpandListGroup();
-			groupchild = new ArrayList<ExpandListChild>();
+			groupchild = new LinkedList<ExpandListChild>();
 			group.setName(dp.getNombreProducto());
 			group.setObject(dp);
 			for (DevolucionProductoLote dpl : dp.getProductoLotes()) 

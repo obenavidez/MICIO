@@ -405,7 +405,7 @@ public class EditDevolucionProducto extends DialogFragment {
 		dp.setProductoLotes(new DevolucionProductoLote[l.size()]); 
 		l.toArray(dp.getProductoLotes());
 		me.getDev_prod().add(dp);
-		me.SetStandardGroups();
+		me.initExpandableListView();
     }
 	
 	private void removeFormaPagoFromRecibo(ReciboDetFormaPago fp) {

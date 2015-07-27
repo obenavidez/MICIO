@@ -1,12 +1,20 @@
 package com.panzyma.nm.view.adapter;
-
-import java.util.ArrayList;
+ 
+import java.util.LinkedList;
 
 public class ExpandListGroup {
  
 	private String Name;
-	private ArrayList<ExpandListChild> Items;
+	private LinkedList<ExpandListChild> Items;
 	private Object obj;
+	
+	public ExpandListGroup(ExpandListGroup lg){
+		this.Name=lg.getName();
+		this.Items=lg.getItems();
+		this.obj=lg.getObject();
+	}
+	
+	public ExpandListGroup(){}
 	
 	public String getName() {
 		return Name;
@@ -14,10 +22,10 @@ public class ExpandListGroup {
 	public void setName(String name) {
 		this.Name = name;
 	}
-	public ArrayList<ExpandListChild> getItems() {
+	public LinkedList<ExpandListChild> getItems() {
 		return Items;
 	}
-	public void setItems(ArrayList<ExpandListChild> Items) {
+	public void setItems(LinkedList<ExpandListChild> Items) {
 		this.Items = Items;
 	}
 	
