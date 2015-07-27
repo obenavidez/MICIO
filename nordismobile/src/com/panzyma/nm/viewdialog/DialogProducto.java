@@ -6,12 +6,15 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
 import java.util.ArrayList; 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -38,6 +41,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.view.ViewDevolucionEdit;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
@@ -57,9 +61,15 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	TextView gridheader;EditText filterEditText;
 	private int positioncache=-1;  
 	private OnButtonClickListener mButtonClickListener; 
+	private Activity $Acticity;	
 	
 	public Producto producto;
 	protected Producto product_selected;  
+	protected TypeCall tipoLLamado;
+	
+	public enum TypeCall {
+		Default, Devolucion
+	}
 
 	public interface OnButtonClickListener {
 		public abstract void onButtonClick(DetallePedido det_p,Producto prod);
@@ -84,6 +94,31 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	private ArrayList<Producto> Lproducto;
 	private com.panzyma.nm.interfaces.Editable parent;
 	
+	public DialogProducto(com.panzyma.nm.interfaces.Editable vpe, ArrayList<Producto> ProdsExclir, long idCategCliente, long idTipoCliente) 
+    {    
+    	super(vpe.getContext(),android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);     
+        
+        try 
+        {           	
+			setContentView(R.layout.mainproducto);   
+			parent=vpe;      	 
+	        NMApp.getController().setView(this);
+	        pd = ProgressDialog.show(vpe.getContext(), "Espere por favor", "Trayendo Info...", true, false); 
+			WindowManager wm = (WindowManager) vpe.getContext().getSystemService(Context.WINDOW_SERVICE);
+            display = wm.getDefaultDisplay(); 
+			NMApp.getController().getInboxHandler().sendEmptyMessage(LOAD_DATA_FROM_LOCALHOST);
+			initComponents();
+	        _idsProdsExcluir = (ProdsExclir==null)?new ArrayList<Producto>():ProdsExclir;
+	        _idCategCliente = idCategCliente;	             
+	        _idTipoCliente = idTipoCliente; 	       
+	        Lproducto=new ArrayList<Producto>();
+	        tipoLLamado = TypeCall.Devolucion;
+        }catch (Exception e) { 
+			e.printStackTrace();
+			//buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
+		}	 
+    } 
+	
 	public DialogProducto(com.panzyma.nm.interfaces.Editable vpe,String codTP, ArrayList<Producto> ProdsExclir, long idPedido, long idCategCliente, long idTipoPrecio, long idTipoCliente, boolean exento) 
     {    
     	super(vpe.getContext(),android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);     
@@ -106,7 +141,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	        _idTipoCliente = idTipoCliente; 
 	        _exento = exento; 
 	        Lproducto=new ArrayList<Producto>();
-	        
+	        tipoLLamado = TypeCall.Default;
         }catch (Exception e) { 
 			e.printStackTrace();
 			//buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
@@ -282,30 +317,36 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			            	adapter.setSelectedPosition(position); 
 			            	view.setBackgroundDrawable(_parent.getResources().getDrawable(R.drawable.action_item_selected));				
 							
-			            	//EditDetPedido editForm = new EditDetPedido(prod, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
-							DetalleProducto dp=new DetalleProducto((ViewPedidoEdit)parent,product_selected, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
-							
-							dp.setOnDialogDetalleProductButtonClickListener(new OnButtonClickHandler(){
-
-								@Override
-								public void onButtonClick(DetallePedido det_p,boolean btn) {
-									if(btn)
-									{ 										
-										mButtonClickListener.onButtonClick(det_p,product_selected);
-										Lproducto.remove(positioncache);
-										adapter.getData().remove(positioncache);
-										adapter.notifyDataSetChanged(); 
-										filterEditText.setText("");
-										
-									}																		
-									
-								} 
+			            	if( tipoLLamado == TypeCall.Default){
+			            		//EditDetPedido editForm = new EditDetPedido(prod, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
+								DetalleProducto dp=new DetalleProducto((ViewPedidoEdit)parent,product_selected, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
 								
-							}); 
-      						dp.getWindow().setGravity(Gravity.CENTER); 
-							dp.getWindow().setGravity(Gravity.CENTER); 
-							dp.getWindow().setLayout(display.getWidth()-40,display.getHeight()-110);  
-							dp.show(); 
+								dp.setOnDialogDetalleProductButtonClickListener(new OnButtonClickHandler(){
+
+									@Override
+									public void onButtonClick(DetallePedido det_p,boolean btn) {
+										if(btn)
+										{ 										
+											mButtonClickListener.onButtonClick(det_p,product_selected);
+											Lproducto.remove(positioncache);
+											adapter.getData().remove(positioncache);
+											adapter.notifyDataSetChanged(); 
+											filterEditText.setText("");
+											
+										}																		
+										
+									} 
+									
+								}); 
+	      						dp.getWindow().setGravity(Gravity.CENTER); 
+								dp.getWindow().setGravity(Gravity.CENTER); 
+								dp.getWindow().setLayout(display.getWidth()-40,display.getHeight()-110);  
+								dp.show(); 
+			            	} else {
+			            		EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(product_selected, ((ViewDevolucionEdit)parent));
+			            		FragmentManager fragmentManager =  ((ViewDevolucionEdit)parent).getSupportFragmentManager();
+								dialogDevolucion.show(fragmentManager, "");
+			            	}
 							return true;
 						}
  

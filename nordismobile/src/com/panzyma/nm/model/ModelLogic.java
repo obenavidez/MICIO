@@ -29,6 +29,7 @@ import com.panzyma.nm.serviceproxy.CCPedido;
 import com.panzyma.nm.serviceproxy.CCReciboColector;
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 
@@ -441,5 +442,41 @@ public class ModelLogic {
 		}
 		return objectResult;
 	}
+	
+	public synchronized static List<Lote> getLotesByProductoID(Context cnt,long l) {
+
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT l.Id , ");
+		query.append("        l.NumeroLote , ");
+		query.append("        l.FechaVencimiento, ");
+		query.append("        cast(l.ObjProductoID  as int), ");
+		query.append("        l.ObjProductoID ");
+		query.append(" from   Lote l ");
+		query.append(" WHERE l.ObjProductoID =  " + String.valueOf(l));		
+		
+		List<Object> paridaCambiaria = null;
+		SQLiteDatabase db = null;
+		List<Lote> lotes = new ArrayList<Lote>();
+		try 
+		{
+			db = DatabaseProvider.Helper.getDatabase(cnt);
+			Cursor c = null;
+			List<Object> catalogos = null;
+			
+				Lote lote = new Lote();				
+				c = DatabaseProvider.query(db,query.toString());
+				if (c.moveToFirst()) {
+					// Recorremos el cursor hasta que no haya más registros
+					do {
+						lotes.add(new Lote(c.getLong(0), c
+								.getString(1), c.getInt(2)));
+					} while (c.moveToNext());
+				}
+			} catch(Exception e) {
+				
+			}
+		return lotes;
+	}
+
 
 }

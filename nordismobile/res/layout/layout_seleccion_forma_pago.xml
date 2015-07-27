@@ -51,7 +51,7 @@
                     android:textSize="11sp" />
 
                 <Spinner
-                    android:id="@+id/cmb_forma_pago"
+                    android:id="@+id/cmb_lote"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -74,7 +74,7 @@
                     android:textSize="11sp" />
 
                 <EditText
-                    android:id="@+id/txtNumero"
+                    android:id="@+id/txtNumeroLote"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
@@ -196,7 +196,7 @@
                     android:textSize="11sp" />
 
                 <EditText
-                    android:id="@+id/txtMontoPago"
+                    android:id="@+id/txtCantidad"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
@@ -246,7 +246,7 @@
                     android:textSize="11sp" />
 
                 <EditText
-                    android:id="@+id/txtNumeroSerie"
+                    android:id="@+id/txtProducto"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"

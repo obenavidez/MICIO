@@ -57,12 +57,14 @@ import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.interfaces.Editable; 
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Cliente; 
+import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.ExpandListAdapter;
@@ -75,6 +77,7 @@ import com.panzyma.nm.view.viewholder.ProductoLoteViewHolder;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewdialog.DialogCliente; 
+import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewdialog.ProductoDevolucion;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener; 
@@ -116,14 +119,19 @@ Handler.Callback, Editable
 	
 	public static ProductoDevolucion pd;
 	List<DevolucionProducto> dev_prod;
+	
+	public List<DevolucionProducto> getDev_prod() {
+		return dev_prod;
+	}	
+
 	private Devolucion dev;
 	private ExpandableListView lvdevproducto; 
 	private ExpandListAdapter adapter;
 	protected int[] childpositioncache = new int[2];
 	protected ExpandListGroup dvselected;
 	private ExpandListChild childselected;
-	
-	
+	private ViewDevolucionEdit me;
+	ArrayList<Producto> aprodselected;
 	
 	DrawerLayout drawerLayout;
 	ListView drawerList;
@@ -177,11 +185,13 @@ Handler.Callback, Editable
 	{
 		super.onCreate(savedInstanceState);
 		context=this;
+		me = this;
 		setContentView(R.layout.devolucion_edit);
 		SessionManager.setContext(this);
 		UserSessionManager.setContext(this);
 		com.panzyma.nm.NMApp.getController().setView(this);
 		Message m=new Message();
+		aprodselected = new ArrayList<Producto>();
 		m.what=ControllerProtocol.OBTENERVALORCATALOGO;
 		m.obj=new String[]{"MotivoDevolucionNoVencidos"};
 		NMApp.getController().getInboxHandler().sendMessage(m);
@@ -500,6 +510,9 @@ Handler.Callback, Editable
 				case ID_DEVOLVER_PEDIDO:
 						devolverdocumento();
 						break;
+				case ID_AGREGAR_PRODUCTO:
+						agregarProducto();
+						break;
 //				case ID_CONDICIONES_Y_NOTAS:
 //						agregarCondicionesYNotas();
 //						break;
@@ -575,6 +588,38 @@ Handler.Callback, Editable
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 	
+	private void agregarProducto() {
+	
+		if (cliente == null) 
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Seleccione primero el cliente del pedido.",
+					"Seleccione primero el cliente del pedido.","")); 
+			return;
+		}
+
+		DialogProducto dp = new DialogProducto(me, aprodselected, cliente.getObjCategoriaClienteID(), cliente.getObjTipoClienteID());
+		
+
+		dp.setOnDialogProductButtonClickListener(new DialogProducto.OnButtonClickListener() {
+
+			@Override
+			public void onButtonClick(DetallePedido det_p, Producto prod) 
+			{
+				com.panzyma.nm.NMApp.getController().setView(me);
+				det_p.setId(pedido.getId());
+				aprodselected.add(prod);				
+			}
+
+		});
+		Window window = dp.getWindow();
+		window.setGravity(Gravity.CENTER);
+		window.setLayout(display.getWidth() - 10, display.getHeight() - 50);
+		dp.show();
+
+	}
+
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -774,6 +819,11 @@ Handler.Callback, Editable
 				break;
 		}
 		return false;
+	}
+
+
+	public void setDev_prod(ArrayList<DevolucionProducto> arrayList) {
+		this.dev_prod = arrayList;		
 	}
 	
 

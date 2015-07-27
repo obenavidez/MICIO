@@ -1,9 +1,22 @@
 package com.panzyma.nm.serviceproxy;
 
-public class DevolucionProductoLote
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class DevolucionProductoLote implements Parcelable
 {
-	
 	public DevolucionProductoLote(){}
+	
+	public DevolucionProductoLote(Parcel parcel){
+		id = parcel.readLong( );
+		objLoteID = parcel.readLong(   );
+		numeroLote = parcel.readString(  );
+		fechaVencimiento = parcel.readInt(   );
+		cantidadDevuelta = parcel.readInt(  );
+		fueraPolitica = (parcel.readInt() == 1) ;
+		cantidadDespachada = parcel.readInt(  );
+		deleted = (parcel.readInt() == 1);
+	}
 	
 	public DevolucionProductoLote(DevolucionProductoLote lote)
 	{		
@@ -144,4 +157,33 @@ public class DevolucionProductoLote
 	private boolean fueraPolitica;
 	private int cantidadDespachada;
 	private boolean deleted;
+	
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {	
+	     @Override
+		public DevolucionProductoLote createFromParcel(Parcel parcel) {
+	          return new DevolucionProductoLote(parcel);
+	     }	
+	     @Override
+		public ReciboDetNC[] newArray(int size) {
+	          return new ReciboDetNC[size];
+	     }
+	};
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(  id );
+		parcel.writeLong(  objLoteID );
+		parcel.writeString( numeroLote );
+		parcel.writeInt(  fechaVencimiento );
+		parcel.writeInt( cantidadDevuelta );
+		parcel.writeInt( fueraPolitica ? 1 : 0 );
+		parcel.writeInt( cantidadDespachada );
+		parcel.writeInt(  deleted ? 1 : 0 );		
+	}
 }
