@@ -5,9 +5,7 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.panzyma.nm.interfaces.DevolucionItem;
-import com.panzyma.nm.interfaces.Item;
-import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.interfaces.DevolucionItem; 
 
 public class vmDevolucion  implements Parcelable , DevolucionItem  {
 

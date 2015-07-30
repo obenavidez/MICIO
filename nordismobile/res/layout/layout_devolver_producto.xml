@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ffffff"
+            android:shrinkColumns="*"
+            android:stretchColumns="*" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="15dp"
+                android:background="#b0b0b0"
+                android:gravity="center_horizontal" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_span="3"
+                    android:background="#b0b0b0"
+                    android:padding="15dip"
+                    android:text="Editar Producto-Lote a Devolver"
+                    android:textColor="@color/DarkBlue"
+                    android:textSize="13sp" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowNumeroSerie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblNumeroSerie"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Producto:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtProducto"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:ems="10"
+                    android:layout_span="2"
+                    android:enabled="false"
+                    android:textSize="11sp" 
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowFormaPago"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblFormaPago"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Lote:"
+                    android:textSize="11sp" />
+
+                <Spinner
+                    android:id="@+id/cmb_lote"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2"
+                    android:ems="10"
+                    tools:listitem="@android:layout/simple_spinner_item" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowNumero"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblNumero"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Número Lote:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtNumeroLote"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:ems="10"
+                    android:layout_span="2"
+                    android:inputType="numberDecimal" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowVencimiento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblFecha"
+                    android:layout_width="125dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Vencimiento:"
+                    android:textSize="11sp" />            
+
+                    <Spinner
+                        android:id="@+id/cmb_mes"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_span="1"
+                        android:ems="10"
+                        android:entries="@array/meses_anio"
+                        tools:listitem="@android:layout/simple_spinner_item" />
+
+                    <EditText
+                        android:id="@+id/txtAnio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="3dp"
+                        android:layout_span="1"
+                        android:ems="10"
+                        android:inputType="numberDecimal" />
+                
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tblRowCantidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/lblMontoPago"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left|center"
+                    android:text="Cantidad:"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/txtCantidad"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:ems="10"
+                    android:layout_span="2"
+                    android:enabled="true"
+                    android:inputType="number|text" />
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
+
+</LinearLayout>

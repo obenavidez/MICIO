@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections; 
 import java.util.LinkedHashMap;  
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;  
 
@@ -57,12 +58,14 @@ import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.interfaces.Editable; 
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Cliente; 
+import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.ExpandListAdapter;
@@ -75,6 +78,7 @@ import com.panzyma.nm.view.viewholder.ProductoLoteViewHolder;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewdialog.DialogCliente; 
+import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewdialog.ProductoDevolucion;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener; 
@@ -116,14 +120,22 @@ Handler.Callback, Editable
 	
 	public static ProductoDevolucion pd;
 	List<DevolucionProducto> dev_prod;
+	
+	public List<DevolucionProducto> getDev_prod() {
+		return dev_prod;
+	}	
+
 	private Devolucion dev;
 	private ExpandableListView lvdevproducto; 
 	private ExpandListAdapter adapter;
-	protected int[] childpositioncache = new int[2];
+	protected int[] positioncache = new int[2];
 	protected ExpandListGroup dvselected;
 	private ExpandListChild childselected;
-	
-	
+
+	private ViewDevolucionEdit me;
+	ArrayList<Producto> aprodselected;
+
+	private ExpandListGroup groupselected;
 	
 	DrawerLayout drawerLayout;
 	ListView drawerList;
@@ -148,11 +160,13 @@ Handler.Callback, Editable
 	
 	public static final Display display;
 	
+	List<ExpandListGroup> lgroups = new LinkedList<ExpandListGroup>();
+	
     static 
     { 
     	int contador=0;
     	Map<String, String> aMap = null;  
-    	 
+    	
     	aMap = new LinkedHashMap<String, String>(); 
     	aMap.put("-1",""); 
     	aMap.put("RE","Reposición");
@@ -177,11 +191,13 @@ Handler.Callback, Editable
 	{
 		super.onCreate(savedInstanceState);
 		context=this;
+		me = this;
 		setContentView(R.layout.devolucion_edit);
 		SessionManager.setContext(this);
 		UserSessionManager.setContext(this);
 		com.panzyma.nm.NMApp.getController().setView(this);
 		Message m=new Message();
+		aprodselected = new ArrayList<Producto>();
 		m.what=ControllerProtocol.OBTENERVALORCATALOGO;
 		m.obj=new String[]{"MotivoDevolucionNoVencidos"};
 		NMApp.getController().getInboxHandler().sendMessage(m);
@@ -296,10 +312,13 @@ Handler.Callback, Editable
 					ProductoLoteDetalleViewHolder.class, false));
 			try 
 			{
-				adapter = new ExpandListAdapter(context,SetStandardGroups(), layouts);
+				adapter = new ExpandListAdapter(context,lgroups=SetStandardGroups(), layouts);
 				lvdevproducto.setAdapter(adapter);
-				lvdevproducto.expandGroup(0);
-				lvdevproducto.expandGroup(1);
+				
+				for(int g=0; g < adapter.getGroupCount(); g++){
+					lvdevproducto.expandGroup(g);
+				}
+				
 				lvdevproducto.setOnChildClickListener(new OnChildClickListener() {
 
 							
@@ -313,13 +332,13 @@ Handler.Callback, Editable
 								if (_parent == null)
 									return false;
 
-								if (childpositioncache != null
-										&& childpositioncache.length != 0) 
+								if (positioncache != null
+										&& positioncache.length != 0) 
 								{
 									long value = ExpandableListView
 											.getPackedPositionForChild(
-													childpositioncache[0],
-													childpositioncache[1]);
+													positioncache[0],
+													positioncache[1]);
 									flatpost = _parent
 											.getFlatListPosition(value);
 									ajustPos = flatpost
@@ -340,10 +359,10 @@ Handler.Callback, Editable
 								v.setBackgroundDrawable(context
 										.getResources().getDrawable(
 												R.color.LighBlueMarine));
-								childpositioncache[0] = groupPosition;
-								childpositioncache[1] = childPosition;
+								positioncache[0] = groupPosition;
+								positioncache[1] = childPosition;
 								
-								childselected=(ExpandListChild) adapter.getChild(childpositioncache[0], childpositioncache[1]);
+								childselected=(ExpandListChild) adapter.getChild(positioncache[0], positioncache[1]);
 								
 								return true;
 							}
@@ -371,12 +390,12 @@ Handler.Callback, Editable
 										if (elv == null)
 											return false;
 
-										if (childpositioncache != null && childpositioncache.length != 0) 
+										if (positioncache != null && positioncache.length != 0) 
 										{
 											long value = ExpandableListView
 													.getPackedPositionForChild(
-															childpositioncache[0],
-															childpositioncache[1]);
+															positioncache[0],
+															positioncache[1]);
 											flatpost = elv
 													.getFlatListPosition(value);
 											ajustPos = flatpost - elv.getFirstVisiblePosition();
@@ -399,11 +418,11 @@ Handler.Callback, Editable
 												.getResources().getDrawable(
 														R.color.LighBlueMarine));
 
-										childpositioncache[0] = ExpandableListView.getPackedPositionGroup(id);
-										childpositioncache[1] = ExpandableListView.getPackedPositionChild(id);
+										positioncache[0] = ExpandableListView.getPackedPositionGroup(id);
+										positioncache[1] = ExpandableListView.getPackedPositionChild(id);
 										 
-										childselected=(ExpandListChild) adapter.getChild(childpositioncache[0], childpositioncache[1]);
-										ExpandListGroup groupselected=(ExpandListGroup) adapter.getGroup(childpositioncache[0]);
+										childselected=(ExpandListChild) adapter.getChild(positioncache[0], positioncache[1]);
+										groupselected=(ExpandListGroup) adapter.getGroup(positioncache[0]);
 										EditarProductoLote(groupselected.getName(),childselected);
 										
 									}
@@ -417,8 +436,7 @@ Handler.Callback, Editable
 			} catch (Exception e) {
 			}
 		} else
-			adapter.notifyDataSetChanged();
-		
+			adapter.notifyDataSetChanged();		
 		
 	}
 	
@@ -436,7 +454,7 @@ Handler.Callback, Editable
 			@Override
 			public void onButtonClick(DevolucionProductoLote plote) 
 			{ 
-				DevolucionProductoLote lote=plote;
+				updateGrid(plote);
 			}
 		});
 		newFragment.show(ft, "dialogDevolucionProductoCantidad");
@@ -444,14 +462,14 @@ Handler.Callback, Editable
 	
 	public List<ExpandListGroup> SetStandardGroups() 
 	{
-		List<ExpandListGroup> lgroups = new ArrayList<ExpandListGroup>();
+		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();
 		
-		ArrayList<ExpandListChild> groupchild;
+		LinkedList<ExpandListChild> groupchild;
 
 		for (DevolucionProducto dp : dev_prod) 
 		{
 			ExpandListGroup group = new ExpandListGroup();
-			groupchild = new ArrayList<ExpandListChild>();
+			groupchild = new LinkedList<ExpandListChild>();
 			group.setName(dp.getNombreProducto());
 			group.setObject(dp);
 			for (DevolucionProductoLote dpl : dp.getProductoLotes()) 
@@ -462,10 +480,64 @@ Handler.Callback, Editable
 				groupchild.add(ch);
 			}
 			group.setItems(groupchild);
-			lgroups.add(group);
-		}
-		return lgroups;
+			_lgroups.add(group);
+		} 
+		return _lgroups;
 	}
+	
+	public void updateGrid(DevolucionProductoLote dpl)
+	{  
+		int cantidadDevolver =0, cantidadTotalDevolver=0,cantidadBonificada=0,cantidadOrdenada=0,cantidadFacturada;
+		float proporcion=0.0f;
+		long preciounitario=0,montobonificacion=0,subTotal,impuesto=0;	
+		
+		ExpandListGroup lg=new ExpandListGroup();		
+		ExpandListChild ch = new ExpandListChild();
+		ch.setName(dpl.getNumeroLote());
+		ch.setObject(dpl); 		
+		groupselected.getItems().set(positioncache[1],ch);	
+		
+		for(ExpandListChild _ch:groupselected.getItems()) 
+			cantidadTotalDevolver+=((DevolucionProductoLote)_ch.getObject()).getCantidadDevuelta(); 
+		
+		DevolucionProducto dp=(DevolucionProducto) groupselected.getObject(); 	 
+		cantidadDevolver=dpl.getCantidadDevuelta();
+		cantidadFacturada=dp.getCantidadOrdenada()+dp.getCantidadBonificada();
+		
+		cantidadOrdenada=dp.getCantidadOrdenada();
+		preciounitario=dp.getPrecio();
+		
+		if(cantidadDevolver==cantidadFacturada)
+			cantidadBonificada=dp.getCantidadBonificada();
+		else
+		{
+			// calcular Bonificacion
+			proporcion  = (dp.getCantidadBonificada() / cantidadOrdenada ) + 1;
+			cantidadBonificada = (int)(cantidadDevolver - (cantidadDevolver / proporcion));
+		}
+		
+		// calcular montobonificacion
+		montobonificacion = cantidadBonificada * preciounitario;
+
+		subTotal=cantidadDevolver*preciounitario;
+		
+		// Impuesto --pendiente, tenemos q traer el impuesto del pedido.
+		//impuesto = porcentajadeImpuestoPedido * ( subtotal - montobonificacion); 
+		//Total
+		dp.setCantidadDevolver(cantidadTotalDevolver); 
+		dp.setBonificacion(cantidadBonificada);
+		dp.setBonificacionVen(cantidadBonificada);
+		dp.setMontoBonif(montobonificacion);
+		dp.setMontoBonifVen(montobonificacion);
+		
+		dp.setSubtotal(subTotal); 
+		dp.setTotal(subTotal - montobonificacion + impuesto);
+		groupselected.setObject(dp); 
+		lgroups.set(positioncache[0], groupselected);
+		
+		initExpandableListView();
+	}
+	
 	
 	public void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
@@ -499,6 +571,9 @@ Handler.Callback, Editable
 						break;
 				case ID_DEVOLVER_PEDIDO:
 						devolverdocumento();
+						break;
+				case ID_AGREGAR_PRODUCTO:
+						agregarProducto();
 						break;
 //				case ID_CONDICIONES_Y_NOTAS:
 //						agregarCondicionesYNotas();
@@ -575,6 +650,38 @@ Handler.Callback, Editable
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 	
+	private void agregarProducto() {
+	
+		if (cliente == null) 
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Seleccione primero el cliente del pedido.",
+					"Seleccione primero el cliente del pedido.","")); 
+			return;
+		}
+
+		DialogProducto dp = new DialogProducto(me, aprodselected, cliente.getObjCategoriaClienteID(), cliente.getObjTipoClienteID());
+		
+
+		dp.setOnDialogProductButtonClickListener(new DialogProducto.OnButtonClickListener() {
+
+			@Override
+			public void onButtonClick(DetallePedido det_p, Producto prod) 
+			{
+				com.panzyma.nm.NMApp.getController().setView(me);
+				det_p.setId(pedido.getId());
+				aprodselected.add(prod);				
+			}
+
+		});
+		Window window = dp.getWindow();
+		window.setGravity(Gravity.CENTER);
+		window.setLayout(display.getWidth() - 10, display.getHeight() - 50);
+		dp.show();
+
+	}
+
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -774,6 +881,11 @@ Handler.Callback, Editable
 				break;
 		}
 		return false;
+	}
+
+
+	public void setDev_prod(ArrayList<DevolucionProducto> arrayList) {
+		this.dev_prod = arrayList;		
 	}
 	
 

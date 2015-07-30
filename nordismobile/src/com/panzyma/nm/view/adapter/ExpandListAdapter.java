@@ -2,9 +2,12 @@ package com.panzyma.nm.view.adapter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
 import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
 import com.panzyma.nordismobile.R;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -46,7 +49,7 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
 		// TODO Auto-generated method stub
-		ArrayList<ExpandListChild> chList = ((ExpandListGroup)groups.get(groupPosition)).getItems();
+		LinkedList<ExpandListChild> chList = ((ExpandListGroup)groups.get(groupPosition)).getItems();
 		return chList.get(childPosition);
 	}
 	
@@ -65,7 +68,7 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 	@Override
 	public int getChildrenCount(int groupPosition) {
 		// TODO Auto-generated method stub
-		ArrayList<ExpandListChild> chList = ((ExpandListGroup)groups.get(groupPosition)).getItems();
+		LinkedList<ExpandListChild> chList = ((ExpandListGroup)groups.get(groupPosition)).getItems();
 
 		return chList.size();
 	}
