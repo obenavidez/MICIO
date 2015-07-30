@@ -1,5 +1,8 @@
 package com.panzyma.nm.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.SessionManager;
@@ -8,10 +11,14 @@ import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.view.adapter.InvokeBridge;
+import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nm.viewmodel.vmDevolucion;
 import com.panzyma.nordismobile.R;
 
+import static com.panzyma.nm.controller.ControllerProtocol.*;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
+@InvokeBridge(bridgeName = "BDevolucionM")
 public class ViewDevoluciones extends ActionBarActivity implements ListaFragment.OnItemSelectedListener, Handler.Callback {
 
 	
@@ -66,6 +74,8 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	SearchView searchView;
 	CustomArrayAdapter customArrayAdapter;
 	vmDevolucion item_selected = null;
+	ProgressDialog pDialog;
+	List<vmDevolucion> clientes = new ArrayList<vmDevolucion>();
 	
 
 	@Override
@@ -80,6 +90,8 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		
 		Render_Menu();
 		
+		Load_Data(LOAD_DATA_FROM_LOCALHOST);
+		
 		fragmentActive = FragmentActive.LIST;
 		
 		firstFragment = new ListaFragment<vmDevolucion>();
@@ -91,14 +103,28 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		}
 		
 		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
-		
-		
 	
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean handleMessage(Message arg0) {
-		return false;
+	public boolean handleMessage(Message msg) {
+		boolean result = false;
+		ArrayList<vmDevolucion> list = null;
+		
+		if (pDialog != null && pDialog.isShowing())
+			pDialog.dismiss();
+		
+		switch (msg.what) {
+		
+			case C_DATA:
+				list = (ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>() : msg.obj);
+				SetList(list);
+			
+			break;
+		
+		}
+		return result ;
 	}
 	
 	@Override
@@ -254,5 +280,28 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			return;
 		}
 	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	private void Load_Data(int what) {
+		try {
+
+			NMApp.getController().getInboxHandler().sendEmptyMessage(what);
+			pDialog = new ProgressDialog(this);
+			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDialog.setMessage("Procesando...");
+			pDialog.setCancelable(true);
+			pDialog.show();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void SetList(List<vmDevolucion> list) {
+		firstFragment.setItems(clientes);
+	}
+	
 	
 }

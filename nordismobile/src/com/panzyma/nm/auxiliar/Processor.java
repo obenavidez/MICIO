@@ -20,6 +20,7 @@ import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.viewmodel.vmCliente;
+import com.panzyma.nm.viewmodel.vmDevolucion;
 import com.panzyma.nm.viewmodel.vmFicha;
 import com.panzyma.nm.viewmodel.vmProducto;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -203,5 +204,12 @@ public class Processor {
 		
 	}
 	
-	
+	public static void send_ViewDevolucionesToView(ArrayList<vmDevolucion> objL,Controller controller)throws Exception
+	{ 
+		 synchronized(lock)
+	     { 
+			 controller.notifyOutboxHandlers(C_DATA, 0, 0, (objL.size()!=0)?objL:new ArrayList<vmDevolucion>() );
+			// Thread.sleep(500); 
+	     }  
+	}
 }

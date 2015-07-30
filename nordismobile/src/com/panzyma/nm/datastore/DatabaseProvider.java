@@ -164,7 +164,7 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 14; 
+	private static final int BD_VERSION = 16; 
 	
 	public static final String TABLA_CLIENTE = "Cliente";
 	public static final String TABLA_FACTURA = "Factura";
@@ -1221,7 +1221,8 @@ public class DatabaseProvider extends ContentProvider
 									 	break;
 			case DEVOLUCION:				
 										dictionary.put(DEVOLUCION, TABLA_DEVOLUCIONES);
-										dictionary.put(DEVOLUCION_ID,CONTENT_URI_DEVOLUCION.toString());
+										dictionary.put(CONTENT_URI_LOCALID,CONTENT_URI_DEVOLUCION.toString());
+										
 										break;
 			case DEVOLUCIONPRODUCTO:				
 										dictionary.put(DEVOLUCIONPRODUCTO, TABLA_DEVOLUCIONPRODUCTO);

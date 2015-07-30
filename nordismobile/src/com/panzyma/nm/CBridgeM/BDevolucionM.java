@@ -1,6 +1,7 @@
 package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 
 import java.util.HashMap;
 
@@ -8,6 +9,7 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelPedido;
@@ -34,10 +36,13 @@ public class BDevolucionM extends BBaseM{
 			case ControllerProtocol.LOAD_PEDIDOS_FROM_LOCALHOST:
 					ObtenerPedidosLocalmente( Long.valueOf(msg.getData().get("objSucursalID").toString()));
 				break;			
+			case LOAD_DATA_FROM_LOCALHOST:
+				onLoadALLData_From_LocalHost();
+				break;
 			default:
 				break;
 		}
-		return false;
+		return true;
 	}
 
 	private void ObtenerValorCatalogo(String...valores)
@@ -117,4 +122,39 @@ public class BDevolucionM extends BBaseM{
 		} 
 		  
     }
+
+    
+    
+    
+    private void onLoadALLData_From_LocalHost()
+	{		
+		try 
+		{ 
+			getPool().execute(new Runnable(){
+			
+					@Override
+					public void run() {
+						try 
+						{
+							Processor.send_ViewDevolucionesToView(ModelDevolucion.obtenerDevolucionesFromLocalHost(getResolver()), getController());	
+						}
+						catch (Exception e) 
+						{
+							e.printStackTrace();
+						}
+					}
+			});
+		}
+		catch (Exception e) 
+        { 
+			try {
+				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno en la sincronización con la BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}  
+		} 
+		
+	}
+
+
 }

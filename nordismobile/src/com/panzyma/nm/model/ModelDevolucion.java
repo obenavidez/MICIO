@@ -38,7 +38,7 @@ public class ModelDevolucion {
   
 	}
 	
-	public static List<vmDevolucion> obtenerDevolucionesFromLocalHost(ContentResolver content)
+	public static ArrayList<vmDevolucion> obtenerDevolucionesFromLocalHost(ContentResolver content)
 	{
 		
 		 String[] projection = new String[] {
@@ -52,13 +52,14 @@ public class ModelDevolucion {
 					 };
 		
 		
-		 List<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
+		 ArrayList<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
 		
 		 Cursor cur = content.query(DatabaseProvider.CONTENT_URI_DEVOLUCION,
-			        projection, //Columnas a devolver
+			        null, //Columnas a devolver
 			        null,       //Condición de la query
 			        null,       //Argumentos variables de la query
 			        null);  
+		 
 		 if (cur.moveToFirst()) 
 		 {  
 				
