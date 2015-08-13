@@ -42,6 +42,20 @@ public class ListaFragment<E> extends ListFragment implements Filterable,
 		setListAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 	}
+	
+	public void setItems(List<E> items, boolean use_special_holder) {
+		if (mAdapter == null) {
+			Activity a=getActivity();
+			if(a==null)
+				return;
+			mAdapter = new CustomArrayAdapter<E>(a,android.R.id.list, items,use_special_holder);
+		} else {
+			mAdapter.setData(items,use_special_holder);
+		}
+		setListAdapter(mAdapter);
+		mAdapter.notifyDataSetChanged();
+	}
+	
 
 	// The container Activity must implement this interface so the frag can
 	// deliver messages

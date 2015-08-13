@@ -75,7 +75,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	CustomArrayAdapter customArrayAdapter;
 	vmDevolucion item_selected = null;
 	ProgressDialog pDialog;
-	List<vmDevolucion> clientes = new ArrayList<vmDevolucion>();
+	List<vmDevolucion> devoluciones = new ArrayList<vmDevolucion>();
 	
 
 	@Override
@@ -300,7 +300,9 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	}
 
 	private void SetList(List<vmDevolucion> list) {
-		firstFragment.setItems(clientes);
+		devoluciones = list;
+		firstFragment.setItems(devoluciones,true);
+		gridheader.setText(String.format("LISTA DEVOLUCIONES (%s)", devoluciones.size()));
 	}
 	
 	

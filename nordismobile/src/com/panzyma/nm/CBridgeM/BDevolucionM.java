@@ -3,6 +3,8 @@ package com.panzyma.nm.CBridgeM;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.panzyma.nm.auxiliar.ErrorMessage;
@@ -15,6 +17,7 @@ import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.model.ModelSolicitudDescuento;
 import com.panzyma.nm.serviceproxy.Devolucion;
+import com.panzyma.nm.viewmodel.vmDevolucion;
 
 import android.os.Message;
 import android.util.Log;
@@ -136,7 +139,28 @@ public class BDevolucionM extends BBaseM{
 					public void run() {
 						try 
 						{
-							Processor.send_ViewDevolucionesToView(ModelDevolucion.obtenerDevolucionesFromLocalHost(getResolver()), getController());	
+							vmDevolucion item = new vmDevolucion();
+							item.setCliente("Cliente 1");
+							item.setEstado("BORRADOR");
+							
+							item.setNumeroCentral(123456789);
+							item.setTotal(new Float(123.45));
+							
+							ArrayList<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
+							lista.add(item);
+							
+							/*
+							lista.add(new vmDevolucion(
+     							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))),
+     							   Integer.parseInt(cur.getString(cur.getColumnIndex(projection[1]))), 
+     							   Date.valueOf(cur.getString(cur.getColumnIndex(projection[2]))), 
+     							   cur.getString(cur.getColumnIndex(projection[3])), 
+     							   Float.valueOf(cur.getString(cur.getColumnIndex(projection[4]))),
+     							   cur.getString(cur.getColumnIndex(projection[5])),
+     							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[6]))))
+     	);*/
+							
+							Processor.send_ViewDevolucionesToView(/*ModelDevolucion.obtenerDevolucionesFromLocalHost(getResolver())*/lista, getController());	
 						}
 						catch (Exception e) 
 						{

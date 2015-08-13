@@ -55,7 +55,7 @@ public class ModelDevolucion {
 		 ArrayList<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
 		
 		 Cursor cur = content.query(DatabaseProvider.CONTENT_URI_DEVOLUCION,
-			        null, //Columnas a devolver
+				 projection, //Columnas a devolver
 			        null,       //Condición de la query
 			        null,       //Argumentos variables de la query
 			        null);  
