@@ -336,6 +336,14 @@ public class BConfiguracionM extends BBaseM {
 										
 										if (res.get_error() == null) 
 										{
+											if( res.get_devicePrefix() < 0) {
+												Processor.notifyToView(NMApp.getController(),
+														ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
+														"Configure el movil en la aplicación de escritorio.");
+												SessionManager.setValidPrefix(false);
+												return;
+											}
+											SessionManager.setValidPrefix(true);
 											Processor.notifyToView(NMApp.getController(),
 													ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
 													"Salvando configuración.");

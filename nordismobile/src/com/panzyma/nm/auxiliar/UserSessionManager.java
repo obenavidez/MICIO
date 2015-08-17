@@ -328,7 +328,8 @@ public class UserSessionManager
 													UserSessionManager.setPassword(password);															
 													
 													Usuario user = SessionManager.getLoginUser();
-													if( ( user != null ) &&
+													if(  SessionManager.isValidPrefix() &&
+														( user != null ) &&
 														( user.getPassword() == null ||
 														  ( user.getPassword() != null &&
 														    user.getPassword().trim().length() == 0) 
