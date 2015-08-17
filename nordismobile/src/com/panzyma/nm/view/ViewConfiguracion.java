@@ -398,7 +398,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 						}
 							
 						if (actionId == ID_SALVAR_CONFIGURACION)
-								salvarConfiguracion();
+								salvarConfiguracion(ControllerProtocol.ID_SALVAR_CONFIGURACION);
 						else if (actionId == ID_SINCRONIZE_PARAMETROS)  
 								controller.getInboxHandler().sendEmptyMessage(ID_SINCRONIZE_PARAMETROS); 
 						else if (actionId == ID_SINCRONIZE_CATALOGOSBASICOS) 						 
@@ -750,7 +750,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 				Controller controller = NMApp.getController();
 				switch (position) {
 				case SALVAR_CONFIGURACION:
-					salvarConfiguracion();
+					salvarConfiguracion(ID_SALVAR_CONFIGURACION);
 					break;
 				case SINCRONIZAR_PARAMETROS:
 					controller.getInboxHandler().sendEmptyMessage(
