@@ -138,8 +138,7 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 				convertView.setTag(R.layout.list_row,holder);
 			 }
 		} 
-		else 
-		{
+		
 			 if(SpecialItem)
 			 {
 				 holderdevolucion = ((ViewHolderDevolucion) convertView.getTag(R.layout.list_row_devolucion));
@@ -156,7 +155,7 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 				 holder.txtDescription.setText(rowItem.getItemDescription());
 				 holder.txtExtraInfo.setText(" | "+rowItem.getItemCode() + " CD");
 			 }
-		}
+		
 		
 
 		 if (position == selectedPos) {
