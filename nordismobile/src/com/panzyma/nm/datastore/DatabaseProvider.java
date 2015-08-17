@@ -1657,10 +1657,11 @@ public class DatabaseProvider extends ContentProvider
 		 
 			if(idpedido!=0)
 			{
-				bdd.delete(TABLA_PEDIDO, NMConfig.Pedido.Id+"="+String.valueOf(idpedido),null); 
+				 
 				bdd.delete(TABLA_PEDIDODETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(idpedido),null);
 				bdd.delete(TABLA_PEDIDOPROMOCION,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(idpedido),null);
 				bdd.delete(TABLA_PEDIDOPROMOCIONDETALLE,NMConfig.Pedido.DetallePedido.objPedidoID+ "="+String.valueOf(idpedido),null);
+				bdd.delete(TABLA_PEDIDO, NMConfig.Pedido.Id+"="+String.valueOf(idpedido),null);
 			}
 			if(pedido.getNumeroCentral()!=0)
 				values.put(NMConfig.Pedido.Id, pedido.getId());	

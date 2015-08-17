@@ -257,15 +257,17 @@ public class BPedidoM extends BBaseM {
 								0,0,new String("Actualizando Pedido..."));
 						Pedido obj =ModelPedido.refrescarPedido(credenciales, refPedido);			          
 			            
-			            if (obj == null) return; 
+			            if (obj == null || obj.getId() == 0L ) return; 
 						
 					    //guardando de nuevo localmente el pedido ya actualizado  
 						guardar_Pedido(obj);
 						 
 						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
 								0,0,new String("Actualizando el estado de cuentas del Cliente"));
-			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
-			            Cliente cliente= BClienteM.actualizarCliente(NMApp.getContext(),SessionManager.getCredenciales(),obj.getObjSucursalID()); 
+			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo 
+						Cliente cliente = null;
+						if( obj.getObjSucursalID() != 0)
+							cliente = BClienteM.actualizarCliente(NMApp.getContext(),SessionManager.getCredenciales(),obj.getObjSucursalID());						
 			           
 			            //Notificar al Usuario el resultado del envio del Pedido.
 			            NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER, 0, 0,obj);

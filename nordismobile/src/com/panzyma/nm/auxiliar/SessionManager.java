@@ -31,7 +31,15 @@ public class SessionManager
 	private static  String password; 
 	private static  boolean islogged;
 	public static boolean usuarioDeSincronizacion = false;
+	public static boolean validPrefix = false;
 	
+	public static boolean isValidPrefix() {
+		return validPrefix;
+	}
+
+	public static void setValidPrefix(boolean validPrefix) {
+		SessionManager.validPrefix = validPrefix;
+	}
 	private static  Activity context;
 	
     private static final int AUT_FALLIDA = 0; 
@@ -115,6 +123,10 @@ public class SessionManager
 			userinfo=Usuario.get(context);
 		return userinfo;
 	}
+	
+	public static void setLoginUserToNull(){
+		userinfo = null;
+	} 
 	
 	public static String[] getSession()
 	{
