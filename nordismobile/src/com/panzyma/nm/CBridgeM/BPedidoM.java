@@ -257,7 +257,7 @@ public class BPedidoM extends BBaseM {
 								0,0,new String("Actualizando Pedido..."));
 						Pedido obj =ModelPedido.refrescarPedido(credenciales, refPedido);			          
 			            
-			            if (obj == null) return; 
+			            if (obj == null || obj.getId() == 0L ) return; 
 						
 					    //guardando de nuevo localmente el pedido ya actualizado  
 						guardar_Pedido(obj);
