@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.interfaces.DevolucionItem;
 import com.panzyma.nm.interfaces.Item;
 import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.vCliente;
@@ -29,6 +30,8 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 	 * 
 	 */
 	private static final long serialVersionUID = 1251056210535658217L;
+	private boolean SpecialItem;
+	
 
 	@Override
 	public void remove(E object) {
@@ -63,6 +66,12 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 		this.context = context;
 		items = objects;
 	}
+	public CustomArrayAdapter(Context context, int textViewResourceId, List<E> objects, boolean ViewHolder_Devoluciones) {
+		super(context, textViewResourceId, objects = (objects==null)? new ArrayList<E>():objects);		
+		this.context = context;
+		items = objects;
+		SpecialItem = ViewHolder_Devoluciones;
+	}
 	
 	public void setData(List<E> data) {        
         items.clear();
@@ -72,40 +81,82 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
             }
         }
     }
+	
+	public void setData(List<E> data, boolean ViewHolder_Devoluciones) {   
+		SpecialItem = ViewHolder_Devoluciones;
+        items.clear();
+        if (data != null) {
+            for (E appEntry : data) {                
+                items.add(appEntry);
+            }
+        }
+    }
 
-	/* private view holder class */
-	private class ViewHolder { 
-		TextView txtName;
-		TextView txtDescription;
-		TextView txtExtraInfo;
-	}
-
+	
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public View getView(int position, View convertView, ViewGroup parent) {
 
 		ViewHolder holder = null;
-		Item rowItem = (Item)getItem(position);
+		ViewHolderDevolucion holderdevolucion = null;
+		Item rowItem =null;
+		DevolucionItem Item=null; 
+		
+		
+	   if(SpecialItem)
+		   Item  = (DevolucionItem)getItem(position);
+	   else 
+		   rowItem = (Item)getItem(position);
+	   
 
 		LayoutInflater mInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		if (convertView == null) {
+		if (convertView == null) 
+		{
 
-			convertView = mInflater.inflate(R.layout.list_row, null);
-			holder = new ViewHolder();
+			 if(SpecialItem)
+			 {
+				 convertView = mInflater.inflate(R.layout.list_row_devolucion, null);
+				 holderdevolucion = new ViewHolderDevolucion();
+				 holderdevolucion.txtNumero = (TextView) convertView.findViewById(R.id.Numero);
+				 holderdevolucion.txtfecha = (TextView) convertView.findViewById(R.id.fecha);
+				 holderdevolucion.txtcustomer = (TextView) convertView.findViewById(R.id.customer);
+				 holderdevolucion.txtmonto = (TextView) convertView.findViewById(R.id.totalmonto);
+				 holderdevolucion.txtestado = (TextView) convertView.findViewById(R.id.Estado);
+				 convertView.setTag(R.layout.list_row_devolucion,holderdevolucion);
+			 }
+			 else 
+			 {
+				convertView = mInflater.inflate(R.layout.list_row, null);
+				holder = new ViewHolder();
 
-			holder.txtName = (TextView) convertView.findViewById(R.id.menu_name);
-			holder.txtDescription = (TextView) convertView.findViewById(R.id.description);
-			holder.txtExtraInfo = (TextView) convertView.findViewById(R.id.price); 
-			convertView.setTag(holder);
-
-		} else
-			holder = ((ViewHolder) convertView.getTag());
-
-		holder.txtName.setText(rowItem.getItemName());
-		holder.txtDescription.setText(rowItem.getItemDescription());
-		holder.txtExtraInfo.setText(" | "+rowItem.getItemCode() + " CD"); 
+				holder.txtName = (TextView) convertView.findViewById(R.id.menu_name);
+				holder.txtDescription = (TextView) convertView.findViewById(R.id.description);
+				holder.txtExtraInfo = (TextView) convertView.findViewById(R.id.price); 
+				convertView.setTag(R.layout.list_row,holder);
+			 }
+		} 
+		
+			 if(SpecialItem)
+			 {
+				 holderdevolucion = ((ViewHolderDevolucion) convertView.getTag(R.layout.list_row_devolucion));
+				 holderdevolucion.txtNumero.setText(Item.getItemNumero());
+				 holderdevolucion.txtfecha.setText(Item.getItemfecha());
+				 holderdevolucion.txtcustomer.setText(Item.getItemCliente());
+				 holderdevolucion.txtmonto.setText(Item.getItemTotal());
+				 holderdevolucion.txtestado.setText(Item.getItemEstado());
+			 }
+			 else 
+			 {
+				 holder = ((ViewHolder) convertView.getTag(R.layout.list_row));
+				 holder.txtName.setText(rowItem.getItemName());
+				 holder.txtDescription.setText(rowItem.getItemDescription());
+				 holder.txtExtraInfo.setText(" | "+rowItem.getItemCode() + " CD");
+			 }
+		
+		
 
 		 if (position == selectedPos) {
  	         convertView.setBackgroundColor(convertView.getResources().getColor(R.color.Gold));
@@ -222,6 +273,22 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 		};
 
 		return filter;
+	}
+	
+	
+	/* private view holder class */
+	private class ViewHolder { 
+		TextView txtName;
+		TextView txtDescription;
+		TextView txtExtraInfo;
+	}
+
+	private class ViewHolderDevolucion { 
+		TextView txtNumero;
+		TextView txtfecha;
+		TextView txtcustomer;
+		TextView txtmonto;
+		TextView txtestado;
 	}
 
 }

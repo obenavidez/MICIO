@@ -381,7 +381,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     		+ " referenciaNC   Integer , "
     		+ " preRegistro   Integer , "
     		+ " offLine   Integer , "
-    		+ " fechaFacturacion  Integer , "
+    		+ " fechaFacturacion  Integer"
     	    + ");" ;
     
     String sqlDevolucionProducto = "CREATE TABLE IF NOT EXISTS DevolucionProducto ("

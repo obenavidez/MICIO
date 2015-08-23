@@ -205,15 +205,15 @@ public class EditFormaPago extends DialogFragment {
 	
 	private void initComponents() {
 		// OBTENIENDO LAS REFERENCIAS DE LAS VIEWS
-		numero = (EditText) view.findViewById(R.id.txtNumero);
+		numero = (EditText) view.findViewById(R.id.txtNumeroLote);
 		fecha = (EditText) view.findViewById(R.id.txtFecha);
 		tasa = (EditText) view.findViewById(R.id.txtTasa);
-		montoPago = (EditText) view.findViewById(R.id.txtMontoPago);
+		montoPago = (EditText) view.findViewById(R.id.txtCantidad);
 		montoNacional = (EditText) view.findViewById(R.id.txtMontoNacional);
-		cmbFormaPago = (Spinner) view.findViewById(R.id.cmb_forma_pago);
+		cmbFormaPago = (Spinner) view.findViewById(R.id.cmb_lote);
 		cmbBanco = (Spinner) view.findViewById(R.id.cmb_banco);
 		cmbMoneda = (Spinner) view.findViewById(R.id.cmb_moneda);
-		numeroSerie = (EditText) view.findViewById(R.id.txtNumeroSerie);
+		numeroSerie = (EditText) view.findViewById(R.id.txtProducto);
 		tblRowFormaPago = (TableRow) view.findViewById(R.id.tblRowFormaPago);
 		tblRowNumero = (TableRow) view.findViewById(R.id.tblRowNumero);
 		tblRowFecha = (TableRow) view.findViewById(R.id.tblRowFecha);

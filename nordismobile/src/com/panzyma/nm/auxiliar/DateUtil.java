@@ -9,6 +9,21 @@ import java.util.Date;
 public class DateUtil {
 	DateUtil() {
 	}
+	
+	public static long getLastDayOfMonth(long date) {
+		String dia = "";
+		String mes = "";
+		String anio = "";
+		String fechaVencimiento = String.valueOf(date);
+		anio = fechaVencimiento.substring(0, 4);
+		mes  = fechaVencimiento.substring(4, 6);
+		mes  = String.valueOf(Integer.parseInt(mes)+1);
+		if(mes.length()==1) mes = "0"+mes;
+		dia  = "01";
+		long fecha = Long.valueOf(anio.concat(mes).concat(dia));
+		fecha = addDay(fecha, -1);
+		return fecha;
+	}
 
 	public static int time2int(long time) {
 		Date d = new Date(time);

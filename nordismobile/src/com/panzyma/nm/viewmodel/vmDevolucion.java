@@ -17,7 +17,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	private String Estado;
 	private long cliente_id;
 	
-	
+	public vmDevolucion(){}
 		
 	public vmDevolucion(long id, int numeroCentral, Date fecha, String cliente,
 			Float total, String estado, long cliente_id) {

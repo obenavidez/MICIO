@@ -91,6 +91,12 @@ public class BConfiguracionM extends BBaseM {
 			}
 			break;
 		case ID_SALVAR_CONFIGURACION:
+			vmConfiguracion c = ModelConfiguracion.getVMConfiguration(getContext());
+			c.setAppServerURL(b.get("URL").toString());
+			c.setAppServerURL2(b.get("URL2").toString());
+			c.setNameUser(b.get("LoginUsuario").toString());
+			c.setEnterprise(b.get("Empresa").toString());
+			SaveLocalHost(c);
 			break;
 		case ID_SINCRONIZE_PARAMETROS:
 			SINCRONIZE_PARAMETROS();
@@ -336,6 +342,14 @@ public class BConfiguracionM extends BBaseM {
 										
 										if (res.get_error() == null) 
 										{
+											if( res.get_devicePrefix() < 0) {
+												Processor.notifyToView(NMApp.getController(),
+														ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
+														"Configure el movil en la aplicación de escritorio.");
+												SessionManager.setValidPrefix(false);
+												return;
+											}
+											SessionManager.setValidPrefix(true);
 											Processor.notifyToView(NMApp.getController(),
 													ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
 													"Salvando configuración.");
@@ -794,4 +808,32 @@ public class BConfiguracionM extends BBaseM {
 		}
 	}
 
+	private void SaveLocalHost(vmConfiguracion c){
+		
+		try {
+			ModelConfiguracion.saveConfiguration(NMApp.getContext(),c);
+			 Processor.notifyToView(NMApp.getController(),ControllerProtocol.C_UPDATE_FINISHED,0, 0,"Se guardó la configuración correctamente.");
+		} 
+		catch (Exception e) 
+		{
+			try 
+			{
+				Processor
+						.notifyToView(NMApp.getController(),
+								ERROR,
+								0,
+								1,
+								new ErrorMessage(
+										"error en la comunicacion con el servidor",
+										e.getMessage()
+												+ "\r\n",
+										""));
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+	
 }
+
