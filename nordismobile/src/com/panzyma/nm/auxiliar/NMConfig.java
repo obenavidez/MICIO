@@ -46,6 +46,7 @@ public class NMConfig
 		public static final String GetCProducto="GetCProducto";
 		public static final String GetPedidoByRef="GetPedidoByRef";
 		public static final String BuscarDevolucionDePedido="BuscarDevolucionDePedido";
+		public static final String GetPedido="GetPedido";
 		
 	}
 	 

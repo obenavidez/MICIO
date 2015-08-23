@@ -746,7 +746,20 @@ public class Devolucion {
 	private boolean PedidoYaDevuelto;
 	private int ReferenciaNC;
 	private boolean PreRegistro;
-	private boolean OffLine;
-	
+	private boolean OffLine;	
+	private Pedido objPedido;
+	/**
+	 * @return the objPedido
+	 */
+	public Pedido getObjPedido() {
+		return objPedido;
+	}
+
+	/**
+	 * @param objPedido the objPedido to set
+	 */
+	public void setObjPedido(Pedido objPedido) {
+		this.objPedido = objPedido;
+	}
 
 }

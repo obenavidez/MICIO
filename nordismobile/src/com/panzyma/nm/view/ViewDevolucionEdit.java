@@ -424,7 +424,8 @@ Handler.Callback, Editable
 		
 	}
 	
-	private void EditarProductoLote(String productname,ExpandListChild _childselected) { 
+	private void EditarProductoLote(String productname,ExpandListChild _childselected) 
+	{ 
 		FragmentTransaction ft =getSupportFragmentManager().beginTransaction();
 		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialogNotaRecibo");
 		if (prev != null) 
@@ -479,36 +480,54 @@ Handler.Callback, Editable
 		ExpandListChild ch = new ExpandListChild();
 		ch.setName(dpl.getNumeroLote());
 		ch.setObject(dpl); 		
-		groupselected.getItems().set(positioncache[1],ch);	
+		groupselected.getItems().set(positioncache[1],ch);			
 		
+		//sumar todas las cantidades a devolver de sus lote del producto seleccionado.
 		for(ExpandListChild _ch:groupselected.getItems()) 
 			cantidadTotalDevolver+=((DevolucionProductoLote)_ch.getObject()).getCantidadDevuelta(); 
+		DevolucionProducto dp=(DevolucionProducto) groupselected.getObject();
+		dp.setCantidadDevolver(cantidadTotalDevolver); 
+		groupselected.setObject(dp); 
+		lgroups.set(positioncache[0], groupselected);	 
+		 
 		
-		DevolucionProducto dp=(DevolucionProducto) groupselected.getObject(); 	 
-		cantidadDevolver=dpl.getCantidadDevuelta();
-		cantidadFacturada=dp.getCantidadOrdenada()+dp.getCantidadBonificada();
-		
-		cantidadOrdenada=dp.getCantidadOrdenada();
-		preciounitario=dp.getPrecio();
-		
-		if(cantidadDevolver==cantidadFacturada)
-			cantidadBonificada=dp.getCantidadBonificada();
-		else
+		//Estimar costo devolucion
+		int cantmindevbonif=Integer.parseInt(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("CantMinDevolvBonif","0"));
+		 		
+		DevolucionProducto _dp=(DevolucionProducto) groupselected.getObject();
+		cantidadDevolver=_dp.getCantidadDevolver();
+		//bonificacion se calcula si la cantidad a devolver es mayor que la cantidad min
+		if(cantidadDevolver>=cantmindevbonif || pedido!=null)
 		{
-			// calcular Bonificacion
-			proporcion  = (dp.getCantidadBonificada() / cantidadOrdenada ) + 1;
-			cantidadBonificada = (int)(cantidadDevolver - (cantidadDevolver / proporcion));
+			if(pedido!=null)
+			{ 			
+				cantidadBonificada=dp.getCantidadBonificada();
+				cantidadOrdenada=dp.getCantidadOrdenada();
+				cantidadFacturada=cantidadOrdenada+dp.getCantidadBonificada();	
+				preciounitario=dp.getPrecio();					
+				if(cantidadDevolver==cantidadFacturada)
+					cantidadBonificada=dp.getCantidadBonificada();
+				else
+				{
+					if(cantidadDevolver < cantidadFacturada)
+					{
+						// calcular Bonificacion
+						proporcion  = ((float)dp.getCantidadBonificada() / (float)cantidadOrdenada ) + 1;
+						cantidadBonificada = (int)(cantidadDevolver - (cantidadDevolver / proporcion));
+					}
+				}
+				
+			}
+			
 		}
-		
+		else
+			cantidadBonificada=0; 
 		// calcular montobonificacion
 		montobonificacion = cantidadBonificada * preciounitario;
-
 		subTotal=cantidadDevolver*preciounitario;
-		
 		// Impuesto --pendiente, tenemos q traer el impuesto del pedido.
 		//impuesto = porcentajadeImpuestoPedido * ( subtotal - montobonificacion); 
-		//Total
-		dp.setCantidadDevolver(cantidadTotalDevolver); 
+		//Total	
 		dp.setBonificacion(cantidadBonificada);
 		dp.setBonificacionVen(cantidadBonificada);
 		dp.setMontoBonif(montobonificacion);
@@ -517,10 +536,12 @@ Handler.Callback, Editable
 		dp.setSubtotal(subTotal); 
 		dp.setTotal(subTotal - montobonificacion + impuesto);
 		groupselected.setObject(dp); 
-		lgroups.set(positioncache[0], groupselected);
-		
+		lgroups.set(positioncache[0], groupselected);		
+		//fin estimacion de costo		
 		initExpandableListView();
 	}
+	
+	
 	
 	
 	public void CreateMenu() {
@@ -712,6 +733,7 @@ Handler.Callback, Editable
 				if(_dev!=null && _dev.getProductosDevueltos()!=null && _dev.getProductosDevueltos().length!=0)
 				{
 					dev=_dev;
+					pedido=dev.getObjPedido();
 					dev_prod=Arrays.asList(dev.getProductosDevueltos());
 					initExpandableListView();
 				}
