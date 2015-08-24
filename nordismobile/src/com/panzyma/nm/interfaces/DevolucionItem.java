@@ -12,6 +12,6 @@ public interface DevolucionItem extends BaseHolder {
 
 	String getItemEstado();
 	
-	
+	boolean getItemOffline(); 
 	
 }

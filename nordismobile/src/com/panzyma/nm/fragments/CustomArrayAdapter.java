@@ -147,6 +147,13 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 				 holderdevolucion.txtcustomer.setText(Item.getItemCliente());
 				 holderdevolucion.txtmonto.setText(Item.getItemTotal());
 				 holderdevolucion.txtestado.setText(Item.getItemEstado());
+				 if(Item.getItemOffline()){
+					 holderdevolucion.txtNumero.setTextColor(convertView.getResources().getColor(R.color.Red));
+					 holderdevolucion.txtfecha.setTextColor(convertView.getResources().getColor(R.color.Red));
+					 holderdevolucion.txtcustomer.setTextColor(convertView.getResources().getColor(R.color.Red));
+					 holderdevolucion.txtmonto.setTextColor(convertView.getResources().getColor(R.color.Red));
+					 holderdevolucion.txtestado.setTextColor(convertView.getResources().getColor(R.color.Red));
+				 }
 			 }
 			 else 
 			 {
@@ -163,6 +170,7 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 			 //convertView.setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.action_item_selected));
 		    }
 		    else {
+		    	
 		        convertView.setBackgroundColor(convertView.getResources().getColor(R.color.White));
 		    } 
 		 

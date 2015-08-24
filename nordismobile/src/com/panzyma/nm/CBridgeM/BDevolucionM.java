@@ -5,6 +5,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import com.panzyma.nm.auxiliar.ErrorMessage;
@@ -140,15 +141,40 @@ public class BDevolucionM extends BBaseM{
 						try 
 						{
 							vmDevolucion item = new vmDevolucion();
-							item.setCliente("Cliente 1");
-							item.setEstado("BORRADOR");
+							item.setCliente("Fci. Dayanara/Angelica Quezada");
+							item.setEstado("Registrada");
 							
-							item.setNumeroCentral(123456789);
+							Calendar c = Calendar.getInstance(); 
+							c.set(2014, 02, 14);
+							item.setFecha(c.getTime());
+							item.setNumeroCentral(7487799);
 							item.setTotal(new Float(123.45));
 							
 							ArrayList<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
 							lista.add(item);
 							
+							item = new vmDevolucion();
+							item.setCliente("Fci. Tamara Garcia/Angelica Palema.");
+							item.setEstado("Registrada");
+							
+							c = Calendar.getInstance(); 
+							c.set(2014, 02, 14);
+							item.setFecha(c.getTime());
+							item.setNumeroCentral(8887702);
+							item.setTotal(new Float(155670.43));
+							item.setOffLine(true);
+							lista.add(item);
+							
+							item = new vmDevolucion();
+							item.setCliente("Empresa Medica de Carazo/Rolando Niño.");
+							item.setEstado("Enviada");
+							c = Calendar.getInstance(); 
+							c.set(2014, 02, 14);
+							item.setFecha(c.getTime());
+							item.setNumeroCentral(8887702);
+							item.setTotal(new Float(155670.43));
+							item.setOffLine(false);
+							lista.add(item);
 							/*
 							lista.add(new vmDevolucion(
      							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))),

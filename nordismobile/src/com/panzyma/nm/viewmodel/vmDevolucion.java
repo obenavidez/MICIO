@@ -5,7 +5,14 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.panzyma.nm.interfaces.DevolucionItem; 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import com.panzyma.nm.auxiliar.DateUtil.*;
+import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.Util;
+import com.panzyma.nm.interfaces.DevolucionItem;
+import com.panzyma.nordismobile.R.color; 
 
 public class vmDevolucion  implements Parcelable , DevolucionItem  {
 
@@ -16,11 +23,13 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	private Float  total;
 	private String Estado;
 	private long cliente_id;
+	private boolean OffLine;
+	
 	
 	public vmDevolucion(){}
 		
-	public vmDevolucion(long id, int numeroCentral, Date fecha, String cliente,
-			Float total, String estado, long cliente_id) {
+	public vmDevolucion(long id, int numeroCentral,  Date fecha, String cliente,
+			Float total, String estado, long cliente_id,boolean offline) {
 		super();
 		this.id = id;
 		NumeroCentral = numeroCentral;
@@ -29,8 +38,17 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 		this.total = total;
 		Estado = estado;
 		this.cliente_id = cliente_id;
+		this.OffLine = offline;
 	}
 
+
+	public boolean isOffLine() {
+		return OffLine;
+	}
+
+	public void setOffLine(boolean offLine) {
+		OffLine = offLine;
+	}
 
 	public int getNumeroCentral() {
 		return NumeroCentral;
@@ -47,7 +65,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 
 
 	public Date getFecha() {
-		return fecha;
+		return this.fecha;
 	}
 
 
@@ -141,8 +159,10 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 
 	@Override
 	public String getItemfecha() {
-		// TODO Auto-generated method stub
-		return String.valueOf(getFecha());
+		//return String.valueOf(getFecha());
+		//DateFormat df =  DateFormat.getDateInstance(DateFormat.MEDIUM);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
+		return sdf.format(getFecha());
 	}
 
 
@@ -156,7 +176,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	@Override
 	public String getItemTotal() {
 		// TODO Auto-generated method stub
-		return String.valueOf(getTotal());
+		return "C$".concat(String.valueOf(getTotal()));
 	}
 
 
@@ -164,6 +184,12 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	public String getItemEstado() {
 		// TODO Auto-generated method stub
 		return getEstado();
+	}
+
+	@Override
+	public boolean getItemOffline() {
+		
+		return this.OffLine;
 	}
 
 }

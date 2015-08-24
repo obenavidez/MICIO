@@ -2,17 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="5dip" >
+    android:layout_margin="5dp"
+     >
 
 
     <!-- Numero -->
 
     <TextView
         android:id="@+id/Numero"
-        android:layout_width="wrap_content"
+        android:layout_width="70dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
         android:layout_alignParentLeft="true"
-        android:text="@string/menu_name"
+        android:text="Numero"
         android:textColor="#040404"
         android:textSize="15sp"
         android:textStyle="bold"
@@ -22,49 +24,61 @@
 
     <TextView
         android:id="@+id/fecha"
-        android:layout_width="fill_parent"
+        android:layout_width="90dp"
         android:layout_height="wrap_content" 
-        android:layout_below="@id/menu_name"
-        android:layout_marginTop="1dip" 
-        android:text="@string/description"
-        android:textColor="#343434"
-        android:textSize="10sp" />
+        android:gravity="center"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/Numero"
+        android:text="Fecha"
+        android:textStyle="bold"
+        android:textColor="#040404"
+        android:textSize="15sp" />
 
     <!-- CLIENTE -->
 
     <TextView
         android:id="@+id/customer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"           
-        android:layout_below="@id/menu_name"
-        android:layout_alignRight="@+id/fecha"
-        android:text="@string/price"
-        android:textColor="#10bcc9"
-        android:textSize="10sp"
+        android:layout_width="190dp"
+        android:layout_height="wrap_content"  
+        android:layout_toRightOf="@+id/fecha" 
+        android:gravity="right"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentEnd="true"  
+        android:layout_alignParentRight="@+id/fecha"     
+        android:text="customer"
+        android:textColor="#040404"
+        android:textSize="15sp"
         android:textStyle="bold" />
     
      <!-- total -->
+
      <TextView
-        android:id="@+id/totalmonto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"           
-        android:layout_below="@id/menu_name"
-        android:layout_alignRight="@+id/customer"
-        android:text="@string/price"
-        android:textColor="#10bcc9"
-        android:textSize="10sp"
-        android:textStyle="bold" />
+         android:id="@+id/totalmonto"
+         android:layout_width="180dp"
+         android:layout_height="wrap_content"
+         android:layout_marginLeft="4dp"
+         android:gravity="left"
+         android:textDirection="rtl"
+         android:layout_alignParentLeft="true"
+         android:layout_below="@id/customer"
+         android:text="totalmonto"
+         android:textColor="#10bcc9"
+         android:textSize="17sp"
+          />
      
        <!-- Estado -->
+
        <TextView
-        android:id="@+id/Estado"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"           
-        android:layout_below="@id/menu_name"
-        android:layout_alignRight="@+id/totalmonto"
-        android:text="@string/price"
-        android:textColor="#10bcc9"
-        android:textSize="10sp"
-        android:textStyle="bold" />
+           android:id="@+id/Estado"
+           android:layout_width="147dp"
+           android:layout_height="wrap_content"
+           android:layout_below="@id/customer"
+           android:gravity="right"
+           android:layout_alignParentRight="true" 
+           android:layout_marginRight="10dp"
+           android:text="Estado"
+           android:textColor="#10bcc9"
+           android:textSize="17sp"
+           />
 
 </RelativeLayout>

@@ -76,6 +76,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	vmDevolucion item_selected = null;
 	ProgressDialog pDialog;
 	List<vmDevolucion> devoluciones = new ArrayList<vmDevolucion>();
+	int posicion ;
 	
 
 	@Override
@@ -129,7 +130,8 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	
 	@Override
 	public void onItemSelected(Object obj, int position) {
-		
+		item_selected = (vmDevolucion)obj;
+		 posicion = position;
 	}
 
 	@SuppressLint("NewApi")
@@ -200,6 +202,11 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 				tituloSeccion = opcionesMenu[position];
 				getSupportActionBar().setTitle(tituloSeccion);
 				
+				// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
+				int pos = customArrayAdapter.getSelectedPosition();
+				// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
+				item_selected = (vmDevolucion) customArrayAdapter.getItem(pos);
+				
 				switch (position) {
 					case NUEVO_DEVOLUCION : 
 						Intent intent = new Intent(ViewDevoluciones.this, ViewDevolucionEdit.class);
@@ -211,6 +218,8 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 						break;
 					case BORRAR_DEVOLUCION:
 						is_Item_selected();
+						isOffLine();
+						isEnviada();
 						
 						break;
 					case ENVIAR_DEVOLUCION :
@@ -280,8 +289,20 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			return;
 		}
 	}
-	
-	
+	private void isOffLine(){
+		if(item_selected.isOffLine()){
+			drawerLayout.closeDrawers();
+			AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "El comprobante fue emitida offline.\n",DialogType.DIALOGO_ALERTA);
+			return;
+		}
+	}
+	private void isEnviada(){
+		if(!item_selected.getEstado().equals("ENVIADA")){
+			drawerLayout.closeDrawers();
+			AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Este registro no tiene estado Enviado.",DialogType.DIALOGO_ALERTA);
+			return;
+		}
+	}
 	
 	@SuppressWarnings("unchecked")
 	private void Load_Data(int what) {
