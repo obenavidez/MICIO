@@ -80,7 +80,7 @@ public class ModelPedido {
 			throws Exception {
 
 		Parameters params = new Parameters((new String[] { "Credentials",
-				"refPedido" }), (new Object[] { credenciales, idPedido }),
+				"idPedido" }), (new Object[] { credenciales, idPedido }),
 				(new Type[] { PropertyInfo.STRING_CLASS,
 						PropertyInfo.LONG_CLASS }));
 

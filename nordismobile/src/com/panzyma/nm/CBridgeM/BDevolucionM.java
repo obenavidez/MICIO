@@ -3,6 +3,8 @@ package com.panzyma.nm.CBridgeM;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
  
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,6 +15,8 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelPedido; 
+import com.panzyma.nm.serviceproxy.Devolucion;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.viewmodel.vmDevolucion;
 
 import android.os.Message;
@@ -86,42 +90,60 @@ public class BDevolucionM extends BBaseM
 			}
 		} 
 	}
+    
+    private void BuscarDevolucionDePedido(Object obj) {
+		HashMap<String, Long> parametros = (HashMap<String, Long>) obj;
+		long idsucursal, nopedido, nofactura;
+		idsucursal = parametros.get("idsucursal");
+		nopedido = parametros.get("nopedido");
+		nofactura = parametros.get("nofactura");
 
-    private void BuscarDevolucionDePedido(Object obj){
-    	
-    	
-		HashMap<String,Long> parametros = (HashMap<String, Long>) obj;
-    	long idsucursal,nopedido,nofactura; 
-    	idsucursal=parametros.get("idsucursal");
-    	nopedido=parametros.get("nopedido");
-    	nofactura=parametros.get("nofactura");
-    	
-    	String credenciales="";
-		
-		credenciales = SessionManager.getCredentials(); 
-		if(credenciales=="")
+		String credenciales = "";
+		Devolucion dev;
+		Pedido pedido;
+		credenciales = SessionManager.getCredentials();
+		if (credenciales == "")
 			return;
 		try 
 		{
+			dev = ModelDevolucion.BuscarDevolucionDePedido(credenciales,
+					idsucursal, nopedido, nofactura);
+			pedido = obtenerPedido(dev.getObjPedidoDevueltoID());
+			if (pedido != null)
+				dev.setObjPedido(pedido);
+
 			Processor.notifyToView(getController(),
-					ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO,
-					0,
-					0,
-					ModelDevolucion.BuscarDevolucionDePedido(credenciales, idsucursal, nopedido, nofactura)
-					);
-			  
-			
-		} catch (Exception e) 
-		{ 
+					ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO, 0, 0, dev);
+
+		} catch (Exception e) {
 			Log.e(TAG, "Error interno trayendo datos desde el servidor", e);
 			try {
-				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno trayendo datos desde el servidor",""+((e!=null && e.toString()!=null)?e.toString():""),"\n Causa: "+""+((e!=null && e.getCause()!=null)?e.getCause():"")));
-			} catch (Exception e1) { 
+				Processor
+						.notifyToView(
+								getController(),
+								ERROR,
+								0,
+								0,
+								new ErrorMessage(
+										"Error interno trayendo datos desde el servidor",
+										""
+												+ ((e != null && e.toString() != null) ? e
+														.toString() : ""),
+										"\n Causa: "
+												+ ""
+												+ ((e != null && e.getCause() != null) ? e
+														.getCause() : "")));
+			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-		} 
-		  
-    }
+		}
+
+	}
+ 
+	private Pedido obtenerPedido(final long idPedido) throws Exception {
+		return ModelPedido.getPedido(SessionManager.getCredentials(),
+				idPedido);
+	}
 
     
     

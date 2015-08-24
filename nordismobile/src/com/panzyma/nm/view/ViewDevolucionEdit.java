@@ -292,7 +292,6 @@ Handler.Callback, Editable
 			devolucion.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
 			devolucion.setNumeroCentral(0);
 			devolucion.setReferencia(0); 
-			
 			cboxtramitedev.setSelection(NOTADECREDITO);
 			cboxtipodev.setSelection(PARCIAL);
 		}
@@ -490,7 +489,10 @@ Handler.Callback, Editable
 	{  
 		int cantidadDevolver =0, cantidadTotalDevolver=0,cantidadBonificada=0,cantidadOrdenada=0,cantidadFacturada;
 		float proporcion=0.0f;
-		long preciounitario=0,montobonificacion=0,subTotal,impuesto=0;	
+		double preciounitario=0;
+		double montobonificacion=0;
+		double subTotal;
+		double impuesto=0;	
 		
 		ExpandListGroup lg=new ExpandListGroup();		
 		ExpandListChild ch = new ExpandListChild();
@@ -518,9 +520,9 @@ Handler.Callback, Editable
 			if(pedido!=null)
 			{ 			
 				cantidadBonificada=dp.getCantidadBonificada();
-				cantidadOrdenada=dp.getCantidadOrdenada();
+				cantidadOrdenada=dpl.getCantidadDespachada();
 				cantidadFacturada=cantidadOrdenada+dp.getCantidadBonificada();	
-				preciounitario=dp.getPrecio();					
+				preciounitario=dp.getPrecio()/100.00;					
 				if(cantidadDevolver==cantidadFacturada)
 					cantidadBonificada=dp.getCantidadBonificada();
 				else
@@ -529,7 +531,7 @@ Handler.Callback, Editable
 					{
 						// calcular Bonificacion
 						proporcion  = ((float)dp.getCantidadBonificada() / (float)cantidadOrdenada ) + 1;
-						cantidadBonificada = (int)(cantidadDevolver - (cantidadDevolver / proporcion));
+						cantidadBonificada = (int)Math.ceil((cantidadDevolver - (cantidadDevolver / proporcion)));
 					}
 				}
 				
@@ -546,11 +548,11 @@ Handler.Callback, Editable
 		//Total	
 		dp.setBonificacion(cantidadBonificada);
 		dp.setBonificacionVen(cantidadBonificada);
-		dp.setMontoBonif(montobonificacion);
-		dp.setMontoBonifVen(montobonificacion);
+		dp.setMontoBonif((long) ((double)(montobonificacion*100)));
+		dp.setMontoBonifVen((long) ((double)(montobonificacion*100)));
 		
-		dp.setSubtotal(subTotal); 
-		dp.setTotal(subTotal - montobonificacion + impuesto);
+		dp.setSubtotal((long) ((double)(subTotal*100.00))); 
+		dp.setTotal((long) ((double)((subTotal - montobonificacion + impuesto))*100));
 		groupselected.setObject(dp); 
 		lgroups.set(positioncache[0], groupselected);		
 		//fin estimacion de costo		
@@ -671,7 +673,8 @@ Handler.Callback, Editable
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 	
-	private void agregarProducto() {
+	private void agregarProducto() 
+	{
 	
 		if (cliente == null) 
 		{
