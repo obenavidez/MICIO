@@ -18,6 +18,7 @@ import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat; 
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity; 
@@ -35,9 +36,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ListView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -79,6 +82,7 @@ import com.panzyma.nm.viewdialog.DevolucionProductoCantidad;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewdialog.DialogCliente; 
 import com.panzyma.nm.viewdialog.DialogProducto;
+import com.panzyma.nm.viewdialog.EditDevolucionProducto;
 import com.panzyma.nm.viewdialog.ProductoDevolucion;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener; 
@@ -150,6 +154,10 @@ Handler.Callback, Editable
 	private static final Map<String, String> hmtipodev;
 	
 	Cliente cliente;
+	public Cliente getCliente() {
+		return cliente;
+	}
+
 	Pedido pedido;
 	Factura factura;
 	Lote lote;
@@ -292,7 +300,6 @@ Handler.Callback, Editable
 			devolucion.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
 			devolucion.setNumeroCentral(0);
 			devolucion.setReferencia(0); 
-			
 			cboxtramitedev.setSelection(NOTADECREDITO);
 			cboxtipodev.setSelection(PARCIAL);
 		}
@@ -433,14 +440,36 @@ Handler.Callback, Editable
 							}
 						});
 
+				lvdevproducto.setOnChildClickListener(new OnChildClickListener() {					
+					@Override
+					public boolean onChildClick(ExpandableListView parent, View v,
+							int groupPosition, int childPosition, long id) {
+						Object obj = adapter.getChild(groupPosition, childPosition);
+						return false;
+					}
+				});
+				
+				lvdevproducto.setOnGroupClickListener(new OnGroupClickListener() {
+					
+					public boolean onGroupClick(ExpandableListView parent, View v,
+							int groupPosition, long id) {
+						groupselected = (ExpandListGroup) adapter.getGroup(groupPosition);						
+						return false;
+					}
+				});
+				
 			} catch (Exception e) {
 			}
-		} else
-			adapter.notifyDataSetChanged();		
+		} else {
+			adapter.notifyDataSetChanged();	
+			((BaseExpandableListAdapter) adapter).notifyDataSetChanged();
+		}
+				
 		
-	}
+	}	
 	
-	private void EditarProductoLote(String productname,ExpandListChild _childselected) { 
+	private void EditarProductoLote(String productname,ExpandListChild _childselected) 
+	{ 
 		FragmentTransaction ft =getSupportFragmentManager().beginTransaction();
 		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialogNotaRecibo");
 		if (prev != null) 
@@ -489,54 +518,77 @@ Handler.Callback, Editable
 	{  
 		int cantidadDevolver =0, cantidadTotalDevolver=0,cantidadBonificada=0,cantidadOrdenada=0,cantidadFacturada;
 		float proporcion=0.0f;
-		long preciounitario=0,montobonificacion=0,subTotal,impuesto=0;	
+		double preciounitario=0;
+		double montobonificacion=0;
+		double subTotal;
+		double impuesto=0;	
 		
 		ExpandListGroup lg=new ExpandListGroup();		
 		ExpandListChild ch = new ExpandListChild();
 		ch.setName(dpl.getNumeroLote());
 		ch.setObject(dpl); 		
-		groupselected.getItems().set(positioncache[1],ch);	
+		groupselected.getItems().set(positioncache[1],ch);			
 		
+		//sumar todas las cantidades a devolver de sus lote del producto seleccionado.
 		for(ExpandListChild _ch:groupselected.getItems()) 
 			cantidadTotalDevolver+=((DevolucionProductoLote)_ch.getObject()).getCantidadDevuelta(); 
+		DevolucionProducto dp=(DevolucionProducto) groupselected.getObject();
+		dp.setCantidadDevolver(cantidadTotalDevolver); 
+		groupselected.setObject(dp); 
+		lgroups.set(positioncache[0], groupselected);	 
+		 
 		
-		DevolucionProducto dp=(DevolucionProducto) groupselected.getObject(); 	 
-		cantidadDevolver=dpl.getCantidadDevuelta();
-		cantidadFacturada=dp.getCantidadOrdenada()+dp.getCantidadBonificada();
-		
-		cantidadOrdenada=dp.getCantidadOrdenada();
-		preciounitario=dp.getPrecio();
-		
-		if(cantidadDevolver==cantidadFacturada)
-			cantidadBonificada=dp.getCantidadBonificada();
-		else
+		//Estimar costo devolucion
+		int cantmindevbonif=Integer.parseInt(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("CantMinDevolvBonif","0"));
+		 		
+		DevolucionProducto _dp=(DevolucionProducto) groupselected.getObject();
+		cantidadDevolver=_dp.getCantidadDevolver();
+		//bonificacion se calcula si la cantidad a devolver es mayor que la cantidad min
+		if(cantidadDevolver>=cantmindevbonif || pedido!=null)
 		{
-			// calcular Bonificacion
-			proporcion  = (dp.getCantidadBonificada() / cantidadOrdenada ) + 1;
-			cantidadBonificada = (int)(cantidadDevolver - (cantidadDevolver / proporcion));
+			if(pedido!=null)
+			{ 			
+				cantidadBonificada=dp.getCantidadBonificada();
+				cantidadOrdenada=dpl.getCantidadDespachada();
+				cantidadFacturada=cantidadOrdenada+dp.getCantidadBonificada();	
+				preciounitario=dp.getPrecio()/100.00;					
+				if(cantidadDevolver==cantidadFacturada)
+					cantidadBonificada=dp.getCantidadBonificada();
+				else
+				{
+					if(cantidadDevolver < cantidadFacturada)
+					{
+						// calcular Bonificacion
+						proporcion  = ((float)dp.getCantidadBonificada() / (float)cantidadOrdenada ) + 1;
+						cantidadBonificada = (int)Math.ceil((cantidadDevolver - (cantidadDevolver / proporcion)));
+					}
+				}
+				
+			}
+			
 		}
-		
+		else
+			cantidadBonificada=0; 
 		// calcular montobonificacion
 		montobonificacion = cantidadBonificada * preciounitario;
-
 		subTotal=cantidadDevolver*preciounitario;
-		
 		// Impuesto --pendiente, tenemos q traer el impuesto del pedido.
 		//impuesto = porcentajadeImpuestoPedido * ( subtotal - montobonificacion); 
-		//Total
-		dp.setCantidadDevolver(cantidadTotalDevolver); 
+		//Total	
 		dp.setBonificacion(cantidadBonificada);
 		dp.setBonificacionVen(cantidadBonificada);
-		dp.setMontoBonif(montobonificacion);
-		dp.setMontoBonifVen(montobonificacion);
+		dp.setMontoBonif((long) ((double)(montobonificacion*100)));
+		dp.setMontoBonifVen((long) ((double)(montobonificacion*100)));
 		
-		dp.setSubtotal(subTotal); 
-		dp.setTotal(subTotal - montobonificacion + impuesto);
+		dp.setSubtotal((long) ((double)(subTotal*100.00))); 
+		dp.setTotal((long) ((double)((subTotal - montobonificacion + impuesto))*100));
 		groupselected.setObject(dp); 
-		lgroups.set(positioncache[0], groupselected);
-		
+		lgroups.set(positioncache[0], groupselected);		
+		//fin estimacion de costo		
 		initExpandableListView();
 	}
+	
+	
 	
 	
 	public void CreateMenu() {
@@ -574,6 +626,13 @@ Handler.Callback, Editable
 						break;
 				case ID_AGREGAR_PRODUCTO:
 						agregarProducto();
+						break;
+				case ID_AGREGAR_LOTE:						
+						if ( groupselected != null ){
+							EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(groupselected, me);
+		            		FragmentManager fragmentManager =  getSupportFragmentManager();
+							dialogDevolucion.show(fragmentManager, "");
+						}					
 						break;
 //				case ID_CONDICIONES_Y_NOTAS:
 //						agregarCondicionesYNotas();
@@ -650,7 +709,8 @@ Handler.Callback, Editable
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 	
-	private void agregarProducto() {
+	private void agregarProducto() 
+	{
 	
 		if (cliente == null) 
 		{
@@ -763,6 +823,7 @@ Handler.Callback, Editable
 				if(_dev!=null && _dev.getProductosDevueltos()!=null && _dev.getProductosDevueltos().length!=0)
 				{
 					dev=_dev;
+					pedido=dev.getObjPedido();
 					dev_prod=Arrays.asList(dev.getProductosDevueltos());
 					initExpandableListView();
 				}

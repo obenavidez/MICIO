@@ -142,8 +142,9 @@ public class DevolucionProductoCantidad extends DialogFragment
 		qtydelivered.setEnabled(false);
 
 		qtyreturn=(EditText) view.findViewById(R.id.et_cantDevolver);  
-		qtyreturn.setText(""+ plote.getCantidadDevuelta());
-		
+		if(plote.getCantidadDevuelta()!=0)
+			qtyreturn.setText(""+ plote.getCantidadDevuelta());
+		qtyreturn.requestFocus();
 		alert.setView(view);
  
 		alert.setCancelable(false);     	

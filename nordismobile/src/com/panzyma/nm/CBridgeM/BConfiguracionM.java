@@ -19,6 +19,7 @@ import org.json.JSONArray;
 
 import android.os.Bundle;
 import android.os.Message;
+import android.widget.Toast;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
@@ -342,41 +343,39 @@ public class BConfiguracionM extends BBaseM {
 										
 										if (res.get_error() == null) 
 										{
-											if( res.get_devicePrefix() < 0) {
+											/*if( res.get_devicePrefix() < 0) {
+												SessionManager.setValidPrefix(false);
+											} else*/ 
+											{
+												SessionManager.setValidPrefix(true);
 												Processor.notifyToView(NMApp.getController(),
 														ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
-														"Configure el movil en la aplicación de escritorio.");
-												SessionManager.setValidPrefix(false);
-												return;
-											}
-											SessionManager.setValidPrefix(true);
-											Processor.notifyToView(NMApp.getController(),
-													ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, 
-													"Salvando configuración.");
-											vmConfiguracion setting = vmConfiguracion.setConfiguration
-													(
-															Url,
-															Url2,
-															String.valueOf(res.get_devicePrefix()), 
-															Empresa, 
-															res.get_userInfo().getLogin(), 
-															res.get_maxIdPedido(), 
-															res.get_maxIdRecibo(),
-															dispositivo
-													);
-											ModelConfiguracion.saveConfiguration(NMApp.getContext(),setting);
-											ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
-											SessionManager.setImpresora(dispositivo);
-											SessionManager.setLoguedUser(res.userInfo); 
-											Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATE_OBJ_VIEW, 0,0, setting);
-											if(mode==null || (mode!=null && mode.length==0))
-												Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Configuración guardada exitosamente...");
-											else
-											Processor.notifyToView(
-															NMApp.getController(),
-															ControllerProtocol.NOTIFICATION,
-															0,
-															0,"Configuración guardada exitosamente.");
+														"Salvando configuración.");
+												vmConfiguracion setting = vmConfiguracion.setConfiguration
+														(
+																Url,
+																Url2,
+																String.valueOf(res.get_devicePrefix()), 
+																Empresa, 
+																res.get_userInfo().getLogin(), 
+																res.get_maxIdPedido(), 
+																res.get_maxIdRecibo(),
+																dispositivo
+														);
+												ModelConfiguracion.saveConfiguration(NMApp.getContext(),setting);
+												ModelConfiguracion.saveUser(NMApp.getContext(), res.get_userInfo());
+												SessionManager.setImpresora(dispositivo);
+												SessionManager.setLoguedUser(res.userInfo); 
+												Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATE_OBJ_VIEW, 0,0, setting);
+												if(mode==null || (mode!=null && mode.length==0))
+													Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0, "Configuración guardada exitosamente...");
+												else
+												Processor.notifyToView(
+																NMApp.getController(),
+																ControllerProtocol.NOTIFICATION,
+																0,
+																0,"Configuración guardada exitosamente.");
+											}							
 							 
 
 										} else
