@@ -18,6 +18,7 @@ import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat; 
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity; 
@@ -35,9 +36,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ListView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -79,6 +82,7 @@ import com.panzyma.nm.viewdialog.DevolucionProductoCantidad;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewdialog.DialogCliente; 
 import com.panzyma.nm.viewdialog.DialogProducto;
+import com.panzyma.nm.viewdialog.EditDevolucionProducto;
 import com.panzyma.nm.viewdialog.ProductoDevolucion;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener; 
@@ -150,6 +154,10 @@ Handler.Callback, Editable
 	private static final Map<String, String> hmtipodev;
 	
 	Cliente cliente;
+	public Cliente getCliente() {
+		return cliente;
+	}
+
 	Pedido pedido;
 	Factura factura;
 	Lote lote;
@@ -432,12 +440,33 @@ Handler.Callback, Editable
 							}
 						});
 
+				lvdevproducto.setOnChildClickListener(new OnChildClickListener() {					
+					@Override
+					public boolean onChildClick(ExpandableListView parent, View v,
+							int groupPosition, int childPosition, long id) {
+						Object obj = adapter.getChild(groupPosition, childPosition);
+						return false;
+					}
+				});
+				
+				lvdevproducto.setOnGroupClickListener(new OnGroupClickListener() {
+					
+					public boolean onGroupClick(ExpandableListView parent, View v,
+							int groupPosition, long id) {
+						groupselected = (ExpandListGroup) adapter.getGroup(groupPosition);						
+						return false;
+					}
+				});
+				
 			} catch (Exception e) {
 			}
-		} else
-			adapter.notifyDataSetChanged();		
+		} else {
+			adapter.notifyDataSetChanged();	
+			((BaseExpandableListAdapter) adapter).notifyDataSetChanged();
+		}
+				
 		
-	}
+	}	
 	
 	private void EditarProductoLote(String productname,ExpandListChild _childselected) 
 	{ 
@@ -597,6 +626,13 @@ Handler.Callback, Editable
 						break;
 				case ID_AGREGAR_PRODUCTO:
 						agregarProducto();
+						break;
+				case ID_AGREGAR_LOTE:						
+						if ( groupselected != null ){
+							EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(groupselected, me);
+		            		FragmentManager fragmentManager =  getSupportFragmentManager();
+							dialogDevolucion.show(fragmentManager, "");
+						}					
 						break;
 //				case ID_CONDICIONES_Y_NOTAS:
 //						agregarCondicionesYNotas();

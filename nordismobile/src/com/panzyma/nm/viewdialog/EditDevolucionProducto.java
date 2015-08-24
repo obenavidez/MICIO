@@ -20,7 +20,10 @@ import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener;
 import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.model.ModelLogic;
+import com.panzyma.nm.model.ModelProducto;
+import com.panzyma.nm.serviceproxy.Bonificacion;
 import com.panzyma.nm.serviceproxy.Catalogo;
+import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Lote;
@@ -33,6 +36,8 @@ import com.panzyma.nm.view.ViewDevolucionEdit;
 import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.CustomAdapter;
+import com.panzyma.nm.view.adapter.ExpandListChild;
+import com.panzyma.nm.view.adapter.ExpandListGroup;
 import com.panzyma.nordismobile.R;
 
 import android.app.Activity;
@@ -52,6 +57,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
@@ -100,10 +106,19 @@ public class EditDevolucionProducto extends DialogFragment {
 	protected static Producto product_selected;
 	protected DevolucionProductoLote devProLote;
 	private static ViewDevolucionEdit me;
-	
+	private DevolucionProducto devolucionProducto;	
+	private ExpandListGroup groupselected;
+
 	public static final String SELECTED_PRODUCT = "OBJ_PRODUCT";
 	public static final String PRODUCT_LOTE = "OBJ_PRODUCT_LOTE";
+	private Cliente cliente;
 	
+	enum Type {
+		ADD,
+		EDIT
+	}
+	
+	private Type tipo;
 	
 	public class LoadDataToUI extends AsyncTask<Void, Void, List<Lote> > {
 
@@ -124,11 +139,30 @@ public class EditDevolucionProducto extends DialogFragment {
 			super.onPostExecute(objectResult);
 		}
 		
-	} 
+	}
+	
+	public EditDevolucionProducto(ExpandListGroup groupselected, ViewDevolucionEdit vde) {
+		this.setDevolucionProducto((DevolucionProducto) groupselected.getObject());
+		this.groupselected = groupselected;
+		cliente = vde.getCliente();
+		try {
+			product_selected = ModelProducto.getProductoByID(NMApp.getContext().getContentResolver(), devolucionProducto.getObjProductoID()) ;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		tipo = Type.EDIT;
+		me = vde;
+		Bundle parametros = new Bundle();
+		parametros.putParcelable(SELECTED_PRODUCT, product_selected);
+		this.setArguments(parametros);
+	}
 	
 	public EditDevolucionProducto(Producto ps, ViewDevolucionEdit vde) {
 		product_selected = ps;		
 		me = vde;
+		tipo = Type.ADD;
+		this.setDevolucionProducto(null);
 		Bundle parametros = new Bundle();
 		parametros.putParcelable(SELECTED_PRODUCT, product_selected);
 		this.setArguments(parametros);
@@ -395,16 +429,35 @@ public class EditDevolucionProducto extends DialogFragment {
 		if(me.getDev_prod() == null){
 			me.setDev_prod(new ArrayList<DevolucionProducto>());
 		}
-		DevolucionProducto dp = new DevolucionProducto(); 
+		DevolucionProducto dp = this.getDevolucionProducto(); 
 		dp.setObjProductoID(product_selected.getId());
 		dp.setNombreProducto(product_selected.getNombre());
 		dp.setObjProveedorID(product_selected.getObjProveedorID());
-		dp.setCantidadDevolver(dvl.getCantidadDevuelta());
-		List<DevolucionProductoLote> l = new ArrayList<DevolucionProductoLote>();
+		dp.setCantidadDevolver(dp.getCantidadDevolver()+dvl.getCantidadDevuelta());
+		Bonificacion b = DetalleProducto.getBonificacion(product_selected, cliente.getObjCategoriaClienteID(), dvl.getCantidadDevuelta());
+		dp.setBonificacion(b.getCantBonificacion());
+		dp.setBonificacionVen(b.getCantBonificacion());
+		long idTP = Long.parseLong(me.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
+		float precioProducto = DetalleProducto.getPrecioProducto(product_selected, idTP, dvl.getCantidadDevuelta());
+		dp.setMontoBonif((long)((double)(dp.getCantidadBonificada()*precioProducto)*100));
+		dp.setPrecio((long)((double)precioProducto*100));
+		List<DevolucionProductoLote> l = null;
+		if( dp.getProductoLotes() == null || ( dp.getProductoLotes() != null && dp.getProductoLotes().length == 0 ) ) {
+			l = new ArrayList<DevolucionProductoLote>();
+		} else {
+			l = new ArrayList<DevolucionProductoLote>(Arrays.asList(dp.getProductoLotes()));
+		} 		
 		l.add(dvl);
 		dp.setProductoLotes(new DevolucionProductoLote[l.size()]); 
 		l.toArray(dp.getProductoLotes());
-		me.getDev_prod().add(dp);
+		if (tipo == Type.ADD) {
+			me.getDev_prod().add(dp);
+		} else {
+			ExpandListChild ch = new ExpandListChild();
+			ch.setName(dvl.getNumeroLote());
+			ch.setObject(dvl);
+			groupselected.getItems().add(ch);
+		}			
 		me.initExpandableListView();
     }
 	
@@ -521,4 +574,12 @@ public class EditDevolucionProducto extends DialogFragment {
 	public interface EditDialogListener {
         void updateResult(String inputText);
     }
+	
+	public DevolucionProducto getDevolucionProducto() {
+		return ( devolucionProducto == null ? new DevolucionProducto() : devolucionProducto);
+	}
+
+	public void setDevolucionProducto(DevolucionProducto devolucionProducto) {
+		this.devolucionProducto = devolucionProducto;
+	}
 }

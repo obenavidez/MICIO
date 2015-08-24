@@ -328,22 +328,28 @@ public class UserSessionManager
 													UserSessionManager.setPassword(password);															
 													
 													Usuario user = SessionManager.getLoginUser();
-													if(  SessionManager.isValidPrefix() &&
-														( user != null ) &&
-														( user.getPassword() == null ||
-														  ( user.getPassword() != null &&
-														    user.getPassword().trim().length() == 0) 
-														  )
-													   ) {
-														 
-														user.setPassword(password);
-														user.setIsAdmin(admin);
-														Usuario.guardarInfoUsuario(NMApp.getContext(), user);
-														NMApp.tipoAutenticacion = AutenticationType.LOCAL;
-													
+													//if ( SessionManager.isValidPrefix() ) {
+													if ( true ) {
+														if( 
+																( user != null ) &&
+																( user.getPassword() == null ||
+																  ( user.getPassword() != null &&
+																    user.getPassword().trim().length() == 0) 
+																  )
+															   ) {
+																 
+																user.setPassword(password);
+																user.setIsAdmin(admin);
+																Usuario.guardarInfoUsuario(NMApp.getContext(), user);
+																NMApp.tipoAutenticacion = AutenticationType.LOCAL;
+															
+															}
+															
+															UserSessionManager.isValidCredentials = true;
+													} else {
+														sendErrorMessage(new ErrorMessage("Error en la Autenticación","El dispositivo no ha sido configurado en el Servidor",""));
 													}
-													
-													UserSessionManager.isValidCredentials = true;	
+														
 															
 												}else
 												{
