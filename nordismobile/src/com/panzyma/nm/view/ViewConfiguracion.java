@@ -378,24 +378,33 @@ public class ViewConfiguracion extends ActionBarActivity implements
 
 					@Override
 					public void onItemClick(QuickAction source, int pos,
-							int actionId) {
+							int actionId) 
+					{
 						final Controller controller = NMApp.getController();
 						ActionItem actionItem = quickAction.getActionItem(pos);
 						if (actionId != ID_SETTING_BLUETOOTHDEVICE)
 							if (!validar())
 								return;
 						
-						if( actionId==ID_SINCRONIZE_PARAMETROS ||
-							actionId==ID_SINCRONIZE_CATALOGOSBASICOS ||
-							actionId==ID_SINCRONIZE_CLIENTES ||
-							actionId==ID_SINCRONIZE_PRODUCTOS ||
-							actionId==ID_SINCRONIZE_PROMOCIONES ||
-							actionId == ID_SINCRONIZE_TODOS)
+						
+//						if( actionId==ID_SINCRONIZE_PARAMETROS ||
+//							actionId==ID_SINCRONIZE_CATALOGOSBASICOS ||
+//							actionId==ID_SINCRONIZE_CLIENTES ||
+//							actionId==ID_SINCRONIZE_PRODUCTOS ||
+//							actionId==ID_SINCRONIZE_PROMOCIONES ||
+//							actionId == ID_SINCRONIZE_TODOS)
+//						{
+//							showStatus("Probando conexión!!!...");
+//							if(!(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController())))
+//								return;
+//						}
+						
+						if(!compare())
 						{
-							showStatus("Probando conexión!!!...");
-							if(!(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController())))
-								return;
+							salvarConfiguracion(ControllerProtocol.ID_RESETEAR_CONFIGURACION,actionId);
+							return;
 						}
+							
 							
 						if (actionId == ID_SALVAR_CONFIGURACION)
 								salvarConfiguracion(ControllerProtocol.ID_SALVAR_CONFIGURACION);
@@ -446,6 +455,22 @@ public class ViewConfiguracion extends ActionBarActivity implements
 
 	}
 
+	public boolean compare()
+	{ 
+		vmConfiguracion  olddata=configuracion.getOldData();
+		
+		if(!txtURL.getText().toString().trim().equals(olddata.getAppServerURL()))
+			return false;
+		if(!txtURL2.getText().toString().trim().equals(olddata.getAppServerURL2()))
+			return false;
+		if(!txtEmpresa.getText().toString().trim().equals(olddata.getEnterprise()))
+			return false;
+		if(!txtUsuario.getText().toString().trim().equals(olddata.getNameUser()))
+			return false;
+		
+		return true;
+	}
+	
 	public void dialogLoginAdmin() {
 		try {
 			NMApp.getThreadPool().execute(new Runnable() {
@@ -471,6 +496,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 		}
 	}
 
+	@SuppressLint("UseValueOf") 
 	private boolean salvarConfiguracion(int... _what) {
 		if (validar()) 
 		{
@@ -490,6 +516,13 @@ public class ViewConfiguracion extends ActionBarActivity implements
 			b.putParcelable("impresora", getImpresora());
 			b.putString("PIN", NMNetWork.getDeviceId(context));
 			b.putBoolean("confirm", true);
+			
+			if(_what.length != 0 ? new Integer(_what[0]).equals(ControllerProtocol.ID_RESETEAR_CONFIGURACION):false)
+				b.putBoolean("reset", true);
+			else
+				b.putBoolean("reset", false);
+			if(_what.length>1)
+				msg.arg1=_what[1];
 			msg.setData(b);
 			msg.what = _what.length != 0 ? _what[0] : LOAD_SETTING;
 			NMApp.getController().getInboxHandler().sendMessage(msg);
@@ -741,14 +774,23 @@ public class ViewConfiguracion extends ActionBarActivity implements
 		drawerList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+					int position, long id) 
+			{
 				drawerList.setItemChecked(position, true);
 				drawerLayout.closeDrawers();
 				tituloSeccion = opcionesMenu[position];
 				// Ponemos el titulo del Menú
 				getSupportActionBar().setTitle(tituloSeccion);
-				Controller controller = NMApp.getController();
-				switch (position) {
+				Controller controller = NMApp.getController(); 
+				
+				if(!compare())
+				{
+					salvarConfiguracion(ControllerProtocol.ID_RESETEAR_CONFIGURACION,position);
+					return;
+				}
+				
+				switch (position) 
+				{
 				case SALVAR_CONFIGURACION:
 					salvarConfiguracion(ID_SALVAR_CONFIGURACION);
 					break;

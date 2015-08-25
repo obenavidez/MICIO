@@ -323,6 +323,14 @@ public class ModelConfiguracion {
 
 		edit.commit();
 	}
+	
+	public static boolean removeSharedPreference(String key)
+	{
+		pref = NMApp.getContext().getSharedPreferences(key, Context.MODE_PRIVATE);
+		edit = pref.edit();
+		edit.clear();
+		return edit.commit();
+	}
 
 	public static Session guardarSession(Session session)
 	{

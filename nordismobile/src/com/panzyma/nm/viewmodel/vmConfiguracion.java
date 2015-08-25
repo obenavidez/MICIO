@@ -27,6 +27,7 @@ public class vmConfiguracion{
 	public static vmConfiguracion setConfiguration(java.lang.String url_server,java.lang.String url_server2,
 			java.lang.String device_prefix, java.lang.String enterprise,
 			java.lang.String name_user, int max_idpedido, int max_idrecibo,Impresora _impresora) {
+		
 		vmConfiguracion vmonfig = new vmConfiguracion();
 		vmonfig.setAppServerURL(url_server);
 		vmonfig.setAppServerURL2(url_server2);

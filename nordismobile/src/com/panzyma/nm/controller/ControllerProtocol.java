@@ -3,6 +3,7 @@ package com.panzyma.nm.controller;
 public interface ControllerProtocol {
 	
 	int ID_SALVAR_CONFIGURACION  = 1;
+	int ID_RESETEAR_CONFIGURACION  = 111;
     int ID_SINCRONIZE_PARAMETROS  = 2;
     int ID_SINCRONIZE_CATALOGOSBASICOS= 3; 
     int ID_SINCRONIZE_CATALOGOSBASICOS2= 32; 
