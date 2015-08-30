@@ -202,7 +202,7 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
             if (resp.compareTo("0") == 0) {
             	AppDialog.showMessage(parent,"","No se ha solicitado autorización.",DialogType.DIALOGO_ALERTA);
                 return false;
-            }
+            } 
             
             if (resp.compareTo("1") == 0) {
             	AppDialog.showMessage(parent,"","La solicitud aún no ha sido autorizada.",DialogType.DIALOGO_ALERTA);
@@ -249,6 +249,8 @@ public class AplicarDescuentoOcasional extends DialogFragment implements Handler
 	@Override
 	public boolean handleMessage(Message msg) 
 	{ 
+		if(pDialog!=null)
+			pDialog.dismiss();
 		switch (msg.what) 
 		{
 			case ControllerProtocol.REQUEST_APLICAR_DESCUENTO:	

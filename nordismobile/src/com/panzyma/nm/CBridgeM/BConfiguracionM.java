@@ -144,7 +144,8 @@ public class BConfiguracionM extends BBaseM {
 			break;
 		case LOAD_SETTING:
 
-			try {
+			try 
+			{
 				GET_DATACONFIGURATION(
 						b.get("URL").toString(),
 						b.get("URL2").toString(),
@@ -398,7 +399,7 @@ public class BConfiguracionM extends BBaseM {
 				DataConfigurationResult res;
 				try { 
 					res = ModelConfiguracion.getDataConfiguration(Url2,
-							Credentials, LoginUsuario,PIN);/*PIN*/
+							Credentials, LoginUsuario,"353926052963690");/*PIN*/
 
 					if (res.get_error() == null) {
 						if (res.get_devicePrefix() < 0) {

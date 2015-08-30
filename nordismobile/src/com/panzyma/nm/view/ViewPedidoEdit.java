@@ -841,13 +841,14 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			public void run() {
 				// Informar al usuario
 				AppDialog.showMessage(me, "", sms,
-						AppDialog.DialogType.DIALOGO_ALERTA,
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
 						new AppDialog.OnButtonClickListener() {
 							@Override
 							public void onButtonClick(AlertDialog _dialog,
 									int actionId) 
 							{
 
+								if(AppDialog.OK_BUTTOM==actionId)
 								if (pedido.getCodEstado().compareTo("FACTURADO") == 0) 
 								{
 									Message msg = new Message();

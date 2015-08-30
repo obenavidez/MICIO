@@ -55,11 +55,13 @@ public class NMTranslate
 				        String fieldname=((fields[i].getName().charAt(0)+"").toUpperCase())+""+(fields[i].getName().substring(1, fields[i].getName().length()));
 //				        boolean exists=objsoap.hasProperty(fields[i].getName()); 
 //				        if(exists)
-//					        value=objsoap.getProperty(fields[i].getName()); 
-				        
-				        boolean exists=objsoap.hasProperty(fieldname); 
+//					        value=objsoap.getProperty(fields[i].getName());  
+				        boolean exists=objsoap.hasProperty(fieldname);				         
 				        if(exists)
-					        value=objsoap.getProperty(fieldname); 
+					        value=objsoap.getProperty(fieldname);  				        
+				        exists=objsoap.hasProperty(fields[i].getName());				        
+				        if(exists) 
+				        	 value=objsoap.getProperty(fields[i].getName());
 				        
 					    if(value!=null)
 					    {

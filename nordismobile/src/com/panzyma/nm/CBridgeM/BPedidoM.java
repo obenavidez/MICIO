@@ -470,7 +470,7 @@ public class BPedidoM extends BBaseM {
 						Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
 								0,0,new String("Actualizando el estado de cuentas del Cliente"));
 			            //Volver a traer al cliente del servidor y actualizarlo en la memoria del dispositivo            
-			            Cliente cliente= BClienteM.actualizarCliente(NMApp.getContext(),SessionManager.getCredenciales(),obj.getObjSucursalID()); 
+			            Cliente cliente= BClienteM.actualizarCliente(NMApp.getContext(),SessionManager.getCredenciales(),pedido.getObjSucursalID()); 
 			           
 			            //Notificar al Usuario el resultado del envio del Pedido.
 			            NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_ENVIARPEDIDO, 0, 0, new ArrayList<Object>(Arrays.asList(obj,cliente)));
