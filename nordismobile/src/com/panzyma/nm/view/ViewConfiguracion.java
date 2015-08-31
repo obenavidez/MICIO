@@ -236,7 +236,8 @@ public class ViewConfiguracion extends ActionBarActivity implements
 	public boolean handleMessage(final Message msg) {
 		Log.d(TAG, "Received message: " + msg);
 		ocultarDialogos();
-		switch (msg.what) {
+		switch (msg.what) 
+		{
 		case C_UPDATE_FINISHED:
 			runOnUiThread(new Runnable() {
 				@Override
@@ -255,7 +256,9 @@ public class ViewConfiguracion extends ActionBarActivity implements
 							});
 				}
 			});
+			configuracion.setOldData(configuracion);
 			break;
+		
 		case C_DATA:
 			setData((vmConfiguracion) msg.obj);
 			break;

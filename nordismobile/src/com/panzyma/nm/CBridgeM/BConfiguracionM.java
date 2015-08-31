@@ -66,7 +66,7 @@ public class BConfiguracionM extends BBaseM {
 	 */
 
 	@Override
-	public boolean handleMessage(Message msg) 
+	public boolean handleMessage(Message msg) throws Exception 
 	{ 
 		
 		makeAction(msg.what, msg);
@@ -130,7 +130,7 @@ public class BConfiguracionM extends BBaseM {
 		return false;
 	}
 
-	public boolean makeAction(int idaction, Message... _msg) 
+	public boolean makeAction(int idaction, Message... _msg) throws Exception 
 	{ 
 		Message msg=(_msg!=null && _msg.length!=0)? _msg[0]:null;		
 		Bundle b = (msg!=null)? msg.getData():null;
@@ -161,12 +161,22 @@ public class BConfiguracionM extends BBaseM {
 			}
 			break;
 		case ID_SALVAR_CONFIGURACION:
-			SaveLocalHost(b);
+			vmConfiguracion c = ModelConfiguracion.getVMConfiguration(getContext());
+			c.setAppServerURL(b.get("URL").toString());
+			c.setAppServerURL2(b.get("URL2").toString());
+			c.setNameUser(b.get("LoginUsuario").toString());
+			c.setEnterprise(b.get("Empresa").toString());
+			SaveLocalHost(c);
 			break;
 		case ControllerProtocol.ID_RESETEAR_CONFIGURACION:			
 			saveLocalHost(b);
-			if(msg.arg1!=0)
+			if(msg.arg1!=0 && msg.arg1!=ID_SALVAR_CONFIGURACION)
 				makeAction(msg.arg1);
+			else
+				Processor.notifyToView(NMApp.getController(),
+						ControllerProtocol.C_UPDATE_FINISHED, 0, 0,
+						"Se guardó la configuración correctamente.");
+			
 			break;
 		case ID_SINCRONIZE_PARAMETROS:
 			SINCRONIZE_PARAMETROS();
@@ -847,43 +857,29 @@ public class BConfiguracionM extends BBaseM {
 		}
 	}
 
-	private void SaveLocalHost(Bundle b) {
-
-		try {
-			vmConfiguracion setting = vmConfiguracion.setConfiguration(
-					b.get("URL").toString(), b.get("URL2").toString(),
-					"0", // prefijo
-					b.get("Empresa").toString(),
-					null, // userinfo
-					0, // maxIdPedido
-					0, // maxIdRecibo
-					(b.getParcelable("impresora") != null) ? (Impresora) b
-							.getParcelable("impresora") : null);
-			ModelConfiguracion.saveConfiguration(NMApp.getContext(), setting);
-
-			if (b.getBoolean("reset")) {
-				SessionManager.setValidPrefix(false);
-				ModelConfiguracion.removeSharedPreference("LoginUser");
-				SessionManager
-						.setImpresora((b.getParcelable("impresora") != null) ? (Impresora) b
-								.getParcelable("impresora") : null);
-				SessionManager.setLoguedUser(null);
-				UserSessionManager.removeSession();
+private void SaveLocalHost(vmConfiguracion c){
+		
+		try 
+		{
+			ModelConfiguracion.saveConfiguration(NMApp.getContext(),c);
+			Processor.notifyToView(NMApp.getController(),ControllerProtocol.C_UPDATE_FINISHED,0, 0,"Se guardó la configuración correctamente.");
+		} 
+		catch (Exception e) 
+		{
+			try 
+			{
+				Processor
+						.notifyToView(NMApp.getController(),
+								ERROR,
+								0,
+								1,
+								new ErrorMessage(
+										"error en la comunicacion con el servidor",
+										e.getMessage()
+												+ "\r\n",
+										""));
 			}
-			Processor.notifyToView(NMApp.getController(),
-					ControllerProtocol.C_UPDATE_FINISHED, 0, 0,
-					"Se guardó la configuración correctamente.");
-		} catch (Exception e) {
-			try {
-				Processor.notifyToView(
-						NMApp.getController(),
-						ERROR,
-						0,
-						1,
-						new ErrorMessage(
-								"error en la comunicacion con el servidor", e
-										.getMessage() + "\r\n", ""));
-			} catch (Exception ex) {
+			catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -902,6 +898,7 @@ public class BConfiguracionM extends BBaseM {
 					(b.getParcelable("impresora") != null) ? (Impresora) b
 							.getParcelable("impresora") : null);
 			ModelConfiguracion.saveConfiguration(NMApp.getContext(), setting);
+			setting.setNameUser(b.get("LoginUsuario").toString());
 
 			if (b.getBoolean("reset")) 
 			{
@@ -911,6 +908,9 @@ public class BConfiguracionM extends BBaseM {
 				SessionManager.setLoguedUser(null);				
 				UserSessionManager.removeSession();
 			}
+			Processor.notifyToView(NMApp.getController(),
+					ControllerProtocol.C_DATA, 0, 0,
+					setting);
 		} catch (Exception e) {
 			try {
 				Processor.notifyToView(
@@ -924,7 +924,7 @@ public class BConfiguracionM extends BBaseM {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-		}
+		} 
 	}
 
 }
