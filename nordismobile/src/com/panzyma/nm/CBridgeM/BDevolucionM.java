@@ -168,14 +168,14 @@ public class BDevolucionM extends BBaseM
 							item.setFecha(c.getTime());
 							item.setNumeroCentral(7487799);
 							item.setTotal(new Float(123.45));
-							
+							item.setCliente_id(1002548);
 							ArrayList<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
 							lista.add(item);
 							
 							item = new vmDevolucion();
 							item.setCliente("Fci. Tamara Garcia/Angelica Palema.");
 							item.setEstado("Registrada");
-							
+							item.setCliente_id(1002548);
 							c = Calendar.getInstance(); 
 							c.set(2014, 02, 14);
 							item.setFecha(c.getTime());
@@ -187,6 +187,7 @@ public class BDevolucionM extends BBaseM
 							item = new vmDevolucion();
 							item.setCliente("Empresa Medica de Carazo/Rolando Niño.");
 							item.setEstado("Enviada");
+							item.setCliente_id(1002548);
 							c = Calendar.getInstance(); 
 							c.set(2014, 02, 14);
 							item.setFecha(c.getTime());

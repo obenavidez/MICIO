@@ -1,18 +1,22 @@
 package com.panzyma.nm.view;
 
+import java.nio.channels.SelectableChannel;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
+import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.view.adapter.InvokeBridge;
-import com.panzyma.nm.viewmodel.vmCliente;
+import com.panzyma.nm.view.vCliente.FragmentActive;
 import com.panzyma.nm.viewmodel.vmDevolucion;
 import com.panzyma.nordismobile.R;
 
@@ -25,6 +29,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -37,7 +43,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 @InvokeBridge(bridgeName = "BDevolucionM")
@@ -46,7 +51,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	
 	//VARIABLES
 	public enum FragmentActive {
-		LIST,EDIT
+		LIST,EDIT,FICHACLIENTE
 	};
 
 	private static final int NUEVO_DEVOLUCION = 0;
@@ -236,6 +241,13 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 						break;
 					case FICHA_DEL_CLIENTE:
 						is_Item_selected();
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							fragmentActive = FragmentActive.FICHACLIENTE;
+							ShowCustomerDetails(item_selected.getCliente_id());
+							
+			            }
+						
 						
 						break;
 					case CUENTAS_POR_COBRAR:
@@ -324,6 +336,55 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		devoluciones = list;
 		firstFragment.setItems(devoluciones,true);
 		gridheader.setText(String.format("LISTA DEVOLUCIONES (%s)", devoluciones.size()));
+	}
+	
+	private void ShowCustomerDetails(long idsucursal) {
+		Bundle args = new Bundle();
+		args.putInt(FichaClienteFragment.ARG_POSITION, this.posicion);
+		args.putLong(FichaClienteFragment.ARG_SUCURSAL, idsucursal);
+
+		// establecemos el titulo
+		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
+
+		FichaClienteFragment ficha;
+		FragmentTransaction transaction = getSupportFragmentManager()
+				.beginTransaction();
+ 
+		if (findViewById(R.id.dynamic_fragment) != null) {
+		} else {
+			Fragment fragment = getSupportFragmentManager().findFragmentById(
+					R.id.fragment_container);
+			if (fragment instanceof ListaFragment) {
+				ficha = new FichaClienteFragment();
+				ficha.setArguments(args);
+				ficha.setRetainInstance(true);
+				transaction.addToBackStack(null);
+				transaction.replace(R.id.fragment_container, ficha, "ficha");
+				gridheader.setVisibility(View.INVISIBLE);
+			}
+		}
+		// Commit the transaction transaction.commit();
+		transaction.commit();
+	}
+
+	@Override
+	public void onBackPressed() {
+		Fragment fragment = getSupportFragmentManager().findFragmentById(
+				R.id.fragment_container);
+		if (fragment instanceof FichaClienteFragment
+				|| fragment instanceof CuentasPorCobrarFragment) {
+			gridheader.setVisibility(View.VISIBLE);
+			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			//transaction.detach(fragment);
+			transaction.replace(R.id.fragment_container, firstFragment);
+			transaction.addToBackStack(null);
+			transaction.commit();
+			fragmentActive = FragmentActive.LIST;
+			getSupportActionBar().show();
+		} 
+		/*else {
+			FINISH_ACTIVITY();
+		}*/
 	}
 	
 	
