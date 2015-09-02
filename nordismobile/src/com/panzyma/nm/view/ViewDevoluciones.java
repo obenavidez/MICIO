@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
@@ -24,6 +26,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.*;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,6 +39,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,7 +57,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	
 	//VARIABLES
 	public enum FragmentActive {
-		LIST,EDIT,FICHACLIENTE
+		LIST,EDIT,FICHACLIENTE,CONSULTAR_CUENTA_COBRAR
 	};
 
 	private static final int NUEVO_DEVOLUCION = 0;
@@ -66,7 +72,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	String[] opcionesMenu;
 	CharSequence tituloSeccion;
 	CharSequence tituloApp;
-	
+	ViewDevoluciones vd;
 	private FragmentActive fragmentActive = null;
 	
 	//Controles
@@ -82,7 +88,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	ProgressDialog pDialog;
 	List<vmDevolucion> devoluciones = new ArrayList<vmDevolucion>();
 	int posicion ;
-	
+	private static CustomDialog dlg;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +96,10 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		//Establecemos nuestras variables de entorno
 		NMApp.getController().setView(this);
 		SessionManager.setContext(this);
-		UserSessionManager.setContext(this);
-		
+		UserSessionManager.setContext(this);		
 		setContentView(R.layout.layout_client_fragment);
-		
-		Render_Menu();
+		vd = this;
+		CreateMenu();
 		
 		Load_Data(LOAD_DATA_FROM_LOCALHOST);
 		
@@ -105,11 +110,13 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		
 		//Si es Phone
 		if (findViewById(R.id.fragment_container) != null) {
-			getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, firstFragment).commit();
+			getSupportFragmentManager().beginTransaction()
+			.replace(R.id.fragment_container, firstFragment)
+			.commit();
 		}
 		
-		gridheader = (TextView) findViewById(R.id.ctextv_gridheader);
-	
+		gridheader = footerView =  (TextView) findViewById(R.id.ctextv_gridheader);
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -118,8 +125,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		boolean result = false;
 		ArrayList<vmDevolucion> list = null;
 		
-		if (pDialog != null && pDialog.isShowing())
-			pDialog.dismiss();
+		HideDialogos();
 		
 		switch (msg.what) {
 		
@@ -129,6 +135,21 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			
 			break;
 		
+			case ERROR:
+				AppDialog.showMessage((ViewDevoluciones)NMApp.getController().getView(), ((ErrorMessage) msg.obj).getTittle(),
+						((ErrorMessage) msg.obj).getMessage(),
+						DialogType.DIALOGO_ALERTA);
+				final ErrorMessage error = ((ErrorMessage) msg.obj);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						// pDialog.hide();
+						dlg = new CustomDialog((ViewDevoluciones)NMApp.getController().getView() , error.getMessage()
+								+ error.getCause(), false, NOTIFICATION_DIALOG);
+						dlg.show();
+					}
+				});
+			
 		}
 		return result ;
 	}
@@ -174,7 +195,13 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		return true;
 	}
 	
-	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu.findItem(R.id.action_search).setVisible(true);
+		super.onPrepareOptionsMenu(menu);
+		return true;
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -184,9 +211,20 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 
 		return true;
 	}
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		drawerToggle.onConfigurationChanged(newConfig);
+	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		drawerToggle.syncState();
+	}
 
 	
-	private void Render_Menu(){
+	private void CreateMenu(){
 		// Obtenemos las opciones desde el recurso
 		opcionesMenu = getResources().getStringArray(R.array.devoluciones_lista_options);
 		
@@ -203,7 +241,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 				
 				drawerList.setItemChecked(position, true);
-				
+				drawerLayout.closeDrawers();
 				tituloSeccion = opcionesMenu[position];
 				getSupportActionBar().setTitle(tituloSeccion);
 				
@@ -252,17 +290,18 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 						break;
 					case CUENTAS_POR_COBRAR:
 						is_Item_selected();
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+							LOAD_CUENTASXPAGAR();
+			            }
 						
 						break;
 					case CERRAR :
 						finish();
 						break;
-				
 				}
-				
-				drawerLayout.closeDrawers();
 			}
-					
 		});
 		
 		tituloSeccion = getTitle();
@@ -367,6 +406,19 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		transaction.commit();
 	}
 
+	public void LOAD_CUENTASXPAGAR() {
+		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
+		Bundle msg = new Bundle();
+		FragmentTransaction transaction = getSupportFragmentManager()
+				.beginTransaction();
+		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, this.posicion);
+		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,this.item_selected.getIdSucursal());
+		cuentasPorCobrar.setArguments(msg);
+		transaction.replace(R.id.fragment_container, cuentasPorCobrar);
+		transaction.addToBackStack(null);
+		transaction.commit();
+	}
+	
 	@Override
 	public void onBackPressed() {
 		Fragment fragment = getSupportFragmentManager().findFragmentById(
@@ -382,10 +434,39 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			fragmentActive = FragmentActive.LIST;
 			getSupportActionBar().show();
 		} 
-		/*else {
+		else 
 			FINISH_ACTIVITY();
-		}*/
 	}
 	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+			if (fragment instanceof FichaClienteFragment) {
+				return true;
+			} else {
+				drawerLayout.openDrawer(Gravity.LEFT);
+			}
+		}
+		if (keyCode == KeyEvent.KEYCODE_SETTINGS) {
+			return false;
+		}
+		return super.onKeyUp(keyCode, event);
+	}
 	
+	private void FINISH_ACTIVITY() {
+		//ocultarDialogos();
+		//Log.d(TAG, "Activity quitting");
+		if (pDialog != null)
+			pDialog.dismiss();
+		finish();
+	}
+
+	public void HideDialogos() {
+		if (dlg != null && dlg.isShowing())
+			dlg.dismiss();
+		if (pDialog != null && pDialog.isShowing())
+			pDialog.dismiss();
+	}
+
 }

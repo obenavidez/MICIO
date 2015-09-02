@@ -5,14 +5,8 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import com.panzyma.nm.auxiliar.DateUtil.*;
-import com.panzyma.nm.auxiliar.DateUtil;
-import com.panzyma.nm.auxiliar.Util;
-import com.panzyma.nm.interfaces.DevolucionItem;
-import com.panzyma.nordismobile.R.color; 
+import com.panzyma.nm.interfaces.DevolucionItem; 
 
 public class vmDevolucion  implements Parcelable , DevolucionItem  {
 
@@ -24,10 +18,29 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	private String Estado;
 	private long cliente_id;
 	private boolean OffLine;
+	private int customer_id;
+	private long idSucursal;
+
 	
 	
 	public vmDevolucion(){}
 		
+	public long getCliente_id() {
+		return cliente_id;
+	}
+
+	public void setCliente_id(long cliente_id) {
+		this.cliente_id = cliente_id;
+	}
+
+	public int getCustomer_id() {
+		return customer_id;
+	}
+
+	public void setCustomer_id(int customer_id) {
+		this.customer_id = customer_id;
+	}
+
 	public vmDevolucion(long id, int numeroCentral,  Date fecha, String cliente,
 			Float total, String estado, long cliente_id,boolean offline) {
 		super();
@@ -39,6 +52,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 		Estado = estado;
 		this.cliente_id = cliente_id;
 		this.OffLine = offline;
+		this.customer_id=1002548;
 	}
 
 
@@ -190,6 +204,24 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	public boolean getItemOffline() {
 		
 		return this.OffLine;
+	}
+
+	@Override
+	public long getItemCustomerid() {
+		return this.customer_id;
+	}
+
+	@Override
+	public long getItemsucursalid() {
+		return getIdSucursal();
+	}
+
+	public long getIdSucursal() {
+		return idSucursal;
+	}
+
+	public void setIdSucursal(long idSucursal) {
+		this.idSucursal = idSucursal;
 	}
 
 }
