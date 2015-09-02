@@ -110,9 +110,11 @@ public class BDevolucionM extends BBaseM
 			dev = ModelDevolucion.BuscarDevolucionDePedido(credenciales,
 					idsucursal, nopedido, nofactura);
 			pedido = obtenerPedido(dev.getObjPedidoDevueltoID());
-			if (pedido != null)
+			if (pedido != null && pedido.getId()!=0)
 				dev.setObjPedido(pedido);
-
+			else
+				Processor.notifyToView(getController(),
+						ControllerProtocol.NOTIFICATION, 0, 0,"No se encontro pedido alguno...");
 			Processor.notifyToView(getController(),
 					ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO, 0, 0, dev);
 

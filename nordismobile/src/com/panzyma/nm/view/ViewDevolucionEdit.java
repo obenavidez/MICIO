@@ -1,5 +1,7 @@
 package com.panzyma.nm.view;
 
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -49,6 +51,7 @@ import android.widget.TextView;
 
 import com.panzyma.nm.NMApp; 
 import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
@@ -122,6 +125,7 @@ Handler.Callback, Editable
 	CustomAdapter adapter_tipodev;
 	ArrayList<Catalogo> catalogos;
 	
+	private CustomDialog dlg;
 	public static ProductoDevolucion pd;
 	List<DevolucionProducto> dev_prod;
 	
@@ -940,8 +944,50 @@ Handler.Callback, Editable
 						R.layout.spinner_rows, setListData(catalogos=(ArrayList<Catalogo>) msg.obj));
 				cboxmotivodev.setAdapter(adapter_motdev);  
 				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG:
+				showStatus(msg.obj.toString(),true);
+				break;
+			case ControllerProtocol.ERROR:
+				AppDialog.showMessage(me, ((ErrorMessage) msg.obj).getTittle(),
+						((ErrorMessage) msg.obj).getMessage(),
+						DialogType.DIALOGO_ALERTA);
+				break;
 		}
 		return false;
+	}
+
+	public void showStatus(final String mensaje, boolean... confirmacion) 
+	{ 
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(me, "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(AlertDialog _dialog,
+										int actionId) {
+
+									if (AppDialog.OK_BUTTOM == actionId) {
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else {
+			runOnUiThread(new Runnable() {
+				
+
+				@Override
+				public void run() {
+					dlg = new CustomDialog(me, mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		}
 	}
 
 

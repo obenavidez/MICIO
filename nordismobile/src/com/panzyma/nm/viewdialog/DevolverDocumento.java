@@ -12,6 +12,7 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BDevolucionM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork; 
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
@@ -253,6 +254,11 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 				}else
 					showStatus("El pedido/factura "+ numpedido+"/"+numfactura+" no se encontro en el servidor central...",true);
 				
+				break;
+			case ControllerProtocol.ERROR:
+				AppDialog.showMessage(this.getActivity(), ((ErrorMessage) msg.obj).getTittle(),
+						((ErrorMessage) msg.obj).getMessage(),
+						DialogType.DIALOGO_ALERTA);
 				break;
 		}
 		return false;
