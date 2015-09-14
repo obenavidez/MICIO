@@ -299,7 +299,9 @@ public class NMNetWork {
   //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
     public static synchronized boolean CheckConnection() 
     {
-    	error=null;  
+    	error=null; 
+    	response=false;
+    	UserSessionManager.HAS_ERROR=false;
         try 
         {        
 			Thread t = new Thread(new Runnable() 
@@ -373,6 +375,70 @@ public class NMNetWork {
         }
 		return response;  
     }    
+    
+    
+    
+    
+    
+    //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
+    public static synchronized boolean CheckConnectionV2() 
+    {
+    	error=null; 
+    	response=false;
+    	UserSessionManager.HAS_ERROR=false;
+        try 
+        {        
+			Thread t = new Thread(new Runnable() 
+			{
+				@Override
+				public void run() {
+					try 
+					{
+						response = Boolean.parseBoolean(((SoapPrimitive) NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),
+										NMConfig.URL, NMConfig.NAME_SPACE,
+										NMConfig.MethodName.CheckConnection))
+								.toString());
+					} catch (Exception ex) {
+						ex.printStackTrace();    	 
+		            	UserSessionManager.HAS_ERROR=true; 
+					}
+				}
+			});
+        	t.start(); // spawn thread
+        	try {
+        		t.join();  // wait for thread to finish
+            } catch (InterruptedException ex) 
+            {
+            	ex.printStackTrace();    	 
+            	UserSessionManager.HAS_ERROR=true;
+            	
+                return false; 
+            }        	 
+        } 
+        catch(Exception ex) 
+        {         	 
+        	ex.printStackTrace();    	 
+        	UserSessionManager.HAS_ERROR=true;
+         
+            return false;
+        }
+		return response;  
+    }    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
   //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis

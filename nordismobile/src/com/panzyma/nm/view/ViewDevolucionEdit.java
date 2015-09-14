@@ -1,6 +1,8 @@
 package com.panzyma.nm.view;
 
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData.Item;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -497,8 +500,7 @@ Handler.Callback, Editable
 	{
 		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();
 		
-		LinkedList<ExpandListChild> groupchild;
-
+		LinkedList<ExpandListChild> groupchild; 
 		for (DevolucionProducto dp : dev_prod) 
 		{
 			ExpandListGroup group = new ExpandListGroup();
@@ -516,6 +518,29 @@ Handler.Callback, Editable
 			_lgroups.add(group);
 		} 
 		return _lgroups;
+	}
+	
+	public void updateObject()
+	{		
+		List<ExpandListGroup>  _lgroups = lgroups;
+		ExpandListGroup group = null;
+		DevolucionProducto[] adp=new DevolucionProducto[lgroups.size()];
+		
+		for(int a=0;a<lgroups.size();a++)
+		{
+			group =  (ExpandListGroup) lgroups.get(a);
+			DevolucionProducto dp=(DevolucionProducto) group.getObject();
+			
+			LinkedList<ExpandListChild> Items=group.getItems();
+			DevolucionProductoLote[] adpl=new DevolucionProductoLote[Items.size()];
+			for(int i=0;i<Items.size();i++)
+			{
+				adpl[i]=(DevolucionProductoLote) Items.get(i).getObject();
+			}
+			dp.setProductoLotes(adpl);
+			adp[a]=dp; 			
+		}
+		dev.setProductosDevueltos(adp);
 	}
 	
 	public void updateGrid(DevolucionProductoLote dpl)
@@ -638,33 +663,10 @@ Handler.Callback, Editable
 							dialogDevolucion.show(fragmentManager, "");
 						}					
 						break;
-//				case ID_CONDICIONES_Y_NOTAS:
-//						agregarCondicionesYNotas();
-//						break;
-//				case ID_EDITAR_PRODUCTO:
-//						editarProducto();
-//						break;
-//				case ID_ELIMINAR_PRODUCTO:
-//						eliminarProducto();
-//						break;
-//				case ID_CONSULTAR_BONIFICACIONES:
-//						consultarBonificaciones();
-//						break;
-//				case ID_CONSULTAR_LISTA_PRECIOS:
-//						consultarPrecioProducto();
-//						break;
-//				case ID_APLICAR_PROMOCIONES:
-//						aplicarPromociones(true); 
-//						break;
-//				case ID_DESAPLICAR_PROMOCIONES:
-//						desaplicarPromociones();
-//						break;
-//				case ID_EXONERAR_IMPUESTO:
-//						exonerarDeImpuesto();
-//						break;
-//				case ID_GUARDAR:
-//						salvarPedido();
-//						break;
+				 
+				case ID_GUARDAR:
+						salvarDevolucion();
+						break;
 //				case ID_ENVIAR:
 //						enviarPedido();
 //						break;
@@ -681,6 +683,8 @@ Handler.Callback, Editable
 				
 				}
 			}
+
+		
 
 			
 		});
@@ -713,6 +717,17 @@ Handler.Callback, Editable
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 	
+	protected void salvarDevolucion() 
+	{
+
+		Message msg = new Message(); 
+		msg.obj=dev; 
+		msg.what = SAVE_DATA_FROM_LOCALHOST;
+		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+		
+	}
+
+
 	private void agregarProducto() 
 	{
 	
@@ -810,7 +825,7 @@ Handler.Callback, Editable
 		
 		boolean isoffline=false;
 		pdialog=ProgressDialog.show(this, "Probando conexión","");
-		if( (!NMNetWork.CheckConnection()) && !UserSessionManager.HAS_ERROR)  
+		if( (!NMNetWork.CheckConnectionV2()) && UserSessionManager.HAS_ERROR)  
 			isoffline=true; 
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("DialogDevolverDocumento");
@@ -834,8 +849,9 @@ Handler.Callback, Editable
 				
 			}
 		});
-		newFragment.show(ft, "dialogDocumentoDevolucion");
-		
+		newFragment.show(ft, "dialogDocumentoDevolucion"); 
+		if(isoffline=true)
+			NMApp.getController()._notifyOutboxHandlers(0, 0, 0,"Dispositivo fuera de cobertura");
 	}
 	
 	public void showClientDialog(final AlertDialog... _dialog)
@@ -922,6 +938,12 @@ Handler.Callback, Editable
 		return this;
 	}
 	
+	public void dismiss(){
+		if(pdialog!=null)
+			pdialog.dismiss();				
+		if(dlg!=null)
+			dlg.dismiss();
+	}
 	public void hideProgress(){
 		runOnUiThread(new Runnable() 
 		{
@@ -930,6 +952,8 @@ Handler.Callback, Editable
 			public void run() {
 				if(pdialog!=null)
 					pdialog.dismiss();				
+				if(dlg!=null)
+					dlg.dismiss();
 			}
 		});
 	}
@@ -937,6 +961,7 @@ Handler.Callback, Editable
 	@Override
 	public boolean handleMessage(Message msg) 
 	{ 		
+		dismiss();
 		switch (msg.what) 
 		{
 			case ControllerProtocol.OBTENERVALORCATALOGO:				
@@ -945,12 +970,18 @@ Handler.Callback, Editable
 				cboxmotivodev.setAdapter(adapter_motdev);  
 				break;
 			case ControllerProtocol.NOTIFICATION_DIALOG:
-				showStatus(msg.obj.toString(),true);
+				if (msg.obj instanceof String)
+					showStatus(msg.obj.toString(),true);
 				break;
 			case ControllerProtocol.ERROR:
-				AppDialog.showMessage(me, ((ErrorMessage) msg.obj).getTittle(),
+				/*AppDialog.showMessage(me, ((ErrorMessage) msg.obj).getTittle(),
 						((ErrorMessage) msg.obj).getMessage(),
-						DialogType.DIALOGO_ALERTA);
+						DialogType.DIALOGO_ALERTA);*/
+				if(msg.obj instanceof ErrorMessage)
+					showStatus(((ErrorMessage) msg.obj).getMessage(), true);
+				else if (msg.obj instanceof String)
+					showStatus(((String) msg.obj), true);
+				
 				break;
 		}
 		return false;

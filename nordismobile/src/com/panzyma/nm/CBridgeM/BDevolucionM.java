@@ -5,14 +5,19 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
  
 
 
+
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol; 
+import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelPedido; 
@@ -43,6 +48,10 @@ public class BDevolucionM extends BBaseM
 				break;			
 			case LOAD_DATA_FROM_LOCALHOST:
 				onLoadALLData_From_LocalHost();
+				break;
+			case ControllerProtocol.SAVE_DATA_FROM_LOCALHOST:
+				Devolucion dev=(Devolucion) msg.obj;
+				RegistrarDevolucion(dev);
 				break;
 			default:
 				break;
@@ -92,7 +101,8 @@ public class BDevolucionM extends BBaseM
 		} 
 	}
     
-    private void BuscarDevolucionDePedido(Object obj) {
+    private void BuscarDevolucionDePedido(Object obj) 
+    {
 		HashMap<String, Long> parametros = (HashMap<String, Long>) obj;
 		long idsucursal, nopedido, nofactura;
 		idsucursal = parametros.get("idsucursal");
@@ -148,9 +158,6 @@ public class BDevolucionM extends BBaseM
 				idPedido);
 	}
 
-    
-    
-    
     private void onLoadALLData_From_LocalHost()
 	{		
 		try 
@@ -229,5 +236,14 @@ public class BDevolucionM extends BBaseM
 		
 	}
 
+    private void RegistrarDevolucion(Devolucion dev){
+    	try {
+			DatabaseProvider.RegistrarDevolucion(dev, NMApp.getContext());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
  }
 

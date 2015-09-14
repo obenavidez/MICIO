@@ -129,7 +129,7 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 		btncancelar=(Button) row.findViewById(R.id.btnCancel);
 		visible=View.GONE; 
 		
-		((ViewDevolucionEdit)parent).hideProgress();
+		((ViewDevolucionEdit)parent).dismiss();
 		
 		if(offline /* (!NMNetWork.CheckConnection()) && !UserSessionManager.HAS_ERROR*/) 
 		{
