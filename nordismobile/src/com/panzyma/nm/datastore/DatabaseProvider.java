@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import com.comunicator.AppNMComunication;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
+import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.model.ModelCProducto;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
@@ -1438,18 +1439,25 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.Recibo.TOTAL_IMPUESTO_EXONERADO, recibo.getTotalImpuestoExonerado());
 			values.put(NMConfig.Recibo.EXENTO, recibo.isExento());
 			values.put(NMConfig.Recibo.AUTORIZA_DGI, recibo.getAutorizacionDGI());
-					 
+					 //174
+					 //1741756
 			 Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
 	         recibomax=Ventas.getMaxReciboId(NMApp.getContext());
 	         recibomax2=new Integer(recibomax);
+	         
+	         
+	         
 			 //Generar Id del recibo
 	       if (recibo.getReferencia() == 0 || recibo.getId() == 0) 
 	       {            	    	   
-	    	   //Salvando el tipo de pedido (crédito contado)		 
+	    	   //Salvando el tipo de pedido (crédito contado)		    	   
                if (recibomax == null) 
                	recibomax = Integer.valueOf(1);
-               else
-               	recibomax =recibomax+1; 
+               else{
+            	   Integer rmax=NumberUtil.getNumeroMaxRecibo(recibomax, prefijo);
+            	   recibomax =rmax+1; 
+               }
+               	
                String strIdMovil = prefijo.intValue() + "" + recibomax.intValue();
                int idMovil = Integer.parseInt(strIdMovil); 
 	           

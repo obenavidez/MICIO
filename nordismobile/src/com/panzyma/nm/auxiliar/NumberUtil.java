@@ -212,4 +212,19 @@ public abstract class NumberUtil {
     		res+="0"; 
     	return res; 
     }
+    
+    public static Integer getNumeroMaxRecibo(int numeromax,int prefijo) 
+    {
+    	String fuente = ""+numeromax;
+    	String prefix = ""+prefijo;    	
+    	 
+    	if(!fuente.contains(prefix))
+    		return numeromax; 
+    	String value=fuente.substring(0, prefix.length());
+    	String rs=fuente.substring(prefix.length(), fuente.length());  
+    	if(prefix.equals(value)) 
+    		return new Integer(rs); 
+    	
+		return new Integer(numeromax);
+	}
 }

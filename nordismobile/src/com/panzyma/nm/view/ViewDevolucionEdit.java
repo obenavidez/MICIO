@@ -135,8 +135,7 @@ Handler.Callback, Editable
 	public List<DevolucionProducto> getDev_prod() {
 		return dev_prod;
 	}	
-
-	private Devolucion dev;
+ 
 	private ExpandableListView lvdevproducto; 
 	private ExpandListAdapter adapter;
 	protected int[] positioncache = new int[2];
@@ -540,7 +539,7 @@ Handler.Callback, Editable
 			dp.setProductoLotes(adpl);
 			adp[a]=dp; 			
 		}
-		dev.setProductosDevueltos(adp);
+		devolucion.setProductosDevueltos(adp);
 	}
 	
 	public void updateGrid(DevolucionProductoLote dpl)
@@ -719,9 +718,8 @@ Handler.Callback, Editable
 	
 	protected void salvarDevolucion() 
 	{
-
 		Message msg = new Message(); 
-		msg.obj=dev; 
+		msg.obj=devolucion; 
 		msg.what = SAVE_DATA_FROM_LOCALHOST;
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 		
@@ -841,9 +839,9 @@ Handler.Callback, Editable
 			{ 
 				if(_dev!=null && _dev.getProductosDevueltos()!=null && _dev.getProductosDevueltos().length!=0)
 				{
-					dev=_dev;
-					pedido=dev.getObjPedido();
-					dev_prod=Arrays.asList(dev.getProductosDevueltos());
+					devolucion=_dev;
+					pedido=devolucion.getObjPedido();
+					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
 					initExpandableListView();
 				}
 				
