@@ -409,7 +409,7 @@ public class BConfiguracionM extends BBaseM {
 				DataConfigurationResult res;
 				try { 
 					res = ModelConfiguracion.getDataConfiguration(Url2,
-							Credentials, LoginUsuario,"353926052963690");/*PIN*/
+							Credentials, LoginUsuario,PIN);/*PIN*/
 
 					if (res.get_error() == null) {
 						if (res.get_devicePrefix() < 0) {
