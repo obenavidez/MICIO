@@ -495,8 +495,17 @@ public class vCliente extends ActionBarActivity implements
 					intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
 					startActivity(intent);
 					break;
-				case NUEVO_DEVOLUCION:
-					buildToastMessage("PROXIMANTE....", 5);
+				case NUEVO_DEVOLUCION:					
+					if (cliente_selected == null) {
+						AppDialog.showMessage(vc, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					intent = new Intent(vCliente.this, ViewDevolucionEdit.class);
+					intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
+					startActivity(intent);
+					
 					break;
 				case FICHA_CLIENTE:
 					if (cliente_selected == null) {

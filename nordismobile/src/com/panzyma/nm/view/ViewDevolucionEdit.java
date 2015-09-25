@@ -76,6 +76,7 @@ import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
+import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.ExpandListAdapter;
 import com.panzyma.nm.view.adapter.ExpandListChild;
@@ -131,6 +132,7 @@ Handler.Callback, Editable
 	private CustomDialog dlg;
 	public static ProductoDevolucion pd;
 	List<DevolucionProducto> dev_prod;
+	public static final String CLIENTE = "cliente";
 	
 	public List<DevolucionProducto> getDev_prod() {
 		return dev_prod;
@@ -216,6 +218,16 @@ Handler.Callback, Editable
 		m.obj=new String[]{"MotivoDevolucionNoVencidos"};
 		NMApp.getController().getInboxHandler().sendMessage(m);
 		initComponent();
+		if (getIntent().hasExtra("cliente")) {
+			long IdCliente = getIntent().getLongExtra("cliente", 0);
+			try {
+				cliente = Ventas.getClienteBySucursalID(IdCliente,me.getContentResolver());
+				setInformacionCliente();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	
