@@ -282,11 +282,8 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 			            {
 							fragmentActive = FragmentActive.FICHACLIENTE;
-							ShowCustomerDetails(item_selected.getCliente_id());
-							
+							ShowCustomerDetails();
 			            }
-						
-						
 						break;
 					case CUENTAS_POR_COBRAR:
 						is_Item_selected();
@@ -377,10 +374,10 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		gridheader.setText(String.format("LISTA DEVOLUCIONES (%s)", devoluciones.size()));
 	}
 	
-	private void ShowCustomerDetails(long idsucursal) {
+	private void ShowCustomerDetails() {
 		Bundle args = new Bundle();
 		args.putInt(FichaClienteFragment.ARG_POSITION, this.posicion);
-		args.putLong(FichaClienteFragment.ARG_SUCURSAL, idsucursal);
+		args.putLong(FichaClienteFragment.ARG_SUCURSAL, item_selected.getIdSucursal());
 
 		// establecemos el titulo
 		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);

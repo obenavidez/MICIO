@@ -235,13 +235,25 @@ public class DialogoConfirmacion extends DialogFragment implements Callback {
 				
 				descuento.requestFocus(); 
 			}			
-		} else if( document instanceof ReciboDetND ) {
-			rowRetencion.setVisibility(View.GONE);
-			rowDescuento.setVisibility(View.GONE);
-		} else if ( document instanceof ReciboDetNC ) {
+		} 
+		else if( document instanceof ReciboDetND ) 
+		{
+			if( this.actionType == ActionType.ADD ) {
+				rowRetencion.setVisibility(View.GONE);
+				rowDescuento.setVisibility(View.GONE);
+			}
+			/*rowRetencion.setVisibility(View.GONE);
+			rowDescuento.setVisibility(View.GONE);*/
+		} 
+		else if ( document instanceof ReciboDetNC ) 
+		{
+			if( this.actionType == ActionType.ADD ) {
+				rowRetencion.setVisibility(View.GONE);
+				rowDescuento.setVisibility(View.GONE);
+			}
 			monto.setEnabled(false);
-			rowRetencion.setVisibility(View.GONE);
-			rowDescuento.setVisibility(View.GONE);
+			/*rowRetencion.setVisibility(View.GONE);
+			rowDescuento.setVisibility(View.GONE);*/
 		} 
 	}
 	

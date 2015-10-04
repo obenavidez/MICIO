@@ -23,12 +23,10 @@ import com.panzyma.nm.view.viewholder.FacturaViewHolder;
 import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
 import com.panzyma.nm.viewdialog.DialogSeleccionTipoDocumento.Documento;
-import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -410,8 +408,9 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			
 			if( notasCredito.length > 0 ){
 				//SE OBTIENEN LAS NOTAS DE CREDITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
-				//ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);		 
-				ArrayList<CCNotaCredito> _notasCredito = new ArrayList<CCNotaCredito>(Arrays.asList(notasCredito));	
+				//ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);
+				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);
+				//ArrayList<CCNotaCredito> _notasCredito = new ArrayList<CCNotaCredito>(Arrays.asList(notasCredito));	
 				if( _notasCredito.size() == 0 )
 				{
 					if(pd != null)pd.dismiss();

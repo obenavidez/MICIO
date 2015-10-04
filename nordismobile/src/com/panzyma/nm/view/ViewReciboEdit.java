@@ -2,7 +2,6 @@ package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
-import static com.panzyma.nm.controller.ControllerProtocol.SOLICITAR_DESCUENTO;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
 
@@ -27,8 +26,6 @@ import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMConfig.Recibo.DetalleNotaCredito;
-import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
@@ -47,7 +44,6 @@ import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboColector;
@@ -60,10 +56,8 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
-import com.panzyma.nm.view.viewholder.PProductoViewHolder;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
-import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogFormasPago;
 import com.panzyma.nm.viewdialog.DialogNotaRecibo;
@@ -84,7 +78,6 @@ import com.panzyma.nordismobile.R;
 
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -92,9 +85,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -122,7 +113,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 @InvokeBridge(bridgeName = "BReciboM")
@@ -2046,14 +2036,17 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	
 	public boolean existReceiptedInvoice(){
 		boolean exist = false;
-		if(relFacturaNotaCredito == null) return false;		
-		for(Entry<Long,Long> r : relFacturaNotaCredito.entrySet()){
+		if(relFacturaNotaCredito == null) 
+			return false;
+		else 
+			return true;
+		/*for(Entry<Long,Long> r : relFacturaNotaCredito.entrySet()){
 			if(r.getValue() == 0) {
 				exist = true;
 				break;
 			}
-		}		
-		return exist;
+		}*/		
+		/*return exist;*/
 	}
 	
 	public void asociarNotaCreditoFactura(Long ncID){
@@ -2384,10 +2377,18 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 								dialogConfirmacion.setActionPago(new Pagable() {
 									@Override
 									public void onPagarEvent(List<Ammount> montos) {
-										procesaNotaCredito(notaCreditoDetalle,notaCredito, montos, true);
-										dialog.loadNotasCredito(cliente.getNotasCreditoPendientes(),0);
-										dialogConfirmacion.dismiss();
-										asociarNotaCreditoFactura(notaCreditoDetalle.getObjNotaCreditoID());
+										
+										float monto_notas_creditos = GetTotalNotasDeCreditos();
+										if(recibo.getTotalFacturas() <  (monto_notas_creditos + notaCreditoDetalle.getMonto())){
+											Toast.makeText(getApplicationContext(), "EL monto acumulado en las notas de creditos no puede ser mayor al monto total del recibo", Toast.LENGTH_LONG).show();
+											dialogConfirmacion.dismiss();
+										}
+										else {
+											procesaNotaCredito(notaCreditoDetalle,notaCredito, montos, true);
+											dialog.loadNotasCredito(cliente.getNotasCreditoPendientes(),0);
+											dialogConfirmacion.dismiss();
+											asociarNotaCreditoFactura(notaCreditoDetalle.getObjNotaCreditoID());
+									   }
 									}
 								});
 								FragmentManager fragmentManager = getSupportFragmentManager();
@@ -2578,9 +2579,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		if (recibo.getId() != 0) {
 			List<ReciboDetNC> ncToUpd = new ArrayList<ReciboDetNC>();
 			ncToUpd.add(ncDetalle);
-			ContentResolver cntr = (ContentResolver) NMApp.getContext()
+			ContentResolver cntr = NMApp.getContext()
 					.getContentResolver();
-			Context cntx = (Context) NMApp.getContext();
+			Context cntx = NMApp.getContext();
 			ModelRecibo.updateNotasCredito(ncToUpd, cntr, cntx);
 			ModelRecibo.deleteDocument(30, ncDetalle.getId(), recibo.getId(),
 					cntx);
@@ -2618,8 +2619,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			{
 				List<ReciboDetFactura> factToUpd = new ArrayList<ReciboDetFactura>();
 				factToUpd.add(factDetalle);
-				ContentResolver cntr = (ContentResolver) NMApp.getContext().getContentResolver();
-				Context cntx = (Context) NMApp.getContext();
+				ContentResolver cntr = NMApp.getContext().getContentResolver();
+				Context cntx = NMApp.getContext();
 				ModelRecibo.updateFacturas(recibo.getId(),factToUpd, cntr, cntx);
 				ModelRecibo.deleteDocument(10, factDetalle.getId(),
 						recibo.getId(), cntx);
@@ -2651,9 +2652,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			if (recibo.getId() != 0) {
 				List<ReciboDetND> ndToUpd = new ArrayList<ReciboDetND>();
 				ndToUpd.add(ndDetalle);
-				ContentResolver cntr = (ContentResolver) NMApp.getContext()
+				ContentResolver cntr = NMApp.getContext()
 						.getContentResolver();
-				Context cntx = (Context) NMApp.getContext();
+				Context cntx = NMApp.getContext();
 				ModelRecibo.updateNotasDebito(ndToUpd, cntr, cntx);
 				ModelRecibo.deleteDocument(20, ndDetalle.getId(),
 						recibo.getId(), cntx);
@@ -2683,9 +2684,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			if (recibo.getId() != 0) {
 				List<ReciboDetNC> ncToUpd = new ArrayList<ReciboDetNC>();
 				ncToUpd.add(ncDetalle);
-				ContentResolver cntr = (ContentResolver) NMApp.getContext()
+				ContentResolver cntr = NMApp.getContext()
 						.getContentResolver();
-				Context cntx = (Context) NMApp.getContext();
+				Context cntx = NMApp.getContext();
 				ModelRecibo.updateNotasCredito(ncToUpd, cntr, cntx);
 				ModelRecibo.deleteDocument(30, ncDetalle.getId(),
 						recibo.getId(), cntx);
@@ -3646,10 +3647,21 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	        agregarDocumentosAlDetalleDeRecibo();
 	}
 	 
-	 public void updateResult(String montopagado) {
+	 @Override
+	public void updateResult(String montopagado) {
 		 
 		 txtmonto.setText(montopagado);
 		  
 	}
 	
+	 
+	public float GetTotalNotasDeCreditos(){
+		float sum = 0L;
+		if(recibo.getNotasCreditoRecibo().size()> 1){
+			for ( ReciboDetNC item : recibo.getNotasCreditoRecibo()){
+				sum+= item.getMonto();
+			}
+		}
+		return sum;
+	}
 }
