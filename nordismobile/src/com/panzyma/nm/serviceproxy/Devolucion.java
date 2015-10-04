@@ -2,7 +2,18 @@ package com.panzyma.nm.serviceproxy;
 
 public class Devolucion {
 	
-	public Devolucion(){}
+	public Devolucion(){
+		setNombreCliente("");
+		setCodMotivo("");
+		setDescMotivo("");
+		setTipoTramite("");
+		setNota("");
+		setObservacion("");
+		setDescEstado("");
+		setCodEstado("");
+		setDescCausaEstado("");
+		setClaveAutorizaAplicacionInmediata("");
+	}
 	
 	/**
 	 * @return the id
@@ -762,4 +773,5 @@ public class Devolucion {
 		this.objPedido = objPedido;
 	}
 
+	
 }

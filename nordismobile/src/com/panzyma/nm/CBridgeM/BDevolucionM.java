@@ -168,6 +168,7 @@ public class BDevolucionM extends BBaseM
 					public void run() {
 						try 
 						{
+							/*
 							vmDevolucion item = new vmDevolucion();
 							item.setCliente("Fci. Dayanara/Angelica Quezada");
 							item.setEstado("Registrada");
@@ -178,6 +179,7 @@ public class BDevolucionM extends BBaseM
 							item.setNumeroCentral(7487799);
 							item.setTotal(new Float(123.45));
 							item.setCliente_id(1002548);
+							item.setIdSucursal(1002522);
 							ArrayList<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
 							lista.add(item);
 							
@@ -191,6 +193,7 @@ public class BDevolucionM extends BBaseM
 							item.setNumeroCentral(8887702);
 							item.setTotal(new Float(155670.43));
 							item.setOffLine(true);
+							item.setIdSucursal(1001962);
 							lista.add(item);
 							
 							item = new vmDevolucion();
@@ -203,9 +206,10 @@ public class BDevolucionM extends BBaseM
 							item.setNumeroCentral(8887702);
 							item.setTotal(new Float(155670.43));
 							item.setOffLine(false);
-							lista.add(item);
+							item.setIdSucursal(100328);
+							lista.add(item);*/
 							
-							/*
+							/*ArrayList<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
 							lista.add(new vmDevolucion(
      							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))),
      							   Integer.parseInt(cur.getString(cur.getColumnIndex(projection[1]))), 
@@ -213,10 +217,9 @@ public class BDevolucionM extends BBaseM
      							   cur.getString(cur.getColumnIndex(projection[3])), 
      							   Float.valueOf(cur.getString(cur.getColumnIndex(projection[4]))),
      							   cur.getString(cur.getColumnIndex(projection[5])),
-     							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[6]))))
-     	);*/
-							
-							Processor.send_ViewDevolucionesToView(/*ModelDevolucion.obtenerDevolucionesFromLocalHost(getResolver())*/lista, getController());	
+     							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[6])))));
+							*/
+							Processor.send_ViewDevolucionesToView(ModelDevolucion.obtenerDevolucionesFromLocalHost(getResolver())/*lista*/, getController());	
 						}
 						catch (Exception e) 
 						{
