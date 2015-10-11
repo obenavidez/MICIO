@@ -107,10 +107,10 @@
     </string-array>
     
     <string-array name="devoluciones_lista_options">
-        <item >Nueva Devoluciòn</item>  
-        <item >Abrir Devoluciòn</item>
-        <item >Borrar Devoluciòn</item>
-        <item >Enviar Devoluciòn</item>
+        <item >Nueva Devolución</item>  
+        <item >Abrir Devolución</item>
+        <item >Borrar Devolución</item>
+        <item >Enviar Devolución</item>
         <item >Imprimir Comprobante</item>  
         <item >Borrar Enviadas</item>
         <item >Ficha del Cliente</item>
