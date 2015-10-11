@@ -85,6 +85,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -216,7 +217,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	CharSequence tituloApp;
 	View _view;
 	Map<Long, Long> relFacturaNotaCredito;
-
+    int CantMaxNotasCreditoEnRecibo =0;
 	EncabezadoSolicitud solicitud;
 	boolean imprimir = false;
 	boolean pagarOnLine = false;
@@ -307,7 +308,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					.getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
 			initComponent();
-
+			CantMaxNotasCreditoEnRecibo = GetCantMaxNotasCreditoEnRecibo();
 		} 
 		catch (Exception e) {
 			NMApp.getController().notifyOutboxHandlers(
@@ -2378,6 +2379,11 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 									@Override
 									public void onPagarEvent(List<Ammount> montos) {
 										
+										if(GetContadorNotasCreditoEnRecibo() > CantMaxNotasCreditoEnRecibo ){
+											Toast.makeText(getApplicationContext(), "Ha excedido el numero de notas de creditos máximo. ".concat(String.valueOf(CantMaxNotasCreditoEnRecibo)), Toast.LENGTH_LONG).show();
+											dialogConfirmacion.dismiss();
+										}
+										
 										float monto_notas_creditos = GetTotalNotasDeCreditos();
 										if(recibo.getTotalFacturas() <  (monto_notas_creditos + notaCreditoDetalle.getMonto())){
 											Toast.makeText(getApplicationContext(), "EL monto acumulado en las notas de creditos no puede ser mayor al monto total del recibo", Toast.LENGTH_LONG).show();
@@ -3663,5 +3669,16 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			}
 		}
 		return sum;
+	}
+	
+	private int GetCantMaxNotasCreditoEnRecibo(){
+		int cantmax = 0;
+		SharedPreferences  pref = me.getSharedPreferences("SystemParams", Context.MODE_PRIVATE);
+		cantmax =Integer.valueOf(pref.getString("CantMaxNotasCreditoEnRecibo", "0"));
+		return cantmax;
+	}
+	
+	private int GetContadorNotasCreditoEnRecibo(){
+		return recibo.getNotasCreditoRecibo().size();
 	}
 }
