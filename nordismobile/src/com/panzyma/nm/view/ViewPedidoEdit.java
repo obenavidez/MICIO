@@ -960,9 +960,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			pedido.setFecha(DateUtil.d2i(new Date()));
 		}
 
-	}
-	
-	
+	}		
 
 	private void seleccionarCliente() {
 		if (!((pedido.getCodEstado().compareTo("REGISTRADO") == 0) || (pedido

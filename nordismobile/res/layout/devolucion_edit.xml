@@ -37,7 +37,7 @@
                     android:id="@+id/devchk_typodevolucion"
                     android:layout_width="100dp"
                     android:layout_height="30dp"
-                    android:text="No Vencido"
+                    android:text="De Vencido"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections; 
+import java.util.Date;
 import java.util.LinkedHashMap;  
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +45,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ListView;
@@ -59,12 +61,16 @@ import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager; 
+import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.custom.model.SpinnerModel; 
 import com.panzyma.nm.interfaces.Editable; 
+import com.panzyma.nm.model.ModelLogic;
+import com.panzyma.nm.model.ModelProducto;
+import com.panzyma.nm.serviceproxy.Bonificacion;
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Cliente; 
 import com.panzyma.nm.serviceproxy.DetallePedido;
@@ -74,6 +80,7 @@ import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.PrecioProducto;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.serviceproxy.Ventas;
@@ -118,11 +125,12 @@ Handler.Callback, Editable
 	private static final int PARCIAL = 2;
 	
 	private TextView tbxNombreDelCliente;
-	private CheckBox ckboxnovencidodev;
+	private CheckBox ckboxvencidodev;
 	private Spinner cboxmotivodev;
 	private Spinner cboxtramitedev;
 	private Spinner cboxtipodev;
 	private CheckBox ckboxncinmeditata;
+	private EditText tbxFecha;
 	
 	CustomAdapter adapter_motdev;
 	CustomAdapter adapter_tramite;
@@ -177,6 +185,7 @@ Handler.Callback, Editable
 	public static final Display display;
 	
 	List<ExpandListGroup> lgroups = new LinkedList<ExpandListGroup>();
+	
 	
     static 
     { 
@@ -233,7 +242,7 @@ Handler.Callback, Editable
 	
 	public void initComponent() 
 	{
-		ckboxnovencidodev=(CheckBox) findViewById(R.id.devchk_typodevolucion);
+		ckboxvencidodev=(CheckBox) findViewById(R.id.devchk_typodevolucion);
 		ckboxncinmeditata=(CheckBox) findViewById(R.id.devchk_ncinmediata);
 		cboxmotivodev=(Spinner) findViewById(R.id.devcombox_motivo);
 		cboxtramitedev=(Spinner) findViewById(R.id.devcombox_tramite);
@@ -241,6 +250,7 @@ Handler.Callback, Editable
 		tbxNombreDelCliente=(TextView) findViewById(R.id.devtextv_detallecliente); 
 		View include=findViewById(R.id.pdevgrilla);
 		lvdevproducto = (ExpandableListView)include.findViewById(R.id.ExpList); 
+		tbxFecha=(EditText)findViewById(R.id.devetextv_detalle_fecha);
 		
 		adapter_tramite = new CustomAdapter(getContext(),
 				R.layout.spinner_rows, setListData(hmtramite));
@@ -249,7 +259,7 @@ Handler.Callback, Editable
 		adapter_tipodev = new CustomAdapter(getContext(),
 				R.layout.spinner_rows, setListData(hmtipodev));
 		cboxtipodev.setAdapter(adapter_tipodev);
-		
+ 
 		
 		cboxmotivodev.setOnItemSelectedListener(new OnItemSelectedListener() {
  
@@ -319,9 +329,11 @@ Handler.Callback, Editable
 			devolucion.setNumeroCentral(0);
 			devolucion.setReferencia(0); 
 			cboxtramitedev.setSelection(NOTADECREDITO);
-			cboxtipodev.setSelection(PARCIAL);
+			cboxtipodev.setSelection(PARCIAL); 
 		}
-		
+		if (devolucion.getFecha() == 0)
+			devolucion.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
+		tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
 		CreateMenu();
 		
 	}
@@ -627,10 +639,7 @@ Handler.Callback, Editable
 		//fin estimacion de costo		
 		initExpandableListView();
 	}
-	
-	
-	
-	
+	 
 	public void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
 		opcionesMenu = getResources().getStringArray(
@@ -730,22 +739,281 @@ Handler.Callback, Editable
 	
 	protected void salvarDevolucion() 
 	{
+		
 		Message msg = new Message(); 
 		msg.obj=devolucion; 
 		msg.what = SAVE_DATA_FROM_LOCALHOST;
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 		
 	}
+	
+	public void validarDevolucion()
+	{ 
+		boolean result;
+		pedido.setFecha(DateUtil.d2i(new Date()));
+		if (cliente == null) 
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					"Seleccione primero el cliente de la Devolución.",
+					"Seleccione primero el cliente de la Devolución.","")); 
+			return;
+		}
+		if (( cboxmotivodev==null || (cboxmotivodev!=null && cboxmotivodev.getSelectedItem()==null)) && !ckboxvencidodev.isChecked())
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
+					 "Debe seleccionar la causa de la devolución",
+					 "Debe seleccionar la causa de la devolución","")); 
+			return;
+		}
+		
+		if(devolucion.getProductosDevueltos()==null || (devolucion.getProductosDevueltos()!=null && devolucion.getProductosDevueltos().length==0))
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+					"Al menos un producto debe ser incluido en la devolución.",
+					"Al menos un producto debe ser incluido en la devolución.","")); 
+			return;
+		}
+		
+		if(devolucion.getProductosDevueltos()==null || (devolucion.getProductosDevueltos()!=null && devolucion.getProductosDevueltos().length==0))
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+					"Al menos un producto debe ser incluido en la devolución.",
+					"Al menos un producto debe ser incluido en la devolución.","")); 
+			return;
+		}
+		
+		for(DevolucionProducto _dp:devolucion.getProductosDevueltos())
+		{
+			if(_dp.getProductoLotes()==null || (_dp.getProductoLotes()!=null &&_dp.getProductoLotes().length==0))
+			{
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+						"Al menos un lote debe ser incluido en el detalle.",
+						"Al menos un lote debe ser incluido en el detalle.","")); 
+				return;
+			}
+			for(DevolucionProductoLote _dpl:_dp.getProductoLotes())
+			{
+				if("".equals(_dpl.getNumeroLote()) || _dpl.getNumeroLote()==null)
+				{
+					com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+							String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),
+							String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),"")); 
+					return;
+				}
+				
+				
+				if(_dpl.getFechaVencimiento()<=0)
+				{
+					com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+							String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),
+							String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),"")); 
+					return;
+				}
+				if(_dpl.getCantidadDevuelta()<=0)
+				{
+					com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+							String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),
+							String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),"")); 
+					return;
+				}
+				 
+			}
+		}
+		
+		ckboxvencidodev=(CheckBox) findViewById(R.id.devchk_typodevolucion);
+		ckboxncinmeditata=(CheckBox) findViewById(R.id.devchk_ncinmediata);
+		cboxmotivodev=(Spinner) findViewById(R.id.devcombox_motivo);
+		cboxtramitedev=(Spinner) findViewById(R.id.devcombox_tramite);
+		cboxtipodev=(Spinner) findViewById(R.id.devcombox_tipo);
+		tbxNombreDelCliente=(TextView) findViewById(R.id.devtextv_detallecliente); 
+		View include=findViewById(R.id.pdevgrilla);
+		lvdevproducto = (ExpandableListView)include.findViewById(R.id.ExpList); 
+		tbxFecha=(EditText)findViewById(R.id.devetextv_detalle_fecha);
+		 
+		if("NC".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo())) 
+		{
+			devolucion.setTipoTramite("NC");
+		}
+		else
+		{
+			devolucion.setTipoTramite("RE"); 
+		}		
+		
+		if("TT".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo())) 
+		
+			
+		devolucion.setParcial(("TT".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo()))?false:true);
+		devolucion.setDeVencido(ckboxvencidodev.isChecked());
+		if (this.pedido == null || this.pedido.getId() == 0L)
+		{
+			devolucion.setObjPedidoDevueltoID(0);
+		}
+		else
+		{
+			devolucion.setObjPedidoDevueltoID(pedido.getId());
+		}
+		
+		devolucion.setObjClienteID(cliente.getIdCliente());
+		devolucion.setObjSucursalID(cliente.getIdSucursal());
+		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado()))
+		{
+			EstimarCostosDev(false);
+//			this.CalcMontoPromocion();
+//			this.CalcularTotalDev(); 
+		}
+		result = true;
+		
+	}
 
+	public void EstimarCostosDev(boolean calBonif)
+	{
+		//Estimar costo devolucion
+		int cantmindevbonif=Integer.parseInt(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("CantMinDevolvBonif","0"));
+		//sumar todas las cantidades a devolver de sus lote del producto seleccionado.
+		for(int a=0;a<lgroups.size();a++)
+		{
+			ExpandListGroup group =  (ExpandListGroup) lgroups.get(a);
+			DevolucionProducto _dp=(DevolucionProducto) group.getObject();
+			Producto prod = null;
+			try {
+				prod = ModelProducto.getProductoByID(getContext().getContentResolver(),_dp.getObjProductoID());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			int cantidaddevolver=_dp.getCantidadDevolver();
+			if (cantidaddevolver >= cantmindevbonif || this.pedido != null)
+			{
+				if (this.pedido != null)
+				{
+					int cantidadordenada=_dp.getCantidadOrdenada();
+					int cantidadbonificadaeditada=_dp.getCantidadBonificada();
+					if(_dp.getCantidadDevolver()==(cantidadordenada+cantidadbonificadaeditada))
+					{
+						_dp.setBonificacion(cantidadbonificadaeditada);
+						_dp.setBonificacionVen(cantidadbonificadaeditada);
+					}else
+					{
+						if (calBonif)
+						{
+							if(_dp.getCantidadDevolver()<(cantidadordenada+cantidadbonificadaeditada))
+							{								
+								int rs=CalcularBonificacion(_dp.getCantidadDevolver(),_dp.getCantidadOrdenada(),_dp.getCantidadBonificada());
+								_dp.setBonificacion(rs);
+								_dp.setBonificacionVen(rs);
+							}
+						}
+					}
+					
+					
+				}
+				else
+				{
+					if (calBonif)
+					{
+						int qtybonif = 0; 
+						 
+						Bonificacion bonif=getBonificacion(prod, cliente.getObjCategoriaClienteID(), _dp.getCantidadDevolver());
+						if (bonif!=null  && bonif.getCantBonificacion()!=0)
+						{
+							qtybonif = bonif.getCantBonificacion();
+						}
+						_dp.setBonificacion(qtybonif);
+						_dp.setBonificacionVen(qtybonif); 
+					}
+				}
+			}
+			else
+			{
+				_dp.setBonificacion(0);
+				_dp.setBonificacionVen(0); 
+			}
+			
+			if (this.pedido != null)
+			{  
 
+				if (!devolucion.isDeVencido())
+				{
+					// Calcular precio IdTipoClienteMayorista
+					long idTP = pedido.getObjTipoPrecioVentaID();
+					long idTipoCliente=cliente.getObjTipoClienteID();
+					long IdTipoClienteMayorista=Long.parseLong(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoClienteMayorista","0"));
+					if (IdTipoClienteMayorista==idTipoCliente)
+						idTP = Long.parseLong(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
+
+					_dp.setPrecio((long)(getPrecioProducto(prod, idTP,  _dp.getCantidadDevolver())*100));
+			    }
+				else
+				{
+					List<Catalogo> catalogo=ModelLogic.getValorCatalogo(new String("VEN"));
+					long idTP =pedido.getObjTipoPrecioVentaID();
+					if(catalogo!=null)
+						idTP=catalogo.get(0).getId();
+					Long.parseLong(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("VEN","0"));
+					_dp.setPrecio((long)(getPrecioProducto(prod, idTP,  _dp.getCantidadDevolver())*100)); 
+				} 
+				
+				_dp.setSubtotal((long)((double)(_dp.getCantidadDevolver()*(_dp.getPrecio()/100.00))*100.00)); 
+				long boniL=(long)((double)(_dp.getBonificacion()*(_dp.getPrecio()/100.00))*100.00);
+				_dp.setMontoBonif(boniL); 
+				_dp.setMontoBonifVen(boniL);
+				
+				if (_dp.isGravable() )
+				{
+					if (this.pedido != null)
+					{ 
+						_dp.setPorcImpuesto((long) ViewDevolucionEdit.getPorcImpuesto(pedido,prod.getId()));
+						 
+					}
+					else
+					{
+						int porcimp=Integer.parseInt(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeImpuesto","0"));
+						_dp.setPorcImpuesto((long) porcimp); 
+					}
+					
+					 
+				}
+				long impuestoL=(long)(_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getBonificacion()/100.00));
+				_dp.setImpuesto(impuestoL);
+				_dp.setImpuestoVen((long)(_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getBonificacionVen()/100.00)));
+				_dp.setTotal(_dp.getSubtotal() - _dp.getBonificacion()+impuestoL);
+				_dp.setTotalVen(_dp.getSubtotal() - _dp.getBonificacion()+impuestoL);
+			}
+		}
+		
+	}
+	
+	// BusinessLogic.DevolucionesBL
+	public static int CalcularBonificacion(int CantidadDevolver, int CantidadOrdenada, int CantidadBonificada)
+	{
+		Double proporcion = Double.valueOf((double)CantidadBonificada) / Double.valueOf((double)CantidadOrdenada);
+		Double CantBonif = CantidadDevolver * proporcion;
+		int result;
+		if (CantBonif == 0d)
+		{
+			result = 0;
+		}
+		else
+		{
+			Double decimalBonif = Double.valueOf("0." + CantBonif.toString().substring(CantBonif.toString().indexOf(".") + 1));
+			String DecimalRedondeoBonif =NMApp.getContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("DecimalRedondeoBonif","0");
+			if (decimalBonif >= Double.valueOf(DecimalRedondeoBonif))
+			{
+				CantBonif = ++CantBonif;
+			}
+			result = Integer.valueOf(CantBonif.toString());
+		}
+		return result;
+	}
+	
 	private void agregarProducto() 
 	{
 	
 		if (cliente == null) 
 		{
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
-					"Seleccione primero el cliente del pedido.",
-					"Seleccione primero el cliente del pedido.","")); 
+					"Seleccione primero el cliente de la Devolución.",
+					"Seleccione primero el cliente de la Devolución.","")); 
 			return;
 		}
 
@@ -954,6 +1222,7 @@ Handler.Callback, Editable
 		if(dlg!=null)
 			dlg.dismiss();
 	}
+	
 	public void hideProgress(){
 		runOnUiThread(new Runnable() 
 		{
@@ -1031,10 +1300,144 @@ Handler.Callback, Editable
 		}
 	}
 
-
 	public void setDev_prod(ArrayList<DevolucionProducto> arrayList) {
 		this.dev_prod = arrayList;		
 	}
 	
+	public static ArrayList<Bonificacion> parseListaBonificaciones(
+			Producto prod, long idCatCliente) 
+			{
+		if (prod.getListaBonificaciones() == null)
+			return null;
+		if (prod.getListaBonificaciones() == "")
+			return null;
 
+		ArrayList<Bonificacion> abon = new ArrayList<Bonificacion>();
+		String catCLiente = idCatCliente + "";
+		String[] listaBonif = StringUtil.split(prod.getListaBonificaciones(),
+				"|");
+		for (int i = 0; i < listaBonif.length; i++)
+		{
+			if(!listaBonif[0].equals(""))
+			{	
+				String[] bonifProd = StringUtil.split(listaBonif[i], ",");
+		
+				if(bonifProd!=null && bonifProd.length!=0 && bonifProd[0]!="")
+				if ((idCatCliente == 0) || (catCLiente.compareTo(bonifProd[1]) == 0)) {
+					Bonificacion b = new Bonificacion();
+					b.setObjBonificacionID(Long.parseLong(bonifProd[0]));
+					b.setObjCategoriaClienteID(idCatCliente);
+					b.setCantidad(Integer.parseInt(bonifProd[2]));
+					b.setCantBonificacion(Integer.parseInt(bonifProd[3]));
+					b.setCategoriaCliente(bonifProd[4]);
+					abon.add(b);
+				}
+			}
+			else
+				break;
+		}
+
+		return abon;
+	}
+
+	/*
+	 * Devuelve la bonificación de un producto dada la cantidad que se está
+	 * ordenando y la categoría de cliente
+	 */
+	public static Bonificacion getBonificacion(Producto prod,
+			long idCatCliente, int cantidad) {
+		ArrayList<Bonificacion> bonificaciones = parseListaBonificaciones(prod,
+				idCatCliente);
+		if (bonificaciones == null)
+			return null;
+
+		Bonificacion bb = null;
+		for (int i = bonificaciones.size() - 1; i >= 0; i--) {
+			Bonificacion b = bonificaciones.get(i);
+			if (cantidad >= b.getCantidad()) {
+				bb = b; // Encontrada
+				break; // Salir del ciclo
+			}
+		}
+
+		// Si se encontró bonificación aplicada
+		// Recalcular cantidad real a aplicar para la cantidad ordenada
+		// Recordar traer valor de parámetro DecimalRedondeoBonif (por el
+		// momento se usa 0.8)
+		if (bb != null) {
+			float decimalRedondeoBonif = 0.8F;
+			float cb = bb.getCantBonificacion();
+			float c = bb.getCantidad();
+			float factor = cb / c;
+			float cant = factor * cantidad;
+			String sCant = String.valueOf(cant);
+			String[] arrCant = StringUtil.split(sCant, ".");
+			String sInt = arrCant[0];
+			String sDec = "0.0";
+
+			int cantReal = Integer.parseInt(sInt);
+			if (arrCant.length > 1) {
+				sDec = "0." + arrCant[1];
+				float decimalPart = Float.parseFloat(sDec);
+				if (decimalPart >= decimalRedondeoBonif)
+					cantReal = cantReal + 1;
+			}
+			bb.setCantBonificacion(cantReal);
+		}
+
+		return bb;
+	} 
+
+	/*
+	 * Devuelve el precio de un producto dada la cantidad que se está ordenando
+	 */
+	public static float getPrecioProducto(Producto prod, long idTipoPrecio,
+			int cantidad) 
+	{
+		ArrayList<PrecioProducto> precios = parseListaPrecios(prod,idTipoPrecio); 
+		PrecioProducto p =(precios!=null && precios.size()!=0)? precios.get(0):null ;
+		if (precios.size() > 1) 
+		{
+			for (int i = 0; i < precios.size(); i++) 
+			{
+				p = precios.get(i);
+				if ((cantidad >= p.getMinimo()) && (cantidad <= p.getMaximo()))
+					break; // Salir del ciclo
+			}
+		}
+
+		return (p!=null)?p.getPrecio():null;
+	}
+	
+	public static ArrayList<PrecioProducto> parseListaPrecios(Producto prod,
+			long idTipoPrecio) {
+		ArrayList<PrecioProducto> pp = new ArrayList<PrecioProducto>();
+		String tipoPrecio = idTipoPrecio + "";
+		String[] listaPrecios = StringUtil.split(prod.getListaPrecios(), "|");
+		for (int i = 0; i < listaPrecios.length; i++) {
+			String[] precioProd = StringUtil.split(listaPrecios[i], ",");
+
+			if ((idTipoPrecio == 0)
+					|| (tipoPrecio.compareTo(precioProd[0]) == 0)) {
+				PrecioProducto p = new PrecioProducto();
+				p.setObjTipoPrecioID(idTipoPrecio);
+				p.setMinimo(Integer.parseInt(precioProd[1]));
+				p.setMaximo(Integer.parseInt(precioProd[2]));
+				p.setPrecio(Float.parseFloat(precioProd[3]));
+				p.setDescTipoPrecio(precioProd[4]);
+				pp.add(p);
+			}
+		}
+
+		return pp;
+	}
+
+	public static float getPorcImpuesto(Pedido pedido,long idproducto)
+	{
+		for(DetallePedido dtp:pedido.getDetalles())
+			if(dtp.getObjProductoID()==idproducto)
+				return dtp.getPorcImpuesto();
+		return 0.f;
+	}
+	
 }
