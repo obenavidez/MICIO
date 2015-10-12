@@ -256,40 +256,73 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 						startActivity(intent);
 						break;
 					case ABRIR_DEVOLUCION : 
-						is_Item_selected();
+						if (item_selected == null) {
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
 						
 						break;
 					case BORRAR_DEVOLUCION:
-						is_Item_selected();
-						isOffLine();
-						isEnviada();
+						if (item_selected == null) {
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						if(item_selected.isOffLine()){
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "El comprobante fue emitida offline.\n",DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						if(!item_selected.getEstado().equals("ENVIADA")){
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Este registro no tiene estado Enviado.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
 						
 						break;
 					case ENVIAR_DEVOLUCION :
-						is_Item_selected();
+						if (item_selected == null) {
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
 						
 						break;
 					case IMPRIMIR_COMPROBANTE:
-						is_Item_selected();
+						if (item_selected == null) {
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
 						
 						break;
 					case BORRAR_ENVIADAS:
-						is_Item_selected();
+						if (item_selected == null) {
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
 						
 						break;
 					case FICHA_DEL_CLIENTE:
-						is_Item_selected();
-						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-			            {
+						if (item_selected == null) {
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController())){
 							fragmentActive = FragmentActive.FICHACLIENTE;
-							ShowCustomerDetails(item_selected.getCliente_id());
-							
+							ShowCustomerDetails();
 			            }
-						
-						
 						break;
 					case CUENTAS_POR_COBRAR:
-						is_Item_selected();
+						if (item_selected == null) {
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
 						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 			            {
 							fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
@@ -333,28 +366,6 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		
 	}
 	
-	private void is_Item_selected(){
-		if (item_selected == null) {
-			drawerLayout.closeDrawers();
-			AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-			return;
-		}
-	}
-	private void isOffLine(){
-		if(item_selected.isOffLine()){
-			drawerLayout.closeDrawers();
-			AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "El comprobante fue emitida offline.\n",DialogType.DIALOGO_ALERTA);
-			return;
-		}
-	}
-	private void isEnviada(){
-		if(!item_selected.getEstado().equals("ENVIADA")){
-			drawerLayout.closeDrawers();
-			AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Este registro no tiene estado Enviado.",DialogType.DIALOGO_ALERTA);
-			return;
-		}
-	}
-	
 	@SuppressWarnings("unchecked")
 	private void Load_Data(int what) {
 		try {
@@ -377,10 +388,10 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		gridheader.setText(String.format("LISTA DEVOLUCIONES (%s)", devoluciones.size()));
 	}
 	
-	private void ShowCustomerDetails(long idsucursal) {
+	private void ShowCustomerDetails() {
 		Bundle args = new Bundle();
 		args.putInt(FichaClienteFragment.ARG_POSITION, this.posicion);
-		args.putLong(FichaClienteFragment.ARG_SUCURSAL, idsucursal);
+		args.putLong(FichaClienteFragment.ARG_SUCURSAL, item_selected.getIdSucursal());
 
 		// establecemos el titulo
 		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
