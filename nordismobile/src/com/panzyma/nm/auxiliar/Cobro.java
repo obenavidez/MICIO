@@ -1012,7 +1012,7 @@ public class Cobro
                    } //Para cada promoción
                } //Averiguar si hay descuento por promoción que aplicar
                
-               float totalFact = reciboDetFactura.getTotalfactura();
+               float totalFact = fac.getTotalFacturado();//reciboDetFactura.getTotalfactura();
                mtoTotalFacturas += totalFact;
                
                //Si la fecha no se ha pasado, se suma a total de facturas vigentes, en caso contario a las vencidas
@@ -1062,7 +1062,7 @@ public class Cobro
                   //Montos a aplicar a la factura
                   float mtoTotalFacturasAplicar = (vencida ? mtoFacturasVencidas : mtoFacturasVigentes);
                   float mtoAplicar = (vencida ? mtoAplicarVencidas : mtoAplicarVigente);
-                  float mtoFact = reciboDetFactura.getTotalfactura();
+                  float mtoFact = reciboDetFactura.getTotalFacturaOrigen();//reciboDetFactura.getTotalfactura();
                   
                   //Ver si hay que aplicar descuento ocasional
                   if (reciboDetFactura.getPorcDescOcasional() > 0)
