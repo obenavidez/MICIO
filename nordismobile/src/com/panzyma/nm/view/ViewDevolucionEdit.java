@@ -876,7 +876,7 @@ Handler.Callback, Editable
 			}
 		}
 		
-		ckboxvencidodev=(CheckBox) findViewById(R.id.devchk_typodevolucion);
+		/*ckboxvencidodev=(CheckBox) findViewById(R.id.devchk_typodevolucion);
 		ckboxncinmeditata=(CheckBox) findViewById(R.id.devchk_ncinmediata);
 		cboxmotivodev=(Spinner) findViewById(R.id.devcombox_motivo);
 		cboxtramitedev=(Spinner) findViewById(R.id.devcombox_tramite);
@@ -884,7 +884,7 @@ Handler.Callback, Editable
 		tbxNombreDelCliente=(TextView) findViewById(R.id.devtextv_detallecliente); 
 		View include=findViewById(R.id.pdevgrilla);
 		lvdevproducto = (ExpandableListView)include.findViewById(R.id.ExpList); 
-		tbxFecha=(EditText)findViewById(R.id.devetextv_detalle_fecha);
+		tbxFecha=(EditText)findViewById(R.id.devetextv_detalle_fecha);*/
 		 
 		if("NC".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo())) 
 		{
