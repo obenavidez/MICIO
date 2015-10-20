@@ -855,8 +855,7 @@ Handler.Callback, Editable
 							String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),
 							String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),"")); 
 					return false;
-				}
-				
+				}				
 				
 				if(_dpl.getFechaVencimiento()<=0)
 				{
@@ -871,8 +870,7 @@ Handler.Callback, Editable
 							String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),
 							String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),"")); 
 					return false;
-				}
-				 
+				}				 
 			}
 		}
 		
