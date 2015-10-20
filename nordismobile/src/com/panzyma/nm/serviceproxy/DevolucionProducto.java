@@ -37,7 +37,7 @@ public class DevolucionProducto
 			int totalProducto, boolean gravable, boolean deleted,
 			long objProveedorID, DevolucionProductoLote[] productoLotes) {
 		this.Id = id;
-		this.OjProductoID = objProductoID;
+		this.ObjProductoID = objProductoID;
 		this.NombreProducto = nombreProducto;
 		this.cantidadDevolver = cantidadDevolver;
 		this.bonificacion = bonificacion;
@@ -77,13 +77,13 @@ public class DevolucionProducto
 	 * @return the objProductoID
 	 */
 	public long getObjProductoID() {
-		return OjProductoID;
+		return ObjProductoID;
 	}
 	/**
 	 * @param objProductoID the objProductoID to set
 	 */
 	public void setObjProductoID(long objProductoID) {
-		this.OjProductoID = objProductoID;
+		this.ObjProductoID = objProductoID;
 	}
 	/**
 	 * @return the nombreProducto
@@ -350,7 +350,7 @@ public class DevolucionProducto
 		this.productoLotes = productoLotes;
 	}
 	private long Id;
-	private long OjProductoID;
+	private long ObjProductoID;
 	private String NombreProducto;
 	private int cantidadDevolver;
 	private int bonificacion;

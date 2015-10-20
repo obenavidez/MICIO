@@ -168,6 +168,7 @@ Handler.Callback, Editable
 	private static final Map<String, String> hmmotivodev=null;
 	private static final Map<String, String> hmtramite;
 	private static final Map<String, String> hmtipodev;
+	private static final String REGISTRADA = "REGISTRADA";
 	
 	Cliente cliente;
 	public Cliente getCliente() {
@@ -323,7 +324,7 @@ Handler.Callback, Editable
 		if(devolucion==null)
 		{
 			devolucion=new Devolucion();
-			devolucion.setCodEstado("REGISTRADA");
+			devolucion.setCodEstado(REGISTRADA);
 			devolucion.setId(0);
 			devolucion.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
 			devolucion.setNumeroCentral(0);
@@ -514,7 +515,9 @@ Handler.Callback, Editable
 			public void onButtonClick(DevolucionProductoLote plote) 
 			{ 
 				actualizarProductoLote(plote);
+				adapter.notifyDataSetChanged();
 				validarDevolucion(false);
+				
 				//updateGrid(plote);
 			}
 		});
@@ -618,6 +621,7 @@ Handler.Callback, Editable
 		_dp.setCantidadDevolver(cantidadTotalDevolver); 
 		groupselected.setObject(_dp); 
 		lgroups.set(positioncache[0], groupselected);	 	
+		
 	}
 	
 	public void updateGrid(DevolucionProductoLote dpl)
@@ -895,7 +899,7 @@ Handler.Callback, Editable
 			devolucion.setTipoTramite("RE"); 
 		}		
 		
-		if("TT".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo())) 
+		//if("TT".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo())) 
 		
 			
 		devolucion.setParcial(("TT".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo()))?false:true);
@@ -1174,6 +1178,7 @@ Handler.Callback, Editable
 				if(_dev!=null && _dev.getProductosDevueltos()!=null && _dev.getProductosDevueltos().length!=0)
 				{
 					devolucion=_dev;
+					devolucion.setCodEstado(devolucion.getDescEstado().equals("") ? REGISTRADA : devolucion.getDescEstado());
 					pedido=devolucion.getObjPedido();
 					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
 					initExpandableListView();
