@@ -513,7 +513,8 @@ Handler.Callback, Editable
 			@Override
 			public void onButtonClick(DevolucionProductoLote plote) 
 			{ 
-				updateGrid(plote);
+				actualizarProductoLote(plote);
+				//updateGrid(plote);
 			}
 		});
 		newFragment.show(ft, "dialogDevolucionProductoCantidad");
@@ -564,6 +565,23 @@ Handler.Callback, Editable
 			adp[a]=dp; 			
 		}
 		devolucion.setProductosDevueltos(adp);
+	}
+	
+	private void actualizarProductoLote(DevolucionProductoLote dpl)
+	{
+		int cantidadTotalDevolver = 0;
+		ExpandListGroup lg=new ExpandListGroup();		
+		ExpandListChild ch = new ExpandListChild();
+		ch.setName(dpl.getNumeroLote());
+		ch.setObject(dpl); 		
+		groupselected.getItems().set(positioncache[1],ch);			
+		//sumar todas las cantidades a devolver de sus lote del producto seleccionado.
+		for(ExpandListChild _ch:groupselected.getItems()) 
+			cantidadTotalDevolver+=((DevolucionProductoLote)_ch.getObject()).getCantidadDevuelta(); 
+		DevolucionProducto dp=(DevolucionProducto) groupselected.getObject();
+		dp.setCantidadDevolver(cantidadTotalDevolver); 
+		groupselected.setObject(dp); 
+		lgroups.set(positioncache[0], groupselected);	 	
 	}
 	
 	public void updateGrid(DevolucionProductoLote dpl)
@@ -639,7 +657,7 @@ Handler.Callback, Editable
 		//fin estimacion de costo		
 		initExpandableListView();
 	}
-	 
+ 
 	public void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
 		opcionesMenu = getResources().getStringArray(
@@ -739,7 +757,8 @@ Handler.Callback, Editable
 	
 	protected void salvarDevolucion() 
 	{
-		
+		if(!validarDevolucion())
+			return;
 		Message msg = new Message(); 
 		msg.obj=devolucion; 
 		msg.what = SAVE_DATA_FROM_LOCALHOST;
@@ -747,7 +766,7 @@ Handler.Callback, Editable
 		
 	}
 	
-	public void validarDevolucion()
+	public boolean validarDevolucion()
 	{ 
 		boolean result;
 		pedido.setFecha(DateUtil.d2i(new Date()));
@@ -756,14 +775,14 @@ Handler.Callback, Editable
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					"Seleccione primero el cliente de la Devolución.",
 					"Seleccione primero el cliente de la Devolución.","")); 
-			return;
+			return false;
 		}
 		if (( cboxmotivodev==null || (cboxmotivodev!=null && cboxmotivodev.getSelectedItem()==null)) && !ckboxvencidodev.isChecked())
 		{
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
 					 "Debe seleccionar la causa de la devolución",
 					 "Debe seleccionar la causa de la devolución","")); 
-			return;
+			return false;
 		}
 		
 		if(devolucion.getProductosDevueltos()==null || (devolucion.getProductosDevueltos()!=null && devolucion.getProductosDevueltos().length==0))
@@ -771,7 +790,7 @@ Handler.Callback, Editable
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
 					"Al menos un producto debe ser incluido en la devolución.",
 					"Al menos un producto debe ser incluido en la devolución.","")); 
-			return;
+			return false;
 		}
 		
 		if(devolucion.getProductosDevueltos()==null || (devolucion.getProductosDevueltos()!=null && devolucion.getProductosDevueltos().length==0))
@@ -779,7 +798,7 @@ Handler.Callback, Editable
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
 					"Al menos un producto debe ser incluido en la devolución.",
 					"Al menos un producto debe ser incluido en la devolución.","")); 
-			return;
+			return false;
 		}
 		
 		for(DevolucionProducto _dp:devolucion.getProductosDevueltos())
@@ -789,7 +808,7 @@ Handler.Callback, Editable
 				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
 						"Al menos un lote debe ser incluido en el detalle.",
 						"Al menos un lote debe ser incluido en el detalle.","")); 
-				return;
+				return false;
 			}
 			for(DevolucionProductoLote _dpl:_dp.getProductoLotes())
 			{
@@ -798,7 +817,7 @@ Handler.Callback, Editable
 					com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
 							String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),
 							String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),"")); 
-					return;
+					return false;
 				}
 				
 				
@@ -807,14 +826,14 @@ Handler.Callback, Editable
 					com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
 							String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),
 							String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),"")); 
-					return;
+					return false;
 				}
 				if(_dpl.getCantidadDevuelta()<=0)
 				{
 					com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
 							String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),
 							String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),"")); 
-					return;
+					return false;
 				}
 				 
 			}
@@ -860,9 +879,8 @@ Handler.Callback, Editable
 			EstimarCostosDev(false);
 //			this.CalcMontoPromocion();
 //			this.CalcularTotalDev(); 
-		}
-		result = true;
-		
+		} 
+		return true;
 	}
 
 	public void EstimarCostosDev(boolean calBonif)
@@ -999,7 +1017,7 @@ Handler.Callback, Editable
 			String DecimalRedondeoBonif =NMApp.getContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("DecimalRedondeoBonif","0");
 			if (decimalBonif >= Double.valueOf(DecimalRedondeoBonif))
 			{
-				CantBonif = ++CantBonif;
+				CantBonif++;
 			}
 			result = Integer.valueOf(CantBonif.toString());
 		}
@@ -1037,7 +1055,6 @@ Handler.Callback, Editable
 		dp.show();
 
 	}
-
 
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
@@ -1222,6 +1239,7 @@ Handler.Callback, Editable
 		if(dlg!=null)
 			dlg.dismiss();
 	}
+	
 	
 	public void hideProgress(){
 		runOnUiThread(new Runnable() 
