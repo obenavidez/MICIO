@@ -514,6 +514,7 @@ Handler.Callback, Editable
 			public void onButtonClick(DevolucionProductoLote plote) 
 			{ 
 				actualizarProductoLote(plote);
+				validarDevolucion(false);
 				//updateGrid(plote);
 			}
 		});
@@ -578,9 +579,44 @@ Handler.Callback, Editable
 		//sumar todas las cantidades a devolver de sus lote del producto seleccionado.
 		for(ExpandListChild _ch:groupselected.getItems()) 
 			cantidadTotalDevolver+=((DevolucionProductoLote)_ch.getObject()).getCantidadDevuelta(); 
-		DevolucionProducto dp=(DevolucionProducto) groupselected.getObject();
-		dp.setCantidadDevolver(cantidadTotalDevolver); 
-		groupselected.setObject(dp); 
+		DevolucionProducto _dp=(DevolucionProducto) groupselected.getObject();
+		
+		if(_dp.getProductoLotes()==null || (_dp.getProductoLotes()!=null &&_dp.getProductoLotes().length==0))
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+					"Al menos un lote debe ser incluido en el detalle.",
+					"Al menos un lote debe ser incluido en el detalle.","")); 
+			return ;
+		}
+		for(DevolucionProductoLote _dpl:_dp.getProductoLotes())
+		{
+			if("".equals(_dpl.getNumeroLote()) || _dpl.getNumeroLote()==null)
+			{
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+						String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),
+						String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),"")); 
+				return ;
+			}
+			
+			
+			if(_dpl.getFechaVencimiento()<=0)
+			{
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+						String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),
+						String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),"")); 
+				return ;
+			}
+			if(_dpl.getCantidadDevuelta()<=0)
+			{
+				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+						String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),
+						String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),"")); 
+				return ;
+			}
+			 
+		}		
+		_dp.setCantidadDevolver(cantidadTotalDevolver); 
+		groupselected.setObject(_dp); 
 		lgroups.set(positioncache[0], groupselected);	 	
 	}
 	
@@ -766,7 +802,7 @@ Handler.Callback, Editable
 		
 	}
 	
-	public boolean validarDevolucion()
+	public boolean validarDevolucion(boolean...todo)
 	{ 
 		boolean result;
 		pedido.setFecha(DateUtil.d2i(new Date()));
@@ -801,6 +837,7 @@ Handler.Callback, Editable
 			return false;
 		}
 		
+		if((todo!=null && todo.length!=0 && todo[0]) || (todo==null || (todo!=null && todo.length==0 )))
 		for(DevolucionProducto _dp:devolucion.getProductosDevueltos())
 		{
 			if(_dp.getProductoLotes()==null || (_dp.getProductoLotes()!=null &&_dp.getProductoLotes().length==0))
