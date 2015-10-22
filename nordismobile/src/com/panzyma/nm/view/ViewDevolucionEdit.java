@@ -4,6 +4,8 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -915,7 +917,7 @@ Handler.Callback, Editable
 		devolucion.setObjSucursalID(cliente.getIdSucursal());
 		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado()))
 		{
-			EstimarCostosDev(false);
+			EstimarCostosDev(true);
 //			this.CalcMontoPromocion();
 //			this.CalcularTotalDev(); 
 		} 
@@ -1030,11 +1032,11 @@ Handler.Callback, Editable
 					
 					 
 				}
-				long impuestoL=(long)(_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getBonificacion()/100.00));
+				long impuestoL=(long)(_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getMontoBonif()/100.00));
 				_dp.setImpuesto(impuestoL);
-				_dp.setImpuestoVen((long)(_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getBonificacionVen()/100.00)));
-				_dp.setTotal(_dp.getSubtotal() - _dp.getBonificacion()+impuestoL);
-				_dp.setTotalVen(_dp.getSubtotal() - _dp.getBonificacion()+impuestoL);
+				_dp.setImpuestoVen((long)(_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getMontoBonifVen()/100.00)));
+				_dp.setTotal(_dp.getSubtotal() - _dp.getMontoBonif()+impuestoL);
+				_dp.setTotalVen(_dp.getSubtotal() - _dp.getMontoBonif()+impuestoL);
 			}
 		}
 		
@@ -1043,8 +1045,8 @@ Handler.Callback, Editable
 	// BusinessLogic.DevolucionesBL
 	public static int CalcularBonificacion(int CantidadDevolver, int CantidadOrdenada, int CantidadBonificada)
 	{
-		Double proporcion = Double.valueOf((double)CantidadBonificada) / Double.valueOf((double)CantidadOrdenada);
-		Double CantBonif = CantidadDevolver * proporcion;
+		Double proporcion =( Double.valueOf((double)CantidadBonificada) / Double.valueOf((double)CantidadOrdenada))+new Double(1);
+		Double CantBonif = new Double(CantidadDevolver)-(new Double(CantidadDevolver)/proporcion) ;
 		int result;
 		if (CantBonif == 0d)
 		{
@@ -1052,13 +1054,12 @@ Handler.Callback, Editable
 		}
 		else
 		{
-			Double decimalBonif = Double.valueOf("0." + CantBonif.toString().substring(CantBonif.toString().indexOf(".") + 1));
+			
+			Double decimalBonif =CantBonif-CantBonif.intValue();
 			String DecimalRedondeoBonif =NMApp.getContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("DecimalRedondeoBonif","0");
-			if (decimalBonif >= Double.valueOf(DecimalRedondeoBonif))
-			{
-				CantBonif++;
-			}
-			result = Integer.valueOf(CantBonif.toString());
+			if (decimalBonif >= Double.valueOf(DecimalRedondeoBonif)) 
+				CantBonif+=1;  
+			result =CantBonif.intValue();
 		}
 		return result;
 	}
