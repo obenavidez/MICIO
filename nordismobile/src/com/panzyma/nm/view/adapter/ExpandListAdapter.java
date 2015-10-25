@@ -55,8 +55,8 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 	
 	@Override
 	public int getGroupCount() {
-		// TODO Auto-generated method stub
-		return groups.size();
+		// TODO Auto-generated method stub 
+		return (groups!=null)?groups.size():0;
 	}
 	
 	@Override

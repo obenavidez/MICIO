@@ -592,6 +592,35 @@ public class Devolucion {
 	public void setFechaFacturacion(long fechaFacturacion) {
 		this.FechaFacturacion = fechaFacturacion;
 	}
+	
+	/**
+	 * @return the objPedido
+	 */
+	public Pedido getObjPedido() {
+		return objPedido;
+	}
+
+	/**
+	 * @param objPedido the objPedido to set
+	 */
+	public void setObjPedido(Pedido objPedido) {
+		this.objPedido = objPedido;
+	}
+
+	/**
+	 * @return the olddata
+	 */
+	public Devolucion getOlddata() {
+		return olddata;
+	}
+
+	/**
+	 * @param olddata the olddata to set
+	 */
+	public void setOlddata(Devolucion olddata) {
+		this.olddata = olddata;
+	}
+	
 	 
 	/**
 	 * @param id
@@ -759,19 +788,9 @@ public class Devolucion {
 	private boolean PreRegistro;
 	private boolean OffLine;	
 	private Pedido objPedido;
-	/**
-	 * @return the objPedido
-	 */
-	public Pedido getObjPedido() {
-		return objPedido;
-	}
-
-	/**
-	 * @param objPedido the objPedido to set
-	 */
-	public void setObjPedido(Pedido objPedido) {
-		this.objPedido = objPedido;
-	}
+	
+	protected Devolucion olddata;
+	
 
 	
 }

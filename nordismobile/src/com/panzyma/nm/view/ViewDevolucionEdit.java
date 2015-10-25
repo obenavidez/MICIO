@@ -187,8 +187,7 @@ Handler.Callback, Editable
 	
 	public static final Display display;
 	
-	List<ExpandListGroup> lgroups = new LinkedList<ExpandListGroup>();
-	
+	List<ExpandListGroup> lgroups = new LinkedList<ExpandListGroup>(); 
 	
     static 
     { 
@@ -212,8 +211,7 @@ Handler.Callback, Editable
     	 display= wm.getDefaultDisplay();
     	
     }
-	
-	
+	 
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -269,8 +267,9 @@ Handler.Callback, Editable
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 						int position, long id){  
-				if (position == 0)
+				if (position == 0 || ckboxvencidodev.isChecked())
 					return;
+				
 				
 				if(!"DAÑADO".equals(((ValorCatalogo) adapter_motdev.getItem(position).getObj()).getCodigo()))
 				{
@@ -296,11 +295,14 @@ Handler.Callback, Editable
 			{
 				if (position == 0)
 					return;
+				if(adapter==null || (adapter!=null && adapter.getGroupCount()==0))
+					return;
+				
+				if("RE".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo()) && ckboxncinmeditata.isChecked()) 
+					ckboxncinmeditata.setChecked(false); 
 				if("RE".equals(((Map.Entry<String, String>) adapter_tramite
 						.getItem(position).getObj()).getKey()))
-				{
-					ckboxncinmeditata.setChecked(false);
-				}
+					ValidarTipoTramite(); 
 				
 			}
 
@@ -315,13 +317,50 @@ Handler.Callback, Editable
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				 
-				
-				if("RE".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo()))
-				{
+				if(adapter==null || (adapter!=null && adapter.getGroupCount()==0))
+					return;
+				if("RE".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo()) && ckboxncinmeditata.isChecked())
 					ckboxncinmeditata.setChecked(false);
-				}
+				if("TT".equals(((SpinnerModel)cboxtipodev.getSelectedItem()).getCodigo()) && pedido!=null)
+					ckboxncinmeditata.setChecked(false);
+				EstimarCostosDev(true);
 			}
 		});
+		
+		cboxtipodev.setOnItemSelectedListener(new OnItemSelectedListener()
+		{
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) 
+			{ 
+				if (position == 0){
+					cboxtipodev.setSelection(PARCIAL);
+					return;
+				}	
+				if(adapter==null || (adapter!=null && adapter.getGroupCount()==0))
+					return;
+				
+				if(pedido!=null)
+				{
+					establecerCantidadDev();
+					EstimarCostosDev(true);
+					adapter.notifyDataSetChanged();
+				}
+				
+				ValidarTipoTramite();
+				if("TT".equals(((Map.Entry<String, String>) adapter_tipodev
+						.getItem(position).getObj()).getKey()) && pedido!=null)
+					ckboxncinmeditata.setChecked(false);
+				adapter.notifyDataSetChanged();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				// TODO Auto-generated method stub
+				
+			}}
+		);
 		
 		if(devolucion==null)
 		{
@@ -517,10 +556,9 @@ Handler.Callback, Editable
 			public void onButtonClick(DevolucionProductoLote plote) 
 			{ 
 				actualizarProductoLote(plote);
+				EstimarCostosDev(true);
 				adapter.notifyDataSetChanged();
-				validarDevolucion(false);
-				
-				//updateGrid(plote);
+				//updateObject(); 
 			}
 		});
 		newFragment.show(ft, "dialogDevolucionProductoCantidad");
@@ -550,6 +588,38 @@ Handler.Callback, Editable
 		return _lgroups;
 	}
 	
+	//SetcantidadDevolver
+	public void establecerCantidadDev()
+	{
+		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();		
+		LinkedList<ExpandListChild> groupchild; 
+		for (DevolucionProducto dp : dev_prod) 
+		{
+			int cantidaddevueltadp=0;
+			ExpandListGroup group = new ExpandListGroup();
+			groupchild = new LinkedList<ExpandListChild>();
+			
+			for (DevolucionProductoLote dpl : dp.getProductoLotes()) 
+			{
+				ExpandListChild ch = new ExpandListChild();
+				if("TT".equals(((SpinnerModel)cboxtipodev.getSelectedItem()).getCodigo()))
+				dpl.setCantidadDevuelta(dpl.getCantidadDespachada());
+				else
+					dpl.setCantidadDevuelta(0);
+				ch.setName(dpl.getNumeroLote());
+				ch.setObject(dpl);
+				groupchild.add(ch);
+				cantidaddevueltadp=cantidaddevueltadp+dpl.getCantidadDevuelta();
+			}
+			dp.setCantidadDevolver(cantidaddevueltadp);
+			group.setName(dp.getNombreProducto());
+			group.setObject(dp);
+			group.setItems(groupchild);
+			_lgroups.add(group);
+		}
+		
+	}
+	
 	public void updateObject()
 	{		
 		List<ExpandListGroup>  _lgroups = lgroups;
@@ -575,8 +645,32 @@ Handler.Callback, Editable
 	
 	private void actualizarProductoLote(DevolucionProductoLote dpl)
 	{
-		int cantidadTotalDevolver = 0;
-		ExpandListGroup lg=new ExpandListGroup();		
+		DevolucionProducto _dp=(DevolucionProducto) groupselected.getObject();
+		if("".equals(dpl.getNumeroLote()) || dpl.getNumeroLote()==null)
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+					String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),
+					String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),"")); 
+			return ;
+		}
+		
+		
+		if(dpl.getFechaVencimiento()<=0)
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+					String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),
+					String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),"")); 
+			return ;
+		}
+		if(dpl.getCantidadDevuelta()<=0)
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
+					String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),
+					String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),"")); 
+			return ;
+		}		
+		
+		int cantidadTotalDevolver = 0; 		
 		ExpandListChild ch = new ExpandListChild();
 		ch.setName(dpl.getNumeroLote());
 		ch.setObject(dpl); 		
@@ -584,45 +678,10 @@ Handler.Callback, Editable
 		//sumar todas las cantidades a devolver de sus lote del producto seleccionado.
 		for(ExpandListChild _ch:groupselected.getItems()) 
 			cantidadTotalDevolver+=((DevolucionProductoLote)_ch.getObject()).getCantidadDevuelta(); 
-		DevolucionProducto _dp=(DevolucionProducto) groupselected.getObject();
-		
-		if(_dp.getProductoLotes()==null || (_dp.getProductoLotes()!=null &&_dp.getProductoLotes().length==0))
-		{
-			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
-					"Al menos un lote debe ser incluido en el detalle.",
-					"Al menos un lote debe ser incluido en el detalle.","")); 
-			return ;
-		}
-		for(DevolucionProductoLote _dpl:_dp.getProductoLotes())
-		{
-			if("".equals(_dpl.getNumeroLote()) || _dpl.getNumeroLote()==null)
-			{
-				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
-						String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),
-						String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),"")); 
-				return ;
-			}
-			
-			
-			if(_dpl.getFechaVencimiento()<=0)
-			{
-				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
-						String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),
-						String.format("Para cada detalle del producto '{0}' se debe ingresar la fecha de vencimiento del lote",_dp.getNombreProducto()),"")); 
-				return ;
-			}
-			if(_dpl.getCantidadDevuelta()<=0)
-			{
-				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
-						String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),
-						String.format("La cantidad a devolver de cada lote del producto '{0}' debe ser mayor que cero.", _dp.getNombreProducto()),"")); 
-				return ;
-			}
-			 
-		}		
+		 
 		_dp.setCantidadDevolver(cantidadTotalDevolver); 
 		groupselected.setObject(_dp); 
-		lgroups.set(positioncache[0], groupselected);	 	
+		lgroups.set(positioncache[0], groupselected);		
 		
 	}
 	
@@ -808,10 +867,10 @@ Handler.Callback, Editable
 		
 	}
 	
-	public boolean validarDevolucion(boolean...todo)
+	public boolean validarDevolucion()
 	{ 
 		boolean result;
-		pedido.setFecha(DateUtil.d2i(new Date()));
+		devolucion.setFecha(DateUtil.d2i(new Date()));
 		if (cliente == null) 
 		{
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage(
@@ -835,17 +894,18 @@ Handler.Callback, Editable
 			return false;
 		}
 		
-		if(devolucion.getProductosDevueltos()==null || (devolucion.getProductosDevueltos()!=null && devolucion.getProductosDevueltos().length==0))
+		if(lgroups==null || (lgroups!=null && lgroups.size()!=0))
 		{
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
 					"Al menos un producto debe ser incluido en la devolución.",
 					"Al menos un producto debe ser incluido en la devolución.","")); 
 			return false;
 		}
-		
-		if((todo!=null && todo.length!=0 && todo[0]) || (todo==null || (todo!=null && todo.length==0 )))
-		for(DevolucionProducto _dp:devolucion.getProductosDevueltos())
+		 
+		for(int a=0;a<lgroups.size();a++)
 		{
+			ExpandListGroup group =  (ExpandListGroup) lgroups.get(a);
+			DevolucionProducto _dp=(DevolucionProducto) group.getObject();
 			if(_dp.getProductoLotes()==null || (_dp.getProductoLotes()!=null &&_dp.getProductoLotes().length==0))
 			{
 				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
@@ -878,18 +938,8 @@ Handler.Callback, Editable
 					return false;
 				}				 
 			}
-		}
+		} 
 		
-		/*ckboxvencidodev=(CheckBox) findViewById(R.id.devchk_typodevolucion);
-		ckboxncinmeditata=(CheckBox) findViewById(R.id.devchk_ncinmediata);
-		cboxmotivodev=(Spinner) findViewById(R.id.devcombox_motivo);
-		cboxtramitedev=(Spinner) findViewById(R.id.devcombox_tramite);
-		cboxtipodev=(Spinner) findViewById(R.id.devcombox_tipo);
-		tbxNombreDelCliente=(TextView) findViewById(R.id.devtextv_detallecliente); 
-		View include=findViewById(R.id.pdevgrilla);
-		lvdevproducto = (ExpandableListView)include.findViewById(R.id.ExpList); 
-		tbxFecha=(EditText)findViewById(R.id.devetextv_detalle_fecha);*/
-		 
 		if("NC".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo())) 
 		{
 			devolucion.setTipoTramite("NC");
@@ -897,10 +947,7 @@ Handler.Callback, Editable
 		else
 		{
 			devolucion.setTipoTramite("RE"); 
-		}		
-		
-		//if("TT".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo())) 
-		
+		}		 
 			
 		devolucion.setParcial(("TT".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo()))?false:true);
 		devolucion.setDeVencido(ckboxvencidodev.isChecked());
@@ -911,13 +958,15 @@ Handler.Callback, Editable
 		else
 		{
 			devolucion.setObjPedidoDevueltoID(pedido.getId());
+			devolucion.setObjVendedorID(pedido.getObjVendedorID());
 		}
 		
 		devolucion.setObjClienteID(cliente.getIdCliente());
 		devolucion.setObjSucursalID(cliente.getIdSucursal());
+		devolucion.setEspecial(!"".equals(devolucion.getObservacion()));
 		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado()))
 		{
-			EstimarCostosDev(true);
+			EstimarCostosDev(false);
 //			this.CalcMontoPromocion();
 //			this.CalcularTotalDev(); 
 		} 
@@ -1038,11 +1087,12 @@ Handler.Callback, Editable
 				_dp.setTotal(_dp.getSubtotal() - _dp.getMontoBonif()+impuestoL);
 				_dp.setTotalVen(_dp.getSubtotal() - _dp.getMontoBonif()+impuestoL);
 			}
-		}
+			group.setObject(_dp);
+			lgroups.set(a, group);
+		}//fin del ciclo
 		
 	}
-	
-	// BusinessLogic.DevolucionesBL
+	 
 	public static int CalcularBonificacion(int CantidadDevolver, int CantidadOrdenada, int CantidadBonificada)
 	{
 		Double proporcion =( Double.valueOf((double)CantidadBonificada) / Double.valueOf((double)CantidadOrdenada))+new Double(1);
@@ -1175,11 +1225,12 @@ Handler.Callback, Editable
 			public void onDialogPositiveClick(Devolucion  _dev) 
 			{ 
 				if(_dev!=null && _dev.getProductosDevueltos()!=null && _dev.getProductosDevueltos().length!=0)
-				{
+				{					
 					devolucion=_dev;
 					devolucion.setCodEstado(devolucion.getDescEstado().equals("") ? REGISTRADA : devolucion.getDescEstado());
 					pedido=devolucion.getObjPedido();
 					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
+					devolucion.setOlddata(_dev);
 					initExpandableListView();
 				}
 				
@@ -1280,7 +1331,6 @@ Handler.Callback, Editable
 		if(dlg!=null)
 			dlg.dismiss();
 	}
-	
 	
 	public void hideProgress(){
 		runOnUiThread(new Runnable() 
@@ -1499,4 +1549,32 @@ Handler.Callback, Editable
 		return 0.f;
 	}
 	
+	public void ValidarTipoTramite()
+	{ 
+		if(ckboxvencidodev.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado()))
+		{
+			if(!PermiteSeleccionarTipoTramite())
+				cboxtramitedev.setSelection(NOTADECREDITO);
+		}
+	}
+	
+	public boolean PermiteSeleccionarTipoTramite()
+	{
+		double porc=Double.parseDouble(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcMaxDevolucReposic","0.0"));
+		double porcdev=0d;
+		if(pedido!=null)
+		{
+			for(int a=0;a<lgroups.size();a++)
+			{
+				ExpandListGroup group =  (ExpandListGroup) lgroups.get(a);
+				DevolucionProducto _dp=(DevolucionProducto) group.getObject();
+				if(_dp.getCantidadOrdenada()==0) continue;
+				
+				porcdev=((double)_dp.getCantidadDevolver())/((double)_dp.getCantidadOrdenada());
+				if(porcdev>porc)
+					return false;
+			}
+		}
+		return true;
+	}
 }
