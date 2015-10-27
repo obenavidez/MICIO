@@ -70,6 +70,7 @@ import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.custom.model.SpinnerModel; 
 import com.panzyma.nm.interfaces.Editable; 
+import com.panzyma.nm.logic.DevolucionBL;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Bonificacion;
@@ -239,8 +240,7 @@ Handler.Callback, Editable
 			}
 		}
 	}
-	
-	
+ 
 	public void initComponent() 
 	{
 		ckboxvencidodev=(CheckBox) findViewById(R.id.devchk_typodevolucion);
@@ -858,6 +858,7 @@ Handler.Callback, Editable
 	
 	protected void salvarDevolucion() 
 	{
+		updateObject();
 		if(!validarDevolucion())
 			return;
 		Message msg = new Message(); 
@@ -869,7 +870,7 @@ Handler.Callback, Editable
 	
 	public boolean validarDevolucion()
 	{ 
-		boolean result;
+		
 		devolucion.setFecha(DateUtil.d2i(new Date()));
 		if (cliente == null) 
 		{
@@ -892,20 +893,10 @@ Handler.Callback, Editable
 					"Al menos un producto debe ser incluido en la devolución.",
 					"Al menos un producto debe ser incluido en la devolución.","")); 
 			return false;
-		}
-		
-		if(lgroups==null || (lgroups!=null && lgroups.size()!=0))
-		{
-			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
-					"Al menos un producto debe ser incluido en la devolución.",
-					"Al menos un producto debe ser incluido en la devolución.","")); 
-			return false;
-		}
+		} 
 		 
-		for(int a=0;a<lgroups.size();a++)
-		{
-			ExpandListGroup group =  (ExpandListGroup) lgroups.get(a);
-			DevolucionProducto _dp=(DevolucionProducto) group.getObject();
+		for(DevolucionProducto _dp:devolucion.getProductosDevueltos())
+		{ 
 			if(_dp.getProductoLotes()==null || (_dp.getProductoLotes()!=null &&_dp.getProductoLotes().length==0))
 			{
 				com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,new ErrorMessage( 
@@ -1006,7 +997,7 @@ Handler.Callback, Editable
 						{
 							if(_dp.getCantidadDevolver()<(cantidadordenada+cantidadbonificadaeditada))
 							{								
-								int rs=CalcularBonificacion(_dp.getCantidadDevolver(),_dp.getCantidadOrdenada(),_dp.getCantidadBonificada());
+								int rs=DevolucionBL.CalcularBonificacion(_dp.getCantidadDevolver(),_dp.getCantidadOrdenada(),_dp.getCantidadBonificada());
 								_dp.setBonificacion(rs);
 								_dp.setBonificacionVen(rs);
 							}
@@ -1021,7 +1012,7 @@ Handler.Callback, Editable
 					{
 						int qtybonif = 0; 
 						 
-						Bonificacion bonif=getBonificacion(prod, cliente.getObjCategoriaClienteID(), _dp.getCantidadDevolver());
+						Bonificacion bonif=DevolucionBL.getBonificacion(prod, cliente.getObjCategoriaClienteID(), _dp.getCantidadDevolver());
 						if (bonif!=null  && bonif.getCantBonificacion()!=0)
 						{
 							qtybonif = bonif.getCantBonificacion();
@@ -1049,7 +1040,7 @@ Handler.Callback, Editable
 					if (IdTipoClienteMayorista==idTipoCliente)
 						idTP = Long.parseLong(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral","0"));
 
-					_dp.setPrecio((long)(getPrecioProducto(prod, idTP,  _dp.getCantidadDevolver())*100));
+					_dp.setPrecio((long)(DevolucionBL.getPrecioProducto(prod, idTP,  _dp.getCantidadDevolver())*100));
 			    }
 				else
 				{
@@ -1058,7 +1049,7 @@ Handler.Callback, Editable
 					if(catalogo!=null)
 						idTP=catalogo.get(0).getId();
 					Long.parseLong(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("VEN","0"));
-					_dp.setPrecio((long)(getPrecioProducto(prod, idTP,  _dp.getCantidadDevolver())*100)); 
+					_dp.setPrecio((long)(DevolucionBL.getPrecioProducto(prod, idTP,  _dp.getCantidadDevolver())*100)); 
 				} 
 				
 				_dp.setSubtotal((long)((double)(_dp.getCantidadDevolver()*(_dp.getPrecio()/100.00))*100.00)); 
@@ -1070,15 +1061,14 @@ Handler.Callback, Editable
 				{
 					if (this.pedido != null)
 					{ 
-						_dp.setPorcImpuesto((long) ViewDevolucionEdit.getPorcImpuesto(pedido,prod.getId()));
+						_dp.setPorcImpuesto((long) DevolucionBL.getPorcImpuesto(pedido,prod.getId()));
 						 
 					}
 					else
 					{
 						int porcimp=Integer.parseInt(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeImpuesto","0"));
 						_dp.setPorcImpuesto((long) porcimp); 
-					}
-					
+					}				
 					 
 				}
 				long impuestoL=(long)(_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getMontoBonif()/100.00));
@@ -1092,28 +1082,7 @@ Handler.Callback, Editable
 		}//fin del ciclo
 		
 	}
-	 
-	public static int CalcularBonificacion(int CantidadDevolver, int CantidadOrdenada, int CantidadBonificada)
-	{
-		Double proporcion =( Double.valueOf((double)CantidadBonificada) / Double.valueOf((double)CantidadOrdenada))+new Double(1);
-		Double CantBonif = new Double(CantidadDevolver)-(new Double(CantidadDevolver)/proporcion) ;
-		int result;
-		if (CantBonif == 0d)
-		{
-			result = 0;
-		}
-		else
-		{
-			
-			Double decimalBonif =CantBonif-CantBonif.intValue();
-			String DecimalRedondeoBonif =NMApp.getContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("DecimalRedondeoBonif","0");
-			if (decimalBonif >= Double.valueOf(DecimalRedondeoBonif)) 
-				CantBonif+=1;  
-			result =CantBonif.intValue();
-		}
-		return result;
-	}
-	
+ 	
 	private void agregarProducto() 
 	{
 	
@@ -1412,143 +1381,7 @@ Handler.Callback, Editable
 	public void setDev_prod(ArrayList<DevolucionProducto> arrayList) {
 		this.dev_prod = arrayList;		
 	}
-	
-	public static ArrayList<Bonificacion> parseListaBonificaciones(
-			Producto prod, long idCatCliente) 
-			{
-		if (prod.getListaBonificaciones() == null)
-			return null;
-		if (prod.getListaBonificaciones() == "")
-			return null;
-
-		ArrayList<Bonificacion> abon = new ArrayList<Bonificacion>();
-		String catCLiente = idCatCliente + "";
-		String[] listaBonif = StringUtil.split(prod.getListaBonificaciones(),
-				"|");
-		for (int i = 0; i < listaBonif.length; i++)
-		{
-			if(!listaBonif[0].equals(""))
-			{	
-				String[] bonifProd = StringUtil.split(listaBonif[i], ",");
-		
-				if(bonifProd!=null && bonifProd.length!=0 && bonifProd[0]!="")
-				if ((idCatCliente == 0) || (catCLiente.compareTo(bonifProd[1]) == 0)) {
-					Bonificacion b = new Bonificacion();
-					b.setObjBonificacionID(Long.parseLong(bonifProd[0]));
-					b.setObjCategoriaClienteID(idCatCliente);
-					b.setCantidad(Integer.parseInt(bonifProd[2]));
-					b.setCantBonificacion(Integer.parseInt(bonifProd[3]));
-					b.setCategoriaCliente(bonifProd[4]);
-					abon.add(b);
-				}
-			}
-			else
-				break;
-		}
-
-		return abon;
-	}
-
-	/*
-	 * Devuelve la bonificación de un producto dada la cantidad que se está
-	 * ordenando y la categoría de cliente
-	 */
-	public static Bonificacion getBonificacion(Producto prod,
-			long idCatCliente, int cantidad) {
-		ArrayList<Bonificacion> bonificaciones = parseListaBonificaciones(prod,
-				idCatCliente);
-		if (bonificaciones == null)
-			return null;
-
-		Bonificacion bb = null;
-		for (int i = bonificaciones.size() - 1; i >= 0; i--) {
-			Bonificacion b = bonificaciones.get(i);
-			if (cantidad >= b.getCantidad()) {
-				bb = b; // Encontrada
-				break; // Salir del ciclo
-			}
-		}
-
-		// Si se encontró bonificación aplicada
-		// Recalcular cantidad real a aplicar para la cantidad ordenada
-		// Recordar traer valor de parámetro DecimalRedondeoBonif (por el
-		// momento se usa 0.8)
-		if (bb != null) {
-			float decimalRedondeoBonif = 0.8F;
-			float cb = bb.getCantBonificacion();
-			float c = bb.getCantidad();
-			float factor = cb / c;
-			float cant = factor * cantidad;
-			String sCant = String.valueOf(cant);
-			String[] arrCant = StringUtil.split(sCant, ".");
-			String sInt = arrCant[0];
-			String sDec = "0.0";
-
-			int cantReal = Integer.parseInt(sInt);
-			if (arrCant.length > 1) {
-				sDec = "0." + arrCant[1];
-				float decimalPart = Float.parseFloat(sDec);
-				if (decimalPart >= decimalRedondeoBonif)
-					cantReal = cantReal + 1;
-			}
-			bb.setCantBonificacion(cantReal);
-		}
-
-		return bb;
-	} 
-
-	/*
-	 * Devuelve el precio de un producto dada la cantidad que se está ordenando
-	 */
-	public static float getPrecioProducto(Producto prod, long idTipoPrecio,
-			int cantidad) 
-	{
-		ArrayList<PrecioProducto> precios = parseListaPrecios(prod,idTipoPrecio); 
-		PrecioProducto p =(precios!=null && precios.size()!=0)? precios.get(0):null ;
-		if (precios.size() > 1) 
-		{
-			for (int i = 0; i < precios.size(); i++) 
-			{
-				p = precios.get(i);
-				if ((cantidad >= p.getMinimo()) && (cantidad <= p.getMaximo()))
-					break; // Salir del ciclo
-			}
-		}
-
-		return (p!=null)?p.getPrecio():null;
-	}
-	
-	public static ArrayList<PrecioProducto> parseListaPrecios(Producto prod,
-			long idTipoPrecio) {
-		ArrayList<PrecioProducto> pp = new ArrayList<PrecioProducto>();
-		String tipoPrecio = idTipoPrecio + "";
-		String[] listaPrecios = StringUtil.split(prod.getListaPrecios(), "|");
-		for (int i = 0; i < listaPrecios.length; i++) {
-			String[] precioProd = StringUtil.split(listaPrecios[i], ",");
-
-			if ((idTipoPrecio == 0)
-					|| (tipoPrecio.compareTo(precioProd[0]) == 0)) {
-				PrecioProducto p = new PrecioProducto();
-				p.setObjTipoPrecioID(idTipoPrecio);
-				p.setMinimo(Integer.parseInt(precioProd[1]));
-				p.setMaximo(Integer.parseInt(precioProd[2]));
-				p.setPrecio(Float.parseFloat(precioProd[3]));
-				p.setDescTipoPrecio(precioProd[4]);
-				pp.add(p);
-			}
-		}
-
-		return pp;
-	}
-
-	public static float getPorcImpuesto(Pedido pedido,long idproducto)
-	{
-		for(DetallePedido dtp:pedido.getDetalles())
-			if(dtp.getObjProductoID()==idproducto)
-				return dtp.getPorcImpuesto();
-		return 0.f;
-	}
-	
+ 
 	public void ValidarTipoTramite()
 	{ 
 		if(ckboxvencidodev.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado()))
