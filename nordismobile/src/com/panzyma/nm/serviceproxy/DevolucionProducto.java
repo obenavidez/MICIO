@@ -1,6 +1,6 @@
 package com.panzyma.nm.serviceproxy;
-
-public class DevolucionProducto
+ 
+public class DevolucionProducto 
 {
 	/**
 	 * @param id
@@ -375,4 +375,5 @@ public class DevolucionProducto
 	private DevolucionProductoLote[] productoLotes;
 	
 	public DevolucionProducto(){}
+	 
 }
