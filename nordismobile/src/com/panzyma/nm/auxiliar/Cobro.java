@@ -951,6 +951,7 @@ public class Cobro
            float mtoTotalNC = 0; //Total de notas de crédito
            float mtoNcProporcionalVigente = 0; //Monto de notas de crédito proporcional al total de facturas vigentes
            float mtoNcProporcionalVencidas = 0; //Monto de notas de crédito proporcional al total de facturas vencidas
+           float mtoTotalFacturasSinDescOcasional = 0; // facturas a no aplicar descuento ocasional por tener % descuento ocasional en 0
            
            String days=cnt.getApplicationContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("HolguraDiasAplicarDescPP", "0");
            //Parámetro para determinar si una factura está vencida y ya pasó el periódo de gracia
@@ -1020,6 +1021,11 @@ public class Cobro
                    mtoFacturasVigentes += totalFact;
                else
                    mtoFacturasVencidas += totalFact;
+               
+               if(!tieneDescOcaUsr) {
+            	   //Si la factura detalle no tiene descuento ocasional excluirla del total factura, para el descuento
+            	   mtoTotalFacturasSinDescOcasional += reciboDetFactura.getTotalFacturaOrigen();
+               }
            } //Calculando montos de facturas
     	   
            //Si hay monto que procesar
@@ -1066,7 +1072,7 @@ public class Cobro
                   
                   //Ver si hay que aplicar descuento ocasional
                   if (reciboDetFactura.getPorcDescOcasional() > 0)
-                      descOca = StringUtil.round((mtoFact / mtoTotalFacturasAplicar) * (mtoAplicar * (reciboDetFactura.getPorcDescOcasional() / 100)), 2);
+                      descOca = StringUtil.round((mtoFact / (mtoTotalFacturasAplicar-mtoTotalFacturasSinDescOcasional)) * ( (mtoAplicar - mtoTotalFacturasSinDescOcasional)* (reciboDetFactura.getPorcDescOcasional() / 100)), 2);
                       
                   //Ver si hay que aplicar descuento por promoción
                   descPromo = reciboDetFactura.getMontoDescPromocion();
