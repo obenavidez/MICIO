@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,6 +27,7 @@ import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.NotificationMessage;
 import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
@@ -36,6 +38,8 @@ import com.panzyma.nm.auxiliar.VentasUtil;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
+import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
@@ -53,10 +57,13 @@ import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
+import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
+import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogFormasPago;
@@ -179,8 +186,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	private static final int ID_ENVIAR_RECIBO = 9;
 	private static final int ID_SOLICITAR_DESCUENTO_OCASIONAL = 10;
 	private static final int ID_APLICAR_DESCUENTO_OCASIONAL = 11;
-	private static final int ID_CERRAR = 13;
 	private static final int ID_IMPRIMIR_COMPROBANTE = 12;
+	private static final int ID_CONSULTAR_CUENTAS_POR_PAGAR = 13;
+	private static final int ID_CERRAR = 14;
 	
 	private static final int TIME_TO_VIEW_MESSAGE = 3000;
 	public static final String FORMA_PAGO_IN_EDITION = "edit";
@@ -192,7 +200,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
 	private static final int ID_EDITAR_DESCUENTOV2 = 2;
 	
-	
+	FragmentTransaction transaction ;
 	private ViewReciboEdit me;
 	private Cliente cliente;
 	private ReciboColector recibo = null;
@@ -492,7 +500,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					aplicardescuento();
 					break;
 				case ID_SALVAR_RECIBO:
-					guardarRecibo();
+					if(Validar_Cancelar_Con_Notas_Creditos())
+						guardarRecibo();
 					salvado = true;
 					break;
 				case ID_ENVIAR_RECIBO:
@@ -500,6 +509,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					break;
 				case ID_IMPRIMIR_COMPROBANTE:
 					enviarImprimirRecibo(recibo);
+					break;
+				case ID_CONSULTAR_CUENTAS_POR_PAGAR:
+					//ShowCuentasporPagar();
 					break;
 				case ID_CERRAR:
 						finish();
@@ -3666,7 +3678,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	 
 	public float GetTotalNotasDeCreditos(){
 		float sum = 0L;
-		if(recibo.getNotasCreditoRecibo().size()> 1){
+		if(recibo.getNotasCreditoRecibo().size()> 0){
 			for ( ReciboDetNC item : recibo.getNotasCreditoRecibo()){
 				sum+= item.getMonto();
 			}
@@ -3683,5 +3695,84 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	
 	private int GetContadorNotasCreditoEnRecibo(){
 		return recibo.getNotasCreditoRecibo().size();
+	}
+	
+	public float GetTotalNotasDeDebitos(){
+		float sum = 0L;
+		if(recibo.getNotasDebitoRecibo().size()> 1){
+			for ( ReciboDetND item : recibo.getNotasDebitoRecibo()){
+				sum+= item.getMonto();
+			}
+		}
+		return sum;
+	}
+	
+	/**
+	 * Esta FUncion valida que no se pueda cancelar la factura con puras notas de credito.
+	 * 
+	 */
+	private boolean Validar_Cancelar_Con_Notas_Creditos(){
+		float total_notas_creditos  = GetTotalNotasDeCreditos();
+		float total_notas_debitos  = GetTotalNotasDeDebitos();
+
+		if((recibo.getTotalFacturas() + total_notas_debitos) == total_notas_creditos){
+			Toast.makeText(getApplicationContext(), "No se puede cancelar una factura solo con notas de crédito.", Toast.LENGTH_LONG).show();
+			return false;
+		}
+		return true;
+		
+	}
+	
+	private void ShowCuentasporPagar(){
+	/*	if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+        {
+
+				Bundle msg = new Bundle();
+				CuentasPorCobrarFragment cuentasPorCobrar;	
+	            FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
+	            msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
+				msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, this.recibo.getObjClienteID());
+
+				if (findViewById(R.id.fragment_container) != null) 
+				{
+					cuentasPorCobrar = new CuentasPorCobrarFragment();
+					cuentasPorCobrar.setArguments(msg);
+					mytransaction.addToBackStack(null);
+					mytransaction.replace(R.id.fragment_container,cuentasPorCobrar);
+					mytransaction.commit();	
+				}
+        }	
+        */
+		
+		
+		FragmentTransaction Fragtransaction = getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+		if (prev != null){
+		   Fragtransaction.remove(prev);
+		}
+		
+		Bundle msg = new Bundle();
+		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
+		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, this.recibo.getObjClienteID());
+		
+		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
+		cuentasPorCobrar.setArguments(msg);
+	    Fragtransaction.addToBackStack(null);
+	    cuentasPorCobrar.show(Fragtransaction, "dialog");
+	    
+	    /*
+	     * FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+		if (prev != null) {
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		ConsultaPrecioProducto newFragment = ConsultaPrecioProducto
+				.newInstance(dpselected.getObjProductoID(),
+						pedido.getObjTipoPrecioVentaID());
+		newFragment.show(ft, "dialog");
+	     * 
+	     */
+	    
 	}
 }

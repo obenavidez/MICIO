@@ -21,5 +21,16 @@ public class Predicate
 	    }
 	    return result;
 	}
+	 
+	public static  <T> T find(List<T> target, long ID, IFilterabble<T> predicate) {
+	    
+	    for (T element : target) 
+	    {
+	        if (predicate.search(element,ID))  
+	        	return element; 
+	    }
+	    return null;
+	} 
+ 
   
 }

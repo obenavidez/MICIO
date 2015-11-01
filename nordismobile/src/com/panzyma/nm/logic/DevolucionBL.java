@@ -7,9 +7,11 @@ import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.interfaces.IFilterabble;
 import com.panzyma.nm.interfaces.IPredicate;
 import com.panzyma.nm.interfaces.Predicate;
 import com.panzyma.nm.serviceproxy.Bonificacion;
+import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.Pedido;
@@ -38,7 +40,7 @@ public class DevolucionBL
 			}
 		}
 
-		return (p!=null)?p.getPrecio():null;
+		return (p!=null)?p.getPrecio():0f;
 	}
 	
 	public static ArrayList<PrecioProducto> parseListaPrecios(Producto prod,
@@ -177,7 +179,7 @@ public class DevolucionBL
 		return abon;
 	}
 	
-	public static double CalMontoPromocion(Pedido pedido,List<DevolucionProducto> detalledev, boolean isTotalDev)
+	public static double CalMontoPromocion(Cliente cliente, Pedido pedido,List<DevolucionProducto> detalledev, boolean isTotalDev)
 	{
 		
 		if(pedido.getPromocionesAplicadas()==null || pedido.getPromocionesAplicadas().length==0)
@@ -228,15 +230,55 @@ public class DevolucionBL
 		
 		for(DevolucionProducto dpparcial:productosdevparcial)
 		{
+			DetallePedido  detp=Predicate.find(detalleprodpedido, dpparcial.getObjProductoID(), new IFilterabble<DetallePedido>() {
+
+				@Override
+				public boolean search(DetallePedido detp, long ID) { 
+					return detp.getObjPedidoID()==ID;
+				}
+			});
+			//Actualizar la cantidad con la que se queda el cliente 
+			detp.setCantidadOrdenada(dpparcial.getCantidadOrdenada()-dpparcial.getCantidadDevolver());
+			               
+            //dr["CantidadOrdenada"] = Convert.ToInt32(drw["PCantidadOrdenada"]) - Convert.ToInt32(drw["DCantidadDevolver"]);
+
+            //Actualizar el precio con la nueva cantidad ordenada. Si el pedido es generado a partir de una liciatación, 
+            //se mantiene el precio de licitación
+			
+			
+			detp.setPrecio(GetPrecioProducto(
+					detp.getObjProductoID(),
+					cliente.getObjPrecioVentaID(),
+					detp.getCantidadOrdenada(),
+					detp.getBonifEditada(),
+					cliente.getObjTipoClienteID()));  
+			
+			float prcImp = Float.valueOf((NMApp.getContext().getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeImpuesto", "0")));
+            //Calcular los nuevos totales del cada detalle del pedido
+			detp.setDescuento(0.f);
+			detp.setSubtotal(detp.getCantidadOrdenada()*detp.getPrecio()); 
+            //Calcular el nuevo impuesto solo a los productos que se les habia calculado
+            if (detp.getImpuesto()> 0) {
+            	 detp.setPorcImpuesto(prcImp);
+            	detp.setImpuesto((detp.getSubtotal()* prcImp)/100);
+            }
+            detp.setTotal(detp.getSubtotal()+detp.getImpuesto()); 
 			//Si sé está devolviendo todos los productos del pedido menos los entregados en concepto 
             //promoción y que no estaban en el detalle del pedido, deducir monto por promoción
            //linea 1908 falta de la  1883 a la 1907 en CalMontoPromocion de la desktop
-			if (productosadevueltos==null || productosadevueltos.size() == 0)
-                return DeducirMontoDevPromocion(pedido, detalledev);
-            
+			
             
 		}
+		if (productosadevueltos==null || productosadevueltos.size() == 0)
+             return DeducirMontoDevPromocion(pedido, detalledev);
+            
 		return 0.d;
+	}
+	
+	public static float GetPrecioProducto(long productID,long precioventaID,int cantidadOrdenada,boolean viabonif,long tipoclienteID)
+	{
+		return 0.f;
+		
 	}
 	
 	public static double DeducirMontoDevPromocion(Pedido pedido,List<DevolucionProducto> detalledev)
@@ -396,6 +438,7 @@ public class DevolucionBL
 		 * */
 		return 0.d;
 	}
+
 	
 	
 }
