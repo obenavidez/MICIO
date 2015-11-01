@@ -7,6 +7,8 @@ import android.os.Parcelable;
 
 
 
+
+
 import java.util.Arrays;
 import java.util.Hashtable;
 
@@ -16,7 +18,16 @@ import org.ksoap2.serialization.SoapObject;
 
 import com.panzyma.nm.interfaces.Item;
   
-public class Pedido  implements KvmSerializable,Item,Parcelable{  
+public class Pedido  implements KvmSerializable,Item,Parcelable,Cloneable{  
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+	 
+		return super.clone();
+	}
+
 	private long Id;
     private int NumeroMovil;
     private int NumeroCentral;
