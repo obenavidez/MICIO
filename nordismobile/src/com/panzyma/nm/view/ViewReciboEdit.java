@@ -1621,7 +1621,10 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 		if (!valido())
 			return;
-
+		
+		//CALCULAR TOTALES ANTES DE ENVIAR		
+		CalculaTotales();
+		
 		if (recibo.getCodEstado().compareTo("PAGADO") == 0) {
 			showStatus("No se puede enviar un recibo que tiene estado PAGADO",
 					true);
