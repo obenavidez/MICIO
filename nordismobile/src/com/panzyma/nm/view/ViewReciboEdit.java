@@ -3758,7 +3758,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
 		cuentasPorCobrar.setArguments(msg);
 	    Fragtransaction.addToBackStack(null);
-	    cuentasPorCobrar.show(Fragtransaction, "dialog");
+	   // cuentasPorCobrar.show(Fragtransaction, "dialog");
 	    
 	    /*
 	     * FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

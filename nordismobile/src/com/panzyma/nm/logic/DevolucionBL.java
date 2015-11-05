@@ -438,7 +438,5 @@ public class DevolucionBL
 		 * */
 		return 0.d;
 	}
-
-	
-	
+ 
 }
