@@ -2085,8 +2085,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			case ABONADO_OTROS_RECIBOS:
 				if (ammount.isEvaluar()) {
 					factura.setAbonado(ammount.getValue());
-					factura.setSaldo(factura.getTotalFacturado()
-							- factura.getAbonado());
+					float c = Util.Numero.redondear(factura.getTotalFacturado(), 2) - Util.Numero.redondear(factura.getAbonado(),2);
+					factura.setSaldo(Float.valueOf(Util.Numero.redondear(c,2)+""));
 				}
 				break;
 
@@ -2095,10 +2095,11 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				{
 
 					float montoAbonado = 0.00F, saldo = 0.00F;
-
 					montoAbonado = ammount.getValue();
-					factura.setAbonado(factura.getAbonado() + montoAbonado);
-					saldo = factura.getTotalFacturado() - factura.getAbonado();
+					montoAbonado =  Util.Numero.redondear(factura.getAbonado(),2) + montoAbonado;
+					factura.setAbonado(Float.valueOf(""+montoAbonado));
+					saldo =  Util.Numero.redondear(factura.getTotalFacturado(),2) -  Util.Numero.redondear(factura.getAbonado(),2);
+					saldo = Util.Numero.redondear(saldo,2);
 					if (saldo > 0) {
 						factura.setCodEstado("ABONADA");
 						factura.setEstado("Abonada");
@@ -2111,7 +2112,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					if(!facturaDetalle.isEsAbono()){
 						relFacturaNotaCredito.put(facturaDetalle.getObjFacturaID(), 0L);
 					}
-					factura.setSaldo(saldo);
+					factura.setSaldo(Float.valueOf(""+saldo));
 					facturaDetalle.setMonto(ammount.getValue());
 					facturaDetalle.setSaldoFactura(factura.getSaldo());
 					facturaDetalle.setSaldoTotal(factura.getSaldo());
@@ -2125,6 +2126,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					montoRetencion = ammount.getValue();
 					factura.setRetenido(montoRetencion);
 					facturaDetalle.setMontoRetencion(montoRetencion);
+					Cobro.calcularDetFacturasRecibo(contexto, recibo,recibo.getCliente(), true);
 				}
 				break;
 			case DESCONTADO:
