@@ -495,7 +495,7 @@ public class BConfiguracionM extends BBaseM {
 										.getArrayCustomerFromServer2(
 												credentials, SessionManager
 														.getLoginUser()
-														.getLogin(), page, 50);
+														.getLogin(), page, 5);
 								if (modelcliente.length() != 0) {
 									onSave_From_LocalHost(modelcliente,
 											ID_SINCRONIZE_CLIENTES, page);

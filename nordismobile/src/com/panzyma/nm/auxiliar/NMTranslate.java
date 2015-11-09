@@ -148,9 +148,16 @@ public class NMTranslate
                 fields[i].setAccessible(true); 
 		        Object value=null;
 		        String fieldname=((fields[i].getName().charAt(0)+"").toUpperCase())+""+(fields[i].getName().substring(1, fields[i].getName().length()));
-		        boolean exists=obj2.hasProperty(fieldname); 
+		        /*boolean exists=obj2.hasProperty(fieldname); 
 		        if(exists)
-			        value= obj2.getProperty(fieldname); 
+			        value= obj2.getProperty(fieldname); */
+		        
+		        boolean exists=obj2.hasProperty(fieldname);				         
+		        if(exists)
+			        value=obj2.getProperty(fieldname);  				        
+		        exists=obj2.hasProperty(fields[i].getName());				        
+		        if(exists) 
+		        	 value=obj2.getProperty(fields[i].getName());
 			     
                 if(value!=null)
                 {

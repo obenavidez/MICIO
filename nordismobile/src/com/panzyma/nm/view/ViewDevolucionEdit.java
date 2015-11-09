@@ -58,6 +58,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.panzyma.nm.NMApp; 
+import com.panzyma.nm.CBridgeM.BDevolucionM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
@@ -86,6 +87,8 @@ import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.PedidoPromocion;
+import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
 import com.panzyma.nm.serviceproxy.PrecioProducto;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
@@ -98,6 +101,8 @@ import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.adapter.SetViewHolderWLayout;
 import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
 import com.panzyma.nm.view.viewholder.ProductoLoteViewHolder;
+import com.panzyma.nm.viewdialog.DevolucionProductoBonificacion;
+import com.panzyma.nm.viewdialog.DevolucionProductoBonificacion.escucharModificacionProducto;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewdialog.DialogCliente; 
@@ -153,6 +158,7 @@ Handler.Callback, Editable
 	private Spinner cboxtipodev;
 	private CheckBox ckboxncinmeditata;
 	private EditText tbxFecha;
+	private EditText tbxtotaldev;
 	
 	CustomAdapter adapter_motdev;
 	CustomAdapter adapter_tramite;
@@ -272,7 +278,7 @@ Handler.Callback, Editable
 		View include=findViewById(R.id.pdevgrilla);
 		lvdevproducto = (ExpandableListView)include.findViewById(R.id.ExpList); 
 		tbxFecha=(EditText)findViewById(R.id.devetextv_detalle_fecha);
-		
+		tbxtotaldev=(EditText)findViewById(R.id.devtextv_total);
 		adapter_tramite = new CustomAdapter(getContext(),
 				R.layout.spinner_rows, setListData(hmtramite));
 		cboxtramitedev.setAdapter(adapter_tramite); 
@@ -550,6 +556,11 @@ Handler.Callback, Editable
 					}
 				});
 				
+				EstimarCostosDev(true);
+				CalMontoPromocion();
+				CalTotalDevolucion();
+				CalMontoCargoVendedor();
+				
 			} catch (Exception e) {
 			}
 		} else {
@@ -559,6 +570,31 @@ Handler.Callback, Editable
 				
 		
 	}	
+	
+	private void EditarProductoBonificacion(String productname,ExpandListGroup _groupselected) 
+	{ 
+		FragmentTransaction ft =getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialogNotaRecibo");
+		if (prev != null) 
+		{
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		DevolucionProductoBonificacion newFragment = DevolucionProductoBonificacion.newInstance(productname,((DevolucionProducto) _groupselected.getObject()).getCantidadDevolver());
+		newFragment.obtenerProductoModificado(new escucharModificacionProducto() {
+			
+			@Override
+			public void onButtonClick(int cantidadbonificacion) 
+			{  
+				
+				EstimarCostosDev(false);
+				CalTotalDevolucion();
+				CalMontoCargoVendedor();
+				adapter.notifyDataSetChanged();
+			}
+		});
+		newFragment.show(ft, "dialogDevolucionProductoCantidad");
+	}
 	
 	private void EditarProductoLote(String productname,ExpandListChild _childselected) 
 	{ 
@@ -662,6 +698,13 @@ Handler.Callback, Editable
 			adp[a]=dp; 			
 		}
 		devolucion.setProductosDevueltos(adp);
+	}
+	
+	public void actualizarProductoBonificacion(int cantidadbonificacion){
+		DevolucionProducto _dp=(DevolucionProducto) groupselected.getObject();
+		_dp.setBonificacionVen(cantidadbonificacion); 
+		groupselected.setObject(_dp); 
+		lgroups.set(positioncache[0], groupselected);
 	}
 	
 	private void actualizarProductoLote(DevolucionProductoLote dpl)
@@ -979,6 +1022,7 @@ Handler.Callback, Editable
 		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado()))
 		{
 			EstimarCostosDev(false);
+			CalMontoPromocion();
 		    double d=DevolucionBL.CalMontoPromocion(cliente,pedido,Arrays.asList(devolucion.getProductosDevueltos()),("TT".equals(((SpinnerModel)cboxtramitedev.getSelectedItem()).getCodigo()))?false:true);
 		    CalTotalDevolucion();
 		} 
@@ -1002,15 +1046,7 @@ Handler.Callback, Editable
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				DetallePedido  detp=Predicate.find(Arrays.asList(pedido.getDetalles()), _dp.getObjProductoID(), new IFilterabble<DetallePedido>() {
-	
-					@Override
-					public boolean search(DetallePedido detp, long ID) { 
-						return detp.getObjPedidoID()==ID;
-					}
-				});
-				
+		        
 				int cantidaddevolver=_dp.getCantidadDevolver();
 				if (cantidaddevolver >= cantmindevbonif || this.pedido != null)
 				{
@@ -1083,7 +1119,9 @@ Handler.Callback, Editable
 					
 					_dp.setSubtotal((long)((double)(_dp.getCantidadDevolver()*(_dp.getPrecio()/100.00))*100.00)); 
 					long boniL=(long)((double)(_dp.getBonificacion()*(_dp.getPrecio()/100.00))*100.00);
+					
 					_dp.setMontoBonif(boniL); 
+					boniL=(long)((double)(_dp.getBonificacionVen()*(_dp.getPrecio()/100.00))*100.00);
 					_dp.setMontoBonifVen(boniL);
 					
 					if (_dp.isGravable() )
@@ -1104,7 +1142,29 @@ Handler.Callback, Editable
 					_dp.setImpuesto(impuestoL);
 					_dp.setImpuestoVen((long)(_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getMontoBonifVen()/100.00)));
 					_dp.setTotal(_dp.getSubtotal() - _dp.getMontoBonif()+impuestoL);
-					_dp.setTotalVen(_dp.getSubtotal() - _dp.getMontoBonif()+impuestoL);
+					_dp.setTotalVen(_dp.getSubtotal() - _dp.getMontoBonifVen()+_dp.getImpuestoVen());
+					
+					ArrayList<PedidoPromocion> pap=(ArrayList<PedidoPromocion>) Arrays.asList(pedido.getPromocionesAplicadas());
+					
+					
+					if(pap!=null && pap.size()!=0)
+					{ 
+						PedidoPromocionDetalle ppd=null;
+						for(PedidoPromocion pp:pap)
+						{
+							ppd=Predicate.find(Arrays.asList(pp.getDetalles()) , _dp.getObjProductoID(), new IFilterabble<PedidoPromocionDetalle>(){
+
+									@Override
+									public boolean search(PedidoPromocionDetalle ppdet, long ID) { 
+										return (ppdet.getObjProductoID()==ID);
+									}
+									
+								});
+							if(ppd!=null)
+								break;
+						} 
+						_dp.setCantidadPromocionada(ppd.getCantidadEntregada());
+					}
 				}
 				group.setObject(_dp);
 				lgroups.set(a, group);
@@ -1116,19 +1176,19 @@ Handler.Callback, Editable
 		double porcgastoAdm=0d;
 		porcgastoAdm=(!ckboxvencidodev.isChecked())?Double.valueOf(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeGastosAdm","0")):
 			Double.valueOf(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("CargoAdmDevBueno","0"));
-		
+		double sumatotal=0.d;
+		double sumatotalv=0.d;
 		for(int b=0;b<lgroups.size();b++)
 		{
 			ExpandListGroup lgroup =  (ExpandListGroup) lgroups.get(b);
 			DevolucionProducto item=(DevolucionProducto) lgroup.getObject();
-
-			devolucion.setTotal(devolucion.getTotal()+item.getTotal());
-			devolucion.setTotalVen(devolucion.getTotalVen()+item.getTotalVen());
-		}
-		 
-		double total=devolucion.getTotalVen()/100.00;
+			sumatotal=sumatotal+item.getTotal();
+			sumatotalv=sumatotalv+item.getTotalVen(); 
+		}		 
+		double total=sumatotalv/100.00;
 		costeoMontoCargoAdministrativo=new BigDecimal((total * porcgastoAdm) / 100);
 		costeoMontoCargoAdministrativoVen=costeoMontoCargoAdministrativo;   
+		BDevolucionM.CalcMontoPromocionDevolucion(devolucion);
 		
 	}
  	
@@ -1136,41 +1196,55 @@ Handler.Callback, Editable
 	{		
 		if(lgroups.isEmpty())
 			return; 
+		double sumatotal=0.d;
+		double sumatotalv=0.d;
+		double sumasubtotal=0.d;
+		double sumabonf=0.d;
+		double sumabonfv=0.d;
+		double sumaimp=0.d;
+		double sumaimpv=0.d; 
 		for(int a=0;a<lgroups.size();a++)
 		{
 			ExpandListGroup group =  (ExpandListGroup) lgroups.get(a);
 			DevolucionProducto item=(DevolucionProducto) group.getObject();
 			//SUB TOTAL
-			devolucion.setSubtotal(devolucion.getSubtotal()+item.getSubtotal());
+			sumasubtotal=sumasubtotal+item.getSubtotal();
+			/*devolucion.setSubtotal((long)sumasubtotal);*/
 			//BONIFICACION
-			devolucion.setMontoBonif(devolucion.getMontoBonif()+item.getMontoBonif());			 
-			devolucion.setMontoBonifVen(devolucion.getMontoBonifVen()+item.getMontoBonifVen());
+			sumabonf=sumabonf+item.getMontoBonif();
+			sumabonfv=sumabonfv+item.getMontoBonifVen();
+			/*devolucion.setMontoBonif((long)sumabonf);			 
+			devolucion.setMontoBonifVen((long)sumabonfv);*/
 			//IMPUESTO
-			devolucion.setImpuesto(devolucion.getImpuesto()+item.getImpuesto());
-			devolucion.setImpuestoVen(devolucion.getImpuestoVen()+item.getImpuestoVen());
+			sumaimp=sumaimp+item.getMontoBonif();
+			sumaimpv=sumaimpv+item.getMontoBonifVen();
+			/*devolucion.setImpuesto((long)sumaimp);
+			devolucion.setImpuestoVen((long)sumaimpv);*/
 			
 			//TOTAL
-			devolucion.setTotal(devolucion.getTotal()+item.getTotal());
-			devolucion.setTotalVen(devolucion.getTotalVen()+item.getTotalVen());
+			sumatotal=sumatotal+item.getTotal();
+			sumatotalv=sumatotalv+item.getTotalVen();
+			/*devolucion.setTotal((long)sumatotal);
+			devolucion.setTotalVen((long)sumatotalv);*/
 			
 		} 		
 		//SUB TOTAL
-		costeoMontoSubTotal=new BigDecimal(devolucion.getSubtotal());
+		costeoMontoSubTotal=new BigDecimal(sumasubtotal);
 		costeoMontoSubTotalVen=costeoMontoSubTotal;
 		//BONIFICACION
-		costeoMontoBonificacion=new BigDecimal(devolucion.getMontoBonif()); 
-		costeoMontoBonificacionVen=new BigDecimal(devolucion.getMontoBonifVen());
+		costeoMontoBonificacion=new BigDecimal(sumabonf); 
+		costeoMontoBonificacionVen=new BigDecimal(sumabonfv);
 		//IMPUESTO
-		costeoMontoImpuesto=new BigDecimal(devolucion.getImpuesto());
-		costeoMontoImpuestoVen=new BigDecimal(devolucion.getImpuestoVen());
+		costeoMontoImpuesto=new BigDecimal(sumaimp);
+		costeoMontoImpuestoVen=new BigDecimal(sumaimpv);
 		//VIÑETA
 		BigDecimal vinietas=costeoMontoVinieta==null?new BigDecimal(0):costeoMontoVinieta;
 		//TOTAL DEVOLUCION
-		BigDecimal total=new BigDecimal(devolucion.getTotal());
+		BigDecimal total=new BigDecimal(sumatotal);
 		costeoMontoTotal=total.subtract(costeoMontoPromocion).subtract(costeoMontoCargoAdministrativo); 
-		total=new BigDecimal(devolucion.getTotalVen());
+		total=new BigDecimal(sumatotalv);
 		costeoMontoTotalVen=total.subtract(costeoMontoPromocionVen).subtract(costeoMontoCargoAdministrativoVen).subtract(vinietas);
-
+		tbxtotaldev.setText(""+costeoMontoTotal);
 	}
 	
 	public void CalMontoCargoVendedor()
@@ -1203,12 +1277,13 @@ Handler.Callback, Editable
 	
 	public void CalMontoPromocion()
 	{
+		costeoMontoPromocion=BigDecimal.ZERO;
+		costeoMontoPromocionVen=BigDecimal.ZERO;
 		if(pedido!=null)
-		{
-			costeoMontoPromocion=BigDecimal.ZERO;
-			costeoMontoPromocionVen=BigDecimal.ZERO;
-			DevolucionBL.CalMontoPromocion(cliente, pedido,Arrays.asList(devolucion.getProductosDevueltos()),!devolucion.isParcial());
-			costeoMontoPromocion=new BigDecimal(DevolucionBL.CalMontoPromocion(cliente, pedido,Arrays.asList(devolucion.getProductosDevueltos()),!devolucion.isParcial()));
+		{			
+			BigDecimal val=BigDecimal.ZERO;
+			val=new BigDecimal(DevolucionBL.CalMontoPromocion(cliente, pedido,Arrays.asList(devolucion.getProductosDevueltos()),!devolucion.isParcial()));
+			costeoMontoPromocion=(val!=null && val.compareTo(BigDecimal.ZERO)!=0)?val.multiply(new BigDecimal(100.00)):BigDecimal.ZERO;
 			costeoMontoPromocionVen=costeoMontoPromocion;
 		}		
 	}

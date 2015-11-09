@@ -15,8 +15,10 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PrecioProducto;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.serviceproxy.Promociones;
 import com.panzyma.nm.view.adapter.ExpandListGroup;
 
 public class DevolucionBL 
@@ -281,11 +283,18 @@ public class DevolucionBL
 		
 	}
 	
+	/*private static double AplicarPromociones(Pedido pedido,List<DetallePedido> detp,List<DevolucionProducto>  detdp )
+	{
+		List<PedidoPromocion>pp=Arrays.asList(pedido.getPromocionesAplicadas());
+		if(pp==null)
+			return DeducirMontoDevPromocion(pedido, detdp);	
+		
+	}*/
+	
 	public static double DeducirMontoDevPromocion(Pedido pedido,List<DevolucionProducto> detalledev)
 	{
 		double monto=0;
-		monto+=pedido.getDescuento();
-		
+		monto+=pedido.getDescuento(); 
 		//productos que estan el pedido y no en los productos a devolver
 		List<DetallePedido> prodpromocionados = (List<DetallePedido>) Predicate.filter(Arrays.asList(pedido.getDetalles()),null,
 	    new IPredicate<DetallePedido,DevolucionProducto>() 

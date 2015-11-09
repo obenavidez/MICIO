@@ -46,14 +46,14 @@ public class ProductoLoteViewHolder {
 		tboxcantord.setText(""+dp.getCantidadOrdenada());
 		tboxcantbonif.setText(""+dp.getCantidadBonificada());
 		tboxcantprom.setText(""+dp.getCantidadPromocionada());
-		tboxdescuento.setText(""+dp.getDescuento());
+		tboxdescuento.setText(""+dp.getDescuento()/100.00);
 		tboxtotalprod.setText(""+dp.getTotalProducto());
 		
 		tboxcantdev.setText(""+dp.getCantidadDevolver());
-		tboxdevbonif.setText(""+dp.getBonificacion());
+		tboxdevbonif.setText(""+dp.getBonificacionVen());
 		tboxpreciounit.setText(""+dp.getPrecio()/100.00);
 		tboxsubtotal.setText(""+dp.getSubtotal()/100.00);
-		tboxmontobonif.setText(""+dp.getMontoBonif()/100.00);
+		tboxmontobonif.setText(""+dp.getMontoBonifVen()/100.00);
 		tboximpuesto.setText(""+dp.getImpuesto()/100.00);
 		tboxtotaldev.setText(""+dp.getTotal()/100.00);
 		 

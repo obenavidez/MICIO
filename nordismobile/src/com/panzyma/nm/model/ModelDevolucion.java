@@ -4,10 +4,13 @@ import java.lang.reflect.Type;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.ksoap2.serialization.PropertyInfo;
+
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMComunicacion;
@@ -18,6 +21,7 @@ import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 import com.panzyma.nm.serviceproxy.Devolucion; 
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.viewmodel.vmDevolucion;
 import com.panzyma.nm.viewmodel.vmEntity;
 @SuppressWarnings("unused")
@@ -36,6 +40,18 @@ public class ModelDevolucion {
 			
 			return  NMTranslate.ToObject(NMComunicacion.InvokeMethod(params.getParameters(),NMConfig.URL,NMConfig.NAME_SPACE,NMConfig.MethodName.BuscarDevolucionDePedido),new Devolucion()); 
   
+	}
+	
+	public static long CalcMontoPromocionDevolucion(String Credentials, Devolucion dev) throws Exception
+	{
+		Parameters params = new Parameters((new String[] { "Credentials",
+		"Dev" }), (new Object[] { Credentials, dev }),
+		(new Type[] { PropertyInfo.STRING_CLASS, dev.getClass() }));
+
+ 		Object rs = NMComunicacion.InvokeMethod2(params.getParameters(),
+												NMConfig.URL, NMConfig.NAME_SPACE,
+												NMConfig.MethodName.CalcMontoPromocionDevolucion, Long.class);
+		return (rs!=null)?(Long)(rs):(long)0;
 	}
 	
 	public static ArrayList<vmDevolucion> obtenerDevolucionesFromLocalHost(ContentResolver content)

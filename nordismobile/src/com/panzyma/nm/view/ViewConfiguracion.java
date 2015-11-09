@@ -78,7 +78,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 	boolean isEditActive;
 	private EditText txtURL;
 	private EditText txtURL2;
-	private EditText txtEmpresa;
+	private EditText txtEmpresa; 
 	private EditText txtUsuario;
 	private EditText txtDispositivoID;
 	private String user_name;

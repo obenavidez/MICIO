@@ -153,6 +153,23 @@ public class BDevolucionM extends BBaseM
 
 	}
  
+    public static long CalcMontoPromocionDevolucion(Devolucion dev)
+    {
+    	String credenciales="";
+    	long value=0;
+    	try 
+    	{ 
+    		credenciales = SessionManager.getCredentials();
+    		if (credenciales == "")
+    			return 0;    		
+			value=ModelDevolucion.CalcMontoPromocionDevolucion(credenciales, dev);    		
+    		
+		} catch (Exception e) 
+		{ 
+		}
+    	return value;
+    }
+    
 	private Pedido obtenerPedido(final long idPedido) throws Exception {
 		return ModelPedido.getPedido(SessionManager.getCredentials(),
 				idPedido);
