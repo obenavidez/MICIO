@@ -1028,6 +1028,7 @@ public class Devolucion  implements KvmSerializable{
                    _info.name = "ProductosDevueltos";
                    _info.type=DevolucionProducto[].class;
         	   }    
+        	   break;
            case 42:
                _info.name = "FechaFacturacion";
                _info.type = java.lang.Long.class; break; 

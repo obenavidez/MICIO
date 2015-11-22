@@ -11,6 +11,8 @@ import android.content.Context;
 
 
 public abstract class NumberUtil {
+	
+	private static final String MONEDA_NACIONAL = "CORDOBAS";
 
     private static final String[] UNIDADES = { "", "UN ", "DOS ", "TRES ",
             "CUATRO ", "CINCO ", "SEIS ", "SIETE ", "OCHO ", "NUEVE ", "DIEZ ",
@@ -110,7 +112,7 @@ public abstract class NumberUtil {
         if (cientos > 1)
             converted.append(convertNumber(String.valueOf(cientos)));
 
-        converted.append("PESOS");
+        converted.append(MONEDA_NACIONAL);
 
         // Descompone los centavos
         int centavos = Integer.parseInt(String.valueOf(getDigitAt(
