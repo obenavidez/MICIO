@@ -1,9 +1,14 @@
 package com.panzyma.nm.serviceproxy;
 
+import java.util.Hashtable;
+
+import org.ksoap2.serialization.KvmSerializable;
+import org.ksoap2.serialization.PropertyInfo;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class DevolucionProductoLote implements Parcelable
+public class DevolucionProductoLote implements Parcelable, KvmSerializable
 {
 	public DevolucionProductoLote(){}
 	
@@ -185,5 +190,73 @@ public class DevolucionProductoLote implements Parcelable
 		parcel.writeInt( fueraPolitica ? 1 : 0 );
 		parcel.writeInt( cantidadDespachada );
 		parcel.writeInt(  deleted ? 1 : 0 );		
+	}
+
+	@Override
+	public Object getProperty(int index) 
+	{	
+		 switch(index)  
+		 {
+			 case 0: return id;
+			 case 1: return  objLoteID;
+			 case 2: return  numeroLote;
+			 case 3: return  fechaVencimiento;
+			 case 4: return  cantidadDevuelta;
+			 case 5: return  fueraPolitica;
+			 case 6: return  cantidadDespachada;
+			 case 7: return  deleted;
+		 } 	
+		return null;
+	}
+
+	@Override
+	public int getPropertyCount() {
+		// TODO Auto-generated method stub
+		return 8;
+	}
+
+	@Override
+	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
+        switch(_index)  {
+        case 0:
+            _info.name = "id";
+            _info.type = Long.class; break;
+        case 1:
+            _info.name = "objLoteID";
+            _info.type = Long.class; break;
+        case 2:
+            _info.name = "fechaVencimiento";
+            _info.type = Long.class; break;
+        case 3:
+            _info.name = "cantidadDevuelta";
+            _info.type = Integer.class; break;
+        case 4:
+            _info.name = "fueraPolitica";
+            _info.type = Boolean.class; break;
+        case 5:
+            _info.name = "cantidadDespachada";
+            _info.type = Integer.class; break;
+        case 6:
+            _info.name = "deleted";
+            _info.type = Boolean.class; break;
+        }
+		
+	}
+
+	@Override
+	public void setProperty(int _index, Object _obj) 
+	{		 
+        switch(_index)  
+        {
+	         case 0:id= Long.parseLong(_obj.toString()); break;
+			 case 1:objLoteID=Long.parseLong(_obj.toString()); break;
+			 case 2: numeroLote=(java.lang.String) _obj; break;
+			 case 3: fechaVencimiento=Long.parseLong(_obj.toString()); break;
+			 case 4:cantidadDevuelta=Integer.parseInt(_obj.toString()); break;
+			 case 5: fueraPolitica= "true".equals(_obj.toString()); break;
+			 case 6: cantidadDespachada=Integer.parseInt(_obj.toString()); break;
+			 case 7: deleted="true".equals(_obj.toString()); break;
+        }
+		
 	}
 }

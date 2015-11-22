@@ -481,41 +481,42 @@ Handler.Callback, Editable
 									int position, long id) 
 							{
 								ExpandableListView elv;
+								int flatpost;
+								int ajustPos;
+								long value = 0;
+								elv = (ExpandableListView) _parent;
 								if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) 
 								{
 
 									if (view.getTag() instanceof ProductoLoteDetalleViewHolder) 
 									{
-
-										elv = (ExpandableListView) _parent;
-										ProductoLoteDetalleViewHolder pld = (ProductoLoteDetalleViewHolder) view.getTag();
-
-										int flatpost;
-										int ajustPos;
+										ProductoLoteDetalleViewHolder pld = (ProductoLoteDetalleViewHolder) view.getTag();										
 										if (elv == null)
 											return false;
 
 										if (positioncache != null && positioncache.length != 0) 
 										{
-											long value = ExpandableListView
-													.getPackedPositionForChild(
-															positioncache[0],
-															positioncache[1]);
-											flatpost = elv
-													.getFlatListPosition(value);
-											ajustPos = flatpost - elv.getFirstVisiblePosition();
-											View oldview = elv.getChildAt(ajustPos);
-											if (oldview != null
-													&& oldview.getTag() != null
-													&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder)
+											if(positioncache[1]!=-1)
 											{
-												oldview.setBackgroundDrawable(context
-														.getResources()
-														.getDrawable(
-																R.color.Terracota));
-												oldview.setSelected(false);
-											}
+												value = ExpandableListView.getPackedPositionForChild(
+														positioncache[0],
+														positioncache[1]);
+												flatpost = elv.getFlatListPosition(value);
+												ajustPos = flatpost - elv.getFirstVisiblePosition();
+												View oldview = elv.getChildAt(ajustPos);
+												if (oldview != null
+														&& oldview.getTag() != null
+														&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder)
+												{
+													oldview.setBackgroundDrawable(context
+															.getResources()
+															.getDrawable(
+																	R.color.Terracota));
+													oldview.setSelected(false);
+												}
 												
+											}
+										
 
 										}
 										view.setSelected(true);
@@ -533,6 +534,39 @@ Handler.Callback, Editable
 									}
 
 									return true;
+								}else
+								{
+									
+									if (view.getTag() instanceof ProductoLoteViewHolder) 
+									{									
+										if (elv == null)
+											return false;	
+										
+
+										value = ExpandableListView.getPackedPositionForGroup(positioncache[0]);
+										flatpost = elv.getFlatListPosition(value);
+										ajustPos = flatpost - elv.getFirstVisiblePosition();
+										View oldview = elv.getChildAt(ajustPos);
+										if (oldview != null
+												&& oldview.getTag() != null
+												&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder)
+										{
+											oldview.setBackgroundDrawable(context
+													.getResources()
+													.getDrawable(R.color.Terracota));
+											oldview.setSelected(false);
+										}
+										
+										positioncache[0] = ExpandableListView.getPackedPositionGroup(id);
+										positioncache[1] = -1;
+										 
+										childselected=null;
+										groupselected=(ExpandListGroup) adapter.getGroup(positioncache[0]);
+										
+										EditarProductoBonificacion(groupselected.getName(),groupselected);
+									}
+								
+									
 								}
 								return false;
 							}
@@ -557,7 +591,6 @@ Handler.Callback, Editable
 				});
 				
 				EstimarCostosDev(true);
-				CalMontoPromocion();
 				CalTotalDevolucion();
 				CalMontoCargoVendedor();
 				
@@ -574,7 +607,7 @@ Handler.Callback, Editable
 	private void EditarProductoBonificacion(String productname,ExpandListGroup _groupselected) 
 	{ 
 		FragmentTransaction ft =getSupportFragmentManager().beginTransaction();
-		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialogNotaRecibo");
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("DevolucionProductoBonificacion");
 		if (prev != null) 
 		{
 			ft.remove(prev);
@@ -586,20 +619,20 @@ Handler.Callback, Editable
 			@Override
 			public void onButtonClick(int cantidadbonificacion) 
 			{  
-				
+				actualizarProductoBonificacion(cantidadbonificacion);
 				EstimarCostosDev(false);
 				CalTotalDevolucion();
 				CalMontoCargoVendedor();
 				adapter.notifyDataSetChanged();
 			}
 		});
-		newFragment.show(ft, "dialogDevolucionProductoCantidad");
+		newFragment.show(ft, "DevolucionProductoBonificacion");
 	}
 	
 	private void EditarProductoLote(String productname,ExpandListChild _childselected) 
 	{ 
 		FragmentTransaction ft =getSupportFragmentManager().beginTransaction();
-		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialogNotaRecibo");
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialogDevolucionProductoCantidad");
 		if (prev != null) 
 		{
 			ft.remove(prev);
@@ -700,11 +733,13 @@ Handler.Callback, Editable
 		devolucion.setProductosDevueltos(adp);
 	}
 	
-	public void actualizarProductoBonificacion(int cantidadbonificacion){
+	public void actualizarProductoBonificacion(int cantidadbonificacion)
+	{
 		DevolucionProducto _dp=(DevolucionProducto) groupselected.getObject();
 		_dp.setBonificacionVen(cantidadbonificacion); 
 		groupselected.setObject(_dp); 
 		lgroups.set(positioncache[0], groupselected);
+		adapter.notifyDataSetChanged();
 	}
 	
 	private void actualizarProductoLote(DevolucionProductoLote dpl)
@@ -716,8 +751,7 @@ Handler.Callback, Editable
 					String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),
 					String.format("Para cada detalle del producto '{0}' se debe ingresar el número de lote",_dp.getNombreProducto()),"")); 
 			return ;
-		}
-		
+		}		
 		
 		if(dpl.getFechaVencimiento()<=0)
 		{
@@ -1144,7 +1178,7 @@ Handler.Callback, Editable
 					_dp.setTotal(_dp.getSubtotal() - _dp.getMontoBonif()+impuestoL);
 					_dp.setTotalVen(_dp.getSubtotal() - _dp.getMontoBonifVen()+_dp.getImpuestoVen());
 					
-					ArrayList<PedidoPromocion> pap=(ArrayList<PedidoPromocion>) Arrays.asList(pedido.getPromocionesAplicadas());
+					List<PedidoPromocion> pap=Arrays.asList(pedido.getPromocionesAplicadas());
 					
 					
 					if(pap!=null && pap.size()!=0)
@@ -1160,10 +1194,13 @@ Handler.Callback, Editable
 									}
 									
 								});
-							if(ppd!=null)
+							if(ppd!=null){
+								_dp.setCantidadPromocionada(ppd.getCantidadEntregada());
 								break;
+							}
+								
 						} 
-						_dp.setCantidadPromocionada(ppd.getCantidadEntregada());
+						
 					}
 				}
 				group.setObject(_dp);

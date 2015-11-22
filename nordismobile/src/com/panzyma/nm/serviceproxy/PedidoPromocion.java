@@ -187,8 +187,6 @@ public  class PedidoPromocion implements KvmSerializable,Parcelable {
  	public int describeContents() {
  		// TODO Auto-generated method stub
  		return 0;
- 	}
-     
-    
-    
+ 	} 
+	 
 }

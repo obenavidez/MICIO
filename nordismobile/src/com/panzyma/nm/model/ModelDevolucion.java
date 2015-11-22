@@ -47,10 +47,10 @@ public class ModelDevolucion {
 		Parameters params = new Parameters((new String[] { "Credentials",
 		"Dev" }), (new Object[] { Credentials, dev }),
 		(new Type[] { PropertyInfo.STRING_CLASS, dev.getClass() }));
-
+		
  		Object rs = NMComunicacion.InvokeMethod2(params.getParameters(),
-												NMConfig.URL, NMConfig.NAME_SPACE,
-												NMConfig.MethodName.CalcMontoPromocionDevolucion, Long.class);
+				NMConfig.URL, NMConfig.NAME_SPACE,
+				NMConfig.MethodName.CalcMontoPromocionDevolucion, Devolucion.class); 
 		return (rs!=null)?(Long)(rs):(long)0;
 	}
 	

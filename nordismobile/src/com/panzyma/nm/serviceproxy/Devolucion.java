@@ -1,6 +1,13 @@
 package com.panzyma.nm.serviceproxy;
 
-public class Devolucion {
+import java.util.ArrayList;
+import java.util.Hashtable;
+
+import org.ksoap2.serialization.KvmSerializable;
+import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
+
+public class Devolucion  implements KvmSerializable{
 	
 	public Devolucion(){
 		setNombreCliente("");
@@ -790,6 +797,322 @@ public class Devolucion {
 	private Pedido objPedido;
 	
 	protected Devolucion olddata;
+
+	@Override
+	public Object getProperty(int index)
+	{
+		switch(index)  
+		{
+		case 0:  return (Id);
+		case 1:  return (Referencia);
+		case 2:  return (NumeroCentral);
+		case 3:  return (Fecha);
+		case 4:  return ObjPedidoDevueltoID;
+		case 5:  return NumeroPedidoDevuelto;
+		case 6:  return NumeroFacturaDevuelta;
+		case 7:  return ObjVendedorID;
+		case 8:  return ObjClienteID;
+		case 9:  return ObjSucursalID;
+		case 10: return NombreCliente;
+		case 11: return ObjMotivoID;
+		case 12: return CodMotivo;
+		case 13: return DescMotivo;
+		case 14: return TipoTramite;
+		case 15: return DeVencido;
+		case 16: return Parcial;
+		case 17: return AplicacionInmediata;
+		case 18: return Nota;
+		case 19: return Observacion;
+		case 20: return Subtotal;
+		case 21: return Impuesto;
+		case 22: return MontoPromocion;
+		case 23: return MontoPromocionVen;
+		case 24: return MontoCargoAdm;
+		case 25: return MontoCargoAdmVen;
+		case 26: return MontoVinieta;
+		case 27: return Total;
+		case 28: return TotalVen;
+		case 29: return ObjEstadoID;
+		case 30: return DescEstado;
+		case 31: return CodEstado;
+		case 32: return ObjCausaEstadoID;
+		case 33: return DescCausaEstado;
+		case 34: return Especial;
+		case 35: return MontoCargoVendedor;
+		case 36: return MontoBonif;
+		case 37: return MontoBonifVen;
+		case 38: return ImpuestoVen;
+		case 39: return ClaveAutorizaAplicacionInmediata;
+		case 40: return FechaEnviada;
+		case 41:
+			if (ProductosDevueltos != null && ProductosDevueltos.length > 0) 
+			{	    		
+	    	
+	    		SoapObject _detalle=new SoapObject("", "");
+	    		
+	    		if(ProductosDevueltos!=null)
+		        {
+	    			for(DevolucionProducto dp:ProductosDevueltos)
+		    		{
+	    				SoapObject item = new SoapObject("","DevolucionProducto");
+						int cont = dp.getPropertyCount();
+						for (int i = 0; i < cont; i++) 
+						{
+							PropertyInfo info = new PropertyInfo();
+							dp.getPropertyInfo(i, null, info);
+							if ("ProductoLotes" == info.name)
+								item.addSoapObject((SoapObject) dp.getProperty(i));
+							else
+								item.addProperty(info.name, dp.getProperty(i));
+						}
+						_detalle.addSoapObject(item);
+
+		    		}	  
+		        }	  
+		          		  	
+	    		return _detalle;
+	    	}
+	    	
+	    	break;	    	
+		case 42: return FechaFacturacion;
+		case 43: return PedidoTienePromociones;
+		case 44: return PedidoYaDevuelto;
+		case 45: return ReferenciaNC;
+		case 46: return PreRegistro;
+		case 47: return OffLine;	 
+		
+		}
+		return null;
+	}
+
+	@Override
+	public int getPropertyCount() { 
+		return 48;
+	}
+
+	@Override
+	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) 
+	{
+       try 
+       {   	   
+    	   switch(_index)  
+    	   {
+           case 0:
+               _info.name = "Id";
+               _info.type = java.lang.Long.class; break;
+           case 1:
+               _info.name = "Referencia";
+               _info.type = java.lang.Integer.class; break;
+           case 2:
+               _info.name = "NumeroCentral";
+               _info.type = java.lang.Integer.class; break;
+           case 3:
+               _info.name = "Fecha";
+               _info.type = java.lang.Long.class; break;
+           case 4:
+               _info.name = "ObjPedidoDevueltoID";
+               _info.type = java.lang.Long.class; break;
+           case 5:
+               _info.name = "NumeroPedidoDevuelto";
+               _info.type = java.lang.Integer.class; break;
+           case 6:
+               _info.name = "NumeroFacturaDevuelta";
+               _info.type = java.lang.Integer.class; break;
+           case 7:
+               _info.name = "objVendedorID";
+               _info.type = java.lang.Long.class; break;
+           case 8:
+               _info.name = "objClienteID";
+               _info.type = java.lang.Long.class; break;
+           case 9:
+               _info.name = "objSucursalID";
+               _info.type = java.lang.Long.class; break;
+           case 10:
+               _info.name = "NombreCliente";
+               _info.type = java.lang.String.class; break;
+           case 11:
+               _info.name = "ObjMotivoID";
+               _info.type = java.lang.Long.class; break;
+           case 12:
+               _info.name = "CodMotivo";
+               _info.type = java.lang.String.class;  break;
+           case 13:
+               _info.name = "DescMotivo";
+               _info.type = java.lang.String.class;  break;
+           case 14:
+               _info.name = "TipoTramite";
+               _info.type = java.lang.String.class; break;
+           case 15:
+               _info.name = "DeVencido";
+               _info.type = java.lang.Boolean.class; break;
+           case 16:
+               _info.name = "Parcial";
+               _info.type = java.lang.Boolean.class; break;
+           case 17:
+               _info.name = "AplicacionInmediata";
+               _info.type = java.lang.Boolean.class; break;
+           case 18:
+               _info.name = "Nota";
+               _info.type = java.lang.String.class; break;
+           case 19:
+               _info.name = "Observacion";
+               _info.type = java.lang.String.class;break;    
+           case 20:
+               _info.name = "SubTotal";
+               _info.type = java.lang.Long.class; break;  
+           case 21:
+               _info.name = "Impuesto";
+               _info.type = java.lang.Long.class; break;  
+           case 22:
+               _info.name = "MontoPromocion";
+               _info.type = java.lang.Long.class; break;  
+           case 23:
+               _info.name = "MontoPromocionVen";
+               _info.type = java.lang.Long.class; break;
+           case 24:
+               _info.name = "MontoCargoAdm";
+               _info.type = java.lang.Long.class; break;
+           case 25:
+               _info.name = "MontoCargoAdmVen";
+               _info.type = java.lang.Long.class; break;
+           case 26:
+               _info.name = "MontoVinieta";
+               _info.type = java.lang.Long.class; break;
+           case 27:
+               _info.name = "Total";
+               _info.type = java.lang.Long.class; break;
+           case 28:
+               _info.name = "TotalVen";
+               _info.type = java.lang.Long.class; break;
+           case 29:
+               _info.name = "ObjEstadoID";
+               _info.type = java.lang.Long.class; break;
+           case 30:
+               _info.name = "DescEstado";
+               _info.type=java.lang.String.class;  break;
+           case 31:
+        	   _info.name = "CodEstado";
+               _info.type=java.lang.String.class;  break;
+           case 32:
+               _info.name = "ObjCausaEstadoID";
+               _info.type = java.lang.Long.class; break;
+           case 33:
+               _info.name = "DescCausaEstado";
+               _info.type = java.lang.String.class; break;
+           case 34:
+               _info.name = "Especial";
+               _info.type = java.lang.Boolean.class; break;
+           case 35:
+               _info.name = "MontoCargoVendedor";
+               _info.type = java.lang.Long.class; break;
+           case 36:
+               _info.name = "MontoBonif";
+               _info.type = java.lang.Long.class; break;
+           case 37:
+               _info.name = "MontoBonifVen";
+               _info.type = java.lang.Long.class; break;
+           case 38:
+               _info.name = "ImpuestoVen";
+               _info.type = java.lang.Long.class; break;
+               
+           case 39:
+               _info.name = "ClaveAutorizaAplicacionInmediata";
+               _info.type = java.lang.String.class; break;
+           case 40:
+               _info.name = "FechaEnviada";
+               _info.type = java.lang.Long.class; break;
+               
+           case 41:
+        	   if(ProductosDevueltos!= null && ProductosDevueltos.length > 0) 
+        	   {        		   
+                   _info.name = "ProductosDevueltos";
+                   _info.type=DevolucionProducto[].class;
+        	   }    
+           case 42:
+               _info.name = "FechaFacturacion";
+               _info.type = java.lang.Long.class; break; 
+           case 43:
+	           _info.name = "PedidoTienePromociones";
+	           _info.type = java.lang.Boolean.class; break;
+           case 44:
+	           _info.name = "PedidoYaDevuelto";
+	           _info.type = java.lang.Boolean.class; break;
+           case 45:
+	           _info.name = "ReferenciaNC";
+	           _info.type = java.lang.Boolean.class; break; 
+           case 46:
+	           _info.name = "PreRegistro";
+	           _info.type = java.lang.Boolean.class; break;
+           case 47:
+	           _info.name = "OffLine";
+	           _info.type = java.lang.Boolean.class; break;
+	           
+           }      
+	    	  
+       }
+       catch (Exception e) 
+	   {
+			e.printStackTrace();
+	   }
+		
+	}
+
+	@Override
+	public void setProperty(int _index, Object _) 
+	{
+        switch(_index) 
+        {
+        case 0: Id = java.lang.Long.parseLong(_.toString()); break;
+        case 1: Referencia =  java.lang.Integer.parseInt(_.toString()); break;
+        case 2: NumeroCentral =  java.lang.Integer.parseInt(_.toString()); break;
+        case 3: Fecha = java.lang.Long.parseLong(_.toString()); break;
+        case 4: ObjPedidoDevueltoID = java.lang.Long.parseLong(_.toString()); break;
+        case 5: NumeroPedidoDevuelto = java.lang.Integer.parseInt(_.toString()); break;
+        case 6: NumeroFacturaDevuelta = java.lang.Integer.parseInt(_.toString()); break;
+        case 7: ObjVendedorID = java.lang.Long.parseLong(_.toString()); break;
+        case 8: ObjClienteID = java.lang.Long.parseLong(_.toString()); break;
+        case 9: ObjSucursalID = java.lang.Long.parseLong(_.toString()); break;
+        case 10: NombreCliente = (java.lang.String) _; break;
+        case 11: ObjMotivoID =java.lang.Long.parseLong(_.toString()); break;
+        case 12: CodMotivo = (java.lang.String) _; break;
+        case 13: DescMotivo =(java.lang.String) _; break;
+        case 14: TipoTramite = (java.lang.String) _; break;
+        case 15: DeVencido = "true".equals(_.toString()); break;
+        case 16: Parcial = "true".equals(_.toString()); break;
+        case 17: AplicacionInmediata = "true".equals(_.toString()); break;
+        case 18: Nota = (java.lang.String) _; break;       
+        case 19: Observacion = (java.lang.String) _; break; 
+        case 20: Subtotal = java.lang.Long.parseLong(_.toString()); break;
+        case 21: Impuesto = java.lang.Long.parseLong(_.toString()); break;
+        case 22: MontoPromocion = java.lang.Long.parseLong(_.toString()); break;
+        case 23: MontoPromocionVen = java.lang.Long.parseLong(_.toString()); break;
+        case 24: MontoCargoAdm = java.lang.Long.parseLong(_.toString()); break;
+        case 25: MontoCargoAdmVen = java.lang.Long.parseLong(_.toString()); break;
+        case 26: MontoVinieta =java.lang.Long.parseLong(_.toString()); break;
+        case 27: Total = java.lang.Long.parseLong(_.toString()); break;
+        case 28: TotalVen =java.lang.Long.parseLong(_.toString()); break;
+        case 29: ObjEstadoID = java.lang.Long.parseLong(_.toString()); break;
+        case 30: DescEstado = (java.lang.String) _; break;       
+        case 31: CodEstado =(java.lang.String) _; break;       
+        case 32: ObjCausaEstadoID= java.lang.Long.parseLong(_.toString()); break;
+        case 33: DescCausaEstado = (java.lang.String) _; break;
+        case 34: Especial = "true".equals(_.toString()); break;
+        case 35: MontoCargoVendedor = java.lang.Long.parseLong(_.toString()); break;
+        case 36: MontoBonif = java.lang.Long.parseLong(_.toString()); break;
+        case 37: MontoBonifVen = java.lang.Long.parseLong(_.toString()); break;
+        case 38: ImpuestoVen =java.lang.Long.parseLong(_.toString()); break;
+        case 39: ClaveAutorizaAplicacionInmediata =(java.lang.String) _; break;  
+        case 40: FechaEnviada =java.lang.Long.parseLong(_.toString()); break;
+        case 41: ProductosDevueltos =( DevolucionProducto[])(_); break;
+        case 42: FechaFacturacion =java.lang.Long.parseLong(_.toString()); break;
+        case 43: PedidoTienePromociones = "true".equals(_.toString()); break;
+        case 44: PedidoYaDevuelto = "true".equals(_.toString()); break;
+        case 45: ReferenciaNC =  java.lang.Integer.parseInt(_.toString()); break;
+        case 46: PreRegistro = "true".equals(_.toString()); break;
+        case 47: OffLine = "true".equals(_.toString()); break;
+        }
+		
+	}
 	
 
 	
