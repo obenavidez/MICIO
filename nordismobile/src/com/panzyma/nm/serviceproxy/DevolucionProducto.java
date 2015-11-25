@@ -508,7 +508,7 @@ public class DevolucionProducto implements KvmSerializable {
 			if (productoLotes != null && productoLotes.length > 0) {
 				SoapObject _detalle = null;
 				for (DevolucionProductoLote ppd : productoLotes) {
-					_detalle = new SoapObject("", "ProductoLotes");
+					_detalle = new SoapObject("", "DevolucionProductoLote");
 					for (int i = 0; i < ppd.getPropertyCount(); i++) {
 						PropertyInfo info = new PropertyInfo();
 						ppd.getPropertyInfo(i, null, info);
@@ -606,8 +606,8 @@ public class DevolucionProducto implements KvmSerializable {
 	           case 23:
 	        	   if(productoLotes!= null && productoLotes.length > 0) 
 	        	   {        		   
-	                   _info.name = "productoLotes";
-	                   _info.type=DevolucionProductoLote[].class;
+	                   _info.name = "ProductoLotes";
+	                   _info.type=DevolucionProductoLote[].class;break;
 	        	   }        	  
 			}
 		} catch (Exception e) {
