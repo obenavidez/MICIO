@@ -39,31 +39,42 @@ import com.panzyma.nm.view.viewholder.PedidoViewHolder;
 import com.panzyma.nm.view.viewholder.ReciboViewHolder;
 import com.panzyma.nordismobile.R;
 
+import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.Handler.Callback;
 import android.os.Message;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView; 
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast; 
 @InvokeBridge(bridgeName = "BLogicM") 
-public class CuentasPorCobrarFragment extends Fragment implements
+public class CuentasPorCobrarFragment extends DialogFragment implements
 		Handler.Callback {
 
 	public enum TypeDetail {
@@ -124,7 +135,14 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	public final static String ARG_POSITION = "position";
 	public final static String SUCURSAL_ID = "sucursalID";
-	 
+	private static Dialog dialog =null;
+	private static CuentasPorCobrarFragment cuentasporcobrar ;
+	private View view;
+	public static CuentasPorCobrarFragment  Instancia (){
+		if(cuentasporcobrar == null) cuentasporcobrar = new CuentasPorCobrarFragment();
+		return cuentasporcobrar;
+	}
+	
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -156,25 +174,96 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	    }
 	}
 	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+//	@Override
+//	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//			Bundle savedInstanceState) {
+//		/*
+//		SessionManager.setContext(this.getActivity()); 
+//		if (savedInstanceState != null) {
+//			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
+//			objSucursalID = savedInstanceState.getLong(SUCURSAL_ID);
+//		}*/
+//		/*;*/ 
+//		//view = inflater.inflate(R.layout.cuentas_x_cobrar, container, false);
+//		return super.onCreateView(inflater, container, savedInstanceState);
+//		/*initComponents();
+//		LoadDataToUI sync = new LoadDataToUI();
+//		sync.execute();
+//		return view;*/
+//	}	
+	
+	
 
+	
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		
+		/*
+		 final RelativeLayout root = new RelativeLayout(getActivity());
+	     root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+	     */
+		
+	     LayoutInflater inflater = getActivity().getLayoutInflater();
+		 view = inflater.inflate(R.layout.cuentas_x_cobrar, null);
+			
+	     dialog = new Dialog(getActivity());
+	     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	     dialog.setContentView(view);
+	     dialog.setOnKeyListener(keyListener);
+	    // dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.YELLOW));
+	     dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+	     //view = getActivity().getLayoutInflater().inflate(R.layout.cuentas_x_cobrar, null); 
+		 if (savedInstanceState != null) {
+			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
+			objSucursalID = savedInstanceState.getLong(SUCURSAL_ID);
+		  }
+			
+	
+
+		/*
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); 
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		view = inflater.inflate(R.layout.cuentas_x_cobrar, null);
+//		view.setLayoutParams(new LayoutParams(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.FILL_PARENT));
+		builder.setView(view);
+		builder.setOnKeyListener(keyListener);
+//		//setStyle(android.R.style.Theme_Translucent_NoTitleBar_Fullscreen,android.R.style.Animation_Translucent);
+		dialog = builder.create();
 		SessionManager.setContext(this.getActivity()); 
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 			objSucursalID = savedInstanceState.getLong(SUCURSAL_ID);
 		}
-		return inflater.inflate(R.layout.cuentas_x_cobrar, container, false);
-	}	
-	
+		
+//		setStyle(android.R.style.Animation_Translucent, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+//		WindowManager.LayoutParams lp = new        WindowManager.LayoutParams();
+//        lp.copyFrom(dialog.getWindow().getAttributes());
+//        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+//
+//  
+//        dialog.getWindow().setAttributes(lp); */
+		initComponents();
+		
+		LoadDataToUI sync = new LoadDataToUI();
+		sync.execute();
+		return dialog;
+	}
+
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+	}
+
 	@Override
 	public void onStart() {
 		super.onStart();
 		SessionManager.setContext(getActivity());
 		NMApp.getController().setView(this);
 		Bundle args = getArguments();
-		initComponents();
+		//initComponents();
 		if (args != null) {
 			objSucursalID = args.getLong(SUCURSAL_ID);
 			mCurrentPosition = args.getInt(ARG_POSITION);
@@ -183,8 +272,14 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		/*else if (mCurrentPosition != -1) {
 			cargarEncabezadoCliente();
 		}*/
-		LoadDataToUI sync = new LoadDataToUI();
-		sync.execute(); 
+		/*LoadDataToUI sync = new LoadDataToUI();
+		sync.execute(); */ 
+//		if (dialog != null){
+//			int width = ViewGroup.LayoutParams.MATCH_PARENT;
+//        	int height = ViewGroup.LayoutParams.MATCH_PARENT;
+//        	dialog.getWindow().setLayout(width, height);
+//		}
+
 	}	
    
 	public long getSucursalId() {
@@ -464,25 +559,27 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		fechaInicNC = fechaInicND;
 		fechaFinNC = fechaFinND;
 		// OBTENER LAS REFERENCIAS DE LAS VISTAS
-		txtViewCliente = (TextView) actividad
+		txtViewCliente = (TextView) view 
 				.findViewById(R.id.cctextv_detallecliente);
-		txtViewLimiteCredito = (TextView) actividad
+		txtViewLimiteCredito = (TextView) view
 				.findViewById(R.id.cctextv_detallelimitecredito);
-		txtViewSaldo = (TextView) actividad
+		txtViewSaldo = (TextView) view
 				.findViewById(R.id.cctextv_detallesaldo);
-		txtViewDisponible = (TextView) actividad
+		txtViewDisponible = (TextView) view
 				.findViewById(R.id.cctextv_detalledisponible);
-		gridheader = (TextView) actividad.findViewById(R.id.ctextv_gridheader);
-		gridheader.setVisibility(View.INVISIBLE);
-		gridheader.setHeight(0);
-		txtenty = (TextView) getActivity().findViewById(R.id.ctxtview_enty);
-		headerGrid = (TextView) actividad.findViewById(R.id.cxctextv_header2);
-		listaGenerica = (ListView) actividad.findViewById(R.id.cxclvgeneric);	
+		gridheader = (TextView) view.findViewById(R.id.ctextv_gridheader);
+		if(gridheader!=null){
+			gridheader.setVisibility(View.INVISIBLE);
+			gridheader.setHeight(0);
+		}
+		txtenty = (TextView) view.findViewById(R.id.ctxtview_enty);
+		headerGrid = (TextView) view.findViewById(R.id.cxctextv_header2);
+		listaGenerica = (ListView) view.findViewById(R.id.cxclvgeneric);	
 		
 		
 		search = (EditText) actividad.findViewById(R.id.cxctextv_detalle_generico);
-		
-		search.addTextChangedListener(new TextWatcher() {
+		if(search!=null){
+			search.addTextChangedListener(new TextWatcher() {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -515,12 +612,12 @@ public class CuentasPorCobrarFragment extends Fragment implements
 				
 			}
 		});
-		
+		}
 		WindowManager wm = (WindowManager) getActivity()
 				.getSystemService(Context.WINDOW_SERVICE);
 		display = wm.getDefaultDisplay();
 		
-		btnMenu = (Button) getActivity().findViewById(R.id.btnMenu);
+		btnMenu = (Button) view.findViewById(R.id.btnMenu);
 		
 		initMenu();
 	}
@@ -975,5 +1072,23 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		 public ArrayList<Factura>  facturaspendientes;
 
 	 }
+	 
+	 OnKeyListener keyListener = new OnKeyListener() 
+		{ 
+			  @Override
+			  public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) 
+			  {
+				if (keyCode == KeyEvent.KEYCODE_BACK) 
+				{        	
+				  	dismiss();
+				    return true;
+				}
+				if (keyCode == KeyEvent.KEYCODE_MENU) {	
+					quickAction.show(btnMenu, display, true);	
+				}
+				
+				return false;	 
+			  } 
+		};
 	
 }

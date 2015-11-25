@@ -67,6 +67,7 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.Promociones;
+import com.panzyma.nm.view.ViewReciboEdit.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
@@ -1034,10 +1035,28 @@ public class ViewPedido extends ActionBarActivity implements
 			return;
 		}
 		
-		fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
+//		fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
 		if (findViewById(R.id.fragment_container) != null) 
 		{ 			
 			transaction = getSupportFragmentManager().beginTransaction();
+			
+			fragmentActive =FragmentActive.CUENTAS_POR_COBRAR;
+			cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+			
+			android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+			if (prev != null){
+				transaction.remove(prev);
+			}
+			
+			Bundle msg = new Bundle();
+			msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, pedido.getObjSucursalID());
+			
+			
+			transaction.addToBackStack(null);
+			cuentasPorCobrar.setArguments(msg); 
+		    cuentasPorCobrar.show(transaction, "dialog");
+			/*
 			cuentasPorCobrar = new CuentasPorCobrarFragment();
 			Bundle bundle = new Bundle();
 			bundle.putInt(CuentasPorCobrarFragment.ARG_POSITION,positioncache);
@@ -1045,7 +1064,8 @@ public class ViewPedido extends ActionBarActivity implements
 			cuentasPorCobrar.setArguments(bundle);
 			transaction.replace(R.id.fragment_container,cuentasPorCobrar);
 			transaction.addToBackStack(null);
-			transaction.commit(); 
+			transaction.commit();
+			*/ 
 	    }
 		
 	}

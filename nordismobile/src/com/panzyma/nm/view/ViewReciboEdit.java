@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +38,6 @@ import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
-import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
@@ -57,13 +55,10 @@ import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 import com.panzyma.nm.serviceproxy.Ventas;
-import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional;
-import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
-import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nm.viewdialog.AplicarDescuentoOcasional.RespuestaAlAplicarDescOca;
 import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogFormasPago;
@@ -230,6 +225,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	boolean imprimir = false;
 	boolean pagarOnLine = false;
 	private Message msg;
+	public enum FragmentActive { LIST , CUENTAS_POR_COBRAR };
+	private FragmentActive fragmentActive = null;
+	CuentasPorCobrarFragment cuentasPorCobrar = null;
 
 	public List<Factura> getFacturasRecibo() 
 	{
@@ -311,9 +309,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			}
 
 			contexto = this.getApplicationContext();
-
-			WindowManager wm = (WindowManager) contexto
-					.getSystemService(Context.WINDOW_SERVICE);
+			fragmentActive = FragmentActive.LIST;
+			WindowManager wm = (WindowManager) contexto.getSystemService(Context.WINDOW_SERVICE);
 			display = wm.getDefaultDisplay();
 			initComponent();
 			CantMaxNotasCreditoEnRecibo = GetCantMaxNotasCreditoEnRecibo();
@@ -511,7 +508,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 					enviarImprimirRecibo(recibo);
 					break;
 				case ID_CONSULTAR_CUENTAS_POR_PAGAR:
-					//ShowCuentasporPagar();
+					ShowCuentasporPagar();
 					break;
 				case ID_CERRAR:
 						finish();
@@ -864,18 +861,16 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			quickAction.addActionItem(null);
 			quickAction
 					.addActionItem(new ActionItem(ID_PAGAR_MONTO, "Pagar Monto"));
-			quickAction.addActionItem(new ActionItem(ID_EDITAR_DESCUENTO,
-					"Editar Descuento"));
+			quickAction.addActionItem(new ActionItem(ID_EDITAR_DESCUENTO, "Editar Descuento"));
 			quickAction.addActionItem(null);
-			quickAction.addActionItem(new ActionItem(ID_SALVAR_RECIBO,
-					"Guardar Recibo"));
-			quickAction.addActionItem(new ActionItem(ID_ENVIAR_RECIBO,
-					"Enviar Recibo"));
-			quickAction.addActionItem(new ActionItem(
-					ID_SOLICITAR_DESCUENTO_OCASIONAL,
-					"Solicitar Descuento Ocasional"));
-			quickAction.addActionItem(new ActionItem(
-					ID_APLICAR_DESCUENTO_OCASIONAL, "Aplicar Descuento Ocasional"));
+			quickAction.addActionItem(new ActionItem(ID_SALVAR_RECIBO, "Guardar Recibo"));
+			quickAction.addActionItem(new ActionItem(ID_ENVIAR_RECIBO, "Enviar Recibo"));
+			quickAction.addActionItem(new ActionItem( ID_SOLICITAR_DESCUENTO_OCASIONAL,"Solicitar Descuento Ocasional"));
+			
+			quickAction.addActionItem(new ActionItem( ID_APLICAR_DESCUENTO_OCASIONAL, "Aplicar Descuento Ocasional"));
+			
+			quickAction.addActionItem(new ActionItem( ID_CONSULTAR_CUENTAS_POR_PAGAR, "Consultar Cuentas por Pagar"));
+			
 			quickAction.addActionItem(null);
 			quickAction.addActionItem(new ActionItem(ID_CERRAR, "Cerrar"));
 		}
@@ -960,6 +955,9 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 								case ID_ENVIAR_RECIBO:
 									enviarRecibo();
 									break;
+								case ID_CONSULTAR_CUENTAS_POR_PAGAR:
+									ShowCuentasporPagar();
+									break;
 								case ID_CERRAR:
 									// finalizarvidad();
 									break;
@@ -980,15 +978,52 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_MENU) {
+		/*if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {
+			
+		}*/
+		boolean respuesta = false ;
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_MENU:
+			if(fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {
+				cuentasPorCobrar.mostrarMenu();
+			}
+			else {
+				Menu = (Button) gridDetalleRecibo.findViewById(R.id.btnmenu);
+				quickAction.show(Menu, display, true);
+				respuesta = true;
+			}
+			break;
+		case KeyEvent.KEYCODE_BACK :
+			if(fragmentActive != FragmentActive.CUENTAS_POR_COBRAR) 
+				FINISH_ACTIVITY();
+			else 
+				fragmentActive = FragmentActive.LIST;
+			
+			
+			respuesta = true;
+			
+			break;
+		default:
+			break;
+		}
+		
+		return respuesta ;
+		
+		/*if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {			
+			cuentasPorCobrar.mostrarMenu();
+			return true;
+		} */
+		/*
+		if (keyCode == KeyEvent.KEYCODE_MENU &&  fragmentActive !=FragmentActive.CUENTAS_POR_COBRAR) {
 			Menu = (Button) gridDetalleRecibo.findViewById(R.id.btnmenu);
 			quickAction.show(Menu, display, true);
 			return true;
-		} else if (keyCode == KeyEvent.KEYCODE_BACK) {
+		} */
+		/*else if (keyCode == KeyEvent.KEYCODE_BACK) {
 			FINISH_ACTIVITY();
 			return true;
-		}
-		return super.onKeyUp(keyCode, event);
+		}*/
+		//return super.onKeyUp(keyCode, event);
 	}
 
 	@Override
@@ -3745,36 +3780,27 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				}
         }	
         */
-		
-		
-		FragmentTransaction Fragtransaction = getSupportFragmentManager().beginTransaction();
-		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-		if (prev != null){
-		   Fragtransaction.remove(prev);
+		if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+		{
+			fragmentActive =FragmentActive.CUENTAS_POR_COBRAR;
+			cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+			
+			FragmentTransaction Fragtransaction = getSupportFragmentManager().beginTransaction();
+			android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+			if (prev != null){
+			   Fragtransaction.remove(prev);
+			}
+			
+			Bundle msg = new Bundle();
+			msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
+			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, this.recibo.getObjSucursalID());
+			
+			
+			Fragtransaction.addToBackStack(null);
+			cuentasPorCobrar.setArguments(msg); 
+		    cuentasPorCobrar.show(Fragtransaction, "dialog");
+		    //Fragtransaction.commit();
 		}
-		
-		Bundle msg = new Bundle();
-		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
-		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, this.recibo.getObjClienteID());
-		
-		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
-		cuentasPorCobrar.setArguments(msg);
-	    Fragtransaction.addToBackStack(null);
-	   // cuentasPorCobrar.show(Fragtransaction, "dialog");
-	    
-	    /*
-	     * FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-		if (prev != null) {
-			ft.remove(prev);
-		}
-		ft.addToBackStack(null);
-		ConsultaPrecioProducto newFragment = ConsultaPrecioProducto
-				.newInstance(dpselected.getObjProductoID(),
-						pedido.getObjTipoPrecioVentaID());
-		newFragment.show(ft, "dialog");
-	     * 
-	     */
 	    
 	}
 }

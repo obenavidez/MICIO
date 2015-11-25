@@ -56,6 +56,7 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
@@ -854,6 +855,26 @@ public class vCliente extends ActionBarActivity implements
 	}
 
 	public void LOAD_CUENTASXPAGAR() {
+		
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		
+		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+		
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+		if (prev != null){
+			transaction.remove(prev);
+		}
+		
+		Bundle msg = new Bundle();
+		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, cliente_selected.getIdSucursal());
+		
+		
+		transaction.addToBackStack(null);
+		cuentasPorCobrar.setArguments(msg); 
+	    cuentasPorCobrar.show(transaction, "dialog");
+		
+		/*
 		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
 		Bundle msg = new Bundle();
 		FragmentTransaction transaction = getSupportFragmentManager()
@@ -865,5 +886,6 @@ public class vCliente extends ActionBarActivity implements
 		transaction.replace(R.id.fragment_container, cuentasPorCobrar);
 		transaction.addToBackStack(null);
 		transaction.commit();
+		*/
 	}
 }
