@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapPrimitive;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -45,13 +46,13 @@ public class ModelDevolucion {
 	public static long CalcMontoPromocionDevolucion(String Credentials, Devolucion dev) throws Exception
 	{
 		Parameters params = new Parameters((new String[] { "Credentials",
-		"Dev" }), (new Object[] { Credentials, dev }),
+		"dev" }), (new Object[] { Credentials, dev }),
 		(new Type[] { PropertyInfo.STRING_CLASS, dev.getClass() }));
 		
  		Object rs = NMComunicacion.InvokeMethod2(params.getParameters(),
 				NMConfig.URL, NMConfig.NAME_SPACE,
-				NMConfig.MethodName.CalcMontoPromocionDevolucion, Devolucion.class); 
-		return (rs!=null)?(Long)(rs):(long)0;
+				NMConfig.MethodName.CalcMontoPromocionDevolucion, Devolucion.class);  
+		return (rs!=null)?Long.parseLong(rs.toString()):(long)0;
 	}
 	
 	public static ArrayList<vmDevolucion> obtenerDevolucionesFromLocalHost(ContentResolver content)

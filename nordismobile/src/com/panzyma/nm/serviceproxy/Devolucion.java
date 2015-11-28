@@ -1026,7 +1026,7 @@ public class Devolucion  implements KvmSerializable{
         	   if(ProductosDevueltos!= null && ProductosDevueltos.length > 0) 
         	   {        		   
                    _info.name = "ProductosDevueltos";
-                   _info.type=DevolucionProducto[].class;
+                   _info.type=DevolucionProducto[].class;break;
         	   }    
         	   break;
            case 42:

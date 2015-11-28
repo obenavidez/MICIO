@@ -74,9 +74,9 @@ import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelRecibo;
-import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.view.ViewPedido.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.TasaCambioFragment;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -404,6 +404,26 @@ public class ViewRecibo extends ActionBarActivity implements
 						fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
 						if (findViewById(R.id.fragment_container) != null) 
 						{	
+							transaction = getSupportFragmentManager().beginTransaction();
+							
+							fragmentActive =FragmentActive.CUENTAS_POR_COBRAR;
+							cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+							
+							android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+							if (prev != null){
+								transaction.remove(prev);
+							}
+							
+							Bundle msg = new Bundle();
+							msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+							msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
+							
+							
+							transaction.addToBackStack(null);
+							cuentasPorCobrar.setArguments(msg); 
+						    cuentasPorCobrar.show(transaction, "dialog");
+						    
+							/*
 							cuentasPorCobrar = new CuentasPorCobrarFragment();						
 							Bundle msg = new Bundle();
 							msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
@@ -412,7 +432,8 @@ public class ViewRecibo extends ActionBarActivity implements
 							transaction = getSupportFragmentManager().beginTransaction();
 							transaction.replace(R.id.fragment_container,cuentasPorCobrar);
 							transaction.addToBackStack(null);
-							transaction.commit();						
+							transaction.commit();
+							*/						
 						}
 						//OCULTAR LA BARRA DE ACCION
 						getSupportActionBar().hide();
@@ -1255,6 +1276,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_MENU  && fragmentActive != FragmentActive.CUENTAS_POR_COBRAR) {
 			 drawerLayout.openDrawer(Gravity.LEFT);
+			 
 		}
 		if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {			
 			cuentasPorCobrar.mostrarMenu();
@@ -1264,6 +1286,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		  	FINISH_ACTIVITY();	
 		  	finish();
 		} else if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {
+			fragmentActive =FragmentActive.LIST;
 			getSupportActionBar().show();
 			gridheader.setVisibility(View.VISIBLE);
 		}

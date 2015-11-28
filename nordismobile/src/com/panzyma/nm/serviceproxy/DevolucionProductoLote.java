@@ -223,24 +223,26 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable
             _info.type = Long.class; break;
         case 1:
             _info.name = "objLoteID";
-            _info.type = Long.class; break;
+            _info.type = Long.class; break; 
         case 2:
+            _info.name = "numeroLote";
+            _info.type = String.class; break;
+        case 3:
             _info.name = "fechaVencimiento";
             _info.type = Long.class; break;
-        case 3:
+        case 4:
             _info.name = "cantidadDevuelta";
             _info.type = Integer.class; break;
-        case 4:
+        case 5:
             _info.name = "fueraPolitica";
             _info.type = Boolean.class; break;
-        case 5:
+        case 6:
             _info.name = "cantidadDespachada";
             _info.type = Integer.class; break;
-        case 6:
+        case 7:
             _info.name = "deleted";
             _info.type = Boolean.class; break;
-        }
-		
+        } 
 	}
 
 	@Override
