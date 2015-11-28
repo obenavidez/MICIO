@@ -6,14 +6,37 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Factura;
+import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 
 public class ModelDocumento {
+	
+	public static Factura getFacturaByID(Long objFacturaID) {
+		SQLiteDatabase db = null;
+		Factura f = null;
+		try {
+			db = Helper.getDatabase(NMApp.ctx);
+			f = ModelDocumento.getFacturaByID(db, objFacturaID);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (db != null) {
+				if (db.isOpen())
+					db.close();
+				db = null;
+			}
+		}
+		return f;
+	}
+	
 	
 	/**
 	 * Obtiene un Documento del tipo factura

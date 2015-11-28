@@ -42,6 +42,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
+import com.panzyma.nm.model.ModelDocumento;
 import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.model.ModelSolicitudDescuento;
@@ -1211,13 +1212,17 @@ public final class BReciboM extends BBaseM {
 	                ff =rcol.getFacturasRecibo().toArray(ff);
 	                for(int i=0; i<ff.length; i++) {
 	                    ReciboDetFactura f = ff[i];
+	                    
+	                    //Factura _fac = ModelDocumento.getFacturaByID(f.getObjFacturaID());
+	                    
 	                    if (!f.isEsAbono()) continue;
 	                    
 	                    recibo += "T 7 0 0 " + y + " FA\r\n";
 	                    recibo += "T 7 0 50 " + y + " " + f.getNumero() + "\r\n";
 	                    
 	                    recibo += "RIGHT 400\r\n";
-	                    recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(StringUtil.round(f.getSaldoTotal() - f.getMonto(), 2)) + "\r\n";
+	                    //recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(StringUtil.round(f.getSaldoTotal() - f.getMonto(), 2)) + "\r\n";
+	                    recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(StringUtil.round(f.getTotalfactura() - f.getMonto(), 2)) + "\r\n";
 	                    recibo += "LEFT\r\n";
 	                    y += 30;
 	                }
