@@ -55,6 +55,17 @@ public class ModelDevolucion {
 		return (rs!=null)?Long.parseLong(rs.toString()):(long)0;
 	}
 	
+	public static long enviarDevolucion(String credentials, Devolucion dev) throws Exception {
+		Parameters params = new Parameters((new String[] { "Credentials",
+		"dev" }), (new Object[] { credentials, dev }),
+		(new Type[] { PropertyInfo.STRING_CLASS, dev.getClass() }));
+		
+ 		Object rs = NMComunicacion.InvokeMethod2(params.getParameters(),
+				NMConfig.URL, NMConfig.NAME_SPACE,
+				NMConfig.MethodName.EnviarDevolucion, Devolucion.class);  
+		return (rs!=null)?Long.parseLong(rs.toString()):(long)0;		
+	}
+	
 	public static ArrayList<vmDevolucion> obtenerDevolucionesFromLocalHost(ContentResolver content)
 	{
 		

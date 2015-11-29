@@ -53,6 +53,10 @@ public class BDevolucionM extends BBaseM
 				Devolucion dev=(Devolucion) msg.obj;
 				RegistrarDevolucion(dev);
 				break;
+			case ControllerProtocol.ENVIARDEVOLUCION:
+				Devolucion $dev=(Devolucion) msg.obj;
+				EnviarDevolucion($dev);
+				break;
 			default:
 				break;
 		}
@@ -164,6 +168,22 @@ public class BDevolucionM extends BBaseM
     			return 0;    		
 			value=ModelDevolucion.CalcMontoPromocionDevolucion(credenciales, dev);    		
     		
+		} catch (Exception e) 
+		{ 
+		}
+    	return value;
+    }
+    
+    public static long EnviarDevolucion(Devolucion dev)
+    {
+    	String credenciales="";
+    	long value=0;
+    	try 
+    	{ 
+    		credenciales = SessionManager.getCredentials();
+    		if (credenciales == "")
+    			return 0;    		
+			value=ModelDevolucion.enviarDevolucion(credenciales, dev); 
 		} catch (Exception e) 
 		{ 
 		}

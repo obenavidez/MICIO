@@ -106,11 +106,15 @@ import com.panzyma.nm.viewdialog.DevolucionProductoBonificacion.escucharModifica
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewdialog.DialogCliente; 
+import com.panzyma.nm.viewdialog.DialogNotaDevolucion;
+import com.panzyma.nm.viewdialog.DialogNotaDevolucion.RespuestaNotaDevolucion;
+import com.panzyma.nm.viewdialog.DialogNotaRecibo;
 import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewdialog.EditDevolucionProducto;
 import com.panzyma.nm.viewdialog.ProductoDevolucion;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener; 
+import com.panzyma.nm.viewdialog.DialogNotaRecibo.RespuestaNotaRecibo;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({ "unchecked", "rawtypes","deprecation","unused" })
@@ -900,13 +904,15 @@ Handler.Callback, Editable
 							dialogDevolucion.show(fragmentManager, "");
 						}					
 						break;
-				 
+				case ID_EDITAR_NOTA:
+					EditarNotaDevolucion();
+					break;
 				case ID_GUARDAR:
 						salvarDevolucion();
 						break;
-//				case ID_ENVIAR:
-//						enviarPedido();
-//						break;
+				case ID_ENVIAR:
+						enviarPedido();
+						break;
 //				case ID_IMPRIMIR_COMPROBANTE:
 //					try {
 //						ImprimirComprobante();
@@ -920,10 +926,6 @@ Handler.Callback, Editable
 				
 				}
 			}
-
-		
-
-			
 		});
 
 		tituloSeccion = getTitle();
@@ -964,6 +966,16 @@ Handler.Callback, Editable
 		msg.what = SAVE_DATA_FROM_LOCALHOST;
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 		
+	}
+	
+	private void enviarPedido() {
+		if(!validarDevolucion()) {
+			return;			
+		}		
+		Message msg = new Message(); 
+		msg.obj=devolucion; 
+		msg.what = ControllerProtocol.ENVIARDEVOLUCION;
+		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 	
 	public boolean validarDevolucion()
@@ -1651,6 +1663,24 @@ Handler.Callback, Editable
 			}
 		}
 		return true;
+	}
+	
+	private void EditarNotaDevolucion() { 
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag(DialogNotaDevolucion.FRAGMENT_TAG);
+		if (prev != null) {
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		DialogNotaDevolucion newFragment = DialogNotaDevolucion.newInstance(devolucion.getNota(),this);
+		newFragment.establecerRespuestaNotaDevolucion(new RespuestaNotaDevolucion() {			
+			@Override
+			public void onButtonClick(String nota) { 
+				if("".equals(nota))
+					devolucion.setNota(nota);
+			}
+		});
+		newFragment.show(ft, DialogNotaDevolucion.FRAGMENT_TAG);
 	}
 
 }
