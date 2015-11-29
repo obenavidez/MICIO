@@ -1178,8 +1178,7 @@ Handler.Callback, Editable
 					_dp.setTotal(_dp.getSubtotal() - _dp.getMontoBonif()+impuestoL);
 					_dp.setTotalVen(_dp.getSubtotal() - _dp.getMontoBonifVen()+_dp.getImpuestoVen());
 					
-					List<PedidoPromocion> pap=Arrays.asList(pedido.getPromocionesAplicadas());
-					
+					List<PedidoPromocion> pap=Arrays.asList(pedido.getPromocionesAplicadas());					
 					
 					if(pap!=null && pap.size()!=0)
 					{ 
@@ -1281,7 +1280,7 @@ Handler.Callback, Editable
 		costeoMontoTotal=total.subtract(costeoMontoPromocion).subtract(costeoMontoCargoAdministrativo); 
 		total=new BigDecimal(sumatotalv);
 		costeoMontoTotalVen=total.subtract(costeoMontoPromocionVen).subtract(costeoMontoCargoAdministrativoVen).subtract(vinietas);
-		tbxtotaldev.setText(""+costeoMontoTotal);
+		tbxtotaldev.setText(""+costeoMontoTotal.divide(new BigDecimal(100.00)));
 	}
 	
 	public void CalMontoCargoVendedor()

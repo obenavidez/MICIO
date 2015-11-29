@@ -1,6 +1,5 @@
 package com.panzyma.nm.serviceproxy;
-
-import java.util.ArrayList;
+ 
 import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;
@@ -9,7 +8,8 @@ import org.ksoap2.serialization.SoapObject;
 
 public class Devolucion  implements KvmSerializable{
 	
-	public Devolucion(){
+	public Devolucion()
+	{
 		setNombreCliente("");
 		setCodMotivo("");
 		setDescMotivo("");

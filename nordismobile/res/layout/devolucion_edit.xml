@@ -266,25 +266,26 @@
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/devtextv_total"
-                    android:layout_width="fill_parent"
-                    android:layout_height="30dp"
-                    android:layout_below="@+id/devlbl_notas"
-                    android:layout_toRightOf="@+id/devlbl_total"
-                    android:background="@drawable/style_textbox"
-                    android:enabled="false"
-                    android:scrollHorizontally="true" />
+               
             </RelativeLayout>
         </ScrollView>
 
+         <EditText
+                    android:id="@+id/devtextv_total"
+                    android:layout_width="match_parent"
+            		android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:background="@drawable/style_textbox"
+                    android:enabled="false"
+                    android:scrollHorizontally="true" />
+         
         <include
             android:id="@+id/pdevgrilla"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="50"
+            android:layout_weight="40"
             layout="@layout/productodevolucion" />
-    </LinearLayout>
+    	</LinearLayout>
 
     
         <ListView
