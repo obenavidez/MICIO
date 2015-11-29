@@ -366,7 +366,7 @@ public class Pedido  implements KvmSerializable,Item,Parcelable,Cloneable{
     }
 
     public DetallePedido[] getDetalles() {
-        return this.Detalles;
+    	 return (this.Detalles!=null)?this.Detalles:new DetallePedido[0]; 
     }
 
     public void setPromocionesAplicadas(PedidoPromocion[] promocionesAplicadas) {
@@ -374,7 +374,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable,Cloneable{
     }
 
     public PedidoPromocion[] getPromocionesAplicadas() {
-        return this.PromocionesAplicadas;
+    	
+        return (this.PromocionesAplicadas!=null)?this.PromocionesAplicadas:new PedidoPromocion[0];
     }
 
     public void setNota(java.lang.String nota) {
