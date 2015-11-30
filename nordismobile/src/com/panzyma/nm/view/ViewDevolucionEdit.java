@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections; 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;  
 import java.util.LinkedList;
 import java.util.List;
@@ -687,32 +688,38 @@ Handler.Callback, Editable
 	//SetcantidadDevolver
 	public void establecerCantidadDev()
 	{
+		int contador=0;
 		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();		
 		LinkedList<ExpandListChild> groupchild; 
-		for (DevolucionProducto dp : dev_prod) 
+		Iterator<ExpandListGroup> llgroups=lgroups.iterator();
+		while (llgroups.hasNext())
 		{
-			int cantidaddevueltadp=0;
-			ExpandListGroup group = new ExpandListGroup();
-			groupchild = new LinkedList<ExpandListChild>();
-			
-			for (DevolucionProductoLote dpl : dp.getProductoLotes()) 
-			{
-				ExpandListChild ch = new ExpandListChild();
-				if("TT".equals(((SpinnerModel)cboxtipodev.getSelectedItem()).getCodigo()))
-				dpl.setCantidadDevuelta(dpl.getCantidadDespachada());
-				else
-					dpl.setCantidadDevuelta(0);
-				ch.setName(dpl.getNumeroLote());
-				ch.setObject(dpl);
-				groupchild.add(ch);
-				cantidaddevueltadp=cantidaddevueltadp+dpl.getCantidadDevuelta();
-			}
-			dp.setCantidadDevolver(cantidaddevueltadp);
-			group.setName(dp.getNombreProducto());
-			group.setObject(dp);
-			group.setItems(groupchild);
-			_lgroups.add(group);
+				ExpandListGroup _group =  (ExpandListGroup) llgroups.next(); 
+				DevolucionProducto dp=(DevolucionProducto) _group.getObject();
+				int cantidaddevueltadp=0;
+				ExpandListGroup group = new ExpandListGroup();
+				groupchild = new LinkedList<ExpandListChild>();
+				
+				for (DevolucionProductoLote dpl : dp.getProductoLotes()) 
+				{
+					ExpandListChild ch = new ExpandListChild();
+					if("TT".equals(((SpinnerModel)cboxtipodev.getSelectedItem()).getCodigo()))
+					dpl.setCantidadDevuelta(dpl.getCantidadDespachada());
+					else
+						dpl.setCantidadDevuelta(0);
+					ch.setName(dpl.getNumeroLote());
+					ch.setObject(dpl);
+					groupchild.add(ch);
+					cantidaddevueltadp=cantidaddevueltadp+dpl.getCantidadDevuelta();
+				}
+				dp.setCantidadDevolver(cantidaddevueltadp);
+				group.setName(dp.getNombreProducto());
+				group.setObject(dp);
+				group.setItems(groupchild);
+				lgroups.set(contador,group);
+				contador++;
 		}
+		 
 		
 	}
 	
@@ -1082,10 +1089,11 @@ Handler.Callback, Editable
 		//Estimar costo devolucion
 		int cantmindevbonif=Integer.parseInt(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("CantMinDevolvBonif","0"));
 		//sumar todas las cantidades a devolver de sus lote del producto seleccionado.
- 
-		for(int a=0;a<lgroups.size();a++)
+		int contador=0;
+		Iterator<ExpandListGroup> llgroups=lgroups.iterator();
+		while (llgroups.hasNext())
 		{
-				ExpandListGroup group =  (ExpandListGroup) lgroups.get(a);
+				ExpandListGroup group =  (ExpandListGroup) llgroups.next();  
 				DevolucionProducto _dp=(DevolucionProducto) group.getObject();
 				Producto prod = null;
 				try {
@@ -1117,16 +1125,13 @@ Handler.Callback, Editable
 									_dp.setBonificacionVen(rs);
 								}
 							}
-						}
-						
-						
+						}					
 					}
 					else
 					{
 						if (calBonif)
 						{
-							int qtybonif = 0; 
-							 
+							int qtybonif = 0; 							 
 							Bonificacion bonif=DevolucionBL.getBonificacion(prod, cliente.getObjCategoriaClienteID(), _dp.getCantidadDevolver());
 							if (bonif!=null  && bonif.getCantBonificacion()!=0)
 							{
@@ -1217,7 +1222,7 @@ Handler.Callback, Editable
 					}
 				}
 				group.setObject(_dp);
-				lgroups.set(a, group);
+				lgroups.set(contador, group);
 		}//fin del ciclo
 		
 		costeoMontoCargoAdministrativo=BigDecimal.ZERO;
