@@ -338,6 +338,7 @@ Handler.Callback, Editable
 			} 
  
 		});
+		
 		ckboxncinmeditata.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
 			@Override
@@ -1441,6 +1442,7 @@ Handler.Callback, Editable
 					pedido=devolucion.getObjPedido();
 					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
 					devolucion.setOlddata(_dev);
+					setInformacionCliente();
 					initExpandableListView();
 				}
 				
@@ -1651,5 +1653,16 @@ Handler.Callback, Editable
 		}
 		return true;
 	}
-
+	
+	private void Setfieldsdevolucion(){
+		
+	devolucion.setDeVencido(ckboxvencidodev.isChecked());
+	devolucion.setTipoTramite(cboxtramitedev.getSelectedItem().toString());
+	devolucion.setDescMotivo(cboxmotivodev.getSelectedItem().toString());
+	devolucion.setCodMotivo(cboxmotivodev.getSelectedItem().toString());
+	devolucion.setObjMotivoID(cboxmotivodev.getSelectedItemId());
+	
+	
+		
+	}
 }
