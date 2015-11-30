@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class DialogNotaDevolucion extends DialogFragment {
 	
@@ -24,6 +25,7 @@ public class DialogNotaDevolucion extends DialogFragment {
 	private EditText tboxNota;
 	private ViewDevolucionEdit parent;
 	RespuestaNotaDevolucion mylisterner;
+	TextView tv;
 
 	public interface RespuestaNotaDevolucion {
 		public abstract void onButtonClick(String nota);
@@ -63,6 +65,8 @@ public class DialogNotaDevolucion extends DialogFragment {
 		
 		View view = inflater.inflate(R.layout.nota_recibo, null);
 		tboxNota = (EditText) view.findViewById(R.id.rectbox_nota);
+		tv = (TextView) view.findViewById(R.id.rectxv_nota);
+		tv.setText("Nota de la Devolución");
 		builder.setView(view);
 		builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
 			@Override

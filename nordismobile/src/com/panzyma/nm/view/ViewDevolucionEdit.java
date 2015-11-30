@@ -163,6 +163,7 @@ Handler.Callback, Editable
 	private CheckBox ckboxncinmeditata;
 	private EditText tbxFecha;
 	private EditText tbxtotaldev;
+	private EditText tbxNota;
 	
 	CustomAdapter adapter_motdev;
 	CustomAdapter adapter_tramite;
@@ -279,6 +280,7 @@ Handler.Callback, Editable
 		cboxtramitedev=(Spinner) findViewById(R.id.devcombox_tramite);
 		cboxtipodev=(Spinner) findViewById(R.id.devcombox_tipo);
 		tbxNombreDelCliente=(TextView) findViewById(R.id.devtextv_detallecliente); 
+		tbxNota = (EditText)findViewById(R.id.devtextv_detalle_notas);
 		View include=findViewById(R.id.pdevgrilla);
 		lvdevproducto = (ExpandableListView)include.findViewById(R.id.ExpList); 
 		tbxFecha=(EditText)findViewById(R.id.devetextv_detalle_fecha);
@@ -1677,6 +1679,7 @@ Handler.Callback, Editable
 			public void onButtonClick(String nota) { 
 				if("".equals(nota))
 					devolucion.setNota(nota);
+					tbxNota.setText(nota);
 			}
 		});
 		newFragment.show(ft, DialogNotaDevolucion.FRAGMENT_TAG);
