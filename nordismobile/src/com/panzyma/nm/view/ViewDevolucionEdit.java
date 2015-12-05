@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections; 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;  
 import java.util.LinkedList;
 import java.util.List;
@@ -106,11 +107,15 @@ import com.panzyma.nm.viewdialog.DevolucionProductoBonificacion.escucharModifica
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewdialog.DialogCliente; 
+import com.panzyma.nm.viewdialog.DialogNotaDevolucion;
+import com.panzyma.nm.viewdialog.DialogNotaDevolucion.RespuestaNotaDevolucion;
+import com.panzyma.nm.viewdialog.DialogNotaRecibo;
 import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewdialog.EditDevolucionProducto;
 import com.panzyma.nm.viewdialog.ProductoDevolucion;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener; 
+import com.panzyma.nm.viewdialog.DialogNotaRecibo.RespuestaNotaRecibo;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({ "unchecked", "rawtypes","deprecation","unused" })
@@ -159,6 +164,7 @@ Handler.Callback, Editable
 	private CheckBox ckboxncinmeditata;
 	private EditText tbxFecha;
 	private EditText tbxtotaldev;
+	private EditText tbxNota;
 	
 	CustomAdapter adapter_motdev;
 	CustomAdapter adapter_tramite;
@@ -275,6 +281,7 @@ Handler.Callback, Editable
 		cboxtramitedev=(Spinner) findViewById(R.id.devcombox_tramite);
 		cboxtipodev=(Spinner) findViewById(R.id.devcombox_tipo);
 		tbxNombreDelCliente=(TextView) findViewById(R.id.devtextv_detallecliente); 
+		tbxNota = (EditText)findViewById(R.id.devtextv_detalle_notas);
 		View include=findViewById(R.id.pdevgrilla);
 		lvdevproducto = (ExpandableListView)include.findViewById(R.id.ExpList); 
 		tbxFecha=(EditText)findViewById(R.id.devetextv_detalle_fecha);
@@ -682,32 +689,38 @@ Handler.Callback, Editable
 	//SetcantidadDevolver
 	public void establecerCantidadDev()
 	{
+		int contador=0;
 		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();		
 		LinkedList<ExpandListChild> groupchild; 
-		for (DevolucionProducto dp : dev_prod) 
+		Iterator<ExpandListGroup> llgroups=lgroups.iterator();
+		while (llgroups.hasNext())
 		{
-			int cantidaddevueltadp=0;
-			ExpandListGroup group = new ExpandListGroup();
-			groupchild = new LinkedList<ExpandListChild>();
-			
-			for (DevolucionProductoLote dpl : dp.getProductoLotes()) 
-			{
-				ExpandListChild ch = new ExpandListChild();
-				if("TT".equals(((SpinnerModel)cboxtipodev.getSelectedItem()).getCodigo()))
-				dpl.setCantidadDevuelta(dpl.getCantidadDespachada());
-				else
-					dpl.setCantidadDevuelta(0);
-				ch.setName(dpl.getNumeroLote());
-				ch.setObject(dpl);
-				groupchild.add(ch);
-				cantidaddevueltadp=cantidaddevueltadp+dpl.getCantidadDevuelta();
-			}
-			dp.setCantidadDevolver(cantidaddevueltadp);
-			group.setName(dp.getNombreProducto());
-			group.setObject(dp);
-			group.setItems(groupchild);
-			_lgroups.add(group);
+				ExpandListGroup _group =  (ExpandListGroup) llgroups.next(); 
+				DevolucionProducto dp=(DevolucionProducto) _group.getObject();
+				int cantidaddevueltadp=0;
+				ExpandListGroup group = new ExpandListGroup();
+				groupchild = new LinkedList<ExpandListChild>();
+				
+				for (DevolucionProductoLote dpl : dp.getProductoLotes()) 
+				{
+					ExpandListChild ch = new ExpandListChild();
+					if("TT".equals(((SpinnerModel)cboxtipodev.getSelectedItem()).getCodigo()))
+					dpl.setCantidadDevuelta(dpl.getCantidadDespachada());
+					else
+						dpl.setCantidadDevuelta(0);
+					ch.setName(dpl.getNumeroLote());
+					ch.setObject(dpl);
+					groupchild.add(ch);
+					cantidaddevueltadp=cantidaddevueltadp+dpl.getCantidadDevuelta();
+				}
+				dp.setCantidadDevolver(cantidaddevueltadp);
+				group.setName(dp.getNombreProducto());
+				group.setObject(dp);
+				group.setItems(groupchild);
+				lgroups.set(contador,group);
+				contador++;
 		}
+		 
 		
 	}
 	
@@ -901,13 +914,15 @@ Handler.Callback, Editable
 							dialogDevolucion.show(fragmentManager, "");
 						}					
 						break;
-				 
+				case ID_EDITAR_NOTA:
+					EditarNotaDevolucion();
+					break;
 				case ID_GUARDAR:
 						salvarDevolucion();
 						break;
-//				case ID_ENVIAR:
-//						enviarPedido();
-//						break;
+				case ID_ENVIAR:
+						enviarPedido();
+						break;
 //				case ID_IMPRIMIR_COMPROBANTE:
 //					try {
 //						ImprimirComprobante();
@@ -921,10 +936,6 @@ Handler.Callback, Editable
 				
 				}
 			}
-
-		
-
-			
 		});
 
 		tituloSeccion = getTitle();
@@ -965,6 +976,16 @@ Handler.Callback, Editable
 		msg.what = SAVE_DATA_FROM_LOCALHOST;
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 		
+	}
+	
+	private void enviarPedido() {
+		if(!validarDevolucion()) {
+			return;			
+		}		
+		Message msg = new Message(); 
+		msg.obj=devolucion; 
+		msg.what = ControllerProtocol.ENVIARDEVOLUCION;
+		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 	
 	public boolean validarDevolucion()
@@ -1069,10 +1090,11 @@ Handler.Callback, Editable
 		//Estimar costo devolucion
 		int cantmindevbonif=Integer.parseInt(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("CantMinDevolvBonif","0"));
 		//sumar todas las cantidades a devolver de sus lote del producto seleccionado.
- 
-		for(int a=0;a<lgroups.size();a++)
+		int contador=0;
+		Iterator<ExpandListGroup> llgroups=lgroups.iterator();
+		while (llgroups.hasNext())
 		{
-				ExpandListGroup group =  (ExpandListGroup) lgroups.get(a);
+				ExpandListGroup group =  (ExpandListGroup) llgroups.next();  
 				DevolucionProducto _dp=(DevolucionProducto) group.getObject();
 				Producto prod = null;
 				try {
@@ -1104,16 +1126,13 @@ Handler.Callback, Editable
 									_dp.setBonificacionVen(rs);
 								}
 							}
-						}
-						
-						
+						}					
 					}
 					else
 					{
 						if (calBonif)
 						{
-							int qtybonif = 0; 
-							 
+							int qtybonif = 0; 							 
 							Bonificacion bonif=DevolucionBL.getBonificacion(prod, cliente.getObjCategoriaClienteID(), _dp.getCantidadDevolver());
 							if (bonif!=null  && bonif.getCantBonificacion()!=0)
 							{
@@ -1204,7 +1223,7 @@ Handler.Callback, Editable
 					}
 				}
 				group.setObject(_dp);
-				lgroups.set(a, group);
+				lgroups.set(contador, group);
 		}//fin del ciclo
 		
 		costeoMontoCargoAdministrativo=BigDecimal.ZERO;
@@ -1654,6 +1673,7 @@ Handler.Callback, Editable
 		return true;
 	}
 	
+
 	private void Setfieldsdevolucion(){
 		
 	devolucion.setDeVencido(ckboxvencidodev.isChecked());
@@ -1665,4 +1685,25 @@ Handler.Callback, Editable
 	
 		
 	}
+
+	private void EditarNotaDevolucion() { 
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag(DialogNotaDevolucion.FRAGMENT_TAG);
+		if (prev != null) {
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		DialogNotaDevolucion newFragment = DialogNotaDevolucion.newInstance(devolucion.getNota(),this);
+		newFragment.establecerRespuestaNotaDevolucion(new RespuestaNotaDevolucion() {			
+			@Override
+			public void onButtonClick(String nota) { 
+				if("".equals(nota))
+					devolucion.setNota(nota);
+					tbxNota.setText(nota);
+			}
+		});
+		newFragment.show(ft, DialogNotaDevolucion.FRAGMENT_TAG);
+	}
+
+
 }
