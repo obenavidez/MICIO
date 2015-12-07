@@ -1468,7 +1468,7 @@ Handler.Callback, Editable
 			}
 		});
 		newFragment.show(ft, "dialogDocumentoDevolucion"); 
-		if(isoffline=true)
+		if(isoffline)
 			NMApp.getController()._notifyOutboxHandlers(0, 0, 0,"Dispositivo fuera de cobertura");
 	}
 	
