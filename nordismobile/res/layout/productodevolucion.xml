@@ -5,25 +5,53 @@
     android:orientation="vertical"
     android:weightSum="100" >
 
-    		<TextView
-            android:id="@+id/dev_headergrid"
-            style="StyleFontTextViewActionBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_actionbar29"
-            android:gravity="center"
-            android:text="Productos a Devolver"
-            android:textColor="@color/White"
-            android:layout_weight="30" />
-    		
-            <ExpandableListView
-                android:id="@+id/ExpList"
-                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" 
-                android:layout_weight="70"
-                android:groupIndicator="@null"
-                android:choiceMode="singleChoice"
-                android:descendantFocusability="beforeDescendants" 
-                 />   
+    <LinearLayout   android:layout_width="wrap_content"
+    android:layout_height="wrap_content" 
+    android:orientation="horizontal"  >
+     <TextView
+        android:id="@+id/devlbl_total"
+        android:layout_width="58dp"
+        android:layout_height="25dp" 
+        android:layout_marginLeft="3dp" 
+        android:text="Total :"
+        android:textColor="@color/Black"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+     <EditText
+         android:id="@+id/devtextv_total"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:background="@drawable/style_textbox"     
+         android:ems="10"
+         android:enabled="false"
+          android:textSize="25sp"
+         android:textColor="@color/Blue"
+         android:hint="0.00"
+         android:scrollHorizontally="true" />
+
+    </LinearLayout>
+   
+
+    <TextView
+        android:id="@+id/dev_headergrid"
+        style="StyleFontTextViewActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="10"
+        android:background="@drawable/bg_actionbar29"
+        android:gravity="center"
+        android:text="Productos a Devolver"
+        android:textColor="@color/White" />
+
+    <ExpandableListView
+        android:id="@+id/ExpList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="60"
+        android:choiceMode="singleChoice"
+        android:descendantFocusability="beforeDescendants"
+        android:groupIndicator="@null" 
+       />
 
 </LinearLayout>

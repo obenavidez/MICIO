@@ -108,6 +108,7 @@ import com.panzyma.nm.viewdialog.DevolucionProductoBonificacion.escucharModifica
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad;
 import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewdialog.DialogCliente; 
+import com.panzyma.nm.viewdialog.DialogCosteoDevolucion;
 import com.panzyma.nm.viewdialog.DialogNotaDevolucion;
 import com.panzyma.nm.viewdialog.DialogNotaDevolucion.RespuestaNotaDevolucion;
 import com.panzyma.nm.viewdialog.DialogNotaRecibo;
@@ -400,6 +401,7 @@ Handler.Callback, Editable
 				{
 					establecerCantidadDev();
 					EstimarCostosDev(true);
+					CalTotalDevolucion();
 					adapter.notifyDataSetChanged();
 				}
 				
@@ -459,7 +461,8 @@ Handler.Callback, Editable
 					lvdevproducto.expandGroup(g);
 				}
 				
-				lvdevproducto.setOnChildClickListener(new OnChildClickListener() {
+				lvdevproducto.setOnChildClickListener(new OnChildClickListener() 
+				{
 
 							
 							@Override
@@ -508,7 +511,8 @@ Handler.Callback, Editable
 							}
 						});
 
-				lvdevproducto.setOnItemLongClickListener(new OnItemLongClickListener() {
+				lvdevproducto.setOnItemLongClickListener(new OnItemLongClickListener() 
+				{
 
 							@Override
 							public boolean onItemLongClick(
@@ -944,6 +948,9 @@ Handler.Callback, Editable
 				case ID_EDITAR_NOTA:
 					EditarNotaDevolucion();
 					break;
+				case ID_VER_COSTEO:
+					 VerCosteoDevolucion();
+					break;
 				case ID_GUARDAR:
 						salvarDevolucion();
 						break;
@@ -1327,7 +1334,7 @@ Handler.Callback, Editable
 		costeoMontoTotal=total.subtract(costeoMontoPromocion).subtract(costeoMontoCargoAdministrativo); 
 		total=new BigDecimal(sumatotalv);
 		costeoMontoTotalVen=total.subtract(costeoMontoPromocionVen).subtract(costeoMontoCargoAdministrativoVen).subtract(vinietas);
-		tbxtotaldev.setText(""+costeoMontoTotal.divide(new BigDecimal(100.00)));
+		tbxtotaldev.setText(""+costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2, RoundingMode.UNNECESSARY));
 	}
 	
 	public void CalMontoCargoVendedor()
@@ -1742,5 +1749,15 @@ Handler.Callback, Editable
 		newFragment.show(ft, DialogNotaDevolucion.FRAGMENT_TAG);
 	}
 
+	private void VerCosteoDevolucion() { 
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag(DialogCosteoDevolucion.FRAGMENT_TAG);
+		if (prev != null) {
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		DialogCosteoDevolucion newFragment = DialogCosteoDevolucion.newInstance(this); 
+		newFragment.show(ft, DialogNotaDevolucion.FRAGMENT_TAG);
+	}
 
 }
