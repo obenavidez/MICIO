@@ -306,7 +306,7 @@ public class BConfiguracionM extends BBaseM {
 									ModelConfiguracion
 											.getValoresCatalogo(
 													credentials,
-													"FormaPago-Moneda-EntidadBancaria-MotivoDevolucionNoVencidos-EstadoDevolucion-TipoPrecio"),
+													"FormaPago-Moneda-EntidadBancaria-MotivoDevolucionNoVencidos-EstadoDevolucion-CausaEstadoDevolucion-TipoPrecio"),
 									ID_SINCRONIZE_CATALOGOSBASICOS, 0);
 							Processor.notifyToView(getController(),
 									ControllerProtocol.NOTIFICATION_DIALOG2, 0,

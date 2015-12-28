@@ -368,6 +368,40 @@ public class ModelLogic {
 		}
 	    return catalogos;
 	}
+	
+	public synchronized static ValorCatalogo getValorByCatalogo(String catalogName,String codigo )
+	{
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT id , ");
+		query.append("        codigo , ");
+		query.append("        descripcion ");
+		query.append(" FROM ValorCatalogo vc ");
+		query.append(" WHERE vc.objCatalogoID = (  ");
+		query.append("	 SELECT Id FROM CATALOGO c WHERE c.NombreCatalogo = '%s' ");
+		query.append(" )  and vc.Codigo='"+codigo+"'");
+		SQLiteDatabase db = null;
+		ValorCatalogo valorCatalogo = null; 
+		try 
+		{
+			db = DatabaseProvider.Helper.getDatabase(NMApp.getContext());
+			Cursor c = null; 
+			valorCatalogo = new ValorCatalogo();
+			c = DatabaseProvider.query(db,String.format(query.toString(), catalogName));
+				if (c.moveToFirst()) 
+				{
+					// Recorremos el cursor hasta que no haya más registros
+					do {
+						
+						valorCatalogo=(new ValorCatalogo(c.getInt(0), c
+								.getString(1), c.getString(2)));
+					} while (c.moveToNext()); 
+				} 
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	    return valorCatalogo;
+	}
+	
 	/***
 	 * Obtiene la informacion de catalogos y tasas de cambio para forma de pago
 	 * @param cnt             Contexto de ejecucion

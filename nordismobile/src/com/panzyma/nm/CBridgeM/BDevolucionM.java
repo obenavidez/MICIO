@@ -84,6 +84,28 @@ public class BDevolucionM extends BBaseM
 		} 
 	}
 	
+	private void ObtenerValorCatalogo(String codigo,String valores)
+	{
+		try 
+		{
+			Processor.notifyToView(getController(),
+					ControllerProtocol.OBTENERVALORCATALOGO,
+					0,
+					0,
+					ModelLogic.getValorByCatalogo(codigo,valores)
+					);
+		} catch (Exception e) 
+		{ 
+			Log.e(TAG, "Error interno trayendo datos desde BDD", e);
+			try {
+				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno trayendo datos desde BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}
+		} 
+	}
+	
+	
 	private void ObtenerPedidosLocalmente(long objSucursalID)
 	{
 		try 
