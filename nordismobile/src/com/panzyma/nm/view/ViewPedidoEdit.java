@@ -1196,13 +1196,18 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 									// return;
 									//SE OBTIENE EL PRODUCTO DEL DETALLE DE PEDIDO
 									DetallePedido detalle = Lvmpproducto.remove(idx);
+									Producto producto = null;
 									for(Producto pr: aprodselected) {
 										//ELIMINAR EL PRODUCTO DE LOS PRODUCTOS MOSTRADOS EN EL DETALLE
 										if( pr.getId() == detalle.getObjProductoID() ){
-											aprodselected.remove(pr);
+											//aprodselected.remove(pr);
+											producto = pr;
+											break;
 										}
 									}
-                                    
+									if(producto!=null)
+										aprodselected.remove(producto);
+									
 									// Si habían promociones aplicadas,
 									// desaplicarlas
 									PedidoPromocion[] pproms = pedido.getPromocionesAplicadas();

@@ -28,6 +28,7 @@ import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -73,6 +74,9 @@ import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.custom.model.SpinnerModel;
+import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
+import com.panzyma.nm.fragments.FichaClienteFragment;
+import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.interfaces.IFilterabble;
 import com.panzyma.nm.interfaces.Predicate;
@@ -132,7 +136,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_VER_COSTEO = 5;
 	private static final int ID_GUARDAR = 6;
 	private static final int ID_ENVIAR = 7;
-	private static final int ID_CERRAR = 8;
+	private static final int ID_FICHACLIENTE = 8;
+	private static final int ID_CUENTASXCOBRAR = 9;
+	private static final int ID_CERRAR = 10;
 
 	private static BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
 	private static BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
@@ -216,7 +222,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final String TOTALCODE = "TT";
 	private static final String PARCIALCODE = "PC";
 	Cliente cliente;
-
+	
 	public Cliente getCliente() {
 		return cliente;
 	}
@@ -1077,6 +1083,24 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				// } catch (Exception e) {
 				// e.printStackTrace();
 				// }
+				case ID_FICHACLIENTE : 
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información","Seleccione un cliente.",DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController())){
+						ShowFichCliente();
+		            }
+					break;
+				case ID_CUENTASXCOBRAR : 
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información","Seleccione un cliente.",DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController())){
+						LOAD_CUENTASXPAGAR();
+					}
+					break;
 				case ID_CERRAR:
 					// FINISH_ACTIVITY();
 					break;
@@ -1913,7 +1937,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		}
 
 		devolucion.setNota(tbxNota.getText().toString());
-		devolucion.setParcial(PARTIAL);
+		devolucion.setParcial(PARTIAL); 
 		devolucion.setSubtotal(costeoMontoSubTotal.longValue());	 
 		devolucion.setImpuesto(costeoMontoImpuesto.longValue());	
 		devolucion.setImpuestoVen(costeoMontoImpuestoVen.longValue());
@@ -1941,8 +1965,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			{
 				devolucion.setDescEstado(this.getSharedPreferences("SystemParams", android.content.Context.MODE_PRIVATE).getString("EtiquetaDevolucionesOfflineNCI", ""));
 			}			
-		}	
-		
+		}	 
 	}
 
 	private void EditarNotaDevolucion() {
@@ -1978,6 +2001,57 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		DialogCosteoDevolucion newFragment = DialogCosteoDevolucion
 				.newInstance(this);
 		newFragment.show(ft, DialogNotaDevolucion.FRAGMENT_TAG);
+	}
+	
+	
+	private void ShowFichCliente() {
+		Bundle args = new Bundle();
+		args.putInt(FichaClienteFragment.ARG_POSITION, 0);
+		args.putLong(FichaClienteFragment.ARG_SUCURSAL, this.cliente.getIdSucursal());
+
+		// establecemos el titulo
+		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
+
+		FichaClienteFragment ficha;
+		FragmentTransaction transaction = getSupportFragmentManager()
+				.beginTransaction();
+ 
+		if (findViewById(R.id.dynamic_fragment) != null) {
+		} else {
+			Fragment fragment = getSupportFragmentManager().findFragmentById(
+					R.id.fragment_container);
+			if (fragment instanceof ListaFragment) {
+				ficha = new FichaClienteFragment();
+				ficha.setArguments(args);
+				ficha.setRetainInstance(true);
+				transaction.addToBackStack(null);
+				transaction.replace(R.id.fragment_container, ficha, "ficha");
+				//gridheader.setVisibility(View.INVISIBLE);
+			}
+		}
+		// Commit the transaction transaction.commit();
+		transaction.commit();
+	}
+	
+	public void LOAD_CUENTASXPAGAR() {
+			
+			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			
+			CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+			
+			android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+			if (prev != null){
+				transaction.remove(prev);
+			}
+			
+			Bundle msg = new Bundle();
+			msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
+			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, cliente.getIdSucursal());
+			
+			
+			transaction.addToBackStack(null);
+			cuentasPorCobrar.setArguments(msg); 
+		    cuentasPorCobrar.show(transaction, "dialog");
 	}
 
 }
