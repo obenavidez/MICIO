@@ -49,6 +49,9 @@ public class NMConfig
 		public static final String GetPedido="GetPedido";
 		public static final String CalcMontoPromocionDevolucion="CalcMontoPromocionDevolucion";
 		public static final String EnviarDevolucion="EnviarDevolucion";
+		public static final String GetPagosColector="GetPagosColector";
+		public static final String GetCobroColector="GetCobroColector";
+		
 	}
 	 
     

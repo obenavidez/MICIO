@@ -76,7 +76,6 @@ import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
-import com.panzyma.nm.view.ViewPedido.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.TasaCambioFragment;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -198,8 +197,9 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int IMPRIMIR_RECIBO = 4;
 	private static final int FICHA_CLIENTE = 5;
 	private static final int CUENTAS_POR_COBRAR = 6;
-	private static final int TASA_CAMBIO = 7;
-	private static final int CERRAR = 8;
+	private static final int CONSULTA_COBROS = 7;
+	private static final int TASA_CAMBIO = 8;
+	private static final int CERRAR = 9;
 	public static final String RECIBO_ID = "recibo_id";
 	private FragmentActive fragmentActive = null;
 	private BReciboM bpm;
@@ -263,7 +263,7 @@ public class ViewRecibo extends ActionBarActivity implements
 
 		opcionesMenu = new String[] { "Nuevo Recibo", "Abrir Recibo",
 				"Borrar Recibo", "Enviar Recibo", "Imprimir Recibo",
-				"Ficha del Cliente", "Cuentas por Cobrar","Tasa Cambio" ,"Cerrar" };
+				"Ficha del Cliente", "Cuentas por Cobrar","Consultar Cobros","Tasa Cambio" ,"Cerrar" };
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// drawerLayout.openDrawer(Gravity.END);
@@ -438,6 +438,11 @@ public class ViewRecibo extends ActionBarActivity implements
 						//OCULTAR LA BARRA DE ACCION
 						getSupportActionBar().hide();
 		            }
+					break;
+				case CONSULTA_COBROS :
+					
+					//CERRAR EL MENU DEL DRAWER
+					drawerLayout.closeDrawers();
 					break;
 				case TASA_CAMBIO :
 				
