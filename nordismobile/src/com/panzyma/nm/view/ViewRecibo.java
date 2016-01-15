@@ -71,11 +71,13 @@ import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
+import com.panzyma.nm.fragments.consultaCobroFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.view.ViewPedido.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.TasaCambioFragment;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -185,7 +187,8 @@ public class ViewRecibo extends ActionBarActivity implements
 		LIST,
 		ITEM,
 		CUENTAS_POR_COBRAR,
-		FICHA_CLIENTE
+		FICHA_CLIENTE,
+		CONSULTAR_COBROS
 	};
 
 	private static final String TAG = ViewRecibo.class.getSimpleName();
@@ -440,7 +443,17 @@ public class ViewRecibo extends ActionBarActivity implements
 		            }
 					break;
 				case CONSULTA_COBROS :
-					
+					fragmentActive = FragmentActive.CONSULTAR_COBROS;
+					if (findViewById(R.id.fragment_container) != null) 
+					{
+						transaction = getSupportFragmentManager().beginTransaction();
+						consultaCobroFragment cobros = new consultaCobroFragment();
+						transaction.replace(R.id.fragment_container,cobros);
+						transaction.addToBackStack(null);
+						transaction.commit();
+						
+						
+					}
 					//CERRAR EL MENU DEL DRAWER
 					drawerLayout.closeDrawers();
 					break;
