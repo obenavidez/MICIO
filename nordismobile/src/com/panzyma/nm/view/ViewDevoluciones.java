@@ -237,6 +237,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		// Añadimos Funciones al menú laterak
 		drawerList.setOnItemClickListener(new OnItemClickListener() {
 
+			@SuppressLint("NewApi")
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 				

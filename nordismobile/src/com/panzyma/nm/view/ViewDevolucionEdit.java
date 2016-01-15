@@ -205,9 +205,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final Map<String, String> hmmotivodev = null;
 	private static final Map<String, String> hmtramite;
 	private static final Map<String, String> hmtipodev;
+	
 	private static final String REGISTRADA = "REGISTRADA";
-
 	private static final String RECEPCIONADA = "RECEPCIONADA";
+	private static final String ENVIADA = "ENVIADA";
 
 	private static final Integer NOTA_CREDITO = 2;
 	private static final String EMPTY = "";
@@ -518,8 +519,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 
-	public void initExpandableListView() {
-		if (adapter == null) {
+	public void initExpandableListView() 
+	{
+		if (adapter == null) 
+		{
 			ArrayList<SetViewHolderWLayout> layouts = new ArrayList<SetViewHolderWLayout>();
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_productolote,
 					ProductoLoteViewHolder.class, true));
@@ -870,7 +873,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		adapter.notifyDataSetChanged();
 	}
 
-	private void actualizarProductoLote(DevolucionProductoLote dpl) {
+	private void actualizarProductoLote(DevolucionProductoLote dpl) 
+	{
 		DevolucionProducto _dp = (DevolucionProducto) groupselected.getObject();
 		if ("".equals(dpl.getNumeroLote()) || dpl.getNumeroLote() == null) {
 			com.panzyma.nm.NMApp
@@ -930,8 +934,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		// sumar todas las cantidades a devolver de sus lote del producto
 		// seleccionado.
 		for (ExpandListChild _ch : groupselected.getItems())
-			cantidadTotalDevolver += ((DevolucionProductoLote) _ch.getObject())
-					.getCantidadDevuelta();
+			cantidadTotalDevolver += ((DevolucionProductoLote) _ch.getObject()).getCantidadDevuelta();
 
 		_dp.setCantidadDevolver(cantidadTotalDevolver);
 		groupselected.setObject(_dp);
@@ -1266,13 +1269,29 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setObjClienteID(cliente.getIdCliente());
 		devolucion.setObjSucursalID(cliente.getIdSucursal());
 		devolucion.setEspecial(!"".equals(devolucion.getObservacion()));
-		if (!ckboxncinmeditata.isChecked()
-				&& "REGISTRADA".equals(devolucion.getCodEstado())) {
+		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado())) 
+		{
 			EstimarCostosDev(false);
-			if(devolucion.isPedidoTienePromociones())
-				CalMontoPromocion(); 
+			CalMontoPromocion(); 
 			CalTotalDevolucion();
 		}
+		
+		devolucion.setMontoCargoVendedor(costeoMontoCargoVen.longValue());
+		devolucion.setTotalVen(costeoMontoTotalVen.longValue());
+		devolucion.setMontoVinieta(costeoMontoVinieta.longValue());
+		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen.longValue());
+		devolucion.setMontoPromocionVen(costeoMontoPromocionVen.longValue());
+		devolucion.setImpuestoVen(costeoMontoImpuestoVen.longValue());
+		devolucion.setMontoBonifVen(costeoMontoBonificacionVen.longValue()); 
+		 
+		devolucion.setTotal(costeoMontoTotal.longValue()); 
+		devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo.longValue());
+		devolucion.setMontoPromocion(costeoMontoPromocion.longValue());
+		devolucion.setImpuesto(costeoMontoImpuesto.longValue());
+		devolucion.setMontoBonif(costeoMontoBonificacion.longValue());
+		devolucion.setSubtotal(costeoMontoSubTotal.longValue());
+		
+		
 		return true;
 	}
 
@@ -1285,33 +1304,36 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		// seleccionado.
 		int contador = 0;
 		Iterator<ExpandListGroup> llgroups = lgroups.iterator();
-		while (llgroups.hasNext()) {
+		while (llgroups.hasNext()) 
+		{
 			ExpandListGroup group = (ExpandListGroup) llgroups.next();
 			DevolucionProducto _dp = (DevolucionProducto) group.getObject();
 			Producto prod = null;
-			try {
+			try 
+			{
 				prod = ModelProducto.getProductoByID(getContext()
 						.getContentResolver(), _dp.getObjProductoID());
-			} catch (Exception e) {
+			} catch (Exception e) 
+			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 			int cantidaddevolver = _dp.getCantidadDevolver();
-			if (cantidaddevolver >= cantmindevbonif || this.pedido != null) {
+			if (cantidaddevolver >= cantmindevbonif || this.pedido != null) 
+			{
 				if (this.pedido != null) {
 					int cantidadordenada = _dp.getCantidadOrdenada();
 					int cantidadbonificadaeditada = _dp.getCantidadBonificada();
-					if (_dp.getCantidadDevolver() == (cantidadordenada + cantidadbonificadaeditada)) {
+					if (_dp.getCantidadDevolver() == (cantidadordenada + cantidadbonificadaeditada)) 
+					{
 						_dp.setBonificacion(cantidadbonificadaeditada);
 						_dp.setBonificacionVen(cantidadbonificadaeditada);
 					} else {
 						if (calBonif) {
-							if (_dp.getCantidadDevolver() < (cantidadordenada + cantidadbonificadaeditada)) {
-								int rs = DevolucionBL.CalcularBonificacion(
-										_dp.getCantidadDevolver(),
-										_dp.getCantidadOrdenada(),
-										_dp.getCantidadBonificada());
+							if (_dp.getCantidadDevolver() < (cantidadordenada + cantidadbonificadaeditada)) 
+							{
+								int rs = DevolucionBL.CalcularBonificacion(_dp.getCantidadDevolver(),_dp.getCantidadOrdenada(),_dp.getCantidadBonificada());
 								_dp.setBonificacion(rs);
 								_dp.setBonificacionVen(rs);
 							}
@@ -1320,10 +1342,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				} else {
 					if (calBonif) {
 						int qtybonif = 0;
-						Bonificacion bonif = DevolucionBL.getBonificacion(prod,
-								cliente.getObjCategoriaClienteID(),
-								_dp.getCantidadDevolver());
-						if (bonif != null && bonif.getCantBonificacion() != 0) {
+						Bonificacion bonif = DevolucionBL.getBonificacion(prod,cliente.getObjCategoriaClienteID(),_dp.getCantidadDevolver());
+						if (bonif != null && bonif.getCantBonificacion() != 0) 
+						{
 							qtybonif = bonif.getCantBonificacion();
 						}
 						_dp.setBonificacion(qtybonif);
@@ -1334,96 +1355,83 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				_dp.setBonificacion(0);
 				_dp.setBonificacionVen(0);
 			}
-
-			if (this.pedido != null) {
-				if (!ckboxvencidodev.isChecked()) {
+			
+			if(pedido==null || _dp.getCantidadOrdenada()<=0)
+			{
+				if (!ckboxvencidodev.isChecked()) 
+				{
 					// Calcular precio IdTipoClienteMayorista
-					long idTP = pedido.getObjTipoPrecioVentaID();
+					long idTP = pedido==null?0:pedido.getObjTipoPrecioVentaID();
 					long idTipoCliente = cliente.getObjTipoClienteID();
-					long IdTipoClienteMayorista = Long.parseLong(this
-							.getSharedPreferences("SystemParams",
-									android.content.Context.MODE_PRIVATE)
-							.getString("IdTipoClienteMayorista", "0"));
+					long IdTipoClienteMayorista = Long.parseLong(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoClienteMayorista", "0"));
 					if (IdTipoClienteMayorista == idTipoCliente)
-						idTP = Long.parseLong(this.getSharedPreferences(
-								"SystemParams",
-								android.content.Context.MODE_PRIVATE)
-								.getString("IdTipoPrecioGeneral", "0"));
-
-					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,
-							idTP, _dp.getCantidadDevolver()) * 100));
-				} else {
-					List<Catalogo> catalogo = ModelLogic
-							.getValorCatalogo(new String("VEN"));
-					long idTP = pedido.getObjTipoPrecioVentaID();
+						idTP = Long.parseLong(this.getSharedPreferences("SystemParams",	android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral", "0"));
+					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,idTP, _dp.getCantidadDevolver()) * 100));
+				} else 
+				{
+					List<Catalogo> catalogo = ModelLogic.getValorCatalogo(new String("VEN"));
+					long idTP = pedido==null?0:pedido.getObjTipoPrecioVentaID();
 					if (catalogo != null)
 						idTP = catalogo.get(0).getId();
-					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,
-							idTP, _dp.getCantidadDevolver()) * 100));
+					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,idTP, _dp.getCantidadDevolver()) * 100));
+				}
+			
+			} 
+				 
+
+			_dp.setSubtotal((long) ((double) (_dp.getCantidadDevolver() * (_dp.getPrecio() / 100.00)) * 100.00));
+			long boniL = (long) ((double) (_dp.getBonificacion() * (_dp.getPrecio() / 100.00)) * 100.00);
+
+			_dp.setMontoBonif(boniL);
+			boniL = (long) ((double) (_dp.getBonificacionVen() * (_dp.getPrecio() / 100.00)) * 100.00);
+			_dp.setMontoBonifVen(boniL);
+
+			if (_dp.isGravable()) 
+			{
+				if (this.pedido == null) 
+			/*	{
+					_dp.setPorcImpuesto((long) DevolucionBL.getPorcImpuesto(pedido, prod.getId()));
+
+				} else */
+				{
+					int porcimp = Integer.parseInt(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeImpuesto", "0"));
+					_dp.setPorcImpuesto((long) porcimp);
 				}
 
-				_dp.setSubtotal((long) ((double) (_dp.getCantidadDevolver() * (_dp
-						.getPrecio() / 100.00)) * 100.00));
-				long boniL = (long) ((double) (_dp.getBonificacion() * (_dp
-						.getPrecio() / 100.00)) * 100.00);
-
-				_dp.setMontoBonif(boniL);
-				boniL = (long) ((double) (_dp.getBonificacionVen() * (_dp
-						.getPrecio() / 100.00)) * 100.00);
-				_dp.setMontoBonifVen(boniL);
-
-				if (_dp.isGravable()) {
-					if (this.pedido != null) {
-						_dp.setPorcImpuesto((long) DevolucionBL
-								.getPorcImpuesto(pedido, prod.getId()));
-
-					} else {
-						int porcimp = Integer.parseInt(this
-								.getSharedPreferences("SystemParams",
-										android.content.Context.MODE_PRIVATE)
-								.getString("PorcentajeImpuesto", "0"));
-						_dp.setPorcImpuesto((long) porcimp);
-					}
-
-				}
-				long impuestoL = (long) (_dp.getPorcImpuesto() * (_dp
-						.getSubtotal() - _dp.getMontoBonif() / 100.00));
-				_dp.setImpuesto(impuestoL);
-				_dp.setImpuestoVen((long) (_dp.getPorcImpuesto() * (_dp
-						.getSubtotal() - _dp.getMontoBonifVen() / 100.00)));
-				_dp.setTotal(_dp.getSubtotal() - _dp.getMontoBonif()
-						+ impuestoL);
-				_dp.setTotalVen(_dp.getSubtotal() - _dp.getMontoBonifVen()
-						+ _dp.getImpuestoVen());
-
-				List<PedidoPromocion> pap = Arrays.asList(pedido
-						.getPromocionesAplicadas());
-
-				if (pap != null && pap.size() != 0) {
-					PedidoPromocionDetalle ppd = null;
-					for (PedidoPromocion pp : pap) {
-						ppd = Predicate.find(Arrays.asList(pp.getDetalles()),
-								_dp.getObjProductoID(),
-								new IFilterabble<PedidoPromocionDetalle>() {
-
-									@Override
-									public boolean search(
-											PedidoPromocionDetalle ppdet,
-											long ID) {
-										return (ppdet.getObjProductoID() == ID);
-									}
-
-								});
-						if (ppd != null) {
-							_dp.setCantidadPromocionada(ppd
-									.getCantidadEntregada());
-							break;
-						}
-
-					}
-
-				}
 			}
+			long impuestoL = (long) (_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getMontoBonif() / 100.00));
+			_dp.setImpuesto(impuestoL);
+			_dp.setImpuestoVen((long) (_dp.getPorcImpuesto() * (_dp.getSubtotal() - _dp.getMontoBonifVen() / 100.00)));
+			_dp.setTotal(_dp.getSubtotal() - _dp.getMontoBonif()+ impuestoL);
+			_dp.setTotalVen(_dp.getSubtotal() - _dp.getMontoBonifVen()+ _dp.getImpuestoVen());
+
+			/*<PedidoPromocion> pap = Arrays.asList(pedido.getPromocionesAplicadas());
+
+			if (pap != null && pap.size() != 0) 
+			{
+				PedidoPromocionDetalle ppd = null;
+				for (PedidoPromocion pp : pap) 
+				{
+					ppd = Predicate.find(Arrays.asList(pp.getDetalles()),_dp.getObjProductoID(),
+							new IFilterabble<PedidoPromocionDetalle>() 
+							{
+
+								@Override
+								public boolean search(PedidoPromocionDetalle ppdet,long ID) 
+								{
+									return (ppdet.getObjProductoID() == ID);
+								}
+
+							});
+					if (ppd != null) 
+					{
+						_dp.setCantidadPromocionada(ppd.getCantidadEntregada());
+						break;
+					}
+
+				}
+
+			} */
 			group.setObject(_dp);
 			lgroups.set(contador, group);
 		}// fin del ciclo
@@ -1432,13 +1440,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		costeoMontoCargoAdministrativoVen = BigDecimal.ZERO;
 
 		double porcgastoAdm = 0d;
-		porcgastoAdm = (!ckboxvencidodev.isChecked()) ? Double.valueOf(this
-				.getSharedPreferences("SystemParams",
-						android.content.Context.MODE_PRIVATE).getString(
-						"PorcentajeGastosAdm", "0")) : Double.valueOf(this
-				.getSharedPreferences("SystemParams",
-						android.content.Context.MODE_PRIVATE).getString(
-						"CargoAdmDevBueno", "0"));
+		porcgastoAdm = (!ckboxvencidodev.isChecked()) ? 
+						Double.valueOf(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeGastosAdm", "0")) :
+						Double.valueOf(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("CargoAdmDevBueno", "0"));
 		double sumatotal = 0.d;
 		double sumatotalv = 0.d;
 		for (int b = 0; b < lgroups.size(); b++) {
@@ -1447,9 +1451,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			sumatotal = sumatotal + item.getTotal();
 			sumatotalv = sumatotalv + item.getTotalVen();
 		}
-		double total = sumatotalv / 100.00;
-		costeoMontoCargoAdministrativo = new BigDecimal(
-				(total * porcgastoAdm) / 100);
+		double total = ((sumatotalv==0d)?0d:sumatotalv / 100.00);
+		costeoMontoCargoAdministrativo = new BigDecimal(((total * porcgastoAdm)==0)?0.00:(total * porcgastoAdm)/ 100);
 		costeoMontoCargoAdministrativoVen = costeoMontoCargoAdministrativo;
 		CalMontoPromocion();
 
@@ -1465,34 +1468,21 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		double sumabonfv = 0.d;
 		double sumaimp = 0.d;
 		double sumaimpv = 0.d;
-		for (int a = 0; a < lgroups.size(); a++) {
+		for (int a = 0; a < lgroups.size(); a++) 
+		{
 			ExpandListGroup group = (ExpandListGroup) lgroups.get(a);
 			DevolucionProducto item = (DevolucionProducto) group.getObject();
 			// SUB TOTAL
-			sumasubtotal = sumasubtotal + item.getSubtotal();
-			/* devolucion.setSubtotal((long)sumasubtotal); */
+			sumasubtotal = sumasubtotal + item.getSubtotal(); 
 			// BONIFICACION
 			sumabonf = sumabonf + item.getMontoBonif();
-			sumabonfv = sumabonfv + item.getMontoBonifVen();
-			/*
-			 * devolucion.setMontoBonif((long)sumabonf);
-			 * devolucion.setMontoBonifVen((long)sumabonfv);
-			 */
+			sumabonfv = sumabonfv + item.getMontoBonifVen(); 
 			// IMPUESTO
 			sumaimp = sumaimp + item.getMontoBonif();
-			sumaimpv = sumaimpv + item.getMontoBonifVen();
-			/*
-			 * devolucion.setImpuesto((long)sumaimp);
-			 * devolucion.setImpuestoVen((long)sumaimpv);
-			 */
-
+			sumaimpv = sumaimpv + item.getMontoBonifVen(); 
 			// TOTAL
 			sumatotal = sumatotal + item.getTotal();
-			sumatotalv = sumatotalv + item.getTotalVen();
-			/*
-			 * devolucion.setTotal((long)sumatotal);
-			 * devolucion.setTotalVen((long)sumatotalv);
-			 */
+			sumatotalv = sumatotalv + item.getTotalVen(); 
 
 		}
 		// SUB TOTAL
@@ -1504,33 +1494,49 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		costeoMontoImpuesto = new BigDecimal(sumaimp);
 		costeoMontoImpuestoVen = new BigDecimal(sumaimpv);
 		// VIÑETA
-		BigDecimal vinietas = costeoMontoVinieta == null ? new BigDecimal(0)
-				: costeoMontoVinieta;
+		BigDecimal vinietas = costeoMontoVinieta == null ? new BigDecimal(0.00): costeoMontoVinieta;
 		// TOTAL DEVOLUCION
 		BigDecimal total = new BigDecimal(sumatotal);
-		costeoMontoTotal = total.subtract(costeoMontoPromocion).subtract(
-				costeoMontoCargoAdministrativo);
+		costeoMontoTotal = total.subtract(costeoMontoPromocion).subtract(costeoMontoCargoAdministrativo);
 		total = new BigDecimal(sumatotalv);
-		costeoMontoTotalVen = total.subtract(costeoMontoPromocionVen)
-				.subtract(costeoMontoCargoAdministrativoVen).subtract(vinietas);
-		tbxtotaldev.setText(""
-				+ costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2,
-						RoundingMode.UNNECESSARY));
+		costeoMontoTotalVen = total.subtract(costeoMontoPromocionVen).subtract(costeoMontoCargoAdministrativoVen).subtract(vinietas);
+		tbxtotaldev.setText(""+ costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2,RoundingMode.UNNECESSARY));
+		
+		
+		
 	}
 
-	public void CalMontoCargoVendedor() {
+	public void CalMontoCargoVendedor() 
+	{
 		if (RECEPCIONADA.equals(devolucion.getCodEstado()))
 			return;
-		if (costeoMontoTotalVen.longValue() > costeoMontoTotal.longValue()) {
-			BigDecimal cargoven = costeoMontoTotalVen
-					.subtract(costeoMontoTotal);
-			if (cargoven.longValue() > 0) {
-				cargoven = cargoven.subtract(costeoMontoBonificacion
-						.subtract(costeoMontoBonificacionVen));
+		if (ENVIADA.equals(devolucion.getCodEstado()))
+		{
+			double cargo=0d;
+			for(DevolucionProducto dp:devolucion.getProductosDevueltos())
+			{
+				double value1=0d,value2=0d;
+				value1=(dp.getCantidadDevolver()-dp.getPrecio());
+				value2=(value1*dp.getImpuesto())/100;
+				cargo+=value1+value2;
+				
+			}
+			costeoMontoCargoVen = new BigDecimal(cargo);
+		}
+		else if (costeoMontoTotalVen.longValue() > costeoMontoTotal.longValue()) 
+		{
+			
+			BigDecimal cargoven = costeoMontoTotalVen.subtract(costeoMontoTotal);
+			if (cargoven.longValue() > 0) 
+			{
+				cargoven = cargoven.subtract(costeoMontoBonificacion.subtract(costeoMontoBonificacionVen));
+				if(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("CargarBonificacionesAlVendedor", "false").toLowerCase()=="false")
+					cargoven=cargoven.subtract(costeoMontoBonificacion.subtract(costeoMontoBonificacionVen));
 				costeoMontoCargoVen = cargoven;
 			}
 		} else
 			costeoMontoCargoVen = BigDecimal.ZERO;
+		
 
 	}
 
@@ -1547,13 +1553,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	public void CalMontoPromocion() {
 		costeoMontoPromocion = BigDecimal.ZERO;
 		costeoMontoPromocionVen = BigDecimal.ZERO;
-		if (pedido != null) 
+		if (pedido != null && devolucion.isPedidoTienePromociones()) 
 		{
 			BigDecimal val = BigDecimal.ZERO;
 			val =	new BigDecimal(	BDevolucionM.CalcMontoPromocionDevolucion(devolucion));
-			costeoMontoPromocion = (val != null && val
-					.compareTo(BigDecimal.ZERO) != 0) ? val
-					.multiply(new BigDecimal(100.00)) : BigDecimal.ZERO;
+			costeoMontoPromocion = (val != null && val.compareTo(BigDecimal.ZERO) != 0) ? val.multiply(new BigDecimal(100.00)) : BigDecimal.ZERO;
 			costeoMontoPromocionVen = costeoMontoPromocion;
 		}
 	}

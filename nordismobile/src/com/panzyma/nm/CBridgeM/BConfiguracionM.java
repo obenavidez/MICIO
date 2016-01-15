@@ -365,7 +365,8 @@ public class BConfiguracionM extends BBaseM {
 				vmConfiguracion setting = vmConfiguracion.setConfiguration(Url,
 						Url2, String.valueOf(res.get_devicePrefix()), Empresa,
 						res.get_userInfo().getLogin(), res.get_maxIdPedido(),
-						res.get_maxIdRecibo(), dispositivo);
+						res.get_maxIdRecibo()
+						,res.getMaxIdDevolucionV(),res.getMaxIdDevolucionNV(),dispositivo);
 				ModelConfiguracion.saveConfiguration(NMApp.getContext(),
 						setting);
 				ModelConfiguracion.saveUser(NMApp.getContext(),
@@ -426,7 +427,7 @@ public class BConfiguracionM extends BBaseM {
 											Empresa, res.get_userInfo()
 													.getLogin(), res
 													.get_maxIdPedido(), res
-													.get_maxIdRecibo(),
+													.get_maxIdRecibo(),res.getMaxIdDevolucionV(),res.getMaxIdDevolucionNV(),
 											dispositivo);
 							ModelConfiguracion.saveConfiguration(
 									NMApp.getContext(), setting);
@@ -895,6 +896,8 @@ private void SaveLocalHost(vmConfiguracion c){
 					null, // userinfo
 					0, // maxIdPedido
 					0, // maxIdRecibo
+					0, //maxIdDevolucionV
+					0, //maxIdDevolucionNV
 					(b.getParcelable("impresora") != null) ? (Impresora) b
 							.getParcelable("impresora") : null);
 			ModelConfiguracion.saveConfiguration(NMApp.getContext(), setting);

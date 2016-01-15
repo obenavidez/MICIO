@@ -11,6 +11,36 @@ public class vmConfiguracion{
 	private java.lang.String NAME_USER;
 	private int MAX_IDPEDIDO;
 	private int MAX_IDRECIBO;
+	private int MAX_IDDEVOLUCIONV;
+	private int MAX_IDDEVOLUCIONNV;
+	/**
+	 * @return the mAX_IDDEVOLUCIONV
+	 */
+	public int getMAX_IDDEVOLUCIONV() {
+		return MAX_IDDEVOLUCIONV;
+	}
+
+	/**
+	 * @param mAX_IDDEVOLUCIONV the mAX_IDDEVOLUCIONV to set
+	 */
+	public void setMAX_IDDEVOLUCIONV(int mAX_IDDEVOLUCIONV) {
+		MAX_IDDEVOLUCIONV = mAX_IDDEVOLUCIONV;
+	}
+
+	/**
+	 * @return the mAX_IDDEVOLUCIONNV
+	 */
+	public int getMAX_IDDEVOLUCIONNV() {
+		return MAX_IDDEVOLUCIONNV;
+	}
+
+	/**
+	 * @param mAX_IDDEVOLUCIONNV the mAX_IDDEVOLUCIONNV to set
+	 */
+	public void setMAX_IDDEVOLUCIONNV(int mAX_IDDEVOLUCIONNV) {
+		MAX_IDDEVOLUCIONNV = mAX_IDDEVOLUCIONNV;
+	}
+
 	private Impresora impresora;
 
 	vmConfiguracion oldata;
@@ -26,7 +56,8 @@ public class vmConfiguracion{
 	 */ 
 	public static vmConfiguracion setConfiguration(java.lang.String url_server,java.lang.String url_server2,
 			java.lang.String device_prefix, java.lang.String enterprise,
-			java.lang.String name_user, int max_idpedido, int max_idrecibo,Impresora _impresora) {
+			java.lang.String name_user, int max_idpedido, int max_idrecibo,
+			int max_devolucionv, int max_devolucionnv,Impresora _impresora) {
 		
 		vmConfiguracion vmonfig = new vmConfiguracion();
 		vmonfig.setAppServerURL(url_server);
@@ -36,6 +67,8 @@ public class vmConfiguracion{
 		vmonfig.setNameUser(name_user);
 		vmonfig.setMax_IdPedido(max_idpedido);
 		vmonfig.setMax_Idrecibo(max_idrecibo);
+		vmonfig.setMAX_IDDEVOLUCIONV(max_devolucionv);
+		vmonfig.setMAX_IDDEVOLUCIONNV(max_devolucionnv);
 		vmonfig.setImpresora(_impresora);
 		return vmonfig;
 	}
@@ -87,7 +120,7 @@ public class vmConfiguracion{
 	{
 		return vmConfiguracion.setConfiguration(obj.getAppServerURL(),obj.getAppServerURL2(),
 				obj.getDeviceId(), obj.getEnterprise(), obj.getNameUser(),
-				obj.getMax_IdPedido(), obj.getMax_Idrecibo(),obj.getImpresora());
+				obj.getMax_IdPedido(), obj.getMax_Idrecibo(),obj.getMAX_IDDEVOLUCIONV(),obj.getMAX_IDDEVOLUCIONNV(),obj.getImpresora());
 	}
 	
 	public String setAppServerURL(String uri) {

@@ -10,16 +10,49 @@ public class DataConfigurationResult
     public int devicePrefix;
     public int maxIdPedido;
     public int maxIdRecibo;
+    public int maxIdDevolucionV;
+    /**
+	 * @return the maxIdDevolucionV
+	 */
+	public int getMaxIdDevolucionV() {
+		return maxIdDevolucionV;
+	}
+
+	/**
+	 * @param maxIdDevolucionV the maxIdDevolucionV to set
+	 */
+	public void setMaxIdDevolucionV(int maxIdDevolucionV) {
+		this.maxIdDevolucionV = maxIdDevolucionV;
+	}
+
+	/**
+	 * @return the maxIdDevolucionNV
+	 */
+	public int getMaxIdDevolucionNV() {
+		return maxIdDevolucionNV;
+	}
+
+	/**
+	 * @param maxIdDevolucionNV the maxIdDevolucionNV to set
+	 */
+	public void setMaxIdDevolucionNV(int maxIdDevolucionNV) {
+		this.maxIdDevolucionNV = maxIdDevolucionNV;
+	}
+
+	public int maxIdDevolucionNV;
     public String error;
     
 	public DataConfigurationResult(){}
 	
-	public DataConfigurationResult(Usuario _userInfo, int _devicePrefix,int _maxIdPedido,int _maxIdRecibo,String _error)
+	public DataConfigurationResult(Usuario _userInfo, int _devicePrefix,int _maxIdPedido,int _maxIdRecibo,
+			int _maxIdDevolucionV,int _maxIdDevolucionNV,String _error)
 	{
 		this.userInfo=_userInfo;
 	    this.devicePrefix=_devicePrefix;
 	    this.maxIdPedido=_maxIdPedido;
 	    this.maxIdRecibo=_maxIdRecibo;
+	    this.maxIdDevolucionV=_maxIdDevolucionV;
+	    this.maxIdDevolucionNV=_maxIdDevolucionNV;
 	    this.error=_error; 
 	}
 	

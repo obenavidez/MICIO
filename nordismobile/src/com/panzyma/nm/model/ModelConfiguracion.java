@@ -81,6 +81,8 @@ public class ModelConfiguracion {
 				pref.getString("name_user", ""),
 				pref.getInt("max_idpedido", 0), 
 				pref.getInt("max_idrecibo", 0),
+				pref.getInt("max_iddevolucionv", 0), 
+				pref.getInt("max_iddevolucionnv", 0),
 				null);
 		config.setImpresora(Impresora.get(cnt));
 		return config;
@@ -201,7 +203,9 @@ public class ModelConfiguracion {
 		edit.putString("enterprise", setting.getEnterprise());
 		edit.putString("name_user", setting.getNameUser());
 		edit.putInt("max_idpedido", setting.getMax_IdPedido());
-		edit.putInt("max_idrecibo", setting.getMax_Idrecibo());		
+		edit.putInt("max_idrecibo", setting.getMax_Idrecibo());	
+		edit.putInt("max_iddevolucionv", setting.getMAX_IDDEVOLUCIONV());
+		edit.putInt("max_iddevolucionnv", setting.getMAX_IDDEVOLUCIONNV());	
 		edit.commit();
 		ModelConfiguracion.guardarImpresora(view, setting.getImpresora());
 	}
