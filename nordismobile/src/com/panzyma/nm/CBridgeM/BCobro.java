@@ -29,9 +29,9 @@ public class BCobro extends BBaseM{
 			return result;
 		}
 
-		public static Petition toInt(int x) {
+		public static Accion toInt(int x) {
 			
-			return Petition.values()[x];
+			return Accion.values()[x];
 		}
 	}
 	
