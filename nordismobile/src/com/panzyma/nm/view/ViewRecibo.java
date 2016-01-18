@@ -77,7 +77,6 @@ import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
-import com.panzyma.nm.view.ViewPedido.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.TasaCambioFragment;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -444,13 +443,15 @@ public class ViewRecibo extends ActionBarActivity implements
 					break;
 				case CONSULTA_COBROS :
 					fragmentActive = FragmentActive.CONSULTAR_COBROS;
-					if (findViewById(R.id.fragment_container) != null) 
+					if (findViewById(R.id.dynamic_fragment) != null) {
+					}
+					else
 					{
-						transaction = getSupportFragmentManager().beginTransaction();
+						FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
 						consultaCobroFragment cobros = new consultaCobroFragment();
-						transaction.replace(R.id.fragment_container,cobros);
-						transaction.addToBackStack(null);
-						transaction.commit();
+						mytransaction.replace(R.id.fragment_container,cobros);
+						mytransaction.addToBackStack(null);
+						mytransaction.commit();
 						
 						
 					}

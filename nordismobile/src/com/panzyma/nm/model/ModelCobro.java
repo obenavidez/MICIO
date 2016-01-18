@@ -21,7 +21,7 @@ public class ModelCobro {
 		 Parameters params = new Parameters(
 				 			(new String[] { "Credentials","delDia", "deSemana", "deMes", "fechaInic", "fechaFin"}),
 				 			(new Object[] { credenciales, delDia, deSemana, deMes, fechaInic, fechaFin }), 
-				 			(new Type[] {   PropertyInfo.STRING_CLASS, PropertyInfo.BOOLEAN_CLASS, PropertyInfo.BOOLEAN_CLASS, PropertyInfo.BOOLEAN_CLASS,PropertyInfo.LONG_CLASS, PropertyInfo.LONG_CLASS }));
+				 			(new Type[] {   PropertyInfo.STRING_CLASS, PropertyInfo.BOOLEAN_CLASS, PropertyInfo.BOOLEAN_CLASS, PropertyInfo.BOOLEAN_CLASS,PropertyInfo.INTEGER_CLASS, PropertyInfo.INTEGER_CLASS }));
 		 try 
 		 {
 				Object cobros = AppNMComunication.InvokeMethod( params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,NMConfig.MethodName.GetCobroColector);

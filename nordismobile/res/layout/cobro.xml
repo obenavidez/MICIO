@@ -30,7 +30,7 @@
             android:visibility="gone" />
 
         <ListView
-            android:id="@+id/cxclvgeneric"
+            android:id="@+id/cobrosList"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:choiceMode="singleChoice"

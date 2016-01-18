@@ -4,21 +4,22 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 
 import java.util.ArrayList;
 
-import com.panzyma.nm.CBridgeM.BVentaM.Petition;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.model.ModelCobro;
-import com.panzyma.nm.model.ModelVenta;
 import com.panzyma.nm.serviceproxy.CCobro;
 
 import android.os.Message;
 
-public class BCobro extends BBaseM{
+public class BCobroM extends BBaseM{
 
+	
+	public BCobroM(){}
+	
 	public enum Accion {
-		VENTAS_DEL_DIA(0), VENTAS_DEL_SEMANA(1), VENTAS_DEL_MES(2);
+		COBROS_DEL_DIA(0), COBROS_DEL_SEMANA(1), COBROS_DEL_MES(2) , UPDATE_LISTVIEW_HEADER(888);
 		int result;
 
 		Accion(int result) {
@@ -37,11 +38,18 @@ public class BCobro extends BBaseM{
 	
 	@Override
 	public boolean handleMessage(Message msg) throws Exception {
-		Petition request = Petition.toInt(msg.what);
+		Accion request = Accion.toInt(msg.what);
 		switch (request) {
-		case VENTAS_DEL_DIA:
-			LoadCobros(true, false, false, 0, 0, Accion.VENTAS_DEL_DIA);
+		case COBROS_DEL_DIA:
+			LoadCobros(true, false, false, 0, 0, Accion.COBROS_DEL_DIA);
 			break;
+		case COBROS_DEL_SEMANA:
+			LoadCobros(false, true, false, 0, 0, Accion.COBROS_DEL_SEMANA);
+			break;
+		case COBROS_DEL_MES:
+			LoadCobros(false, false, true, 0, 0, Accion.COBROS_DEL_MES);
+			break;
+		
 		}
 		return false;
 	}
