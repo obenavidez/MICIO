@@ -95,77 +95,6 @@
          android:layout_weight="0.75" 
          android:layout_height="wrap_content" />
     </TableRow>
-<!-- 	<TableRow> -->
-<!--         <TextView -->
-<!--             android:id="@+id/cxclbl_num_central" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:text="Numero Central:" -->
-<!--             android:textColor="@color/Teal" -->
-<!--             android:textSize="10dp" /> -->
-
-<!--         <TextView -->
-<!--             android:id="@+id/cxctextv_numero_central" -->
-<!--             android:scrollHorizontally="true" -->
-<!--             android:textColor="@color/Black" -->
-<!--             android:textSize="10dp" /> -->
-
-<!--         <TextView -->
-<!--             android:id="@+id/cxclbl_fecha" -->
-<!--             android:text="Fecha :" -->
-<!--             android:textColor="@color/Teal" -->
-<!--             android:textSize="10dp" /> -->
-
-<!--         <TextView -->
-<!--             android:id="@+id/cxctextv_detalle_fecha" -->
-<!--             android:textColor="@color/Black" -->
-<!--             android:textSize="10dp" /> -->
-<!--      </TableRow>   -->
-
-
-<!--         <TableRow> -->
-<!--           <TextView -->
-<!--             android:id="@+id/cxclbl_total_recibo" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_marginLeft="3dp" -->
-<!--             android:layout_weight="1" -->
-<!--             android:text="Total Recibo :" -->
-<!--             android:textColor="@color/Teal" -->
-<!--             android:textSize="10dp" /> -->
-
-<!--         <TextView -->
-<!--             android:id="@+id/cxctext_detalle_total" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_weight="4" -->
-<!--              android:layout_marginRight="3dp" -->
-<!--             android:ellipsize="marquee" -->
-<!--             android:lines="1" -->
-<!--             android:marqueeRepeatLimit="marquee_forever" -->
-<!--             android:scrollHorizontally="true" -->
-<!--             android:textColor="@color/Black" -->
-<!--             android:textSize="10dp" /> -->
-<!--          </TableRow>  -->
-   
-
-<!--  <TableRow>  -->
-<!--         <TextView -->
-<!--             android:id="@+id/cxclbl_cliente" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_marginLeft="3dp" -->
-<!--             android:layout_weight="0.5" -->
-<!--             android:text="Cliente :" -->
-<!--             android:textColor="@color/Teal" -->
-<!--             android:textSize="10dp" /> -->
-
-<!--         <TextView -->
-<!--             android:id="@+id/cxctext_cobro_cliente" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_weight="3" -->
-<!--             android:ellipsize="marquee" -->
-<!--             android:lines="3" -->
-<!--             android:marqueeRepeatLimit="marquee_forever" -->
-<!--             android:scrollHorizontally="true" -->
-<!--             android:textColor="@color/Black" -->
-<!--             android:textSize="10dp" /> --><!--  </TableRow> --> 
 
     
 

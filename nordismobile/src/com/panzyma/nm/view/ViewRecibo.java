@@ -78,6 +78,7 @@ import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.view.adapter.InvokeBridge;
+import com.panzyma.nm.view.vCliente.FragmentActive;
 import com.panzyma.nm.viewdialog.TasaCambioFragment;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
@@ -235,6 +236,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	private ReciboColector recibo;
 	private Intent intent;
 	private Bundle b;
+	consultaCobroFragment cobros;
 	
 	private static final int MOSTRAR_FACTURAS = 0;
 	private static final int MOSTRAR_NOTAS_DEBITO = 1;
@@ -401,6 +403,12 @@ public class ViewRecibo extends ActionBarActivity implements
 					//getSupportActionBar().hide();
 					break;
 				case CUENTAS_POR_COBRAR:
+					if(recibo_selected== null)
+					{
+						AppDialog.showMessage(vr,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					
 					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 		            {
 						fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
@@ -442,20 +450,21 @@ public class ViewRecibo extends ActionBarActivity implements
 		            }
 					break;
 				case CONSULTA_COBROS :
-					fragmentActive = FragmentActive.CONSULTAR_COBROS;
-					if (findViewById(R.id.dynamic_fragment) != null) {
-					}
-					else
-					{
-						FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
-						consultaCobroFragment cobros = new consultaCobroFragment();
-						mytransaction.replace(R.id.fragment_container,cobros);
-						mytransaction.addToBackStack(null);
-						mytransaction.commit();
-						
-						
-					}
-					//CERRAR EL MENU DEL DRAWER
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+		            {
+						fragmentActive = FragmentActive.CONSULTAR_COBROS;
+						if (findViewById(R.id.dynamic_fragment) != null) {}
+						else
+						{
+							FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
+							cobros = new consultaCobroFragment();
+							mytransaction.replace(R.id.fragment_container,cobros);
+							mytransaction.addToBackStack(null);
+							mytransaction.commit();
+							footerView.setVisibility(View.GONE);
+						}
+						//CERRAR EL MENU DEL DRAWER
+		            }
 					drawerLayout.closeDrawers();
 					break;
 				case TASA_CAMBIO :
@@ -1293,7 +1302,7 @@ public class ViewRecibo extends ActionBarActivity implements
 		
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_MENU  && fragmentActive != FragmentActive.CUENTAS_POR_COBRAR) {
+		if (keyCode == KeyEvent.KEYCODE_MENU  && fragmentActive != FragmentActive.CUENTAS_POR_COBRAR && fragmentActive != FragmentActive.CONSULTAR_COBROS) {
 			 drawerLayout.openDrawer(Gravity.LEFT);
 			 
 		}
@@ -1301,13 +1310,25 @@ public class ViewRecibo extends ActionBarActivity implements
 			cuentasPorCobrar.mostrarMenu();
 			return true;
 		} 
+		if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CONSULTAR_COBROS) {			
+			cobros.mostrarMenu();
+			return true;
+		} 
 		else if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.LIST) {        	
 		  	FINISH_ACTIVITY();	
 		  	finish();
-		} else if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {
+		} 
+		else if (keyCode == KeyEvent.KEYCODE_BACK && ( fragmentActive == FragmentActive.CUENTAS_POR_COBRAR || fragmentActive == FragmentActive.CONSULTAR_COBROS)) {
 			fragmentActive =FragmentActive.LIST;
 			getSupportActionBar().show();
 			gridheader.setVisibility(View.VISIBLE);
+			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);	
+			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, firstFragment);
+			transaction.addToBackStack(null);
+			transaction.commit();
+			getSupportActionBar().show();
+			setList();
 		}
 		
 		return super.onKeyUp(keyCode, event);
@@ -1332,13 +1353,15 @@ public class ViewRecibo extends ActionBarActivity implements
 	@Override
 	public void onBackPressed() {
 		Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-		if (fragment instanceof FichaClienteFragment || fragment instanceof CuentasPorCobrarFragment) {
+		if (fragment instanceof FichaClienteFragment || fragment instanceof CuentasPorCobrarFragment || fragmentActive == FragmentActive.CONSULTAR_COBROS) {
 			fragmentActive = FragmentActive.LIST;
+			gridheader.setText(String.format("LISTA RECIBOS (%s)",recibos.size()));
 			gridheader.setVisibility(View.VISIBLE);
 			getSupportActionBar().show();
 			FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
 			mytransaction.replace(R.id.fragment_container, firstFragment);
 			mytransaction.commit();
+			setList();
 		} 
 	}
 
