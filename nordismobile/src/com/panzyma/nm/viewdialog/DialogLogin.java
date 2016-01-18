@@ -120,8 +120,10 @@ public class DialogLogin extends Dialog
 			}
 			else
 			{
-		    	txtenterprise.setText(session[0]);
-		    	txtenterprise.setEnabled(false);  
+				if(txtenterprise !=null){
+			    	txtenterprise.setText(session[0]);
+			    	txtenterprise.setEnabled(false);  
+				}
 		    	txtusername.setText((admin?"":session[1]));		    	
 		    	txtusername.setEnabled(!admin); 
 		    	if(admin) {
