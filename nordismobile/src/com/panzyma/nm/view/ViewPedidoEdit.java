@@ -70,6 +70,7 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Pedido;
@@ -187,6 +188,10 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			if (pedido != null) 
 			{
 				DetallePedido[] detPed = pedido.getDetalles();
+				for(DetallePedido dp: detPed) {
+					Producto p = ModelProducto.getProductoByID(me.getContentResolver(), dp.getObjProductoID());
+					aprodselected.add(p);
+				}				
 				for (int i = 0; i < detPed.length; i++)
 					Lvmpproducto.add(detPed[i]);
 				onEdit = true;
