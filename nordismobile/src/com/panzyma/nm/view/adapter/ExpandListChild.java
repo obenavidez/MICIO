@@ -5,17 +5,7 @@ public class ExpandListChild {
 	
 	public ExpandListChild(){}
 	
-	/**
-	 * @param name
-	 * @param tag
-	 * @param obj
-	 */
-	public ExpandListChild(String name, String tag, Object obj) {
-		super();
-		Name = name;
-		Tag = tag;
-		this.obj = obj;
-	}
+
 	public ExpandListChild(ExpandListChild obj) {
 		super();
 		Name = obj.getName();
@@ -25,7 +15,26 @@ public class ExpandListChild {
 	
 	private String Name;
 	private String Tag;
+	private Integer parentposition;
 	
+	public ExpandListChild(String name, String tag, Integer parentposition, Object obj) {
+		super();
+		Name = name;
+		Tag = tag;
+		this.parentposition = parentposition;
+		this.obj = obj;
+	}
+
+
+	public Integer getParentposition() {
+		return parentposition;
+	}
+
+
+	public void setParentposition(Integer parentposition) {
+		this.parentposition = parentposition;
+	}
+
 	private Object obj; 
 	
 	public String getName() {

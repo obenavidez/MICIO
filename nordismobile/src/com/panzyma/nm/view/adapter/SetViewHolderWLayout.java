@@ -47,20 +47,28 @@ public class SetViewHolderWLayout {
 	private int layoutid;
 	private Class<?> viewHoder;
 	private boolean isParent=false;
+	private Integer parentposition;
 	
-	
+
+	public SetViewHolderWLayout(int layoutid, Class<?> viewHoder, boolean isParent, Integer parentposition) {
+		super();
+		this.layoutid = layoutid;
+		this.viewHoder = viewHoder;
+		this.isParent = isParent;
+		this.parentposition = parentposition;
+	}
+
+	public Integer getParentposition() {
+		return parentposition;
+	}
+
+	public void setParentposition(Integer parentposition) {
+		this.parentposition = parentposition;
+	}
 
 	public SetViewHolderWLayout(){}
 	
-	/**
-	 * @param layoutid
-	 * @param viewHoder
-	 */
-	public SetViewHolderWLayout(int layoutid, Class<?> viewHoder,boolean _isParent) {		 
-		this.layoutid = layoutid;
-		this.viewHoder = viewHoder;
-		this.isParent=_isParent;
-	}
+ 
 	 
 	
 }

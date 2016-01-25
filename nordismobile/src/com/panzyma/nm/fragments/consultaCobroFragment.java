@@ -1,20 +1,34 @@
 package com.panzyma.nm.fragments;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BCobroM.Accion;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.fragments.ConsultaVentasFragment.ActionMenu;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCobro;
 import com.panzyma.nm.serviceproxy.CFormaPago;
 import com.panzyma.nm.serviceproxy.CVenta;
+import com.panzyma.nm.serviceproxy.DevolucionProducto;
+import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
+import com.panzyma.nm.view.adapter.ExpandListAdapter;
+import com.panzyma.nm.view.adapter.ExpandListChild;
+import com.panzyma.nm.view.adapter.ExpandListGroup;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
+import com.panzyma.nm.view.adapter.SetViewHolderWLayout;
 import com.panzyma.nm.view.viewholder.CobroViewHolder;
+import com.panzyma.nm.view.viewholder.ListGroupHolder;
+import com.panzyma.nm.view.viewholder.PagoViewHolder;
+import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
+import com.panzyma.nm.view.viewholder.ProductoLoteViewHolder;
 import com.panzyma.nordismobile.R;
 
 import android.app.ProgressDialog;
@@ -35,6 +49,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -47,7 +63,10 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	ArrayList<CFormaPago> pagos = new ArrayList<CFormaPago>();
 	String titulo = "VENTAS";
 	private GenericAdapter adapter = null;
+	private ExpandListAdapter adapter3 = null;
+	private GenericAdapter adapter2 = null;
 	private ListView listaGenerica;
+	private ListView listapagos;
 	private TextView txtenty;
 	private EditText txtFiltro;
 	private TextView headerGrid;
@@ -62,6 +81,12 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	private static final int MOSTRAR_COBROS_MES = 3;
 	private static final int IMPRIMIR = 4;
 	private ActionMenu menuSelected;
+	TextView txt_footer ;
+	TextView txt_footer2 ;
+	private ExpandableListView expItems;
+	List<ExpandListGroup> lgroups = new LinkedList<ExpandListGroup>();
+	List<String> listDataHeader;
+	HashMap<String, List<String>> listDataChild;
 	
 	public enum ActionMenu {
 		COBROS_DIA, COBROS_SEMANA, COBROS_MES, IMPRIMIR 
@@ -82,7 +107,6 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 		initComponent();
 		menuSelected = ActionMenu.COBROS_DIA;
 		CargarCobros(Accion.COBROS_DEL_DIA.getActionCode());
-		//CargarPagos();
 	}
 	
 	@Override
@@ -137,13 +161,14 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 				case COBROS_DEL_SEMANA:
 				case COBROS_DEL_MES:
 					System.out.print("YA LLego");
+					cobros.clear();
 					cobros = (ArrayList<CCobro>)msg.obj;
-					//MostrarCobros();
 					 CargarPagos(response.getActionCode()+3);
 					break;
 				case PAGOS_DEL_DIA :
 				case PAGOS_DE_SEMANA :
 				case PAGOS_DEL_MES :
+					pagos.clear();
 					pagos = (ArrayList<CFormaPago>)msg.obj;
 					 MostrarCobros();
 					break;
@@ -156,42 +181,42 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	private void MostrarCobros(){
 		if (waiting != null) waiting.dismiss();
 
-		adapter = new GenericAdapter<CCobro, CobroViewHolder>( this.getActivity().getApplicationContext(),CobroViewHolder.class,cobros,R.layout.detalle_cobro);
-		listaGenerica.setAdapter(adapter);
 		
-		if(cobros.size() == 0){
-			adapter = new GenericAdapter<CCobro, CobroViewHolder>( this.getActivity().getApplicationContext(),CobroViewHolder.class,cobros,R.layout.detalle_cobro);
-			listaGenerica.setAdapter(adapter);
-			txtview_entry.setVisibility(View.VISIBLE);
-			txtFiltro.setVisibility(View.GONE);
-//			adapter = new GenericAdapter<CCobro, CobroViewHolder>( this.getActivity().getApplicationContext(),CobroViewHolder.class,cobros,R.layout.detalle_cobro);
-//			listaGenerica.setAdapter(adapter);
-//			//adapter.notifyDataSetChanged();
+		ArrayList<SetViewHolderWLayout> layouts = new ArrayList<SetViewHolderWLayout>();
+		layouts.add(new SetViewHolderWLayout(R.layout.list_group, ListGroupHolder.class, true,0));
+		layouts.add(new SetViewHolderWLayout(R.layout.detalle_cobro, CobroViewHolder.class, false,0));
+		layouts.add(new SetViewHolderWLayout(R.layout.detalle_pago, PagoViewHolder.class, false,0));
+//		
+		    
+		adapter3 = new ExpandListAdapter(getActivity(), SetStandardGroups() , layouts);
+ 
+		expItems.setAdapter(adapter3);
+
+
+		for (int g = 0; g < adapter3.getGroupCount(); g++) {
+			expItems.expandGroup(g);
 		}
-		
-		titulo = "VENTAS";
+	
+
+		titulo = "MOSTRANDO COBRO ";
 		if( menuSelected == ActionMenu.COBROS_DIA ) titulo += " DEL DIA ";
 		else if( menuSelected == ActionMenu.COBROS_SEMANA ) titulo  += " DE LA SEMANA ";
 		else if( menuSelected == ActionMenu.COBROS_MES ) titulo  += " DEL MES ";
-		
+	
 		gridheader.setText(titulo + " (" + cobros.size() + ")");
+
 	}
 	
 	private void initComponent(){
-//		bar =((ActionBarActivity)getActivity()).getSupportActionBar();
-//		bar.hide();
-		txtview_entry = (TextView)getActivity().findViewById(R.id.cctxtview_entytext);
-		//if(txtview_entry != null)
-			//txtview_entry.setVisibility(View.GONE);
 		
-		listaGenerica = (ListView) getActivity().findViewById(R.id.cobrosList);
+		expItems= (ExpandableListView) getActivity().findViewById(R.id.ExpList);
+		
 		txtenty = (TextView) getActivity().findViewById(R.id.ctxtview_enty);
-		headerGrid = (TextView) getActivity().findViewById(R.id.cxctextv_header2);
+		//headerGrid = (TextView) getActivity().findViewById(R.id.cxctextv_header2);
 		btnMenu = (Button)getActivity().findViewById(R.id.btnMenu);
-		txtFiltro = (EditText) getActivity().findViewById(R.id.cxctextv_filtro);
+		//txtFiltro = (EditText) getActivity().findViewById(R.id.cxctextv_filtro);
 		gridheader = (TextView)  getActivity().findViewById(R.id.ctextv_gridheader);
-		//gridheader.setVisibility(View.INVISIBLE);
-		gridheader.setText("VENTAS DEL DIA (0)");
+
 		if(txtFiltro!=null) {
 			txtFiltro.addTextChangedListener(new TextWatcher() {
 				@Override
@@ -208,10 +233,6 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 								filtercobros.add(cobro);
 							}
 						}					
-						gridheader.setText(String.format("VENTAS DEL DIA (%s)", filtercobros.size()));
-						adapter.setItems(filtercobros);
-						adapter.notifyDataSetChanged();
-						listaGenerica.setAdapter(adapter);
 					}		
 				}
 				@Override
@@ -220,7 +241,7 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 				public void afterTextChanged(Editable s) {}
 			});
 		}
-		
+
 		WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
 		display = wm.getDefaultDisplay();
 		initMenu();
@@ -281,4 +302,65 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 
 	}
 
+	private float getTotalPagos(){
+		float total = 0;
+		for(CFormaPago item : pagos){
+			total+= item.getMonto();
+		}
+		return total;
+	}
+	
+	private float getTotalCobros(){
+		float total = 0;
+		for(CCobro item : cobros){
+			total+= item.getTotalRecibo();
+		}
+		return total;
+	}
+	
+	public List<ExpandListGroup> SetStandardGroups() {
+
+		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();
+		LinkedList<ExpandListChild> groupchild = null ;
+		
+		ExpandListGroup group = new ExpandListGroup();
+		group.setName("RECIBOS");
+		group.setPosition(0); // 0
+		groupchild = new LinkedList<ExpandListChild>();
+
+		for( CCobro item : cobros  ){
+			ExpandListChild ch = new ExpandListChild();
+			ch.setName(item.getNombreCliente());
+			ch.setObject(item);
+			ch.setParentposition(0);
+			groupchild.add(ch);		
+		}
+		
+		group.setItems(groupchild);
+		_lgroups.add(group);
+		
+		/********** PAGOS *******************/
+		ExpandListGroup group2 = new ExpandListGroup();
+		group2.setPosition(0); // 1
+		group2.setName("PAGOS");
+		
+		groupchild = new LinkedList<ExpandListChild>();
+		
+		for(CFormaPago item : pagos ){
+			ExpandListChild ch = new ExpandListChild();
+			ch.setName(item.getCodFormaPago());
+			ch.setObject(item);
+			ch.setParentposition(1);
+			groupchild.add(ch); 
+			
+		}
+		
+		group2.setItems(groupchild);
+		_lgroups.add(group2);
+
+		
+		return _lgroups;
+	}
+
+	
 }

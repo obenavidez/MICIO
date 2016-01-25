@@ -7,7 +7,16 @@ public class ExpandListGroup {
 	private String Name;
 	private LinkedList<ExpandListChild> Items;
 	private Object obj;
+	private Integer position;
 	
+	public Integer getPosition() {
+		return position;
+	}
+
+	public void setPosition(Integer position) {
+		this.position = position;
+	}
+
 	public ExpandListGroup(ExpandListGroup lg){
 		this.Name=lg.getName();
 		this.Items=lg.getItems();

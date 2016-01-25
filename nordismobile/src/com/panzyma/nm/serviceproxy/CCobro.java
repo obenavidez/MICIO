@@ -1,12 +1,18 @@
 package com.panzyma.nm.serviceproxy;
 
-public class CCobro {
+import java.sql.Date;
+import java.util.Hashtable;
+
+import org.ksoap2.serialization.KvmSerializable;
+import org.ksoap2.serialization.PropertyInfo;
+
+public class CCobro  implements KvmSerializable {
 	
-		protected java.lang.String numeroCentral;
-	    protected java.lang.String nombreCliente;
-	    protected java.lang.String fecha;
-	    protected float totalRecibo;
-	    protected java.lang.String referencia;
+		private java.lang.String numeroCentral;
+		private java.lang.String nombreCliente;
+	    private java.lang.String fecha;
+	    private float totalRecibo;
+	    private java.lang.String referencia;
 	
 	 	public CCobro() {
 	    }
@@ -58,4 +64,89 @@ public class CCobro {
 	    public void setReferencia(java.lang.String referencia) {
 	        this.referencia = referencia;
 	    }
+
+		@Override
+		public Object getProperty(int index) {
+			switch (index) {
+			case 0:
+				return getNumeroCentral();
+				
+			case 1:
+				return  getNombreCliente();
+			
+			case 2:
+				return  getFecha();
+				
+			case 3:
+				return  getTotalRecibo();
+				
+			case 4:
+				return  getReferencia();
+				
+			}
+			return null;
+		}
+
+		@Override
+		public int getPropertyCount() {
+			// TODO Auto-generated method stub
+			return 5;
+		}
+
+		@Override
+		public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
+			switch (_index) 
+			{
+			 case 0:
+	               _info.name = "numeroCentral";
+	               _info.type = java.lang.String.class; 
+	               break;
+			 case 1:
+	               _info.name = "nombreCliente";
+	               _info.type = java.lang.String.class; 
+	               break;
+			 case 2:
+	               _info.name = "fecha";
+	               _info.type = java.lang.String.class; 
+	               break;
+			 case 3:
+	               _info.name = "totalRecibo";
+	               _info.type = java.lang.Float.class; 
+	               break;
+			 case 4:
+	               _info.name = "referencia";
+	               _info.type = java.lang.String.class; 
+	               break;
+	               
+			}
+			
+		}
+
+		@Override
+		public void setProperty(int _index, Object _obj) {
+			switch (_index) 
+			{
+			 case 0:
+				 numeroCentral = (String) _obj;
+	              
+	               break;
+			 case 1:
+				 nombreCliente = (String) _obj;
+	               
+	               break;
+			 case 2:
+				 fecha = (String) _obj;
+	              
+	               break;
+			 case 3:
+				 totalRecibo = Float.parseFloat(_obj.toString());
+	               
+	               break;
+			 case 4:
+				 referencia = (String) _obj;
+	            
+	               break;
+	               
+			}
+		}
 }

@@ -2,50 +2,46 @@ package com.panzyma.nm.view.adapter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.EditText;
-import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.Toast;
 
 public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 
 	private Context context; 
 	private List<E> groups;//List<E> items;	
 	private ArrayList<SetViewHolderWLayout> holderloyout;//layoutchild  
-	SetViewHolderWLayout parentlayout;
+	SetViewHolderWLayout parentlayout; 
 	SetViewHolderWLayout childlayout; 
+	Map achildlayout;
 	int grouposition;
 	int childposition; 
+	private List<String> _listDataHeader; // header titles
+    // child data in format of header title, child title
+    private HashMap<String, List<String>> _listDataChild;
+    ArrayList<ParentChildPosition> layouts=null;
 	
 	public ExpandListAdapter(Context _context, List<E> _groups,ArrayList<SetViewHolderWLayout> ... _holderloyout) 
 	{
 		this.context = _context; 
 		this.groups = _groups;
 		this.holderloyout=_holderloyout[0] ;
-		getParentView();
-		getChildView();
+		parentlayout = null;
+		layouts = null;
+		getParentView(); 
 	}    
 	
-	
-	
-	
+
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
 		// TODO Auto-generated method stub
@@ -115,6 +111,7 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 	}	
 	
  
+	@Override
 	@SuppressLint("ShowToast") @SuppressWarnings("unchecked")
 	public View getGroupView(int groupPosition, boolean isLastChild, View view,
 			ViewGroup parent) 
@@ -125,7 +122,7 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 			ExpandListGroup _group = (ExpandListGroup) getGroup(groupPosition);
 
 			if (view == null) { 
-				LayoutInflater inf = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				view = inf.inflate(parentlayout.getLayoutid(), null);
 				viewHolder=(V) (parentlayout.getViewHoder().newInstance()); 
 				invokeView(view,viewHolder);
@@ -144,6 +141,7 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		return view;
 	}
 	 
+	@Override
 	@SuppressWarnings("unchecked")
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View view, ViewGroup parent) {
@@ -156,11 +154,11 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 			_parent=parent;
 			ExpandListChild child = (ExpandListChild) getChild(groupPosition, childPosition);
 			if (view == null) 
-			{ 
-				 
-				LayoutInflater inf = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-				view = inf.inflate(childlayout.getLayoutid(), null); 
-				viewHolder=(V) (childlayout.getViewHoder().newInstance()); 
+			{  
+				SetViewHolderWLayout layout= (SetViewHolderWLayout) layouts.get(parentlayout.getParentposition()).getItem(groupPosition);
+				LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				view = inf.inflate(layout.getLayoutid(), null); 
+				viewHolder=(V) (layout.getViewHoder().newInstance()); 
 				invokeView(view,viewHolder);    		
 				view.setTag(viewHolder);	
 				
@@ -185,27 +183,41 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 	
 	public SetViewHolderWLayout getParentView()
 	{
-		if( parentlayout==null){
+		if( parentlayout==null)
+		{
+			layouts=new ArrayList<ParentChildPosition>();
+			
 			for(SetViewHolderWLayout hl:holderloyout)
-				if(hl.isParent()){
+			{
+				if(hl.isParent())
+				{
+					ParentChildPosition obj=new ParentChildPosition();
+					obj.setAprent(hl);
+				    obj.setAchild(getChildView(hl));
+				    layouts.add(obj);
 					parentlayout=hl;
 					break;
+				}else{
+					
 				}
+			}
 		} 
 		return parentlayout; 
 	}
 	
-	public SetViewHolderWLayout getChildView()
-	{
-		if( childlayout==null)
+	public ArrayList<SetViewHolderWLayout> getChildView(SetViewHolderWLayout parent)
+	{ 
+		ArrayList<SetViewHolderWLayout> rs = null;
+		rs=new ArrayList<SetViewHolderWLayout>();
+		for(SetViewHolderWLayout hl:holderloyout)
 		{
-			for(SetViewHolderWLayout hl:holderloyout)
-				if(!hl.isParent()){
-					childlayout=hl;
-					break;
-				}
+			
+			if(!hl.isParent() && hl.getParentposition()==parent.getParentposition())			
+			{ 
+				rs.add(hl);
+			}
 		} 
-		return childlayout; 
+		return rs; 
 	}
  
 	@Override
@@ -218,5 +230,35 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		
 	}
 	 
-
+	
+	
+	class ParentChildPosition
+	{
+		ParentChildPosition(){
+			
+		}
+		public ParentChildPosition(SetViewHolderWLayout aprent, ArrayList<SetViewHolderWLayout> achild) {
+			super();
+			this.aprent = aprent;
+			this.achild = achild;
+		}
+		public SetViewHolderWLayout getAprent() {
+			return aprent;
+		}
+		public void setAprent(SetViewHolderWLayout aprent) {
+			this.aprent = aprent;
+		}
+		public ArrayList<SetViewHolderWLayout> getAchild() {
+			return achild;
+		}
+		public void setAchild(ArrayList<SetViewHolderWLayout> achild) {
+			this.achild = achild;
+		}
+		public SetViewHolderWLayout getItem(int position){
+			return achild.get(position);
+		}
+		private SetViewHolderWLayout aprent;
+		private ArrayList<SetViewHolderWLayout> achild;
+	}
+	
 }
