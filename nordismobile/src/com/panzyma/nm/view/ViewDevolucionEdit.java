@@ -1,12 +1,10 @@
 package com.panzyma.nm.view;
 
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -20,7 +18,6 @@ import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ClipData.Item;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,7 +30,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.Gravity;
@@ -68,7 +64,6 @@ import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.Controller;
@@ -78,8 +73,6 @@ import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Editable;
-import com.panzyma.nm.interfaces.IFilterabble;
-import com.panzyma.nm.interfaces.Predicate;
 import com.panzyma.nm.logic.DevolucionBL;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelProducto;
@@ -93,9 +86,6 @@ import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.PedidoPromocion;
-import com.panzyma.nm.serviceproxy.PedidoPromocionDetalle;
-import com.panzyma.nm.serviceproxy.PrecioProducto;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.serviceproxy.Ventas;
@@ -115,13 +105,11 @@ import com.panzyma.nm.viewdialog.DialogCliente;
 import com.panzyma.nm.viewdialog.DialogCosteoDevolucion;
 import com.panzyma.nm.viewdialog.DialogNotaDevolucion;
 import com.panzyma.nm.viewdialog.DialogNotaDevolucion.RespuestaNotaDevolucion;
-import com.panzyma.nm.viewdialog.DialogNotaRecibo;
 import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewdialog.EditDevolucionProducto;
 import com.panzyma.nm.viewdialog.ProductoDevolucion;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
-import com.panzyma.nm.viewdialog.DialogNotaRecibo.RespuestaNotaRecibo;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({ "unchecked", "rawtypes", "deprecation", "unused" })
@@ -531,9 +519,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		{
 			ArrayList<SetViewHolderWLayout> layouts = new ArrayList<SetViewHolderWLayout>();
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_productolote,
-					ProductoLoteViewHolder.class, true));
+					ProductoLoteViewHolder.class, true,0));
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_loteproducto,
-					ProductoLoteDetalleViewHolder.class, false));
+					ProductoLoteDetalleViewHolder.class, false ,0));
 			try {
 				adapter = new ExpandListAdapter(context,
 						lgroups = SetStandardGroups(), layouts);
@@ -717,6 +705,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				lvdevproducto
 						.setOnGroupClickListener(new OnGroupClickListener() {
 
+							@Override
 							public boolean onGroupClick(
 									ExpandableListView parent, View v,
 									int groupPosition, long id) {
@@ -797,7 +786,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();
 
 		LinkedList<ExpandListChild> groupchild;
-		for (DevolucionProducto dp : dev_prod) {
+		for (DevolucionProducto dp : dev_prod) 
+		{
 			ExpandListGroup group = new ExpandListGroup();
 			groupchild = new LinkedList<ExpandListChild>();
 			group.setName(dp.getNombreProducto());
@@ -821,7 +811,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		LinkedList<ExpandListChild> groupchild;
 		Iterator<ExpandListGroup> llgroups = lgroups.iterator();
 		while (llgroups.hasNext()) {
-			ExpandListGroup _group = (ExpandListGroup) llgroups.next();
+			ExpandListGroup _group = llgroups.next();
 			DevolucionProducto dp = (DevolucionProducto) _group.getObject();
 			int cantidaddevueltadp = 0;
 			ExpandListGroup group = new ExpandListGroup();
@@ -856,7 +846,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		DevolucionProducto[] adp = new DevolucionProducto[lgroups.size()];
 
 		for (int a = 0; a < lgroups.size(); a++) {
-			group = (ExpandListGroup) lgroups.get(a);
+			group = lgroups.get(a);
 			DevolucionProducto dp = (DevolucionProducto) group.getObject();
 
 			LinkedList<ExpandListChild> Items = group.getItems();
@@ -1012,11 +1002,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		// Total
 		dp.setBonificacion(cantidadBonificada);
 		dp.setBonificacionVen(cantidadBonificada);
-		dp.setMontoBonif((long) ((double) (montobonificacion * 100)));
-		dp.setMontoBonifVen((long) ((double) (montobonificacion * 100)));
+		dp.setMontoBonif((long) (montobonificacion * 100));
+		dp.setMontoBonifVen((long) (montobonificacion * 100));
 
-		dp.setSubtotal((long) ((double) (subTotal * 100.00)));
-		dp.setTotal((long) ((double) ((subTotal - montobonificacion + impuesto)) * 100));
+		dp.setSubtotal((long) (subTotal * 100.00));
+		dp.setTotal((long) (((subTotal - montobonificacion + impuesto)) * 100));
 		groupselected.setObject(dp);
 		lgroups.set(positioncache[0], groupselected);
 		// fin estimacion de costo
@@ -1330,7 +1320,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		Iterator<ExpandListGroup> llgroups = lgroups.iterator();
 		while (llgroups.hasNext()) 
 		{
-			ExpandListGroup group = (ExpandListGroup) llgroups.next();
+			ExpandListGroup group = llgroups.next();
 			DevolucionProducto _dp = (DevolucionProducto) group.getObject();
 			Producto prod = null;
 			try 
@@ -1403,11 +1393,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			} 
 				 
 
-			_dp.setSubtotal((long) ((double) (_dp.getCantidadDevolver() * (_dp.getPrecio() / 100.00)) * 100.00));
-			long boniL = (long) ((double) (_dp.getBonificacion() * (_dp.getPrecio() / 100.00)) * 100.00);
+			_dp.setSubtotal((long) (_dp.getCantidadDevolver() * (_dp.getPrecio() / 100.00) * 100.00));
+			long boniL = (long) (_dp.getBonificacion() * (_dp.getPrecio() / 100.00) * 100.00);
 
 			_dp.setMontoBonif(boniL);
-			boniL = (long) ((double) (_dp.getBonificacionVen() * (_dp.getPrecio() / 100.00)) * 100.00);
+			boniL = (long) (_dp.getBonificacionVen() * (_dp.getPrecio() / 100.00) * 100.00);
 			_dp.setMontoBonifVen(boniL);
 
 			if (_dp.isGravable()) 
@@ -1419,7 +1409,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				} else */
 				{
 					int porcimp = Integer.parseInt(this.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("PorcentajeImpuesto", "0"));
-					_dp.setPorcImpuesto((long) porcimp);
+					_dp.setPorcImpuesto(porcimp);
 				}
 
 			}
@@ -1470,7 +1460,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		double sumatotal = 0.d;
 		double sumatotalv = 0.d;
 		for (int b = 0; b < lgroups.size(); b++) {
-			ExpandListGroup lgroup = (ExpandListGroup) lgroups.get(b);
+			ExpandListGroup lgroup = lgroups.get(b);
 			DevolucionProducto item = (DevolucionProducto) lgroup.getObject();
 			sumatotal = sumatotal + item.getTotal();
 			sumatotalv = sumatotalv + item.getTotalVen();
@@ -1494,7 +1484,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		double sumaimpv = 0.d;
 		for (int a = 0; a < lgroups.size(); a++) 
 		{
-			ExpandListGroup group = (ExpandListGroup) lgroups.get(a);
+			ExpandListGroup group = lgroups.get(a);
 			DevolucionProducto item = (DevolucionProducto) group.getObject();
 			// SUB TOTAL
 			sumasubtotal = sumasubtotal + item.getSubtotal(); 
@@ -1567,7 +1557,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	public List<DevolucionProducto> obtenerDevProductos() {
 		List<DevolucionProducto> ldp = new ArrayList<DevolucionProducto>();
 		for (int a = 0; a < lgroups.size(); a++) {
-			ExpandListGroup group = (ExpandListGroup) lgroups.get(a);
+			ExpandListGroup group = lgroups.get(a);
 			DevolucionProducto _dp = (DevolucionProducto) group.getObject();
 			ldp.add(_dp);
 		}
@@ -1786,8 +1776,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			final SpinnerModel sched = new SpinnerModel();
 			/******* Firstly take data in model object ******/
 			sched.setId(contador);
-			sched.setCodigo((String) entry.getKey());
-			sched.setDescripcion((String) entry.getValue());
+			sched.setCodigo(entry.getKey());
+			sched.setDescripcion(entry.getValue());
 			sched.setObj(entry);
 			contador++;
 			/******** Take Model Object in ArrayList **********/
@@ -1905,7 +1895,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		double porcdev = 0d;
 		if (pedido != null) {
 			for (int a = 0; a < lgroups.size(); a++) {
-				ExpandListGroup group = (ExpandListGroup) lgroups.get(a);
+				ExpandListGroup group = lgroups.get(a);
 				DevolucionProducto _dp = (DevolucionProducto) group.getObject();
 				if (_dp.getCantidadOrdenada() == 0)
 					continue;

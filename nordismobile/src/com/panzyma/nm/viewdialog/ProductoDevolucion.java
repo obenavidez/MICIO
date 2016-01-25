@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.view.ViewDevolucionEdit;
@@ -16,28 +15,19 @@ import com.panzyma.nm.view.adapter.SetViewHolderWLayout;
 import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
 import com.panzyma.nm.view.viewholder.ProductoLoteViewHolder;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
-import com.panzyma.nm.viewdialog.DialogNotaRecibo.RespuestaNotaRecibo;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -95,9 +85,9 @@ public class ProductoDevolucion extends DialogFragment
 		{
 			ArrayList<SetViewHolderWLayout> layouts = new ArrayList<SetViewHolderWLayout>();
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_productolote,
-					ProductoLoteViewHolder.class, true));
+					ProductoLoteViewHolder.class, true,0));
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_loteproducto,
-					ProductoLoteDetalleViewHolder.class, false));
+					ProductoLoteDetalleViewHolder.class, false,0));
 			try 
 			{
 				adapter = new ExpandListAdapter(((ViewDevolucionEdit) parent),SetStandardGroups(), layouts);
