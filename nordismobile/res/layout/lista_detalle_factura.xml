@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/White"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        
+        <EditText
+                android:id="@+id/cxctextv_filtro"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:hint="filtro de facturas"
+                android:inputType="textPersonName"
+                android:singleLine="true" >
+            </EditText>
+
+        <TextView
+            android:id="@+id/cxctextv_header2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text=""
+            android:textColor="@color/Black"
+            android:textSize="12dp"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@+id/listview_detalle_factura"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="singleChoice"
+            android:divider="@color/DarkGray"
+            android:dividerHeight="0.3sp"
+            android:listSelector="@drawable/statelist"
+            android:scrollingCache="false" >
+        </ListView>
+
+        <TextView
+            android:id="@+id/cctxtview_enty"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/txtclient_entymessage"
+            android:textColor="@color/Black"
+            android:textSize="12dp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>

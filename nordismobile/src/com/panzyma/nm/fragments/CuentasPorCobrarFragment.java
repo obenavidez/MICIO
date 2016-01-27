@@ -37,6 +37,8 @@ import com.panzyma.nm.view.viewholder.NotaCreditoViewHolder;
 import com.panzyma.nm.view.viewholder.NotaDebitoViewHolder;
 import com.panzyma.nm.view.viewholder.PedidoViewHolder;
 import com.panzyma.nm.view.viewholder.ReciboViewHolder;
+import com.panzyma.nm.viewdialog.TasaCambioFragment;
+import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 import android.app.ActionBar.LayoutParams;
@@ -56,6 +58,7 @@ import android.os.Parcelable;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -72,7 +75,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast; 
+import android.widget.Toast;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener; 
 @InvokeBridge(bridgeName = "BLogicM") 
 public class CuentasPorCobrarFragment extends DialogFragment implements
 		Handler.Callback {
@@ -688,8 +693,24 @@ public class CuentasPorCobrarFragment extends DialogFragment implements
 			txtenty.setVisibility(View.INVISIBLE);
 			headerGrid.setText(String.format(title, facturas.size()));
 			listaGenerica.setAdapter(adapter);
-			mostrarDetalleConsulta("facturas", true, fechaInicFac, fechaFinFac,
-					estadoFac);
+			mostrarDetalleConsulta("facturas", true, fechaInicFac, fechaFinFac, estadoFac);
+			listaGenerica.setOnItemLongClickListener(new OnItemLongClickListener() {
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+					Factura f  =(Factura) adapter.getItem(position);
+					
+					FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+					detalleFacturaFragment dialog = detalleFacturaFragment.newInstance(f.getId());
+					dialog.show(transaction, "dialog");
+					
+					//TasaCambioFragment dialog = TasaCambioFragment.newInstance();
+					//dialog.show(transaction, "dialog");
+					
+					return false;
+				}
+				
+			});
+			
 		} else 
 		{
 			headerGrid.setText(String.format(title,0));

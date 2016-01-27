@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+   
+    >
+    
+      <TableRow 
+        android:padding="2dip" 
+        android:layout_gravity="right"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content" >
+        
+        <TextView 
+            android:layout_width="0dp"
+             android:layout_marginLeft="3dp"
+            android:text="Producto:" 
+            android:textSize="10dp" 
+            android:scrollHorizontally="true"  
+            android:textColor="@color/Teal" 
+            android:layout_weight="0.20" 
+            android:layout_height="wrap_content" />
+        <TextView 
+			android:layout_width="0dp"
+            android:id="@+id/cxctextv_producto" 
+            android:scrollHorizontally="true" 
+            android:textColor="@color/Black" 
+            android:textSize="10dp" 
+            android:layout_weight="0.80"  
+            android:lines="1"
+            android:layout_height="wrap_content" />
+        
+    </TableRow>
+ 
+    <TableRow
+         android:padding="2dip"   
+        android:layout_gravity="right"   
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content">
+        <TextView 
+            android:layout_width="0dp"
+            android:text="Cant. :"  
+            android:textSize="10dp"  
+            android:layout_marginLeft="3dp"
+            android:textColor="@color/Teal" 
+            android:layout_weight="0.15" 
+            android:layout_height="wrap_content" />
+        <TextView 
+			android:layout_width="0dp"
+            android:id="@+id/cxctextv_cantidad" 
+            android:scrollHorizontally="true" 
+            android:textColor="@color/Black" 
+            android:textSize="10dp" 
+             android:lines="1"
+            android:layout_weight="0.35" 
+            android:layout_height="wrap_content" />
+        
+        <TextView 
+            android:layout_width="0dp"
+			 android:layout_marginLeft="3dp"
+            android:text="Bonf :" 
+            android:textSize="10dp"  
+            android:textColor="@color/Teal" 
+            android:layout_weight="0.25" 
+            android:layout_height="wrap_content" />
+        <TextView 
+            android:layout_width="0dp"
+            android:id="@+id/cxctext_bonificacion" 
+            android:scrollHorizontally="true" 
+            android:textColor="@color/Black" 
+            android:textSize="10dp" 
+            android:layout_weight="0.25" 
+             android:lines="1"
+            android:layout_height="wrap_content" />
+         
+    </TableRow>
+ 
+    <TableRow  
+        android:padding="2dip" 
+        android:layout_gravity="right"     
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content">
+        <TextView 
+            android:layout_width="0dp"
+			 android:layout_marginLeft="3dp"
+            android:text="Prom. :" 
+            android:textSize="10dp"  
+            android:textColor="@color/Teal" 
+            android:layout_weight="0.25" 
+            android:layout_height="wrap_content" />
+        <TextView 
+            android:layout_width="0dp"
+            android:id="@+id/cxctext_promocion" 
+            android:scrollHorizontally="true" 
+            android:textColor="@color/Black" 
+            android:textSize="10dp" 
+            android:layout_weight="0.25" 
+             android:lines="1"
+            android:layout_height="wrap_content" />
+        
+        <TextView 
+            android:layout_width="0dp"
+		 android:layout_marginLeft="3dp"
+         android:text="Precio :" 
+         android:textSize="10dp"  
+         android:textColor="@color/Teal" 
+         android:layout_weight="0.25" 
+         android:layout_height="wrap_content" />
+        <TextView 
+		 android:layout_width="0dp"
+         android:id="@+id/cxctext_precio_detalle" 
+         android:scrollHorizontally="true" 
+         android:lines="1"
+         android:textColor="@color/Black" 
+         android:textSize="10dp" 
+         android:layout_weight="0.25" 
+         android:layout_height="wrap_content" />
+            </TableRow>
+
+      <TableRow  
+        android:padding="2dip" 
+        android:layout_gravity="right"     
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content">
+        
+          <TextView 
+            android:layout_width="0dp"
+		 android:layout_marginLeft="3dp"
+         android:text="IVA :" 
+         android:textSize="10dp"  
+         android:textColor="@color/Teal" 
+         android:layout_weight="0.25" 
+         android:layout_height="wrap_content" />
+        <TextView 
+		 android:layout_width="0dp"
+         android:id="@+id/cxctext_iva" 
+         android:scrollHorizontally="true" 
+         android:lines="1"
+         android:textColor="@color/Black" 
+         android:textSize="10dp" 
+         android:layout_weight="0.25" 
+         android:layout_height="wrap_content" />
+          
+        
+        <TextView 
+            android:layout_width="0dp"
+		 android:layout_marginLeft="3dp"
+         android:text="Total :" 
+         android:textSize="10dp"  
+         android:textColor="@color/Teal" 
+         android:layout_weight="0.25" 
+         android:layout_height="wrap_content" />
+        <TextView 
+		 android:layout_width="0dp"
+         android:id="@+id/cxctext_total_detalle" 
+         android:scrollHorizontally="true" 
+         android:lines="1"
+         android:textColor="@color/Black" 
+         android:textSize="10dp" 
+         android:layout_weight="0.25" 
+         android:layout_height="wrap_content" />
+    </TableRow>
+    
+
+</TableLayout>

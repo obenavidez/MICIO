@@ -7,6 +7,8 @@ import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
+import com.panzyma.nm.serviceproxy.CCobro;
+import com.panzyma.nm.serviceproxy.CDetalleFactura;
 import com.panzyma.nm.serviceproxy.CVenta;
 
 public class ModelVenta {
@@ -46,4 +48,22 @@ public class ModelVenta {
 		}
 	}
 
+	
+	
+	public synchronized static ArrayList<CDetalleFactura> getDetalleFactura(String credenciales, long idFactura){
+		 
+		 Parameters params = new Parameters(
+				 			(new String[] { "Credentials","idFactura",}),
+				 			(new Object[] { credenciales, idFactura }), 
+				 			(new Type[] {   PropertyInfo.STRING_CLASS, PropertyInfo.LONG_CLASS }));
+		 try 
+		 {
+				Object detalle = AppNMComunication.InvokeMethod( params.getParameters(), NMConfig.URL, NMConfig.NAME_SPACE,NMConfig.MethodName.GetDetalleFactura);
+				return NMTranslate.ToCollection(detalle, CDetalleFactura.class);
+		 } 
+		 catch (Exception e) {
+				e.printStackTrace();
+				return null;
+		 }
+	 }
 }

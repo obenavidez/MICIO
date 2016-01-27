@@ -1,6 +1,10 @@
 package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+
+import java.util.ArrayList;
+
+import android.content.ContentResolver;
 import android.os.Message;
 import android.util.Log;
 
@@ -10,7 +14,11 @@ import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
+import com.panzyma.nm.model.ModelCobro;
 import com.panzyma.nm.model.ModelVenta;
+import com.panzyma.nm.serviceproxy.CCobro;
+import com.panzyma.nm.serviceproxy.CDetalleFactura;
+import com.panzyma.nm.serviceproxy.Producto;
 
 public class BVentaM extends BBaseM{
  
@@ -20,7 +28,7 @@ public class BVentaM extends BBaseM{
 
 	public enum Petition {
 
-		VENTAS_DEL_DIA(0), VENTAS_DEL_SEMANA(1), VENTAS_DEL_MES(2);
+		VENTAS_DEL_DIA(0), VENTAS_DEL_SEMANA(1), VENTAS_DEL_MES(2) , OBTENER_DETALLE_FACTURA(3);
 
 		int result;
 
@@ -55,6 +63,9 @@ public class BVentaM extends BBaseM{
 			break;
 		case VENTAS_DEL_MES:
 			loadVentas(false, false, true, 0, 0, Petition.VENTAS_DEL_MES);
+			break;
+		case OBTENER_DETALLE_FACTURA :
+			getDetallefactura( Long.parseLong(msg.obj.toString()), request.OBTENER_DETALLE_FACTURA);
 			break;
 		}
 		return false;
@@ -119,4 +130,37 @@ public class BVentaM extends BBaseM{
 
 	}
 
+	public  void  getDetallefactura( final long idFactura , final Petition peticion) throws Exception {
+		
+		
+		try 
+		{
+			final String credentials = SessionManager.getCredentials(); 
+
+			if (!credentials.trim().equals("") && NMNetWork.CheckConnection(getController()) ) 
+			{
+				getPool().execute(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							ArrayList<CDetalleFactura> detalle = ModelVenta.getDetalleFactura(credentials,idFactura);
+							Processor.notifyToView( getController(),peticion.getActionCode(),0,0,detalle);
+						} 
+						catch (Exception e) {
+							try {
+								Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno en la sincronización con la BDD",e.toString(),"\n Causa: "+ e.getCause()));
+							} catch (Exception e1) {
+								e1.printStackTrace();
+							}
+						}
+					}
+				});
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
 }
