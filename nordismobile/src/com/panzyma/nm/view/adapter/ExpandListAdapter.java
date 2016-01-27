@@ -261,4 +261,8 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		private ArrayList<SetViewHolderWLayout> achild;
 	}
 	
+	public void updateData(List<E> groups) {
+	    this.groups = groups;
+	}
+	
 }
