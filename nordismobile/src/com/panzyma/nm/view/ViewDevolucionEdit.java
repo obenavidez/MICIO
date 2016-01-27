@@ -128,20 +128,20 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_CUENTASXCOBRAR = 9;
 	private static final int ID_CERRAR = 10;
 
-	private static BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoImpuesto = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoPromocion = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoCargoAdministrativo = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoTotal = BigDecimal.ZERO;
+	private BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
+	private BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
+	private BigDecimal costeoMontoImpuesto = BigDecimal.ZERO;
+	private BigDecimal costeoMontoPromocion = BigDecimal.ZERO;
+	private BigDecimal costeoMontoCargoAdministrativo = BigDecimal.ZERO;
+	private BigDecimal costeoMontoTotal = BigDecimal.ZERO;
  
-	private static BigDecimal costeoMontoBonificacionVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoImpuestoVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoPromocionVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoCargoAdministrativoVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoCargoVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoVinieta = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoTotalVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoBonificacionVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoImpuestoVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoPromocionVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoCargoAdministrativoVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoCargoVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoVinieta = BigDecimal.ZERO;
+	private BigDecimal costeoMontoTotalVen = BigDecimal.ZERO;
 
 	// TIPO TRAMITE
 	private static final int REPOSICION = 1;
@@ -2051,24 +2051,113 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		    cuentasPorCobrar.show(transaction, "dialog");
 	}
 
-	public ExpandListAdapter getAdapter() {
-		return adapter;
+	public BigDecimal getCosteoMontoSubTotal() {
+		return costeoMontoSubTotal;
 	}
 
-	public void setAdapter(ExpandListAdapter adapter) {
-		this.adapter = adapter;
+	public void setCosteoMontoSubTotal(BigDecimal costeoMontoSubTotal) {
+		this.costeoMontoSubTotal = costeoMontoSubTotal;
 	}
 
-	public ExpandableListView getLvdevproducto() {
-		return lvdevproducto;
+	public BigDecimal getCosteoMontoBonificacion() {
+		return costeoMontoBonificacion;
 	}
 
-	public void setLvdevproducto(ExpandableListView lvdevproducto) {
-		this.lvdevproducto = lvdevproducto;
+	public void setCosteoMontoBonificacion(BigDecimal costeoMontoBonificacion) {
+		this.costeoMontoBonificacion = costeoMontoBonificacion;
+	}
+
+	public BigDecimal getCosteoMontoImpuesto() {
+		return costeoMontoImpuesto;
+	}
+
+	public void setCosteoMontoImpuesto(BigDecimal costeoMontoImpuesto) {
+		this.costeoMontoImpuesto = costeoMontoImpuesto;
+	}
+
+	public BigDecimal getCosteoMontoPromocion() {
+		return costeoMontoPromocion;
+	}
+
+	public void setCosteoMontoPromocion(BigDecimal costeoMontoPromocion) {
+		this.costeoMontoPromocion = costeoMontoPromocion;
+	}
+
+	public BigDecimal getCosteoMontoCargoAdministrativo() {
+		return costeoMontoCargoAdministrativo;
+	}
+
+	public void setCosteoMontoCargoAdministrativo(
+			BigDecimal costeoMontoCargoAdministrativo) {
+		this.costeoMontoCargoAdministrativo = costeoMontoCargoAdministrativo;
+	}
+
+	public BigDecimal getCosteoMontoTotal() {
+		return costeoMontoTotal;
+	}
+
+	public void setCosteoMontoTotal(BigDecimal costeoMontoTotal) {
+		this.costeoMontoTotal = costeoMontoTotal;
+	}
+
+	public BigDecimal getCosteoMontoBonificacionVen() {
+		return costeoMontoBonificacionVen;
+	}
+
+	public void setCosteoMontoBonificacionVen(BigDecimal costeoMontoBonificacionVen) {
+		this.costeoMontoBonificacionVen = costeoMontoBonificacionVen;
+	}
+
+	public BigDecimal getCosteoMontoImpuestoVen() {
+		return costeoMontoImpuestoVen;
+	}
+
+	public void setCosteoMontoImpuestoVen(BigDecimal costeoMontoImpuestoVen) {
+		this.costeoMontoImpuestoVen = costeoMontoImpuestoVen;
+	}
+
+	public BigDecimal getCosteoMontoPromocionVen() {
+		return costeoMontoPromocionVen;
+	}
+
+	public void setCosteoMontoPromocionVen(BigDecimal costeoMontoPromocionVen) {
+		this.costeoMontoPromocionVen = costeoMontoPromocionVen;
+	}
+
+	public BigDecimal getCosteoMontoCargoAdministrativoVen() {
+		return costeoMontoCargoAdministrativoVen;
+	}
+
+	public void setCosteoMontoCargoAdministrativoVen(
+			BigDecimal costeoMontoCargoAdministrativoVen) {
+		this.costeoMontoCargoAdministrativoVen = costeoMontoCargoAdministrativoVen;
+	}
+
+	public BigDecimal getCosteoMontoCargoVen() {
+		return costeoMontoCargoVen;
+	}
+
+	public void setCosteoMontoCargoVen(BigDecimal costeoMontoCargoVen) {
+		this.costeoMontoCargoVen = costeoMontoCargoVen;
+	}
+
+	public BigDecimal getCosteoMontoVinieta() {
+		return costeoMontoVinieta;
+	}
+
+	public void setCosteoMontoVinieta(BigDecimal costeoMontoVinieta) {
+		this.costeoMontoVinieta = costeoMontoVinieta;
+	}
+
+	public BigDecimal getCosteoMontoTotalVen() {
+		return costeoMontoTotalVen;
+	}
+
+	public void setCosteoMontoTotalVen(BigDecimal costeoMontoTotalVen) {
+		this.costeoMontoTotalVen = costeoMontoTotalVen;
 	}
 	
 	
-	
-	
+
 
 }
