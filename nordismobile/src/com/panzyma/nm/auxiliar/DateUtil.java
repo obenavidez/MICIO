@@ -222,6 +222,15 @@ public class DateUtil {
 				+ strDate.substring(2, 4);
 	}
 
+	public static String idateToStrYYYY(long idate) {
+		if (idate == 0)
+			return "";
+
+		String strDate = idate + "";
+		return strDate.substring(6, 8) + "/" + strDate.substring(4, 6) + "/"
+				+ strDate.substring(0, 4);
+	}
+	
 	public static int d2i(Date dt) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(dt);

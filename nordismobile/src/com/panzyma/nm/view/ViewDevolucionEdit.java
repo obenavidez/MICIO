@@ -226,6 +226,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	public static final Display display;
 
 	List<ExpandListGroup> lgroups = new LinkedList<ExpandListGroup>();
+	private long iddevolucion;
+	private boolean onEdit;
+	private Message msg;
 
 	static {
 		int contador = 0;
@@ -259,23 +262,43 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		SessionManager.setContext(this);
 		UserSessionManager.setContext(this);
 		com.panzyma.nm.NMApp.getController().setView(this);
-		Message m = new Message();
-		aprodselected = new ArrayList<Producto>();
-		m.what = ControllerProtocol.OBTENERVALORCATALOGO;
-		m.obj = new String[] { "MotivoDevolucionNoVencidos" };
-		NMApp.getController().getInboxHandler().sendMessage(m);
-		initComponent();
-		if (getIntent().hasExtra("cliente")) {
-			long IdCliente = getIntent().getLongExtra("cliente", 0);
-			try {
-				cliente = Ventas.getClienteBySucursalID(IdCliente,
-						me.getContentResolver());
-				setInformacionCliente();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		
+		
+		
+		iddevolucion = getIntent().getLongExtra("iddevolucion", 0l); 
+		if (iddevolucion != 0l) 
+		{ 
+			onEdit = true;
+			positioncache[0]=0;
+			msg = new Message();
+			aprodselected = new ArrayList<Producto>();
+			msg.what = ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
+			msg.obj =iddevolucion;
+			NMApp.getController().getInboxHandler().sendMessage(msg);
+		}	else
+		{
+			msg = new Message();
+			aprodselected = new ArrayList<Producto>();
+			msg.what = ControllerProtocol.OBTENERVALORCATALOGO;
+			msg.obj = new String[] { "MotivoDevolucionNoVencidos" };
+			NMApp.getController().getInboxHandler().sendMessage(msg);
 		}
+		
+		if (getIntent().hasExtra("cliente")) 
+		{
+				long IdCliente = getIntent().getLongExtra("cliente", 0);
+				try {
+					cliente = Ventas.getClienteBySucursalID(IdCliente,
+							me.getContentResolver());
+					setInformacionCliente();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		initComponent();
+
 	}
 
 	public void initComponent() {
@@ -479,7 +502,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion = new Devolucion();
 			devolucion.setCodEstado(REGISTRADA);
 			devolucion.setId(0);
-			devolucion.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
+			devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 			devolucion.setNumeroCentral(0);
 			devolucion.setReferencia(0);
 			devolucion.setOffLine(true);
@@ -507,7 +530,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			
 		}
 		if (devolucion.getFecha() == 0)
-			devolucion.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
+			devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 		tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
 		CreateMenu();
 
@@ -776,6 +799,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						EstimarCostosDev(true);
 						CalTotalDevolucion();
 						CalMontoCargoVendedor();
+						Setfieldsdevolucion();
 						adapter.notifyDataSetChanged();
 					}
 				});
@@ -1157,7 +1181,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	public boolean validarDevolucion() {
 
-		devolucion.setFecha(DateUtil.d2i(new Date()));
+		devolucion.setFecha(DateUtil.dt2i(new Date()));
 		if (cliente == null) {
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
@@ -1292,9 +1316,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setEspecial(!"".equals(devolucion.getObservacion()));
 		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado())) 
 		{
-			EstimarCostosDev(false);
-			CalMontoPromocion(); 
-			CalTotalDevolucion();
+			EstimarCostosDev(false); 
+			CalMontoCargoVendedor();
+		    CalMontoPromocion();
+		    CalTotalDevolucion();
 		}
 		
 		devolucion.setMontoCargoVendedor(costeoMontoCargoVen.longValue());
@@ -1311,7 +1336,6 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setImpuesto(costeoMontoImpuesto.longValue());
 		devolucion.setMontoBonif(costeoMontoBonificacion.longValue());
 		devolucion.setSubtotal(costeoMontoSubTotal.longValue());
-		
 		
 		return true;
 	}
@@ -1499,8 +1523,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			sumabonf = sumabonf + item.getMontoBonif();
 			sumabonfv = sumabonfv + item.getMontoBonifVen(); 
 			// IMPUESTO
-			sumaimp = sumaimp + item.getMontoBonif();
-			sumaimpv = sumaimpv + item.getMontoBonifVen(); 
+			sumaimp = sumaimp + item.getImpuesto();
+			sumaimpv = sumaimpv + item.getImpuestoVen(); 
 			// TOTAL
 			sumatotal = sumatotal + item.getTotal();
 			sumatotalv = sumatotalv + item.getTotalVen(); 
@@ -1826,29 +1850,32 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	@Override
 	public boolean handleMessage(Message msg) {
 		dismiss();
-		switch (msg.what) {
-		case ControllerProtocol.OBTENERVALORCATALOGO:
-			adapter_motdev = new CustomAdapter(getContext(),
-					R.layout.spinner_rows,
-					setListData(catalogos = (ArrayList<Catalogo>) msg.obj));
-			cboxmotivodev.setAdapter(adapter_motdev);
-			break;
-		case ControllerProtocol.NOTIFICATION_DIALOG:
-			if (msg.obj instanceof String)
-				showStatus(msg.obj.toString(), true);
-			break;
-		case ControllerProtocol.ERROR:
-			/*
-			 * AppDialog.showMessage(me, ((ErrorMessage) msg.obj).getTittle(),
-			 * ((ErrorMessage) msg.obj).getMessage(),
-			 * DialogType.DIALOGO_ALERTA);
-			 */
-			if (msg.obj instanceof ErrorMessage)
-				showStatus(((ErrorMessage) msg.obj).getMessage(), true);
-			else if (msg.obj instanceof String)
-				showStatus(((String) msg.obj), true);
-
-			break;
+		switch (msg.what) 
+		{
+			case ControllerProtocol.C_DATA:
+					if(msg.arg1==ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST);
+					{
+						
+					}
+					break;
+		
+			case ControllerProtocol.OBTENERVALORCATALOGO:
+				adapter_motdev = new CustomAdapter(getContext(),
+						R.layout.spinner_rows,
+						setListData(catalogos = (ArrayList<Catalogo>) msg.obj));
+				cboxmotivodev.setAdapter(adapter_motdev);
+				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG:
+				if (msg.obj instanceof String)
+					showStatus(msg.obj.toString(), true);
+				break;
+			case ControllerProtocol.ERROR: 
+				if (msg.obj instanceof ErrorMessage)
+					showStatus(((ErrorMessage) msg.obj).getMessage(), true);
+				else if (msg.obj instanceof String)
+					showStatus(((String) msg.obj), true);
+	
+				break;
 		}
 		return false;
 	}
@@ -1919,7 +1946,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private void Setfieldsdevolucion() 
 	{
 		devolucion.setDeVencido(ckboxvencidodev.isChecked());
-
+		devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 		if (cboxtramitedev.getSelectedItemPosition() > 0)
 			devolucion.setTipoTramite(((SpinnerModel) cboxtramitedev
 					.getSelectedItem()).getCodigo());
@@ -1932,7 +1959,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setObjMotivoID(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getId());
 		}
-
+		devolucion.setObjClienteID(cliente.getIdCliente());
+		devolucion.setObjSucursalID(cliente.getIdSucursal());
 		devolucion.setNota(tbxNota.getText().toString());
 		devolucion.setParcial(PARTIAL); 
 		devolucion.setSubtotal(costeoMontoSubTotal.longValue());	 

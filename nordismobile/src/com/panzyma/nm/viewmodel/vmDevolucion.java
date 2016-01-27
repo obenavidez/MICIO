@@ -11,8 +11,22 @@ import com.panzyma.nm.interfaces.DevolucionItem;
 public class vmDevolucion  implements Parcelable , DevolucionItem  {
 
 	private long id;
+	/**
+	 * @return the id
+	 */
+	public long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(long id) {
+		this.id = id;
+	}
+
 	private int NumeroCentral;
-	private Date fecha;
+	private String fecha;
 	private String cliente;
 	private Float  total;
 	private String Estado;
@@ -41,7 +55,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 		this.customer_id = customer_id;
 	}
 
-	public vmDevolucion(long id, int numeroCentral,  Date fecha, String cliente,
+	public vmDevolucion(long id, int numeroCentral,  String fecha, String cliente,
 			Float total, String estado, long cliente_id,boolean offline) {
 		super();
 		this.id = id;
@@ -78,14 +92,14 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 
 
 
-	public Date getFecha() {
+	public String getFecha() {
 		return this.fecha;
 	}
 
 
 
 
-	public void setFecha(Date fecha) {
+	public void setFecha(String fecha) {
 		this.fecha = fecha;
 	}
 
@@ -174,9 +188,8 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	@Override
 	public String getItemfecha() {
 		//return String.valueOf(getFecha());
-		//DateFormat df =  DateFormat.getDateInstance(DateFormat.MEDIUM);
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
-		return sdf.format(getFecha());
+		//DateFormat df =  DateFormat.getDateInstance(DateFormat.MEDIUM); 
+		return getFecha();
 	}
 
 

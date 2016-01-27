@@ -574,7 +574,8 @@ public class NMConfig
 			 public static final class DevolucionProductoLote
 			 {
 			     public static final java.lang.String id ="id" ;
-			     public static final java.lang.String DevolucionProductoID ="DevolucionProductoID" ;
+			     public static final java.lang.String DevolucionProductoID ="DevolucionProductoID" ; 
+			     public static final java.lang.String devolucionID ="devolucionID" ;
 				 public static final java.lang.String objLoteID ="objLoteID" ;
 				 public static final java.lang.String numeroLote ="numeroLote" ;
 				 public static final java.lang.String fechaVencimiento ="fechaVencimiento" ;
@@ -582,6 +583,8 @@ public class NMConfig
 				 public static final java.lang.String fueraPolitica ="fueraPolitica" ;
 				 public static final java.lang.String cantidadDespachada ="cantidadDespachada" ;
 				 public static final java.lang.String deleted ="deleted" ;
+				
+				 
 				 
 			 }
 			

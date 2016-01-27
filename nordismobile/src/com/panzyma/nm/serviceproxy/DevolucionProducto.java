@@ -544,64 +544,64 @@ public class DevolucionProducto implements KvmSerializable {
 	               _info.name = "NombreProducto";
 	               _info.type = java.lang.String.class; break;
 	           case 3:
-	               _info.name = "cantidadDevolver";
+	               _info.name = "CantidadDevolver";
 	               _info.type = java.lang.Integer.class; break;
 	           case 4:
-	               _info.name = "bonificacion";
+	               _info.name = "Bonificacion";
 	               _info.type = java.lang.Integer.class;  break;
 	           case 5:
-	               _info.name = "bonificacionVen";
+	               _info.name = "BonificacionVen";
 	               _info.type =  java.lang.Integer.class;  break;
 	           case 6:
-	               _info.name = "precio";
+	               _info.name = "Precio";
 	               _info.type = java.lang.Long.class; break;
 	           case 7:
-	               _info.name = "subtotal";
+	               _info.name = "Subtotal";
 	               _info.type = java.lang.Long.class; break;
 	           case 8:
-	               _info.name = "porcImpuesto";
+	               _info.name = "PorcImpuesto";
 	               _info.type = java.lang.Long.class; break;
 	           case 9:
-	               _info.name = "impuesto";
+	               _info.name = "Impuesto";
 	               _info.type = java.lang.Long.class; break;
 	           case 10:
-	               _info.name = "total";
+	               _info.name = "Total";
 	               _info.type = java.lang.Long.class; break;
 	           case 11:
-	               _info.name = "totalVen";
+	               _info.name = "TotalVen";
 	               _info.type = java.lang.Long.class; break;
 	           case 12:
-	               _info.name = "montoBonif";
+	               _info.name = "MontoBonif";
 	               _info.type = java.lang.Long.class; break;
 	           case 13:
 	               _info.name = "MontoBonifVen";
 	               _info.type = java.lang.Long.class;break;
 	           case 14:
-	               _info.name = "impuestoVen";
+	               _info.name = "ImpuestoVen";
 	               _info.type = java.lang.Long.class; break;
 	           case 15:
-	               _info.name = "cantidadOrdenada";
+	               _info.name = "CantidadOrdenada";
 	               _info.type = java.lang.Integer.class;  break;
 	           case 16:
-	               _info.name = "cantidadBonificada";
+	               _info.name = "CantidadBonificada";
 	               _info.type = java.lang.Integer.class;  break;
 	           case 17:
-	               _info.name = "cantidadPromocionada";
+	               _info.name = "CantidadPromocionada";
 	               _info.type = java.lang.Integer.class;  break;
 	           case 18:
-	               _info.name = "descuento";
+	               _info.name = "Descuento";
 	               _info.type = java.lang.Long.class; break;
 	           case 19:
-	               _info.name = "totalProducto";
+	               _info.name = "TotalProducto";
 	               _info.type = java.lang.Integer.class;  break;    
 	           case 20:
-	               _info.name = "gravable";
+	               _info.name = "Gravable";
 	               _info.type = java.lang.Boolean.class; break;  
 	           case 21:
-	               _info.name = "delete";
+	               _info.name = "Delete";
 	               _info.type = java.lang.Boolean.class; break;  
 	           case 22:
-	               _info.name = "objProveedorID";
+	               _info.name = "ObjProveedorID";
 	               _info.type = java.lang.Long.class; break;  
 	           case 23:
 	        	   if(productoLotes!= null && productoLotes.length > 0) 

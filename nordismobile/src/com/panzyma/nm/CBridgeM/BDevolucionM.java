@@ -8,22 +8,38 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
 
 
 
+
+
+
+
+
+
+
+
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol; 
 import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelPedido; 
+import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.viewmodel.vmDevolucion;
+import com.panzyma.nm.viewmodel.vmDevolucionEdit;
 
 import android.os.Message;
 import android.util.Log;
@@ -31,7 +47,7 @@ import android.util.Log;
 @SuppressWarnings("unchecked")
 public class BDevolucionM extends BBaseM
 {
-	private String TAG=BDevolucionM.class.getSimpleName();
+	private static String TAG=BDevolucionM.class.getSimpleName();
 	
 	@Override
 	public boolean handleMessage(Message msg) throws Exception {
@@ -48,6 +64,9 @@ public class BDevolucionM extends BBaseM
 				break;			
 			case LOAD_DATA_FROM_LOCALHOST:
 				onLoadALLData_From_LocalHost();
+				break;
+			case ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST:
+				loadItem(Long.valueOf((msg.obj==null)?""+0l:msg.obj.toString()));
 				break;
 			case ControllerProtocol.SAVE_DATA_FROM_LOCALHOST:
 				Devolucion dev=(Devolucion) msg.obj;
@@ -196,18 +215,24 @@ public class BDevolucionM extends BBaseM
     	return value;
     }
     
-    public static long EnviarDevolucion(Devolucion dev)
+    public static String EnviarDevolucion(Devolucion dev)
     {
     	String credenciales="";
-    	long value=0;
+    	String value="";
     	try 
     	{ 
     		credenciales = SessionManager.getCredentials();
     		if (credenciales == "")
-    			return 0;    		
+    			return "";    		
+    		RegistrarDevolucion(dev);
 			value=ModelDevolucion.enviarDevolucion(credenciales, dev); 
 		} catch (Exception e) 
 		{ 
+			try {
+				Processor.notifyToView(NMApp.getController(),ERROR,0,0,new ErrorMessage("Error interno en la sincronización con la BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}  
 		}
     	return value;
     }
@@ -226,58 +251,7 @@ public class BDevolucionM extends BBaseM
 					@Override
 					public void run() {
 						try 
-						{
-							/*
-							vmDevolucion item = new vmDevolucion();
-							item.setCliente("Fci. Dayanara/Angelica Quezada");
-							item.setEstado("Registrada");
-							
-							Calendar c = Calendar.getInstance(); 
-							c.set(2014, 02, 14);
-							item.setFecha(c.getTime());
-							item.setNumeroCentral(7487799);
-							item.setTotal(new Float(123.45));
-							item.setCliente_id(1002548);
-							item.setIdSucursal(1002522);
-							ArrayList<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
-							lista.add(item);
-							
-							item = new vmDevolucion();
-							item.setCliente("Fci. Tamara Garcia/Angelica Palema.");
-							item.setEstado("Registrada");
-							item.setCliente_id(1002548);
-							c = Calendar.getInstance(); 
-							c.set(2014, 02, 14);
-							item.setFecha(c.getTime());
-							item.setNumeroCentral(8887702);
-							item.setTotal(new Float(155670.43));
-							item.setOffLine(true);
-							item.setIdSucursal(1001962);
-							lista.add(item);
-							
-							item = new vmDevolucion();
-							item.setCliente("Empresa Medica de Carazo/Rolando Niño.");
-							item.setEstado("Enviada");
-							item.setCliente_id(1002548);
-							c = Calendar.getInstance(); 
-							c.set(2014, 02, 14);
-							item.setFecha(c.getTime());
-							item.setNumeroCentral(8887702);
-							item.setTotal(new Float(155670.43));
-							item.setOffLine(false);
-							item.setIdSucursal(100328);
-							lista.add(item);*/
-							
-							/*ArrayList<vmDevolucion> lista = new  ArrayList<vmDevolucion>();
-							lista.add(new vmDevolucion(
-     							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))),
-     							   Integer.parseInt(cur.getString(cur.getColumnIndex(projection[1]))), 
-     							   Date.valueOf(cur.getString(cur.getColumnIndex(projection[2]))), 
-     							   cur.getString(cur.getColumnIndex(projection[3])), 
-     							   Float.valueOf(cur.getString(cur.getColumnIndex(projection[4]))),
-     							   cur.getString(cur.getColumnIndex(projection[5])),
-     							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[6])))));
-							*/
+						{ 
 							Processor.send_ViewDevolucionesToView(ModelDevolucion.obtenerDevolucionesFromLocalHost(getResolver())/*lista*/, getController());	
 						}
 						catch (Exception e) 
@@ -297,14 +271,67 @@ public class BDevolucionM extends BBaseM
 		} 
 		
 	}
-
-    private void RegistrarDevolucion(Devolucion dev){
-    	try {
-			DatabaseProvider.RegistrarDevolucion(dev, NMApp.getContext());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+    
+    public synchronized static void getDevolucionbyID(long devolucionid)
+    {
+    	try 
+		{ 
+			Processor.send_ViewObjectToView(ModelDevolucion.getDevolucionbyID(devolucionid));	
 		}
+		catch (Exception e) 
+		{
+			Log.e(TAG, "Error interno trayendo datos desde BDD", e);
+			try {
+				Processor.notifyToView(NMApp.getController(),ERROR,0,0,new ErrorMessage("Error interno trayendo datos desde BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}
+		}
+    }
+
+    public synchronized static void loadItem(long devolucionid)
+    {
+    	try 
+		{ 
+    		Devolucion dev=ModelDevolucion.getDevolucionbyID(devolucionid);
+    		List<Catalogo> cats=ModelLogic.getValorCatalogo(new String[] { "MotivoDevolucionNoVencidos" });
+    		
+			Processor.send_ViewObjectToView(ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST,new vmDevolucionEdit(dev,cats));	
+		}
+		catch (Exception e) 
+		{
+			Log.e(TAG, "Error interno trayendo datos desde BDD", e);
+			try {
+				Processor.notifyToView(NMApp.getController(),ERROR,0,0,new ErrorMessage("Error interno trayendo datos desde BDD",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				e1.printStackTrace();
+			}
+		}
+    }
+    
+    private static Devolucion RegistrarDevolucion(Devolucion dev) throws Exception
+    {
+    	Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
+    	Integer devolucionmax=dev.isDeVencido()?Ventas.getMaxDevolucionVId(NMApp.getContext()):Ventas.getMaxDevolucionNVId(NMApp.getContext());
+    	
+    	  //Generar Id del devolución
+        if (dev.getReferencia() == 0) 
+        {                     
+            if (devolucionmax == null) 
+            	devolucionmax = Integer.valueOf(1);
+            else
+            	devolucionmax =devolucionmax+1; 
+            String strIdMovil = prefijo.intValue() + "" + devolucionmax.intValue();
+            int idMovil = Integer.parseInt(strIdMovil);
+            dev.setId(0);
+            dev.setReferencia(idMovil);
+            dev.setCodEstado("REGISTRADA"); 
+            dev.setNumeroCentral(0); 
+        }
+    	
+		 DatabaseProvider.RegistrarDevolucion(dev, NMApp.getContext());
+		 ModelConfiguracion.ActualizarSecuenciaDevolucion(devolucionmax, dev.isDeVencido());
+		 return dev; 
     }
     
  }
