@@ -854,18 +854,23 @@ public class CuentasPorCobrarFragment extends DialogFragment implements
 								
 								switch (actionItem.getActionId()) {
 								case MOSTRAR_FACTURAS:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarFacturasCliente();
 									break;
 								case MOSTRAR_NOTAS_DEBITO:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarNotasDebito();
 									break;
 								case MOSTRAR_NOTAS_CREDITO:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarNotasCredito();
 									break;
 								case MOSTRAR_RECIBOS:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarRecibosColector();
 									break;
 								case MOSTRAR_PEDIDOS:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarPedidos();
 									break;								
 								}
