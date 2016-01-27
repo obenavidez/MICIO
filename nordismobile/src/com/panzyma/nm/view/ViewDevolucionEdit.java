@@ -803,6 +803,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		}
 		return _lgroups;
 	}
+	
+	public void refreshExpandable () {
+		if(adapter != null) {
+			lgroups = SetStandardGroups();		
+			adapter.updateData(lgroups);
+		}		
+	}
 
 	// SetcantidadDevolver
 	public void establecerCantidadDev() {
@@ -2043,5 +2050,25 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			cuentasPorCobrar.setArguments(msg); 
 		    cuentasPorCobrar.show(transaction, "dialog");
 	}
+
+	public ExpandListAdapter getAdapter() {
+		return adapter;
+	}
+
+	public void setAdapter(ExpandListAdapter adapter) {
+		this.adapter = adapter;
+	}
+
+	public ExpandableListView getLvdevproducto() {
+		return lvdevproducto;
+	}
+
+	public void setLvdevproducto(ExpandableListView lvdevproducto) {
+		this.lvdevproducto = lvdevproducto;
+	}
+	
+	
+	
+	
 
 }

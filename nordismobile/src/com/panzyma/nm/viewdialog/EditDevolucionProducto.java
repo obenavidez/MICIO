@@ -511,7 +511,8 @@ public class EditDevolucionProducto extends DialogFragment {
 		dp.setProductoLotes(new DevolucionProductoLote[l.size()]);
 		l.toArray(dp.getProductoLotes());
 		if (tipo == Type.ADD) {
-			me.getDev_prod().add(dp);
+			me.getDev_prod().add(dp);			
+			me.refreshExpandable();
 		} else {
 			ExpandListChild ch = new ExpandListChild();
 			ch.setName(dvl.getNumeroLote());
