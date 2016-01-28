@@ -7,15 +7,18 @@ import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BCobroM.Accion;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.fragments.ConsultaVentasFragment.ActionMenu;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCobro;
 import com.panzyma.nm.serviceproxy.CFormaPago;
 import com.panzyma.nm.serviceproxy.CVenta;
+import com.panzyma.nm.serviceproxy.CobroDetalle;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.view.adapter.ExpandListAdapter;
@@ -79,7 +82,7 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	private static final int MOSTRAR_COBROS_DEL_DIA = 1;
 	private static final int MOSTRAR_COBROS_SEMANA = 2;
 	private static final int MOSTRAR_COBROS_MES = 3;
-	private static final int IMPRIMIR = 4;
+	private static final int IMPRIMIR = 6;
 	private ActionMenu menuSelected;
 	TextView txt_footer ;
 	TextView txt_footer2 ;
@@ -283,7 +286,8 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 							CargarCobros(Accion.COBROS_DEL_MES.getActionCode());
 							break;
 						case IMPRIMIR:
-							menuSelected = ActionMenu.IMPRIMIR;
+							menuSelected = ActionMenu.IMPRIMIR; 
+							Imprimir(Accion.IMPRIMIR.getActionCode()); 
 							break;							
 						}
 					}
@@ -361,5 +365,14 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 		return _lgroups;
 	}
 
-	
+	private void Imprimir(int opt){
+//		if(cobros.size() == 0){
+//			AppDialog.showMessage(getActivity(),"Aviso","No hay datos que imprimir.",DialogType.DIALOGO_ALERTA);
+//			return ;
+//		}
+		Message msg = new Message(); 
+		msg.what = opt ;
+		msg.obj = new CobroDetalle(cobros,pagos);
+		NMApp.getController().getInboxHandler().sendMessage(msg); 
+	}
 }
