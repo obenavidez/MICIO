@@ -18,6 +18,8 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
 
 
 
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -30,11 +32,13 @@ import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol; 
 import com.panzyma.nm.datastore.DatabaseProvider;
+import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelPedido; 
 import com.panzyma.nm.serviceproxy.Catalogo;
+import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Ventas;
@@ -295,8 +299,10 @@ public class BDevolucionM extends BBaseM
 		{ 
     		Devolucion dev=ModelDevolucion.getDevolucionbyID(devolucionid);
     		List<Catalogo> cats=ModelLogic.getValorCatalogo(new String[] { "MotivoDevolucionNoVencidos" });
-    		
-			Processor.send_ViewObjectToView(ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST,new vmDevolucionEdit(dev,cats));	
+    		Cliente cliente =ModelCliente.getClienteBySucursalID(NMApp.getContext().getContentResolver(),dev.getObjSucursalID(),0);
+    		Pedido pedido=ModelPedido.obtenerPedidoByID(dev.getObjPedidoDevueltoID(),NMApp.getContext().getContentResolver());
+    		dev.setObjPedido(pedido);
+			Processor.send_ViewObjectToView(ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST,new vmDevolucionEdit(dev,cats,cliente));	
 		}
 		catch (Exception e) 
 		{
@@ -331,6 +337,7 @@ public class BDevolucionM extends BBaseM
     	
 		 DatabaseProvider.RegistrarDevolucion(dev, NMApp.getContext());
 		 ModelConfiguracion.ActualizarSecuenciaDevolucion(devolucionmax, dev.isDeVencido());
+		 ModelPedido.RegistrarPedido(dev.getObjPedido(), NMApp.getContext());
 		 return dev; 
     }
     

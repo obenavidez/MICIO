@@ -1968,7 +1968,7 @@ public class DatabaseProvider extends ContentProvider
 
 					 productos_devueltoslote_value = new ContentValues();
 					// productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.id , dpl.getId());
-					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.DevolucionProductoID ,devolucionproductoid );
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionproductoID ,devolucionproductoid );
 					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID ,devolucionid );
 					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.objLoteID , dpl.getObjLoteID());
 					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.numeroLote , dpl.getNumeroLote());

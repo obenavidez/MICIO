@@ -136,7 +136,11 @@ public class ModelDevolucion {
 						 row.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.fecha))));
 						 row.setObjPedidoDevueltoID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objPedidoDevueltoID))));
 						 row.setNumeroPedidoDevuelto(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.numeroPedidoDevuelto))));
-						 row.setObjVendedorID(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objVendedorID))));
+						 
+						 Object value=cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objVendedorID));
+						 if(value!=null)
+							 row.setObjVendedorID(Integer.parseInt(""+value));
+						// row.setObjVendedorID(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objVendedorID))));
 						 row.setObjClienteID(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objClienteID))));
 						 row.setObjSucursalID(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objSucursalID))));
 						 row.setNombreCliente(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.nombreCliente)));
@@ -232,7 +236,9 @@ public class ModelDevolucion {
 			{ 
 					 do{
 						 DevolucionProducto r = new DevolucionProducto();
-						 r.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.id))));
+						 Object  value=cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.id));
+						 if(value!=null && Integer.valueOf(""+value)!=-1)
+						    r.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.id))));
 						 r.setNombreProducto(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.nombreProducto)));
 						 r.setCantidadDevolver(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.cantidadDevolver))));
 						 r.setBonificacion(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.bonificacion))));

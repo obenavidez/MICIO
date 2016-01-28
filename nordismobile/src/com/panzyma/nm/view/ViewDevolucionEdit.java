@@ -110,6 +110,7 @@ import com.panzyma.nm.viewdialog.EditDevolucionProducto;
 import com.panzyma.nm.viewdialog.ProductoDevolucion;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
+import com.panzyma.nm.viewmodel.vmDevolucionEdit;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({ "unchecked", "rawtypes", "deprecation", "unused" })
@@ -166,7 +167,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	CustomAdapter adapter_motdev;
 	CustomAdapter adapter_tramite;
 	CustomAdapter adapter_tipodev;
-	ArrayList<Catalogo> catalogos;
+	List<Catalogo> catalogos;
 
 	private CustomDialog dlg;
 	public static ProductoDevolucion pd;
@@ -261,9 +262,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		setContentView(R.layout.devolucion_edit);
 		SessionManager.setContext(this);
 		UserSessionManager.setContext(this);
-		com.panzyma.nm.NMApp.getController().setView(this);
-		
-		
+		com.panzyma.nm.NMApp.getController().setView(this); 
 		
 		iddevolucion = getIntent().getLongExtra("iddevolucion", 0l); 
 		if (iddevolucion != 0l) 
@@ -743,6 +742,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				CalMontoCargoVendedor();
 
 			} catch (Exception e) {
+				AppDialog.showMessage(this, "Alerta",
+						e.getMessage(),
+						DialogType.DIALOGO_ALERTA);
 			}
 		} else {
 			adapter.notifyDataSetChanged();
@@ -1776,7 +1778,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setNombreCliente(cliente.getNombreCliente());
 	}
 
-	private ArrayList<SpinnerModel> setListData(ArrayList<Catalogo> valores) {
+	private ArrayList<SpinnerModel> setListData(List<Catalogo> valores) {
 		ArrayList<SpinnerModel> CustomListViewValuesArr = new ArrayList<SpinnerModel>();
 		// Now i have taken static values by loop.
 		// For further inhancement we can take data by webservice / json / xml;
@@ -1855,7 +1857,31 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			case ControllerProtocol.C_DATA:
 					if(msg.arg1==ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST);
 					{
+						vmDevolucionEdit objdev=(vmDevolucionEdit) msg.obj;
+						devolucion=objdev.getDevolucion();
+						devolucion.setOlddata(devolucion);
+						cliente=objdev.getCliente();
+						pedido=devolucion.getObjPedido();
+						if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0)
+							dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
+						adapter_motdev = new CustomAdapter(getContext(),
+								R.layout.spinner_rows,
+								setListData(catalogos = (List<Catalogo>) objdev.getMotivodev()));
+						cboxmotivodev.setAdapter(adapter_motdev);
+						int index=0;
+						for(ValorCatalogo vc:catalogos.get(0).getValoresCatalogo())
+						{
+							if(devolucion.getCodMotivo().equals(vc.getCodigo()))
+								break;
+								index++;
+						} 
+						if(index==catalogos.get(0).getValoresCatalogo().size())
+							index=0;
+						cboxmotivodev.setSelection(index);
+						adapter_motdev.setSelectedPosition(index);
+						adapter_motdev.notifyDataSetChanged();
 						
+						initExpandableListView();
 					}
 					break;
 		
