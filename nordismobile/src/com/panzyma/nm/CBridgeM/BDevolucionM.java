@@ -20,6 +20,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
 
 
 
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -228,7 +229,8 @@ public class BDevolucionM extends BBaseM
     		credenciales = SessionManager.getCredentials();
     		if (credenciales == "")
     			return "";    		
-    		RegistrarDevolucion(dev);
+    		guardarDevolucion(dev);
+    		if(dev.getReferencia()!=0)
 			value=ModelDevolucion.enviarDevolucion(credenciales, dev); 
 		} catch (Exception e) 
 		{ 
@@ -315,8 +317,7 @@ public class BDevolucionM extends BBaseM
 		}
     }
     
-    private static Devolucion RegistrarDevolucion(Devolucion dev) throws Exception
-    {
+    public static Devolucion guardarDevolucion(Devolucion dev) throws Exception{
     	Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
     	Integer devolucionmax=dev.isDeVencido()?Ventas.getMaxDevolucionVId(NMApp.getContext()):Ventas.getMaxDevolucionNVId(NMApp.getContext());
     	
@@ -333,12 +334,90 @@ public class BDevolucionM extends BBaseM
             dev.setReferencia(idMovil);
             dev.setCodEstado("REGISTRADA"); 
             dev.setNumeroCentral(0); 
-        }
-    	
+        }    	
 		 DatabaseProvider.RegistrarDevolucion(dev, NMApp.getContext());
 		 ModelConfiguracion.ActualizarSecuenciaDevolucion(devolucionmax, dev.isDeVencido());
-		 ModelPedido.RegistrarPedido(dev.getObjPedido(), NMApp.getContext());
-		 return dev; 
+		 if(dev.getObjPedido()!=null && dev.getObjPedido().getId()!=0)
+			 ModelPedido.RegistrarPedido(dev.getObjPedido(), NMApp.getContext());
+		 
+		 return dev;
+    }
+    
+    private  void RegistrarDevolucion(final Devolucion dev) throws Exception
+    {
+			try 
+			{
+				getPool().execute(new Runnable() 
+				{
+					@Override
+					public void run() 
+					{
+						
+						try 
+						{
+							
+					    	Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
+					    	Integer devolucionmax=dev.isDeVencido()?Ventas.getMaxDevolucionVId(NMApp.getContext()):Ventas.getMaxDevolucionNVId(NMApp.getContext());
+					    	
+					    	  //Generar Id del devolución
+					        if (dev.getReferencia() == 0) 
+					        {                     
+					            if (devolucionmax == null) 
+					            	devolucionmax = Integer.valueOf(1);
+					            else
+					            	devolucionmax =devolucionmax+1; 
+					            String strIdMovil = prefijo.intValue() + "" + devolucionmax.intValue();
+					            int idMovil = Integer.parseInt(strIdMovil);
+					            dev.setId(0);
+					            dev.setReferencia(idMovil);
+					            dev.setCodEstado("REGISTRADA"); 
+					            dev.setNumeroCentral(0); 
+					        }    	
+							 DatabaseProvider.RegistrarDevolucion(dev, NMApp.getContext());
+							 ModelConfiguracion.ActualizarSecuenciaDevolucion(devolucionmax, dev.isDeVencido());
+							 if(dev.getObjPedido()!=null && dev.getObjPedido().getId()!=0)
+								 ModelPedido.RegistrarPedido(dev.getObjPedido(), NMApp.getContext());
+							  			        
+					        Processor.notifyToView(
+					        		NMApp.getController(),
+									ControllerProtocol.NOTIFICATION,
+									ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST,
+									0,
+									dev);
+							
+						} catch (Exception e) {
+							Log.e(TAG, "Error in the update thread", e);
+							try {
+								Processor
+										.notifyToView(
+												NMApp.getController(),
+												ERROR,
+												0,
+												0,
+												ErrorMessage.newInstance(
+														"Error interno",
+														e.getMessage(), "\n Causa: "
+																+ e.getCause()));
+							} catch (Exception e1) {
+								e1.printStackTrace();
+							}
+						}
+						
+						
+					}
+				});
+				
+				 Processor.notifyToView(
+						 NMApp.getController(),
+							ControllerProtocol.NOTIFICATION_DIALOG2,
+							0,
+							0,new String("Guardando devolución localmente."));
+				
+			} catch (Exception e) 
+			{ 
+				e.printStackTrace();
+			} 
+		   
     }
     
  }

@@ -284,7 +284,6 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 							break;
 						case IMPRIMIR:
 							menuSelected = ActionMenu.IMPRIMIR;
-
 							break;							
 						}
 					}
