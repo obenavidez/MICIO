@@ -165,7 +165,7 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 16; 
+	private static final int BD_VERSION = 18; 
 	
 	public static final String TABLA_CLIENTE = "Cliente";
 	public static final String TABLA_FACTURA = "Factura";
@@ -1863,11 +1863,26 @@ public class DatabaseProvider extends ContentProvider
 			sdb = Helper.getDatabase(cnt);
 			ContentValues devolucion_value = new ContentValues();
 			ContentValues productos_devueltos_value = new ContentValues();
-			ContentValues productos_devueltoslote_value = new ContentValues();
+			ContentValues productos_devueltoslote_value = new ContentValues(); 
+			 	
+			long iddevolucion=-1;  
+			sdb.beginTransaction();
+			 	 
 			
-			sdb.beginTransaction(); // transaction
-			
-//			devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
+			Cursor _c=sdb.rawQuery("select Id from Devolucion where referencia="+devolucion.getReferencia(), null);
+			if(_c.moveToNext())
+				iddevolucion=_c.getInt(0);
+		 
+			if(iddevolucion!=0)
+			{				  
+				sdb.delete(TABLA_DEVOLUCIONPRODUCTOLOTE,NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID+ "="+String.valueOf(iddevolucion),null);
+				sdb.delete(TABLA_DEVOLUCIONPRODUCTO,NMConfig.Devolucion.DevolucionProducto.devolucionID+ "="+String.valueOf(iddevolucion),null);
+				sdb.delete(TABLA_DEVOLUCIONES,NMConfig.Devolucion.id+"="+String.valueOf(iddevolucion),null);
+			}
+				  
+			 
+			if(devolucion.getNumeroCentral()!=0) 
+				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
 			devolucion_value.put(NMConfig.Devolucion.referencia, devolucion.getReferencia());
 			devolucion_value.put(NMConfig.Devolucion.numeroCentral, devolucion.getNumeroCentral());
 			devolucion_value.put(NMConfig.Devolucion.fecha, devolucion.getFecha());
@@ -1921,7 +1936,7 @@ public class DatabaseProvider extends ContentProvider
 			
 			for(DevolucionProducto dp:productos_devueltos)
 			{
-				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.id , dp.getId());
+				 //productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.id , dp.getId());
 				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.devolucionID , devolucionid); 
 				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.objProductoID , dp.getObjProductoID() );
 				 productos_devueltos_value.put(NMConfig.Devolucion.DevolucionProducto.nombreProducto , dp.getNombreProducto() );
@@ -1952,8 +1967,9 @@ public class DatabaseProvider extends ContentProvider
 				 for(DevolucionProductoLote dpl:lote) {
 
 					 productos_devueltoslote_value = new ContentValues();
-					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.id , dpl.getId());
-					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.DevolucionProductoID ,devolucionproductoid );
+					// productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.id , dpl.getId());
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionproductoID ,devolucionproductoid );
+					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID ,devolucionid );
 					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.objLoteID , dpl.getObjLoteID());
 					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.numeroLote , dpl.getNumeroLote());
 					 productos_devueltoslote_value.put(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.fechaVencimiento , dpl.getFechaVencimiento());

@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.NMComunicacion;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NMTranslate;
@@ -55,7 +56,7 @@ public class ModelDevolucion {
 		return (rs!=null)?Long.parseLong(rs.toString()):(long)0;
 	}
 	
-	public static long enviarDevolucion(String credentials, Devolucion dev) throws Exception {
+	public static String enviarDevolucion(String credentials, Devolucion dev) throws Exception {
 		Parameters params = new Parameters((new String[] { "Credentials",
 		"dev" }), (new Object[] { credentials, dev }),
 		(new Type[] { PropertyInfo.STRING_CLASS, dev.getClass() }));
@@ -63,7 +64,7 @@ public class ModelDevolucion {
  		Object rs = NMComunicacion.InvokeMethod2(params.getParameters(),
 				NMConfig.URL, NMConfig.NAME_SPACE,
 				NMConfig.MethodName.EnviarDevolucion, Devolucion.class);  
-		return (rs!=null)?Long.parseLong(rs.toString()):(long)0;		
+		return (rs.toString());		
 	}
 	
 	public static ArrayList<vmDevolucion> obtenerDevolucionesFromLocalHost(ContentResolver content)
@@ -96,7 +97,7 @@ public class ModelDevolucion {
 	            	lista.add(new vmDevolucion(
 	            							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))),
 	            							   Integer.parseInt(cur.getString(cur.getColumnIndex(projection[1]))), 
-	            							   Date.valueOf(cur.getString(cur.getColumnIndex(projection[2]))), 
+	            							   DateUtil.idateToStrYYYY(Long.valueOf((cur.getString(cur.getColumnIndex(projection[2]))))), 
 	            							   cur.getString(cur.getColumnIndex(projection[3])), 
 	            							   Float.valueOf(cur.getString(cur.getColumnIndex(projection[4]))),
 	            							   cur.getString(cur.getColumnIndex(projection[5])),
@@ -135,7 +136,11 @@ public class ModelDevolucion {
 						 row.setFecha(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.fecha))));
 						 row.setObjPedidoDevueltoID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objPedidoDevueltoID))));
 						 row.setNumeroPedidoDevuelto(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.numeroPedidoDevuelto))));
-						 row.setObjVendedorID(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objVendedorID))));
+						 
+						 Object value=cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objVendedorID));
+						 if(value!=null)
+							 row.setObjVendedorID(Integer.parseInt(""+value));
+						// row.setObjVendedorID(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objVendedorID))));
 						 row.setObjClienteID(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objClienteID))));
 						 row.setObjSucursalID(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objSucursalID))));
 						 row.setNombreCliente(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.nombreCliente)));
@@ -231,7 +236,9 @@ public class ModelDevolucion {
 			{ 
 					 do{
 						 DevolucionProducto r = new DevolucionProducto();
-						 r.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.id))));
+						 Object  value=cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.id));
+						 if(value!=null && Integer.valueOf(""+value)!=-1)
+						    r.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.id))));
 						 r.setNombreProducto(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.nombreProducto)));
 						 r.setCantidadDevolver(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.cantidadDevolver))));
 						 r.setBonificacion(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.bonificacion))));

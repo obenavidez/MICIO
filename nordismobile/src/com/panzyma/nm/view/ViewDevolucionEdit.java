@@ -110,6 +110,7 @@ import com.panzyma.nm.viewdialog.EditDevolucionProducto;
 import com.panzyma.nm.viewdialog.ProductoDevolucion;
 import com.panzyma.nm.viewdialog.DevolucionProductoCantidad.escucharModificacionProductoLote;
 import com.panzyma.nm.viewdialog.DialogCliente.OnButtonClickListener;
+import com.panzyma.nm.viewmodel.vmDevolucionEdit;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({ "unchecked", "rawtypes", "deprecation", "unused" })
@@ -128,20 +129,20 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_CUENTASXCOBRAR = 9;
 	private static final int ID_CERRAR = 10;
 
-	private static BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoImpuesto = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoPromocion = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoCargoAdministrativo = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoTotal = BigDecimal.ZERO;
+	private BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
+	private BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
+	private BigDecimal costeoMontoImpuesto = BigDecimal.ZERO;
+	private BigDecimal costeoMontoPromocion = BigDecimal.ZERO;
+	private BigDecimal costeoMontoCargoAdministrativo = BigDecimal.ZERO;
+	private BigDecimal costeoMontoTotal = BigDecimal.ZERO;
  
-	private static BigDecimal costeoMontoBonificacionVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoImpuestoVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoPromocionVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoCargoAdministrativoVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoCargoVen = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoVinieta = BigDecimal.ZERO;
-	private static BigDecimal costeoMontoTotalVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoBonificacionVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoImpuestoVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoPromocionVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoCargoAdministrativoVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoCargoVen = BigDecimal.ZERO;
+	private BigDecimal costeoMontoVinieta = BigDecimal.ZERO;
+	private BigDecimal costeoMontoTotalVen = BigDecimal.ZERO;
 
 	// TIPO TRAMITE
 	private static final int REPOSICION = 1;
@@ -166,7 +167,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	CustomAdapter adapter_motdev;
 	CustomAdapter adapter_tramite;
 	CustomAdapter adapter_tipodev;
-	ArrayList<Catalogo> catalogos;
+	List<Catalogo> catalogos;
 
 	private CustomDialog dlg;
 	public static ProductoDevolucion pd;
@@ -226,6 +227,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	public static final Display display;
 
 	List<ExpandListGroup> lgroups = new LinkedList<ExpandListGroup>();
+	private long iddevolucion;
+	private boolean onEdit;
+	private Message msg;
 
 	static {
 		int contador = 0;
@@ -258,24 +262,42 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		setContentView(R.layout.devolucion_edit);
 		SessionManager.setContext(this);
 		UserSessionManager.setContext(this);
-		com.panzyma.nm.NMApp.getController().setView(this);
-		Message m = new Message();
-		aprodselected = new ArrayList<Producto>();
-		m.what = ControllerProtocol.OBTENERVALORCATALOGO;
-		m.obj = new String[] { "MotivoDevolucionNoVencidos" };
-		NMApp.getController().getInboxHandler().sendMessage(m);
-		initComponent();
-		if (getIntent().hasExtra("cliente")) {
-			long IdCliente = getIntent().getLongExtra("cliente", 0);
-			try {
-				cliente = Ventas.getClienteBySucursalID(IdCliente,
-						me.getContentResolver());
-				setInformacionCliente();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		com.panzyma.nm.NMApp.getController().setView(this); 
+		
+		iddevolucion = getIntent().getLongExtra("iddevolucion", 0l); 
+		if (iddevolucion != 0l) 
+		{ 
+			onEdit = true;
+			positioncache[0]=0;
+			msg = new Message();
+			aprodselected = new ArrayList<Producto>();
+			msg.what = ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
+			msg.obj =iddevolucion;
+			NMApp.getController().getInboxHandler().sendMessage(msg);
+		}	else
+		{
+			msg = new Message();
+			aprodselected = new ArrayList<Producto>();
+			msg.what = ControllerProtocol.OBTENERVALORCATALOGO;
+			msg.obj = new String[] { "MotivoDevolucionNoVencidos" };
+			NMApp.getController().getInboxHandler().sendMessage(msg);
 		}
+		
+		if (getIntent().hasExtra("cliente")) 
+		{
+				long IdCliente = getIntent().getLongExtra("cliente", 0);
+				try {
+					cliente = Ventas.getClienteBySucursalID(IdCliente,
+							me.getContentResolver());
+					setInformacionCliente();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		initComponent();
+
 	}
 
 	public void initComponent() {
@@ -479,7 +501,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion = new Devolucion();
 			devolucion.setCodEstado(REGISTRADA);
 			devolucion.setId(0);
-			devolucion.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
+			devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 			devolucion.setNumeroCentral(0);
 			devolucion.setReferencia(0);
 			devolucion.setOffLine(true);
@@ -507,7 +529,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			
 		}
 		if (devolucion.getFecha() == 0)
-			devolucion.setFecha(DateUtil.d2i(Calendar.getInstance().getTime()));
+			devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 		tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
 		CreateMenu();
 
@@ -720,6 +742,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				CalMontoCargoVendedor();
 
 			} catch (Exception e) {
+				AppDialog.showMessage(this, "Alerta",
+						e.getMessage(),
+						DialogType.DIALOGO_ALERTA);
 			}
 		} else {
 			adapter.notifyDataSetChanged();
@@ -776,6 +801,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						EstimarCostosDev(true);
 						CalTotalDevolucion();
 						CalMontoCargoVendedor();
+						Setfieldsdevolucion();
 						adapter.notifyDataSetChanged();
 					}
 				});
@@ -1157,7 +1183,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	public boolean validarDevolucion() {
 
-		devolucion.setFecha(DateUtil.d2i(new Date()));
+		devolucion.setFecha(DateUtil.dt2i(new Date()));
 		if (cliente == null) {
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
@@ -1292,9 +1318,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setEspecial(!"".equals(devolucion.getObservacion()));
 		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado())) 
 		{
-			EstimarCostosDev(false);
-			CalMontoPromocion(); 
-			CalTotalDevolucion();
+			EstimarCostosDev(false); 
+			CalMontoCargoVendedor();
+		    CalMontoPromocion();
+		    CalTotalDevolucion();
 		}
 		
 		devolucion.setMontoCargoVendedor(costeoMontoCargoVen.longValue());
@@ -1311,7 +1338,6 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setImpuesto(costeoMontoImpuesto.longValue());
 		devolucion.setMontoBonif(costeoMontoBonificacion.longValue());
 		devolucion.setSubtotal(costeoMontoSubTotal.longValue());
-		
 		
 		return true;
 	}
@@ -1499,8 +1525,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			sumabonf = sumabonf + item.getMontoBonif();
 			sumabonfv = sumabonfv + item.getMontoBonifVen(); 
 			// IMPUESTO
-			sumaimp = sumaimp + item.getMontoBonif();
-			sumaimpv = sumaimpv + item.getMontoBonifVen(); 
+			sumaimp = sumaimp + item.getImpuesto();
+			sumaimpv = sumaimpv + item.getImpuestoVen(); 
 			// TOTAL
 			sumatotal = sumatotal + item.getTotal();
 			sumatotalv = sumatotalv + item.getTotalVen(); 
@@ -1752,7 +1778,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setNombreCliente(cliente.getNombreCliente());
 	}
 
-	private ArrayList<SpinnerModel> setListData(ArrayList<Catalogo> valores) {
+	private ArrayList<SpinnerModel> setListData(List<Catalogo> valores) {
 		ArrayList<SpinnerModel> CustomListViewValuesArr = new ArrayList<SpinnerModel>();
 		// Now i have taken static values by loop.
 		// For further inhancement we can take data by webservice / json / xml;
@@ -1826,29 +1852,56 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	@Override
 	public boolean handleMessage(Message msg) {
 		dismiss();
-		switch (msg.what) {
-		case ControllerProtocol.OBTENERVALORCATALOGO:
-			adapter_motdev = new CustomAdapter(getContext(),
-					R.layout.spinner_rows,
-					setListData(catalogos = (ArrayList<Catalogo>) msg.obj));
-			cboxmotivodev.setAdapter(adapter_motdev);
-			break;
-		case ControllerProtocol.NOTIFICATION_DIALOG:
-			if (msg.obj instanceof String)
-				showStatus(msg.obj.toString(), true);
-			break;
-		case ControllerProtocol.ERROR:
-			/*
-			 * AppDialog.showMessage(me, ((ErrorMessage) msg.obj).getTittle(),
-			 * ((ErrorMessage) msg.obj).getMessage(),
-			 * DialogType.DIALOGO_ALERTA);
-			 */
-			if (msg.obj instanceof ErrorMessage)
-				showStatus(((ErrorMessage) msg.obj).getMessage(), true);
-			else if (msg.obj instanceof String)
-				showStatus(((String) msg.obj), true);
-
-			break;
+		switch (msg.what) 
+		{
+			case ControllerProtocol.C_DATA:
+					if(msg.arg1==ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST);
+					{
+						vmDevolucionEdit objdev=(vmDevolucionEdit) msg.obj;
+						devolucion=objdev.getDevolucion();
+						devolucion.setOlddata(devolucion);
+						cliente=objdev.getCliente();
+						pedido=devolucion.getObjPedido();
+						if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0)
+							dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
+						adapter_motdev = new CustomAdapter(getContext(),
+								R.layout.spinner_rows,
+								setListData(catalogos = (List<Catalogo>) objdev.getMotivodev()));
+						cboxmotivodev.setAdapter(adapter_motdev);
+						int index=0;
+						for(ValorCatalogo vc:catalogos.get(0).getValoresCatalogo())
+						{
+							if(devolucion.getCodMotivo().equals(vc.getCodigo()))
+								break;
+								index++;
+						} 
+						if(index==catalogos.get(0).getValoresCatalogo().size())
+							index=0;
+						cboxmotivodev.setSelection(index);
+						adapter_motdev.setSelectedPosition(index);
+						adapter_motdev.notifyDataSetChanged();
+						
+						initExpandableListView();
+					}
+					break;
+		
+			case ControllerProtocol.OBTENERVALORCATALOGO:
+				adapter_motdev = new CustomAdapter(getContext(),
+						R.layout.spinner_rows,
+						setListData(catalogos = (ArrayList<Catalogo>) msg.obj));
+				cboxmotivodev.setAdapter(adapter_motdev);
+				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG:
+				if (msg.obj instanceof String)
+					showStatus(msg.obj.toString(), true);
+				break;
+			case ControllerProtocol.ERROR: 
+				if (msg.obj instanceof ErrorMessage)
+					showStatus(((ErrorMessage) msg.obj).getMessage(), true);
+				else if (msg.obj instanceof String)
+					showStatus(((String) msg.obj), true);
+	
+				break;
 		}
 		return false;
 	}
@@ -1919,7 +1972,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private void Setfieldsdevolucion() 
 	{
 		devolucion.setDeVencido(ckboxvencidodev.isChecked());
-
+		devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 		if (cboxtramitedev.getSelectedItemPosition() > 0)
 			devolucion.setTipoTramite(((SpinnerModel) cboxtramitedev
 					.getSelectedItem()).getCodigo());
@@ -1932,7 +1985,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setObjMotivoID(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getId());
 		}
-
+		devolucion.setObjClienteID(cliente.getIdCliente());
+		devolucion.setObjSucursalID(cliente.getIdSucursal());
 		devolucion.setNota(tbxNota.getText().toString());
 		devolucion.setParcial(PARTIAL); 
 		devolucion.setSubtotal(costeoMontoSubTotal.longValue());	 
@@ -2051,24 +2105,113 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		    cuentasPorCobrar.show(transaction, "dialog");
 	}
 
-	public ExpandListAdapter getAdapter() {
-		return adapter;
+	public BigDecimal getCosteoMontoSubTotal() {
+		return costeoMontoSubTotal;
 	}
 
-	public void setAdapter(ExpandListAdapter adapter) {
-		this.adapter = adapter;
+	public void setCosteoMontoSubTotal(BigDecimal costeoMontoSubTotal) {
+		this.costeoMontoSubTotal = costeoMontoSubTotal;
 	}
 
-	public ExpandableListView getLvdevproducto() {
-		return lvdevproducto;
+	public BigDecimal getCosteoMontoBonificacion() {
+		return costeoMontoBonificacion;
 	}
 
-	public void setLvdevproducto(ExpandableListView lvdevproducto) {
-		this.lvdevproducto = lvdevproducto;
+	public void setCosteoMontoBonificacion(BigDecimal costeoMontoBonificacion) {
+		this.costeoMontoBonificacion = costeoMontoBonificacion;
+	}
+
+	public BigDecimal getCosteoMontoImpuesto() {
+		return costeoMontoImpuesto;
+	}
+
+	public void setCosteoMontoImpuesto(BigDecimal costeoMontoImpuesto) {
+		this.costeoMontoImpuesto = costeoMontoImpuesto;
+	}
+
+	public BigDecimal getCosteoMontoPromocion() {
+		return costeoMontoPromocion;
+	}
+
+	public void setCosteoMontoPromocion(BigDecimal costeoMontoPromocion) {
+		this.costeoMontoPromocion = costeoMontoPromocion;
+	}
+
+	public BigDecimal getCosteoMontoCargoAdministrativo() {
+		return costeoMontoCargoAdministrativo;
+	}
+
+	public void setCosteoMontoCargoAdministrativo(
+			BigDecimal costeoMontoCargoAdministrativo) {
+		this.costeoMontoCargoAdministrativo = costeoMontoCargoAdministrativo;
+	}
+
+	public BigDecimal getCosteoMontoTotal() {
+		return costeoMontoTotal;
+	}
+
+	public void setCosteoMontoTotal(BigDecimal costeoMontoTotal) {
+		this.costeoMontoTotal = costeoMontoTotal;
+	}
+
+	public BigDecimal getCosteoMontoBonificacionVen() {
+		return costeoMontoBonificacionVen;
+	}
+
+	public void setCosteoMontoBonificacionVen(BigDecimal costeoMontoBonificacionVen) {
+		this.costeoMontoBonificacionVen = costeoMontoBonificacionVen;
+	}
+
+	public BigDecimal getCosteoMontoImpuestoVen() {
+		return costeoMontoImpuestoVen;
+	}
+
+	public void setCosteoMontoImpuestoVen(BigDecimal costeoMontoImpuestoVen) {
+		this.costeoMontoImpuestoVen = costeoMontoImpuestoVen;
+	}
+
+	public BigDecimal getCosteoMontoPromocionVen() {
+		return costeoMontoPromocionVen;
+	}
+
+	public void setCosteoMontoPromocionVen(BigDecimal costeoMontoPromocionVen) {
+		this.costeoMontoPromocionVen = costeoMontoPromocionVen;
+	}
+
+	public BigDecimal getCosteoMontoCargoAdministrativoVen() {
+		return costeoMontoCargoAdministrativoVen;
+	}
+
+	public void setCosteoMontoCargoAdministrativoVen(
+			BigDecimal costeoMontoCargoAdministrativoVen) {
+		this.costeoMontoCargoAdministrativoVen = costeoMontoCargoAdministrativoVen;
+	}
+
+	public BigDecimal getCosteoMontoCargoVen() {
+		return costeoMontoCargoVen;
+	}
+
+	public void setCosteoMontoCargoVen(BigDecimal costeoMontoCargoVen) {
+		this.costeoMontoCargoVen = costeoMontoCargoVen;
+	}
+
+	public BigDecimal getCosteoMontoVinieta() {
+		return costeoMontoVinieta;
+	}
+
+	public void setCosteoMontoVinieta(BigDecimal costeoMontoVinieta) {
+		this.costeoMontoVinieta = costeoMontoVinieta;
+	}
+
+	public BigDecimal getCosteoMontoTotalVen() {
+		return costeoMontoTotalVen;
+	}
+
+	public void setCosteoMontoTotalVen(BigDecimal costeoMontoTotalVen) {
+		this.costeoMontoTotalVen = costeoMontoTotalVen;
 	}
 	
 	
-	
-	
+
 
 }

@@ -197,7 +197,7 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable
 	{	
 		 switch(index)  
 		 {
-			 case 0: return id;
+			 case 0: return  id;
 			 case 1: return  objLoteID;
 			 case 2: return  numeroLote;
 			 case 3: return  fechaVencimiento;
@@ -219,28 +219,28 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable
 	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
         switch(_index)  {
         case 0:
-            _info.name = "id";
+            _info.name = "Id";
             _info.type = Long.class; break;
         case 1:
-            _info.name = "objLoteID";
+            _info.name = "ObjLoteID";
             _info.type = Long.class; break; 
         case 2:
-            _info.name = "numeroLote";
+            _info.name = "NumeroLote";
             _info.type = String.class; break;
         case 3:
-            _info.name = "fechaVencimiento";
+            _info.name = "FechaVencimiento";
             _info.type = Long.class; break;
         case 4:
-            _info.name = "cantidadDevuelta";
+            _info.name = "CantidadDevuelta";
             _info.type = Integer.class; break;
         case 5:
-            _info.name = "fueraPolitica";
+            _info.name = "FueraPolitica";
             _info.type = Boolean.class; break;
         case 6:
-            _info.name = "cantidadDespachada";
+            _info.name = "CantidadDespachada";
             _info.type = Integer.class; break;
         case 7:
-            _info.name = "deleted";
+            _info.name = "Deleted";
             _info.type = Boolean.class; break;
         } 
 	}

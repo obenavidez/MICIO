@@ -919,13 +919,13 @@ public class Devolucion  implements KvmSerializable{
                _info.name = "NumeroFacturaDevuelta";
                _info.type = java.lang.Integer.class; break;
            case 7:
-               _info.name = "objVendedorID";
+               _info.name = "ObjVendedorID";
                _info.type = java.lang.Long.class; break;
            case 8:
-               _info.name = "objClienteID";
+               _info.name = "ObjClienteID";
                _info.type = java.lang.Long.class; break;
            case 9:
-               _info.name = "objSucursalID";
+               _info.name = "ObjSucursalID";
                _info.type = java.lang.Long.class; break;
            case 10:
                _info.name = "NombreCliente";

@@ -415,6 +415,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
     String sqlDevolucionProductoLote =  "CREATE TABLE IF NOT EXISTS DevolucionProductoLote ("
 				    + " id Integer PRIMARY KEY  NOT NULL  UNIQUE , "
 				    + " devolucionproductoID Integer,"
+				    + " devolucionID  Integer, "
 				    + " objLoteID  Integer, "
 				    + " numeroLote  Text, "
 				    + " fechaVencimiento Integer , "

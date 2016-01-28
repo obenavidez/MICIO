@@ -228,8 +228,31 @@ import com.panzyma.nm.view.ViewPedidoEdit;
 		cnt.getSharedPreferences("VConfiguracion",
 				android.content.Context.MODE_PRIVATE).edit().putLong("max_idrecibo", value);
 	}
+	
+	public static int getMaxDevolucionVId(Context cnt) {
+		return cnt.getSharedPreferences("VConfiguracion",
+				android.content.Context.MODE_PRIVATE).getInt(
+				"max_iddevolucionv",0); 	}
+	
+	public static void setMaxDevolucionVId(Context cnt, long value) {
+		cnt.getSharedPreferences("VConfiguracion",
+				android.content.Context.MODE_PRIVATE).edit().putLong("max_iddevolucionv", value);
+	}
  
-//    public static Pedido guardarPedido(Pedido pedido,ViewPedidoEdit vpe) throws Exception
+	public static int getMaxDevolucionNVId(Context cnt) {
+		return cnt.getSharedPreferences("VConfiguracion",
+				android.content.Context.MODE_PRIVATE).getInt(
+				"max_iddevolucionnv",0); 	}
+	
+	public static void setMaxDevolucionNVId(Context cnt, long value) {
+		cnt.getSharedPreferences("VConfiguracion",
+				android.content.Context.MODE_PRIVATE).edit().putLong("max_iddevolucionnv", value);
+	}
+	
+//    
+	//pref.getInt("max_iddevolucionv", 0), 
+	//pref.getInt("max_iddevolucionnv", 0),
+	//public static Pedido guardarPedido(Pedido pedido,ViewPedidoEdit vpe) throws Exception
 //    { 
 //        //Salvando el tipo de pedido (crédito contado)		
 //        pedido.setTipo("CR"); 

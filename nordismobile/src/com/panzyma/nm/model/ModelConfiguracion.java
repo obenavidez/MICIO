@@ -277,6 +277,14 @@ public class ModelConfiguracion {
 		edit.commit();
 		return 1;
 	}
+	
+	public static int ActualizarSecuenciaDevolucion( int iddevolucion,boolean esdevencido) {
+		pref = NMApp.getContext().getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
+		edit = pref.edit();
+		edit.putInt(esdevencido?"max_iddevolucionv":"max_iddevolucionnv", iddevolucion);
+		edit.commit();
+		return 1;
+	}
 
 	public static Usuario getUser(Context view) 
 	{

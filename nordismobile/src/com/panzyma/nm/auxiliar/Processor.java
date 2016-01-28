@@ -13,6 +13,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.ID_REQUEST_SALVARPEDI
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_ITEM_FINISHED;
 
 import com.google.gson.Gson;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.serviceproxy.CCCliente;
 import com.panzyma.nm.serviceproxy.Cliente;
@@ -212,4 +213,23 @@ public class Processor {
 			// Thread.sleep(500); 
 	     }  
 	}
+	
+	public static void send_ViewObjectToView(Object  obj)throws Exception
+	{ 
+		 synchronized(lock)
+	     { 
+			 NMApp.getController().notifyOutboxHandlers(C_DATA, 0, 0, obj);
+			// Thread.sleep(500); 
+	     }  
+	}
+	
+	public static void send_ViewObjectToView(int arg1,Object  obj)throws Exception
+	{ 
+		 synchronized(lock)
+	     { 
+			 NMApp.getController().notifyOutboxHandlers(C_DATA,arg1, 0, obj);
+			// Thread.sleep(500); 
+	     }  
+	}
+	
 }

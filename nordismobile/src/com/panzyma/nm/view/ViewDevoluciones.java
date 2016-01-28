@@ -1,6 +1,5 @@
 package com.panzyma.nm.view;
-
-import java.nio.channels.SelectableChannel;
+ 
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +16,8 @@ import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
-import com.panzyma.nm.view.adapter.InvokeBridge;
-import com.panzyma.nm.view.vCliente.FragmentActive;
+import com.panzyma.nm.serviceproxy.Devolucion;
+import com.panzyma.nm.view.adapter.InvokeBridge; 
 import com.panzyma.nm.viewmodel.vmDevolucion;
 import com.panzyma.nordismobile.R;
 
@@ -38,8 +37,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.util.Log;
+import android.support.v7.widget.SearchView.OnQueryTextListener; 
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -51,6 +49,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
+@SuppressWarnings("rawtypes")
 @InvokeBridge(bridgeName = "BDevolucionM")
 public class ViewDevoluciones extends ActionBarActivity implements ListaFragment.OnItemSelectedListener, Handler.Callback {
 
@@ -89,6 +88,13 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	List<vmDevolucion> devoluciones = new ArrayList<vmDevolucion>();
 	int posicion ;
 	private static CustomDialog dlg;
+	
+	Intent intent;
+	Bundle b;
+	protected int positioncache;
+	
+	Devolucion devolucion;
+	private int request_code;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -247,21 +253,22 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 				getSupportActionBar().setTitle(tituloSeccion);
 				
 				// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-				int pos = customArrayAdapter.getSelectedPosition();
+				positioncache = customArrayAdapter.getSelectedPosition(); 
+				//int pos = customArrayAdapter.getSelectedPosition();
 				// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-				item_selected = (vmDevolucion) customArrayAdapter.getItem(pos);
+				item_selected = (vmDevolucion) customArrayAdapter.getItem(positioncache);
+				
+				
+				
 				
 				switch (position) {
 					case NUEVO_DEVOLUCION : 
-						Intent intent = new Intent(ViewDevoluciones.this, ViewDevolucionEdit.class);
-						startActivity(intent);
+						intent = new Intent(ViewDevoluciones.this, ViewDevolucionEdit.class);
+						intent.putExtra("requestcode", NUEVO_DEVOLUCION);
+						startActivityForResult(intent, NUEVO_DEVOLUCION);
 						break;
 					case ABRIR_DEVOLUCION : 
-						if (item_selected == null) {
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
+						abrirDevolucion();
 						
 						break;
 					case BORRAR_DEVOLUCION:
@@ -481,4 +488,61 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			pDialog.dismiss();
 	}
 
+	public void abrirDevolucion()
+	{
+		
+		try 
+		{ 
+			if (item_selected == null) {
+				drawerLayout.closeDrawers();
+				AppDialog.showMessage(this, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+				return;
+			}
+			
+			positioncache = customArrayAdapter.getSelectedPosition(); 
+			intent = new Intent(ViewDevoluciones.this,ViewDevolucionEdit.class);
+			b = new Bundle();
+			b.putLong("iddevolucion", item_selected.getId()); 
+			intent.putExtras(b);
+			intent.putExtra("requestcode", ABRIR_DEVOLUCION);
+			startActivityForResult(intent, ABRIR_DEVOLUCION); 
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			AppDialog.showMessage(this, "Información",
+					e.getMessage(), DialogType.DIALOGO_ALERTA);
+		} 
+		
+	}
+	
+	@Override
+	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
+		super.onActivityResult(requestcode, resultcode, data);
+		try {
+			SessionManager.setContext(this);
+			UserSessionManager.setContext(this);
+			com.panzyma.nm.NMApp.getController().setView(this);
+			request_code = requestcode;
+			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code) && data != null);;
+				//establecer(data.getParcelableExtra("pedido"), false);
+
+		} catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		if (drawerLayout != null && drawerLayout.isShown())
+			drawerLayout.closeDrawers();
+		finishActivity(request_code);
+	}
+
+	@Override
+	public void startActivityForResult(Intent intent, int requestCode) {
+		super.startActivityForResult(intent, requestCode);
+	}
+
+	@Override
+	public void startActivityFromFragment(Fragment fragment, Intent intent,
+			int requestCode) {
+		super.startActivityFromFragment(fragment, intent, requestCode);
+	}
 }
