@@ -13,6 +13,10 @@ public class vmConfiguracion{
 	private int MAX_IDRECIBO;
 	private int MAX_IDDEVOLUCIONV;
 	private int MAX_IDDEVOLUCIONNV;
+	
+	public vmConfiguracion(){
+		
+	}
 	/**
 	 * @return the mAX_IDDEVOLUCIONV
 	 */

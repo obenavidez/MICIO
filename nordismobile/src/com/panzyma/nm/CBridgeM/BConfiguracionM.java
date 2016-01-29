@@ -161,12 +161,13 @@ public class BConfiguracionM extends BBaseM {
 			}
 			break;
 		case ID_SALVAR_CONFIGURACION:
-			vmConfiguracion c = ModelConfiguracion.getVMConfiguration(getContext());
+			vmConfiguracion c = ModelConfiguracion.getVMConfiguration(getContext()); 
 			c.setAppServerURL(b.get("URL").toString());
 			c.setAppServerURL2(b.get("URL2").toString());
 			c.setNameUser(b.get("LoginUsuario").toString());
-			c.setEnterprise(b.get("Empresa").toString());
+			c.setEnterprise(b.get("Empresa").toString()); 
 			SaveLocalHost(c);
+			
 			break;
 		case ControllerProtocol.ID_RESETEAR_CONFIGURACION:			
 			saveLocalHost(b);

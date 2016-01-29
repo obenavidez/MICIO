@@ -59,6 +59,7 @@ import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
+import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.view.adapter.InvokeBridge;
@@ -218,11 +219,13 @@ public class ViewConfiguracion extends ActionBarActivity implements
 
 	public void setImpresora(Impresora _impresora) {
 		this.impresora = _impresora;
+		Impresora.nuevaIntacia(impresora);
+		impresora.obtenerNombre();
 		SessionManager.setImpresora(impresora);
 	}
 
 	public Impresora getImpresora() {
-		return this.impresora;
+		return impresora;
 	}
 
 	public void ocultarDialogos() {
@@ -503,6 +506,8 @@ public class ViewConfiguracion extends ActionBarActivity implements
 	private boolean salvarConfiguracion(int... _what) {
 		if (validar()) 
 		{
+
+			ModelConfiguracion.guardarImpresora(NMApp.getContext(),  getImpresora());
 			setEnterprise(txtEmpresa.getText().toString());
 			setUserName(txtUsuario.getText().toString());
 			setUrlServer(txtURL.getText().toString());
