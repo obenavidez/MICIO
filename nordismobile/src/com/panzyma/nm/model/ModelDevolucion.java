@@ -239,6 +239,7 @@ public class ModelDevolucion {
 						 Object  value=cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.id));
 						 if(value!=null && Integer.valueOf(""+value)!=-1)
 						    r.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.id))));
+						 r.setObjProductoID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.objProductoID))));
 						 r.setNombreProducto(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.nombreProducto)));
 						 r.setCantidadDevolver(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.cantidadDevolver))));
 						 r.setBonificacion(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.bonificacion))));
@@ -303,7 +304,7 @@ public class ModelDevolucion {
 			if (cur.moveToFirst()) 
 			{ 
 					 do{
-						 DevolucionProductoLote r = new DevolucionProductoLote();
+						 DevolucionProductoLote r = new DevolucionProductoLote(); 
 						 r.setId(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.id))));
 						 r.setObjLoteID(Long.parseLong(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.objLoteID))));
 						 r.setNumeroLote(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.numeroLote)));

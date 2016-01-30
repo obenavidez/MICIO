@@ -361,8 +361,8 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 							CargarCobros(Accion.COBROS_DEL_MES.getActionCode());
 							break;
 						case IMPRIMIR:
-							menuSelected = ActionMenu.IMPRIMIR;
-							Imprimir(Accion.IMPRIMIR.getActionCode());
+							menuSelected = ActionMenu.IMPRIMIR; 
+							Imprimir(Accion.IMPRIMIR.getActionCode()); 
 							break;							
 						}
 					}

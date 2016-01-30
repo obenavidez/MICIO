@@ -43,6 +43,7 @@ public class CustomAdapter extends ArrayAdapter<SpinnerModel> {
       }
     
     
+    
     public void setSelectedPosition(int pos)
 	{
 		selectedPos = pos;
@@ -81,6 +82,11 @@ public class CustomAdapter extends ArrayAdapter<SpinnerModel> {
 		// TODO Auto-generated method stub
 		return (SpinnerModel) data.get(position);
 	}
+    
+    public ArrayList getData()
+    {
+    	return data;
+    }
 
 	// This funtion called for each row ( Called data.size() times )
     public View getCustomView(int position, View convertView, ViewGroup parent) {

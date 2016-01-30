@@ -768,6 +768,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 				}
 				else if (msg.obj!=null &&  msg.obj instanceof String) 
 					message=msg.obj.toString();
+				
 				if (
 					 ControllerProtocol.SAVE_DATA_FROM_LOCALHOST == msg.arg1 ||
 					 ControllerProtocol.DESAPLICARPEDIDOPROMOCIONES==msg.arg1 ||

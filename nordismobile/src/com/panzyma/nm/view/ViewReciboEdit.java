@@ -1163,11 +1163,23 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			@Override
 			public void run() {
 
-				tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
-						r.getReferencia(), me));
-				tbxNumRecibo.setText(NumberUtil.getFormatoNumero(r.getNumero(),
-						me));
-				salvado = true;
+				try 
+				{
+					tbxNumReferencia.setText(NumberUtil.getFormatoNumero(
+							r.getReferencia(), me));
+					tbxNumRecibo.setText(NumberUtil.getFormatoNumero(r.getNumero(),
+							me));					
+					salvado = true;
+					
+				} catch (Exception e) {
+					AppDialog
+					.showMessage(
+							me,
+							"ERROR",
+							"Error de formato ref/num_central."+e.getMessage(),
+							DialogType.DIALOGO_ALERTA);
+				}
+				
 			}
 		});
 	}
