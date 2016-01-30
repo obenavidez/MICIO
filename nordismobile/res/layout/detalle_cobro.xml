@@ -49,7 +49,7 @@
     </TableRow>
  
     <TableRow
-         android:padding="2dip"   
+         android:padding="2dip"
         android:layout_gravity="right"   
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content">
@@ -74,7 +74,8 @@
  
     <TableRow  
         android:padding="2dip" 
-        android:layout_gravity="right"     
+        android:layout_gravity="right"  
+           
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content">
         <TextView 
@@ -88,14 +89,46 @@
         <TextView 
 		 android:layout_width="0dp"
          android:id="@+id/cxctext_cobro_cliente" 
-         android:scrollHorizontally="true" 
          android:lines="1"
          android:textColor="@color/Black" 
          android:textSize="10dp" 
          android:layout_weight="0.75" 
          android:layout_height="wrap_content" />
     </TableRow>
-
     
+   <TableRow
+        android:id="@+id/fila_footer"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:padding="2dip" >
+
+<!--         <include -->
+<!--             android:layout_width="match_parent" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_gravity="fill" -->
+<!--             layout="@layout/footer_view" /> -->
+
+		  <TextView 
+	         android:layout_width="0dp"
+			 android:layout_marginLeft="3dp"
+	         android:text="Monto Total :" 
+	         android:textSize="14dp"  
+	         android:textColor="@color/Teal" 
+	         android:layout_weight="0.25" 
+	         android:layout_height="wrap_content" />
+	    
+		   <TextView 
+			 android:layout_width="0dp"
+	          android:id="@+id/footer_txt" 
+	         android:scrollHorizontally="true" 
+	         android:lines="1"
+	         android:textColor="@color/Black" 
+	         android:textSize="14dp" 
+	         android:layout_weight="0.75" 
+	         android:layout_height="wrap_content" />
+		   
+
+
+    </TableRow>
 
 </TableLayout>

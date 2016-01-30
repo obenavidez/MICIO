@@ -944,7 +944,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	@Override
 	protected void onResume() 
 	{
-		if(NMApp.ciclo==NMApp.lifecycle.ONPAUSE || NMApp.ciclo==NMApp.lifecycle.ONRESTART)
+		if(fragmentActive == fragmentActive.LIST && ( NMApp.ciclo==NMApp.lifecycle.ONPAUSE || NMApp.ciclo==NMApp.lifecycle.ONRESTART))
 		{
 			NMApp.getController().setView(this);
 			SessionManager.setContext(this);

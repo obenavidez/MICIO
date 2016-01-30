@@ -1,6 +1,8 @@
 package com.panzyma.nm.fragments;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +15,7 @@ import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.fragments.ConsultaVentasFragment.ActionMenu;
+import com.panzyma.nm.interfaces.GenericDocument;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCobro;
@@ -22,6 +25,7 @@ import com.panzyma.nm.serviceproxy.CobroDetalle;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.view.adapter.ExpandListAdapter;
+import com.panzyma.nm.view.adapter.ExpandListAdapter.OnGroupFinished;
 import com.panzyma.nm.view.adapter.ExpandListChild;
 import com.panzyma.nm.view.adapter.ExpandListGroup;
 import com.panzyma.nm.view.adapter.GenericAdapter;
@@ -39,6 +43,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.os.Handler.Callback;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -62,8 +67,8 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	
 	public String TAG=consultaCobroFragment.class.getSimpleName();
 	private ProgressDialog waiting;
-	private List<CCobro> cobros = new ArrayList<CCobro>();
-	ArrayList<CFormaPago> pagos = new ArrayList<CFormaPago>();
+	private List<CCobro> cobros = null;
+	ArrayList<CFormaPago> pagos = null;
 	String titulo = "VENTAS";
 	private GenericAdapter adapter = null;
 	private ExpandListAdapter adapter3 = null;
@@ -90,11 +95,63 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	List<ExpandListGroup> lgroups = new LinkedList<ExpandListGroup>();
 	List<String> listDataHeader;
 	HashMap<String, List<String>> listDataChild;
+	View ccf =null;
 	
 	public enum ActionMenu {
 		COBROS_DIA, COBROS_SEMANA, COBROS_MES, IMPRIMIR 
 	}
 	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		
+//		outState.putInt(ARG_POSITION, mCurrentPosition); 
+//		outState.putParcelable("cliente", customer);
+//		outState.putLong(ARG_SUCURSAL, sucursalID);
+//		outState.putParcelable("detailcustomer", DetailCustomerSelected);
+//		outState.putParcelable("cobros", (Parcelable) cobros);
+//		outState.putParcelable("pagos", (Parcelable) pagos);
+//		
+		 Parcelable [] objects = new Parcelable[cobros.size()];
+		 cobros.toArray(objects);
+		 outState.putParcelableArray("cobros", objects);
+		 
+		 Parcelable [] objects2 = new Parcelable[pagos.size()];
+		 pagos.toArray(objects2);
+		 outState.putParcelableArray("pagos", objects2);
+		 
+		 
+		 super.onSaveInstanceState(outState);
+		Log.d(TAG, "onSaveInstanceState");
+	}	
+	
+	@Override
+	public void onViewStateRestored(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onViewStateRestored(savedInstanceState);
+		 if (savedInstanceState != null) 
+		    {
+		    	 Parcelable [] objects = savedInstanceState.getParcelableArray("cobros");
+		    	 cobros = new ArrayList<CCobro>( (Collection<? extends CCobro>) Arrays.asList(objects) ); 
+		    	 
+		    	 Parcelable [] objects2 = savedInstanceState.getParcelableArray("pagos");
+		    	 pagos = new ArrayList<CFormaPago>( (Collection<? extends CFormaPago>) Arrays.asList(objects2) ); 
+		    }
+	}
+
+//	@Override
+//	public void onActivityCreated(Bundle savedInstanceState) 
+//	{
+//	    super.onActivityCreated(savedInstanceState);
+//	    if (savedInstanceState != null) 
+//	    {
+//	    	 Parcelable [] objects = savedInstanceState.getParcelableArray("cobros");
+//	    	 cobros = new ArrayList<CCobro>( (Collection<? extends CCobro>) Arrays.asList(objects) ); 
+//	    	 
+//	    	 Parcelable [] objects2 = savedInstanceState.getParcelableArray("pagos");
+//	    	 pagos = new ArrayList<CFormaPago>( (Collection<? extends CFormaPago>) Arrays.asList(objects2) ); 
+//	    }
+//	
+//	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -105,27 +162,31 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	@Override
 	public void onStart() {
 		super.onStart();
+		//getActivity().getFragmentManager().findFragmentById(R.id.)
 		NMApp.controller.setView(this); 
 		SessionManager.setContext(getActivity());
 		initComponent();
 		menuSelected = ActionMenu.COBROS_DIA;
-		CargarCobros(Accion.COBROS_DEL_DIA.getActionCode());
+		if(cobros==null){
+			CargarCobros(Accion.COBROS_DEL_DIA.getActionCode());	
+		}
+		
 	}
 	
-	@Override
-	public void onDetach ()
-	{
-		Log.d(TAG, "OnDetach");
-		NMApp.getController().setView((Callback)getActivity()); 
-		super.onDetach();
-	}
-	
-	@Override
-    public void onStop() {
-        super.onStop(); 
-		NMApp.getController().setView((Callback)getActivity());  
-        Log.d(TAG, "onStop");
-    }
+//	@Override
+//	public void onDetach ()
+//	{
+//		Log.d(TAG, "OnDetach");
+//		NMApp.getController().setView((Callback)getActivity()); 
+//		super.onDetach();
+//	}
+//	
+//	@Override
+//    public void onStop() {
+//        super.onStop(); 
+//		NMApp.getController().setView((Callback)getActivity());  
+//        Log.d(TAG, "onStop");
+//    }
 	
 	private void CargarCobros(int opt){
 		try {
@@ -164,14 +225,14 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 				case COBROS_DEL_SEMANA:
 				case COBROS_DEL_MES:
 					System.out.print("YA LLego");
-					cobros.clear();
+					if(cobros!=null ) cobros.clear();
 					cobros = (ArrayList<CCobro>)msg.obj;
 					 CargarPagos(response.getActionCode()+3);
 					break;
 				case PAGOS_DEL_DIA :
 				case PAGOS_DE_SEMANA :
 				case PAGOS_DEL_MES :
-					pagos.clear();
+					if(pagos!=null )pagos.clear();
 					pagos = (ArrayList<CFormaPago>)msg.obj;
 					 MostrarCobros();
 					break;
@@ -181,6 +242,7 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 		return false;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void MostrarCobros(){
 		if (waiting != null) waiting.dismiss();
 
@@ -191,7 +253,20 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 		layouts.add(new SetViewHolderWLayout(R.layout.detalle_pago, PagoViewHolder.class, false,0));
 //		
 		    
-		adapter3 = new ExpandListAdapter(getActivity(), SetStandardGroups() , layouts);
+		adapter3 = new ExpandListAdapter(getActivity(), SetStandardGroups() , 
+					new OnGroupFinished() {
+
+					@Override
+					public void onFinish(int grouposition, TextView footertitle ,TextView footer) {
+						if(footer!=null){
+							if(grouposition==0)
+							   footer.setText(StringUtil.formatReal(getTotalCobros()));
+							else
+								footer.setText(StringUtil.formatReal(getTotalPagos()));
+						}
+					}
+
+		}, layouts);
  
 		expItems.setAdapter(adapter3);
 
@@ -345,7 +420,7 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 		/********** PAGOS *******************/
 		ExpandListGroup group2 = new ExpandListGroup();
 		group2.setPosition(0); // 1
-		group2.setName("PAGOS");
+		group2.setName("FORMAS DE PAGO");
 		
 		groupchild = new LinkedList<ExpandListChild>();
 		

@@ -7,14 +7,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.panzyma.nm.auxiliar.AppDialog.OnDismissDialogListener;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 
@@ -24,13 +28,27 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 	SetViewHolderWLayout parentlayout; 
 	SetViewHolderWLayout childlayout; 
 	Map achildlayout;
-	int grouposition;
+	int grouposition = -1;
 	int childposition; 
 	private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
     private HashMap<String, List<String>> _listDataChild;
     ArrayList<ParentChildPosition> layouts=null;
-	
+    int groupPosition_cache =-1;
+    private OnGroupFinished ongroupfinish;
+    
+    public ExpandListAdapter(Context _context, List<E> _groups,OnGroupFinished callback ,ArrayList<SetViewHolderWLayout> ... _holderloyout ) 
+	{
+		this.context = _context; 
+		this.groups = _groups;
+		this.holderloyout=_holderloyout[0] ;
+		parentlayout = null;
+		layouts = null;
+		getParentView(); 
+		this.ongroupfinish = callback;
+	} 
+    
+    
 	public ExpandListAdapter(Context _context, List<E> _groups,ArrayList<SetViewHolderWLayout> ... _holderloyout) 
 	{
 		this.context = _context; 
@@ -41,6 +59,12 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		getParentView(); 
 	}    
 	
+	
+	public Object getChild(int groupPosition) {
+		// TODO Auto-generated method stub
+		LinkedList<ExpandListChild> chList = ((ExpandListGroup)groups.get(groupPosition)).getItems();
+		return chList;
+	} 
 
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
@@ -133,7 +157,7 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 				viewHolder=(V)view.getTag(); 
 			
 			 viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,_group);
-
+			 
 			 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -142,7 +166,7 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 	}
 	 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View view, ViewGroup parent) {
 		
@@ -150,31 +174,39 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		final ViewGroup _parent;
 		try 
 		{			
-			
 			_parent=parent;
 			ExpandListChild child = (ExpandListChild) getChild(groupPosition, childPosition);
-			if (view == null) 
-			{  
-				SetViewHolderWLayout layout= (SetViewHolderWLayout) layouts.get(parentlayout.getParentposition()).getItem(groupPosition);
-				LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				view = inf.inflate(layout.getLayoutid(), null); 
-				viewHolder=(V) (layout.getViewHoder().newInstance()); 
-				invokeView(view,viewHolder);    		
-				view.setTag(viewHolder);	
-				
-				if(view.isSelected()) 
-					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.LighBlueMarine)); 
-				else
-					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.White));
-				
-				
-			} 
+			SetViewHolderWLayout layout= (SetViewHolderWLayout) layouts.get(parentlayout.getParentposition()).getItem(groupPosition);
+			LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			view = inf.inflate(layout.getLayoutid(), null); 
+			viewHolder=(V) (layout.getViewHoder().newInstance()); 
+			invokeView(view,viewHolder);    		
+			view.setTag(viewHolder);	
+
+			if(view.isSelected()) 
+				view.setBackgroundDrawable(context.getResources().getDrawable(R.color.LighBlueMarine)); 
 			else
-				viewHolder=(V)view.getTag();
+				view.setBackgroundDrawable(context.getResources().getDrawable(R.color.White));
+
+			viewHolder=(V)view.getTag();
 			
 			viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,child);
 			grouposition=groupPosition;
 			childposition=childPosition;
+			
+			if(isLastChild ){
+				TableRow row =(TableRow)view.findViewById(R.id.fila_footer);
+				if(row!=null){ 
+					row.setVisibility(View.VISIBLE);
+					TextView footer = (TextView)(row.findViewById(R.id.footer_txt));
+					if(footer!=null) {
+						if(ongroupfinish!=null){
+							ongroupfinish.onFinish(grouposition, footer,footer);
+						}
+					}
+				}
+			}
+
 		} catch (Exception e) {
 			// TODO: handle exception
 		}				
@@ -263,6 +295,12 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 	
 	public void updateData(List<E> groups) {
 	    this.groups = groups;
+	}
+
+
+	
+	public interface OnGroupFinished {
+		public abstract void onFinish(int grouposition ,TextView footertitle,TextView footer);
 	}
 	
 }

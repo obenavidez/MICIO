@@ -6,7 +6,12 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
-public class CCobro  implements KvmSerializable {
+import com.panzyma.nm.viewmodel.vmFicha;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class CCobro  implements Parcelable , KvmSerializable {
 	
 		private java.lang.String numeroCentral;
 		private java.lang.String nombreCliente;
@@ -149,4 +154,29 @@ public class CCobro  implements KvmSerializable {
 	               
 			}
 		}
+
+		@Override
+		public int describeContents() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags) {
+			// TODO Auto-generated method stub
+			
+		}
+		public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+			@Override
+			public vmFicha createFromParcel(Parcel parcel) {
+				return new vmFicha(parcel);
+			}
+
+			@Override
+			public vmFicha[] newArray(int size) {
+				return new vmFicha[size];
+			}
+
+		};
 }

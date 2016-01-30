@@ -1,6 +1,14 @@
 package com.panzyma.nm.serviceproxy;
 
-public class CFormaPago {
+import java.util.Hashtable;
+
+import org.ksoap2.serialization.KvmSerializable;
+import org.ksoap2.serialization.PropertyInfo;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class CFormaPago implements Parcelable , KvmSerializable {
 	
 	    protected java.lang.String codFormaPago;
 	    protected java.lang.String descFormaPago;
@@ -68,4 +76,40 @@ public class CFormaPago {
 	    public void setMonto(float monto) {
 	        this.monto = monto;
 	    }
+
+		@Override
+		public Object getProperty(int arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public int getPropertyCount() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void getPropertyInfo(int arg0, Hashtable arg1, PropertyInfo arg2) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setProperty(int arg0, Object arg1) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public int describeContents() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags) {
+			// TODO Auto-generated method stub
+			
+		}
 }
