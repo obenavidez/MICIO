@@ -56,7 +56,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	}
 
 	public vmDevolucion(long id, int numeroCentral,  String fecha, String cliente,
-			Float total, String estado, long cliente_id,boolean offline) {
+			Float total, String estado, long cliente_id,boolean offline , long idSucursal) {
 		super();
 		this.id = id;
 		NumeroCentral = numeroCentral;
@@ -66,6 +66,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 		Estado = estado;
 		this.cliente_id = cliente_id;
 		this.OffLine = offline;
+		this.idSucursal = idSucursal;
 		this.customer_id=1002548;
 	}
 

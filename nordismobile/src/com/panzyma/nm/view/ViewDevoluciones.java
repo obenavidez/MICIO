@@ -426,16 +426,33 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	}
 
 	public void LOAD_CUENTASXPAGAR() {
-		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
+//		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
+//		Bundle msg = new Bundle();
+//		FragmentTransaction transaction = getSupportFragmentManager()
+//				.beginTransaction();
+//		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, this.posicion);
+//		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,this.item_selected.getIdSucursal());
+//		cuentasPorCobrar.setArguments(msg);
+//		transaction.replace(R.id.fragment_container, cuentasPorCobrar);
+//		transaction.addToBackStack(null);
+//		transaction.commit();
+		
+		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		
+		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+		if (prev != null){
+			transaction.remove(prev);
+		}
+		
 		Bundle msg = new Bundle();
-		FragmentTransaction transaction = getSupportFragmentManager()
-				.beginTransaction();
-		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, this.posicion);
-		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,this.item_selected.getIdSucursal());
-		cuentasPorCobrar.setArguments(msg);
-		transaction.replace(R.id.fragment_container, cuentasPorCobrar);
+		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, item_selected.getIdSucursal());
+		
+		
 		transaction.addToBackStack(null);
-		transaction.commit();
+		cuentasPorCobrar.setArguments(msg); 
+	    cuentasPorCobrar.show(transaction, "dialog");
 	}
 	
 	@Override

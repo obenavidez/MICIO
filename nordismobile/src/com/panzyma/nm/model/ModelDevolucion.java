@@ -78,7 +78,8 @@ public class ModelDevolucion {
 					 NMConfig.Devolucion.total,
 					 NMConfig.Devolucion.codEstado,
 					 NMConfig.Devolucion.objClienteID,
-					 NMConfig.Devolucion.offLine
+					 NMConfig.Devolucion.offLine,
+					 NMConfig.Devolucion.objSucursalID
 					 };
 		
 		
@@ -102,7 +103,8 @@ public class ModelDevolucion {
 	            							   Float.valueOf(cur.getString(cur.getColumnIndex(projection[4]))),
 	            							   cur.getString(cur.getColumnIndex(projection[5])),
 	            							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[6]))),
-	            							   Boolean.parseBoolean(cur.getString(cur.getColumnIndex(projection[7]))))
+	            							   Boolean.parseBoolean(cur.getString(cur.getColumnIndex(projection[7]))),
+	            							   Long.parseLong(cur.getString(cur.getColumnIndex(projection[8]))))
 	            	);
 	            	
 	            }while (cur.moveToNext());
