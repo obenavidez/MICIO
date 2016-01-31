@@ -139,7 +139,11 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			case C_DATA:
 				list = (ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>() : msg.obj);
 				SetList(list);
-			
+				if(msg.arg1 == msg.arg2 && msg.arg2 == -1) {
+					AppDialog.showMessage((ViewDevoluciones)NMApp.getController().getView(), "Información.",
+							"Registro(s) borrado(s) exitosamente!",
+							DialogType.DIALOGO_ALERTA);
+				}
 			break;
 		
 			case ERROR:
@@ -285,7 +289,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 						}
 						if(!item_selected.getEstado().equals("REGISTRADA")){
 							drawerLayout.closeDrawers();
-							AppDialog.showMessage(NMApp.getContext(), "Información", "Este registro no tiene estado Enviado.",DialogType.DIALOGO_ALERTA);
+							AppDialog.showMessage(NMApp.getContext(), "Información", "Este registro no tiene estado Registrado.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
 						Message msg = new Message();
@@ -314,7 +318,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 					case BORRAR_ENVIADAS: 
 						Message msg2 = new Message();
 						Bundle b2 = new Bundle();						
-						b2.putInt("id", 0);
+						b2.putInt("id", -1);
 						msg2.setData(b2);
 						msg2.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
 						NMApp.getController().getInboxHandler().sendMessage(msg2);

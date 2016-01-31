@@ -97,8 +97,8 @@ public class BDevolucionM extends BBaseM
 			ModelDevolucion.borrarDevolucion(id);
 			Processor.notifyToView(getController(),
 					ControllerProtocol.C_DATA,
-					0,
-					0,
+					-1,
+					-1,
 					ModelDevolucion.obtenerDevolucionesFromLocalHost(getResolver())
 					);
 		} catch (Exception e) 

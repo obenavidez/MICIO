@@ -433,7 +433,7 @@ public class ModelDevolucion {
 		try {
 			sdb = Helper.getDatabase(NMApp.getContext());
 			sdb.beginTransaction();			
-			if(id == 0) {
+			if(id == -1) {
 				Cursor _c = sdb.rawQuery("select Id from Devolucion where codEstado='ENVIADA'", null);
 				while(_c.moveToNext()) {
 					id = _c.getInt(0);
