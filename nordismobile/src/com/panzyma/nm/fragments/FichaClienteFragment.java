@@ -272,6 +272,8 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 		public void onDetach ()
 		{
 			Log.d(TAG, "OnDetach");
+			android.support.v7.app.ActionBar a =((ActionBarActivity)getActivity()).getSupportActionBar();
+			a.show();
 			NMApp.getController().setView((Callback)getActivity()); 
 			super.onDetach();
 		}

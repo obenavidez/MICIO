@@ -90,6 +90,7 @@ import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.ViewDevoluciones.FragmentActive;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.ExpandListAdapter;
 import com.panzyma.nm.view.adapter.ExpandListChild;
@@ -2106,16 +2107,17 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
  
 		if (findViewById(R.id.dynamic_fragment) != null) {
 		} else {
-			Fragment fragment = getSupportFragmentManager().findFragmentById(
-					R.id.fragment_container);
-			if (fragment instanceof ListaFragment) {
+			   transaction = getSupportFragmentManager().beginTransaction();
+			
+			
+//			if (fragment instanceof ListaFragment) {
 				ficha = new FichaClienteFragment();
 				ficha.setArguments(args);
 				ficha.setRetainInstance(true);
 				transaction.addToBackStack(null);
 				transaction.replace(R.id.fragment_container, ficha, "ficha");
 				//gridheader.setVisibility(View.INVISIBLE);
-			}
+//			}
 		}
 		// Commit the transaction transaction.commit();
 		transaction.commit();
@@ -2247,8 +2249,5 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	public void setCosteoMontoTotalVen(BigDecimal costeoMontoTotalVen) {
 		this.costeoMontoTotalVen = costeoMontoTotalVen;
 	}
-	
-	
-
 
 }
