@@ -81,10 +81,35 @@ public class BDevolucionM extends BBaseM
 				Devolucion $dev=(Devolucion) msg.obj;
 				EnviarDevolucion($dev);
 				break;
+			case ControllerProtocol.DELETE_DATA_FROM_LOCALHOST:
+				Integer id = msg.getData().getInt("id");	
+				deleteDevolucion(id);
 			default:
 				break;
 		}
 		return true;
+	}
+	
+	private void deleteDevolucion(Integer id)
+	{
+		try 
+		{
+			ModelDevolucion.borrarDevolucion(id);
+			Processor.notifyToView(getController(),
+					ControllerProtocol.C_DATA,
+					0,
+					0,
+					ModelDevolucion.obtenerDevolucionesFromLocalHost(getResolver())
+					);
+		} catch (Exception e) 
+		{ 
+			Log.e(TAG, "Error interno al borrar devolución", e);
+			try {
+				Processor.notifyToView(getController(),ERROR,0,0,new ErrorMessage("Error interno al borrar devolución",e.toString(),"\n Causa: "+e.getCause()));
+			} catch (Exception e1) { 
+				Log.e(TAG, "Error interno al borrar devolución", e);
+			}
+		} 
 	}
 
 	private void ObtenerValorCatalogo(String...valores)

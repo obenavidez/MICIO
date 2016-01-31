@@ -11,6 +11,7 @@ import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
@@ -287,7 +288,12 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Este registro no tiene estado Enviado.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
-						
+						Message msg = new Message();
+						Bundle b = new Bundle();						
+						b.putInt("id", (int) item_selected.getId());
+						msg.setData(b);
+						msg.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
+						NMApp.getController().getInboxHandler().sendMessage(msg);
 						break;
 					case ENVIAR_DEVOLUCION :
 						if (item_selected == null) {
@@ -311,7 +317,12 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 							AppDialog.showMessage(getActionBar().getThemedContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
-						
+						Message msg2 = new Message();
+						Bundle b2 = new Bundle();						
+						b2.putInt("id", 0);
+						msg2.setData(b2);
+						msg2.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
+						NMApp.getController().getInboxHandler().sendMessage(msg2);
 						break;
 					case FICHA_DEL_CLIENTE:
 						if (item_selected == null) {

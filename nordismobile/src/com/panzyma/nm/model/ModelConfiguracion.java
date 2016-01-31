@@ -264,10 +264,14 @@ public class ModelConfiguracion {
 	{
 		pref = view.getSharedPreferences("Impresora", Context.MODE_PRIVATE);
 		edit = pref.edit();
-		edit.putString("nombre", Impresora.obtenerNombre());
-		edit.putString("mac", Impresora.obtenerMac());
-		edit.putInt("estado", Impresora.obtenerEstado());
-		edit.commit();
+		edit.putString("nombre", dispositivo.obtenerNombre());
+		edit.putString("mac", dispositivo.obtenerMac());
+		edit.putInt("estado", dispositivo.obtenerEstado());
+		edit.commit(); 
+		
+		Impresora.establecerEstado(dispositivo.obtenerEstado());
+		Impresora.establecerMac(dispositivo.obtenerMac());
+		Impresora.establecerNombre(dispositivo.obtenerNombre());
 	}
 
 	public static int ActualizarSecuenciaPedido(Context cnt, int idpedido) {

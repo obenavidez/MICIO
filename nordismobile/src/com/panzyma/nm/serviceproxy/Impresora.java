@@ -6,7 +6,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public final class Impresora implements Parcelable
+public  class Impresora implements Parcelable
 {
     static String nombre;
 	static String mac;
@@ -14,16 +14,20 @@ public final class Impresora implements Parcelable
 	private static Impresora impresora;
 	
 	public static Impresora nuevaIntacia(String _nombre,String _mac, int _estado)
-	{
-		if(impresora==null)
-			impresora=new Impresora(_nombre,_mac,_estado);
+	{ 
+		impresora=new Impresora(_nombre,_mac,_estado);
+		return impresora;
+	}
+	
+	public static Impresora nuevaIntacia(Impresora parcel)
+	{ 
+ 		impresora=new Impresora(parcel.obtenerNombre(),parcel.obtenerMac(),parcel.obtenerEstado());
 		return impresora;
 	}
 	
 	public static Impresora nuevaIntacia(Parcel parcel)
-	{
- 		if(impresora==null)
- 			impresora=new Impresora(parcel.readString(),parcel.readString(),parcel.readInt());
+	{ 
+ 		impresora=new Impresora(parcel.readString(),parcel.readString(),parcel.readInt());
 		return impresora;
 	}
 	
@@ -101,5 +105,10 @@ public final class Impresora implements Parcelable
 	public static Impresora get(Context cnt)
 	{		
 		return ModelConfiguracion.obtenerImpresora(cnt);
+	}
+	
+	public static Impresora get()
+	{		
+		return impresora;
 	}
 }
