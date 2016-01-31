@@ -1858,6 +1858,7 @@ public class DatabaseProvider extends ContentProvider
 		long devolucionid = 0;
 		long devolucionproductoid = 0;
 		SQLiteDatabase sdb = null;
+		Integer devolucionmax=0;
 		try 
 		{
 			sdb = Helper.getDatabase(cnt);
@@ -1868,7 +1869,19 @@ public class DatabaseProvider extends ContentProvider
 			long iddevolucion=-1;  
 			sdb.beginTransaction();
 			 	 
-			
+			 Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
+	         devolucionmax=Ventas.getMaxDevolucionVId(NMApp.getContext());
+	         
+	         if (devolucionmax == null)  devolucionmax = Integer.valueOf(1);
+	         else
+	         {
+	            	 Integer rmax=NumberUtil.getNumeroMaxRecibo(devolucionmax, prefijo);
+	            	 devolucionmax =rmax+1; 
+	         }	               	
+	         
+	         String strIdMovil = prefijo.intValue() + "" + devolucionmax.intValue();
+	         int idMovil = Integer.parseInt(strIdMovil); 
+	         
 //			Cursor _c=sdb.rawQuery("select Id from Devolucion where referencia="+devolucion.getReferencia(), null);
 //			if(_c.moveToNext())
 //				iddevolucion=_c.getInt(0);
@@ -1880,9 +1893,16 @@ public class DatabaseProvider extends ContentProvider
 				sdb.delete(TABLA_DEVOLUCIONES,NMConfig.Devolucion.id+"="+String.valueOf(devolucion.getId()),null);
 			}
 			
+			if(devolucion.getId()==0){
+				devolucion.setId(idMovil);
+				devolucion.setReferencia(idMovil);
+			}
+			else {
+				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
+			}
 //			if(devolucion.getNumeroCentral()!=0) 
 //				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
-			devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
+			
 			devolucion_value.put(NMConfig.Devolucion.referencia, devolucion.getReferencia());
 			devolucion_value.put(NMConfig.Devolucion.numeroCentral, devolucion.getNumeroCentral());
 			devolucion_value.put(NMConfig.Devolucion.fecha, devolucion.getFecha());

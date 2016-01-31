@@ -104,21 +104,16 @@ public class ModelDevolucion {
 		if (cur.moveToFirst()) {
 
 			do {
-				lista.add(new vmDevolucion(Long.parseLong(cur.getString(cur
-						.getColumnIndex(projection[0]))), Integer.parseInt(cur
-						.getString(cur.getColumnIndex(projection[1]))),
-						DateUtil.idateToStrYYYY(Long.valueOf((cur.getString(cur
-								.getColumnIndex(projection[2]))))), cur
-								.getString(cur.getColumnIndex(projection[3])),
-						Float.valueOf(cur.getString(cur
-								.getColumnIndex(projection[4]))), cur
-								.getString(cur.getColumnIndex(projection[5])),
-						Long.parseLong(cur.getString(cur
-								.getColumnIndex(projection[6]))), Boolean
-								.parseBoolean(cur.getString(cur
-										.getColumnIndex(projection[7]))), Long
-								.parseLong(cur.getString(cur
-										.getColumnIndex(projection[8])))));
+				lista.add(new vmDevolucion(
+						Long.parseLong(cur.getString(cur.getColumnIndex(projection[0]))), 
+						Integer.parseInt(cur.getString(cur.getColumnIndex(projection[1]))),
+						DateUtil.idateToStrYYYY(Long.valueOf((cur.getString(cur.getColumnIndex(projection[2]))))), 
+						cur.getString(cur.getColumnIndex(projection[3])),
+						Float.valueOf(cur.getString(cur.getColumnIndex(projection[4]))), cur.getString(cur.getColumnIndex(projection[5])),
+						Long.parseLong(cur.getString(cur.getColumnIndex(projection[6]))), 
+						Boolean.parseBoolean(cur.getString(cur.getColumnIndex(projection[7]))), 
+						Long.parseLong(cur.getString(cur.getColumnIndex(projection[8])))
+					));
 
 			} while (cur.moveToNext());
 		}

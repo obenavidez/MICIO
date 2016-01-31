@@ -6,6 +6,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.text.SimpleDateFormat;
+
+import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.interfaces.DevolucionItem; 
 
 public class vmDevolucion  implements Parcelable , DevolucionItem  {
@@ -204,9 +206,14 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	@Override
 	public String getItemTotal() {
 		// TODO Auto-generated method stub
-		return "C$".concat(String.valueOf(getTotal()));
+		return StringUtil.formatReal(getTotal());
 	}
-
+	
+	
+	public String getItemTotalformato() {
+		// TODO Auto-generated method stub
+		return StringUtil.formatReal(getTotal());
+	}
 
 	@Override
 	public String getItemEstado() {
