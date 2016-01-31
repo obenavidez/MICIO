@@ -368,7 +368,8 @@ public class BDevolucionM extends BBaseM
 					            	devolucionmax =devolucionmax+1; 
 					            String strIdMovil = prefijo.intValue() + "" + devolucionmax.intValue();
 					            int idMovil = Integer.parseInt(strIdMovil);
-					            dev.setId(0);
+					            if(dev.getId()==0)
+					            	dev.setId(0);
 					            dev.setReferencia(idMovil);
 					            dev.setCodEstado("REGISTRADA"); 
 					            dev.setNumeroCentral(0); 
