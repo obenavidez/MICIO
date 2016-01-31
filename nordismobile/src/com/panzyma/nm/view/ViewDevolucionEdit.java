@@ -1226,6 +1226,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		updateObject();
 		if (!validarDevolucion())
 			return;
+		Setfieldsdevolucion();
 		Message msg = new Message();
 		msg.obj = devolucion;
 		msg.what = arg.length != 0 ? arg[0] :SAVE_DATA_FROM_LOCALHOST;
@@ -1398,7 +1399,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setObjPedidoDevueltoID(pedido.getId());
 			devolucion.setObjVendedorID(pedido.getObjVendedorID());
 		}
-
+		
 		devolucion.setObjClienteID(cliente.getIdCliente());
 		devolucion.setObjSucursalID(cliente.getIdSucursal());
 		devolucion.setEspecial(!"".equals(devolucion.getObservacion()));

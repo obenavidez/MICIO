@@ -87,7 +87,7 @@ public class ModelDevolucion {
 			ContentResolver content) {
 
 		String[] projection = new String[] { NMConfig.Devolucion.id,
-				NMConfig.Devolucion.numeroCentral, NMConfig.Devolucion.fecha,
+				NMConfig.Devolucion.referencia, NMConfig.Devolucion.fecha,
 				NMConfig.Devolucion.nombreCliente, NMConfig.Devolucion.total,
 				NMConfig.Devolucion.codEstado,
 				NMConfig.Devolucion.objClienteID, NMConfig.Devolucion.offLine,
@@ -239,6 +239,9 @@ public class ModelDevolucion {
 								: false);
 						row.setReferenciaNC(cur.getInt(cur
 								.getColumnIndex(NMConfig.Devolucion.referenciaNC)));
+						
+						row.setReferencia(cur.getInt(cur.getColumnIndex(NMConfig.Devolucion.referencia)));
+						
 						row.setPreRegistro(cur.getInt(cur
 								.getColumnIndex(NMConfig.Devolucion.preRegistro)) == 1 ? true
 								: false);
