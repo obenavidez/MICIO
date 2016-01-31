@@ -21,6 +21,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALH
 
 
 
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.viewmodel.vmDevolucion;
 import com.panzyma.nm.viewmodel.vmDevolucionEdit;
 
+import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
@@ -56,6 +58,7 @@ public class BDevolucionM extends BBaseM
 	
 	@Override
 	public boolean handleMessage(Message msg) throws Exception {
+		Bundle b = msg.getData();
 		switch (msg.what) 
 		{
 			case ControllerProtocol.OBTENERVALORCATALOGO:
@@ -77,6 +80,9 @@ public class BDevolucionM extends BBaseM
 				Devolucion dev=(Devolucion) msg.obj;
 				RegistrarDevolucion(dev);
 				break;
+			case ControllerProtocol.SALVARRECIBOANTESDESALIR:
+				Devolucion dev2 = (Devolucion) msg.obj;
+				RegistrarDevolucion(dev2, 1);
 			case ControllerProtocol.ENVIARDEVOLUCION:
 				Devolucion $dev=(Devolucion) msg.obj;
 				EnviarDevolucion($dev);
@@ -368,7 +374,7 @@ public class BDevolucionM extends BBaseM
 		 return dev;
     }
     
-    private  void RegistrarDevolucion(final Devolucion dev) throws Exception
+    private  void RegistrarDevolucion(final Devolucion dev,final int... args) throws Exception
     {
 			try 
 			{
@@ -406,7 +412,7 @@ public class BDevolucionM extends BBaseM
 							  			        
 					        Processor.notifyToView(
 					        		NMApp.getController(),
-									ControllerProtocol.NOTIFICATION,
+					        		(args.length == 0 ? ControllerProtocol.NOTIFICATION : ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR),
 									ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST,
 									0,
 									dev);

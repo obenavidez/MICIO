@@ -169,14 +169,14 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable
 		return 0;
 	}
 	
-	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {	
+	public static final Parcelable.Creator<DevolucionProductoLote> CREATOR  = new Parcelable.Creator<DevolucionProductoLote>() {	
 	     @Override
 		public DevolucionProductoLote createFromParcel(Parcel parcel) {
 	          return new DevolucionProductoLote(parcel);
 	     }	
 	     @Override
-		public ReciboDetNC[] newArray(int size) {
-	          return new ReciboDetNC[size];
+		public DevolucionProductoLote[] newArray(int size) {
+	          return new DevolucionProductoLote[size];
 	     }
 	};
 

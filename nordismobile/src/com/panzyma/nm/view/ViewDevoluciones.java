@@ -6,11 +6,15 @@ import java.util.List;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
+import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
@@ -18,8 +22,10 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Devolucion;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.view.adapter.InvokeBridge; 
 import com.panzyma.nm.viewmodel.vmDevolucion;
+import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
 import static com.panzyma.nm.controller.ControllerProtocol.*;
@@ -551,7 +557,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
 			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code) && data != null);;
-				//establecer(data.getParcelableExtra("pedido"), false);
+				establecer(data.getParcelableExtra("devolucion"), false);
 
 		} catch (Exception e) 
 		{
@@ -572,4 +578,48 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			int requestCode) {
 		super.startActivityFromFragment(fragment, intent, requestCode);
 	}
+	
+	@SuppressWarnings({ "unchecked", "unused" })
+	private void establecer(final Object _obj, final boolean thread,final int...what) {
+		if (_obj == null)
+			return;
+		if (_obj instanceof Message) {
+			Message msg = (Message) _obj;
+			devoluciones = ((ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>() : msg.obj));
+			positioncache = 0;
+		} else if (_obj instanceof Devolucion) 
+		{
+			Devolucion d = (Devolucion) _obj;
+			vmDevolucion objDev = new vmDevolucion(
+					d.getId(), 
+					d.getNumeroCentral(), 
+					DateUtil.idateToStrYY(d.getFecha()),						 
+					d.getNombreCliente(),
+					Float.valueOf(d.getTotal()),
+					d.getCodEstado(),
+					d.getObjClienteID(),
+					d.isOffLine(),
+					d.getObjSucursalID());
+			if (ABRIR_DEVOLUCION == request_code 
+					|| (what != null 
+						&& what.length != 0 
+						&& ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER == what[0])) {				
+				devoluciones.set(positioncache,objDev);				
+
+			} else if (NUEVO_DEVOLUCION == request_code) {
+				devoluciones.add(objDev);
+				positioncache = devoluciones.size() - 1; 
+				customArrayAdapter.setSelectedPosition(positioncache);
+			}
+		}
+		
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				SetList(devoluciones);
+			}
+		});
+
+	}
+	
 }

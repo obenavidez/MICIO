@@ -1,12 +1,18 @@
 package com.panzyma.nm.serviceproxy;
  
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
-public class Devolucion  implements KvmSerializable{
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Devolucion  implements KvmSerializable, Parcelable, Cloneable {
 	
 	public Devolucion()
 	{
@@ -746,6 +752,16 @@ public class Devolucion  implements KvmSerializable{
 		this.OffLine = offLine;
 		this.FechaFacturacion = fechaFacturacion;
 	}
+	
+	public Devolucion(Devolucion _devolucion) {
+		try {
+			this.olddata = (Devolucion) _devolucion.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	private long Id;
 	private int Referencia;
 	private int NumeroCentral;
@@ -797,6 +813,7 @@ public class Devolucion  implements KvmSerializable{
 	private Pedido objPedido;
 	
 	protected Devolucion olddata;
+	
 
 	@Override
 	public Object getProperty(int index)
@@ -1114,7 +1131,304 @@ public class Devolucion  implements KvmSerializable{
         }
 		
 	}
-	
 
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public static final Parcelable.Creator<Devolucion> CREATOR  = new Parcelable.Creator<Devolucion>() 
+	{
+        @Override
+		public Devolucion createFromParcel(Parcel parcel) {
+             return new Devolucion(parcel);
+        }
+
+        @Override
+		public Devolucion[] newArray(int size) {
+             return new Devolucion[size];
+        }
+   };
+   
+   
+	public Devolucion(Parcel parcel) {
+		this.Id = parcel.readLong();
+		this.Referencia = parcel.readInt();
+		this.NumeroCentral = parcel.readInt();
+		this.Fecha = parcel.readLong();
+		this.ObjPedidoDevueltoID = parcel.readLong();
+		this.NumeroPedidoDevuelto = parcel.readInt();
+		this.NumeroFacturaDevuelta = parcel.readInt();
+		this.ObjVendedorID = parcel.readLong();
+		this.ObjClienteID = parcel.readLong();
+		this.ObjSucursalID = parcel.readLong();
+		this.NombreCliente = parcel.readString();
+		this.ObjMotivoID = parcel.readLong();
+		this.CodMotivo = parcel.readString();
+		this.DescMotivo = parcel.readString();
+		this.TipoTramite = parcel.readString();
+		this.DeVencido = parcel.readInt() == 1;
+		this.Parcial = parcel.readInt() == 1;
+		this.AplicacionInmediata = parcel.readInt() == 1;
+		this.Nota = parcel.readString();
+		this.Observacion = parcel.readString();
+		this.Subtotal = parcel.readLong();
+		this.Impuesto = parcel.readLong();
+		this.MontoPromocion = parcel.readLong();
+		this.MontoPromocionVen = parcel.readLong();
+		this.MontoCargoAdm = parcel.readLong();
+		this.MontoCargoAdmVen = parcel.readLong();
+		this.MontoVinieta = parcel.readLong();
+		this.Total = parcel.readLong();
+		this.TotalVen = parcel.readLong();
+		this.ObjEstadoID = parcel.readLong();
+		this.DescEstado = parcel.readString();
+		this.CodEstado = parcel.readString();
+		this.ObjCausaEstadoID = parcel.readLong();
+		this.DescCausaEstado = parcel.readString();
+		this.Especial = parcel.readInt() == 1;
+		this.MontoCargoVendedor = parcel.readLong();
+		this.MontoBonif = parcel.readLong();
+		this.MontoBonifVen = parcel.readLong();
+		this.ImpuestoVen = parcel.readLong();
+		this.FechaEnviada = parcel.readLong();
+		this.ClaveAutorizaAplicacionInmediata = parcel.readString();
+		List<DevolucionProducto> myclassList = new ArrayList<DevolucionProducto>();
+		parcel.readList(myclassList, DevolucionProducto.class.getClassLoader());
+		ProductosDevueltos = new DevolucionProducto[myclassList.size()];
+		myclassList.toArray(ProductosDevueltos);
+		/*Parcelable[] parcelableArray = parcel.readParcelableArray(DevolucionProducto.class.getClassLoader()); 
+		if (parcelableArray != null) {
+			ProductosDevueltos = new DevolucionProducto[parcelableArray.length];
+			Object[] list = Arrays.copyOf(parcelableArray,
+					parcelableArray.length, DevolucionProducto[].class);
+			for (int p = 0; p < list.length; p++) {
+				ProductosDevueltos[p] = (DevolucionProducto) list[p];
+			}
+		}*/
+		this.PedidoTienePromociones = parcel.readInt() == 1;
+		this.PedidoYaDevuelto = parcel.readInt() == 1;
+		this.ReferenciaNC = parcel.readInt();
+		this.PreRegistro = parcel.readInt() == 1;
+		this.OffLine = parcel.readInt() == 1;
+		this.FechaFacturacion = parcel.readLong();
+	}
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(this.Id);
+		parcel.writeInt(this.Referencia);
+		parcel.writeInt(this.NumeroCentral);
+		parcel.writeLong(this.Fecha);
+		parcel.writeLong(this.ObjPedidoDevueltoID);
+		parcel.writeInt(this.NumeroPedidoDevuelto);
+		parcel.writeInt(this.NumeroFacturaDevuelta);
+		parcel.writeLong(this.ObjVendedorID);
+		parcel.writeLong(this.ObjClienteID);
+		parcel.writeLong(this.ObjSucursalID);
+		parcel.writeString(this.NombreCliente);
+		parcel.writeLong(this.ObjMotivoID);
+		parcel.writeString(this.CodMotivo);
+		parcel.writeString(this.DescMotivo);
+		parcel.writeString(this.TipoTramite);
+		parcel.writeInt(this.DeVencido ? 1 : 0);
+		parcel.writeInt(this.Parcial ? 1 : 0);
+		parcel.writeInt(this.AplicacionInmediata ? 1 : 0);
+		parcel.writeString(this.Nota);
+		parcel.writeString(this.Observacion);
+		parcel.writeLong(this.Subtotal);
+		parcel.writeLong(this.Impuesto);
+		parcel.writeLong(this.MontoPromocion);
+		parcel.writeLong(this.MontoPromocionVen);
+		parcel.writeLong(this.MontoCargoAdm);
+		parcel.writeLong(this.MontoCargoAdmVen);
+		parcel.writeLong(this.MontoVinieta);
+		parcel.writeLong(this.Total);
+		parcel.writeLong(this.TotalVen);
+		parcel.writeLong(this.ObjEstadoID);
+		parcel.writeString(this.DescEstado);
+		parcel.writeString(this.CodEstado);
+		parcel.writeLong(this.ObjCausaEstadoID);
+		parcel.writeString(this.DescCausaEstado);
+		parcel.writeInt(this.Especial ? 1 : 0);
+		parcel.writeLong(this.MontoCargoVendedor);
+		parcel.writeLong(this.MontoBonif);
+		parcel.writeLong(this.MontoBonifVen);
+		parcel.writeLong(this.ImpuestoVen);
+		parcel.writeLong(this.FechaEnviada);
+		parcel.writeString(this.ClaveAutorizaAplicacionInmediata);
+		parcel.writeList(Arrays.asList(this.ProductosDevueltos));
+		//parcel.writeParcelableArray(this.ProductosDevueltos, flags);
+		parcel.writeInt(this.PedidoTienePromociones ? 1 : 0);
+		parcel.writeInt(this.PedidoYaDevuelto ? 1 : 0);
+		parcel.writeInt(this.ReferenciaNC);
+		parcel.writeInt(this.PreRegistro ? 1 : 0);
+		parcel.writeInt(this.OffLine ? 1 : 0);
+		parcel.writeLong(this.FechaFacturacion);
+	}
+	
+	public boolean hasModified(Object obj) {
+		return !this.equals(obj);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Devolucion other = (Devolucion) obj;
+		if (AplicacionInmediata != other.AplicacionInmediata)
+			return false;
+		if (ClaveAutorizaAplicacionInmediata == null) {
+			if (other.ClaveAutorizaAplicacionInmediata != null)
+				return false;
+		} else if (!ClaveAutorizaAplicacionInmediata
+				.equals(other.ClaveAutorizaAplicacionInmediata))
+			return false;
+		if (CodEstado == null) {
+			if (other.CodEstado != null)
+				return false;
+		} else if (!CodEstado.equals(other.CodEstado))
+			return false;
+		if (CodMotivo == null) {
+			if (other.CodMotivo != null)
+				return false;
+		} else if (!CodMotivo.equals(other.CodMotivo))
+			return false;
+		if (DeVencido != other.DeVencido)
+			return false;
+		if (DescCausaEstado == null) {
+			if (other.DescCausaEstado != null)
+				return false;
+		} else if (!DescCausaEstado.equals(other.DescCausaEstado))
+			return false;
+		if (DescEstado == null) {
+			if (other.DescEstado != null)
+				return false;
+		} else if (!DescEstado.equals(other.DescEstado))
+			return false;
+		if (DescMotivo == null) {
+			if (other.DescMotivo != null)
+				return false;
+		} else if (!DescMotivo.equals(other.DescMotivo))
+			return false;
+		if (Especial != other.Especial)
+			return false;
+		if (Fecha != other.Fecha)
+			return false;
+		if (FechaEnviada != other.FechaEnviada)
+			return false;
+		if (FechaFacturacion != other.FechaFacturacion)
+			return false;
+		if (Id != other.Id)
+			return false;
+		if (Impuesto != other.Impuesto)
+			return false;
+		if (ImpuestoVen != other.ImpuestoVen)
+			return false;
+		if (MontoBonif != other.MontoBonif)
+			return false;
+		if (MontoBonifVen != other.MontoBonifVen)
+			return false;
+		if (MontoCargoAdm != other.MontoCargoAdm)
+			return false;
+		if (MontoCargoAdmVen != other.MontoCargoAdmVen)
+			return false;
+		if (MontoCargoVendedor != other.MontoCargoVendedor)
+			return false;
+		if (MontoPromocion != other.MontoPromocion)
+			return false;
+		if (MontoPromocionVen != other.MontoPromocionVen)
+			return false;
+		if (MontoVinieta != other.MontoVinieta)
+			return false;
+		if (NombreCliente == null) {
+			if (other.NombreCliente != null)
+				return false;
+		} else if (!NombreCliente.equals(other.NombreCliente))
+			return false;
+		if (Nota == null) {
+			if (other.Nota != null)
+				return false;
+		} else if (!Nota.equals(other.Nota))
+			return false;
+		if (NumeroCentral != other.NumeroCentral)
+			return false;
+		if (NumeroFacturaDevuelta != other.NumeroFacturaDevuelta)
+			return false;
+		if (NumeroPedidoDevuelto != other.NumeroPedidoDevuelto)
+			return false;
+		if (ObjCausaEstadoID != other.ObjCausaEstadoID)
+			return false;
+		if (ObjClienteID != other.ObjClienteID)
+			return false;
+		if (ObjEstadoID != other.ObjEstadoID)
+			return false;
+		if (ObjMotivoID != other.ObjMotivoID)
+			return false;
+		if (ObjPedidoDevueltoID != other.ObjPedidoDevueltoID)
+			return false;
+		if (ObjSucursalID != other.ObjSucursalID)
+			return false;
+		if (ObjVendedorID != other.ObjVendedorID)
+			return false;
+		if (Observacion == null) {
+			if (other.Observacion != null)
+				return false;
+		} else if (!Observacion.equals(other.Observacion))
+			return false;
+		if (OffLine != other.OffLine)
+			return false;
+		if (Parcial != other.Parcial)
+			return false;
+		if (PedidoTienePromociones != other.PedidoTienePromociones)
+			return false;
+		if (PedidoYaDevuelto != other.PedidoYaDevuelto)
+			return false;
+		if (PreRegistro != other.PreRegistro)
+			return false;
+		if (!Arrays.equals(ProductosDevueltos, other.ProductosDevueltos))
+			return false;
+		if (Referencia != other.Referencia)
+			return false;
+		if (ReferenciaNC != other.ReferenciaNC)
+			return false;
+		if (Subtotal != other.Subtotal)
+			return false;
+		if (TipoTramite == null) {
+			if (other.TipoTramite != null)
+				return false;
+		} else if (!TipoTramite.equals(other.TipoTramite))
+			return false;
+		if (Total != other.Total)
+			return false;
+		if (TotalVen != other.TotalVen)
+			return false;
+		if (objPedido == null) {
+			if (other.objPedido != null)
+				return false;
+		} else if (!objPedido.equals(other.objPedido))
+			return false;
+		if (olddata == null) {
+			if (other.olddata != null)
+				return false;
+		} else if (!olddata.equals(other.olddata))
+			return false;
+		return true;
+	}
+	
+	public void setOldData(Devolucion _devolucion)
+	{
+		this.olddata = new Devolucion(_devolucion);
+	} 
+	
+	public Devolucion getOldData()
+	{
+		return olddata;
+	}
 	
 }
