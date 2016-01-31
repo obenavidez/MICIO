@@ -179,8 +179,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	List<DevolucionProducto> dev_prod;
 	public static final String CLIENTE = "cliente";
 
-	public List<DevolucionProducto> getDev_prod() {
-		return dev_prod;
+	public List<DevolucionProducto> getDev_prod() 
+	{
+		return dev_prod==null?dev_prod=new ArrayList():dev_prod;
 	}
 
 	private ExpandableListView lvdevproducto;
@@ -589,16 +590,17 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 
-	public void initExpandableListView() 
+	public void initExpandableListView(boolean render) 
 	{
-		if (adapter == null) 
+		if (adapter == null || render) 
 		{
 			ArrayList<SetViewHolderWLayout> layouts = new ArrayList<SetViewHolderWLayout>();
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_productolote,
 					ProductoLoteViewHolder.class, true,0));
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_loteproducto,
 					ProductoLoteDetalleViewHolder.class, false ,0));
-			try {
+			try 
+			{
 				adapter = new ExpandListAdapter(context,
 						lgroups = SetStandardGroups(), layouts);
 				lvdevproducto.setAdapter(adapter);
@@ -717,8 +719,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 														positioncache[1]);
 										groupselected = (ExpandListGroup) adapter
 												.getGroup(positioncache[0]);
-										EditarProductoLote(
-												groupselected.getName(),
+										EditarProductoLote(groupselected.getName(),
 												childselected);
 
 									}
@@ -846,11 +847,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		DevolucionProductoCantidad newFragment = DevolucionProductoCantidad
 				.newInstance(productname,
 						(DevolucionProductoLote) _childselected.getObject());
-		newFragment
-				.obtenerProductoLoteModificado(new escucharModificacionProductoLote() {
+		newFragment.obtenerProductoLoteModificado(new escucharModificacionProductoLote() {
 
 					@Override
-					public void onButtonClick(DevolucionProductoLote plote) {
+					public void onButtonClick(DevolucionProductoLote plote) 
+					{
 						actualizarProductoLote(plote);
 						EstimarCostosDev(true);
 						CalTotalDevolucion();
@@ -914,8 +915,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				ch.setName(dpl.getNumeroLote());
 				ch.setObject(dpl);
 				groupchild.add(ch);
-				cantidaddevueltadp = cantidaddevueltadp
-						+ dpl.getCantidadDevuelta();
+				cantidaddevueltadp = cantidaddevueltadp + dpl.getCantidadDevuelta();
 			}
 			dp.setCantidadDevolver(cantidaddevueltadp);
 			group.setName(dp.getNombreProducto());
@@ -959,7 +959,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private void actualizarProductoLote(DevolucionProductoLote dpl) 
 	{
 		DevolucionProducto _dp = (DevolucionProducto) groupselected.getObject();
-		if ("".equals(dpl.getNumeroLote()) || dpl.getNumeroLote() == null) {
+		if ("".equals(dpl.getNumeroLote()) || dpl.getNumeroLote() == null) 
+		{
 			com.panzyma.nm.NMApp
 					.getController()
 					.notifyOutboxHandlers(
@@ -1024,6 +1025,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		lgroups.set(positioncache[0], groupselected);
 
 	}
+	
 
 	public void updateGrid(DevolucionProductoLote dpl) {
 		int cantidadDevolver = 0, cantidadTotalDevolver = 0, cantidadBonificada = 0, cantidadOrdenada = 0, cantidadFacturada;
@@ -1097,7 +1099,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		groupselected.setObject(dp);
 		lgroups.set(positioncache[0], groupselected);
 		// fin estimacion de costo
-		initExpandableListView();
+		initExpandableListView(false);
 	}
 
 	public void CreateMenu() {
@@ -1134,9 +1136,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					agregarProducto();
 					break;
 				case ID_AGREGAR_LOTE:
-					if (groupselected != null) {
-						EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(
-								groupselected, me);
+					if (groupselected != null) 
+					{
+						EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(groupselected, me);
 						FragmentManager fragmentManager = getSupportFragmentManager();
 						dialogDevolucion.show(fragmentManager, "");
 					}
@@ -1235,7 +1237,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 
-	public boolean validarDevolucion() {
+	public boolean validarDevolucion() 
+	{
 
 		devolucion.setFecha(DateUtil.dt2i(new Date()));
 		if (cliente == null) {
@@ -1249,8 +1252,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							""));
 			return false;
 		}
-		if ((cboxmotivodev == null || (cboxmotivodev != null && cboxmotivodev
-				.getSelectedItem() == null)) && !ckboxvencidodev.isChecked()) {
+		
+		if (cboxmotivodev == null || (cboxmotivodev != null && cboxmotivodev
+				.getSelectedItem() == null) && !ckboxvencidodev.isChecked()) {
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
 					0,
@@ -1260,7 +1264,30 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							"Debe seleccionar la causa de la devolución", ""));
 			return false;
 		}
-
+		
+		if(((SpinnerModel) cboxmotivodev.getSelectedItem()).getCodigo().equals(""+-1)){
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
+					ControllerProtocol.ERROR,
+					0,
+					0,
+					new ErrorMessage(
+							"Debe seleccionar la causa de la devolución",
+							"Debe seleccionar la causa de la devolución", ""));
+			return false;
+		}
+		
+		if ("-1".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) 
+		{
+			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
+					ControllerProtocol.ERROR,
+					0,
+					0,
+					new ErrorMessage(
+							"Debe seleccionar tipo de tramite de la devolución",
+							"Debe seleccionar tipo de tramite de la devolución", ""));
+			return false;
+		}		
+			
 		if (devolucion.getProductosDevueltos() == null
 				|| (devolucion.getProductosDevueltos() != null && devolucion
 						.getProductosDevueltos().length == 0)) {
@@ -1350,14 +1377,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			}
 		}
 
-		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem())
-				.getCodigo())) {
+		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
 			devolucion.setTipoTramite("NC");
 		} else {
 			devolucion.setTipoTramite("RE");
 		}
 
-		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtramitedev
+		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtipodev
 				.getSelectedItem()).getCodigo())) ? false : true);
 		devolucion.setDeVencido(ckboxvencidodev.isChecked());
 		if (this.pedido == null || this.pedido.getId() == 0L) {
@@ -1396,7 +1422,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		return true;
 	}
 
-	public void EstimarCostosDev(boolean calBonif) {
+	public void EstimarCostosDev(boolean calBonif) 
+	{
 		// Estimar costo devolucion
 		int cantmindevbonif = Integer.parseInt(this.getSharedPreferences(
 				"SystemParams", android.content.Context.MODE_PRIVATE)
@@ -1423,7 +1450,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			int cantidaddevolver = _dp.getCantidadDevolver();
 			if (cantidaddevolver >= cantmindevbonif || (this.pedido != null && this.pedido.getId() != 0)) 
 			{
-				if (this.pedido != null) {
+				if (this.pedido != null && this.pedido.getId() != 0) 
+				{
 					int cantidadordenada = _dp.getCantidadOrdenada();
 					int cantidadbonificadaeditada = _dp.getCantidadBonificada();
 					if (_dp.getCantidadDevolver() == (cantidadordenada + cantidadbonificadaeditada)) 
@@ -1440,8 +1468,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							}
 						}
 					}
-				} else {
-					if (calBonif) {
+				} else 
+				{
+					if (calBonif) 
+					{
 						int qtybonif = 0;
 						Bonificacion bonif = DevolucionBL.getBonificacion(prod,cliente.getObjCategoriaClienteID(),_dp.getCantidadDevolver());
 						if (bonif != null && bonif.getCantBonificacion() != 0) 
@@ -1489,7 +1519,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 			if (_dp.isGravable()) 
 			{
-				if (this.pedido == null) 
+				if (this.pedido == null || this.pedido.getId()==0) 
 			/*	{
 					_dp.setPorcImpuesto((long) DevolucionBL.getPorcImpuesto(pedido, prod.getId()));
 
@@ -1508,6 +1538,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 			group.setObject(_dp);
 			lgroups.set(contador, group);
+			contador++;
 		}// fin del ciclo
 
 		costeoMontoCargoAdministrativo = BigDecimal.ZERO;
@@ -1764,7 +1795,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							devolucion.setOlddata(_dev);
 							setInformacionCliente();
 							Setfieldsdevolucion();
-							initExpandableListView();
+							initExpandableListView(false);
 						}
 
 					}
@@ -1891,7 +1922,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						pedido=devolucion.getObjPedido(); 
 						catalogos=objdev.getMotivodev();
 						initComponent();
-						initExpandableListView();
+						initExpandableListView(false);
 					}
 					break;
 		

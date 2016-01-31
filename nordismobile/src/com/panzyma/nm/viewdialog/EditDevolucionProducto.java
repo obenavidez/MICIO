@@ -5,8 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
@@ -144,9 +147,9 @@ public class EditDevolucionProducto extends DialogFragment {
 	}
 
 	public EditDevolucionProducto(ExpandListGroup groupselected,
-			ViewDevolucionEdit vde) {
-		this.setDevolucionProducto((DevolucionProducto) groupselected
-				.getObject());
+			ViewDevolucionEdit vde) 
+	{
+		this.setDevolucionProducto((DevolucionProducto) groupselected.getObject());
 
 		DevolucionProducto dp = this.getDevolucionProducto();
 
@@ -161,9 +164,7 @@ public class EditDevolucionProducto extends DialogFragment {
 		this.groupselected = groupselected;
 		cliente = vde.getCliente();
 		try {
-			product_selected = ModelProducto.getProductoByID(NMApp.getContext()
-					.getContentResolver(), devolucionProducto
-					.getObjProductoID());
+			product_selected = ModelProducto.getProductoByID(NMApp.getContext().getContentResolver(), devolucionProducto.getObjProductoID());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -292,7 +293,8 @@ public class EditDevolucionProducto extends DialogFragment {
 
 	private void setValuesToView() {
 		// INICIANDO MIEMBROS INTERNOS
-		if (getArguments() != null) {
+		if (getArguments() != null) 
+		{
 			devProLote = getArguments().getParcelable(PRODUCT_LOTE);
 			product_selected = getArguments().getParcelable(SELECTED_PRODUCT);
 
@@ -440,50 +442,77 @@ public class EditDevolucionProducto extends DialogFragment {
 		return CustomListViewValuesArr;
 	}
 
-	public void accept() {
+	public void accept() 
+	{
 		String dia = "";
 		String mes = "";
 		String anio = "";
 		String fechaVencimiento = "";
 		long fechaVencimientoL;
+/**************************************************************************************************************************************************************/
 		DevolucionProductoLote dvl = new DevolucionProductoLote();
 		dvl.setCantidadDespachada(0);
-		if ((lotes.size() - 1) > cmbLote.getSelectedItemPosition()) {
-			Lote lote = (Lote) lotesAdapter.getItem(
-					cmbLote.getSelectedItemPosition()).getObj();
+		if ((lotes.size() - 1) > cmbLote.getSelectedItemPosition()) 
+		{
+			Lote lote = (Lote) lotesAdapter.getItem(cmbLote.getSelectedItemPosition()).getObj();
 			numeroLote.setText(lote.getNumeroLote());
 			dvl.setFechaVencimiento(lote.getFechaVencimiento());
 			dvl.setObjLoteID(lote.getId());
-		} else {
+		} else 
+		{
 			anio = anioVencimiento.getText().toString();
-			mes = String
-					.valueOf(cmbMesVencimiento.getSelectedItemPosition() + 1);
+			mes = String.valueOf(cmbMesVencimiento.getSelectedItemPosition() + 1);
 			if (mes.length() == 1)
 				mes = "0" + mes;
 			fechaVencimiento = anio + mes + "01";
-			long date = DateUtil.getLastDayOfMonth(Long
-					.valueOf(fechaVencimiento));
+			long date = DateUtil.getLastDayOfMonth(Long.valueOf(fechaVencimiento));
 			dvl.setFechaVencimiento((int) date);
 		}
 		dvl.setCantidadDevuelta(Integer.valueOf(cantidad.getText().toString()));
 		dvl.setNumeroLote(numeroLote.getText().toString());
-		if (me.getDev_prod() == null) {
+/**************************************************************************************************************************************************************/
+		
+		if (me.getDev_prod() == null) 
+		{
 			me.setDev_prod(new ArrayList<DevolucionProducto>());
 		}
-		DevolucionProducto dp = this.getDevolucionProducto();
+		DevolucionProductoInfo obj=obtenerProductoDevolucion(); 
+		
+		DevolucionProducto dp =obj.getItem();
+		dp.setCantidadDevolver(dp.getCantidadDevolver()+ dvl.getCantidadDevuelta());
+		List<DevolucionProductoLote> l = null;
+		if (dp.getProductoLotes() == null || (dp.getProductoLotes() != null && dp.getProductoLotes().length == 0)) 
+		{
+			l = new ArrayList<DevolucionProductoLote>();
+		} else 
+		{
+			l = new ArrayList<DevolucionProductoLote>(Arrays.asList(dp.getProductoLotes()));
+		}
+		addLote(l, dvl);
+		dp.setProductoLotes(new DevolucionProductoLote[l.size()]);
+		l.toArray(dp.getProductoLotes());
+		
+		if(dp.getObjProductoID()==0)
+		{
+			dp.setObjProductoID(product_selected.getId());
+			dp.setNombreProducto(product_selected.getNombre());
+			dp.setObjProveedorID(product_selected.getObjProveedorID());
+			me.getDev_prod().add(dp);		
+		}else
+		{
+			me.getDev_prod().set(obj.getIndex(), dp);
+		}
+		
+	/*	DevolucionProducto dp =this.getDevolucionProducto();
 		dp.setObjProductoID(product_selected.getId());
 		dp.setNombreProducto(product_selected.getNombre());
 		dp.setObjProveedorID(product_selected.getObjProveedorID());
-		dp.setCantidadDevolver(dp.getCantidadDevolver()
-				+ dvl.getCantidadDevuelta());
-		Bonificacion b = DetalleProducto.getBonificacion(product_selected,
-				cliente.getObjCategoriaClienteID(), dvl.getCantidadDevuelta());
+		
+		dp.setCantidadDevolver(dp.getCantidadDevolver()+ dvl.getCantidadDevuelta());
+		Bonificacion b = DetalleProducto.getBonificacion(product_selected,cliente.getObjCategoriaClienteID(), dvl.getCantidadDevuelta());
 
-		long idTP = Long.parseLong(me.getSharedPreferences("SystemParams",
-				android.content.Context.MODE_PRIVATE).getString(
-				"IdTipoPrecioGeneral", "0"));
-		float preciounitario = DetalleProducto.getPrecioProducto(
-				product_selected, idTP, dvl.getCantidadDevuelta());
+		long idTP = Long.parseLong(me.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral", "0"));
+		float preciounitario = DetalleProducto.getPrecioProducto(product_selected, idTP, dvl.getCantidadDevuelta());
 
 		dp.setPrecio((long) ((double) preciounitario * 100));
 		double montobonificacion = dp.getBonificacion() * preciounitario;
@@ -500,12 +529,12 @@ public class EditDevolucionProducto extends DialogFragment {
 		dp.setTotal( ((long) ((double) ((subTotal - montobonificacion + impuesto)) * 100)) + dp.getTotal() );
 
 		List<DevolucionProductoLote> l = null;
-		if (dp.getProductoLotes() == null
-				|| (dp.getProductoLotes() != null && dp.getProductoLotes().length == 0)) {
+		if (dp.getProductoLotes() == null || (dp.getProductoLotes() != null && dp.getProductoLotes().length == 0)) 
+		{
 			l = new ArrayList<DevolucionProductoLote>();
-		} else {
-			l = new ArrayList<DevolucionProductoLote>(Arrays.asList(dp
-					.getProductoLotes()));
+		} else 
+		{
+			l = new ArrayList<DevolucionProductoLote>(Arrays.asList(dp.getProductoLotes()));
 		}
 		l.add(dvl);
 		dp.setProductoLotes(new DevolucionProductoLote[l.size()]);
@@ -519,9 +548,41 @@ public class EditDevolucionProducto extends DialogFragment {
 			ch.setObject(dvl);
 			groupselected.getItems().add(ch);
 		}
-		me.initExpandableListView();
+		*/me.initExpandableListView(true);
+		
 	}
 
+	private List<DevolucionProductoLote> addLote(List<DevolucionProductoLote> lotes,DevolucionProductoLote _lote) 
+	{   
+		int index=0;
+		for (DevolucionProductoLote lote : lotes) 
+		{
+			if (lote.getObjLoteID()!=_lote.getObjLoteID())  
+				index++; 
+		} 		
+		if(index==lotes.size())
+			lotes.add(_lote);
+		else
+			lotes.set(index,_lote);
+		return lotes;
+	}
+	public DevolucionProductoInfo obtenerProductoDevolucion()
+	{ 
+		List<DevolucionProducto> _ldp=me.getDev_prod();
+		DevolucionProducto _dp = null;
+		int cont=0;
+		for(DevolucionProducto item:_ldp)
+		{			 
+			if(item.getObjProductoID()==product_selected.getId())
+			{
+				_dp=item;
+				break;
+			}
+			cont++;
+		} 
+		return new DevolucionProductoInfo(cont==_ldp.size()?null:cont, _dp==null?new DevolucionProducto():_dp);	 
+	}
+	
 	private void removeFormaPagoFromRecibo(ReciboDetFormaPago fp) {
 		int index = -1;
 		for (int i = 0; i < _recibo.getFormasPagoRecibo().size(); i++) {
@@ -628,12 +689,52 @@ public class EditDevolucionProducto extends DialogFragment {
 		void updateResult(String inputText);
 	}
 
-	public DevolucionProducto getDevolucionProducto() {
+	public DevolucionProducto getDevolucionProducto() 
+	{
 		return (devolucionProducto == null ? new DevolucionProducto()
 				: devolucionProducto);
 	}
 
 	public void setDevolucionProducto(DevolucionProducto devolucionProducto) {
 		this.devolucionProducto = devolucionProducto;
+	}
+	
+	class DevolucionProductoInfo{
+		/**
+		 * @param index
+		 * @param item
+		 */
+		public DevolucionProductoInfo(Integer index, DevolucionProducto item) {
+			super();
+			this.index = index;
+			this.item = item;
+		}
+		Integer index;
+		DevolucionProducto item;
+		/**
+		 * @return the index
+		 */
+		public Integer getIndex() {
+			return index;
+		}
+		/**
+		 * @param index the index to set
+		 */
+		public void setIndex(Integer index) {
+			this.index = index;
+		}
+		/**
+		 * @return the item
+		 */
+		public DevolucionProducto getItem() {
+			return item;
+		}
+		/**
+		 * @param item the item to set
+		 */
+		public void setItem(DevolucionProducto item) {
+			this.item = item;
+		}
+		
 	}
 }

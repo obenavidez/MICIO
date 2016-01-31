@@ -102,15 +102,13 @@ public class DevolucionProductoCantidad extends DialogFragment
 				cantidad = Integer.parseInt(qtyreturn.getText().toString());
 				cantidadespachada = Integer.parseInt(qtydelivered.getText().toString());
 				if (cantidad <= 0) {
-					qtyreturn
-							.setError("cantidad a devolver debe ser mayor a cero");
+					qtyreturn.setError("cantidad a devolver debe ser mayor a cero");
 					return;
 				}
 
-				if (cantidad > cantidadespachada) 
+				if (cantidad > cantidadespachada && plote.getCantidadDespachada()!=0) 
 				{
-					qtyreturn
-							.setError("cantidad a devolver debe ser menor a la cantidad despachada("+cantidadespachada+")");
+					qtyreturn.setError("cantidad a devolver debe ser menor a la cantidad despachada("+cantidadespachada+")");
 					return;
 				}					
 				plote.setCantidadDevuelta(cantidad); 

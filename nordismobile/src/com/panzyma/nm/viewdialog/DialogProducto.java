@@ -317,7 +317,8 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			            	adapter.setSelectedPosition(position); 
 			            	view.setBackgroundDrawable(_parent.getResources().getDrawable(R.drawable.action_item_selected));				
 							
-			            	if( tipoLLamado == TypeCall.Default){
+			            	if( tipoLLamado == TypeCall.Default)
+			            	{
 			            		//EditDetPedido editForm = new EditDetPedido(prod, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
 								DetalleProducto dp=new DetalleProducto((ViewPedidoEdit)parent,product_selected, _idCategCliente, _idTipoPrecio, _idTipoCliente, _exento);
 								
