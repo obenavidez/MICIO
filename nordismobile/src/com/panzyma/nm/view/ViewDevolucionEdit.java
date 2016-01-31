@@ -1970,7 +1970,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 			@Override
 			public void run() {
-				tbxRefNum.setText(devolucion.getReferencia()); 
+				tbxRefNum.setText(String.valueOf(devolucion.getReferencia())); 
 			}
 		});
 	}

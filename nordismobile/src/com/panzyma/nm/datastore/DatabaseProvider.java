@@ -1869,20 +1869,20 @@ public class DatabaseProvider extends ContentProvider
 			sdb.beginTransaction();
 			 	 
 			
-			Cursor _c=sdb.rawQuery("select Id from Devolucion where referencia="+devolucion.getReferencia(), null);
-			if(_c.moveToNext())
-				iddevolucion=_c.getInt(0);
-		 
-			if(iddevolucion!=0)
+//			Cursor _c=sdb.rawQuery("select Id from Devolucion where referencia="+devolucion.getReferencia(), null);
+//			if(_c.moveToNext())
+//				iddevolucion=_c.getInt(0);
+
+			if( devolucion.getId()!=0)
 			{				  
 				sdb.delete(TABLA_DEVOLUCIONPRODUCTOLOTE,NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID+ "="+String.valueOf(iddevolucion),null);
 				sdb.delete(TABLA_DEVOLUCIONPRODUCTO,NMConfig.Devolucion.DevolucionProducto.devolucionID+ "="+String.valueOf(iddevolucion),null);
-				sdb.delete(TABLA_DEVOLUCIONES,NMConfig.Devolucion.id+"="+String.valueOf(iddevolucion),null);
+				sdb.delete(TABLA_DEVOLUCIONES,NMConfig.Devolucion.id+"="+String.valueOf(devolucion.getId()),null);
 			}
-				  
-			 
-			if(devolucion.getNumeroCentral()!=0) 
-				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
+			
+//			if(devolucion.getNumeroCentral()!=0) 
+//				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
+			devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
 			devolucion_value.put(NMConfig.Devolucion.referencia, devolucion.getReferencia());
 			devolucion_value.put(NMConfig.Devolucion.numeroCentral, devolucion.getNumeroCentral());
 			devolucion_value.put(NMConfig.Devolucion.fecha, devolucion.getFecha());
