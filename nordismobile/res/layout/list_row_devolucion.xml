@@ -1,84 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_margin="5dp"
-     >
-
-
-    <!-- Numero -->
-
-    <TextView
-        android:id="@+id/Numero"
-        android:layout_width="70dp"
+    android:layout_height="wrap_content">
+    
+      <TableRow 
+        android:padding="2dip" 
+        android:layout_gravity="right"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content" >
+        
+        <TextView 
+            android:layout_width="0dp"
+             android:layout_marginLeft="3dp"
+            android:text="Numero Ref:" 
+            android:textSize="10dp" 
+            android:scrollHorizontally="true"  
+            android:textColor="@color/Teal" 
+            android:layout_weight="0.25" 
+            android:layout_height="wrap_content" />
+        <TextView 
+			android:layout_width="0dp"
+             android:id="@+id/Numero"
+            android:scrollHorizontally="true" 
+            android:textColor="@color/Black" 
+            android:textSize="10dp" 
+            android:layout_weight="0.25"  
+            android:lines="1"
+            android:layout_height="wrap_content" />
+        <TextView 
+            android:layout_width="0dp"
+            android:text="Fecha :"  
+            android:textSize="10dp"  
+            android:textColor="@color/Teal" 
+            android:layout_weight="0.15" 
+            android:layout_height="wrap_content" />
+        <TextView 
+			android:layout_width="0dp"
+            android:id="@+id/fecha"
+            android:scrollHorizontally="true" 
+            android:textColor="@color/Black" 
+            android:textSize="10dp" 
+             android:lines="1"
+            android:layout_weight="0.35" 
+            android:layout_height="wrap_content" />
+    </TableRow>
+    
+    <TableRow
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_alignParentLeft="true"
-        android:text="Numero"
-        android:textColor="#040404"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:typeface="sans" />
+        android:layout_gravity="right"
+        android:padding="2dip" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="0.25"
+            android:text="Monto total :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/totalmonto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:lines="1"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.15"
+            android:text="Estado :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/Estado"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.35"
+            android:lines="1"
+            android:scrollHorizontally="true"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+         
+    </TableRow>
     
-    <!-- Fecha -->
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:padding="2dip" >
 
-    <TextView
-        android:id="@+id/fecha"
-        android:layout_width="90dp"
-        android:layout_height="wrap_content" 
-        android:gravity="center"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@+id/Numero"
-        android:text="Fecha"
-        android:textStyle="bold"
-        android:textColor="#040404"
-        android:textSize="15sp" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="0.25"
+            android:text="Cliente :"
+            android:textColor="@color/Teal"
+            android:textSize="10dp" />
 
-    <!-- CLIENTE -->
-
-    <TextView
-        android:id="@+id/customer"
-        android:layout_width="190dp"
-        android:layout_height="wrap_content"  
-        android:layout_toRightOf="@+id/fecha" 
-        android:gravity="right"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentEnd="true"  
-        android:layout_alignParentRight="@+id/fecha"     
-        android:text="customer"
-        android:textColor="#040404"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/customer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.75"
+            android:lines="1"
+            android:textColor="@color/Black"
+            android:textSize="10dp" />
+    </TableRow>
     
-     <!-- total -->
+</TableLayout>
+<!-- <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" -->
+<!--     android:layout_width="fill_parent" -->
+<!--     android:layout_height="fill_parent" -->
+<!--     android:layout_margin="5dp" -->
+<!--      > -->
 
-     <TextView
-         android:id="@+id/totalmonto"
-         android:layout_width="180dp"
-         android:layout_height="wrap_content"
-         android:layout_marginLeft="4dp"
-         android:gravity="left"
-         android:textDirection="rtl"
-         android:layout_alignParentLeft="true"
-         android:layout_below="@id/customer"
-         android:text="totalmonto"
-         android:textColor="#10bcc9"
-         android:textSize="17sp"
-          />
+
+<!--     Numero -->
+
+<!--     <TextView -->
+<!--         android:id="@+id/Numero" -->
+<!--         android:layout_width="70dp" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:layout_marginLeft="4dp" -->
+<!--         android:layout_alignParentLeft="true" -->
+<!--         android:text="Numero" -->
+<!--         android:textColor="#040404" -->
+<!--         android:textSize="15sp" -->
+<!--         android:textStyle="bold" -->
+<!--         android:typeface="sans" /> -->
+    
+<!--     Fecha -->
+
+<!--     <TextView -->
+<!--         android:id="@+id/fecha" -->
+<!--         android:layout_width="90dp" -->
+<!--         android:layout_height="wrap_content"  -->
+<!--         android:gravity="center" -->
+<!--         android:layout_marginLeft="5dp" -->
+<!--         android:layout_toRightOf="@+id/Numero" -->
+<!--         android:text="Fecha" -->
+<!--         android:textStyle="bold" -->
+<!--         android:textColor="#040404" -->
+<!--         android:textSize="15sp" /> -->
+
+<!--     CLIENTE -->
+
+<!--     <TextView -->
+<!--         android:id="@+id/customer" -->
+<!--         android:layout_width="190dp" -->
+<!--         android:layout_height="wrap_content"   -->
+<!--         android:layout_toRightOf="@+id/fecha"  -->
+<!--         android:gravity="right" -->
+<!--         android:layout_marginRight="10dp" -->
+<!--         android:layout_alignParentEnd="true"   -->
+<!--         android:layout_alignParentRight="@+id/fecha"      -->
+<!--         android:text="customer" -->
+<!--         android:textColor="#040404" -->
+<!--         android:textSize="15sp" -->
+<!--         android:textStyle="bold" /> -->
+    
+<!--      total -->
+
+<!--      <TextView -->
+<!--          android:id="@+id/totalmonto" -->
+<!--          android:layout_width="180dp" -->
+<!--          android:layout_height="wrap_content" -->
+<!--          android:layout_marginLeft="4dp" -->
+<!--          android:gravity="left" -->
+<!--          android:textDirection="rtl" -->
+<!--          android:layout_alignParentLeft="true" -->
+<!--          android:layout_below="@id/customer" -->
+<!--          android:text="totalmonto" -->
+<!--          android:textColor="#10bcc9" -->
+<!--          android:textSize="17sp" -->
+<!--           /> -->
      
-       <!-- Estado -->
+<!--        Estado -->
 
-       <TextView
-           android:id="@+id/Estado"
-           android:layout_width="147dp"
-           android:layout_height="wrap_content"
-           android:layout_below="@id/customer"
-           android:gravity="right"
-           android:layout_alignParentRight="true" 
-           android:layout_marginRight="10dp"
-           android:text="Estado"
-           android:textColor="#10bcc9"
-           android:textSize="17sp"
-           />
+<!--        <TextView -->
+<!--            android:id="@+id/Estado" -->
+<!--            android:layout_width="147dp" -->
+<!--            android:layout_height="wrap_content" -->
+<!--            android:layout_below="@id/customer" -->
+<!--            android:gravity="right" -->
+<!--            android:layout_alignParentRight="true"  -->
+<!--            android:layout_marginRight="10dp" -->
+<!--            android:text="Estado" -->
+<!--            android:textColor="#10bcc9" -->
+<!--            android:textSize="17sp" -->
+<!--            /> -->
 
-</RelativeLayout>
+<!-- </RelativeLayout> -->
