@@ -1861,7 +1861,9 @@ public class DatabaseProvider extends ContentProvider
 		Integer devolucionmax=0;
 		try 
 		{
-			sdb = Helper.getDatabase(cnt);
+			NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	
+			sdb = d.getWritableDatabase();	
+			//sdb = Helper.getDatabase(cnt);
 			ContentValues devolucion_value = new ContentValues();
 			ContentValues productos_devueltos_value = new ContentValues();
 			ContentValues productos_devueltoslote_value = new ContentValues(); 
@@ -1885,12 +1887,17 @@ public class DatabaseProvider extends ContentProvider
 //			Cursor _c=sdb.rawQuery("select Id from Devolucion where referencia="+devolucion.getReferencia(), null);
 //			if(_c.moveToNext())
 //				iddevolucion=_c.getInt(0);
-
 			if( devolucion.getId()!=0)
-			{				  
-				sdb.delete(TABLA_DEVOLUCIONPRODUCTOLOTE,NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID+ "="+String.valueOf(iddevolucion),null);
-				sdb.delete(TABLA_DEVOLUCIONPRODUCTO,NMConfig.Devolucion.DevolucionProducto.devolucionID+ "="+String.valueOf(iddevolucion),null);
+			{	
+				
+				sdb.delete(TABLA_DEVOLUCIONPRODUCTOLOTE,NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID+ "="+String.valueOf(devolucion.getId()),null);
+				sdb.delete(TABLA_DEVOLUCIONPRODUCTO,NMConfig.Devolucion.DevolucionProducto.devolucionID+ "="+String.valueOf(devolucion.getId()),null);
 				sdb.delete(TABLA_DEVOLUCIONES,NMConfig.Devolucion.id+"="+String.valueOf(devolucion.getId()),null);
+//				
+//				String where = NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID+"="+String.valueOf(iddevolucion);
+//				
+//				//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
+//				bdd.delete(TABLA_RECIBO_DETALLE_FACTURA, where ,null); 
 			}
 			
 			if(devolucion.getId()==0){
