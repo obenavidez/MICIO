@@ -473,7 +473,7 @@ public class BPedidoM extends BBaseM {
 			            Cliente cliente= BClienteM.actualizarCliente(NMApp.getContext(),SessionManager.getCredenciales(),pedido.getObjSucursalID()); 
 			           
 			            //Notificar al Usuario el resultado del envio del Pedido.
-			            NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_ENVIARPEDIDO, 0, 0, new ArrayList<Object>(Arrays.asList(obj,cliente)));
+			            NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ID_REQUEST_ENVIAR, 0, 0, new ArrayList<Object>(Arrays.asList(obj,cliente)));
  
 					}catch (Exception e) 
 					{ 

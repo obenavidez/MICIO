@@ -1444,18 +1444,16 @@ public class DatabaseProvider extends ContentProvider
 			 Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
 	         recibomax=Ventas.getMaxReciboId(NMApp.getContext());
 	         recibomax2=new Integer(recibomax);
-	         
-	         
-	         
+	          
 			 //Generar Id del recibo
 	       if (recibo.getReferencia() == 0 || recibo.getId() == 0) 
-	       {            	    	   
+	       {            	 
+	    	   
 	    	   //Salvando el tipo de pedido (crédito contado)		    	   
                if (recibomax == null) 
                	recibomax = Integer.valueOf(1);
-               else{
-            	   Integer rmax=NumberUtil.getNumeroMaxRecibo(recibomax, prefijo);
-            	   recibomax =rmax+1; 
+               else{ 
+            	   recibomax =recibomax+1; 
                }
                	
                String strIdMovil = prefijo.intValue() + "" + recibomax.intValue();

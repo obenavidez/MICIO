@@ -691,13 +691,13 @@ public final class BReciboM extends BBaseM {
 					        	imprimir = false;
 					            if (!SessionManager.isPhoneConnected()) 
 					            {
-//					            	Processor.notifyToView(getController(),ERROR,0,0,
-//											new ErrorMessage(
-//													          "Error en el Modulo Recibo.",
-//													          "Error en el proceso de envio del recibo", "\nCausa: "
-//															  + "Falta de covertura."
-//															 )
-//									      );  
+					            	Processor.notifyToView(getController(),ERROR,0,0,
+											new ErrorMessage(
+													          "Error en el Modulo Recibo.",
+													          "Error en el proceso de envio del recibo", "\nCausa: "
+															  + "Falta de covertura."
+															 )
+									      );  
 					                return;
 					            }
 					        	 
@@ -764,17 +764,17 @@ public final class BReciboM extends BBaseM {
 								recibo.setCliente(cliente);								
 								
 				                //Salvar los cambios en el hilo pricipal
-				                Processor.notifyToView(getController(),ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,imprimir?1:0,0,recibo);
+				                Processor.notifyToView(getController(),ControllerProtocol.ID_REQUEST_ENVIAR,imprimir?1:0,0,recibo);
 							}
 							else
 							{								 
 				               //Poner estado de recibo en PAGADO_OFFLINE                   
 								recibo.setCodEstado("PAGADO_OFFLINE");
-								recibo.setDescEstado("Registrado"); 	
+								recibo.setDescEstado("Registrado"); 	 
 				               //Guardando cambios en el Dispositivo 
 				                saveRecibo(recibo,facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate); 
 				                //enviar los cambios en el hilo pricipal
-				                Processor.notifyToView(getController(),ControllerProtocol.ID_REQUEST_ENVIARPEDIDO,imprimir?1:0,0,recibo);
+				                Processor.notifyToView(getController(),ControllerProtocol.ID_REQUEST_ENVIAR,imprimir?1:0,0,recibo);
 							}
 							ModelConfiguracion.borrarEnvioSolicitud(getContext(),recibo.getReferencia());
 							
