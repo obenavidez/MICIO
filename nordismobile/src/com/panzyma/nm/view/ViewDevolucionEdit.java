@@ -1977,7 +1977,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				Intent intent = new Intent();
 				Bundle b = new Bundle();
 				int requescode = 0;
-				b.putParcelable("devolucion", devolucion);
+				b.putSerializable("devolucion", devolucion);
 				intent.putExtras(b); 
 				if (onEdit)
 					requescode = getIntent().getIntExtra("requestcode", 0);
