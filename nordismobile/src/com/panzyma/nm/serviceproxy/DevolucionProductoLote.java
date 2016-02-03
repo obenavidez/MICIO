@@ -11,6 +11,11 @@ import android.os.Parcelable;
 
 public class DevolucionProductoLote implements Parcelable, KvmSerializable, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 778881152231333633L;
+
 	public DevolucionProductoLote(){}
 	
 	public DevolucionProductoLote(Parcel parcel){
@@ -170,7 +175,7 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable, Seri
 		return 0;
 	}
 	
-	public static final Parcelable.Creator<DevolucionProductoLote> CREATOR  = new Parcelable.Creator<DevolucionProductoLote>() {	
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {	
 	     @Override
 		public DevolucionProductoLote createFromParcel(Parcel parcel) {
 	          return new DevolucionProductoLote(parcel);

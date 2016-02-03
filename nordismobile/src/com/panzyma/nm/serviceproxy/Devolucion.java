@@ -1,10 +1,7 @@
 package com.panzyma.nm.serviceproxy;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
@@ -13,7 +10,12 @@ import org.ksoap2.serialization.SoapObject;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Devolucion implements KvmSerializable, Cloneable, Serializable {
+public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -937340237731291658L;
 
 	public Devolucion() {
 		setNombreCliente("");
@@ -1093,6 +1095,7 @@ public class Devolucion implements KvmSerializable, Cloneable, Serializable {
 		return 48;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
 		try {
@@ -1613,6 +1616,133 @@ public class Devolucion implements KvmSerializable, Cloneable, Serializable {
 
 	public Devolucion getOldData() {
 		return olddata;
+	}
+
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+		@Override
+		public Devolucion createFromParcel(Parcel parcel) {
+			return new Devolucion(parcel);
+		}
+
+		@Override
+		public Devolucion[] newArray(int size) {
+			return new Devolucion[size];
+		}
+	};
+
+	public Devolucion(Parcel parcel) {
+		this.Id = parcel.readLong();
+		this.Referencia = parcel.readInt();
+		this.NumeroCentral = parcel.readInt();
+		this.Fecha = parcel.readLong();
+		this.ObjPedidoDevueltoID = parcel.readLong();
+		this.NumeroPedidoDevuelto = parcel.readInt();
+		this.NumeroFacturaDevuelta = parcel.readInt();
+		this.ObjVendedorID = parcel.readLong();
+		this.ObjClienteID = parcel.readLong();
+		this.ObjSucursalID = parcel.readLong();
+		this.NombreCliente = parcel.readString();
+		this.ObjMotivoID = parcel.readLong();
+		this.CodMotivo = parcel.readString();
+		this.DescMotivo = parcel.readString();
+		this.TipoTramite = parcel.readString();
+		this.DeVencido = (parcel.readInt() == 1);
+		this.Parcial = (parcel.readInt() == 1);
+		this.AplicacionInmediata = (parcel.readInt() == 1);
+		this.Nota = parcel.readString();
+		this.Observacion = parcel.readString();
+		this.Subtotal = parcel.readLong();
+		this.Impuesto = parcel.readLong();
+		this.MontoPromocion = parcel.readLong();
+		this.MontoPromocionVen = parcel.readLong();
+		this.MontoCargoAdm = parcel.readLong();
+		this.MontoCargoAdmVen = parcel.readLong();
+		this.MontoVinieta = parcel.readLong();
+		this.Total = parcel.readLong();
+		this.TotalVen = parcel.readLong();
+		this.ObjEstadoID = parcel.readLong();
+		this.DescEstado = parcel.readString();
+		this.CodEstado = parcel.readString();
+		this.ObjCausaEstadoID = parcel.readLong();
+		this.DescCausaEstado = parcel.readString();
+		this.Especial = (parcel.readInt() == 1);
+		this.MontoCargoVendedor = parcel.readLong();
+		this.MontoBonif = parcel.readLong();
+		this.MontoBonifVen = parcel.readLong();
+		this.ImpuestoVen = parcel.readLong();
+		this.FechaEnviada = parcel.readLong();
+		this.ClaveAutorizaAplicacionInmediata = parcel.readString();
+
+		Parcelable[] parcelableArray = parcel
+				.readParcelableArray(DevolucionProducto.class.getClassLoader());
+		if (parcelableArray != null) {
+			ProductosDevueltos = Arrays.copyOf(parcelableArray, parcelableArray.length, DevolucionProducto[].class);			
+		}
+
+		this.PedidoTienePromociones = (parcel.readInt() == 1);
+		this.PedidoYaDevuelto = (parcel.readInt() == 1);
+		this.ReferenciaNC = parcel.readInt();
+		this.PreRegistro = (parcel.readInt() == 1);
+		this.OffLine = (parcel.readInt() == 1);
+		this.FechaFacturacion = parcel.readLong();
+	}
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(this.Id);
+		parcel.writeInt(this.Referencia);
+		parcel.writeInt(this.NumeroCentral);
+		parcel.writeLong(this.Fecha);
+		parcel.writeLong(this.ObjPedidoDevueltoID);
+		parcel.writeInt(this.NumeroPedidoDevuelto);
+		parcel.writeInt(this.NumeroFacturaDevuelta);
+		parcel.writeLong(this.ObjVendedorID);
+		parcel.writeLong(this.ObjClienteID);
+		parcel.writeLong(this.ObjSucursalID);
+		parcel.writeString(this.NombreCliente);
+		parcel.writeLong(this.ObjMotivoID);
+		parcel.writeString(this.CodMotivo);
+		parcel.writeString(this.DescMotivo);
+		parcel.writeString(this.TipoTramite);
+		parcel.writeInt((this.DeVencido ? 1 : 0));
+		parcel.writeInt((this.Parcial ? 1 : 0));
+		parcel.writeInt((this.AplicacionInmediata ? 1 : 0));
+		parcel.writeString(this.Nota);
+		parcel.writeString(this.Observacion);
+		parcel.writeLong(this.Subtotal);
+		parcel.writeLong(this.Impuesto);
+		parcel.writeLong(this.MontoPromocion);
+		parcel.writeLong(this.MontoPromocionVen);
+		parcel.writeLong(this.MontoCargoAdm);
+		parcel.writeLong(this.MontoCargoAdmVen);
+		parcel.writeLong(this.MontoVinieta);
+		parcel.writeLong(this.Total);
+		parcel.writeLong(this.TotalVen);
+		parcel.writeLong(this.ObjEstadoID);
+		parcel.writeString(this.DescEstado);
+		parcel.writeString(this.CodEstado);
+		parcel.writeLong(this.ObjCausaEstadoID);
+		parcel.writeString(this.DescCausaEstado);
+		parcel.writeInt((this.Especial ? 1 : 0));
+		parcel.writeLong(this.MontoCargoVendedor);
+		parcel.writeLong(this.MontoBonif);
+		parcel.writeLong(this.MontoBonifVen);
+		parcel.writeLong(this.ImpuestoVen);
+		parcel.writeLong(this.FechaEnviada);
+		parcel.writeString(this.ClaveAutorizaAplicacionInmediata);		
+		parcel.writeParcelableArray(ProductosDevueltos, flags);
+		parcel.writeInt((this.PedidoTienePromociones ? 1 : 0));
+		parcel.writeInt((this.PedidoYaDevuelto ? 1 : 0));
+		parcel.writeInt(this.ReferenciaNC);
+		parcel.writeInt((this.PreRegistro ? 1 : 0));
+		parcel.writeInt((this.OffLine ? 1 : 0));
+		parcel.writeLong(this.FechaFacturacion);
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

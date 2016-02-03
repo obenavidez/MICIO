@@ -22,6 +22,7 @@ import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.view.adapter.InvokeBridge; 
@@ -557,9 +558,9 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			UserSessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
-			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code) && data != null);;
-				Bundle bDataReceive = data.getExtras();
-				establecer(bDataReceive.getSerializable("devolucion"), false);
+			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code) && data != null);				
+				Devolucion dev = (Devolucion)data.getParcelableExtra("devolucion");
+				establecer(dev, false);
 
 		} catch (Exception e) 
 		{

@@ -79,7 +79,8 @@ public class BDevolucionM extends BBaseM
 				break;
 			case ControllerProtocol.SALVARRECIBOANTESDESALIR:
 				Devolucion dev2 = (Devolucion) msg.obj;
-				RegistrarDevolucion(dev2, 1);
+				RegistrarDevolucion(dev2, ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR);
+				break;
 			case ControllerProtocol.ENVIARDEVOLUCION:
 				Devolucion $dev=(Devolucion) msg.obj;
 				EnviarDevolucion($dev);
@@ -731,7 +732,7 @@ public class BDevolucionM extends BBaseM
 							Processor.notifyToView(
 									NMApp.getController(),
 									((args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR)?ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR:
-										(args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR?ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR:ControllerProtocol.NOTIFICATION)
+										(args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR?ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR: ControllerProtocol.NOTIFICATION)
 									),
 									ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST,
 									0,

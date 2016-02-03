@@ -1,10 +1,7 @@
 package com.panzyma.nm.serviceproxy;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
@@ -13,7 +10,12 @@ import org.ksoap2.serialization.SoapObject;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class DevolucionProducto implements KvmSerializable, Serializable {
+public class DevolucionProducto implements KvmSerializable, Parcelable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5389784331024111849L;
+
 	/**
 	 * @param id
 	 * @param objProductoID
@@ -717,5 +719,83 @@ public class DevolucionProducto implements KvmSerializable, Serializable {
 			productoLotes = (DevolucionProductoLote[]) _obj;
 			break;
 		}
+	}
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(this.Id);
+		parcel.writeLong(this.ObjProductoID);
+		parcel.writeString(this.NombreProducto);
+		parcel.writeInt(this.cantidadDevolver);
+		parcel.writeInt(this.bonificacion);
+		parcel.writeInt(this.bonificacionVen);
+		parcel.writeLong(this.precio);
+		parcel.writeLong(this.subtotal);
+		parcel.writeLong(this.porcImpuesto);
+		parcel.writeLong(this.impuesto);
+		parcel.writeLong(this.total);
+		parcel.writeLong(this.totalVen);
+		parcel.writeLong(this.montoBonif);
+		parcel.writeLong(this.montoBonifVen);
+		parcel.writeLong(this.impuestoVen);
+		parcel.writeInt(this.cantidadOrdenada);
+		parcel.writeInt(this.cantidadBonificada);
+		parcel.writeInt(this.cantidadPromocionada);
+		parcel.writeLong(this.descuento);
+		parcel.writeInt(this.totalProducto);
+		parcel.writeInt(this.gravable ? 1 : 0);
+		parcel.writeInt(this.deleted ? 1 : 0);
+		parcel.writeLong(this.objProveedorID);
+		parcel.writeParcelableArray(this.productoLotes, flags);
+		//parcel.writeList(Arrays.asList(this.productoLotes));
+	}
+	
+	public DevolucionProducto(Parcel parcel) {
+		this.Id = parcel.readLong();
+		this.ObjProductoID = parcel.readLong();
+		this.NombreProducto = parcel.readString();
+		this.cantidadDevolver = parcel.readInt();
+		this.bonificacion = parcel.readInt();
+		this.bonificacionVen = parcel.readInt();
+		this.precio = parcel.readLong();
+		this.subtotal = parcel.readLong();
+		this.porcImpuesto = parcel.readLong();
+		this.impuesto = parcel.readLong();
+		this.total = parcel.readLong();
+		this.totalVen = parcel.readLong();
+		this.montoBonif = parcel.readLong();
+		this.montoBonifVen = parcel.readLong();
+		this.impuestoVen = parcel.readLong();
+		this.cantidadOrdenada = parcel.readInt();
+		this.cantidadBonificada = parcel.readInt();
+		this.cantidadPromocionada = parcel.readInt();
+		this.descuento = parcel.readLong();
+		this.totalProducto = parcel.readInt();
+		this.gravable = parcel.readInt() == 1;
+		this.deleted = parcel.readInt() == 1;
+		this.objProveedorID = parcel.readLong();
+		
+		Parcelable[] parcelableArray = parcel.readParcelableArray(DevolucionProductoLote.class.getClassLoader());
+		if (parcelableArray != null) {
+			productoLotes = Arrays.copyOf(parcelableArray, parcelableArray.length, DevolucionProductoLote[].class);		   
+		}
+	}
+	
+	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+		@Override
+		public DevolucionProducto createFromParcel(Parcel parcel) {
+			return new DevolucionProducto(parcel);
+		}
+
+		@Override
+		public DevolucionProducto[] newArray(int size) {
+			return new DevolucionProducto[size];
+		}
+	};
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
