@@ -1,12 +1,18 @@
 package com.panzyma.nm.serviceproxy;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
-public class DevolucionProducto implements KvmSerializable {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class DevolucionProducto implements KvmSerializable, Parcelable {
 	/**
 	 * @param id
 	 * @param objProductoID
@@ -455,6 +461,47 @@ public class DevolucionProducto implements KvmSerializable {
 	public DevolucionProducto() {
 	}
 
+	public DevolucionProducto(Parcel parcel) {
+		this.Id = parcel.readLong();
+		this.ObjProductoID = parcel.readLong();
+		this.NombreProducto = parcel.readString();
+		this.cantidadDevolver = parcel.readInt();
+		this.bonificacion = parcel.readInt();
+		this.bonificacionVen = parcel.readInt();
+		this.precio = parcel.readLong();
+		this.subtotal = parcel.readLong();
+		this.porcImpuesto = parcel.readLong();
+		this.impuesto = parcel.readLong();
+		this.total = parcel.readLong();
+		this.totalVen = parcel.readLong();
+		this.montoBonif = parcel.readLong();
+		this.montoBonifVen = parcel.readLong();
+		this.impuestoVen = parcel.readLong();
+		this.cantidadOrdenada = parcel.readInt();
+		this.cantidadBonificada = parcel.readInt();
+		this.cantidadPromocionada = parcel.readInt();
+		this.descuento = parcel.readLong();
+		this.totalProducto = parcel.readInt();
+		this.gravable = parcel.readInt() == 1;
+		this.deleted = parcel.readInt() == 1;
+		this.objProveedorID = parcel.readLong();
+		List<DevolucionProductoLote> list = new ArrayList<DevolucionProductoLote>();
+		parcel.readList(list, DevolucionProductoLote.class.getClassLoader());
+		productoLotes = new DevolucionProductoLote[list.size()];
+		list.toArray(productoLotes);
+		/*Parcelable[] parcelableArray = parcel
+				.readParcelableArray(DevolucionProductoLote.class
+						.getClassLoader());
+		if (parcelableArray != null) {
+			productoLotes = new DevolucionProductoLote[parcelableArray.length];
+			Object[] list = Arrays.copyOf(parcelableArray,
+					parcelableArray.length, DevolucionProductoLote[].class);
+			for (int p = 0; p < list.length; p++) {
+				productoLotes[p] = (DevolucionProductoLote) list[p];
+			}
+		}*/
+	}
+
 	@Override
 	public Object getProperty(int index) {
 		switch (index) {
@@ -531,84 +578,106 @@ public class DevolucionProducto implements KvmSerializable {
 	@Override
 	public void getPropertyInfo(int _index, Hashtable _table, PropertyInfo _info) {
 		try {
-			switch (_index) 
-			{
-			
-	           case 0:
-	               _info.name = "Id";
-	               _info.type = java.lang.Long.class; break;
-	           case 1:
-	               _info.name = "ObjProductoID";
-	               _info.type = java.lang.Long.class; break;
-	           case 2:
-	               _info.name = "NombreProducto";
-	               _info.type = java.lang.String.class; break;
-	           case 3:
-	               _info.name = "CantidadDevolver";
-	               _info.type = java.lang.Integer.class; break;
-	           case 4:
-	               _info.name = "Bonificacion";
-	               _info.type = java.lang.Integer.class;  break;
-	           case 5:
-	               _info.name = "BonificacionVen";
-	               _info.type =  java.lang.Integer.class;  break;
-	           case 6:
-	               _info.name = "Precio";
-	               _info.type = java.lang.Long.class; break;
-	           case 7:
-	               _info.name = "Subtotal";
-	               _info.type = java.lang.Long.class; break;
-	           case 8:
-	               _info.name = "PorcImpuesto";
-	               _info.type = java.lang.Long.class; break;
-	           case 9:
-	               _info.name = "Impuesto";
-	               _info.type = java.lang.Long.class; break;
-	           case 10:
-	               _info.name = "Total";
-	               _info.type = java.lang.Long.class; break;
-	           case 11:
-	               _info.name = "TotalVen";
-	               _info.type = java.lang.Long.class; break;
-	           case 12:
-	               _info.name = "MontoBonif";
-	               _info.type = java.lang.Long.class; break;
-	           case 13:
-	               _info.name = "MontoBonifVen";
-	               _info.type = java.lang.Long.class;break;
-	           case 14:
-	               _info.name = "ImpuestoVen";
-	               _info.type = java.lang.Long.class; break;
-	           case 15:
-	               _info.name = "CantidadOrdenada";
-	               _info.type = java.lang.Integer.class;  break;
-	           case 16:
-	               _info.name = "CantidadBonificada";
-	               _info.type = java.lang.Integer.class;  break;
-	           case 17:
-	               _info.name = "CantidadPromocionada";
-	               _info.type = java.lang.Integer.class;  break;
-	           case 18:
-	               _info.name = "Descuento";
-	               _info.type = java.lang.Long.class; break;
-	           case 19:
-	               _info.name = "TotalProducto";
-	               _info.type = java.lang.Integer.class;  break;    
-	           case 20:
-	               _info.name = "Gravable";
-	               _info.type = java.lang.Boolean.class; break;  
-	           case 21:
-	               _info.name = "Delete";
-	               _info.type = java.lang.Boolean.class; break;  
-	           case 22:
-	               _info.name = "ObjProveedorID";
-	               _info.type = java.lang.Long.class; break;  
-	           case 23:
-	        	   if(productoLotes!= null && productoLotes.length > 0) 
-	        	   {        		   
-	                   _info.name = "ProductoLotes";
-	                   _info.type=DevolucionProductoLote[].class;break;
-	        	   }        	  
+			switch (_index) {
+
+			case 0:
+				_info.name = "Id";
+				_info.type = java.lang.Long.class;
+				break;
+			case 1:
+				_info.name = "ObjProductoID";
+				_info.type = java.lang.Long.class;
+				break;
+			case 2:
+				_info.name = "NombreProducto";
+				_info.type = java.lang.String.class;
+				break;
+			case 3:
+				_info.name = "CantidadDevolver";
+				_info.type = java.lang.Integer.class;
+				break;
+			case 4:
+				_info.name = "Bonificacion";
+				_info.type = java.lang.Integer.class;
+				break;
+			case 5:
+				_info.name = "BonificacionVen";
+				_info.type = java.lang.Integer.class;
+				break;
+			case 6:
+				_info.name = "Precio";
+				_info.type = java.lang.Long.class;
+				break;
+			case 7:
+				_info.name = "Subtotal";
+				_info.type = java.lang.Long.class;
+				break;
+			case 8:
+				_info.name = "PorcImpuesto";
+				_info.type = java.lang.Long.class;
+				break;
+			case 9:
+				_info.name = "Impuesto";
+				_info.type = java.lang.Long.class;
+				break;
+			case 10:
+				_info.name = "Total";
+				_info.type = java.lang.Long.class;
+				break;
+			case 11:
+				_info.name = "TotalVen";
+				_info.type = java.lang.Long.class;
+				break;
+			case 12:
+				_info.name = "MontoBonif";
+				_info.type = java.lang.Long.class;
+				break;
+			case 13:
+				_info.name = "MontoBonifVen";
+				_info.type = java.lang.Long.class;
+				break;
+			case 14:
+				_info.name = "ImpuestoVen";
+				_info.type = java.lang.Long.class;
+				break;
+			case 15:
+				_info.name = "CantidadOrdenada";
+				_info.type = java.lang.Integer.class;
+				break;
+			case 16:
+				_info.name = "CantidadBonificada";
+				_info.type = java.lang.Integer.class;
+				break;
+			case 17:
+				_info.name = "CantidadPromocionada";
+				_info.type = java.lang.Integer.class;
+				break;
+			case 18:
+				_info.name = "Descuento";
+				_info.type = java.lang.Long.class;
+				break;
+			case 19:
+				_info.name = "TotalProducto";
+				_info.type = java.lang.Integer.class;
+				break;
+			case 20:
+				_info.name = "Gravable";
+				_info.type = java.lang.Boolean.class;
+				break;
+			case 21:
+				_info.name = "Delete";
+				_info.type = java.lang.Boolean.class;
+				break;
+			case 22:
+				_info.name = "ObjProveedorID";
+				_info.type = java.lang.Long.class;
+				break;
+			case 23:
+				if (productoLotes != null && productoLotes.length > 0) {
+					_info.name = "ProductoLotes";
+					_info.type = DevolucionProductoLote[].class;
+					break;
+				}
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -618,8 +687,7 @@ public class DevolucionProducto implements KvmSerializable {
 
 	@Override
 	public void setProperty(int _index, Object _obj) {
-		switch (_index) 
-		{
+		switch (_index) {
 		case 0:
 			Id = Long.parseLong(_obj.toString());
 			break;
@@ -689,6 +757,53 @@ public class DevolucionProducto implements KvmSerializable {
 			productoLotes = (DevolucionProductoLote[]) _obj;
 			break;
 		}
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public static final Parcelable.Creator<DevolucionProducto> CREATOR = new Parcelable.Creator<DevolucionProducto>() {
+		@Override
+		public DevolucionProducto createFromParcel(Parcel parcel) {
+			return new DevolucionProducto(parcel);
+		}
+
+		@Override
+		public DevolucionProducto[] newArray(int size) {
+			return new DevolucionProducto[size];
+		}
+	};
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(this.Id);
+		parcel.writeLong(this.ObjProductoID);
+		parcel.writeString(this.NombreProducto);
+		parcel.writeInt(this.cantidadDevolver);
+		parcel.writeInt(this.bonificacion);
+		parcel.writeInt(this.bonificacionVen);
+		parcel.writeLong(this.precio);
+		parcel.writeLong(this.subtotal);
+		parcel.writeLong(this.porcImpuesto);
+		parcel.writeLong(this.impuesto);
+		parcel.writeLong(this.total);
+		parcel.writeLong(this.totalVen);
+		parcel.writeLong(this.montoBonif);
+		parcel.writeLong(this.montoBonifVen);
+		parcel.writeLong(this.impuestoVen);
+		parcel.writeInt(this.cantidadOrdenada);
+		parcel.writeInt(this.cantidadBonificada);
+		parcel.writeInt(this.cantidadPromocionada);
+		parcel.writeLong(this.descuento);
+		parcel.writeInt(this.totalProducto);
+		parcel.writeInt(this.gravable ? 1 : 0);
+		parcel.writeInt(this.deleted ? 1 : 0);
+		parcel.writeLong(this.objProveedorID);
+		//parcel.writeParcelableArray(this.productoLotes, flags);
+		parcel.writeList(Arrays.asList(this.productoLotes));
 	}
 
 }

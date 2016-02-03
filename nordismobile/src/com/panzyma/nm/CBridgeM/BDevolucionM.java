@@ -2,30 +2,6 @@ package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,8 +43,8 @@ import com.panzyma.nm.serviceproxy.RespuestaEnviarRecibo;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.viewmodel.vmDevolucion;
 import com.panzyma.nm.viewmodel.vmDevolucionEdit;
-
 import android.annotation.SuppressLint;
+import android.os.Bundle; 
 import android.os.Message;
 import android.util.Log;
 
@@ -79,6 +55,7 @@ public class BDevolucionM extends BBaseM
 	
 	@Override
 	public boolean handleMessage(Message msg) throws Exception {
+		Bundle b = msg.getData();
 		switch (msg.what) 
 		{
 			case ControllerProtocol.OBTENERVALORCATALOGO:
@@ -100,6 +77,9 @@ public class BDevolucionM extends BBaseM
 				Devolucion dev=(Devolucion) msg.obj;
 				RegistrarDevolucion(dev);
 				break;
+			case ControllerProtocol.SALVARRECIBOANTESDESALIR:
+				Devolucion dev2 = (Devolucion) msg.obj;
+				RegistrarDevolucion(dev2, 1);
 			case ControllerProtocol.ENVIARDEVOLUCION:
 				Devolucion $dev=(Devolucion) msg.obj;
 				EnviarDevolucion($dev);
@@ -123,8 +103,8 @@ public class BDevolucionM extends BBaseM
 			ModelDevolucion.borrarDevolucion(id);
 			Processor.notifyToView(getController(),
 					ControllerProtocol.C_DATA,
-					0,
-					0,
+					-1,
+					-1,
 					ModelDevolucion.obtenerDevolucionesFromLocalHost(getResolver())
 					);
 		} catch (Exception e) 
@@ -712,7 +692,7 @@ public class BDevolucionM extends BBaseM
 		 return dev;
     }
     
-    private  void RegistrarDevolucion(final Devolucion dev,final int...what) throws Exception
+    private  void RegistrarDevolucion(final Devolucion dev,final int...args) throws Exception
     {
 			try 
 			{
@@ -737,7 +717,8 @@ public class BDevolucionM extends BBaseM
 					            	devolucionmax =devolucionmax+1; 
 					            String strIdMovil = prefijo.intValue() + "" + devolucionmax.intValue();
 					            int idMovil = Integer.parseInt(strIdMovil);
-					            dev.setId(0);
+					            if(dev.getId()==0)
+					            	dev.setId(0);
 					            dev.setReferencia(idMovil);
 					            dev.setCodEstado("REGISTRADA"); 
 					            dev.setNumeroCentral(0); 
@@ -747,18 +728,11 @@ public class BDevolucionM extends BBaseM
 							 if(dev.getObjPedido()!=null && dev.getObjPedido().getId()!=0)
 								 ModelPedido.RegistrarPedido(dev.getObjPedido(), NMApp.getContext());
 							  			 
-							if(what!=null && what.length!=0)
-								Processor.notifyToView(
-										NMApp.getController(),
-										(what[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR)?ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR:
-										ControllerProtocol.NOTIFICATION,
-										ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST,
-										0,
-										dev);
-							else
-					        Processor.notifyToView(
-					        		NMApp.getController(),
-									ControllerProtocol.NOTIFICATION,
+							Processor.notifyToView(
+									NMApp.getController(),
+									((args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR)?ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR:
+										(args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR?ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR:ControllerProtocol.NOTIFICATION)
+									),
 									ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST,
 									0,
 									dev);

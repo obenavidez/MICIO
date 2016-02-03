@@ -6,6 +6,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.text.SimpleDateFormat;
+
+import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.interfaces.DevolucionItem; 
 
 public class vmDevolucion  implements Parcelable , DevolucionItem  {
@@ -32,7 +34,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	private String Estado;
 	private long cliente_id;
 	private boolean OffLine;
-	private int customer_id;
+//	private int customer_id;
 	private long idSucursal;
 
 	
@@ -47,13 +49,13 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 		this.cliente_id = cliente_id;
 	}
 
-	public int getCustomer_id() {
-		return customer_id;
-	}
-
-	public void setCustomer_id(int customer_id) {
-		this.customer_id = customer_id;
-	}
+//	public int getCustomer_id() {
+//		return customer_id;
+//	}
+//
+//	public void setCustomer_id(int customer_id) {
+//		this.customer_id = customer_id;
+//	}
 
 	public vmDevolucion(long id, int numeroCentral,  String fecha, String cliente,
 			Float total, String estado, long cliente_id,boolean offline , long idSucursal) {
@@ -67,7 +69,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 		this.cliente_id = cliente_id;
 		this.OffLine = offline;
 		this.idSucursal = idSucursal;
-		this.customer_id=1002548;
+//		this.customer_id=1002548;
 	}
 
 
@@ -204,9 +206,14 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	@Override
 	public String getItemTotal() {
 		// TODO Auto-generated method stub
-		return "C$".concat(String.valueOf(getTotal()));
+		return StringUtil.formatReal(getTotal());
 	}
-
+	
+	
+	public String getItemTotalformato() {
+		// TODO Auto-generated method stub
+		return StringUtil.formatReal(getTotal());
+	}
 
 	@Override
 	public String getItemEstado() {
@@ -220,10 +227,10 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 		return this.OffLine;
 	}
 
-	@Override
-	public long getItemCustomerid() {
-		return this.customer_id;
-	}
+//	@Override
+//	public long getItemCustomerid() {
+//		return this.customer_id;
+//	}
 
 	@Override
 	public long getItemsucursalid() {

@@ -7,11 +7,15 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BDevolucionM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
+import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
+import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
+import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
@@ -19,8 +23,10 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Devolucion;
+import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.view.adapter.InvokeBridge; 
 import com.panzyma.nm.viewmodel.vmDevolucion;
+import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
 import static com.panzyma.nm.controller.ControllerProtocol.*;
@@ -140,7 +146,11 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			case C_DATA:
 				list = (ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>() : msg.obj);
 				SetList(list);
-			
+				if(msg.arg1 == msg.arg2 && msg.arg2 == -1) {
+					AppDialog.showMessage((ViewDevoluciones)NMApp.getController().getView(), "Información.",
+							"Registro(s) borrado(s) exitosamente!",
+							DialogType.DIALOGO_ALERTA);
+				}
 			break;
 		
 			case ERROR:
@@ -286,7 +296,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 						}
 						if(!item_selected.getEstado().equals("REGISTRADA")){
 							drawerLayout.closeDrawers();
-							AppDialog.showMessage(NMApp.getContext(), "Información", "Este registro no tiene estado Enviado.",DialogType.DIALOGO_ALERTA);
+							AppDialog.showMessage(NMApp.getContext(), "Información", "Este registro no tiene estado Registrado.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
 						Message msg = new Message();
@@ -315,7 +325,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 					case BORRAR_ENVIADAS: 
 						Message msg2 = new Message();
 						Bundle b2 = new Bundle();						
-						b2.putInt("id", 0);
+						b2.putInt("id", -1);
 						msg2.setData(b2);
 						msg2.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
 						NMApp.getController().getInboxHandler().sendMessage(msg2);
@@ -548,7 +558,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
 			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code) && data != null);;
-				//establecer(data.getParcelableExtra("pedido"), false);
+				establecer(data.getParcelableExtra("devolucion"), false);
 
 		} catch (Exception e) 
 		{
@@ -569,4 +579,48 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			int requestCode) {
 		super.startActivityFromFragment(fragment, intent, requestCode);
 	}
+	
+	@SuppressWarnings({ "unchecked", "unused" })
+	private void establecer(final Object _obj, final boolean thread,final int...what) {
+		if (_obj == null)
+			return;
+		if (_obj instanceof Message) {
+			Message msg = (Message) _obj;
+			devoluciones = ((ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>() : msg.obj));
+			positioncache = 0;
+		} else if (_obj instanceof Devolucion) 
+		{
+			Devolucion d = (Devolucion) _obj;
+			vmDevolucion objDev = new vmDevolucion(
+					d.getId(), 
+					d.getNumeroCentral(), 
+					DateUtil.idateToStrYY(d.getFecha()),						 
+					d.getNombreCliente(),
+					Float.valueOf(d.getTotal()),
+					d.getCodEstado(),
+					d.getObjClienteID(),
+					d.isOffLine(),
+					d.getObjSucursalID());
+			if (ABRIR_DEVOLUCION == request_code 
+					|| (what != null 
+						&& what.length != 0 
+						&& ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER == what[0])) {				
+				devoluciones.set(positioncache,objDev);				
+
+			} else if (NUEVO_DEVOLUCION == request_code) {
+				devoluciones.add(objDev);
+				positioncache = devoluciones.size() - 1; 
+				customArrayAdapter.setSelectedPosition(positioncache);
+			}
+		}
+		
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				SetList(devoluciones);
+			}
+		});
+
+	}
+	
 }

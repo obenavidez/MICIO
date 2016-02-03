@@ -1856,9 +1856,12 @@ public class DatabaseProvider extends ContentProvider
 		long devolucionid = 0;
 		long devolucionproductoid = 0;
 		SQLiteDatabase sdb = null;
+		Integer devolucionmax=0;
 		try 
 		{
-			sdb = Helper.getDatabase(cnt);
+			NM_SQLiteHelper d = new NM_SQLiteHelper(cnt, DATABASE_NAME, null, BD_VERSION);	
+			sdb = d.getWritableDatabase();	
+			//sdb = Helper.getDatabase(cnt);
 			ContentValues devolucion_value = new ContentValues();
 			ContentValues productos_devueltos_value = new ContentValues();
 			ContentValues productos_devueltoslote_value = new ContentValues(); 
@@ -1866,21 +1869,45 @@ public class DatabaseProvider extends ContentProvider
 			long iddevolucion=-1;  
 			sdb.beginTransaction();
 			 	 
-			
-			Cursor _c=sdb.rawQuery("select Id from Devolucion where referencia="+devolucion.getReferencia(), null);
-			if(_c.moveToNext())
-				iddevolucion=_c.getInt(0);
-		 
-			if(iddevolucion!=0)
-			{				  
-				sdb.delete(TABLA_DEVOLUCIONPRODUCTOLOTE,NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID+ "="+String.valueOf(iddevolucion),null);
-				sdb.delete(TABLA_DEVOLUCIONPRODUCTO,NMConfig.Devolucion.DevolucionProducto.devolucionID+ "="+String.valueOf(iddevolucion),null);
-				sdb.delete(TABLA_DEVOLUCIONES,NMConfig.Devolucion.id+"="+String.valueOf(iddevolucion),null);
+			 Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
+	         devolucionmax=Ventas.getMaxDevolucionVId(NMApp.getContext());
+	         
+	         if (devolucionmax == null)  devolucionmax = Integer.valueOf(1);
+	         else
+	         {
+	            	 Integer rmax=NumberUtil.getNumeroMaxRecibo(devolucionmax, prefijo);
+	            	 devolucionmax =rmax+1; 
+	         }	               	
+	         
+	         String strIdMovil = prefijo.intValue() + "" + devolucionmax.intValue();
+	         int idMovil = Integer.parseInt(strIdMovil); 
+	         
+//			Cursor _c=sdb.rawQuery("select Id from Devolucion where referencia="+devolucion.getReferencia(), null);
+//			if(_c.moveToNext())
+//				iddevolucion=_c.getInt(0);
+			if( devolucion.getId()!=0)
+			{	
+				
+				sdb.delete(TABLA_DEVOLUCIONPRODUCTOLOTE,NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID+ "="+String.valueOf(devolucion.getId()),null);
+				sdb.delete(TABLA_DEVOLUCIONPRODUCTO,NMConfig.Devolucion.DevolucionProducto.devolucionID+ "="+String.valueOf(devolucion.getId()),null);
+				sdb.delete(TABLA_DEVOLUCIONES,NMConfig.Devolucion.id+"="+String.valueOf(devolucion.getId()),null);
+//				
+//				String where = NMConfig.Devolucion.DevolucionProducto.DevolucionProductoLote.devolucionID+"="+String.valueOf(iddevolucion);
+//				
+//				//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
+//				bdd.delete(TABLA_RECIBO_DETALLE_FACTURA, where ,null); 
 			}
-				  
-			 
-			if(devolucion.getNumeroCentral()!=0) 
+			
+			if(devolucion.getId()==0){
+				devolucion.setId(idMovil);
+				devolucion.setReferencia(idMovil);
+			}
+			else {
 				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
+			}
+//			if(devolucion.getNumeroCentral()!=0) 
+//				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
+			
 			devolucion_value.put(NMConfig.Devolucion.referencia, devolucion.getReferencia());
 			devolucion_value.put(NMConfig.Devolucion.numeroCentral, devolucion.getNumeroCentral());
 			devolucion_value.put(NMConfig.Devolucion.fecha, devolucion.getFecha());

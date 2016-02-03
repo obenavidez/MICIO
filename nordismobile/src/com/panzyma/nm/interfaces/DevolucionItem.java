@@ -14,7 +14,7 @@ public interface DevolucionItem extends BaseHolder {
 	
 	boolean getItemOffline(); 
 	
-	long getItemCustomerid();
+//	long getItemCustomerid();
 	
 	long getItemsucursalid();
 }
