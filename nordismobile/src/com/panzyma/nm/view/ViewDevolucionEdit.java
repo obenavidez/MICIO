@@ -88,6 +88,7 @@ import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ViewDevoluciones.FragmentActive;
@@ -1153,7 +1154,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					salvarDevolucion();
 					break;
 				case ID_ENVIAR:
-					enviarPedido();
+					enviarDevolucion();
 					break;
 				// case ID_IMPRIMIR_COMPROBANTE:
 				// try {
@@ -1216,18 +1217,18 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 
-	protected void salvarDevolucion() {
+	protected void salvarDevolucion(int... arg) 
+	{
 		updateObject();
 		if (!validarDevolucion())
 			return;
 		Message msg = new Message();
 		msg.obj = devolucion;
-		msg.what = SAVE_DATA_FROM_LOCALHOST;
+		msg.what = arg.length != 0 ? arg[0] : SAVE_DATA_FROM_LOCALHOST; 
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
-
 	}
 
-	private void enviarPedido() {
+	private void enviarDevolucion() {
 		if (!validarDevolucion()) {
 			return;
 		}
@@ -1945,7 +1946,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				if (ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1) 
 				{ 										
 					devolucion.setOlddata(devolucion);
-					actualizarOnUINumRef(); 
+					actualizarOnUINumRef(devolucion); 
 				}				
 				if((!message.equals("")) || ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST==msg.arg1)
 				showStatus((ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST==msg.arg1)?"La devolución fue registrada satisfactoriamente."
@@ -1961,16 +1962,79 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					showStatus(((String) msg.obj), true);
 	
 				break;
+			case ControllerProtocol.ID_REQUEST_ENVIAR:
+			case ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR:
+				if (msg.obj != null) 
+				{
+					devolucion = ((Devolucion) msg.obj);
+					devolucion.setOlddata(devolucion); 
+					actualizarOnUINumRef(devolucion);
+					enviarImprimirRecibo(devolucion);
+				}
+				break; 
 		}
 		return false;
 	}
 
-	public void actualizarOnUINumRef() {
+	private  void enviarImprimirRecibo(final Devolucion devolucion) 
+	{
+		
+		if (devolucion != null && devolucion.getReferencia()==0) 
+		{
+			 salvarDevolucion(ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR);
+			return;
+		}
+		
+		
+		
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				AppDialog.showMessage(me, "", "¿Desea imprimir comprobante de devolucion?",
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						new AppDialog.OnButtonClickListener() 
+				{
+							@Override
+							public void onButtonClick(AlertDialog _dialog,
+									int actionId) {
+								if (actionId == AppDialog.OK_BUTTOM) 
+								{
+									try 
+									{
+										Message msg = new Message();
+										Bundle b = new Bundle(); 
+										msg.obj=devolucion;
+										msg.what = ControllerProtocol.IMPRIMIR;
+										NMApp.getController().getInboxHandler()
+												.sendMessage(msg);
+										_dialog.dismiss();
+
+									} catch (Exception e) {
+										NMApp.getController()
+												.notifyOutboxHandlers(
+														ControllerProtocol.ERROR,
+														0,
+														0,
+														new ErrorMessage(
+																"Error al intentar imprimir el comprobante de la4 devolución",
+																e.getMessage(),
+																e.getMessage()));
+									}
+								}
+							}
+						});
+			}
+		});
+
+	}
+	public void actualizarOnUINumRef(final Devolucion devolucion) {
 		runOnUiThread(new Runnable() {
 
 			@Override
-			public void run() {
+			public void run() 
+			{ 
 				tbxRefNum.setText(devolucion.getReferencia()); 
+				tbxCentralNum.setText(devolucion.getNumeroCentral()); 
 			}
 		});
 	}

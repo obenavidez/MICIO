@@ -692,7 +692,7 @@ public class ViewPedido extends ActionBarActivity implements
 			case ControllerProtocol.NOTIFICATION_DIALOG2:
 				showStatus(msg.obj.toString());
 				break;
-			case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
+			case ControllerProtocol.ID_REQUEST_ENVIAR:
 				request_code = ABRIR_PEDIDO;
 				resultadoEnvioPedido(msg.obj);
 				break;			

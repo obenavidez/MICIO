@@ -793,7 +793,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 						((ErrorMessage) msg.obj).getMessage(),
 						DialogType.DIALOGO_ALERTA);
 				break;
-			case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
+			case ControllerProtocol.ID_REQUEST_ENVIAR:
 				resultadoEnvioPedido(msg.obj);
 				salvado = true;
 				break;

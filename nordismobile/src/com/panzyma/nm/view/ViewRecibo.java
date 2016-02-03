@@ -1123,7 +1123,7 @@ public class ViewRecibo extends ActionBarActivity implements
 					((ErrorMessage) msg.obj).getMessage(),
 					DialogType.DIALOGO_ALERTA);
 			return true;
-		case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
+		case ControllerProtocol.ID_REQUEST_ENVIAR:
 			if (dlg != null)
 				dlg.dismiss();
 			

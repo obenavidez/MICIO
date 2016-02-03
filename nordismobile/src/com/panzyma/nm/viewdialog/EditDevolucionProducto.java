@@ -503,52 +503,7 @@ public class EditDevolucionProducto extends DialogFragment {
 			me.getDev_prod().set(obj.getIndex(), dp);
 		}
 		
-	/*	DevolucionProducto dp =this.getDevolucionProducto();
-		dp.setObjProductoID(product_selected.getId());
-		dp.setNombreProducto(product_selected.getNombre());
-		dp.setObjProveedorID(product_selected.getObjProveedorID());
-		
-		dp.setCantidadDevolver(dp.getCantidadDevolver()+ dvl.getCantidadDevuelta());
-		Bonificacion b = DetalleProducto.getBonificacion(product_selected,cliente.getObjCategoriaClienteID(), dvl.getCantidadDevuelta());
-
-		long idTP = Long.parseLong(me.getSharedPreferences("SystemParams",android.content.Context.MODE_PRIVATE).getString("IdTipoPrecioGeneral", "0"));
-		float preciounitario = DetalleProducto.getPrecioProducto(product_selected, idTP, dvl.getCantidadDevuelta());
-
-		dp.setPrecio((long) ((double) preciounitario * 100));
-		double montobonificacion = dp.getBonificacion() * preciounitario;
-		double subTotal = dvl.getCantidadDevuelta() * preciounitario;
-		double impuesto = 0.00D;
-		int    cantidad_bonificable = ( (b == null ) ? 0 : b.getCantBonificacion() );
-
-		dp.setBonificacion( dp.getBonificacion() + cantidad_bonificable );
-		dp.setBonificacionVen( dp.getBonificacionVen() + cantidad_bonificable );
-		dp.setMontoBonif( ((long) ((double) (montobonificacion * 100))) + dp.getMontoBonif() );
-		dp.setMontoBonifVen( ((long) ((double) (montobonificacion * 100))) + dp.getMontoBonifVen() );
-
-		dp.setSubtotal( ((long) ((double) (subTotal * 100.00)))  + dp.getSubtotal() );
-		dp.setTotal( ((long) ((double) ((subTotal - montobonificacion + impuesto)) * 100)) + dp.getTotal() );
-
-		List<DevolucionProductoLote> l = null;
-		if (dp.getProductoLotes() == null || (dp.getProductoLotes() != null && dp.getProductoLotes().length == 0)) 
-		{
-			l = new ArrayList<DevolucionProductoLote>();
-		} else 
-		{
-			l = new ArrayList<DevolucionProductoLote>(Arrays.asList(dp.getProductoLotes()));
-		}
-		l.add(dvl);
-		dp.setProductoLotes(new DevolucionProductoLote[l.size()]);
-		l.toArray(dp.getProductoLotes());
-		if (tipo == Type.ADD) {
-			me.getDev_prod().add(dp);			
-			me.refreshExpandable();
-		} else {
-			ExpandListChild ch = new ExpandListChild();
-			ch.setName(dvl.getNumeroLote());
-			ch.setObject(dvl);
-			groupselected.getItems().add(ch);
-		}
-		*/me.initExpandableListView(true);
+        me.initExpandableListView(true);
 		
 	}
 

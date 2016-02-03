@@ -1036,7 +1036,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 			recibo.setOldData(recibo);
 			loadData(true);
 			break;
-		case ControllerProtocol.ID_REQUEST_ENVIARPEDIDO:
+		case ControllerProtocol.ID_REQUEST_ENVIAR:
 			if (msg.obj != null) {
 				recibo = ((ReciboColector) msg.obj);
 				recibo.setOldData(recibo);

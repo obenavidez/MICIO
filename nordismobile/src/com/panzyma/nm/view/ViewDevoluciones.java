@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BDevolucionM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
@@ -309,7 +310,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 							AppDialog.showMessage(NMApp.getContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
-						
+						BDevolucionM.ImprimirDevolucion(item_selected.getId(), false);
 						break;
 					case BORRAR_ENVIADAS: 
 						Message msg2 = new Message();
