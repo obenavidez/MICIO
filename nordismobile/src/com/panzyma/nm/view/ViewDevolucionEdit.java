@@ -1988,6 +1988,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				Intent intent = new Intent();
 				Bundle b = new Bundle();
 				int requescode = 0;
+				b.setClassLoader(com.panzyma.nm.serviceproxy.Devolucion.class.getClassLoader());
 				b.putParcelable("devolucion", devolucion);				
 				intent.putExtras(b); 
 				if (onEdit)

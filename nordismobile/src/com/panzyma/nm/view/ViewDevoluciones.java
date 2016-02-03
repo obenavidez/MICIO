@@ -558,8 +558,9 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			UserSessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
-			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code) && data != null);				
-				Devolucion dev = (Devolucion)data.getParcelableExtra("devolucion");
+			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code) && data != null);
+				Bundle bundle = intent.getExtras();
+				Devolucion dev = (Devolucion)bundle.getParcelable("devolucion");
 				establecer(dev, false);
 
 		} catch (Exception e) 

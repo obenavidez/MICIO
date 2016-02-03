@@ -775,20 +775,20 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 		this.deleted = parcel.readInt() == 1;
 		this.objProveedorID = parcel.readLong();
 		
-		Parcelable[] parcelableArray = parcel.readParcelableArray(DevolucionProductoLote.class.getClassLoader());
+		Parcelable[] parcelableArray = parcel.readParcelableArray(com.panzyma.nm.serviceproxy.DevolucionProductoLote.class.getClassLoader());
 		if (parcelableArray != null) {
-			productoLotes = Arrays.copyOf(parcelableArray, parcelableArray.length, DevolucionProductoLote[].class);		   
+			productoLotes = Arrays.copyOf(parcelableArray, parcelableArray.length, com.panzyma.nm.serviceproxy.DevolucionProductoLote[].class);		   
 		}
 	}
 	
-	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+	public static final Parcelable.Creator<com.panzyma.nm.serviceproxy.DevolucionProducto> CREATOR  = new Parcelable.Creator<com.panzyma.nm.serviceproxy.DevolucionProducto> (){
 		@Override
-		public DevolucionProducto createFromParcel(Parcel parcel) {
+		public com.panzyma.nm.serviceproxy.DevolucionProducto  createFromParcel(Parcel parcel) {
 			return new DevolucionProducto(parcel);
 		}
 
 		@Override
-		public DevolucionProducto[] newArray(int size) {
+		public com.panzyma.nm.serviceproxy.DevolucionProducto[] newArray(int size) {
 			return new DevolucionProducto[size];
 		}
 	};

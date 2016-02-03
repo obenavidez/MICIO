@@ -1618,14 +1618,14 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 		return olddata;
 	}
 
-	public static final Parcelable.Creator CREATOR  = new Parcelable.Creator() {
+	public static final Parcelable.Creator<com.panzyma.nm.serviceproxy.Devolucion> CREATOR  = new Parcelable.Creator<com.panzyma.nm.serviceproxy.Devolucion>() {
 		@Override
-		public Devolucion createFromParcel(Parcel parcel) {
+		public com.panzyma.nm.serviceproxy.Devolucion createFromParcel(Parcel parcel) {
 			return new Devolucion(parcel);
 		}
 
 		@Override
-		public Devolucion[] newArray(int size) {
+		public com.panzyma.nm.serviceproxy.Devolucion[] newArray(int size) {
 			return new Devolucion[size];
 		}
 	};
@@ -1674,9 +1674,9 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 		this.ClaveAutorizaAplicacionInmediata = parcel.readString();
 
 		Parcelable[] parcelableArray = parcel
-				.readParcelableArray(DevolucionProducto.class.getClassLoader());
+				.readParcelableArray(com.panzyma.nm.serviceproxy.DevolucionProducto.class.getClassLoader());
 		if (parcelableArray != null) {
-			ProductosDevueltos = Arrays.copyOf(parcelableArray, parcelableArray.length, DevolucionProducto[].class);			
+			ProductosDevueltos = Arrays.copyOf(parcelableArray, parcelableArray.length, com.panzyma.nm.serviceproxy.DevolucionProducto[].class);			
 		}
 
 		this.PedidoTienePromociones = (parcel.readInt() == 1);
