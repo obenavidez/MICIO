@@ -97,6 +97,7 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.view.ViewDevoluciones.FragmentActive;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.ExpandListAdapter;
+import com.panzyma.nm.view.adapter.ExpandListAdapterOriginal;
 import com.panzyma.nm.view.adapter.ExpandListChild;
 import com.panzyma.nm.view.adapter.ExpandListGroup;
 import com.panzyma.nm.view.adapter.InvokeBridge;
@@ -191,7 +192,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	}
 
 	private ExpandableListView lvdevproducto;
-	private ExpandListAdapter adapter;
+	private ExpandListAdapterOriginal adapter;
 	protected int[] positioncache = new int[2];
 	protected ExpandListGroup dvselected;
 	private ExpandListChild childselected;
@@ -608,7 +609,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					ProductoLoteDetalleViewHolder.class, false ,0));
 			try 
 			{
-				adapter = new ExpandListAdapter(context,
+				adapter = new ExpandListAdapterOriginal(context,
 						lgroups = SetStandardGroups(), layouts);
 				lvdevproducto.setAdapter(adapter);
 
@@ -872,12 +873,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	public List<ExpandListGroup> SetStandardGroups() {
 		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();
-
-		LinkedList<ExpandListChild> groupchild;
+		
 		for (DevolucionProducto dp : dev_prod) 
 		{
 			ExpandListGroup group = new ExpandListGroup();
-			groupchild = new LinkedList<ExpandListChild>();
+			LinkedList<ExpandListChild> groupchild = new LinkedList<ExpandListChild>();
 			group.setName(dp.getNombreProducto());
 			group.setObject(dp);
 			for (DevolucionProductoLote dpl : dp.getProductoLotes()) {
@@ -2053,7 +2053,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 	public void actualizarOnUINumRef(final Devolucion devolucion) {
-		runOnUiThread(new Runnable() {
+		this.runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() 
