@@ -17,10 +17,6 @@ import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.interfaces.DevolucionItem;
 import com.panzyma.nm.interfaces.Item;
-import com.panzyma.nm.view.ProductoView;
-import com.panzyma.nm.view.vCliente;
-import com.panzyma.nm.viewdialog.DialogCliente;
-import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("DefaultLocale") 

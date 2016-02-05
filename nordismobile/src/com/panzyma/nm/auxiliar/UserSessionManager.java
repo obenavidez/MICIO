@@ -1,6 +1,5 @@
 package com.panzyma.nm.auxiliar;
 
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG2;
 
 import java.text.SimpleDateFormat;
@@ -272,7 +271,7 @@ public class UserSessionManager {
 					&& !UserSessionManager.HAS_ERROR) 
 			{
 
-				((Activity) _context).runOnUiThread(new Runnable() {
+				_context.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						UserSessionManager.login(false, new String[] {
@@ -462,7 +461,7 @@ public class UserSessionManager {
 
 	public static void unlock() {
 		NMApp.getController()._notifyOutboxHandlers(0, 0, 0, 0);
-		((Activity) _context).runOnUiThread(new Runnable() {
+		_context.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				synchronized (lock) {

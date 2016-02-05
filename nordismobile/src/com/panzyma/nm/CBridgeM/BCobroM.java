@@ -3,14 +3,11 @@ package com.panzyma.nm.CBridgeM;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
-import com.panzyma.nm.auxiliar.Session;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.bluetooth.BluetoothConnection;
@@ -19,8 +16,6 @@ import com.panzyma.nm.model.ModelCobro;
 import com.panzyma.nm.serviceproxy.CCobro;
 import com.panzyma.nm.serviceproxy.CFormaPago;
 import com.panzyma.nm.serviceproxy.CobroDetalle;
-import com.panzyma.nm.serviceproxy.ReciboColector;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Message;

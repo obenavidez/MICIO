@@ -2,12 +2,8 @@ package com.panzyma.nm.view.viewholder;
 
 
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-
 import android.widget.TextView;
 
 import com.panzyma.nm.auxiliar.DateUtil;

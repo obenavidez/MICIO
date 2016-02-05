@@ -1,10 +1,6 @@
 package com.panzyma.nm.viewdialog;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.view.ViewDevolucionEdit; 
 import com.panzyma.nordismobile.R;
 
@@ -16,7 +12,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button; 
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class DialogCosteoDevolucion extends DialogFragment {

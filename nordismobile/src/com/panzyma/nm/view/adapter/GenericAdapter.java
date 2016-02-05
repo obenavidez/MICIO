@@ -14,8 +14,6 @@ import android.widget.Filterable;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.viewdialog.DialogCliente;
-import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
 import com.panzyma.nordismobile.R;
 

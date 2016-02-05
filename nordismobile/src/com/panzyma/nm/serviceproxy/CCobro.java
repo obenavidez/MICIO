@@ -1,6 +1,5 @@
 package com.panzyma.nm.serviceproxy;
 
-import java.sql.Date;
 import java.util.Hashtable;
 
 import org.ksoap2.serialization.KvmSerializable;

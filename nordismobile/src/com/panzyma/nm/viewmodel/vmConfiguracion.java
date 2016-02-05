@@ -114,7 +114,7 @@ public class vmConfiguracion{
 		 
 		if((printer==null && _printer!=null) || ((printer!=null && _printer==null)))
 			return true;
-		if (printer.obtenerMac()!=_printer.obtenerMac())
+		if (Impresora.obtenerMac()!=Impresora.obtenerMac())
 			return true;
 		
 		return false;

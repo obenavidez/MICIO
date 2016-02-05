@@ -1,14 +1,9 @@
 package com.panzyma.nm.viewdialog;
 
-import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
-import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
-import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
@@ -16,7 +11,6 @@ import com.panzyma.nm.view.ViewPedidoEdit;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.viewholder.FormaPagoViewHolder;
-import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
 
 import android.app.Dialog;

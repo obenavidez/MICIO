@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -134,7 +135,7 @@ public class DialogCliente extends Dialog  implements Handler.Callback
 	    
 	    
 	    lvcliente = (ListView) findViewById(R.id.lvcliente);
-	    lvcliente.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+	    lvcliente.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
 	    gridheader=(TextView) findViewById(R.id.ctextv_gridheader); 
 	    ViewStub stub = (ViewStub) findViewById(R.id.vsHeader);
 	    ((ViewGroup) lvcliente.getParent()).removeView(stub);

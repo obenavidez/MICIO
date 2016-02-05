@@ -4,7 +4,6 @@ import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 
 import java.util.ArrayList;
 
-import android.content.ContentResolver;
 import android.os.Message;
 import android.util.Log;
 
@@ -14,11 +13,8 @@ import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.fragments.ConsultaVentasFragment;
-import com.panzyma.nm.model.ModelCobro;
 import com.panzyma.nm.model.ModelVenta;
-import com.panzyma.nm.serviceproxy.CCobro;
 import com.panzyma.nm.serviceproxy.CDetalleFactura;
-import com.panzyma.nm.serviceproxy.Producto;
 
 public class BVentaM extends BBaseM{
  
@@ -65,7 +61,7 @@ public class BVentaM extends BBaseM{
 			loadVentas(false, false, true, 0, 0, Petition.VENTAS_DEL_MES);
 			break;
 		case OBTENER_DETALLE_FACTURA :
-			getDetallefactura( Long.parseLong(msg.obj.toString()), request.OBTENER_DETALLE_FACTURA);
+			getDetallefactura( Long.parseLong(msg.obj.toString()), Petition.OBTENER_DETALLE_FACTURA);
 			break;
 		}
 		return false;

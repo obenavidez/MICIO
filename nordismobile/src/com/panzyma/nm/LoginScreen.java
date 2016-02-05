@@ -3,7 +3,6 @@ package com.panzyma.nm;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
-import com.panzyma.nm.NMApp.lifecycle;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
@@ -11,18 +10,14 @@ import com.panzyma.nm.auxiliar.Session;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
-import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.view.ViewConfiguracion;
 import com.panzyma.nm.viewdialog.DialogLogin;
-import com.panzyma.nm.viewdialog.DialogLogin.OnButtonClickListener;
 import com.panzyma.nordismobile.R;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.YuvImage;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -167,7 +162,7 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 	}
 
 	public void initComponents() {
-		View layout = (View) findViewById(R.id.loggin);
+		View layout = findViewById(R.id.loggin);
 		signin = ((Button) layout.findViewById(R.id.btnsignin));
 		cancel = ((Button) layout.findViewById(R.id.btncancel));
 		txtusername = ((EditText) layout.findViewById(R.id.etusername));
@@ -179,6 +174,7 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 				if (isValidInformation()) {
 					try {
 						NMApp.getThreadPool().execute(new Runnable() {
+							@Override
 							public void run() 
 							{
 								if (UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim())) {

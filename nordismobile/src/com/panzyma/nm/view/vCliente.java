@@ -56,7 +56,6 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Cliente;
-import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;

@@ -1,7 +1,6 @@
 package com.panzyma.nm.view.viewholder;
 
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.serviceproxy.CCobro;
 import com.panzyma.nm.serviceproxy.CFormaPago;
 import com.panzyma.nm.view.adapter.ExpandListChild;
 import com.panzyma.nm.view.adapter.InvokeView;

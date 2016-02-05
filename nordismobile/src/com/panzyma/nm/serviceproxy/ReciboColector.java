@@ -9,8 +9,6 @@ import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
 import com.panzyma.nm.auxiliar.NMConfig;
-import com.panzyma.nm.auxiliar.NMConfig.Recibo.DetalleFormaPago;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 

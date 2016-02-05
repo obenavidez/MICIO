@@ -9,7 +9,6 @@ import com.panzyma.nm.serviceproxy.CDetalleFactura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DetallesFacturaHolder;
-import com.panzyma.nm.view.viewholder.TasaCambioViewHolder;
 import com.panzyma.nordismobile.R;
 
 import android.app.AlertDialog;
@@ -26,7 +25,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 
 @InvokeBridge(bridgeName = "BVentaM")

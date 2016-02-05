@@ -12,8 +12,6 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.auxiliar.AppDialog.DialogType;
-import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CVenta;
@@ -43,7 +41,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 @InvokeBridge(bridgeName = "BVentaM")
 public class ConsultaVentasFragment extends Fragment implements
 		Handler.Callback {

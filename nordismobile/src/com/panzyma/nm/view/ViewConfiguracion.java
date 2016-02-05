@@ -220,7 +220,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 	public void setImpresora(Impresora _impresora) {
 		this.impresora = _impresora;
 		Impresora.nuevaIntacia(impresora);
-		impresora.obtenerNombre();
+		Impresora.obtenerNombre();
 		SessionManager.setImpresora(impresora);
 	}
 

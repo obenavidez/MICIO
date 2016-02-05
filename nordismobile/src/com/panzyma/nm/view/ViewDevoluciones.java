@@ -3,6 +3,8 @@ package com.panzyma.nm.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.parceler.Parcels;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BDevolucionM;
 import com.panzyma.nm.auxiliar.AppDialog;
@@ -10,24 +12,19 @@ import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
-import com.panzyma.nm.auxiliar.NumberUtil;
 import com.panzyma.nm.auxiliar.SessionManager;
-import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
-import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
-import com.panzyma.nm.model.ModelDevolucion;
+import com.panzyma.nm.logic.PojoDevolucion;
 import com.panzyma.nm.serviceproxy.Devolucion;
-import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.view.adapter.InvokeBridge; 
 import com.panzyma.nm.viewmodel.vmDevolucion;
-import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;
 
 import static com.panzyma.nm.controller.ControllerProtocol.*;
@@ -38,6 +35,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -67,6 +65,8 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	public enum FragmentActive {
 		LIST,EDIT,FICHACLIENTE,CONSULTAR_CUENTA_COBRAR
 	};
+	
+	public static final String SERIALIZE_DEVOLUCION = "devolucion";
 
 	private static final int NUEVO_DEVOLUCION = 0;
 	private static final int ABRIR_DEVOLUCION = 1;
@@ -120,8 +120,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		
 		fragmentActive = FragmentActive.LIST;
 		
-		firstFragment = new ListaFragment<vmDevolucion>();
-		
+		firstFragment = new ListaFragment<vmDevolucion>(true);		
 		
 		//Si es Phone
 		if (findViewById(R.id.fragment_container) != null) {
@@ -559,8 +558,9 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
 			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code) && data != null);
-				Bundle bundle = intent.getExtras();
-				Devolucion dev = (Devolucion)bundle.getParcelable("devolucion");
+				Bundle bundle = data.getExtras();
+				bundle.setClassLoader(com.panzyma.nm.serviceproxy.Devolucion.class.getClassLoader());				
+				PojoDevolucion dev = (PojoDevolucion)bundle.getSerializable(SERIALIZE_DEVOLUCION);				
 				establecer(dev, false);
 
 		} catch (Exception e) 
@@ -591,19 +591,13 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			Message msg = (Message) _obj;
 			devoluciones = ((ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>() : msg.obj));
 			positioncache = 0;
-		} else if (_obj instanceof Devolucion) 
+		} else if (_obj instanceof PojoDevolucion) 
 		{
-			Devolucion d = (Devolucion) _obj;
-			vmDevolucion objDev = new vmDevolucion(
-					d.getId(), 
-					d.getNumeroCentral(), 
-					DateUtil.idateToStrYY(d.getFecha()),						 
-					d.getNombreCliente(),
-					Float.valueOf(d.getTotal()),
-					d.getCodEstado(),
-					d.getObjClienteID(),
-					d.isOffLine(),
-					d.getObjSucursalID());
+			PojoDevolucion d = (PojoDevolucion) _obj;
+			vmDevolucion objDev = new vmDevolucion(d.getId(),
+					d.getReferencia(), d.getFecha(), d.getNombreCliente(),
+					Float.valueOf(d.getTotal()), d.getCodigoEstado(),
+					d.getClienteId(), d.isOffLine(), d.getSucursalId());
 			if (ABRIR_DEVOLUCION == request_code 
 					|| (what != null 
 						&& what.length != 0 

@@ -17,14 +17,10 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 
-import android.animation.ArgbEvaluator;
 import android.os.Bundle;
 import android.os.Message;
-import android.widget.Toast;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;

@@ -25,8 +25,13 @@ public class ListaFragment<E> extends ListFragment implements Filterable,
 	private transient CustomArrayAdapter<E> mAdapter = null;
 	private int pos = 0;
 	private Activity activity;
+	private boolean especial = false;
 
 	public ListaFragment() {
+	}
+	
+	public ListaFragment(boolean especial) {
+		this.especial = especial;
 	}
 
 	public void setItems(List<E> items) {
@@ -79,7 +84,7 @@ public class ListaFragment<E> extends ListFragment implements Filterable,
 		super.onCreate(savedInstanceState);
 
 		mAdapter = new CustomArrayAdapter<E>(getActivity(), android.R.id.list,
-				items);
+				items, especial);
 		setListAdapter(mAdapter);
 
 	}

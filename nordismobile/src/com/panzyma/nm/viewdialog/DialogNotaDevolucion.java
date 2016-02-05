@@ -1,7 +1,6 @@
 package com.panzyma.nm.viewdialog;
 
 import com.panzyma.nm.view.ViewDevolucionEdit;
-import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nordismobile.R;
 
 import android.app.AlertDialog;

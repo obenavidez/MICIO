@@ -409,7 +409,7 @@ public class DialogDocumentos  extends Dialog  implements Handler.Callback  {
 			if( notasCredito.length > 0 ){
 				//SE OBTIENEN LAS NOTAS DE CREDITO SIN TOMAR EN CUENTA LAS QUE YA ESTAN AGREGADAS AL RECIBO
 				//ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);
-				ArrayList<CCNotaCredito> _notasCredito = (ArrayList<CCNotaCredito>) getArray(notasCredito, notasCredito[0]);
+				ArrayList<CCNotaCredito> _notasCredito = getArray(notasCredito, notasCredito[0]);
 				//ArrayList<CCNotaCredito> _notasCredito = new ArrayList<CCNotaCredito>(Arrays.asList(notasCredito));	
 				if( _notasCredito.size() == 0 )
 				{

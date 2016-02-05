@@ -1,15 +1,9 @@
 package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
-import java.sql.Date;
 import java.util.ArrayList;
-import java.util.List;
-
 import org.ksoap2.serialization.PropertyInfo;
-import org.ksoap2.serialization.SoapPrimitive;
-
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import static com.panzyma.nm.datastore.DatabaseProvider.*;
@@ -25,9 +19,7 @@ import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
-import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.viewmodel.vmDevolucion;
-import com.panzyma.nm.viewmodel.vmEntity;
 
 @SuppressWarnings("unused")
 public class ModelDevolucion {

@@ -1,31 +1,16 @@
 package com.panzyma.nm.viewdialog;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
-import com.panzyma.nm.auxiliar.Cobro;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.StringUtil;
-import com.panzyma.nm.auxiliar.Util;
-import com.panzyma.nm.auxiliar.ValorCatalogoUtil;
-import com.panzyma.nm.auxiliar.AppDialog.DialogType;
-import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener;
 import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelProducto;
-import com.panzyma.nm.serviceproxy.Bonificacion;
-import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
@@ -36,10 +21,7 @@ import com.panzyma.nm.serviceproxy.ReciboDetFormaPago;
 import com.panzyma.nm.serviceproxy.TasaCambio;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.view.ViewDevolucionEdit;
-import com.panzyma.nm.view.ViewPedidoEdit;
-import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.CustomAdapter;
-import com.panzyma.nm.view.adapter.ExpandListChild;
 import com.panzyma.nm.view.adapter.ExpandListGroup;
 import com.panzyma.nordismobile.R;
 
@@ -47,24 +29,19 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
-import android.widget.TextView;
 
 public class EditDevolucionProducto extends DialogFragment {
 
@@ -274,13 +251,13 @@ public class EditDevolucionProducto extends DialogFragment {
 		lyrow6 = (LayoutParams) cantidad.getLayoutParams();
 
 		productName.setLayoutParams(new TableRow.LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT));
 
 		cmbLote.setLayoutParams(new TableRow.LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT));
 
 		cantidad.setLayoutParams(new TableRow.LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT));
 
 		tblRowVencimiento = (TableRow) view
 				.findViewById(R.id.tblRowVencimiento);
@@ -324,11 +301,11 @@ public class EditDevolucionProducto extends DialogFragment {
 
 				} else {
 					productName.setLayoutParams(new TableRow.LayoutParams(
-							LayoutParams.WRAP_CONTENT,
-							LayoutParams.MATCH_PARENT));
+							android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+							android.view.ViewGroup.LayoutParams.MATCH_PARENT));
 					cmbLote.setLayoutParams(new TableRow.LayoutParams(
-							LayoutParams.WRAP_CONTENT,
-							LayoutParams.MATCH_PARENT));
+							android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+							android.view.ViewGroup.LayoutParams.MATCH_PARENT));
 					/*
 					 * cantidad.setLayoutParams( new TableRow.LayoutParams(
 					 * LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));

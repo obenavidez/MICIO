@@ -9,7 +9,6 @@ import java.util.Map;
 import org.json.JSONArray; 
 import org.json.JSONObject;
 
-import com.comunicator.AppNMComunication;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
 import com.panzyma.nm.auxiliar.NumberUtil;
@@ -1899,12 +1898,12 @@ public class DatabaseProvider extends ContentProvider
 			}
 			
 			if(devolucion.getId()==0){
-				devolucion.setId(idMovil);
-				devolucion.setReferencia(idMovil);
+				devolucion.setId(idMovil);				
 			}
 			else {
 				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
 			}
+			devolucion.setReferencia(idMovil);
 //			if(devolucion.getNumeroCentral()!=0) 
 //				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
 			

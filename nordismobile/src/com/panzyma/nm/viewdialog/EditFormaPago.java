@@ -16,7 +16,6 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.auxiliar.ValorCatalogoUtil;
-import com.panzyma.nm.auxiliar.AppDialog.OnButtonClickListener;
 import com.panzyma.nm.custom.model.SpinnerModel;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.serviceproxy.Catalogo;

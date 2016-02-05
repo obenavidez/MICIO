@@ -13,7 +13,6 @@ import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.Factura;
-import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 
 public class ModelDocumento {

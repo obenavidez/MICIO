@@ -3,13 +3,10 @@ package com.panzyma.nm.auxiliar;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR; 
 
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.ksoap2.serialization.SoapPrimitive; 
 
-import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.Controller;
@@ -17,7 +14,6 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.view.ViewConfiguracion;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;

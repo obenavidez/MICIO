@@ -13,7 +13,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;

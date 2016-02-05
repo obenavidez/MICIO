@@ -2,7 +2,6 @@ package com.panzyma.nm.logic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;
@@ -15,11 +14,8 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.Pedido;
-import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.PrecioProducto;
 import com.panzyma.nm.serviceproxy.Producto;
-import com.panzyma.nm.serviceproxy.Promociones;
-import com.panzyma.nm.view.adapter.ExpandListGroup;
 
 public class DevolucionBL 
 {
@@ -78,7 +74,7 @@ public class DevolucionBL
 	
 	public static int CalcularBonificacion(int CantidadDevolver, int CantidadOrdenada, int CantidadBonificada)
 	{
-		Double proporcion =( Double.valueOf((double)CantidadBonificada) / Double.valueOf((double)CantidadOrdenada))+new Double(1);
+		Double proporcion =( Double.valueOf(CantidadBonificada) / Double.valueOf(CantidadOrdenada))+new Double(1);
 		Double CantBonif = new Double(CantidadDevolver)-(new Double(CantidadDevolver)/proporcion) ;
 		int result;
 		if (CantBonif == 0d)
@@ -322,7 +318,7 @@ public class DevolucionBL
 		}
 		for(int a=0;a<detalledev.size();a++)
 		{
-			DevolucionProducto _dp=(DevolucionProducto)detalledev.get(a);
+			DevolucionProducto _dp=detalledev.get(a);
 			monto+=_dp.getCantidadPromocionada()*_dp.getPrecio();
 		 
 			if(!isTotalDev)

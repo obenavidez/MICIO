@@ -1,7 +1,9 @@
 package com.panzyma.nm.serviceproxy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
@@ -10,6 +12,7 @@ import org.ksoap2.serialization.SoapObject;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+
 public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 
 	/**
@@ -17,7 +20,9 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 	 */
 	private static final long serialVersionUID = -937340237731291658L;
 
-	public Devolucion() {
+	public Devolucion() {}
+	
+	public Devolucion(String a) {
 		setNombreCliente("");
 		setCodMotivo("");
 		setDescMotivo("");
@@ -1618,9 +1623,10 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 		return olddata;
 	}
 
-	public static final Parcelable.Creator<com.panzyma.nm.serviceproxy.Devolucion> CREATOR  = new Parcelable.Creator<com.panzyma.nm.serviceproxy.Devolucion>() {
+	public static final Parcelable.Creator<com.panzyma.nm.serviceproxy.Devolucion> CREATOR = new Parcelable.Creator<com.panzyma.nm.serviceproxy.Devolucion>() {
 		@Override
-		public com.panzyma.nm.serviceproxy.Devolucion createFromParcel(Parcel parcel) {
+		public com.panzyma.nm.serviceproxy.Devolucion createFromParcel(
+				Parcel parcel) {
 			return new Devolucion(parcel);
 		}
 
@@ -1674,9 +1680,12 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 		this.ClaveAutorizaAplicacionInmediata = parcel.readString();
 
 		Parcelable[] parcelableArray = parcel
-				.readParcelableArray(com.panzyma.nm.serviceproxy.DevolucionProducto.class.getClassLoader());
+				.readParcelableArray(com.panzyma.nm.serviceproxy.DevolucionProducto.class
+						.getClassLoader());
 		if (parcelableArray != null) {
-			ProductosDevueltos = Arrays.copyOf(parcelableArray, parcelableArray.length, com.panzyma.nm.serviceproxy.DevolucionProducto[].class);			
+			ProductosDevueltos = Arrays.copyOf(parcelableArray,
+					parcelableArray.length,
+					com.panzyma.nm.serviceproxy.DevolucionProducto[].class);
 		}
 
 		this.PedidoTienePromociones = (parcel.readInt() == 1);
@@ -1729,8 +1738,10 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 		parcel.writeLong(this.MontoBonifVen);
 		parcel.writeLong(this.ImpuestoVen);
 		parcel.writeLong(this.FechaEnviada);
-		parcel.writeString(this.ClaveAutorizaAplicacionInmediata);		
-		parcel.writeParcelableArray(ProductosDevueltos, flags);
+		parcel.writeString(this.ClaveAutorizaAplicacionInmediata);
+		// parcel.writeParcelableArray(ProductosDevueltos, flags);
+		List<DevolucionProducto> dev_prod = new ArrayList<DevolucionProducto>(Arrays.asList(ProductosDevueltos));
+		parcel.writeTypedList(dev_prod);		
 		parcel.writeInt((this.PedidoTienePromociones ? 1 : 0));
 		parcel.writeInt((this.PedidoYaDevuelto ? 1 : 0));
 		parcel.writeInt(this.ReferenciaNC);

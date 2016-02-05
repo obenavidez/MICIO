@@ -1,13 +1,9 @@
 package com.panzyma.nm.bluetooth;
 
 import java.util.ArrayList;
-import java.util.Set;
-
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
-import com.panzyma.nm.controller.ControllerProtocol;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -15,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 
 public class BluetoothManager 

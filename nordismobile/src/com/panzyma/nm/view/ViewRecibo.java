@@ -78,7 +78,6 @@ import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.view.adapter.InvokeBridge;
-import com.panzyma.nm.view.vCliente.FragmentActive;
 import com.panzyma.nm.viewdialog.TasaCambioFragment;
 import com.panzyma.nm.viewmodel.vmRecibo;
 import com.panzyma.nordismobile.R;
@@ -944,7 +943,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	@Override
 	protected void onResume() 
 	{
-		if(fragmentActive == fragmentActive.LIST && ( NMApp.ciclo==NMApp.lifecycle.ONPAUSE || NMApp.ciclo==NMApp.lifecycle.ONRESTART))
+		if(fragmentActive == FragmentActive.LIST && ( NMApp.ciclo==NMApp.lifecycle.ONPAUSE || NMApp.ciclo==NMApp.lifecycle.ONRESTART))
 		{
 			NMApp.getController().setView(this);
 			SessionManager.setContext(this);

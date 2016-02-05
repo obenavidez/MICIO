@@ -5,9 +5,6 @@ import com.panzyma.nm.view.adapter.ExpandListChild;
 import com.panzyma.nm.view.adapter.InvokeView;
 import com.panzyma.nordismobile.R;
 
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class ProductoLoteDetalleViewHolder 

@@ -7,11 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.panzyma.nm.auxiliar.AppDialog.OnDismissDialogListener;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -176,7 +174,7 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 		{			
 			_parent=parent;
 			ExpandListChild child = (ExpandListChild) getChild(groupPosition, childPosition);
-			SetViewHolderWLayout layout= (SetViewHolderWLayout) layouts.get(parentlayout.getParentposition()).getItem(groupPosition);
+			SetViewHolderWLayout layout= layouts.get(parentlayout.getParentposition()).getItem(groupPosition);
 			LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			view = inf.inflate(layout.getLayoutid(), null); 
 			viewHolder=(V) (layout.getViewHoder().newInstance()); 

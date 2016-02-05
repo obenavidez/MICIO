@@ -2,8 +2,6 @@ package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_SERVER;
-import static com.panzyma.nm.controller.ControllerProtocol.UPDATE_ITEM_FROM_SERVER;
 import static com.panzyma.nm.controller.ControllerProtocol.C_FACTURACLIENTE;
 import static com.panzyma.nm.controller.ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST;
@@ -42,8 +40,6 @@ import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.model.ModelCliente;
 import com.panzyma.nm.model.ModelConfiguracion;
-import com.panzyma.nm.model.ModelDocumento;
-import com.panzyma.nm.model.ModelPedido;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.model.ModelSolicitudDescuento;
 import com.panzyma.nm.model.ModelTasaCambio;

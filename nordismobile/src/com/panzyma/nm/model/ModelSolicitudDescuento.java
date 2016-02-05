@@ -8,12 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig;
-import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.datastore.DatabaseProvider.Helper;
-import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
-import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 
 public class ModelSolicitudDescuento 

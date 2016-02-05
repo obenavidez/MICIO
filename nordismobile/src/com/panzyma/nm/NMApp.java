@@ -4,7 +4,6 @@ package com.panzyma.nm;
 import com.panzyma.nm.auxiliar.AutenticationType;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.ThreadPool;
-import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.Controller;
 
 import android.app.Activity;

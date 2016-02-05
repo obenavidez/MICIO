@@ -67,7 +67,6 @@ import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.PedidoPromocion;
 import com.panzyma.nm.serviceproxy.Promociones;
-import com.panzyma.nm.view.ViewReciboEdit.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmEntity;
 import com.panzyma.nordismobile.R;

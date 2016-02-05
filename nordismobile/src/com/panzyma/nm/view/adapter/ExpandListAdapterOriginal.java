@@ -5,24 +5,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
 import com.panzyma.nordismobile.R;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.EditText;
-import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.Toast;
 
 public class ExpandListAdapterOriginal<E, V> extends BaseExpandableListAdapter {
 
@@ -112,6 +102,7 @@ public class ExpandListAdapterOriginal<E, V> extends BaseExpandableListAdapter {
 	}	
 	
  
+	@Override
 	@SuppressLint("ShowToast") @SuppressWarnings("unchecked")
 	public View getGroupView(int groupPosition, boolean isLastChild, View view,
 			ViewGroup parent) 
@@ -122,7 +113,7 @@ public class ExpandListAdapterOriginal<E, V> extends BaseExpandableListAdapter {
 			ExpandListGroup _group = (ExpandListGroup) getGroup(groupPosition);
 
 			if (view == null) { 
-				LayoutInflater inf = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				view = inf.inflate(parentlayout.getLayoutid(), null);
 				viewHolder=(V) (parentlayout.getViewHoder().newInstance()); 
 				invokeView(view,viewHolder);
@@ -141,6 +132,7 @@ public class ExpandListAdapterOriginal<E, V> extends BaseExpandableListAdapter {
 		return view;
 	}
 	 
+	@Override
 	@SuppressWarnings("unchecked")
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View view, ViewGroup parent) {
@@ -155,7 +147,7 @@ public class ExpandListAdapterOriginal<E, V> extends BaseExpandableListAdapter {
 			if (view == null) 
 			{ 
 				 
-				LayoutInflater inf = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				view = inf.inflate(childlayout.getLayoutid(), null); 
 				viewHolder=(V) (childlayout.getViewHoder().newInstance()); 
 				invokeView(view,viewHolder);    		

@@ -2,10 +2,7 @@ package com.panzyma.nm.viewdialog;
      
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
-import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.panzyma.nm.NMApp;    
@@ -15,45 +12,30 @@ import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.DescuentoProveedor;
-import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.Factura;
-import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ReciboColector;
-import com.panzyma.nm.serviceproxy.ReciboDetFactura;
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
-import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.ViewReciboEdit;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
-import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
 import com.panzyma.nm.view.viewholder.SolicitudDescuentoViewHolder;
-import com.panzyma.nm.viewdialog.DialogProducto.OnButtonClickListener;
 import com.panzyma.nordismobile.R;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog; 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;  
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Toast;
 
 @InvokeBridge(bridgeName = "BSolicitudDescuentoM")
 public class DialogSolicitudDescuento extends Dialog  implements Handler.Callback{

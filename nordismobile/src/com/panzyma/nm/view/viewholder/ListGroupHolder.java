@@ -14,6 +14,6 @@ public class ListGroupHolder {
 	public void mappingData(Object entity) {
 	
 		ExpandListGroup grp=(ExpandListGroup)entity;
-		header.setText("" + (String)grp.getName());
+		header.setText("" + grp.getName());
 	}
 }

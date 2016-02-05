@@ -1,11 +1,7 @@
 package com.panzyma.nm.viewmodel;
 
-import java.util.Date;
-
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.text.SimpleDateFormat;
 
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.interfaces.DevolucionItem; 

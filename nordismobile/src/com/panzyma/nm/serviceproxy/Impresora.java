@@ -21,7 +21,7 @@ public  class Impresora implements Parcelable
 	
 	public static Impresora nuevaIntacia(Impresora parcel)
 	{ 
- 		impresora=new Impresora(parcel.obtenerNombre(),parcel.obtenerMac(),parcel.obtenerEstado());
+ 		impresora=new Impresora(Impresora.obtenerNombre(),Impresora.obtenerMac(),Impresora.obtenerEstado());
 		return impresora;
 	}
 	
