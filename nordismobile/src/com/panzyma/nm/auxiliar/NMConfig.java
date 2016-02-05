@@ -52,7 +52,7 @@ public class NMConfig
 		public static final String GetPagosColector="GetPagosColector";
 		public static final String GetCobroColector="GetCobroColector";
 		public static final String GetDetalleFactura="GetDetalleFactura";
-		
+		public static final String GetObservacionesDevolucion="GetObservacionesDevolucion";
 	}
 	 
     
