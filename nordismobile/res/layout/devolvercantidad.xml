@@ -110,6 +110,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" 
             android:singleLine="true"   
+            android:inputType="number"
+	        android:numeric="integer"
             android:hint="0"
             
             > 

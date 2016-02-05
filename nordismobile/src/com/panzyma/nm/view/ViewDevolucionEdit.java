@@ -826,7 +826,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	public List<ExpandListGroup> SetStandardGroups() {
 		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();
 		
-		for (DevolucionProducto dp : dev_prod) 
+		for (DevolucionProducto dp : getDev_prod()) 
 		{
 			ExpandListGroup group = new ExpandListGroup();
 			LinkedList<ExpandListChild> groupchild = new LinkedList<ExpandListChild>();
@@ -1739,14 +1739,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				.setOnDialogClickListener(new DevolverDocumento.DialogListener() {
 					@Override
 					public void onDialogPositiveClick(Devolucion _dev) {
-						if (_dev != null
-								&& _dev.getProductosDevueltos() != null
-								&& _dev.getProductosDevueltos().length != 0) 
+						if (_dev != null) 
 						{
 							devolucion = _dev;
 							devolucion.setCodEstado(devolucion.getDescEstado().equals("") ? REGISTRADA : devolucion.getDescEstado());
 							pedido = devolucion.getObjPedido();
-							dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
+							if(_dev.getProductosDevueltos() != null && _dev.getProductosDevueltos().length != 0)
+								dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
 							devolucion.setOlddata(_dev); 
 							setInformacionCliente();
 							Setfieldsdevolucion();
@@ -2397,35 +2396,39 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = (List<Catalogo>) catalogos));
 				cboxmotivodev.setAdapter(adapter_motdev);
 				int index=0;
-				for(ValorCatalogo vc:catalogos.get(0).getValoresCatalogo())
+				if(devolucion.getCodMotivo()!=null)
 				{
-					if(devolucion.getCodMotivo().equals(vc.getCodigo()))
-						break;
-						index++;
-				} 
-				if(index==catalogos.get(0).getValoresCatalogo().size())
-					index=0;
-				cboxmotivodev.setSelection(index);
-				adapter_motdev.setSelectedPosition(index);
-				adapter_motdev.notifyDataSetChanged();
+					for(ValorCatalogo vc:catalogos.get(0).getValoresCatalogo())
+					{
+						if(devolucion.getCodMotivo().equals(vc.getCodigo()))
+							break;
+							index++;
+					} 
+					if(index==catalogos.get(0).getValoresCatalogo().size())
+						index=0;
+					cboxmotivodev.setSelection(index);
+					adapter_motdev.setSelectedPosition(index);
+					adapter_motdev.notifyDataSetChanged();
+				}
+				
 				
 				index=0;
-				
-				for(int i=0;i<adapter_tramite.getData().size();i++)
-				{
-					SpinnerModel item=adapter_tramite.getItem(i);				
-					if(devolucion.getTipoTramite().equals(item.getCodigo()))
-						break;
-						index++;
-				} 
-				if(index==adapter_tramite.getData().size())
-					index=0;			
-				cboxtramitedev.setSelection(index);
-				adapter_tramite.setSelectedPosition(index);
-				adapter_tramite.notifyDataSetChanged();
-				
-				index=0; 
-				
+				if(devolucion.getTipoTramite()!=null){
+					for(int i=0;i<adapter_tramite.getData().size();i++)
+					{
+						SpinnerModel item=adapter_tramite.getItem(i);				
+						if(devolucion.getTipoTramite().equals(item.getCodigo()))
+							break;
+							index++;
+					} 
+					if(index==adapter_tramite.getData().size())
+						index=0;			
+					cboxtramitedev.setSelection(index);
+					adapter_tramite.setSelectedPosition(index);
+					adapter_tramite.notifyDataSetChanged();
+					
+				}				
+				index=0; 				
 				cboxtipodev.setSelection(index=devolucion.isParcial()?2:1);
 				adapter_tipodev.setSelectedPosition(index);
 				adapter_tipodev.notifyDataSetChanged();

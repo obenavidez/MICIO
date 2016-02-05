@@ -144,7 +144,7 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 				long nopedido = 0; 	
 				devolucion.setOffLine(offline);
 				if( offline ) {
-					if(validar())
+					if(!validar())
 						return;
 					nopedido = (long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0);
 					numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
@@ -227,11 +227,11 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
    	
 	public boolean validar() {
 
-		if (tboxPedido.getText().toString().trim().length() == 0
-				&& "0".equals(tboxPedido.getText())
+		if ((tboxPedido.getText().toString().trim().length() == 0
+				|| "0".equals(tboxPedido.getText().toString()))
 				&&
-				tboxFactura.getText().toString().trim().length() == 0
-				&& "0".equals(tboxFactura.getText())) 
+				(tboxFactura.getText().toString().trim().length() == 0
+				|| "0".equals(tboxFactura.getText().toString()))) 
 		{
 			tboxPedido.setError("Debe ingresar el número del pedido o factura.");
 			tboxPedido.requestFocus();

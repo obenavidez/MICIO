@@ -50,6 +50,10 @@
 	        android:layout_below="@+id/devcombox_pedidorec"
 	        android:layout_toRightOf="@+id/dev_lblPedido"
 	        android:ems="10"
+	        android:singleLine="true" 
+	        android:inputType="number"
+	        android:numeric="integer"
+	        android:hint="0"
 	        android:layout_marginTop="5dp" />
 	
 	    <TextView
@@ -68,6 +72,10 @@
 	        android:layout_below="@+id/dev_lblPedido"
 	        android:layout_toRightOf="@+id/dev_lblFactura"
 	        android:layout_marginTop="13dp"
+	        android:inputType="number"
+	        android:numeric="integer"
+	        android:singleLine="true" 
+	        android:hint="0"
 	        android:ems="10" />
         
     </RelativeLayout>
