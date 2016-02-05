@@ -120,7 +120,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 
 
 	public Float getTotal() {
-		return total;
+		return (float) (total/100.00);
 	}
 
 

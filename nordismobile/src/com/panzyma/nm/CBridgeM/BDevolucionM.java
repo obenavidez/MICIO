@@ -238,6 +238,42 @@ public class BDevolucionM extends BBaseM
     	return value;
     }
     
+    public static void getObservacionesDevolucion(Devolucion dev) throws Exception
+    {
+    	 
+    	
+		try 
+		{
+			String credenciales="";
+			credenciales=SessionManager.getCredentials();						
+			if(credenciales!="")
+			{
+				 Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
+							0,0,"Validando devolución con el servidor central.");
+				if (!SessionManager.isPhoneConnected()) 
+	            {
+					Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,1,0,"La devolución no será enviada por falta de cobertura\r\n, esta será impresa y quedará pendiente de enviarse."); 
+	                return;
+	            }
+				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev); 
+				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,1,0,"".equals(respuesta)?"Desea Imprimir el comprobante de devolución?":respuesta); 
+
+				 
+			}else
+				Processor.notifyToView(NMApp.getController(),0,0,0,null);
+			
+		} catch (Exception e) {
+			Processor.notifyToView(NMApp.getController(),ERROR,0,0,
+					new ErrorMessage(
+							          "Error en el Modulo Devolución.",
+							          "Error en el proceso de obtener observaciones de la devolución", "\nCausa: "
+									  + e.getMessage()
+									 )
+			      );
+		}					
+				
+	}
+    
     public static void EnviarDevolucion(Devolucion dev) throws Exception
     {
     	

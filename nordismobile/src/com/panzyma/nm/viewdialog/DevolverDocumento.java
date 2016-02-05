@@ -3,22 +3,29 @@ package com.panzyma.nm.viewdialog;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;  
 import java.util.List;
+import java.util.Map;
+
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.CBridgeM.BDevolucionM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.NMNetWork; 
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.custom.model.SpinnerModel; 
 import com.panzyma.nm.model.ModelPedido;
+import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Pedido; 
+import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.view.ViewDevolucionEdit;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
@@ -124,7 +131,7 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 		
 		((ViewDevolucionEdit)parent).dismiss();
 		
-		if(offline /* (!NMNetWork.CheckConnection()) && !UserSessionManager.HAS_ERROR*/) 
+		if(offline) 
 		{
 			offline = true;
 			visible=View.VISIBLE;  
@@ -136,23 +143,31 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 			{ 
 				long nopedido = 0; 	
 				devolucion.setOffLine(offline);
-				if( offline ) {					
-					nopedido = (tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0;					
+				if( offline ) {
+					if(!validar())
+						return;
+					nopedido = (long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0);
+					numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
+					devolucion.setNumeroFacturaDevuelta(Integer.parseInt(""+numfactura));
+					devolucion.setNumeroPedidoDevuelto(Integer.parseInt(""+nopedido));
+					listener.onDialogPositiveClick(devolucion); 
+					dismiss();
 				} else 
 				{
+					if(validar())
+						return;
 					HashMap<String,Long> parametros = new HashMap<String,Long>();				
 					Message m=new Message();
 					m.what=ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO;
 					parametros.put("idsucursal",objSucursalID);
-					numpedido=(tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0;
-					numfactura=(tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0;
+					numpedido=(long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0);
+					numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
 					parametros.put("nopedido",numpedido);
 					parametros.put("nofactura",numfactura);
 					m.obj=parametros;
 					NMApp.getController().getInboxHandler().sendMessage(m);
-					pdialog=ProgressDialog.show(getActivity(), "Buscando productos lotes para el pedido",""+((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0));
+					pdialog=ProgressDialog.show(getActivity(), "Buscando productos lotes para el pedido",""+(long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0));
 				}
-				//listener.onDialogPositiveClick(devolucion, nopedido, null);
 			}
 		});
 		
@@ -187,13 +202,6 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 				
 			}});
 		
-		/*com.panzyma.nm.NMApp.getController().setView(this);
-		Message m=new Message();
-		m.what=ControllerProtocol.LOAD_PEDIDOS_FROM_LOCALHOST; 
-		Bundle data = new Bundle();
-		data.putLong("objSucursalID", objSucursalID);
-		m.setData(data);
-		NMApp.getController().getInboxHandler().sendMessage(m);*/
 		initComponent();
 		if(offline)
 			new LoadDataToUI().execute();
@@ -217,6 +225,21 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 	private CustomAdapter adapter_pedidos;
 	protected CustomDialog dlg;
    	
+	public boolean validar() {
+
+		if ((tboxPedido.getText().toString().trim().length() == 0
+				|| "0".equals(tboxPedido.getText().toString()))
+				&&
+				(tboxFactura.getText().toString().trim().length() == 0
+				|| "0".equals(tboxFactura.getText().toString()))) 
+		{
+			tboxPedido.setError("Debe ingresar el número del pedido o factura.");
+			tboxPedido.requestFocus();
+			return false;
+		}  
+		return true;
+	}
+	
    	public void initComponent()
    	{   		 
 		com.panzyma.nm.NMApp.getController().setView(this);

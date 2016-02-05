@@ -72,9 +72,22 @@ public class ModelDevolucion {
 		Object rs = NMComunicacion.InvokeMethod2(params.getParameters(),
 				NMConfig.URL, NMConfig.NAME_SPACE,
 				NMConfig.MethodName.EnviarDevolucion, Devolucion.class);
-		return (rs.toString());
+		return rs!=null?rs.toString():"";
 	}
 
+	public static String getObservacionesDevolucion(String credentials, Devolucion dev)
+			throws Exception {
+		Parameters params = new Parameters(
+				(new String[] { "Credentials", "dev" }), (new Object[] {
+						credentials, dev }), (new Type[] {
+						PropertyInfo.STRING_CLASS, dev.getClass() }));
+
+		Object rs = NMComunicacion.InvokeMethod2(params.getParameters(),
+				NMConfig.URL, NMConfig.NAME_SPACE,
+				NMConfig.MethodName.GetObservacionesDevolucion, Devolucion.class);
+		return  rs!=null?rs.toString():"";
+	}
+	
 	public static ArrayList<vmDevolucion> obtenerDevolucionesFromLocalHost(
 			ContentResolver content) {
 

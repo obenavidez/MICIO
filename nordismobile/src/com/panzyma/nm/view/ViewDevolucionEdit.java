@@ -415,11 +415,15 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					int position, long id) {
 				if (position == 0)
 					return;
+
 				if (adapter == null
 						|| (adapter != null && adapter.getGroupCount() == 0))
 					return;
 				if ("RE".equals(((SpinnerModel) cboxtramitedev
 						.getSelectedItem()).getCodigo())) {
+				if ("RE".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()))
+				{
+
 					ckboxncinmeditata.setChecked(false);
 					ckboxncinmeditata.setEnabled(false);
 					ValidarTipoTramite();
@@ -428,7 +432,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					ckboxncinmeditata.setEnabled(true);
 				}
 
-			}
+			}}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
@@ -517,8 +521,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion = new Devolucion();
 			devolucion.setCodEstado(REGISTRADA);
 			devolucion.setId(0);
-			devolucion
-					.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
+			devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 			devolucion.setNumeroCentral(0);
 			devolucion.setReferencia(0);
 			devolucion.setOffLine(true);
@@ -533,72 +536,24 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setMontoVinieta(0);
 			devolucion.setNota("");
 			devolucion.setParcial(PARTIAL);
-			devolucion.setSubtotal(costeoMontoSubTotal.longValue());
-			devolucion.setImpuesto(costeoMontoImpuesto.longValue());
+			devolucion.setSubtotal(costeoMontoSubTotal.longValue());	 
+			devolucion.setImpuesto(costeoMontoImpuesto.longValue());	
 			devolucion.setImpuestoVen(costeoMontoImpuestoVen.longValue());
 			devolucion.setMontoPromocion(costeoMontoBonificacion.longValue());
-			devolucion.setMontoPromocionVen(costeoMontoBonificacionVen
-					.longValue());
-			devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo
-					.longValue());
-			devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen
-					.longValue());
+			devolucion.setMontoPromocionVen(costeoMontoBonificacionVen.longValue());
+			devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo.longValue());
+			devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen.longValue()); 
 			devolucion.setTotal(costeoMontoTotal.longValue());
-			devolucion.setTotalVen(costeoMontoTotalVen.longValue());
+			devolucion.setTotalVen(costeoMontoTotalVen.longValue()); 
 			devolucion.setReferenciaNC(0);
-
-			devolucion
-					.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
+			
+			devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 			tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
-
-		} else {
-			ckboxvencidodev.setChecked(devolucion.isDeVencido());
-			tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
-			tbxRefNum.setText("" + devolucion.getReferencia());
-			tbxCentralNum.setText("" + devolucion.getNumeroCentral());
-			tbxNombreDelCliente.setText(devolucion.getNombreCliente());
-
-			if (devolucion.getProductosDevueltos() != null
-					&& devolucion.getProductosDevueltos().length != 0)
-				dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
-			adapter_motdev = new CustomAdapter(getContext(),
-					R.layout.spinner_rows, setListData(catalogos = catalogos));
-			cboxmotivodev.setAdapter(adapter_motdev);
-			int index = 0;
-			for (ValorCatalogo vc : catalogos.get(0).getValoresCatalogo()) {
-				if (devolucion.getCodMotivo().equals(vc.getCodigo()))
-					break;
-				index++;
-			}
-			if (index == catalogos.get(0).getValoresCatalogo().size())
-				index = 0;
-			cboxmotivodev.setSelection(index);
-			adapter_motdev.setSelectedPosition(index);
-			adapter_motdev.notifyDataSetChanged();
-
-			index = 0;
-
-			for (int i = 0; i < adapter_tramite.getData().size(); i++) {
-				SpinnerModel item = adapter_tramite.getItem(i);
-				if (devolucion.getTipoTramite().equals(item.getCodigo()))
-					break;
-				index++;
-			}
-			if (index == adapter_tramite.getData().size())
-				index = 0;
-			cboxtramitedev.setSelection(index);
-			adapter_tramite.setSelectedPosition(index);
-			adapter_tramite.notifyDataSetChanged();
-
-			index = 0;
-
-			cboxtipodev.setSelection(index = devolucion.isParcial() ? 2 : 1);
-			adapter_tipodev.setSelectedPosition(index);
-			adapter_tipodev.notifyDataSetChanged();
-
-			tbxPedidoNum.setText("" + devolucion.getNumeroPedidoDevuelto());
-			tbxNota.setText("" + devolucion.getNota());
-
+			
+		}
+		else
+		{ 
+			updateControls(devolucion);
 		}
 
 		CreateMenu();
@@ -877,8 +832,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	public List<ExpandListGroup> SetStandardGroups() {
 		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();
+		
+		for (DevolucionProducto dp : getDev_prod()) 
+		{
 
-		for (DevolucionProducto dp : dev_prod) {
 			ExpandListGroup group = new ExpandListGroup();
 			LinkedList<ExpandListChild> groupchild = new LinkedList<ExpandListChild>();
 			group.setName(dp.getNombreProducto());
@@ -1242,7 +1199,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 
-	private void enviarDevolucion() {
+	private void enviarDevolucion() 
+	{
 		if (!validarDevolucion()) {
 			return;
 		}
@@ -1252,7 +1210,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 
-	public boolean validarDevolucion() {
+	public boolean validarDevolucion() 
+	{
 
 		devolucion.setFecha(DateUtil.dt2i(new Date()));
 		if (cliente == null) {
@@ -1266,10 +1225,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							""));
 			return false;
 		}
-
-		if (cboxmotivodev == null
-				|| (cboxmotivodev != null && cboxmotivodev.getSelectedItem() == null)
-				&& !ckboxvencidodev.isChecked()) {
+		
+		if(!ckboxvencidodev.isChecked() && 
+				(cboxmotivodev == null || (cboxmotivodev != null && cboxmotivodev
+				.getSelectedItem() == null)) ||
+				(cboxmotivodev != null && "-1".equals(((SpinnerModel) cboxmotivodev.getSelectedItem()).getCodigo())))
+		{
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
 					0,
@@ -1279,34 +1240,20 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							"Debe seleccionar la causa de la devolución", ""));
 			return false;
 		}
-
-		if (((SpinnerModel) cboxmotivodev.getSelectedItem()).getCodigo()
-				.equals("" + -1)) {
+		
+		
+		if ("-1".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) 
+		{
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
 					0,
 					0,
 					new ErrorMessage(
-							"Debe seleccionar la causa de la devolución",
-							"Debe seleccionar la causa de la devolución", ""));
+							"Debe seleccionar tipo de tramite de la devolución",
+							"Debe seleccionar tipo de tramite de la devolución", ""));
 			return false;
-		}
-
-		if ("-1".equals(((SpinnerModel) cboxtramitedev.getSelectedItem())
-				.getCodigo())) {
-			com.panzyma.nm.NMApp
-					.getController()
-					.notifyOutboxHandlers(
-							ControllerProtocol.ERROR,
-							0,
-							0,
-							new ErrorMessage(
-									"Debe seleccionar tipo de tramite de la devolución",
-									"Debe seleccionar tipo de tramite de la devolución",
-									""));
-			return false;
-		}
-
+		}		
+			
 		if (devolucion.getProductosDevueltos() == null
 				|| (devolucion.getProductosDevueltos() != null && devolucion
 						.getProductosDevueltos().length == 0)) {
@@ -1396,15 +1343,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			}
 		}
 
-		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem())
-				.getCodigo())) {
+		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
 			devolucion.setTipoTramite("NC");
 		} else {
 			devolucion.setTipoTramite("RE");
 		}
 
-		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtipodev
-				.getSelectedItem()).getCodigo())) ? false : true);
+		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtipodev.getSelectedItem()).getCodigo())) ? false : true);
 		devolucion.setDeVencido(ckboxvencidodev.isChecked());
 		if (this.pedido == null || this.pedido.getId() == 0L) {
 			devolucion.setObjPedidoDevueltoID(0);
@@ -1412,34 +1357,33 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setObjPedidoDevueltoID(pedido.getId());
 			devolucion.setObjVendedorID(pedido.getObjVendedorID());
 		}
-
+		
 		devolucion.setObjClienteID(cliente.getIdCliente());
 		devolucion.setObjSucursalID(cliente.getIdSucursal());
 		devolucion.setEspecial(!"".equals(devolucion.getObservacion()));
-		if (!ckboxncinmeditata.isChecked()
-				&& "REGISTRADA".equals(devolucion.getCodEstado())) {
-			EstimarCostosDev(false);
+		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado())) 
+		{
+			EstimarCostosDev(false); 
 			CalMontoCargoVendedor();
-			CalMontoPromocion();
-			CalTotalDevolucion();
+		    CalMontoPromocion();
+		    CalTotalDevolucion();
 		}
-
+		
 		devolucion.setMontoCargoVendedor(costeoMontoCargoVen.longValue());
 		devolucion.setTotalVen(costeoMontoTotalVen.longValue());
 		devolucion.setMontoVinieta(costeoMontoVinieta.longValue());
-		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen
-				.longValue());
+		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen.longValue());
 		devolucion.setMontoPromocionVen(costeoMontoPromocionVen.longValue());
 		devolucion.setImpuestoVen(costeoMontoImpuestoVen.longValue());
-		devolucion.setMontoBonifVen(costeoMontoBonificacionVen.longValue());
-
-		devolucion.setTotal(costeoMontoTotal.longValue());
+		devolucion.setMontoBonifVen(costeoMontoBonificacionVen.longValue()); 
+		 
+		devolucion.setTotal(costeoMontoTotal.longValue()); 
 		devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo.longValue());
 		devolucion.setMontoPromocion(costeoMontoPromocion.longValue());
 		devolucion.setImpuesto(costeoMontoImpuesto.longValue());
 		devolucion.setMontoBonif(costeoMontoBonificacion.longValue());
 		devolucion.setSubtotal(costeoMontoSubTotal.longValue());
-
+		
 		return true;
 	}
 
@@ -1830,19 +1774,17 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				.setOnDialogClickListener(new DevolverDocumento.DialogListener() {
 					@Override
 					public void onDialogPositiveClick(Devolucion _dev) {
-						if (_dev != null
-								&& _dev.getProductosDevueltos() != null
-								&& _dev.getProductosDevueltos().length != 0) {
+						if (_dev != null) 
+						{
 							devolucion = _dev;
-							devolucion.setCodEstado(devolucion.getDescEstado()
-									.equals("") ? REGISTRADA : devolucion
-									.getDescEstado());
+							devolucion.setCodEstado(devolucion.getDescEstado().equals("") ? REGISTRADA : devolucion.getDescEstado());
 							pedido = devolucion.getObjPedido();
-							dev_prod = Arrays.asList(devolucion
-									.getProductosDevueltos());
-							devolucion.setOlddata(_dev);
+							if(_dev.getProductosDevueltos() != null && _dev.getProductosDevueltos().length != 0)
+								dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
+							devolucion.setOlddata(_dev); 
 							setInformacionCliente();
 							Setfieldsdevolucion();
+							updateControls(devolucion);
 							initExpandableListView(false);
 						}
 
@@ -2097,9 +2039,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		this.runOnUiThread(new Runnable() {
 
 			@Override
-			public void run() {
-				tbxRefNum.setText(devolucion.getReferencia());
-				tbxCentralNum.setText(devolucion.getNumeroCentral());
+			public void run() 
+			{ 
+				tbxRefNum.setText(""+devolucion.getReferencia()); 
+				tbxCentralNum.setText(""+devolucion.getNumeroCentral()); 
+
 			}
 		});
 	}
@@ -2127,13 +2071,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					dlg = new CustomDialog(me, "" + mensaje, false,
-							NOTIFICATION_DIALOG);
+					dlg = new CustomDialog(me, ""+mensaje, false, NOTIFICATION_DIALOG);
 					dlg.show();
 				}
 			});
 		}
 	}
+
 
 	public void setDev_prod(ArrayList<DevolucionProducto> arrayList) {
 		this.dev_prod = arrayList;
@@ -2175,13 +2119,18 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setTipoTramite(((SpinnerModel) cboxtramitedev
 					.getSelectedItem()).getCodigo());
 
-		if (cboxmotivodev.getSelectedItemPosition() > 0) {
+		if (cboxmotivodev!=null && cboxmotivodev.getSelectedItem()!=null && cboxmotivodev.getSelectedItemPosition() > 0) {
 			devolucion.setDescMotivo(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getDescripcion());
 			devolucion.setCodMotivo(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getCodigo());
 			devolucion.setObjMotivoID(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getId());
+		}else
+		{  
+			devolucion.setDescMotivo(null);
+			devolucion.setCodMotivo(null);
+			devolucion.setObjMotivoID(0);  
 		}
 		devolucion.setObjClienteID(cliente.getIdCliente());
 		devolucion.setObjSucursalID(cliente.getIdSucursal());
@@ -2207,8 +2156,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setDescEstado(catalogo.getCodigo());
 			devolucion.setObjCausaEstadoID(catalogo2.getId());
 			devolucion.setDescCausaEstado(catalogo2.getDescripcion());
+
 			if (devolucion.getObservacion() != null
 					&& !devolucion.getObservacion().equals(""))
+
+			if(devolucion.getObservacion()!=null && !"".equals(devolucion.getObservacion()))
+
 				devolucion.setEspecial(true);
 			if (ckboxncinmeditata.isChecked() && devolucion.isOffLine()) {
 				devolucion.setDescEstado(this.getSharedPreferences(
@@ -2473,5 +2426,70 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			dlg.dismiss();
 		if (pd != null)
 			pd.dismiss();
+	}
+	
+	public void updateControls(final Devolucion devolucion)
+	{
+		runOnUiThread(new Runnable() 
+		{
+			
+			@Override
+			public void run() 
+			{
+				ckboxvencidodev.setChecked(devolucion.isDeVencido());
+				tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
+				tbxRefNum.setText(""+devolucion.getReferencia());
+				tbxCentralNum.setText(""+devolucion.getNumeroCentral());
+				tbxNombreDelCliente.setText(devolucion.getNombreCliente());
+				
+				
+				if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0)
+					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
+				adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = (List<Catalogo>) catalogos));
+				cboxmotivodev.setAdapter(adapter_motdev);
+				int index=0;
+				if(devolucion.getCodMotivo()!=null)
+				{
+					for(ValorCatalogo vc:catalogos.get(0).getValoresCatalogo())
+					{
+						if(devolucion.getCodMotivo().equals(vc.getCodigo()))
+							break;
+							index++;
+					} 
+					if(index==catalogos.get(0).getValoresCatalogo().size())
+						index=0;
+					cboxmotivodev.setSelection(index);
+					adapter_motdev.setSelectedPosition(index);
+					adapter_motdev.notifyDataSetChanged();
+				}
+				
+				
+				index=0;
+				if(devolucion.getTipoTramite()!=null){
+					for(int i=0;i<adapter_tramite.getData().size();i++)
+					{
+						SpinnerModel item=adapter_tramite.getItem(i);				
+						if(devolucion.getTipoTramite().equals(item.getCodigo()))
+							break;
+							index++;
+					} 
+					if(index==adapter_tramite.getData().size())
+						index=0;			
+					cboxtramitedev.setSelection(index);
+					adapter_tramite.setSelectedPosition(index);
+					adapter_tramite.notifyDataSetChanged();
+					
+				}				
+				index=0; 				
+				cboxtipodev.setSelection(index=devolucion.isParcial()?2:1);
+				adapter_tipodev.setSelectedPosition(index);
+				adapter_tipodev.notifyDataSetChanged();
+				
+				tbxPedidoNum.setText(""+devolucion.getNumeroPedidoDevuelto());
+				tbxNota.setText(""+devolucion.getNota());
+				
+			}
+		});
+		
 	}
 }
