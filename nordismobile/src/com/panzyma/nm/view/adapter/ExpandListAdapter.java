@@ -294,6 +294,8 @@ public class ExpandListAdapter<E, V> extends BaseExpandableListAdapter {
 	}
 	
 	public void updateData(List<E> groups) {
+		if(this.groups != null && this.groups.size() > 0)
+			this.groups.clear();
 	    this.groups = groups;
 	}
 
