@@ -165,6 +165,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private TextView tbxNombreDelCliente;
 	private EditText tbxPedidoNum;
 	private CheckBox ckboxvencidodev;
+	private TextView labelMotivo;
 	private Spinner cboxmotivodev;
 	private Spinner cboxtramitedev;
 	private Spinner cboxtipodev;
@@ -320,6 +321,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		tbxCentralNum=(EditText) findViewById(R.id.devtextv_detallenumero);
 		ckboxncinmeditata = (CheckBox) findViewById(R.id.devchk_ncinmediata);
 		cboxmotivodev = (Spinner) findViewById(R.id.devcombox_motivo);
+		labelMotivo= (TextView) findViewById(R.id.devlbl_motivo);
+		
 		cboxtramitedev = (Spinner) findViewById(R.id.devcombox_tramite);
 		cboxtipodev = (Spinner) findViewById(R.id.devcombox_tipo);
 		tbxNombreDelCliente = (TextView) findViewById(R.id.devtextv_detallecliente);
@@ -335,21 +338,44 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 		adapter_tipodev = new CustomAdapter(getContext(),R.layout.spinner_rows, setListData(hmtipodev));
 		cboxtipodev.setAdapter(adapter_tipodev);
+		cboxmotivodev.setVisibility(View.GONE);
+		labelMotivo.setVisibility(View.GONE);
+		ckboxvencidodev
+		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) 
+			{			  					
+					cboxmotivodev.setVisibility(isChecked?View.GONE:View.VISIBLE);
+					labelMotivo.setVisibility(isChecked?View.GONE:View.VISIBLE);
+					cboxmotivodev.setSelection(isChecked?0:cboxmotivodev.getSelectedItemPosition());
+					adapter_motdev.setSelectedPosition(isChecked?0:cboxmotivodev.getSelectedItemPosition());
+					devolucion.setDescMotivo(isChecked?devolucion.getDescMotivo():null);
+					devolucion.setCodMotivo(isChecked?devolucion.getCodMotivo():null);
+					devolucion.setObjMotivoID(isChecked?devolucion.getObjMotivoID():0); 
+				    devolucion.setDeVencido(isChecked);
+				    cboxtramitedev.setEnabled(true);
+			}
+
+		});
+		
+		cboxmotivodev.setVisibility(ckboxvencidodev!=null && ckboxvencidodev.isChecked()?View.GONE:View.VISIBLE);
+		labelMotivo.setVisibility(ckboxvencidodev!=null && ckboxvencidodev.isChecked()?View.GONE:View.VISIBLE);
+		
 		cboxmotivodev.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) 
 			{
-				if (position == 0 || ckboxvencidodev.isChecked())
+				if (position == 0)
+				{
+					cboxtramitedev.setSelection(0);
+					adapter_tramite.setSelectedPosition(0);
+					cboxtramitedev.setEnabled(false); 
 					return;
-				if (!"DAÑADO".equals(((ValorCatalogo) adapter_motdev.getItem(
-						position).getObj()).getCodigo())) {
-					cboxtramitedev.setSelection(2);
-					adapter_tramite.setSelectedPosition(2);
-					cboxtramitedev.setEnabled(false);
-				} else
+				}
 
 				if (!"DAÑADO".equals(((ValorCatalogo) adapter_motdev.getItem(
 						position).getObj()).getCodigo())) 
@@ -360,15 +386,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 					if (cboxmotivodev.getSelectedItemPosition() > 0) 
 					{
-						devolucion.setDescMotivo(((SpinnerModel) cboxmotivodev
-								.getSelectedItem()).getDescripcion());
-						devolucion.setCodMotivo(((SpinnerModel) cboxmotivodev
-								.getSelectedItem()).getCodigo());
-						devolucion.setObjMotivoID(((SpinnerModel) cboxmotivodev
-								.getSelectedItem()).getId());
-					} else {
-						devolucion.setDescMotivo(EMPTY);
-						devolucion.setCodMotivo(EMPTY);
+						devolucion.setDescMotivo(((SpinnerModel) cboxmotivodev.getSelectedItem()).getDescripcion());
+						devolucion.setCodMotivo(((SpinnerModel) cboxmotivodev.getSelectedItem()).getCodigo());
+						devolucion.setObjMotivoID(((SpinnerModel) cboxmotivodev.getSelectedItem()).getId());
+					} else 
+					{
+						devolucion.setDescMotivo(null);
+						devolucion.setCodMotivo(null);
 						devolucion.setObjMotivoID(0);
 					}
 
@@ -391,17 +415,16 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					return;
 				if (adapter == null || (adapter != null && adapter.getGroupCount() == 0))
 					return;
-				if ("RE".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()) && ckboxncinmeditata.isChecked())
+				if ("RE".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()))
+				{
 					ckboxncinmeditata.setChecked(false);
-				if ("RE".equals(((Map.Entry<String, String>) adapter_tramite.getItem(position).getObj()).getKey()))
+					ckboxncinmeditata.setEnabled(false);
 					ValidarTipoTramite();
-
-				if (REPOSICIONCODE.equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()) && ckboxncinmeditata.isChecked())
-					ckboxncinmeditata.setChecked(false);
-				if (REPOSICIONCODE.equals(((Map.Entry<String, String>) adapter_tramite.getItem(position).getObj()).getKey()))
-					ValidarTipoTramite();
-
-				devolucion.setTipoTramite(((SpinnerModel) cboxmotivodev.getSelectedItem()).getCodigo());
+				}else if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()))
+				{
+					ckboxncinmeditata.setEnabled(true); 
+				} 
+				
 
 			}
 
@@ -422,42 +445,17 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						if (adapter == null
 								|| (adapter != null && adapter.getGroupCount() == 0))
 							return;
-						if (REPOSICIONCODE
-								.equals(((SpinnerModel) cboxtramitedev
-										.getSelectedItem()).getCodigo())
-								&& ckboxncinmeditata.isChecked())
-							ckboxncinmeditata.setChecked(false);
-						if (TOTALCODE.equals(((SpinnerModel) cboxtipodev
-								.getSelectedItem()).getCodigo())
-								&& pedido != null)
+						if (REPOSICIONCODE.equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()))
 							ckboxncinmeditata.setChecked(false);
 						EstimarCostosDev(true);
 					}
 
 				});
 
-		ckboxncinmeditata
-				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) {
-
-						if (adapter == null
-								|| (adapter != null && adapter.getGroupCount() == 0))
-							return;
-						if ("RE".equals(((SpinnerModel) cboxtramitedev
-								.getSelectedItem()).getCodigo())
-								&& ckboxncinmeditata.isChecked())
-							ckboxncinmeditata.setChecked(false);
-						if ("TT".equals(((SpinnerModel) cboxtipodev
-								.getSelectedItem()).getCodigo())
-								&& pedido != null)
-							ckboxncinmeditata.setChecked(false);
-						EstimarCostosDev(true);
-					}
-				});
-
+		ckboxncinmeditata.setEnabled(false);
+		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()))
+			ckboxncinmeditata.setEnabled(true);
+		
 		cboxtipodev.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -483,13 +481,14 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					ValidarTipoTramite();
 					if ("TT".equals(((Map.Entry<String, String>) adapter_tipodev
 							.getItem(position).getObj()).getKey())
-							&& pedido != null)
+							&& pedido != null){
 						ckboxncinmeditata.setChecked(false);
-					if (TOTALCODE
-							.equals(((Map.Entry<String, String>) adapter_tipodev
-									.getItem(position).getObj()).getKey())
-							&& pedido != null) {
+						ckboxncinmeditata.setEnabled(false);
+					}
+						
+					if (TOTALCODE .equals(((Map.Entry<String, String>) adapter_tipodev.getItem(position).getObj()).getKey()) ) {
 						ckboxncinmeditata.setChecked(false);
+						ckboxncinmeditata.setEnabled(false);
 						PARTIAL = false;
 						devolucion.setParcial(PARTIAL);
 					} else {
