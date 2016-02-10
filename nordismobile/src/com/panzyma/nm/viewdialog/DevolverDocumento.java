@@ -337,7 +337,9 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 		@Override
 		protected void onPostExecute(List<Factura> facturas) 
 		{
-			facturas.add(0, new Factura(-1,"",""));
+			if(adapter_pedidos != null)
+				adapter_pedidos.getData().clear();			
+			facturas.add(0, new Factura(-1,"",""));			
 			adapter_pedidos = new CustomAdapter($this.getActivity(),
 					R.layout.spinner_rows, setListData(facturas));
 			cboxreciborec.setAdapter(adapter_pedidos);  

@@ -1782,7 +1782,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							pedido = devolucion.getObjPedido();
 							if(_dev.getProductosDevueltos() != null && _dev.getProductosDevueltos().length != 0)
 								dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
-							devolucion.setOlddata(_dev); 
+							//devolucion.setOlddata(_dev); 
 							setInformacionCliente();
 							Setfieldsdevolucion();
 							updateControls(devolucion);
@@ -2446,8 +2446,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				
 				if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0)
 					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
-				adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = (List<Catalogo>) catalogos));
-				cboxmotivodev.setAdapter(adapter_motdev);
+				if(adapter_motdev == null){
+					adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = (List<Catalogo>) catalogos));
+					cboxmotivodev.setAdapter(adapter_motdev);
+				} else {
+					adapter_motdev.notifyDataSetChanged();
+				}					
 				int index=0;
 				if(devolucion.getCodMotivo()!=null)
 				{

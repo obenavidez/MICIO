@@ -783,7 +783,11 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 	 *            the olddata to set
 	 */
 	public void setOlddata(Devolucion olddata) {
-		this.olddata = olddata;
+		try {
+			this.olddata = (Devolucion) olddata.clone();
+		} catch (CloneNotSupportedException e) {			
+			e.printStackTrace();
+		}
 	}
 
 	/**
