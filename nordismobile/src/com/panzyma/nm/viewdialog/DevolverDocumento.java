@@ -143,11 +143,22 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 			{ 
 				long nopedido = 0; 	
 				devolucion.setOffLine(offline);
+				String numeroFactura = (tboxFactura.getText() != null ? tboxFactura
+						.getText().toString() : "");
+				if (!"".equals(numeroFactura.trim())) {
+					if(numeroFactura.indexOf("-") != -1) {
+						String parts[] = numeroFactura.split("-"); 
+						numeroFactura = parts[parts.length-1];
+					}
+				} else {
+					numeroFactura = "0";
+				}				
+				numfactura = Long.valueOf(numeroFactura); 
 				if( offline ) {
 					if(!validar())
 						return;
 					nopedido = (long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0);
-					numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
+					//numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
 					devolucion.setNumeroFacturaDevuelta(Integer.parseInt(""+numfactura));
 					devolucion.setNumeroPedidoDevuelto(Integer.parseInt(""+nopedido));
 					listener.onDialogPositiveClick(devolucion); 
@@ -161,7 +172,7 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 					m.what=ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO;
 					parametros.put("idsucursal",objSucursalID);
 					numpedido=(long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0);
-					numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
+					//numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
 					parametros.put("nopedido",numpedido);
 					parametros.put("nofactura",numfactura);
 					m.obj=parametros;

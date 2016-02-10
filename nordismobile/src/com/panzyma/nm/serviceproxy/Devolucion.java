@@ -1616,7 +1616,7 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 	}
 
 	public void setOldData(Devolucion _devolucion) {
-		this.olddata = new Devolucion(_devolucion);
+		this.olddata = new Devolucion(this);
 	}
 
 	public Devolucion getOldData() {

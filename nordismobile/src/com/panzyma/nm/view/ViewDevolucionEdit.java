@@ -1777,7 +1777,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						if (_dev != null) 
 						{
 							devolucion = _dev;
-							devolucion.setCodEstado(devolucion.getDescEstado().equals("") ? REGISTRADA : devolucion.getDescEstado());
+							devolucion.setDescEstado((devolucion.getDescEstado() == null ? REGISTRADA : devolucion.getDescEstado() ));
+							devolucion.setCodEstado( "".equals(devolucion.getDescEstado()) ? REGISTRADA : devolucion.getDescEstado());
 							pedido = devolucion.getObjPedido();
 							if(_dev.getProductosDevueltos() != null && _dev.getProductosDevueltos().length != 0)
 								dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
@@ -1902,8 +1903,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		dismiss();
 		switch (msg.what) {
 		case ControllerProtocol.C_DATA:
-			if (msg.arg1 == ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST)
-				;
+			if (msg.arg1 == ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST)				
 			{
 				vmDevolucionEdit objdev = (vmDevolucionEdit) msg.obj;
 				devolucion = objdev.getDevolucion();
@@ -1918,6 +1918,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			break;
 
 		case ControllerProtocol.OBTENERVALORCATALOGO:
+			devolucion.setOlddata(devolucion);
 			adapter_motdev = new CustomAdapter(getContext(),
 					R.layout.spinner_rows,
 					setListData(catalogos = (ArrayList<Catalogo>) msg.obj));
@@ -2414,7 +2415,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			if (!onEdit)
 				com.panzyma.nm.NMApp.getController()._notifyOutboxHandlers(
 						ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR, 0, 0,
-						pedido);
+						devolucion);
 			else
 				finish();
 		}
