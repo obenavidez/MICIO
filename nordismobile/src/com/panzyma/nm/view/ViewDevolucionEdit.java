@@ -14,9 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import org.parceler.Parcels;
+import java.util.Map; 
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;

@@ -1,9 +1,7 @@
 package com.panzyma.nm.view;
  
 import java.util.ArrayList;
-import java.util.List;
-
-import org.parceler.Parcels;
+import java.util.List; 
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BDevolucionM;

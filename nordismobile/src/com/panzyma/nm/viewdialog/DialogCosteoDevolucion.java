@@ -74,26 +74,26 @@ public class DialogCosteoDevolucion extends DialogFragment {
 		txtVendedor_vinetas = (TextView) view.findViewById(R.id.cxctext_vinievend);
 		txtCargo_al_vendedor = (TextView) view.findViewById(R.id.cxctext_cargvend);
 		///////
-		txtSistema_SubTotal.setText(StringUtil.formatReal(this.parent.getCosteoMontoSubTotal().doubleValue()));
-		txtVendedor_SubTotal.setText(StringUtil.formatReal(this.parent.getCosteoMontoSubTotal().doubleValue()));
+		txtSistema_SubTotal.setText(StringUtil.formatReal(this.parent.getCosteoMontoSubTotal().doubleValue()/100.00));
+		txtVendedor_SubTotal.setText(StringUtil.formatReal(this.parent.getCosteoMontoSubTotal().doubleValue()/100.00));
 		
-		txtSistema_Bonificacion.setText(StringUtil.formatReal(this.parent.getCosteoMontoBonificacion().doubleValue()));
-		txtVendedor_Bonificacion.setText(StringUtil.formatReal(this.parent.getCosteoMontoBonificacionVen().doubleValue()));
+		txtSistema_Bonificacion.setText(StringUtil.formatReal(this.parent.getCosteoMontoBonificacion().doubleValue()/100.00));
+		txtVendedor_Bonificacion.setText(StringUtil.formatReal(this.parent.getCosteoMontoBonificacionVen().doubleValue()/100.00));
 		
-		txtSistema_Impuesto.setText(StringUtil.formatReal(this.parent.getCosteoMontoImpuesto().doubleValue()));
-		txtVendedor_Impuesto.setText(StringUtil.formatReal(this.parent.getCosteoMontoImpuestoVen().doubleValue()));
+		txtSistema_Impuesto.setText(StringUtil.formatReal(this.parent.getCosteoMontoImpuesto().doubleValue()/100.00));
+		txtVendedor_Impuesto.setText(StringUtil.formatReal(this.parent.getCosteoMontoImpuestoVen().doubleValue()/100.00));
 		
-		txtSistema_Promocion.setText(StringUtil.formatReal(this.parent.getCosteoMontoPromocion().doubleValue()));
-		txtVendedor_Promocion.setText(StringUtil.formatReal(this.parent.getCosteoMontoPromocionVen().doubleValue()));
+		txtSistema_Promocion.setText(StringUtil.formatReal(this.parent.getCosteoMontoPromocion().doubleValue()/100.00));
+		txtVendedor_Promocion.setText(StringUtil.formatReal(this.parent.getCosteoMontoPromocionVen().doubleValue()/100.00));
 		
-		txtSistema_CargoAdm.setText(StringUtil.formatReal(this.parent.getCosteoMontoCargoAdministrativo().doubleValue()));
-		txtVendedor_CargoAdm.setText(StringUtil.formatReal(this.parent.getCosteoMontoCargoAdministrativoVen().doubleValue()));
+		txtSistema_CargoAdm.setText(StringUtil.formatReal(this.parent.getCosteoMontoCargoAdministrativo().doubleValue()/100.00));
+		txtVendedor_CargoAdm.setText(StringUtil.formatReal(this.parent.getCosteoMontoCargoAdministrativoVen().doubleValue()/100.00));
 		
-		txtSistema_Total.setText(StringUtil.formatReal(this.parent.getCosteoMontoTotal().doubleValue()));
-		txtVendedor_Total.setText(StringUtil.formatReal(this.parent.getCosteoMontoTotalVen().doubleValue()));
+		txtSistema_Total.setText(StringUtil.formatReal(this.parent.getCosteoMontoTotal().doubleValue()/100.00));
+		txtVendedor_Total.setText(StringUtil.formatReal(this.parent.getCosteoMontoTotalVen().doubleValue()/100.00));
 		
-		txtVendedor_vinetas.setText(StringUtil.formatReal(this.parent.getCosteoMontoVinieta().doubleValue()));
-		txtCargo_al_vendedor.setText(StringUtil.formatReal(this.parent.getCosteoMontoCargoVen().doubleValue()));		
+		txtVendedor_vinetas.setText(StringUtil.formatReal(this.parent.getCosteoMontoVinieta().doubleValue()/100.00));
+		txtCargo_al_vendedor.setText(StringUtil.formatReal(this.parent.getCosteoMontoCargoVen().doubleValue()/100.00));		
 	}
 	
 	public static DialogCosteoDevolucion newInstance(

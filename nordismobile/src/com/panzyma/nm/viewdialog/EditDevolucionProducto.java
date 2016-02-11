@@ -476,8 +476,8 @@ public class EditDevolucionProducto extends DialogFragment {
 		} else {
 			me.getDev_prod().set(obj.getIndex(), dp);
 		}
-		me.refreshExpandable();
-		me.initExpandableListView(false);
+	    //me.refreshExpandable();
+		me.initExpandableListView(true);
 
 	}
 
@@ -522,10 +522,12 @@ public class EditDevolucionProducto extends DialogFragment {
 
 	private boolean validarDatos() throws InterruptedException {
 		// SI ESTAMOS EN OTRO LOTE
-		if ((lotes.size() - 1) == cmbLote.getSelectedItemPosition()) {
+		if ((lotes.size() - 1) == cmbLote.getSelectedItemPosition() || cmbLote.getSelectedItemPosition()>0) 
+		{
 			// VERIFICAR SI SE DIGITO UN NUMERO DE LOTE Y FECHA DE VENCIMIENTO
 			if (numeroLote.getText().toString().trim().length() == 0) {
 				numeroLote.setError("Debe indicar el número de lote");
+
 				return false;
 			}
 			if (anioVencimiento.getText().toString().trim().length() == 0) {
