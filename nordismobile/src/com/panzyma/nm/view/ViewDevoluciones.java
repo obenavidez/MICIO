@@ -307,7 +307,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 					case ENVIAR_DEVOLUCION :
 						if (item_selected == null) {
 							drawerLayout.closeDrawers();
-							AppDialog.showMessage(NMApp.getContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							AppDialog.showMessage(vd, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
 						
@@ -315,7 +315,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 					case IMPRIMIR_COMPROBANTE:
 						if (item_selected == null) {
 							drawerLayout.closeDrawers();
-							AppDialog.showMessage(NMApp.getContext(), "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							AppDialog.showMessage(vd, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
 						BDevolucionM.ImprimirDevolucion(item_selected.getId(), false);
