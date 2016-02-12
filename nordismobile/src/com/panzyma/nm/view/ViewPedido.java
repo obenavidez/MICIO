@@ -269,15 +269,32 @@ public class ViewPedido extends ActionBarActivity implements
 	
 						break;
 					case ABRIR_PEDIDO:
+						if(pedido_selected==null)
+						{
+							ShowNoRecords();
+							return;
+						}
+						
 						abrirPedido(true);
 						break;
 					case ENVIAR_PEDIDO:
+						if(pedido_selected==null)
+						{
+							ShowNoRecords();
+							return;
+						}
 						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 			            {
 							enviarPedido(true);
 			            }
 						break;
-					case REFRESCAR_PEDIDO:		
+					case REFRESCAR_PEDIDO:	
+						if(pedido_selected==null)
+						{
+							ShowNoRecords();
+							return;
+						}
+						
 						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 			            {
 							msg = new Message();
@@ -319,6 +336,12 @@ public class ViewPedido extends ActionBarActivity implements
 	
 					case CUENTAS_POR_COBRAR:
 						
+						if(pedido_selected==null)
+						{
+							ShowNoRecords();
+							return;
+						}
+						
 						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 			            {
 							mandarObtenerPedido(CUENTAS_POR_COBRAR);
@@ -327,6 +350,11 @@ public class ViewPedido extends ActionBarActivity implements
 						//mostrarCuentasPorCobrar(true);
 						break;
 					case CONSULTA_VENTAS:
+						if(pedido_selected==null)
+						{
+							ShowNoRecords();
+							return;
+						}
 						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 			            {
 							fragmentActive = FragmentActive.CONSULTA_VENTAS;
