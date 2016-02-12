@@ -340,15 +340,5 @@ public class CustomDialog extends Dialog implements OnDismissListener
 		
 	}	 
     
-    @Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) 
-	{ 
-		if (keyCode == KeyEvent.KEYCODE_BACK) 
-		{  
-			NMApp.getThreadPool().stopRequestAllWorkers();
-			return true;
-		}
- 
-		return super.onKeyUp(keyCode, event);
-	}
+     
 }

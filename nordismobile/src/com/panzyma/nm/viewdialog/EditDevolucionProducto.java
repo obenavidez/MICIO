@@ -432,7 +432,7 @@ public class EditDevolucionProducto extends DialogFragment {
 		/**************************************************************************************************************************************************************/
 		DevolucionProductoLote dvl = new DevolucionProductoLote();
 		dvl.setCantidadDespachada(0);
-		if ((lotes.size() - 1) > cmbLote.getSelectedItemPosition()) {
+		if (cmbLote.getSelectedItemPosition()>1) {
 			Lote lote = (Lote) lotesAdapter.getItem(
 					cmbLote.getSelectedItemPosition()).getObj();
 			numeroLote.setText(lote.getNumeroLote());

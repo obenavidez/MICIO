@@ -1225,9 +1225,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		}
 		
 		if(!ckboxvencidodev.isChecked() && 
-				(cboxmotivodev == null || (cboxmotivodev != null && cboxmotivodev
+				((cboxmotivodev == null || (cboxmotivodev != null && cboxmotivodev
 				.getSelectedItem() == null)) ||
-				(cboxmotivodev != null && "-1".equals(((SpinnerModel) cboxmotivodev.getSelectedItem()).getCodigo())))
+				(cboxmotivodev != null && "-1".equals(((SpinnerModel) cboxmotivodev.getSelectedItem()).getCodigo()))))
 		{
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
