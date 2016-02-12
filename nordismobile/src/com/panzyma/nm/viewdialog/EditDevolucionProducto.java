@@ -286,7 +286,8 @@ public class EditDevolucionProducto extends DialogFragment {
 			@Override
 			public void onItemSelected(AdapterView<?> parentView,
 					View selectedItemView, int position, long id) {
-				if (position == (lotes.size() - 1)) {
+//				if (position == (lotes.size() - 1)) {
+				if (position == 1) {
 					Lote _formaPago = (Lote) lotesAdapter.getItem(position)
 							.getObj();
 					tblRowNumeroLote.setVisibility(View.VISIBLE);
@@ -373,6 +374,8 @@ public class EditDevolucionProducto extends DialogFragment {
 
 	private List<Lote> lotesSinRepetir(List<Lote> lotes) {
 		List<Lote> lts = new ArrayList();
+		lts.add(0,new Lote(0, "OTRO", 0));
+		lts.add(1,new Lote(-1, "OTRO", 0));
 		if (this.devolucionProducto != null) {
 			if (lotesInDevolution.size() > 0) {
 				for (Lote lote : lotes) {
@@ -382,7 +385,7 @@ public class EditDevolucionProducto extends DialogFragment {
 				}
 			}
 		} else {
-			lts = lotes;
+			lts.addAll(2, lotes) ;
 		}
 		return lts;
 	}
@@ -390,7 +393,7 @@ public class EditDevolucionProducto extends DialogFragment {
 	private void establecer(List<Lote> ltes) {
 		lotes = lotesSinRepetir(ltes);
 		// lotes = ltes;
-		lotes.add(lotes.size(), new Lote(-1, "OTRO", 0));
+		//lotes.add(lotes.size(), new Lote(-1, "OTRO", 0));
 		lotesAdapter = new CustomAdapter(getActivity(), R.layout.spinner_rows,
 				setListData(lotes));
 		cmbLote.setAdapter(lotesAdapter);
@@ -524,17 +527,22 @@ public class EditDevolucionProducto extends DialogFragment {
 		// SI ESTAMOS EN OTRO LOTE
 		if ((lotes.size() - 1) == cmbLote.getSelectedItemPosition() || cmbLote.getSelectedItemPosition()>0) 
 		{
-			// VERIFICAR SI SE DIGITO UN NUMERO DE LOTE Y FECHA DE VENCIMIENTO
-			if (numeroLote.getText().toString().trim().length() == 0) {
-				numeroLote.setError("Debe indicar el número de lote");
-
-				return false;
-			}
-			if (anioVencimiento.getText().toString().trim().length() == 0) {
-				anioVencimiento.setError("Debe indicar el año de vencimiento");
-				return false;
-			}
+			if(((SpinnerModel)cmbLote.getSelectedItem()).getId() == -1){
+				
+				if (numeroLote.getText().toString().trim().length() == 0) {
+					numeroLote.setError("Debe indicar el número de lote");
+					return false;
+				}
+				
+				if (anioVencimiento.getText().toString().trim().length() == 0) {
+					anioVencimiento.setError("Debe indicar el año de vencimiento");
+					return false;
+				}
+			}		
 		}
+		if(cmbLote.getSelectedItemPosition() == 0) 
+				return false;
+		
 		if (cantidad.getText().toString().trim().length() == 0) {
 			cantidad.setError("Debe indicar la cantidad a devolver");
 			return false;
