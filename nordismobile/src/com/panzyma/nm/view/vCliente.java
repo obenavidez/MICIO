@@ -624,6 +624,7 @@ public class vCliente extends ActionBarActivity implements
 	}
 
 	private void FINISH_ACTIVITY() {
+		NMApp.getThreadPool().stopRequestAllWorkers();
 		ocultarDialogos();
 		Log.d(TAG, "Activity quitting");
 		if (pDialog != null)

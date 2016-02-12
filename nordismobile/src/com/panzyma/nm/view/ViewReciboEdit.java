@@ -3036,6 +3036,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 
 	private void FINISH_ACTIVITY() {
 //		recibo.setNotas(tbxNotas.getText().toString());
+		NMApp.getThreadPool().stopRequestAllWorkers();
 		if (recibo.hasModified(recibo.getOldData())) 
 		{
 

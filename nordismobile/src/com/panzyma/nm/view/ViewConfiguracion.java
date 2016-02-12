@@ -603,7 +603,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 	}
 
 	private void FINISH_ACTIVITY() {
-
+		NMApp.getThreadPool().stopRequestAllWorkers();
 		ocultarDialogos();
 		Log.d(TAG, "Activity quitting");
 		if (configuracion.hasModified(configuracion.getOldData())) {

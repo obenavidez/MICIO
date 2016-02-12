@@ -42,11 +42,13 @@ public class NMApp extends Application{
 	
 	public static Modulo modulo;
 	
+	public static final int numberThread=5;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		controller = new Controller();
-		pool = new ThreadPool(5);
+		pool = new ThreadPool(numberThread);
 		setContext(this);
 		NMNetWork.getDeviceId(this);
 	}
@@ -80,6 +82,12 @@ public class NMApp extends Application{
 	{
 		return pool;
 	}
+	
+	public static void setThreadPool(ThreadPool _pool)
+	{
+		 pool=_pool;
+	}
+	
 	@Override
 	public void onLowMemory() { 
 		super.onLowMemory();

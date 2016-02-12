@@ -339,6 +339,7 @@ public class ViewProducto extends DashBoardActivity implements Handler.Callback
 	}
     private void FINISH_ACTIVITY()
 	{
+    	NMApp.getThreadPool().stopRequestAllWorkers();
     	NMApp.getController().removeOutboxHandler(TAG);
 		NMApp.getController().disposeEntities();
 		Log.d(TAG, "Activity quitting"); 

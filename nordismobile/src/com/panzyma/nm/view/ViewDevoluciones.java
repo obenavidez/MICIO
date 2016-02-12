@@ -516,6 +516,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		//Log.d(TAG, "Activity quitting");
 		if (pDialog != null)
 			pDialog.dismiss();
+		NMApp.getThreadPool().stopRequestAllWorkers();
 		finish();
 	}
 

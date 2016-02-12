@@ -1015,6 +1015,7 @@ public class ViewPedido extends ActionBarActivity implements
 
 	private void FINISH_ACTIVITY() {  
 		Log.d(TAG, "Activity quitting");
+		NMApp.getThreadPool().stopRequestAllWorkers();
 		finish();
 	}
 

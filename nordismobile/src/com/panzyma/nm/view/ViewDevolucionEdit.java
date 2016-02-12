@@ -2423,6 +2423,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	private void FINISH_ACTIVITY() {
 		ocultarDialogos();
+		NMApp.getThreadPool().stopRequestAllWorkers();
 		Log.d(TAG, "Activity quitting");
 
 		if (devolucion.hasModified(devolucion.getOldData())) {

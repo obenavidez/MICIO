@@ -1,4 +1,6 @@
 package com.panzyma.nm.auxiliar;
+
+import com.panzyma.nm.NMApp;
  
 
 public class ThreadPool extends Object 
@@ -22,10 +24,11 @@ public class ThreadPool extends Object
 	  }
 
 	  public void execute(Runnable target) throws InterruptedException 
-	  {
+	  { 
 	    // block (forever) until a worker is available
-	    ThreadPoolWorker worker = (ThreadPoolWorker) idleWorkers.remove();
-	    worker.process(target);
+		  ThreadPoolWorker worker= (ThreadPoolWorker) idleWorkers.remove();
+	    
+		  worker.process(target);
 	  }
 
 	  public void stopRequestIdleWorkers() {
@@ -39,7 +42,8 @@ public class ThreadPool extends Object
 	    }
 	  }
 
-	  public void stopRequestAllWorkers() {
+	  public void stopRequestAllWorkers() 
+	  {
 	    stopRequestIdleWorkers();
 
 	    try {
@@ -52,7 +56,10 @@ public class ThreadPool extends Object
 	        workerList[i].stopRequest();
 	      }
 	    }
-	  }
+	    if(idleWorkers.getSize()==0)
+	    	NMApp.setThreadPool(new ThreadPool(NMApp.numberThread) );
+	  }		
+		//
 	}
 
 	class ThreadPoolWorker extends Object 
@@ -92,6 +99,10 @@ public class ThreadPool extends Object
 
 	    internalThread = new Thread(r);
 	    internalThread.start();
+	  }
+	  
+	  public ObjectFIFO getIdleWorkers(){
+		 return this.idleWorkers ;
 	  }
 
 	  public static synchronized int getNextWorkerID() {
@@ -215,7 +226,23 @@ public class ThreadPool extends Object
 
 	    return obj;
 	  }
+	  
+	  public synchronized Object _remove() throws InterruptedException {
 
+		    waitUntilEmpty();
+
+		    Object obj = queue[tail];
+
+		    queue[tail] = null;
+
+		    tail = (tail + 1) % capacity;
+		    size--;
+
+		    notifyAll(); 
+
+		    return obj;
+		  }
+ 
 	  public synchronized Object[] removeAll() throws InterruptedException {
 
 	     Object[] list = new Object[size]; 

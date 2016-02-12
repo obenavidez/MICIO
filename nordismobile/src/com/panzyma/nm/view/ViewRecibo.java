@@ -1334,6 +1334,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	}
 	
 	private void FINISH_ACTIVITY()	{
+		NMApp.getThreadPool().stopRequestAllWorkers();
 		NMApp.getController().removeOutboxHandler(TAG);
 		NMApp.getController().removebridge(NMApp.getController().getBridge());			
 		Log.d(TAG, "Activity quitting"); 
