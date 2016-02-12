@@ -291,6 +291,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			NMApp.getController().getInboxHandler().sendMessage(msg);
 		}
 
+		initComponent();
 		if (getIntent().hasExtra("cliente")) {
 			long IdCliente = getIntent().getLongExtra("cliente", 0);
 			try {
@@ -302,8 +303,6 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				e.printStackTrace();
 			}
 		}
-
-		initComponent();
 
 	}
 

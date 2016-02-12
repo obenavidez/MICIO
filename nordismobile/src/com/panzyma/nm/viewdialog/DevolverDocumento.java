@@ -165,7 +165,7 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 					dismiss();
 				} else 
 				{
-					if(validar())
+					if(!validar())
 						return;
 					HashMap<String,Long> parametros = new HashMap<String,Long>();				
 					Message m=new Message();
