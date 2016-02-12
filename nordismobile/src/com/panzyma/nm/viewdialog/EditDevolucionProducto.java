@@ -525,7 +525,7 @@ public class EditDevolucionProducto extends DialogFragment {
 
 	private boolean validarDatos() throws InterruptedException {
 		// SI ESTAMOS EN OTRO LOTE
-		if ((lotes.size() - 1) == cmbLote.getSelectedItemPosition() || cmbLote.getSelectedItemPosition()<=0) 
+		if ((lotes.size() - 1) == cmbLote.getSelectedItemPosition() || cmbLote.getSelectedItemPosition()<=1) 
 		{
 			if(((SpinnerModel)cmbLote.getSelectedItem()).getId() == -1){
 				
@@ -538,6 +538,11 @@ public class EditDevolucionProducto extends DialogFragment {
 					anioVencimiento.setError("Debe indicar el año de vencimiento");
 					return false;
 				}
+				if (anioVencimiento.getText().toString().trim().length() != 4) {
+					anioVencimiento.setError("Año Incorrecto!");
+					return false;
+				}
+				
 			}		
 		}
 		if(cmbLote.getSelectedItemPosition() == 0) 
