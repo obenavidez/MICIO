@@ -1094,7 +1094,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					seleccionarCliente();
 					break;
 				case ID_DEVOLVER_PEDIDO:
-					devolverdocumento();
+					//devolverdocumento();
+					devolverPedido();
 					break;
 				case ID_AGREGAR_PRODUCTO:
 					agregarProducto();
@@ -1185,7 +1186,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
-
+ 
 	protected void salvarDevolucion(int... arg) {
 		updateObject();
 		if (!validarDevolucion())
@@ -1718,13 +1719,17 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	}
 
 	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
+	public boolean onKeyUp(int keyCode, KeyEvent event) 
+	{
 		if (keyCode == KeyEvent.KEYCODE_MENU)
 			drawerLayout.openDrawer(Gravity.LEFT);
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			FINISH_ACTIVITY();
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+		{			
+			FINISH_ACTIVITY(); 
+			NMApp.getThreadPool().stopRequestAllWorkers();
 			return true;
 		}
+ 
 		return super.onKeyUp(keyCode, event);
 	}
 
@@ -1745,54 +1750,101 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 		showClientDialog();
 	}
+	
+	private void devolverPedido()
+	{
+		
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					NMApp.getThreadPool().execute(new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
 
-	private void devolverdocumento() {
-		if (cliente == null) {
-			AppDialog.showMessage(this, "Alerta",
-					"Por favor seleccione un cliente primero.",
-					DialogType.DIALOGO_ALERTA);
-			return;
-		}
-
-		boolean isoffline = false;
-		pdialog = ProgressDialog.show(this, "Probando conexión", "");
-		if ((!NMNetWork.CheckConnectionV2()) && UserSessionManager.HAS_ERROR)
-			isoffline = true;
-		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		android.support.v4.app.Fragment prev = getSupportFragmentManager()
-				.findFragmentByTag("DialogDevolverDocumento");
-		if (prev != null) {
-			ft.remove(prev);
-		}
-		ft.addToBackStack(null);
-
-		DevolverDocumento newFragment = DevolverDocumento.newInstance(this,
-				cliente.getIdSucursal(), devolucion, isoffline);
-		newFragment
-				.setOnDialogClickListener(new DevolverDocumento.DialogListener() {
-					@Override
-					public void onDialogPositiveClick(Devolucion _dev) {
-						if (_dev != null) 
-						{
-							devolucion = _dev;
-							devolucion.setDescEstado((devolucion.getDescEstado() == null ? REGISTRADA : devolucion.getDescEstado() ));
-							devolucion.setCodEstado( "".equals(devolucion.getDescEstado()) ? REGISTRADA : devolucion.getDescEstado());
-							pedido = devolucion.getObjPedido();
-							if(_dev.getProductosDevueltos() != null && _dev.getProductosDevueltos().length != 0)
-								dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
-							//devolucion.setOlddata(_dev); 
-							setInformacionCliente();
-							Setfieldsdevolucion();
-							updateControls(devolucion);
-							initExpandableListView(false);
+							boolean isoffline = false; 
+							
+							if ((!NMNetWork.CheckConnectionV2()) && UserSessionManager.HAS_ERROR)
+								isoffline = true;
+							devolverdocumento(isoffline);
 						}
+					});
+				} catch (InterruptedException e) { 
+					e.printStackTrace();
+				}
+			}
+		});
+		showStatus("Probando conexion.");
+		return; 
+		
+	}
 
-					}
-				});
-		newFragment.show(ft, "dialogDocumentoDevolucion");
-		if (isoffline)
-			NMApp.getController()._notifyOutboxHandlers(0, 0, 0,
-					"Dispositivo fuera de cobertura");
+	private void devolverdocumento(boolean... _isoffline) 
+	{
+		
+		try 
+		{
+			if (cliente == null) {
+				AppDialog.showMessage(this, "Alerta",
+						"Por favor seleccione un cliente primero.",
+						DialogType.DIALOGO_ALERTA);
+				return;
+			}
+
+			boolean isoffline = _isoffline!=null && _isoffline.length!=0?_isoffline[0]:false;  
+			
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			android.support.v4.app.Fragment prev = getSupportFragmentManager()
+					.findFragmentByTag("DialogDevolverDocumento");
+			if (prev != null) {
+				ft.remove(prev);
+			}
+			ft.addToBackStack(null); 
+			DevolverDocumento newFragment = DevolverDocumento.newInstance(this,
+					cliente.getIdSucursal(), devolucion, isoffline);
+			newFragment
+					.setOnDialogClickListener(new DevolverDocumento.DialogListener() {
+						@Override
+						public void onDialogPositiveClick(Devolucion _dev) {
+							if (_dev != null) 
+							{
+								devolucion = _dev;
+								devolucion.setDescEstado((devolucion.getDescEstado() == null ? REGISTRADA : devolucion.getDescEstado() ));
+								devolucion.setCodEstado( "".equals(devolucion.getDescEstado()) ? REGISTRADA : devolucion.getDescEstado());
+								pedido = devolucion.getObjPedido();
+								if(_dev.getProductosDevueltos() != null && _dev.getProductosDevueltos().length != 0)
+									dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
+								//devolucion.setOlddata(_dev); 
+								setInformacionCliente();
+								Setfieldsdevolucion();
+								updateControls(devolucion);
+								initExpandableListView(false);
+							}
+
+						}
+					});
+			newFragment.show(ft, "dialogDocumentoDevolucion");
+			if (isoffline)
+				NMApp.getController()._notifyOutboxHandlers(0, 0, 0,
+						"Dispositivo fuera de cobertura");
+			ocultarDialogos();
+		} catch (Exception e) 
+		{
+			ocultarDialogos();	
+			NMApp.getController()
+			.notifyOutboxHandlers(
+					ControllerProtocol.ERROR,
+					0,
+					0,
+					new ErrorMessage(
+							"Error al intentar devolver pedido.",
+							e.getMessage(),
+							e.getMessage()));
+		}
+		
 	}
 
 	public void showClientDialog(final AlertDialog... _dialog) {

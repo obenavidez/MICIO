@@ -525,7 +525,7 @@ public class EditDevolucionProducto extends DialogFragment {
 
 	private boolean validarDatos() throws InterruptedException {
 		// SI ESTAMOS EN OTRO LOTE
-		if ((lotes.size() - 1) == cmbLote.getSelectedItemPosition() || cmbLote.getSelectedItemPosition()>0) 
+		if ((lotes.size() - 1) == cmbLote.getSelectedItemPosition() || cmbLote.getSelectedItemPosition()<=0) 
 		{
 			if(((SpinnerModel)cmbLote.getSelectedItem()).getId() == -1){
 				

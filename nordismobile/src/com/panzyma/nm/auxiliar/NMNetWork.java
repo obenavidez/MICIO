@@ -293,6 +293,50 @@ public class NMNetWork {
     }    
     
   //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
+    public static synchronized void CheckConnection(final int what) 
+    {
+    	error=null;  
+        try 
+        {        
+        	NMApp.getThreadPool().execute(new Runnable() 
+			{
+				@Override
+				public void run() {
+					try 
+					{
+						response = Boolean.parseBoolean(((SoapPrimitive) NMComunicacion.InvokeMethod(new ArrayList<Parameters>(),
+										NMConfig.URL, NMConfig.NAME_SPACE,
+										NMConfig.MethodName.CheckConnection)).toString());
+						
+						NMApp.getController()._notifyOutboxHandlers(what, 0, 0,response);
+						
+					} catch (Exception ex) {
+						ex.printStackTrace();    	 
+		            	UserSessionManager.HAS_ERROR=true;
+		            	try 
+		    			{				
+		            		NMApp.getController()._notifyOutboxHandlers(what, 0, 0,false); 
+		    			} catch (Exception e) { 
+		    				e.printStackTrace();
+		    			}	  
+					}
+				}
+			}); 				
+			 Processor.notifyToView(
+					 NMApp.getController(),
+						ControllerProtocol.NOTIFICATION_DIALOG2,
+						0,
+						0,new String("Probando conexión."));	 
+        } 
+        catch(Exception ex) 
+        {         	 
+        	ex.printStackTrace();    	 
+        	UserSessionManager.HAS_ERROR=true;
+        	NMApp.getController()._notifyOutboxHandlers(what, 0, 0,false);    
+        } 
+    }    
+    
+  //Chequea el estado de la conexión con el servidor de aplicaciones de Nordis
     public static synchronized boolean CheckConnection() 
     {
     	error=null; 

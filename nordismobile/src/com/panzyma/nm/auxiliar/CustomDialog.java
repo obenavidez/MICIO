@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
@@ -14,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nordismobile.R;
 
 @SuppressLint("ParserError")
@@ -337,5 +340,15 @@ public class CustomDialog extends Dialog implements OnDismissListener
 		
 	}	 
     
-   
+    @Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) 
+	{ 
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+		{  
+			NMApp.getThreadPool().stopRequestAllWorkers();
+			return true;
+		}
+ 
+		return super.onKeyUp(keyCode, event);
+	}
 }
