@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -75,7 +74,6 @@ import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.logic.DevolucionBL;
-import com.panzyma.nm.logic.PojoDevolucion;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Bonificacion;
@@ -2497,7 +2495,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0)
 					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
 				if(adapter_motdev == null){
-					adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = (List<Catalogo>) catalogos));
+					adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = catalogos));
 					cboxmotivodev.setAdapter(adapter_motdev);
 				} else {
 					adapter_motdev.notifyDataSetChanged();
