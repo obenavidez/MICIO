@@ -486,12 +486,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							|| (adapter != null && adapter.getGroupCount() == 0))
 						return;
 
-					if (pedido != null) {
-						establecerCantidadDev();
-						EstimarCostosDev(true);
-						CalTotalDevolucion();
-						adapter.notifyDataSetChanged();
-					}
+					//if (pedido != null) {
+					establecerCantidadDev();
+					EstimarCostosDev(true);
+					CalTotalDevolucion();
+					adapter.notifyDataSetChanged();
+					//}
 
 					ValidarTipoTramite();
 					if ("TT".equals(((Map.Entry<String, String>) adapter_tipodev
