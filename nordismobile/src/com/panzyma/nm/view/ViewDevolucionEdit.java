@@ -353,6 +353,15 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								.getObjMotivoID() : 0);
 						devolucion.setDeVencido(isChecked);
 						cboxtramitedev.setEnabled(true);
+						///////////////////////////////
+						lgroups.clear();
+						adapter.updateData(lgroups);
+						costeoMontoTotal = BigDecimal.ZERO;
+						tbxtotaldev.setText(""
+								+ costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2,
+										RoundingMode.UNNECESSARY));						
+						updateObject();
+						initExpandableListView(false);
 					}
 
 				});
@@ -908,7 +917,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			dp.setProductoLotes(adpl);
 			adp[a] = dp;
 		}
-		devolucion.setProductosDevueltos(adp);
+		devolucion.setProductosDevueltos(adp.length == 0 ? null : adp);
 	}
 
 	public void actualizarProductoBonificacion(int cantidadbonificacion) {

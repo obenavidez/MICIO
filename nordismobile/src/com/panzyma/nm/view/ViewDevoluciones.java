@@ -163,7 +163,9 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 						dlg.show();
 					}
 				});
-			
+			case AFTERGETOBSERVACIONDEV:
+				
+				break;			
 		}
 		return result ;
 	}

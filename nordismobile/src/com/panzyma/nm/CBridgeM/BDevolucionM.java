@@ -238,6 +238,11 @@ public class BDevolucionM extends BBaseM
     	return value;
     }
     
+    public static void beforeSend(long id) {
+    	Devolucion dev = ModelDevolucion.getDevolucionbyID(id);
+    	
+    } 
+        
     public static void getObservacionesDevolucion(Devolucion dev) throws Exception
     {
     	 
@@ -257,8 +262,6 @@ public class BDevolucionM extends BBaseM
 	            }
 				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev); 
 				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,1,0,"".equals(respuesta)?"Desea Imprimir el comprobante de devolución?":respuesta); 
-
-				 
 			}else
 				Processor.notifyToView(NMApp.getController(),0,0,0,null);
 			
