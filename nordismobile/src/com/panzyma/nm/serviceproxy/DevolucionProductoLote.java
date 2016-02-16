@@ -19,123 +19,123 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable, Seri
 	public DevolucionProductoLote(){}
 	
 	public DevolucionProductoLote(Parcel parcel){
-		id = parcel.readLong( );
-		objLoteID = parcel.readLong(   );
-		numeroLote = parcel.readString(  );
-		fechaVencimiento = parcel.readInt(   );
-		cantidadDevuelta = parcel.readInt(  );
-		fueraPolitica = (parcel.readInt() == 1) ;
-		cantidadDespachada = parcel.readInt(  );
-		deleted = (parcel.readInt() == 1);
+		Id = parcel.readLong( );
+		ObjLoteID = parcel.readLong(   );
+		NumeroLote = parcel.readString(  );
+		FechaVencimiento = parcel.readInt(   );
+		CantidadDevuelta = parcel.readInt(  );
+		FueraPolitica = (parcel.readInt() == 1) ;
+		CantidadDespachada = parcel.readInt(  );
+		Deleted = (parcel.readInt() == 1);
 	}
 	
 	public DevolucionProductoLote(DevolucionProductoLote lote)
 	{		
-		this.id = lote.getId();
-		this.objLoteID = lote.getObjLoteID();
-		this.numeroLote = lote.getNumeroLote();
-		this.fechaVencimiento = lote.getFechaVencimiento();
-		this.cantidadDevuelta = lote.getCantidadDevuelta();
-		this.fueraPolitica = lote.isFueraPolitica();
-		this.cantidadDespachada =lote.getCantidadDespachada();
-		this.deleted = lote.isDeleted();
+		this.Id = lote.getId();
+		this.ObjLoteID = lote.getObjLoteID();
+		this.NumeroLote = lote.getNumeroLote();
+		this.FechaVencimiento = lote.getFechaVencimiento();
+		this.CantidadDevuelta = lote.getCantidadDevuelta();
+		this.FueraPolitica = lote.isFueraPolitica();
+		this.CantidadDespachada =lote.getCantidadDespachada();
+		this.Deleted = lote.isDeleted();
 	}
 	
 	/**
 	 * @return the id
 	 */
 	public long getId() {
-		return id;
+		return Id;
 	}
 	/**
 	 * @param id the id to set
 	 */
 	public void setId(long id) {
-		this.id = id;
+		this.Id = id;
 	}
 	/**
 	 * @return the objLoteID
 	 */
 	public long getObjLoteID() {
-		return objLoteID;
+		return ObjLoteID;
 	}
 	/**
 	 * @param objLoteID the objLoteID to set
 	 */
 	public void setObjLoteID(long objLoteID) {
-		this.objLoteID = objLoteID;
+		this.ObjLoteID = objLoteID;
 	}
 	/**
 	 * @return the numeroLote
 	 */
 	public String getNumeroLote() {
-		return numeroLote;
+		return NumeroLote;
 	}
 	/**
 	 * @param numeroLote the numeroLote to set
 	 */
 	public void setNumeroLote(String numeroLote) {
-		this.numeroLote = numeroLote;
+		this.NumeroLote = numeroLote;
 	}
 	/**
 	 * @return the fechaVencimiento
 	 */
 	public long getFechaVencimiento() {
-		return fechaVencimiento;
+		return FechaVencimiento;
 	}
 	/**
 	 * @param fechaVencimiento the fechaVencimiento to set
 	 */
 	public void setFechaVencimiento(long fechaVencimiento) {
-		this.fechaVencimiento = fechaVencimiento;
+		this.FechaVencimiento = fechaVencimiento;
 	}
 	/**
 	 * @return the cantidadDevuelta
 	 */
 	public int getCantidadDevuelta() {
-		return cantidadDevuelta;
+		return CantidadDevuelta;
 	}
 	/**
 	 * @param cantidadDevuelta the cantidadDevuelta to set
 	 */
 	public void setCantidadDevuelta(int cantidadDevuelta) {
-		this.cantidadDevuelta = cantidadDevuelta;
+		this.CantidadDevuelta = cantidadDevuelta;
 	}
 	/**
 	 * @return the fueraPolitica
 	 */
 	public boolean isFueraPolitica() {
-		return fueraPolitica;
+		return FueraPolitica;
 	}
 	/**
 	 * @param fueraPolitica the fueraPolitica to set
 	 */
 	public void setFueraPolitica(boolean fueraPolitica) {
-		this.fueraPolitica = fueraPolitica;
+		this.FueraPolitica = fueraPolitica;
 	}
 	/**
 	 * @return the cantidadDespachada
 	 */
 	public int getCantidadDespachada() {
-		return cantidadDespachada;
+		return CantidadDespachada;
 	}
 	/**
 	 * @param cantidadDespachada the cantidadDespachada to set
 	 */
 	public void setCantidadDespachada(int cantidadDespachada) {
-		this.cantidadDespachada = cantidadDespachada;
+		this.CantidadDespachada = cantidadDespachada;
 	}
 	/**
 	 * @return the deleted
 	 */
 	public boolean isDeleted() {
-		return deleted;
+		return Deleted;
 	}
 	/**
 	 * @param deleted the deleted to set
 	 */
 	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
+		this.Deleted = deleted;
 	}
 	/**
 	 * @param id
@@ -151,23 +151,23 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable, Seri
 			int fechaVencimiento, int cantidadDevuelta, boolean fueraPolitica,
 			int cantidadDespachada, boolean deleted) {
 		super();
-		this.id = id;
-		this.objLoteID = objLoteID;
-		this.numeroLote = numeroLote;
-		this.fechaVencimiento = fechaVencimiento;
-		this.cantidadDevuelta = cantidadDevuelta;
-		this.fueraPolitica = fueraPolitica;
-		this.cantidadDespachada = cantidadDespachada;
-		this.deleted = deleted;
+		this.Id = id;
+		this.ObjLoteID = objLoteID;
+		this.NumeroLote = numeroLote;
+		this.FechaVencimiento = fechaVencimiento;
+		this.CantidadDevuelta = cantidadDevuelta;
+		this.FueraPolitica = fueraPolitica;
+		this.CantidadDespachada = cantidadDespachada;
+		this.Deleted = deleted;
 	}
-	private long id;
-	private long objLoteID;
-	private String numeroLote;
-	private long fechaVencimiento;
-	private int cantidadDevuelta;
-	private boolean fueraPolitica;
-	private int cantidadDespachada;
-	private boolean deleted;
+	private long Id;
+	private long ObjLoteID;
+	private String NumeroLote;
+	private long FechaVencimiento;
+	private int CantidadDevuelta;
+	private boolean FueraPolitica;
+	private int CantidadDespachada;
+	private boolean Deleted;
 	
 	@Override
 	public int describeContents() {
@@ -188,14 +188,14 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable, Seri
 
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeLong(  id );
-		parcel.writeLong(  objLoteID );
-		parcel.writeString( numeroLote );
-		parcel.writeLong(  fechaVencimiento );
-		parcel.writeInt( cantidadDevuelta );
-		parcel.writeInt( fueraPolitica ? 1 : 0 );
-		parcel.writeInt( cantidadDespachada );
-		parcel.writeInt(  deleted ? 1 : 0 );		
+		parcel.writeLong(  Id );
+		parcel.writeLong(  ObjLoteID );
+		parcel.writeString( NumeroLote );
+		parcel.writeLong(  FechaVencimiento );
+		parcel.writeInt( CantidadDevuelta );
+		parcel.writeInt( FueraPolitica ? 1 : 0 );
+		parcel.writeInt( CantidadDespachada );
+		parcel.writeInt(  Deleted ? 1 : 0 );		
 	}
 
 	@Override
@@ -203,14 +203,14 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable, Seri
 	{	
 		 switch(index)  
 		 {
-			 case 0: return  id;
-			 case 1: return  objLoteID;
-			 case 2: return  numeroLote;
-			 case 3: return  fechaVencimiento;
-			 case 4: return  cantidadDevuelta;
-			 case 5: return  fueraPolitica;
-			 case 6: return  cantidadDespachada;
-			 case 7: return  deleted;
+			 case 0: return  Id;
+			 case 1: return  ObjLoteID;
+			 case 2: return  NumeroLote;
+			 case 3: return  FechaVencimiento;
+			 case 4: return  CantidadDevuelta;
+			 case 5: return  FueraPolitica;
+			 case 6: return  CantidadDespachada;
+			 case 7: return  Deleted;
 		 } 	
 		return null;
 	}
@@ -256,14 +256,14 @@ public class DevolucionProductoLote implements Parcelable, KvmSerializable, Seri
 	{		 
         switch(_index)  
         {
-	         case 0:id= Long.parseLong(_obj.toString()); break;
-			 case 1:objLoteID=Long.parseLong(_obj.toString()); break;
-			 case 2: numeroLote=(java.lang.String) _obj; break;
-			 case 3: fechaVencimiento=Long.parseLong(_obj.toString()); break;
-			 case 4:cantidadDevuelta=Integer.parseInt(_obj.toString()); break;
-			 case 5: fueraPolitica= "true".equals(_obj.toString()); break;
-			 case 6: cantidadDespachada=Integer.parseInt(_obj.toString()); break;
-			 case 7: deleted="true".equals(_obj.toString()); break;
+	         case 0:Id= Long.parseLong(_obj.toString()); break;
+			 case 1:ObjLoteID=Long.parseLong(_obj.toString()); break;
+			 case 2: NumeroLote=(java.lang.String) _obj; break;
+			 case 3: FechaVencimiento=Long.parseLong(_obj.toString()); break;
+			 case 4:CantidadDevuelta=Integer.parseInt(_obj.toString()); break;
+			 case 5: FueraPolitica= "true".equals(_obj.toString()); break;
+			 case 6: CantidadDespachada=Integer.parseInt(_obj.toString()); break;
+			 case 7: Deleted="true".equals(_obj.toString()); break;
         }
 		
 	}

@@ -1117,6 +1117,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					salvarDevolucion();
 					break;
 				case ID_ENVIAR:
+				//	enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
 					enviarDevolucion();
 					break;
 				// case ID_IMPRIMIR_COMPROBANTE:
@@ -1197,15 +1198,16 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 
-	private void enviarDevolucion() 
+	private void enviarDevolucion(int... arg) 
 	{
-		if (!validarDevolucion()) {
+		if (devolucion != null && devolucion.getReferencia() == 0) {
+			salvarDevolucion(ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR);
 			return;
-		}
+		}		
 		Message msg = new Message();
 		msg.obj = devolucion;
-		msg.what = ControllerProtocol.ENVIARDEVOLUCION;
-		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+		msg.what = arg.length != 0 ? arg[0] : ControllerProtocol.ENVIARDEVOLUCION;
+		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg); 
 	}
 
 	public boolean validarDevolucion() 
@@ -2034,7 +2036,15 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			setResult(requescode, intent);
 			finish();
 			break;
+		case ControllerProtocol.AFTERGETOBSERVACIONDEV:
+			 devolucion.setObservacion(msg.obj.toString());
+			 enviarDevolucion();
+			break;
+		case ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR:
+			enviarDevolucion();
+			break;
 		}
+		
 		return false;
 	}
 
@@ -2044,6 +2054,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			salvarDevolucion(ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR);
 			return;
 		}
+		
+		
+		enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+		 
 
 		runOnUiThread(new Runnable() {
 			@Override

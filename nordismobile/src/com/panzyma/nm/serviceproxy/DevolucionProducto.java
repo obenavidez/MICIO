@@ -53,27 +53,27 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 		this.Id = id;
 		this.ObjProductoID = objProductoID;
 		this.NombreProducto = nombreProducto;
-		this.cantidadDevolver = cantidadDevolver;
-		this.bonificacion = bonificacion;
-		this.bonificacionVen = bonificacionVen;
-		this.precio = precio;
-		this.subtotal = subtotal;
-		this.porcImpuesto = porcImpuesto;
-		this.impuesto = impuesto;
-		this.total = total;
-		this.totalVen = totalVen;
-		this.montoBonif = montoBonif;
-		this.montoBonifVen = montoBonifVen;
-		this.impuestoVen = impuestoVen;
-		this.cantidadOrdenada = cantidadOrdenada;
-		this.cantidadBonificada = cantidadBonificada;
-		this.cantidadPromocionada = cantidadPromocionada;
-		this.descuento = descuento;
-		this.totalProducto = totalProducto;
-		this.gravable = gravable;
-		this.deleted = deleted;
-		this.objProveedorID = objProveedorID;
-		this.productoLotes = productoLotes;
+		this.CantidadDevolver = cantidadDevolver;
+		this.Bonificacion = bonificacion;
+		this.BonificacionVen = bonificacionVen;
+		this.Precio = precio;
+		this.Subtotal = subtotal;
+		this.PorcImpuesto = porcImpuesto;
+		this.Impuesto = impuesto;
+		this.Total = total;
+		this.TotalVen = totalVen;
+		this.MontoBonif = montoBonif;
+		this.MontoBonifVen = montoBonifVen;
+		this.ImpuestoVen = impuestoVen;
+		this.CantidadOrdenada = cantidadOrdenada;
+		this.CantidadBonificada = cantidadBonificada;
+		this.CantidadPromocionada = cantidadPromocionada;
+		this.Descuento = descuento;
+		this.TotalProducto = totalProducto;
+		this.Gravable = gravable;
+		this.Deleted = deleted;
+		this.ObjProveedorID = objProveedorID;
+		this.ProductoLotes = productoLotes;
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 * @return the cantidadDevolver
 	 */
 	public int getCantidadDevolver() {
-		return cantidadDevolver;
+		return CantidadDevolver;
 	}
 
 	/**
@@ -133,14 +133,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the cantidadDevolver to set
 	 */
 	public void setCantidadDevolver(int cantidadDevolver) {
-		this.cantidadDevolver = cantidadDevolver;
+		this.CantidadDevolver = cantidadDevolver;
 	}
 
 	/**
 	 * @return the bonificacion
 	 */
 	public int getBonificacion() {
-		return bonificacion;
+		return Bonificacion;
 	}
 
 	/**
@@ -148,14 +148,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the bonificacion to set
 	 */
 	public void setBonificacion(int bonificacion) {
-		this.bonificacion = bonificacion;
+		this.Bonificacion = bonificacion;
 	}
 
 	/**
 	 * @return the bonificacionVen
 	 */
 	public int getBonificacionVen() {
-		return bonificacionVen;
+		return BonificacionVen;
 	}
 
 	/**
@@ -163,14 +163,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the bonificacionVen to set
 	 */
 	public void setBonificacionVen(int bonificacionVen) {
-		this.bonificacionVen = bonificacionVen;
+		this.BonificacionVen = bonificacionVen;
 	}
 
 	/**
 	 * @return the precio
 	 */
 	public long getPrecio() {
-		return precio;
+		return Precio;
 	}
 
 	/**
@@ -178,14 +178,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the precio to set
 	 */
 	public void setPrecio(long precio) {
-		this.precio = precio;
+		this.Precio = precio;
 	}
 
 	/**
 	 * @return the subtotal
 	 */
 	public long getSubtotal() {
-		return subtotal;
+		return Subtotal;
 	}
 
 	/**
@@ -193,14 +193,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the subtotal to set
 	 */
 	public void setSubtotal(long subtotal) {
-		this.subtotal = subtotal;
+		this.Subtotal = subtotal;
 	}
 
 	/**
 	 * @return the porcImpuesto
 	 */
 	public long getPorcImpuesto() {
-		return porcImpuesto;
+		return PorcImpuesto;
 	}
 
 	/**
@@ -208,14 +208,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the porcImpuesto to set
 	 */
 	public void setPorcImpuesto(long porcImpuesto) {
-		this.porcImpuesto = porcImpuesto;
+		this.PorcImpuesto = porcImpuesto;
 	}
 
 	/**
 	 * @return the impuesto
 	 */
 	public long getImpuesto() {
-		return impuesto;
+		return Impuesto;
 	}
 
 	/**
@@ -223,14 +223,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the impuesto to set
 	 */
 	public void setImpuesto(long impuesto) {
-		this.impuesto = impuesto;
+		this.Impuesto = impuesto;
 	}
 
 	/**
 	 * @return the total
 	 */
 	public long getTotal() {
-		return total;
+		return Total;
 	}
 
 	/**
@@ -238,14 +238,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the total to set
 	 */
 	public void setTotal(long total) {
-		this.total = total;
+		this.Total = total;
 	}
 
 	/**
 	 * @return the totalVen
 	 */
 	public long getTotalVen() {
-		return totalVen;
+		return TotalVen;
 	}
 
 	/**
@@ -253,14 +253,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the totalVen to set
 	 */
 	public void setTotalVen(long totalVen) {
-		this.totalVen = totalVen;
+		this.TotalVen = totalVen;
 	}
 
 	/**
 	 * @return the montoBonif
 	 */
 	public long getMontoBonif() {
-		return montoBonif;
+		return MontoBonif;
 	}
 
 	/**
@@ -268,14 +268,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the montoBonif to set
 	 */
 	public void setMontoBonif(long montoBonif) {
-		this.montoBonif = montoBonif;
+		this.MontoBonif = montoBonif;
 	}
 
 	/**
 	 * @return the montoBonifVen
 	 */
 	public long getMontoBonifVen() {
-		return montoBonifVen;
+		return MontoBonifVen;
 	}
 
 	/**
@@ -283,14 +283,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the montoBonifVen to set
 	 */
 	public void setMontoBonifVen(long montoBonifVen) {
-		this.montoBonifVen = montoBonifVen;
+		this.MontoBonifVen = montoBonifVen;
 	}
 
 	/**
 	 * @return the impuestoVen
 	 */
 	public long getImpuestoVen() {
-		return impuestoVen;
+		return ImpuestoVen;
 	}
 
 	/**
@@ -298,14 +298,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the impuestoVen to set
 	 */
 	public void setImpuestoVen(long impuestoVen) {
-		this.impuestoVen = impuestoVen;
+		this.ImpuestoVen = impuestoVen;
 	}
 
 	/**
 	 * @return the cantidadOrdenada
 	 */
 	public int getCantidadOrdenada() {
-		return cantidadOrdenada;
+		return CantidadOrdenada;
 	}
 
 	/**
@@ -313,14 +313,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the cantidadOrdenada to set
 	 */
 	public void setCantidadOrdenada(int cantidadOrdenada) {
-		this.cantidadOrdenada = cantidadOrdenada;
+		this.CantidadOrdenada = cantidadOrdenada;
 	}
 
 	/**
 	 * @return the cantidadBonificada
 	 */
 	public int getCantidadBonificada() {
-		return cantidadBonificada;
+		return CantidadBonificada;
 	}
 
 	/**
@@ -328,14 +328,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the cantidadBonificada to set
 	 */
 	public void setCantidadBonificada(int cantidadBonificada) {
-		this.cantidadBonificada = cantidadBonificada;
+		this.CantidadBonificada = cantidadBonificada;
 	}
 
 	/**
 	 * @return the cantidadPromocionada
 	 */
 	public int getCantidadPromocionada() {
-		return cantidadPromocionada;
+		return CantidadPromocionada;
 	}
 
 	/**
@@ -343,14 +343,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the cantidadPromocionada to set
 	 */
 	public void setCantidadPromocionada(int cantidadPromocionada) {
-		this.cantidadPromocionada = cantidadPromocionada;
+		this.CantidadPromocionada = cantidadPromocionada;
 	}
 
 	/**
 	 * @return the descuento
 	 */
 	public long getDescuento() {
-		return descuento;
+		return Descuento;
 	}
 
 	/**
@@ -358,14 +358,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the descuento to set
 	 */
 	public void setDescuento(long descuento) {
-		this.descuento = descuento;
+		this.Descuento = descuento;
 	}
 
 	/**
 	 * @return the totalProducto
 	 */
 	public int getTotalProducto() {
-		return totalProducto;
+		return TotalProducto;
 	}
 
 	/**
@@ -373,14 +373,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the totalProducto to set
 	 */
 	public void setTotalProducto(int totalProducto) {
-		this.totalProducto = totalProducto;
+		this.TotalProducto = totalProducto;
 	}
 
 	/**
 	 * @return the gravable
 	 */
 	public boolean isGravable() {
-		return gravable;
+		return Gravable;
 	}
 
 	/**
@@ -388,14 +388,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the gravable to set
 	 */
 	public void setGravable(boolean gravable) {
-		this.gravable = gravable;
+		this.Gravable = gravable;
 	}
 
 	/**
 	 * @return the deleted
 	 */
 	public boolean isDeleted() {
-		return deleted;
+		return Deleted;
 	}
 
 	/**
@@ -403,14 +403,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the deleted to set
 	 */
 	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
+		this.Deleted = deleted;
 	}
 
 	/**
 	 * @return the objProveedorID
 	 */
 	public long getObjProveedorID() {
-		return objProveedorID;
+		return ObjProveedorID;
 	}
 
 	/**
@@ -418,14 +418,14 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the objProveedorID to set
 	 */
 	public void setObjProveedorID(long objProveedorID) {
-		this.objProveedorID = objProveedorID;
+		this.ObjProveedorID = objProveedorID;
 	}
 
 	/**
 	 * @return the productoLotes
 	 */
 	public DevolucionProductoLote[] getProductoLotes() {
-		return productoLotes;
+		return ProductoLotes;
 	}
 
 	/**
@@ -433,33 +433,33 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 	 *            the productoLotes to set
 	 */
 	public void setProductoLotes(DevolucionProductoLote[] productoLotes) {
-		this.productoLotes = productoLotes;
+		this.ProductoLotes = productoLotes;
 	}
 
 	private long Id;
 	private long ObjProductoID;
 	private String NombreProducto;
-	private int cantidadDevolver;
-	private int bonificacion;
-	private int bonificacionVen;
-	private long precio;
-	private long subtotal;
-	private long porcImpuesto;
-	private long impuesto;
-	private long total;
-	private long totalVen;
-	private long montoBonif;
-	private long montoBonifVen;
-	private long impuestoVen;
-	private int cantidadOrdenada;
-	private int cantidadBonificada;
-	private int cantidadPromocionada;
-	private long descuento;
-	private int totalProducto;
-	private boolean gravable;
-	private boolean deleted;
-	private long objProveedorID;
-	private DevolucionProductoLote[] productoLotes;
+	private int CantidadDevolver;
+	private int Bonificacion;
+	private int BonificacionVen;
+	private long Precio;
+	private long Subtotal;
+	private long PorcImpuesto;
+	private long Impuesto;
+	private long Total;
+	private long TotalVen;
+	private long MontoBonif;
+	private long MontoBonifVen;
+	private long ImpuestoVen;
+	private int CantidadOrdenada;
+	private int CantidadBonificada;
+	private int CantidadPromocionada;
+	private long Descuento;
+	private int TotalProducto;
+	private boolean Gravable;
+	private boolean Deleted;
+	private long ObjProveedorID;
+	private DevolucionProductoLote[] ProductoLotes;
 
 	public DevolucionProducto() {
 	}
@@ -474,59 +474,62 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 		case 2:
 			return NombreProducto;
 		case 3:
-			return cantidadDevolver;
+			return CantidadDevolver;
 		case 4:
-			return bonificacion;
+			return Bonificacion;
 		case 5:
-			return bonificacionVen;
+			return BonificacionVen;
 		case 6:
-			return new Long(precio);
+			return new Long(Precio);
 		case 7:
-			return subtotal;
+			return Subtotal;
 		case 8:
-			return new Long(porcImpuesto);
+			return new Long(PorcImpuesto);
 		case 9:
-			return impuesto;
+			return Impuesto;
 		case 10:
-			return total;
+			return Total;
 		case 11:
-			return new Long(totalVen);
+			return new Long(TotalVen);
 		case 12:
-			return montoBonif;
+			return MontoBonif;
 		case 13:
-			return montoBonifVen;
+			return MontoBonifVen;
 		case 14:
-			return impuestoVen;
+			return ImpuestoVen;
 		case 15:
-			return cantidadOrdenada;
+			return CantidadOrdenada;
 		case 16:
-			return cantidadBonificada;
+			return CantidadBonificada;
 		case 17:
-			return cantidadPromocionada;
+			return CantidadPromocionada;
 		case 18:
-			return descuento;
+			return Descuento;
 		case 19:
-			return (totalProducto);
+			return (TotalProducto);
 		case 20:
-			return new Boolean(gravable);
+			return new Boolean(Gravable);
 		case 21:
-			return new Boolean(deleted);
+			return new Boolean(Deleted);
 		case 22:
-			return objProveedorID;
-		case 23:
-			if (productoLotes != null && productoLotes.length > 0) {
-				SoapObject _detalle = null;
-				for (DevolucionProductoLote ppd : productoLotes) {
-					_detalle = new SoapObject("", "DevolucionProductoLote");
-					for (int i = 0; i < ppd.getPropertyCount(); i++) {
+			return ObjProveedorID;
+		case 23: 
+			
+			 	SoapObject item = new SoapObject("","ProductoLotes");;
+				for (DevolucionProductoLote ppd : ProductoLotes) 
+				{ 
+					SoapObject detalle = new SoapObject("","DevolucionProductoLote");
+					int cont = ppd.getPropertyCount();  
+					for (int i = 0; i < ppd.getPropertyCount(); i++) 
+					{
 						PropertyInfo info = new PropertyInfo();
 						ppd.getPropertyInfo(i, null, info);
-						_detalle.addProperty(info.name, ppd.getProperty(i));
-					}
-				}
-				return _detalle;
-			}
-			break;
+						detalle.addProperty(info.name, ppd.getProperty(i));
+					} 
+					if(detalle!=null)
+						item.addSoapObject(detalle);
+				} 
+				return item;
 		}
 		return null;
 	}
@@ -635,7 +638,7 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 				_info.type = java.lang.Long.class;
 				break;
 			case 23:
-				if (productoLotes != null && productoLotes.length > 0) {
+				if (ProductoLotes != null && ProductoLotes.length > 0) {
 					_info.name = "ProductoLotes";
 					_info.type = DevolucionProductoLote[].class;
 					break;
@@ -660,63 +663,63 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 			NombreProducto = (String) _obj;
 			break;
 		case 3:
-			cantidadDevolver = Integer.parseInt(_obj.toString());
+			CantidadDevolver = Integer.parseInt(_obj.toString());
 			break;
 		case 4:
-			bonificacion = Integer.parseInt(_obj.toString());
+			Bonificacion = Integer.parseInt(_obj.toString());
 			break;
 		case 5:
-			bonificacionVen = Integer.parseInt(_obj.toString());
+			BonificacionVen = Integer.parseInt(_obj.toString());
 			break;
 		case 6:
-			precio = Long.parseLong(_obj.toString());
+			Precio = Long.parseLong(_obj.toString());
 			break;
 		case 7:
-			subtotal = Long.parseLong(_obj.toString());
+			Subtotal = Long.parseLong(_obj.toString());
 			break;
 		case 8:
-			porcImpuesto = Long.parseLong(_obj.toString());
+			PorcImpuesto = Long.parseLong(_obj.toString());
 			break;
 		case 9:
-			impuesto = Long.parseLong(_obj.toString());
+			Impuesto = Long.parseLong(_obj.toString());
 			break;
 		case 10:
-			total = Long.parseLong(_obj.toString());
+			Total = Long.parseLong(_obj.toString());
 			break;
 		case 11:
-			totalVen = Long.parseLong(_obj.toString());
+			TotalVen = Long.parseLong(_obj.toString());
 			break;
 		case 12:
-			montoBonif = Long.parseLong(_obj.toString());
+			MontoBonif = Long.parseLong(_obj.toString());
 			break;
 		case 13:
-			montoBonifVen = Long.parseLong(_obj.toString());
+			MontoBonifVen = Long.parseLong(_obj.toString());
 			break;
 		case 14:
-			impuestoVen = Long.parseLong(_obj.toString());
+			ImpuestoVen = Long.parseLong(_obj.toString());
 			break;
 		case 15:
-			cantidadOrdenada = Integer.parseInt(_obj.toString());
+			CantidadOrdenada = Integer.parseInt(_obj.toString());
 		case 16:
-			cantidadBonificada = Integer.parseInt(_obj.toString());
+			CantidadBonificada = Integer.parseInt(_obj.toString());
 		case 17:
-			cantidadPromocionada = Integer.parseInt(_obj.toString());
+			CantidadPromocionada = Integer.parseInt(_obj.toString());
 		case 18:
-			descuento = Long.parseLong(_obj.toString());
+			Descuento = Long.parseLong(_obj.toString());
 			break;
 		case 19:
-			totalProducto = Integer.parseInt(_obj.toString());
+			TotalProducto = Integer.parseInt(_obj.toString());
 		case 20:
-			gravable = "true".equals(_obj.toString());
+			Gravable = "true".equals(_obj.toString());
 			break;
 		case 21:
-			deleted = "true".equals(_obj.toString());
+			Deleted = "true".equals(_obj.toString());
 			break;
 		case 22:
-			objProveedorID = Long.parseLong(_obj.toString());
+			ObjProveedorID = Long.parseLong(_obj.toString());
 			break;
 		case 23:
-			productoLotes = (DevolucionProductoLote[]) _obj;
+			ProductoLotes = (DevolucionProductoLote[]) _obj;
 			break;
 		}
 	}
@@ -726,27 +729,27 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 		parcel.writeLong(this.Id);
 		parcel.writeLong(this.ObjProductoID);
 		parcel.writeString(this.NombreProducto);
-		parcel.writeInt(this.cantidadDevolver);
-		parcel.writeInt(this.bonificacion);
-		parcel.writeInt(this.bonificacionVen);
-		parcel.writeLong(this.precio);
-		parcel.writeLong(this.subtotal);
-		parcel.writeLong(this.porcImpuesto);
-		parcel.writeLong(this.impuesto);
-		parcel.writeLong(this.total);
-		parcel.writeLong(this.totalVen);
-		parcel.writeLong(this.montoBonif);
-		parcel.writeLong(this.montoBonifVen);
-		parcel.writeLong(this.impuestoVen);
-		parcel.writeInt(this.cantidadOrdenada);
-		parcel.writeInt(this.cantidadBonificada);
-		parcel.writeInt(this.cantidadPromocionada);
-		parcel.writeLong(this.descuento);
-		parcel.writeInt(this.totalProducto);
-		parcel.writeInt(this.gravable ? 1 : 0);
-		parcel.writeInt(this.deleted ? 1 : 0);
-		parcel.writeLong(this.objProveedorID);
-		parcel.writeParcelableArray(this.productoLotes, flags);
+		parcel.writeInt(this.CantidadDevolver);
+		parcel.writeInt(this.Bonificacion);
+		parcel.writeInt(this.BonificacionVen);
+		parcel.writeLong(this.Precio);
+		parcel.writeLong(this.Subtotal);
+		parcel.writeLong(this.PorcImpuesto);
+		parcel.writeLong(this.Impuesto);
+		parcel.writeLong(this.Total);
+		parcel.writeLong(this.TotalVen);
+		parcel.writeLong(this.MontoBonif);
+		parcel.writeLong(this.MontoBonifVen);
+		parcel.writeLong(this.ImpuestoVen);
+		parcel.writeInt(this.CantidadOrdenada);
+		parcel.writeInt(this.CantidadBonificada);
+		parcel.writeInt(this.CantidadPromocionada);
+		parcel.writeLong(this.Descuento);
+		parcel.writeInt(this.TotalProducto);
+		parcel.writeInt(this.Gravable ? 1 : 0);
+		parcel.writeInt(this.Deleted ? 1 : 0);
+		parcel.writeLong(this.ObjProveedorID);
+		parcel.writeParcelableArray(this.ProductoLotes, flags);
 		//parcel.writeList(Arrays.asList(this.productoLotes));
 	}
 	
@@ -754,30 +757,30 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 		this.Id = parcel.readLong();
 		this.ObjProductoID = parcel.readLong();
 		this.NombreProducto = parcel.readString();
-		this.cantidadDevolver = parcel.readInt();
-		this.bonificacion = parcel.readInt();
-		this.bonificacionVen = parcel.readInt();
-		this.precio = parcel.readLong();
-		this.subtotal = parcel.readLong();
-		this.porcImpuesto = parcel.readLong();
-		this.impuesto = parcel.readLong();
-		this.total = parcel.readLong();
-		this.totalVen = parcel.readLong();
-		this.montoBonif = parcel.readLong();
-		this.montoBonifVen = parcel.readLong();
-		this.impuestoVen = parcel.readLong();
-		this.cantidadOrdenada = parcel.readInt();
-		this.cantidadBonificada = parcel.readInt();
-		this.cantidadPromocionada = parcel.readInt();
-		this.descuento = parcel.readLong();
-		this.totalProducto = parcel.readInt();
-		this.gravable = parcel.readInt() == 1;
-		this.deleted = parcel.readInt() == 1;
-		this.objProveedorID = parcel.readLong();
+		this.CantidadDevolver = parcel.readInt();
+		this.Bonificacion = parcel.readInt();
+		this.BonificacionVen = parcel.readInt();
+		this.Precio = parcel.readLong();
+		this.Subtotal = parcel.readLong();
+		this.PorcImpuesto = parcel.readLong();
+		this.Impuesto = parcel.readLong();
+		this.Total = parcel.readLong();
+		this.TotalVen = parcel.readLong();
+		this.MontoBonif = parcel.readLong();
+		this.MontoBonifVen = parcel.readLong();
+		this.ImpuestoVen = parcel.readLong();
+		this.CantidadOrdenada = parcel.readInt();
+		this.CantidadBonificada = parcel.readInt();
+		this.CantidadPromocionada = parcel.readInt();
+		this.Descuento = parcel.readLong();
+		this.TotalProducto = parcel.readInt();
+		this.Gravable = parcel.readInt() == 1;
+		this.Deleted = parcel.readInt() == 1;
+		this.ObjProveedorID = parcel.readLong();
 		
 		Parcelable[] parcelableArray = parcel.readParcelableArray(com.panzyma.nm.serviceproxy.DevolucionProductoLote.class.getClassLoader());
 		if (parcelableArray != null) {
-			productoLotes = Arrays.copyOf(parcelableArray, parcelableArray.length, com.panzyma.nm.serviceproxy.DevolucionProductoLote[].class);		   
+			ProductoLotes = Arrays.copyOf(parcelableArray, parcelableArray.length, com.panzyma.nm.serviceproxy.DevolucionProductoLote[].class);		   
 		}
 	}
 	

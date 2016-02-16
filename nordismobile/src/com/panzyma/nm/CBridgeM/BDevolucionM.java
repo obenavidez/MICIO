@@ -63,9 +63,9 @@ public class BDevolucionM extends BBaseM
 				Devolucion dev=(Devolucion) msg.obj;
 				RegistrarDevolucion(dev);
 				break;
-			case ControllerProtocol.SALVARRECIBOANTESDESALIR:
+			case ControllerProtocol.SALVARRECIBOANTESDESALIR: case ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR:
 				Devolucion dev2 = (Devolucion) msg.obj;
-				RegistrarDevolucion(dev2, ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR);
+				RegistrarDevolucion(dev2, msg.what);
 				break;
 			case ControllerProtocol.ENVIARDEVOLUCION:
 				Devolucion $dev=(Devolucion) msg.obj;
@@ -77,6 +77,8 @@ public class BDevolucionM extends BBaseM
 			case  ControllerProtocol.IMPRIMIR:
 				if(msg.obj instanceof Devolucion)
 					ImprimirDevolucion((Devolucion)msg.obj, true);
+			case ControllerProtocol.GETOBSERVACIONDEV: 
+				getObservacionesDevolucion((Devolucion) msg.obj);
 			default:
 				break;
 		}
@@ -256,7 +258,7 @@ public class BDevolucionM extends BBaseM
 	                return;
 	            }
 				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev); 
-				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,1,0,"".equals(respuesta)?"Desea Imprimir el comprobante de devolución?":respuesta); 
+				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,1,0,"".equals(respuesta)?"Desea enviar la devolución?":respuesta); 
 
 				 
 			}else
@@ -754,7 +756,9 @@ public class BDevolucionM extends BBaseM
 							Processor.notifyToView(
 									NMApp.getController(),
 									((args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR)?ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR:
-										(args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR?ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR: ControllerProtocol.NOTIFICATION)
+										(args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR?ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR: 
+											(args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR?ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR: ControllerProtocol.NOTIFICATION)
+												)
 									),
 									ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST,
 									0,
