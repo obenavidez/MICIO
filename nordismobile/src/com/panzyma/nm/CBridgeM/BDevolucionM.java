@@ -71,6 +71,9 @@ public class BDevolucionM extends BBaseM
 				Devolucion $dev=(Devolucion) msg.obj;
 				EnviarDevolucion($dev);
 				break;
+			case ControllerProtocol.GETOBSERVACIONDEV :
+				 getObservacionesDevolucion((Devolucion) msg.obj);
+				 break;
 			case ControllerProtocol.DELETE_DATA_FROM_LOCALHOST:
 				Integer id = msg.getData().getInt("id");	
 				deleteDevolucion(id);
@@ -244,9 +247,7 @@ public class BDevolucionM extends BBaseM
     } 
         
     public static void getObservacionesDevolucion(Devolucion dev) throws Exception
-    {
-    	 
-    	
+    {   	
 		try 
 		{
 			String credenciales="";
@@ -270,9 +271,9 @@ public class BDevolucionM extends BBaseM
 	            }
 				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev);  
 				dev.setObservacion(respuesta);
-				 guardarDevolucion(dev);
+				guardarDevolucion(dev);
 			    Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
-				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.SEND_DATA_FROM_SERVER,0,"".equals(respuesta)?"Desea enviar la devolución?":"Se obtubieron las siguientes observaciones:"+respuesta+"\n Desea Enviar la devolución?"); 
+				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.ENVIARDEVOLUCION,0,"".equals(respuesta)?"Desea enviar la devolución?":"Se obtubieron las siguientes observaciones:"+respuesta+"\n Desea Enviar la devolución?"); 
   
 			}else
 				Processor.notifyToView(NMApp.getController(),0,0,0,null);

@@ -514,19 +514,21 @@ public class DevolucionProducto implements KvmSerializable, Parcelable {
 		case 22:
 			return objProveedorID;
 		case 23:
-			if (productoLotes != null && productoLotes.length > 0) {
-				SoapObject _detalle = null;
-				for (DevolucionProductoLote ppd : productoLotes) {
-					_detalle = new SoapObject("", "DevolucionProductoLote");
-					for (int i = 0; i < ppd.getPropertyCount(); i++) {
-						PropertyInfo info = new PropertyInfo();
-						ppd.getPropertyInfo(i, null, info);
-						_detalle.addProperty(info.name, ppd.getProperty(i));
-					}
-				}
-				return _detalle;
-			}
-			break;
+			SoapObject item = new SoapObject("","ProductoLotes");;
+			for (DevolucionProductoLote ppd : productoLotes) 
+			{ 
+				SoapObject detalle = new SoapObject("","DevolucionProductoLote");
+				int cont = ppd.getPropertyCount();  
+				for (int i = 0; i < ppd.getPropertyCount(); i++) 
+				{
+					PropertyInfo info = new PropertyInfo();
+					ppd.getPropertyInfo(i, null, info);				 
+					detalle.addProperty(info.name, ppd.getProperty(i));
+				} 
+				if(detalle!=null)
+					item.addSoapObject(detalle);
+			} 
+			return item; 
 		}
 		return null;
 	}

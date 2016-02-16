@@ -127,9 +127,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_VER_COSTEO = 5;
 	private static final int ID_GUARDAR = 6;
 	private static final int ID_ENVIAR = 7;
-	private static final int ID_FICHACLIENTE = 8;
-	private static final int ID_CUENTASXCOBRAR = 9;
-	private static final int ID_CERRAR = 10;
+	private static final int ID_IMPRIMIR = 8;
+	private static final int ID_FICHACLIENTE = 9;
+	private static final int ID_CUENTASXCOBRAR = 10;
+	private static final int ID_CERRAR = 11;
 
 	private BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
 	private BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
@@ -1128,7 +1129,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				case ID_ENVIAR: 
 				    enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV); 
 					break;  
-					 
+				case ID_IMPRIMIR:
+					if(devolucion.getNumeroCentral()==0)
+						enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+					else
+						enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
+						break;
 				case ID_FICHACLIENTE:
 					if (cliente == null) {
 						AppDialog.showMessage(getContext(), "Información",
@@ -1202,6 +1208,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	private void enviarDevolucion(int... arg) 
 	{
+		updateObject();
 		if (!validarDevolucion()) {
 			return;
 		}
@@ -2008,9 +2015,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				break;
 			case ControllerProtocol.ID_REQUEST_ENVIAR: 		
 					if(msg.arg1==ControllerProtocol.IMPRIMIR)
-						enviarImprimirRecibo(msg.obj.toString(),devolucion); 
+						enviarImprimirDevolucion(msg.obj.toString(),devolucion); 
 					else
-						enviarImprimirRecibo(msg.obj.toString(),devolucion,msg.arg1); 
+						enviarImprimirDevolucion(msg.obj.toString(),devolucion,msg.arg1); 
 				break;
 			case ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR:
 				devolucion = (Devolucion) msg.obj;
@@ -2038,9 +2045,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				break;
 			case ControllerProtocol.AFTERGETOBSERVACIONDEV: 	
 				if(ControllerProtocol.IMPRIMIR==msg.arg1)
-					enviarImprimirRecibo(msg.obj.toString(),devolucion);
-				else if(ControllerProtocol.SEND_DATA_FROM_SERVER==msg.arg1)
-					enviarImprimirRecibo(msg.obj.toString(),devolucion,ControllerProtocol.SEND_DATA_FROM_SERVER);  
+					enviarImprimirDevolucion(msg.obj.toString(),devolucion);
+				else if(ControllerProtocol.ENVIARDEVOLUCION==msg.arg1)
+					enviarImprimirDevolucion(msg.obj.toString(),devolucion,ControllerProtocol.ENVIARDEVOLUCION);  
 				break;
 			case ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR:
 				enviarDevolucion();
@@ -2055,11 +2062,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		return false;
 	}
 
-	private void enviarImprimirRecibo(final String  mensaje,final Devolucion devolucion,final int... what) 
+	private void enviarImprimirDevolucion(final String  mensaje,final Devolucion devolucion,final int... what) 
 	{ 
- 
-
-		runOnUiThread(new Runnable() { 
+		runOnUiThread(new Runnable() 
+		{ 
 			@Override
 			public void run() {
 
