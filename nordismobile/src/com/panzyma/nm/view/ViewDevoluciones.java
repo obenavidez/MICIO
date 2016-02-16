@@ -163,8 +163,13 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 						dlg.show();
 					}
 				});
+				break;
 			case AFTERGETOBSERVACIONDEV:
-				
+				Message msg2 = new Message();
+				Bundle b = new Bundle();
+				msg2.obj = msg.obj;
+				msg.what  = ControllerProtocol.ENVIARDEVOLUCION;
+				com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);				
 				break;			
 		}
 		return result ;
@@ -310,7 +315,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 							AppDialog.showMessage(vd, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
 							return;
 						}
-						
+						BDevolucionM.beforeSend(item_selected.getId());
 						break;
 					case IMPRIMIR_COMPROBANTE:
 						if (item_selected == null) {

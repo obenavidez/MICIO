@@ -29,6 +29,7 @@ import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.viewmodel.vmDevolucionEdit;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle; 
 import android.os.Message;
@@ -240,7 +241,12 @@ public class BDevolucionM extends BBaseM
     
     public static void beforeSend(long id) {
     	Devolucion dev = ModelDevolucion.getDevolucionbyID(id);
-    	
+    	try {
+			getObservacionesDevolucion(dev);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     } 
         
     public static void getObservacionesDevolucion(Devolucion dev) throws Exception
