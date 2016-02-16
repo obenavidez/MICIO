@@ -338,7 +338,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) {
+							boolean isChecked) 
+					{
 						cboxmotivodev.setVisibility(isChecked ? View.GONE
 								: View.VISIBLE);
 						labelMotivo.setVisibility(isChecked ? View.GONE
@@ -892,7 +893,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 
-	public void updateObject() {
+	public void updateObject() 
+	{
 		List<ExpandListGroup> _lgroups = lgroups;
 		ExpandListGroup group = null;
 		DevolucionProducto[] adp = new DevolucionProducto[lgroups.size()];
@@ -1117,16 +1119,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					salvarDevolucion();
 					break;
 				case ID_ENVIAR:
-				//	enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
-					enviarDevolucion();
-					break;
-				// case ID_IMPRIMIR_COMPROBANTE:
-				// try {
-				// ImprimirComprobante();
-				// break;
-				// } catch (Exception e) {
-				// e.printStackTrace();
-				// }
+				    enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV); 
+					break; 
 				case ID_FICHACLIENTE:
 					if (cliente == null) {
 						AppDialog.showMessage(getContext(), "Información",
@@ -1214,7 +1208,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	{
 
 		devolucion.setFecha(DateUtil.dt2i(new Date()));
-		if (cliente == null) {
+		if (cliente == null) 
+		{
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
 					0,
@@ -1952,119 +1947,118 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	@Override
 	public boolean handleMessage(Message msg) {
 		dismiss();
-		switch (msg.what) {
-		case ControllerProtocol.C_DATA:
-			if (msg.arg1 == ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST)				
-			{
-				vmDevolucionEdit objdev = (vmDevolucionEdit) msg.obj;
-				devolucion = objdev.getDevolucion();
+		switch (msg.what) 
+		{
+			case ControllerProtocol.C_DATA:
+				if (msg.arg1 == ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST)				
+				{
+					vmDevolucionEdit objdev = (vmDevolucionEdit) msg.obj;
+					devolucion = objdev.getDevolucion();
+					devolucion.setOlddata(devolucion);
+					cliente = objdev.getCliente();
+					pedido = devolucion.getObjPedido();
+					catalogos = objdev.getMotivodev();
+					initComponent();
+					initExpandableListView(false);
+					devolucion.setOldData(devolucion);
+				}
+				break;
+	
+			case ControllerProtocol.OBTENERVALORCATALOGO:
 				devolucion.setOlddata(devolucion);
-				cliente = objdev.getCliente();
-				pedido = devolucion.getObjPedido();
-				catalogos = objdev.getMotivodev();
-				initComponent();
-				initExpandableListView(false);
-				devolucion.setOldData(devolucion);
-			}
-			break;
-
-		case ControllerProtocol.OBTENERVALORCATALOGO:
-			devolucion.setOlddata(devolucion);
-			adapter_motdev = new CustomAdapter(getContext(),
-					R.layout.spinner_rows,
-					setListData(catalogos = (ArrayList<Catalogo>) msg.obj));
-			cboxmotivodev.setAdapter(adapter_motdev);
-			break;
-		case ControllerProtocol.NOTIFICATION:
-
-			String message = "";
-			if (msg.obj != null && msg.obj instanceof Devolucion) {
+				adapter_motdev = new CustomAdapter(getContext(),
+						R.layout.spinner_rows,
+						setListData(catalogos = (ArrayList<Catalogo>) msg.obj));
+				cboxmotivodev.setAdapter(adapter_motdev);
+				break;
+			case ControllerProtocol.NOTIFICATION:
+	
+				String message = "";
+				if (msg.obj != null && msg.obj instanceof Devolucion) {
+					devolucion = (Devolucion) msg.obj;
+				} else if (msg.obj != null && msg.obj instanceof String)
+					message = msg.obj.toString();
+	
+				if (ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1) {
+					devolucion.setOlddata(devolucion);
+					actualizarOnUINumRef(devolucion);
+				}
+				if ((!message.equals(""))
+						|| ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1)
+					showStatus(
+							(ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1) ? "La devolución fue registrada satisfactoriamente."
+									: message, true);
+				break;
+			case ControllerProtocol.NOTIFICATION_DIALOG2:
+				showStatus(msg.obj.toString());
+				break;
+			case ControllerProtocol.ERROR:
+				if (msg.obj instanceof ErrorMessage)
+					showStatus(((ErrorMessage) msg.obj).getMessage(), true);
+				else if (msg.obj instanceof String)
+					showStatus(((String) msg.obj), true);
+	
+				break;
+			case ControllerProtocol.ID_REQUEST_ENVIAR: 		
+					if(msg.arg1==ControllerProtocol.IMPRIMIR)
+						enviarImprimirRecibo(msg.obj.toString(),devolucion); 
+					else
+						enviarImprimirRecibo(msg.obj.toString(),devolucion,msg.arg1); 
+				break;
+			case ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR:
 				devolucion = (Devolucion) msg.obj;
-			} else if (msg.obj != null && msg.obj instanceof String)
-				message = msg.obj.toString();
-
-			if (ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1) {
-				devolucion.setOlddata(devolucion);
-				actualizarOnUINumRef(devolucion);
-			}
-			if ((!message.equals(""))
-					|| ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1)
-				showStatus(
-						(ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1) ? "La devolución fue registrada satisfactoriamente."
-								: message, true);
-			break;
-		case ControllerProtocol.NOTIFICATION_DIALOG2:
-			showStatus(msg.obj.toString());
-			break;
-		case ControllerProtocol.ERROR:
-			if (msg.obj instanceof ErrorMessage)
-				showStatus(((ErrorMessage) msg.obj).getMessage(), true);
-			else if (msg.obj instanceof String)
-				showStatus(((String) msg.obj), true);
-
-			break;
-		case ControllerProtocol.ID_REQUEST_ENVIAR:
-		case ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR:
-			if (msg.obj != null) {
+				Intent intent = new Intent();
+				Bundle bundle = new Bundle();
+				int requescode = 0;
+				com.panzyma.nm.logic.PojoDevolucion pojo = new com.panzyma.nm.logic.PojoDevolucion();
+				pojo.setId(devolucion.getId());
+				pojo.setReferencia(devolucion.getReferencia());
+				pojo.setFecha(DateUtil.idateToStrYY(devolucion.getFecha()));
+				pojo.setNombreCliente(devolucion.getNombreCliente());
+				pojo.setTotal(devolucion.getTotal());
+				pojo.setCodigoEstado(devolucion.getCodEstado());
+				pojo.setClienteId(devolucion.getObjClienteID());
+				pojo.setOffLine(devolucion.isOffLine());
+				pojo.setSucursalId(devolucion.getObjSucursalID());
+				//agregar el objeto Serializable
+				bundle.putSerializable(ViewDevoluciones.SERIALIZE_DEVOLUCION, pojo);
+				//agregar al intent
+				intent.putExtras(bundle);
+				if (onEdit)
+					requescode = getIntent().getIntExtra("requestcode", 0);
+				setResult(requescode, intent);
+				finish();
+				break;
+			case ControllerProtocol.AFTERGETOBSERVACIONDEV: 	
+				if(ControllerProtocol.IMPRIMIR==msg.arg1)
+					enviarImprimirRecibo(msg.obj.toString(),devolucion);
+				else if(ControllerProtocol.SEND_DATA_FROM_SERVER==msg.arg1)
+					enviarImprimirRecibo(msg.obj.toString(),devolucion,ControllerProtocol.SEND_DATA_FROM_SERVER);  
+				break;
+			case ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR:
+				enviarDevolucion();
+				break;
+				
+			case ControllerProtocol.UPDATOBJECT:
 				devolucion = ((Devolucion) msg.obj);
 				devolucion.setOlddata(devolucion);
 				actualizarOnUINumRef(devolucion);
-				enviarImprimirRecibo(devolucion);
-			}
-			break;
-		case ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR:
-			devolucion = (Devolucion) msg.obj;
-			Intent intent = new Intent();
-			Bundle bundle = new Bundle();
-			int requescode = 0;
-			com.panzyma.nm.logic.PojoDevolucion pojo = new com.panzyma.nm.logic.PojoDevolucion();
-			pojo.setId(devolucion.getId());
-			pojo.setReferencia(devolucion.getReferencia());
-			pojo.setFecha(DateUtil.idateToStrYY(devolucion.getFecha()));
-			pojo.setNombreCliente(devolucion.getNombreCliente());
-			pojo.setTotal(devolucion.getTotal());
-			pojo.setCodigoEstado(devolucion.getCodEstado());
-			pojo.setClienteId(devolucion.getObjClienteID());
-			pojo.setOffLine(devolucion.isOffLine());
-			pojo.setSucursalId(devolucion.getObjSucursalID());
-			//agregar el objeto Serializable
-			bundle.putSerializable(ViewDevoluciones.SERIALIZE_DEVOLUCION, pojo);
-			//agregar al intent
-			intent.putExtras(bundle);
-			if (onEdit)
-				requescode = getIntent().getIntExtra("requestcode", 0);
-			setResult(requescode, intent);
-			finish();
-			break;
-		case ControllerProtocol.AFTERGETOBSERVACIONDEV:
-			 devolucion.setObservacion(msg.obj.toString());
-			 enviarDevolucion();
-			break;
-		case ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR:
-			enviarDevolucion();
-			break;
+
 		}
 		
 		return false;
 	}
 
-	private void enviarImprimirRecibo(final Devolucion devolucion) {
+	private void enviarImprimirRecibo(final String  mensaje,final Devolucion devolucion,final int... what) 
+	{ 
 
-		if (devolucion != null && devolucion.getReferencia() == 0) {
-			salvarDevolucion(ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR);
-			return;
-		}
-		
-		
-		enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
-		 
-
-		runOnUiThread(new Runnable() {
+		runOnUiThread(new Runnable() 
+		{
 			@Override
 			public void run() {
 
 				AppDialog.showMessage(me, "",
-						"¿Desea imprimir comprobante de devolucion?",
+						""+mensaje,
 						AppDialog.DialogType.DIALOGO_CONFIRMACION,
 						new AppDialog.OnButtonClickListener() {
 							@Override
@@ -2075,7 +2069,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 										Message msg = new Message();
 										Bundle b = new Bundle();
 										msg.obj = devolucion;
-										msg.what = ControllerProtocol.IMPRIMIR;
+										msg.obj = devolucion;
+										msg.what = what.length != 0 ? what[0] : ControllerProtocol.IMPRIMIR; 
 										NMApp.getController().getInboxHandler()
 												.sendMessage(msg);
 										_dialog.dismiss();
