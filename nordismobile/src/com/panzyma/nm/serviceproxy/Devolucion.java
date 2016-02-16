@@ -1060,16 +1060,16 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 				SoapObject _detalle = new SoapObject("", "");
 
 				if (ProductosDevueltos != null) {
-					for (DevolucionProducto dp : ProductosDevueltos) 
-					{
-						SoapObject item = new SoapObject("","DevolucionProducto");
+					for (DevolucionProducto dp : ProductosDevueltos) {
+						SoapObject item = new SoapObject("",
+								"DevolucionProducto");
 						int cont = dp.getPropertyCount();
-						for (int i = 0; i < cont; i++) 
-						{
+						for (int i = 0; i < cont; i++) {
 							PropertyInfo info = new PropertyInfo();
 							dp.getPropertyInfo(i, null, info);
 							if ("ProductoLotes" == info.name)
-								item.addSoapObject((SoapObject) dp.getProperty(i));
+								item.addSoapObject((SoapObject) dp
+										.getProperty(i));
 							else
 								item.addProperty(info.name, dp.getProperty(i));
 						}

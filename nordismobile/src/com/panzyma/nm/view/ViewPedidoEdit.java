@@ -876,7 +876,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 
 	private void FINISH_ACTIVITY() 
 	{ 
-		NMApp.getThreadPool().stopRequestAllWorkers();
+		com.panzyma.nm.NMApp.getThreadPool().stopRequestAllWorkers();
 		ocultarDialogos();
 		Log.d(TAG, "Activity quitting"); 
 		

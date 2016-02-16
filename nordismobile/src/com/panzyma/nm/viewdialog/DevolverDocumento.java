@@ -3,29 +3,22 @@ package com.panzyma.nm.viewdialog;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;  
 import java.util.List;
-import java.util.Map;
-
 import com.panzyma.nm.NMApp;
-import com.panzyma.nm.CBridgeM.BDevolucionM;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
-import com.panzyma.nm.auxiliar.NMNetWork; 
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.custom.model.SpinnerModel; 
 import com.panzyma.nm.model.ModelPedido;
-import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.Pedido; 
-import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.view.ViewDevolucionEdit;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
@@ -157,7 +150,7 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 				if( offline ) {
 					if(!validar())
 						return;
-					nopedido = (long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0);
+					nopedido = (tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0;
 					//numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
 					devolucion.setNumeroFacturaDevuelta(Integer.parseInt(""+numfactura));
 					devolucion.setNumeroPedidoDevuelto(Integer.parseInt(""+nopedido));
@@ -171,13 +164,13 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 					Message m=new Message();
 					m.what=ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO;
 					parametros.put("idsucursal",objSucursalID);
-					numpedido=(long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0);
+					numpedido=(tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0;
 					//numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
 					parametros.put("nopedido",numpedido);
 					parametros.put("nofactura",numfactura);
 					m.obj=parametros;
 					NMApp.getController().getInboxHandler().sendMessage(m);
-					pdialog=ProgressDialog.show(getActivity(), "Buscando productos lotes para el pedido",""+(long)((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0));
+					pdialog=ProgressDialog.show(getActivity(), "Buscando productos lotes para el pedido",""+((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0));
 				}
 			}
 		});

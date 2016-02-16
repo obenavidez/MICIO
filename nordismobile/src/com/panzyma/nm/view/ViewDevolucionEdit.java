@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -75,7 +74,6 @@ import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.logic.DevolucionBL;
-import com.panzyma.nm.logic.PojoDevolucion;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Bonificacion;
@@ -356,6 +354,15 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								.getObjMotivoID() : 0);
 						devolucion.setDeVencido(isChecked);
 						cboxtramitedev.setEnabled(true);
+						///////////////////////////////
+						lgroups.clear();
+						adapter.updateData(lgroups);
+						costeoMontoTotal = BigDecimal.ZERO;
+						tbxtotaldev.setText(""
+								+ costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2,
+										RoundingMode.UNNECESSARY));						
+						updateObject();
+						initExpandableListView(false);
 					}
 
 				});
@@ -912,7 +919,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			dp.setProductoLotes(adpl);
 			adp[a] = dp;
 		}
-		devolucion.setProductosDevueltos(adp);
+		devolucion.setProductosDevueltos(adp.length == 0 ? null : adp);
 	}
 
 	public void actualizarProductoBonificacion(int cantidadbonificacion) {
@@ -1118,9 +1125,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				case ID_GUARDAR:
 					salvarDevolucion();
 					break;
-				case ID_ENVIAR:
+				case ID_ENVIAR: 
 				    enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV); 
-					break; 
+					break;  
+					 
 				case ID_FICHACLIENTE:
 					if (cliente == null) {
 						AppDialog.showMessage(getContext(), "Información",
@@ -1194,14 +1202,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	private void enviarDevolucion(int... arg) 
 	{
-		if (devolucion != null && devolucion.getReferencia() == 0) {
-			salvarDevolucion(ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR);
+		if (!validarDevolucion()) {
 			return;
-		}		
+		}
 		Message msg = new Message();
 		msg.obj = devolucion;
-		msg.what = arg.length != 0 ? arg[0] : ControllerProtocol.ENVIARDEVOLUCION;
-		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg); 
+		msg.what  = arg.length != 0 ? arg[0] :ControllerProtocol.ENVIARDEVOLUCION;
+		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 
 	public boolean validarDevolucion() 
@@ -2042,18 +2049,17 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			case ControllerProtocol.UPDATOBJECT:
 				devolucion = ((Devolucion) msg.obj);
 				devolucion.setOlddata(devolucion);
-				actualizarOnUINumRef(devolucion);
-
+				actualizarOnUINumRef(devolucion);  
+			break;
 		}
-		
 		return false;
 	}
 
 	private void enviarImprimirRecibo(final String  mensaje,final Devolucion devolucion,final int... what) 
 	{ 
+ 
 
-		runOnUiThread(new Runnable() 
-		{
+		runOnUiThread(new Runnable() { 
 			@Override
 			public void run() {
 
@@ -2506,7 +2512,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0)
 					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
 				if(adapter_motdev == null){
-					adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = (List<Catalogo>) catalogos));
+					adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = catalogos));
 					cboxmotivodev.setAdapter(adapter_motdev);
 				} else {
 					adapter_motdev.notifyDataSetChanged();

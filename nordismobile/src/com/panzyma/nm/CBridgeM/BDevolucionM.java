@@ -63,9 +63,9 @@ public class BDevolucionM extends BBaseM
 				Devolucion dev=(Devolucion) msg.obj;
 				RegistrarDevolucion(dev);
 				break;
-			case ControllerProtocol.SALVARRECIBOANTESDESALIR: case ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR:
+			case ControllerProtocol.SALVARRECIBOANTESDESALIR:
 				Devolucion dev2 = (Devolucion) msg.obj;
-				RegistrarDevolucion(dev2, msg.what);
+				RegistrarDevolucion(dev2, ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR);
 				break;
 			case ControllerProtocol.ENVIARDEVOLUCION:
 				Devolucion $dev=(Devolucion) msg.obj;
@@ -77,8 +77,6 @@ public class BDevolucionM extends BBaseM
 			case  ControllerProtocol.IMPRIMIR:
 				if(msg.obj instanceof Devolucion)
 					ImprimirDevolucion((Devolucion)msg.obj, true);
-			case ControllerProtocol.GETOBSERVACIONDEV: 
-				getObservacionesDevolucion((Devolucion) msg.obj);
 			default:
 				break;
 		}
@@ -240,6 +238,11 @@ public class BDevolucionM extends BBaseM
     	return value;
     }
     
+    public static void beforeSend(long id) {
+    	Devolucion dev = ModelDevolucion.getDevolucionbyID(id);
+    	
+    } 
+        
     public static void getObservacionesDevolucion(Devolucion dev) throws Exception
     {
     	 
@@ -265,12 +268,12 @@ public class BDevolucionM extends BBaseM
 					Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.IMPRIMIR,0,"La devolución no será enviada por falta de cobertura\r\n, esta será impresa y quedará pendiente de enviarse."); 
 	                return;
 	            }
-				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev); 
+				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev);  
 				dev.setObservacion(respuesta);
+				 guardarDevolucion(dev);
 			    Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
 				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.SEND_DATA_FROM_SERVER,0,"".equals(respuesta)?"Desea enviar la devolución?":"Se obtubieron las siguientes observaciones:"+respuesta+"\n Desea Enviar la devolución?"); 
-
-				 
+  
 			}else
 				Processor.notifyToView(NMApp.getController(),0,0,0,null);
 			
@@ -766,9 +769,7 @@ public class BDevolucionM extends BBaseM
 							Processor.notifyToView(
 									NMApp.getController(),
 									((args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR)?ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR:
-										(args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR?ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR: 
-											(args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR?ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR: ControllerProtocol.NOTIFICATION)
-												)
+										(args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR?ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR: ControllerProtocol.NOTIFICATION)
 									),
 									ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST,
 									0,
