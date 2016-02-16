@@ -254,14 +254,26 @@ public class BDevolucionM extends BBaseM
 			if(credenciales!="")
 			{
 				 Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
-							0,0,"Validando devolución con el servidor central.");
+							0,0,"Obteniendo observación en el servidor central..");
 				if (!SessionManager.isPhoneConnected()) 
 	            {
-					Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,1,0,"La devolución no será enviada por falta de cobertura\r\n, esta será impresa y quedará pendiente de enviarse."); 
+					 //Poner estado de recibo en PAGADO_OFFLINE                   
+					dev.setCodEstado("PAGADO_OFFLINE");
+					dev.setDescEstado("Registrado"); 	
+					dev.setOffLine(true);
+	               //Guardando cambios en el Dispositivo 
+			        guardarDevolucion(dev); 
+			        Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
+	                //enviar los cambios en el hilo pricipal 	                
+					Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.IMPRIMIR,0,"La devolución no será enviada por falta de cobertura\r\n, esta será impresa y quedará pendiente de enviarse."); 
 	                return;
 	            }
-				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev); 
-				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,1,0,"".equals(respuesta)?"Desea Imprimir el comprobante de devolución?":respuesta); 
+				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev);  
+				dev.setObservacion(respuesta);
+				 guardarDevolucion(dev);
+			    Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
+				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.SEND_DATA_FROM_SERVER,0,"".equals(respuesta)?"Desea enviar la devolución?":"Se obtubieron las siguientes observaciones:"+respuesta+"\n Desea Enviar la devolución?"); 
+  
 			}else
 				Processor.notifyToView(NMApp.getController(),0,0,0,null);
 			
@@ -312,8 +324,7 @@ public class BDevolucionM extends BBaseM
 			        {                
 			            if (!SessionManager.isPhoneConnected()) 
 			            {	
-			            	pagarOnLine = false;
-			            	Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,0,0,"La devolución no será enviada por falta de cobertura\r\n, esta será impresa y quedará pendiente de enviarse.");
+			            	pagarOnLine = false; 
 			            }
 			        } 
 			       
@@ -356,9 +367,9 @@ public class BDevolucionM extends BBaseM
 						dev.setNumeroCentral(Integer.valueOf(""+numerocentral));
 						//Guardando cambios en el Dispositivo   				        
 				        guardarDevolucion(dev);
-						 
+				        Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
 		                //Salvar los cambios en el hilo pricipal
-		                Processor.notifyToView(NMApp.getController(),ControllerProtocol.ID_REQUEST_ENVIAR,imprimir?1:0,0,dev);
+		                Processor.notifyToView(NMApp.getController(),ControllerProtocol.ID_REQUEST_ENVIAR,imprimir?ControllerProtocol.IMPRIMIR:0,0,imprimir?"¿Desea imprimir comprobante devolución?":"Devolución enviada con exito.");
 					}
 					else
 					{								 
@@ -368,8 +379,9 @@ public class BDevolucionM extends BBaseM
 						dev.setOffLine(true);
 		               //Guardando cambios en el Dispositivo 
 				        guardarDevolucion(dev); 
-		                //enviar los cambios en el hilo pricipal
-		                Processor.notifyToView(NMApp.getController(),ControllerProtocol.ID_REQUEST_ENVIAR,imprimir?1:0,0,dev);
+				        Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
+				        //enviar los cambios en el hilo pricipal 	                
+						Processor.notifyToView(NMApp.getController(),ControllerProtocol.ID_REQUEST_ENVIAR,ControllerProtocol.IMPRIMIR,0,"La devolución no será enviada por falta de cobertura\r\n, esta será impresa y quedará pendiente de enviarse."); 
 					} 
 					
 				} 
