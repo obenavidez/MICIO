@@ -172,8 +172,9 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 
 	@Override
 	public Object isMatch(CharSequence constraint) {
-		// TODO Auto-generated method stub
-		return null;
+		if (getCliente().toLowerCase().contains(constraint.toString()))
+			return true;
+		return false;
 	}
 
 

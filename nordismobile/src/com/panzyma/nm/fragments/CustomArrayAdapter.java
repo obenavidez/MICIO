@@ -233,7 +233,11 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 						try 
 						{
 							E data = mOriginalValues.get(i);
-							Object obj = ((Item) data).isMatch(constraint); 
+							Object obj = null;
+							if(SpecialItem==false)
+								 obj = ((Item) data).isMatch(constraint);
+							else 
+								 obj = ((DevolucionItem) data).isMatch(constraint);
 							if (Boolean.valueOf(obj.toString()))
 								FilteredArrList.add(data);
 							results.count = FilteredArrList.size();
