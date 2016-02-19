@@ -356,7 +356,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						cboxtramitedev.setEnabled(true);
 						///////////////////////////////
 						lgroups.clear();
-						adapter.updateData(lgroups);
+						if(adapter!=null)
+							adapter.updateData(lgroups);
 						costeoMontoTotal = BigDecimal.ZERO;
 						tbxtotaldev.setText(""
 								+ costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2,
@@ -2205,8 +2206,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setCodMotivo(null);
 			devolucion.setObjMotivoID(0);  
 		}
-		devolucion.setObjClienteID(cliente.getIdCliente());
-		devolucion.setObjSucursalID(cliente.getIdSucursal());
+		if(cliente!=null){
+			devolucion.setObjClienteID(cliente.getIdCliente());
+			devolucion.setObjSucursalID(cliente.getIdSucursal());
+		}
 		devolucion.setNota(tbxNota.getText().toString());
 		devolucion.setParcial(PARTIAL);
 		devolucion.setSubtotal(costeoMontoSubTotal.longValue());
