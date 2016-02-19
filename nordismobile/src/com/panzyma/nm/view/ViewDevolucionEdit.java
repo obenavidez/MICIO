@@ -332,8 +332,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		cboxtipodev.setAdapter(adapter_tipodev);
 		cboxmotivodev.setVisibility(View.GONE);
 		labelMotivo.setVisibility(View.GONE);
-		ckboxvencidodev
-				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		ckboxvencidodev.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
@@ -829,7 +828,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						EstimarCostosDev(true);
 						CalTotalDevolucion();
 						CalMontoCargoVendedor();
-						Setfieldsdevolucion();
+						Actualizardevolucion();
 						adapter.notifyDataSetChanged();
 					}
 				});
@@ -921,6 +920,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			adp[a] = dp;
 		}
 		devolucion.setProductosDevueltos(adp.length == 0 ? null : adp);
+		Actualizardevolucion();
 	}
 
 	public void actualizarProductoBonificacion(int cantidadbonificacion) {
@@ -1198,8 +1198,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	protected void salvarDevolucion(int... arg) {
 		updateObject();
 		if (!validarDevolucion())
-			return;
-		Setfieldsdevolucion();
+			return; 
 		Message msg = new Message();
 		msg.obj = devolucion;
 		msg.what = arg.length != 0 ? arg[0] : SAVE_DATA_FROM_LOCALHOST;
@@ -1209,7 +1208,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private void enviarDevolucion(int... arg) 
 	{
 		updateObject();
-		if (!validarDevolucion()) {
+		if (!validarDevolucion()) 
+		{
 			return;
 		}
 		Message msg = new Message();
@@ -1829,7 +1829,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 									dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
 								//devolucion.setOlddata(_dev); 
 								setInformacionCliente();
-								Setfieldsdevolucion();
+								Actualizardevolucion();
 								updateControls(devolucion);
 								initExpandableListView(false);
 							}
@@ -2017,7 +2017,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					if(msg.arg1==ControllerProtocol.IMPRIMIR)
 						enviarImprimirDevolucion(msg.obj.toString(),devolucion); 
 					else
+					{
 						enviarImprimirDevolucion(msg.obj.toString(),devolucion,msg.arg1); 
+					}
 				break;
 			case ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR:
 				devolucion = (Devolucion) msg.obj;
@@ -2183,7 +2185,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		return true;
 	}
 
-	private void Setfieldsdevolucion() {
+	private void Actualizardevolucion() {
 		devolucion.setDeVencido(ckboxvencidodev.isChecked());
 		devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 		if (cboxtramitedev.getSelectedItemPosition() > 0)
@@ -2213,11 +2215,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setMontoPromocion(costeoMontoBonificacion.longValue());
 		devolucion.setMontoPromocionVen(costeoMontoBonificacionVen.longValue());
 		devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo.longValue());
-		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen
-				.longValue());
+		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen.longValue());
 		devolucion.setTotal(costeoMontoTotal.longValue());
 		devolucion.setTotalVen(costeoMontoTotalVen.longValue());
-		if (devolucion.getId() == 0) {
+		devolucion.setAplicacionInmediata(ckboxncinmeditata.isChecked());
+		if (devolucion.getId() == 0) 
+		{
 			ValorCatalogo catalogo = ModelLogic.getValorByCatalogo(
 					"EstadoDevolucion", "REGISTRADA");
 			ValorCatalogo catalogo2 = ModelLogic.getValorByCatalogo(
@@ -2232,7 +2235,6 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					&& !devolucion.getObservacion().equals(""))
 
 			if(devolucion.getObservacion()!=null && !"".equals(devolucion.getObservacion()))
-
 				devolucion.setEspecial(true);
 			if (ckboxncinmeditata.isChecked() && devolucion.isOffLine()) {
 				devolucion.setDescEstado(this.getSharedPreferences(
@@ -2244,6 +2246,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						.getString("EtiquetaDevolucionesOfflineNCI", ""));
 			}
 		}
+		devolucion.setObjEstadoID(Integer.valueOf(this.getSharedPreferences(
+						"SystemParams", android.content.Context.MODE_PRIVATE)
+						.getString("ID_CONCEPTO_DEVOLUCIONNV", "0")));
 	}
 
 	private void EditarNotaDevolucion() {
@@ -2512,8 +2517,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
 				tbxRefNum.setText(""+devolucion.getReferencia());
 				tbxCentralNum.setText(""+devolucion.getNumeroCentral());
-				tbxNombreDelCliente.setText(devolucion.getNombreCliente());
-				
+				tbxNombreDelCliente.setText(devolucion.getNombreCliente());				
 				
 				if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0)
 					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
@@ -2522,7 +2526,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					cboxmotivodev.setAdapter(adapter_motdev);
 				} else {
 					adapter_motdev.notifyDataSetChanged();
-				}					
+				}			
+				
+				cboxmotivodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
+				
 				int index=0;
 				if(devolucion.getCodMotivo()!=null)
 				{
@@ -2555,7 +2562,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					adapter_tramite.setSelectedPosition(index);
 					adapter_tramite.notifyDataSetChanged();
 					
-				}				
+				}		
+				
 				index=0; 				
 				cboxtipodev.setSelection(index=devolucion.isParcial()?2:1);
 				adapter_tipodev.setSelectedPosition(index);
@@ -2563,7 +2571,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				
 				tbxPedidoNum.setText(""+devolucion.getNumeroPedidoDevuelto());
 				tbxNota.setText(""+devolucion.getNota());
+				ckboxncinmeditata.setChecked(devolucion.isAplicacionInmediata());
 				
+				cboxmotivodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
+				cboxtramitedev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
+				cboxtipodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
+				ckboxncinmeditata.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
 			}
 		});
 		

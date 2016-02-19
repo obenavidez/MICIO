@@ -268,6 +268,19 @@ public class BDevolucionM extends BBaseM
 					dev.setCodEstado("PAGADO_OFFLINE");
 					dev.setDescEstado("Registrado"); 	
 					dev.setOffLine(true);
+					
+					if (dev.isOffLine()) 
+						dev.setDescEstado(NMApp.getContext().getSharedPreferences(
+								"SystemParams", android.content.Context.MODE_PRIVATE)
+								.getString("EtiquetaDevolucionesOffline", "")); 
+					
+					if (dev.isAplicacionInmediata() && dev.isOffLine()) 
+						dev.setDescEstado(NMApp.getContext().getSharedPreferences(
+								"SystemParams", android.content.Context.MODE_PRIVATE)
+								.getString("EtiquetaDevolucionesOfflineNCI", ""));
+				
+					
+					
 	               //Guardando cambios en el Dispositivo 
 			        guardarDevolucion(dev); 
 			        Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
@@ -277,6 +290,10 @@ public class BDevolucionM extends BBaseM
 	            }
 				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev);  
 				dev.setObservacion(respuesta);
+				
+				if(respuesta!=null && !"".equals(respuesta))
+					dev.setEspecial(true);
+				
 				guardarDevolucion(dev);
 			    Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
 				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.ENVIARDEVOLUCION,0,"".equals(respuesta)?"Desea enviar la devolución?":"Se obtubieron las siguientes observaciones:"+respuesta+"\n Desea Enviar la devolución?"); 
