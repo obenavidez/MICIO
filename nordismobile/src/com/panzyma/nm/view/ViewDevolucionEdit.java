@@ -344,8 +344,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								: View.VISIBLE);
 						cboxmotivodev.setSelection(isChecked ? 0
 								: cboxmotivodev.getSelectedItemPosition());
-						adapter_motdev.setSelectedPosition(isChecked ? 0
-								: cboxmotivodev.getSelectedItemPosition());
+						if(adapter_motdev!=null)
+							adapter_motdev.setSelectedPosition(isChecked ? 0 : cboxmotivodev.getSelectedItemPosition());
 						devolucion.setDescMotivo(isChecked ? devolucion
 								.getDescMotivo() : null);
 						devolucion.setCodMotivo(isChecked ? devolucion
