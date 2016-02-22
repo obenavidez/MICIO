@@ -14,7 +14,7 @@
         <ImageView
             android:id="@+id/imageView0"
             android:layout_height="wrap_content"     
-            android:src="@drawable/rgb" />
+            android:src="@drawable/ic_launcher_large" />
     </TableRow>
     
     <include
