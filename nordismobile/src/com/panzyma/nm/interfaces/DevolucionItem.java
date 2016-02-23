@@ -1,5 +1,7 @@
 package com.panzyma.nm.interfaces;
 
+import com.panzyma.nm.serviceproxy.Devolucion;
+
 public interface DevolucionItem extends BaseHolder {
 
 	String getItemNumero();
@@ -14,7 +16,7 @@ public interface DevolucionItem extends BaseHolder {
 	
 	boolean getItemOffline(); 
 	
-//	long getItemCustomerid();
+    int getReferencia();
 	
 	long getItemsucursalid();
 }

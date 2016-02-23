@@ -1,7 +1,7 @@
 package com.panzyma.nm.view;
- 
+
 import java.util.ArrayList;
-import java.util.List; 
+import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BDevolucionM;
@@ -19,13 +19,15 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.logic.PojoDevolucion;
+import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.serviceproxy.Devolucion;
-import com.panzyma.nm.view.adapter.InvokeBridge; 
+import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmDevolucion;
 import com.panzyma.nordismobile.R;
 
 import static com.panzyma.nm.controller.ControllerProtocol.*;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -40,7 +42,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SearchView.OnQueryTextListener; 
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -54,14 +56,14 @@ import android.widget.AdapterView.OnItemClickListener;
 
 @SuppressWarnings("rawtypes")
 @InvokeBridge(bridgeName = "BDevolucionM")
-public class ViewDevoluciones extends ActionBarActivity implements ListaFragment.OnItemSelectedListener, Handler.Callback {
+public class ViewDevoluciones extends ActionBarActivity implements
+		ListaFragment.OnItemSelectedListener, Handler.Callback {
 
-	
-	//VARIABLES
+	// VARIABLES
 	public enum FragmentActive {
-		LIST,EDIT,FICHACLIENTE,CONSULTAR_CUENTA_COBRAR
+		LIST, EDIT, FICHACLIENTE, CONSULTAR_CUENTA_COBRAR
 	};
-	
+
 	public static final String SERIALIZE_DEVOLUCION = "devolucion";
 
 	private static final int NUEVO_DEVOLUCION = 0;
@@ -78,8 +80,8 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	CharSequence tituloApp;
 	ViewDevoluciones vd;
 	private FragmentActive fragmentActive = null;
-	
-	//Controles
+
+	// Controles
 	DrawerLayout drawerLayout;
 	ListView drawerList;
 	TextView gridheader;
@@ -91,94 +93,109 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	vmDevolucion item_selected = null;
 	ProgressDialog pDialog;
 	List<vmDevolucion> devoluciones = new ArrayList<vmDevolucion>();
-	int posicion ;
+	int posicion;
 	private static CustomDialog dlg;
-	
+
 	Intent intent;
 	Bundle b;
 	protected int positioncache;
-	
+
 	Devolucion devolucion;
 	private int request_code;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//Establecemos nuestras variables de entorno
+		// Establecemos nuestras variables de entorno
 		NMApp.getController().setView(this);
 		SessionManager.setContext(this);
-		UserSessionManager.setContext(this);		
+		UserSessionManager.setContext(this);
 		setContentView(R.layout.layout_client_fragment);
 		vd = this;
 		CreateMenu();
-		
+
 		Load_Data(LOAD_DATA_FROM_LOCALHOST);
-		
+
 		fragmentActive = FragmentActive.LIST;
-		
-		firstFragment = new ListaFragment<vmDevolucion>(true);		
-		
-		//Si es Phone
+
+		firstFragment = new ListaFragment<vmDevolucion>(true);
+
+		// Si es Phone
 		if (findViewById(R.id.fragment_container) != null) {
 			getSupportFragmentManager().beginTransaction()
-			.replace(R.id.fragment_container, firstFragment)
-			.commit();
+					.replace(R.id.fragment_container, firstFragment).commit();
 		}
-		
-		gridheader = footerView =  (TextView) findViewById(R.id.ctextv_gridheader);
-		
+
+		gridheader = footerView = (TextView) findViewById(R.id.ctextv_gridheader);
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleMessage(Message msg) {
 		boolean result = false;
 		ArrayList<vmDevolucion> list = null;
-		
+
 		HideDialogos();
-		
+
 		switch (msg.what) {
-		
-			case C_DATA:
-				list = (ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>() : msg.obj);
-				SetList(list);
-				if(msg.arg1 == msg.arg2 && msg.arg2 == -1) {
-					AppDialog.showMessage((ViewDevoluciones)NMApp.getController().getView(), "Información.",
-							"Registro(s) borrado(s) exitosamente!",
-							DialogType.DIALOGO_ALERTA);
-				}
-			break;
-		
-			case ERROR:
-				AppDialog.showMessage((ViewDevoluciones)NMApp.getController().getView(), ((ErrorMessage) msg.obj).getTittle(),
-						((ErrorMessage) msg.obj).getMessage(),
+
+		case C_DATA:
+			list = (ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>()
+					: msg.obj);
+			SetList(list);
+			if (msg.arg1 == msg.arg2 && msg.arg2 == -1) {
+				AppDialog.showMessage((ViewDevoluciones) NMApp.getController()
+						.getView(), "Información.",
+						"Registro(s) borrado(s) exitosamente!",
 						DialogType.DIALOGO_ALERTA);
-				final ErrorMessage error = ((ErrorMessage) msg.obj);
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						// pDialog.hide();
-						dlg = new CustomDialog((ViewDevoluciones)NMApp.getController().getView() , error.getMessage()
-								+ error.getCause(), false, NOTIFICATION_DIALOG);
-						dlg.show();
-					}
-				});
-				break;
-			case AFTERGETOBSERVACIONDEV:
-				Message msg2 = new Message();
-				Bundle b = new Bundle();
-				msg2.obj = msg.obj;
-				msg2.what  = ControllerProtocol.ENVIARDEVOLUCION;
-				com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg2);				
-				break;			
+			}
+			break;
+
+		case ERROR:
+			AppDialog.showMessage((ViewDevoluciones) NMApp.getController()
+					.getView(), ((ErrorMessage) msg.obj).getTittle(),
+					((ErrorMessage) msg.obj).getMessage(),
+					DialogType.DIALOGO_ALERTA);
+			final ErrorMessage error = ((ErrorMessage) msg.obj);
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					// pDialog.hide();
+					dlg = new CustomDialog(vd, error.getMessage()
+							+ error.getCause(), false, NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+			break;
+		case AFTERGETOBSERVACIONDEV:
+			if (msg.arg1 == ControllerProtocol.IMPRIMIR) {
+				enviarImprimirDevolucion(msg.obj.toString(), devolucion);
+			} else if (msg.arg1 == ControllerProtocol.ENVIARDEVOLUCION) {
+				enviarImprimirDevolucion(msg.obj.toString(), devolucion,
+						ControllerProtocol.ENVIARDEVOLUCION);
+			}
+			break;
+		case ControllerProtocol.ID_REQUEST_ENVIAR:
+			if (msg.arg1 == ControllerProtocol.IMPRIMIR)
+				enviarImprimirDevolucion(msg.obj.toString(), devolucion);
+			else {
+				enviarImprimirDevolucion(msg.obj.toString(), devolucion,
+						msg.arg1);
+			}
+			break;
 		}
-		return result ;
+		return result;
 	}
-	
+
 	@Override
 	public void onItemSelected(Object obj, int position) {
-		item_selected = (vmDevolucion)obj;
-		 posicion = position;
+		item_selected = (vmDevolucion) obj;
+		if (devolucion != null
+				&& devolucion.getReferencia() != item_selected.getReferencia())
+			devolucion = ModelDevolucion.getDevolucionbyID(item_selected
+					.getId());
+		posicion = position;
 	}
 
 	@SuppressLint("NewApi")
@@ -196,7 +213,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 				customArrayAdapter = ((Filterable) getSupportFragmentManager()
 						.findFragmentById(R.id.fragment_container))
 						.getAdapter();
-																
+
 				searchView.setOnQueryTextListener(new OnQueryTextListener() {
 					@Override
 					public boolean onQueryTextChange(String s) {
@@ -215,7 +232,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 
 		return true;
 	}
-	
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.findItem(R.id.action_search).setVisible(true);
@@ -232,145 +249,174 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 
 		return true;
 	}
+
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		drawerToggle.onConfigurationChanged(newConfig);
 	}
-	
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		drawerToggle.syncState();
 	}
 
-	
-	private void CreateMenu(){
+	private void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
-		opcionesMenu = getResources().getStringArray(R.array.devoluciones_lista_options);
-		
+		opcionesMenu = getResources().getStringArray(
+				R.array.devoluciones_lista_options);
+
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// Buscamos nuestro menu lateral
 		drawerList = (ListView) findViewById(R.id.left_drawer);
 
-		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
-		
+		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
+				.getThemedContext(), android.R.layout.simple_list_item_1,
+				opcionesMenu));
+
 		// Añadimos Funciones al menú laterak
 		drawerList.setOnItemClickListener(new OnItemClickListener() {
 
 			@SuppressLint("NewApi")
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-				
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
 				drawerList.setItemChecked(position, true);
 				drawerLayout.closeDrawers();
 				tituloSeccion = opcionesMenu[position];
 				getSupportActionBar().setTitle(tituloSeccion);
-				
+
 				// SELECCIONAR LA POSICION DEL RECIBO SELECCIONADO ACTUALMENTE
-				positioncache = customArrayAdapter.getSelectedPosition(); 
-				//int pos = customArrayAdapter.getSelectedPosition();
+				positioncache = customArrayAdapter.getSelectedPosition();
+				// int pos = customArrayAdapter.getSelectedPosition();
 				// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
-				item_selected = (vmDevolucion) customArrayAdapter.getItem(positioncache);
-				
-				
-				
-				
+				item_selected = (vmDevolucion) customArrayAdapter
+						.getItem(positioncache);
+
 				switch (position) {
-					case NUEVO_DEVOLUCION : 
-						intent = new Intent(ViewDevoluciones.this, ViewDevolucionEdit.class);
-						intent.putExtra("requestcode", NUEVO_DEVOLUCION);
-						startActivityForResult(intent, NUEVO_DEVOLUCION);
-						break;
-					case ABRIR_DEVOLUCION : 
-						abrirDevolucion();
-						
-						break;
-					case BORRAR_DEVOLUCION:
-						if (item_selected == null) {
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(vd, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						if(item_selected.isOffLine()){
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(vd, "Información", "El comprobante fue emitida offline.\n",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						if(!item_selected.getEstado().equals("REGISTRADA")){
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(vd, "Información", "Este registro no tiene estado Registrado.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						Message msg = new Message();
-						Bundle b = new Bundle();						
-						b.putInt("id", (int) item_selected.getId());
-						msg.setData(b);
-						msg.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
-						NMApp.getController().getInboxHandler().sendMessage(msg);
-						break;
-					case ENVIAR_DEVOLUCION :
-						if (item_selected == null) {
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(vd, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						BDevolucionM.beforeSend(item_selected.getId());
-						break;
-					case IMPRIMIR_COMPROBANTE:
-						if (item_selected == null) {
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(vd, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						BDevolucionM.ImprimirDevolucion(item_selected.getId(), false);
-						break;
-					case BORRAR_ENVIADAS: 
-						if (item_selected == null) {
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(vd, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						
-						Message msg2 = new Message();
-						Bundle b2 = new Bundle();						
-						b2.putInt("id", -1);
-						msg2.setData(b2);
-						msg2.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
-						NMApp.getController().getInboxHandler().sendMessage(msg2);
-						break;
-					case FICHA_DEL_CLIENTE:
-						if (item_selected == null) {
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(vd, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						
-						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController())){
-							fragmentActive = FragmentActive.FICHACLIENTE;
-							ShowCustomerDetails();
-			            }
-						break;
-					case CUENTAS_POR_COBRAR:
-						if (item_selected == null) {
-							drawerLayout.closeDrawers();
-							AppDialog.showMessage(vd, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-			            {
-							fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
-							LOAD_CUENTASXPAGAR();
-			            }
-						
-						break;
-					case CERRAR :
-						finish();
-						break;
+				case NUEVO_DEVOLUCION:
+					intent = new Intent(ViewDevoluciones.this,
+							ViewDevolucionEdit.class);
+					intent.putExtra("requestcode", NUEVO_DEVOLUCION);
+					startActivityForResult(intent, NUEVO_DEVOLUCION);
+					break;
+				case ABRIR_DEVOLUCION:
+					abrirDevolucion();
+
+					break;
+				case BORRAR_DEVOLUCION:
+					if (item_selected == null) {
+						drawerLayout.closeDrawers();
+						AppDialog.showMessage(vd, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (item_selected.isOffLine()) {
+						drawerLayout.closeDrawers();
+						AppDialog.showMessage(vd, "Información",
+								"El comprobante fue emitida offline.\n",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (!item_selected.getEstado().equals("REGISTRADA")) {
+						drawerLayout.closeDrawers();
+						AppDialog.showMessage(vd, "Información",
+								"Este registro no tiene estado Registrado.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					Message msg = new Message();
+					Bundle b = new Bundle();
+					b.putInt("id", (int) item_selected.getId());
+					msg.setData(b);
+					msg.what = ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
+					NMApp.getController().getInboxHandler().sendMessage(msg);
+					break;
+				case ENVIAR_DEVOLUCION:
+					if (item_selected == null) {
+						drawerLayout.closeDrawers();
+						AppDialog.showMessage(vd, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					BDevolucionM.beforeSend(item_selected.getId());
+					break;
+				case IMPRIMIR_COMPROBANTE:
+					if (item_selected == null) {
+						drawerLayout.closeDrawers();
+						AppDialog.showMessage(vd, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (devolucion.getNumeroCentral() == 0)
+						enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+					else
+						enviarImprimirDevolucion(
+								"Se mandara a imprimir el comprobante de la Devolución",
+								devolucion);
+					/*
+					 * BDevolucionM.ImprimirDevolucion(item_selected.getId(),
+					 * false);
+					 */
+					break;
+				case BORRAR_ENVIADAS:
+					if (item_selected == null) {
+						drawerLayout.closeDrawers();
+						AppDialog.showMessage(vd, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+
+					Message msg2 = new Message();
+					Bundle b2 = new Bundle();
+					b2.putInt("id", -1);
+					msg2.setData(b2);
+					msg2.what = ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
+					NMApp.getController().getInboxHandler().sendMessage(msg2);
+					break;
+				case FICHA_DEL_CLIENTE:
+					if (item_selected == null) {
+						drawerLayout.closeDrawers();
+						AppDialog.showMessage(vd, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						fragmentActive = FragmentActive.FICHACLIENTE;
+						ShowCustomerDetails();
+					}
+					break;
+				case CUENTAS_POR_COBRAR:
+					if (item_selected == null) {
+						drawerLayout.closeDrawers();
+						AppDialog.showMessage(vd, "Información",
+								"Seleccione un registro.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+						LOAD_CUENTASXPAGAR();
+					}
+
+					break;
+				case CERRAR:
+					finish();
+					break;
 				}
 			}
 		});
-		
+
 		tituloSeccion = getTitle();
 		tituloApp = getTitle();
 
@@ -391,15 +437,23 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 
 			}
 		};
-		
+
 		// establecemos el listener para el dragable ....
 		drawerLayout.setDrawerListener(drawerToggle);
-		
+
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		
+
 	}
-	
+
+	private void enviarDevolucion(int... arg) {
+		Message msg = new Message();
+		msg.obj = devolucion;
+		msg.what = arg.length != 0 ? arg[0]
+				: ControllerProtocol.ENVIARDEVOLUCION;
+		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
+	}
+
 	@SuppressWarnings("unchecked")
 	private void Load_Data(int what) {
 		try {
@@ -418,14 +472,21 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 
 	private void SetList(List<vmDevolucion> list) {
 		devoluciones = list;
-		firstFragment.setItems(devoluciones,true);
-		gridheader.setText(String.format("LISTA DEVOLUCIONES (%s)", devoluciones.size()));
+		firstFragment.setItems(devoluciones, true);
+		gridheader.setText(String.format("LISTA DEVOLUCIONES (%s)",
+				devoluciones.size()));
+		if (list != null && list.size() > 0) {
+			vmDevolucion dev = devoluciones.get(0);
+			devolucion = ModelDevolucion.getDevolucionbyID(dev.getId());
+		}
+
 	}
-	
+
 	private void ShowCustomerDetails() {
 		Bundle args = new Bundle();
 		args.putInt(FichaClienteFragment.ARG_POSITION, this.posicion);
-		args.putLong(FichaClienteFragment.ARG_SUCURSAL, item_selected.getIdSucursal());
+		args.putLong(FichaClienteFragment.ARG_SUCURSAL,
+				item_selected.getIdSucursal());
 
 		// establecemos el titulo
 		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
@@ -433,7 +494,7 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		FichaClienteFragment ficha;
 		FragmentTransaction transaction = getSupportFragmentManager()
 				.beginTransaction();
- 
+
 		if (findViewById(R.id.dynamic_fragment) != null) {
 		} else {
 			Fragment fragment = getSupportFragmentManager().findFragmentById(
@@ -452,35 +513,39 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	}
 
 	public void LOAD_CUENTASXPAGAR() {
-//		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
-//		Bundle msg = new Bundle();
-//		FragmentTransaction transaction = getSupportFragmentManager()
-//				.beginTransaction();
-//		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, this.posicion);
-//		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,this.item_selected.getIdSucursal());
-//		cuentasPorCobrar.setArguments(msg);
-//		transaction.replace(R.id.fragment_container, cuentasPorCobrar);
-//		transaction.addToBackStack(null);
-//		transaction.commit();
-		
-		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		
-		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-		if (prev != null){
+		// CuentasPorCobrarFragment cuentasPorCobrar = new
+		// CuentasPorCobrarFragment();
+		// Bundle msg = new Bundle();
+		// FragmentTransaction transaction = getSupportFragmentManager()
+		// .beginTransaction();
+		// msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, this.posicion);
+		// msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,this.item_selected.getIdSucursal());
+		// cuentasPorCobrar.setArguments(msg);
+		// transaction.replace(R.id.fragment_container, cuentasPorCobrar);
+		// transaction.addToBackStack(null);
+		// transaction.commit();
+
+		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment
+				.Instancia();
+		FragmentTransaction transaction = getSupportFragmentManager()
+				.beginTransaction();
+
+		android.support.v4.app.Fragment prev = getSupportFragmentManager()
+				.findFragmentByTag("dialog");
+		if (prev != null) {
 			transaction.remove(prev);
 		}
-		
+
 		Bundle msg = new Bundle();
 		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
-		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, item_selected.getIdSucursal());
-		
-		
+		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
+				item_selected.getIdSucursal());
+
 		transaction.addToBackStack(null);
-		cuentasPorCobrar.setArguments(msg); 
-	    cuentasPorCobrar.show(transaction, "dialog");
+		cuentasPorCobrar.setArguments(msg);
+		cuentasPorCobrar.show(transaction, "dialog");
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		Fragment fragment = getSupportFragmentManager().findFragmentById(
@@ -488,22 +553,23 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		if (fragment instanceof FichaClienteFragment
 				|| fragment instanceof CuentasPorCobrarFragment) {
 			gridheader.setVisibility(View.VISIBLE);
-			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-			//transaction.detach(fragment);
+			FragmentTransaction transaction = getSupportFragmentManager()
+					.beginTransaction();
+			// transaction.detach(fragment);
 			transaction.replace(R.id.fragment_container, firstFragment);
 			transaction.addToBackStack(null);
 			transaction.commit();
 			fragmentActive = FragmentActive.LIST;
 			getSupportActionBar().show();
-		} 
-		else 
+		} else
 			FINISH_ACTIVITY();
 	}
-	
+
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
-			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+			Fragment fragment = getSupportFragmentManager().findFragmentById(
+					R.id.fragment_container);
 			if (fragment instanceof FichaClienteFragment) {
 				return true;
 			} else {
@@ -515,10 +581,10 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-	
+
 	private void FINISH_ACTIVITY() {
-		//ocultarDialogos();
-		//Log.d(TAG, "Activity quitting");
+		// ocultarDialogos();
+		// Log.d(TAG, "Activity quitting");
 		if (pDialog != null)
 			pDialog.dismiss();
 		NMApp.getThreadPool().stopRequestAllWorkers();
@@ -526,39 +592,38 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 	}
 
 	public void HideDialogos() {
-		if (dlg != null && dlg.isShowing())
+		if (dlg != null)
 			dlg.dismiss();
-		if (pDialog != null && pDialog.isShowing())
+		if (pDialog != null)
 			pDialog.dismiss();
 	}
 
-	public void abrirDevolucion()
-	{
-		
-		try 
-		{ 
+	public void abrirDevolucion() {
+
+		try {
 			if (item_selected == null) {
 				drawerLayout.closeDrawers();
-				AppDialog.showMessage(this, "Información", "Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+				AppDialog.showMessage(this, "Información",
+						"Seleccione un registro.", DialogType.DIALOGO_ALERTA);
 				return;
 			}
-			
-			positioncache = customArrayAdapter.getSelectedPosition(); 
-			intent = new Intent(ViewDevoluciones.this,ViewDevolucionEdit.class);
+
+			positioncache = customArrayAdapter.getSelectedPosition();
+			intent = new Intent(ViewDevoluciones.this, ViewDevolucionEdit.class);
 			b = new Bundle();
-			b.putLong("iddevolucion", item_selected.getId()); 
+			b.putLong("iddevolucion", item_selected.getId());
 			intent.putExtras(b);
 			intent.putExtra("requestcode", ABRIR_DEVOLUCION);
-			startActivityForResult(intent, ABRIR_DEVOLUCION); 
+			startActivityForResult(intent, ABRIR_DEVOLUCION);
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			AppDialog.showMessage(this, "Información",
-					e.getMessage(), DialogType.DIALOGO_ALERTA);
-		} 
-		
+			AppDialog.showMessage(this, "Información", e.getMessage(),
+					DialogType.DIALOGO_ALERTA);
+		}
+
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestcode, int resultcode, Intent data) {
 		super.onActivityResult(requestcode, resultcode, data);
@@ -567,14 +632,17 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			UserSessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
-			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code) && data != null);
-				Bundle bundle = data.getExtras();
-				bundle.setClassLoader(com.panzyma.nm.serviceproxy.Devolucion.class.getClassLoader());				
-				PojoDevolucion dev = (PojoDevolucion)bundle.getSerializable(SERIALIZE_DEVOLUCION);				
-				establecer(dev, false);
+			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code)
+					&& data != null)
+				;
+			Bundle bundle = data.getExtras();
+			bundle.setClassLoader(com.panzyma.nm.serviceproxy.Devolucion.class
+					.getClassLoader());
+			PojoDevolucion dev = (PojoDevolucion) bundle
+					.getSerializable(SERIALIZE_DEVOLUCION);
+			establecer(dev, false);
 
-		} catch (Exception e) 
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if (drawerLayout != null && drawerLayout.isShown())
@@ -592,35 +660,35 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 			int requestCode) {
 		super.startActivityFromFragment(fragment, intent, requestCode);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "unused" })
-	private void establecer(final Object _obj, final boolean thread,final int...what) {
+	private void establecer(final Object _obj, final boolean thread,
+			final int... what) {
 		if (_obj == null)
 			return;
 		if (_obj instanceof Message) {
 			Message msg = (Message) _obj;
-			devoluciones = ((ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>() : msg.obj));
+			devoluciones = ((ArrayList<vmDevolucion>) ((msg.obj == null) ? new ArrayList<vmDevolucion>()
+					: msg.obj));
 			positioncache = 0;
-		} else if (_obj instanceof PojoDevolucion) 
-		{
+		} else if (_obj instanceof PojoDevolucion) {
 			PojoDevolucion d = (PojoDevolucion) _obj;
 			vmDevolucion objDev = new vmDevolucion(d.getId(),
 					d.getReferencia(), d.getFecha(), d.getNombreCliente(),
 					Float.valueOf(d.getTotal()), d.getCodigoEstado(),
-					d.getClienteId(), d.isOffLine(), d.getSucursalId());
-			if (ABRIR_DEVOLUCION == request_code 
-					|| (what != null 
-						&& what.length != 0 
-						&& ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER == what[0])) {				
-				devoluciones.set(positioncache,objDev);				
+					d.getClienteId(), d.isOffLine(), d.getSucursalId(),
+					d.getReferencia());
+			if (ABRIR_DEVOLUCION == request_code
+					|| (what != null && what.length != 0 && ControllerProtocol.ID_REQUEST_UPDATEITEM_FROMSERVER == what[0])) {
+				devoluciones.set(positioncache, objDev);
 
 			} else if (NUEVO_DEVOLUCION == request_code) {
 				devoluciones.add(objDev);
-				positioncache = devoluciones.size() - 1; 
+				positioncache = devoluciones.size() - 1;
 				customArrayAdapter.setSelectedPosition(positioncache);
 			}
 		}
-		
+
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -629,5 +697,47 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 		});
 
 	}
-	
+
+	private void enviarImprimirDevolucion(final String mensaje,
+			final Devolucion devolucion, final int... what) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+
+				AppDialog.showMessage(vd, "", "" + mensaje,
+						AppDialog.DialogType.DIALOGO_CONFIRMACION,
+						new AppDialog.OnButtonClickListener() {
+							@Override
+							public void onButtonClick(AlertDialog _dialog,
+									int actionId) {
+								if (actionId == AppDialog.OK_BUTTOM) {
+									try {
+										_dialog.dismiss();
+										Message msg = new Message();
+										Bundle b = new Bundle();
+										msg.obj = devolucion;
+										msg.obj = devolucion;
+										msg.what = what.length != 0 ? what[0]
+												: ControllerProtocol.IMPRIMIR;
+										NMApp.getController().getInboxHandler()
+												.sendMessage(msg);
+									} catch (Exception e) {
+										NMApp.getController()
+												.notifyOutboxHandlers(
+														ControllerProtocol.ERROR,
+														0,
+														0,
+														new ErrorMessage(
+																"Error al intentar imprimir el comprobante de la4 devolución",
+																e.getMessage(),
+																e.getMessage()));
+									}
+								}
+							}
+						});
+			}
+		});
+
+	}
+
 }

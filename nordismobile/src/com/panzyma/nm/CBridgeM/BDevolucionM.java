@@ -80,9 +80,11 @@ public class BDevolucionM extends BBaseM
 			case ControllerProtocol.DELETE_DATA_FROM_LOCALHOST:
 				Integer id = msg.getData().getInt("id");	
 				deleteDevolucion(id);
+				break;
 			case  ControllerProtocol.IMPRIMIR:
 				if(msg.obj instanceof Devolucion)
 					ImprimirDevolucion((Devolucion)msg.obj, true);
+				break;
 			default:
 				break;
 		}

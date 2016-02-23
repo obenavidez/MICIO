@@ -127,9 +127,8 @@ public class NMNetWork {
 				{ 
 						UserSessionManager.HAS_ERROR=true;
 						SessionManager.hasError=true;
-						SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());
-						Thread.sleep(1000);
-						NMApp.getController()._notifyOutboxHandlers(ERROR, 0, 0,error); 
+						SessionManager.setErrorAuntentication(error.getTittle()+"\n\t\t"+error.getMessage());						 
+						NMApp.getController()._notifyOutboxHandlers(ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,error); 
 						return false;
 				} catch (Exception e) { 
 					e.printStackTrace();

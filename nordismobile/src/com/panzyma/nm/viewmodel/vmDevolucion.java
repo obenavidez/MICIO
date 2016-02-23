@@ -32,6 +32,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	private boolean OffLine;
 //	private int customer_id;
 	private long idSucursal;
+	private int referencia;
 
 	
 	
@@ -54,7 +55,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 //	}
 
 	public vmDevolucion(long id, int numeroCentral,  String fecha, String cliente,
-			Float total, String estado, long cliente_id,boolean offline , long idSucursal) {
+			Float total, String estado, long cliente_id,boolean offline , long idSucursal, int referencia) {
 		super();
 		this.id = id;
 		NumeroCentral = numeroCentral;
@@ -65,7 +66,7 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 		this.cliente_id = cliente_id;
 		this.OffLine = offline;
 		this.idSucursal = idSucursal;
-//		this.customer_id=1002548;
+		this.referencia = referencia;
 	}
 
 
@@ -240,6 +241,12 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 
 	public void setIdSucursal(long idSucursal) {
 		this.idSucursal = idSucursal;
+	}
+
+	@Override
+	public int getReferencia() {
+		// TODO Auto-generated method stub
+		return this.referencia;
 	}
 
 }

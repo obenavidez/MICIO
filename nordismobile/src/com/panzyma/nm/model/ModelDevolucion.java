@@ -96,7 +96,7 @@ public class ModelDevolucion {
 				NMConfig.Devolucion.nombreCliente, NMConfig.Devolucion.total,
 				NMConfig.Devolucion.codEstado,
 				NMConfig.Devolucion.objClienteID, NMConfig.Devolucion.offLine,
-				NMConfig.Devolucion.objSucursalID };
+				NMConfig.Devolucion.objSucursalID, NMConfig.Devolucion.referencia};
 
 		ArrayList<vmDevolucion> lista = new ArrayList<vmDevolucion>();
 
@@ -117,8 +117,9 @@ public class ModelDevolucion {
 						Float.valueOf(cur.getString(cur.getColumnIndex(projection[4]))), cur.getString(cur.getColumnIndex(projection[5])),
 						Long.parseLong(cur.getString(cur.getColumnIndex(projection[6]))), 
 						Boolean.parseBoolean(cur.getString(cur.getColumnIndex(projection[7]))), 
-						Long.parseLong(cur.getString(cur.getColumnIndex(projection[8])))
-					));
+						Long.parseLong(cur.getString(cur.getColumnIndex(projection[8]))),
+								Integer.parseInt(cur.getString(cur.getColumnIndex(projection[9]))))
+					);
 
 			} while (cur.moveToNext());
 		}
