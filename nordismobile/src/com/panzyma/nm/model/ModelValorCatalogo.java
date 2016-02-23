@@ -3,6 +3,7 @@ package com.panzyma.nm.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.datastore.DatabaseProvider;
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
@@ -57,4 +58,45 @@ public class ModelValorCatalogo {
 		return catalogo;
 	}
 
+public synchronized static ValorCatalogo getValorCatalogByCodigo ( String catalogName,String Codigo)
+{
+		
+		ValorCatalogo valorCatalogo = null ;
+		Catalogo catalogo = new Catalogo();
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT id , ");
+		query.append("        codigo , ");
+		query.append("        descripcion ");
+		query.append(" FROM ValorCatalogo vc ");
+		query.append(" WHERE vc.Codigo ="+Codigo); 
+		query.append(" AND vc.objCatalogoID = (  ");
+		query.append(String.format(" SELECT Id FROM CATALOGO c WHERE c.NombreCatalogo = '%s' ", catalogName));
+		query.append(" )   ");
+
+		
+		SQLiteDatabase db = DatabaseProvider.Helper.getDatabase(NMApp.getContext());
+		try {
+			Cursor c = DatabaseProvider.query( db, query.toString());
+			
+			// Nos aseguramos de que existe al menos un registro
+			if (c.moveToFirst()) {
+				// Recorremos el cursor hasta que no haya más registros
+				do {
+					valorCatalogo = new ValorCatalogo (c.getInt(0),
+							c.getString(1),
+							c.getString(2)); 
+				} while (c.moveToNext());
+			} 
+		} catch (Exception e) {
+			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
+		} finally {
+			if( db != null  )
+			{	
+				if(db.isOpen())				
+					db.close();
+				db = null;
+			}
+		}
+		return valorCatalogo;
+	}
 }

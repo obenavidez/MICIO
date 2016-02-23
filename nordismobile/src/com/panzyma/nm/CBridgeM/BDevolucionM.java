@@ -21,12 +21,14 @@ import com.panzyma.nm.model.ModelConfiguracion;
 import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelPedido; 
+import com.panzyma.nm.model.ModelValorCatalogo;
 import com.panzyma.nm.serviceproxy.Catalogo;
 import com.panzyma.nm.serviceproxy.Cliente;
 import com.panzyma.nm.serviceproxy.Devolucion;
 import com.panzyma.nm.serviceproxy.DevolucionProducto;
 import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Pedido;
+import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.viewmodel.vmDevolucionEdit;
 
@@ -374,6 +376,7 @@ public class BDevolucionM extends BBaseM
 													  + respuesta
 													 )
 							      ); 
+							return;
 						}
 						else if (!respuesta.contains("ID:")) 
 		                {
@@ -385,10 +388,18 @@ public class BDevolucionM extends BBaseM
 													  + respuesta
 													 )
 							      ); 
+							return;
 		                }
 						
 						String numerocentral=respuesta.split(":")[1];
 						dev.setNumeroCentral(Integer.valueOf(""+numerocentral));
+						
+						dev.setCodEstado("ENVIADA"); 
+			            ValorCatalogo  vc=ModelValorCatalogo.getValorCatalogByCodigo("EstadoDevolucion","ENVIADA");
+			            dev.setObjEstadoID(vc.getId());
+			            dev.setDescEstado(vc.getDescripcion());
+			   
+						
 						//Guardando cambios en el Dispositivo   				        
 				        guardarDevolucion(dev);
 				        Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
@@ -744,7 +755,15 @@ public class BDevolucionM extends BBaseM
             dev.setId(0);
             dev.setReferencia(idMovil);
             dev.setCodEstado("REGISTRADA"); 
+            ValorCatalogo  vc=ModelValorCatalogo.getValorCatalogByCodigo("EstadoDevolucion","REGISTRADA");
+            dev.setObjEstadoID(vc.getId());
+            dev.setDescEstado(vc.getDescripcion());
+            
+            vc=ModelValorCatalogo.getValorCatalogByCodigo("CausaEstadoDevolucion","REGISTRADA");
+            dev.setObjCausaEstadoID(vc.Id);
+            dev.setDescCausaEstado(vc.getDescripcion()); 
             dev.setNumeroCentral(0); 
+            
         }    	
 		 DatabaseProvider.RegistrarDevolucion(dev, NMApp.getContext());
 		 ModelConfiguracion.ActualizarSecuenciaDevolucion(devolucionmax, dev.isDeVencido());
@@ -782,7 +801,16 @@ public class BDevolucionM extends BBaseM
 					            if(dev.getId()==0)
 					            	dev.setId(0);
 					            dev.setReferencia(idMovil);
-					            dev.setCodEstado("REGISTRADA"); 
+					            dev.setCodEstado("REGISTRADA");  
+					            ValorCatalogo  vc=ModelValorCatalogo.getValorCatalogByCodigo("EstadoDevolucion","REGISTRADA");
+					            dev.setObjEstadoID(vc.getId());
+					            dev.setDescEstado(vc.getDescripcion());
+					            
+					            vc=ModelValorCatalogo.getValorCatalogByCodigo("CausaEstadoDevolucion","REGISTRADA");
+					            dev.setObjCausaEstadoID(vc.Id);
+					            dev.setDescCausaEstado(vc.getDescripcion()); 
+
+					            
 					            dev.setNumeroCentral(0); 
 					        }    	
 							 DatabaseProvider.RegistrarDevolucion(dev, NMApp.getContext());
