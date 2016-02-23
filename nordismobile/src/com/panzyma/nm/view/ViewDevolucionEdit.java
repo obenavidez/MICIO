@@ -1840,7 +1840,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								devolucion.setCodEstado( "".equals(devolucion.getDescEstado()) ? REGISTRADA : devolucion.getDescEstado());
 								pedido = devolucion.getObjPedido();
 								if(_dev.getProductosDevueltos() != null && _dev.getProductosDevueltos().length != 0)
-									dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
+									dev_prod =new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
 								//devolucion.setOlddata(_dev); 
 								setInformacionCliente();
 								Actualizardevolucion();
@@ -1986,7 +1986,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					cliente = objdev.getCliente();
 					pedido = devolucion.getObjPedido();
 					catalogos = objdev.getMotivodev();
-					dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
+					dev_prod = new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
 					initComponent();
 					initExpandableListView(true);
 					devolucion.setOldData(devolucion);
