@@ -168,8 +168,8 @@ public class ViewDevoluciones extends ActionBarActivity implements ListaFragment
 				Message msg2 = new Message();
 				Bundle b = new Bundle();
 				msg2.obj = msg.obj;
-				msg.what  = ControllerProtocol.ENVIARDEVOLUCION;
-				com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);				
+				msg2.what  = ControllerProtocol.ENVIARDEVOLUCION;
+				com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg2);				
 				break;			
 		}
 		return result ;
