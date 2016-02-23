@@ -359,8 +359,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						cboxtramitedev.setEnabled(true);
 						///////////////////////////////
 						lgroups.clear();
-						if(dev_prod!=null)
+						if(dev_prod!=null){
 							dev_prod.clear();
+							dev_prod =new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
+						}
 						if(adapter!=null)
 							adapter.updateData(lgroups);
 						costeoMontoTotal = BigDecimal.ZERO;
