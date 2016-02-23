@@ -1973,8 +1973,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					cliente = objdev.getCliente();
 					pedido = devolucion.getObjPedido();
 					catalogos = objdev.getMotivodev();
+					dev_prod = Arrays.asList(devolucion.getProductosDevueltos());
 					initComponent();
-					initExpandableListView(false);
+					initExpandableListView(true);
 					devolucion.setOldData(devolucion);
 				}
 				break;
