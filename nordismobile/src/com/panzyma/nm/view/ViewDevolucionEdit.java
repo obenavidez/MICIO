@@ -2529,6 +2529,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			@Override
 			public void run() 
 			{
+				boolean enabled = true;
+				if(devolucion.getNumeroCentral()!=0) enabled = false;
+				
 				ckboxvencidodev.setChecked(devolucion.isDeVencido());
 				tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
 				tbxRefNum.setText(""+devolucion.getReferencia());
@@ -2589,10 +2592,22 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				tbxNota.setText(""+devolucion.getNota());
 				ckboxncinmeditata.setChecked(devolucion.isAplicacionInmediata());
 				
-				cboxmotivodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
-				cboxtramitedev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
-				cboxtipodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
-				ckboxncinmeditata.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
+//				cboxmotivodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
+//				cboxtramitedev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
+//				cboxtipodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
+//				ckboxncinmeditata.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
+				cboxmotivodev.setEnabled(enabled);
+				cboxtramitedev.setEnabled(enabled);
+				cboxtipodev.setEnabled(enabled);
+				ckboxncinmeditata.setEnabled(enabled);
+				ckboxvencidodev.setEnabled(enabled);
+				tbxFecha.setEnabled(enabled);
+				tbxRefNum.setEnabled(enabled);
+				tbxCentralNum.setEnabled(enabled);
+				tbxNombreDelCliente.setEnabled(enabled);
+				cboxmotivodev.setEnabled(enabled);
+				tbxPedidoNum.setEnabled(enabled);
+				
 			}
 		});
 		
