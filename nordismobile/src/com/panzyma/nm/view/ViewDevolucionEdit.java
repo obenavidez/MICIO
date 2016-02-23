@@ -620,17 +620,22 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 									View oldview = _parent.getChildAt(ajustPos);
 									if (oldview != null
 											&& oldview.getTag() != null
-											&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) {
-										oldview.setBackgroundDrawable(context
-												.getResources().getDrawable(
-														R.color.Terracota));
+											&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) 
+									{
+										 
+										oldview.setBackgroundColor(oldview.getResources().getColor(R.color.White));
+										 
 										oldview.setSelected(false);
 									}
 
 								}
 								v.setSelected(true);
-								v.setBackgroundDrawable(context.getResources()
-										.getDrawable(R.color.LighBlueMarine));
+								v.setBackgroundColor(v.getResources().getColor(R.color.Gold));
+//								v.setBackgroundDrawable(context.getResources()
+//										.getDrawable(R.color.LighBlueMarine));
+								
+								
+								
 								positioncache[0] = groupPosition;
 								positioncache[1] = childPosition;
 
@@ -679,10 +684,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 												if (oldview != null
 														&& oldview.getTag() != null
 														&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) {
-													oldview.setBackgroundDrawable(context
-															.getResources()
-															.getDrawable(
-																	R.color.Terracota));
+													oldview.setBackgroundColor(oldview.getResources().getColor(R.color.White));
 													oldview.setSelected(false);
 												}
 
@@ -690,9 +692,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 										}
 										view.setSelected(true);
-										view.setBackgroundDrawable(context
-												.getResources().getDrawable(
-														R.color.LighBlueMarine));
+										view.setBackgroundColor(view.getResources().getColor(R.color.Gold));
 
 										positioncache[0] = ExpandableListView
 												.getPackedPositionGroup(id);

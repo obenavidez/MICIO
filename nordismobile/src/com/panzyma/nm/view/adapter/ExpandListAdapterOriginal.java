@@ -157,11 +157,18 @@ public class ExpandListAdapterOriginal<E, V> extends BaseExpandableListAdapter {
 				invokeView(view,viewHolder);    		
 				view.setTag(viewHolder);	
 				
-				if(view.isSelected()) 
-					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.LighBlueMarine)); 
-				else
-					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.White));
-				
+//				if(view.isSelected()) 
+//					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.LighBlueMarine)); 
+//				else
+//					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.White));
+				if (view.isSelected()) {
+		 	         view.setBackgroundColor(view.getResources().getColor(R.color.Gold));
+					 //convertView.setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.action_item_selected));
+				    }
+				    else {
+				    	
+				    	view.setBackgroundColor(view.getResources().getColor(R.color.White));
+				    }
 				
 			} 
 			else

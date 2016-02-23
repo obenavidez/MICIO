@@ -9,23 +9,13 @@
            android:id="@+id/tableRowheader"
            android:layout_width="fill_parent"
            android:layout_height="wrap_content"
-           android:layout_gravity="center" >
-
-           <TextView
-               android:id="@+id/dpl_producto"
-               android:layout_height="wrap_content"
-               android:layout_marginLeft="3dp"
-               android:layout_marginTop="5dp"
-               android:layout_weight="5"
-               android:text="Producto :"
-               android:textColor="@color/Black"
-               android:textSize="14dp" />
+           android:layout_gravity="center" > 
 
            <TextView
                android:id="@+id/dpl_tboxproducto"
                android:layout_height="wrap_content"
                android:layout_marginTop="5dp"
-               android:layout_weight="95"
+               android:layout_width="fill_parent"
                android:textColor="@color/White"
                android:textSize="18dp" />
     </TableRow>
