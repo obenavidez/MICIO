@@ -358,6 +358,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						cboxtramitedev.setEnabled(true);
 						///////////////////////////////
 						lgroups.clear();
+						dev_prod.clear();
 						if(adapter!=null)
 							adapter.updateData(lgroups);
 						costeoMontoTotal = BigDecimal.ZERO;
@@ -367,9 +368,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						updateObject();
 						initExpandableListView(false);
 					}
-
 				});
-
 		cboxmotivodev.setVisibility(ckboxvencidodev != null
 				&& ckboxvencidodev.isChecked() ? View.GONE : View.VISIBLE);
 		labelMotivo.setVisibility(ckboxvencidodev != null
