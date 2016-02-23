@@ -7,9 +7,11 @@ import java.util.List;
 
 import com.panzyma.nordismobile.R;
 
+import android.R.color;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -23,6 +25,8 @@ public class ExpandListAdapterOriginal<E, V> extends BaseExpandableListAdapter {
 	SetViewHolderWLayout childlayout; 
 	int grouposition;
 	int childposition; 
+	
+	
 	
 	public ExpandListAdapterOriginal(Context _context, List<E> _groups,ArrayList<SetViewHolderWLayout> ... _holderloyout) 
 	{
@@ -124,7 +128,7 @@ public class ExpandListAdapterOriginal<E, V> extends BaseExpandableListAdapter {
 				viewHolder=(V)view.getTag(); 
 			
 			 viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,_group);
-
+			 
 			 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -153,15 +157,23 @@ public class ExpandListAdapterOriginal<E, V> extends BaseExpandableListAdapter {
 				invokeView(view,viewHolder);    		
 				view.setTag(viewHolder);	
 				
-				if(view.isSelected()) 
-					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.LighBlueMarine)); 
-				else
-					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.White));
-				
+//				if(view.isSelected()) 
+//					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.LighBlueMarine)); 
+//				else
+//					view.setBackgroundDrawable(context.getResources().getDrawable(R.color.White));
+				if (view.isSelected()) {
+		 	         view.setBackgroundColor(view.getResources().getColor(R.color.Gold));
+					 //convertView.setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.action_item_selected));
+				    }
+				    else {
+				    	
+				    	view.setBackgroundColor(view.getResources().getColor(R.color.White));
+				    }
 				
 			} 
 			else
 				viewHolder=(V)view.getTag();
+			
 			
 			viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,child);
 			grouposition=groupPosition;

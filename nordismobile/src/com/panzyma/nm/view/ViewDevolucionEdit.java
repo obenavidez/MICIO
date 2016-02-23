@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
@@ -170,6 +171,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private EditText tbxNota;
 	private EditText tbxRefNum;
 	private EditText tbxCentralNum;
+	View _lastColored;
 
 	CustomAdapter adapter_motdev;
 	CustomAdapter adapter_tramite;
@@ -590,6 +592,16 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 									ExpandableListView _parent, View v,
 									int groupPosition, int childPosition,
 									long id) {
+								
+								if (_lastColored != null) {
+									_lastColored
+											.setBackgroundColor(Color.TRANSPARENT);
+									_lastColored.invalidate();
+								}
+								_lastColored = v;
+								v.setBackgroundColor(Color.rgb(214, 214, 214));
+
+								
 								int flatpost;
 								int ajustPos;
 								if (_parent == null)
@@ -608,17 +620,22 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 									View oldview = _parent.getChildAt(ajustPos);
 									if (oldview != null
 											&& oldview.getTag() != null
-											&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) {
-										oldview.setBackgroundDrawable(context
-												.getResources().getDrawable(
-														R.color.Terracota));
+											&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) 
+									{
+										 
+										oldview.setBackgroundColor(oldview.getResources().getColor(R.color.White));
+										 
 										oldview.setSelected(false);
 									}
 
 								}
 								v.setSelected(true);
-								v.setBackgroundDrawable(context.getResources()
-										.getDrawable(R.color.LighBlueMarine));
+								v.setBackgroundColor(v.getResources().getColor(R.color.Gold));
+//								v.setBackgroundDrawable(context.getResources()
+//										.getDrawable(R.color.LighBlueMarine));
+								
+								
+								
 								positioncache[0] = groupPosition;
 								positioncache[1] = childPosition;
 
@@ -667,10 +684,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 												if (oldview != null
 														&& oldview.getTag() != null
 														&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) {
-													oldview.setBackgroundDrawable(context
-															.getResources()
-															.getDrawable(
-																	R.color.Terracota));
+													oldview.setBackgroundColor(oldview.getResources().getColor(R.color.White));
 													oldview.setSelected(false);
 												}
 
@@ -678,9 +692,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 										}
 										view.setSelected(true);
-										view.setBackgroundDrawable(context
-												.getResources().getDrawable(
-														R.color.LighBlueMarine));
+										view.setBackgroundColor(view.getResources().getColor(R.color.Gold));
 
 										positioncache[0] = ExpandableListView
 												.getPackedPositionGroup(id);
