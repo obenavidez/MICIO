@@ -368,9 +368,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						updateObject();
 						initExpandableListView(false);
 					}
-
 				});
-
 		cboxmotivodev.setVisibility(ckboxvencidodev != null
 				&& ckboxvencidodev.isChecked() ? View.GONE : View.VISIBLE);
 		labelMotivo.setVisibility(ckboxvencidodev != null
