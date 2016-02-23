@@ -361,7 +361,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						lgroups.clear();
 						if(dev_prod!=null){
 							dev_prod.clear();
-							dev_prod =new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
+							
+							if(devolucion.getProductosDevueltos()!=null)
+								dev_prod =new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
 						}
 						if(adapter!=null)
 							adapter.updateData(lgroups);

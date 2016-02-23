@@ -68,7 +68,7 @@ public synchronized static ValorCatalogo getValorCatalogByCodigo ( String catalo
 		query.append("        codigo , ");
 		query.append("        descripcion ");
 		query.append(" FROM ValorCatalogo vc ");
-		query.append(" WHERE vc.Codigo ="+Codigo); 
+		query.append(" WHERE vc.Codigo = '" + Codigo + "'"); 
 		query.append(" AND vc.objCatalogoID = (  ");
 		query.append(String.format(" SELECT Id FROM CATALOGO c WHERE c.NombreCatalogo = '%s' ", catalogName));
 		query.append(" )   ");
