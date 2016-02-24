@@ -548,7 +548,7 @@ public class BDevolucionM extends BBaseM
 				new BluetoothConnection(devolucion); 
 		} catch (Exception e) 
 		 { 
-			 NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,ErrorMessage.newInstance("",e.getMessage(),(e.getCause()==null)?"":e.getCause().toString()));
+			NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,ErrorMessage.newInstance("",e.getMessage(),(e.getCause()==null)?"":e.getCause().toString()));
 			Log.d(TAG,"ERROR al tratar de envia el recibo", e);
 		}
     }
