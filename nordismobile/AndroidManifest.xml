@@ -81,12 +81,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
-        
-        <activity
-            android:name=".ui.ReciboColector_A"
-            android:label="@string/app_name"            
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        </activity>
+         
         
         <activity
             android:name="com.panzyma.nm.view.ViewCliente"
@@ -128,13 +123,6 @@
             android:label="@string/app_name"      
             android:configChanges="orientation"     
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" > 
-        </activity>  
-        
-        <activity
-            android:name="com.panzyma.nm.view.VConfiguracion"
-            android:label="@string/app_name"      
-            android:configChanges="orientation"     
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" > 
         </activity>  
           
         <activity
