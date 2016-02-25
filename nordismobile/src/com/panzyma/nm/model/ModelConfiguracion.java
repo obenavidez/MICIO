@@ -88,6 +88,11 @@ public class ModelConfiguracion {
 		config.setImpresora(Impresora.get(cnt));
 		return config;
 	} 
+	
+	public  static String getEnterprise(Context cnt){ 
+		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
+		return pref.getString("enterprise", "dp");
+	}
 	 
 	public synchronized static int getMaxReciboID(Context cnt,
 			SQLiteDatabase... _db) 
@@ -285,6 +290,14 @@ public class ModelConfiguracion {
 	
 	public static int ActualizarSecuenciaDevolucion( int iddevolucion,boolean esdevencido) {
 		pref = NMApp.getContext().getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
+		edit = pref.edit();
+		edit.putInt(esdevencido?"max_iddevolucionv":"max_iddevolucionnv", iddevolucion);
+		edit.commit();
+		return 1;
+	}
+	
+	public static int ActualizarSecuenciaDevolucion(Context context, int iddevolucion,boolean esdevencido) {
+		pref = context.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		edit = pref.edit();
 		edit.putInt(esdevencido?"max_iddevolucionv":"max_iddevolucionnv", iddevolucion);
 		edit.commit();

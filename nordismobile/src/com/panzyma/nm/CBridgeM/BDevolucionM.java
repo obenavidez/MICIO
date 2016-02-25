@@ -3,6 +3,7 @@ package com.panzyma.nm.CBridgeM;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import com.panzyma.nm.serviceproxy.Ventas;
 import com.panzyma.nm.viewmodel.vmDevolucionEdit;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle; 
 import android.os.Message;
 import android.util.Log;
@@ -413,7 +415,7 @@ public class BDevolucionM extends BBaseM
 		               //Poner estado de recibo en PAGADO_OFFLINE                   
 						dev.setCodEstado("PAGADO_OFFLINE");
 						dev.setDescEstado("Registrado"); 	
-						dev.setOffLine(true);
+						dev.setOffLine(true); 
 		               //Guardando cambios en el Dispositivo 
 				        guardarDevolucion(dev); 
 				        Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
@@ -425,6 +427,70 @@ public class BDevolucionM extends BBaseM
 				else
 					Processor.notifyToView(NMApp.getController(),0,0,0,null);
 		 
+	 
+	
+		} catch (Exception e) 
+		{ 
+			Processor.notifyToView(NMApp.getController(),ERROR,0,0,
+					new ErrorMessage(
+							          "Error en el Modulo Devolución.",
+							          "Error en el proceso de envio de la devolución", "\nCausa: "
+									  + e.getMessage()
+									 )
+			      );
+		} 
+    }
+    
+    public static void EnviarDevolucion(Context context) throws Exception
+    { 
+		try 
+		{  						
+			ArrayList<Devolucion> devoluciones=ModelDevolucion.getDevolucionesPorEstado("PAGADO_OFFLINE");
+			String credenciales="";
+			credenciales=SessionManager.getCredentials(context);	
+			for(Devolucion dev:devoluciones)
+			{				
+				if(credenciales!="")
+				{						 
+						String respuesta=ModelDevolucion.enviarDevolucion(credenciales, dev); 
+						  
+						if (respuesta == null) 
+						{
+							Processor.notifyToView(NMApp.getController(),ERROR,0,0,
+									new ErrorMessage(
+											          "Error en el Modulo Devolución.",
+											          "Error en el proceso de envio de la devolución", "\nCausa: "
+													  + respuesta
+													 )
+							      ); 
+							return;
+						}
+						else if (!respuesta.contains("ID:")) 
+		                {
+						
+							Processor.notifyToView(NMApp.getController(),ERROR,0,0,
+									new ErrorMessage(
+											          "Error en el Modulo Devolución.",
+											          "La devolución fue rechazada por el servidor", "\nCausa: "
+													  + respuesta
+													 )
+							      ); 
+							return;
+		                }
+						
+						String numerocentral=respuesta.split(":")[1];
+						dev.setNumeroCentral(Integer.valueOf(""+numerocentral));
+						
+						dev.setCodEstado("ENVIADA"); 
+			            ValorCatalogo  vc=ModelValorCatalogo.getValorCatalogByCodigo(context,"EstadoDevolucion","ENVIADA");
+			            dev.setObjEstadoID(vc.getId());
+			            dev.setDescEstado(vc.getDescripcion()); 
+						
+						//Guardando cambios en el Dispositivo   				        
+				        guardarDevolucion(context,dev);
+				 }
+					 
+			}
 	 
 	
 		} catch (Exception e) 
@@ -771,6 +837,40 @@ public class BDevolucionM extends BBaseM
 		 ModelConfiguracion.ActualizarSecuenciaDevolucion(devolucionmax, dev.isDeVencido());
 		 if(dev.getObjPedido()!=null && dev.getObjPedido().getId()!=0)
 			 ModelPedido.RegistrarPedido(dev.getObjPedido(), NMApp.getContext());
+		 
+		 return dev;
+    }
+    
+    public static Devolucion guardarDevolucion(Context context,Devolucion dev) throws Exception{
+    	Integer prefijo=Ventas.getPrefijoIds(context);
+    	Integer devolucionmax=dev.isDeVencido()?Ventas.getMaxDevolucionVId(context):Ventas.getMaxDevolucionNVId(context);
+    	
+    	  //Generar Id del devolución
+        if (dev.getReferencia() == 0) 
+        {                     
+            if (devolucionmax == null) 
+            	devolucionmax = Integer.valueOf(1);
+            else
+            	devolucionmax =devolucionmax+1; 
+            String strIdMovil = prefijo.intValue() + "" + devolucionmax.intValue();
+            int idMovil = Integer.parseInt(strIdMovil);
+            dev.setId(0);
+            dev.setReferencia(idMovil);
+            dev.setCodEstado("REGISTRADA"); 
+            ValorCatalogo  vc=ModelValorCatalogo.getValorCatalogByCodigo(context,"EstadoDevolucion","REGISTRADA");
+            dev.setObjEstadoID(vc.getId());
+            dev.setDescEstado(vc.getDescripcion());
+            
+            vc=ModelValorCatalogo.getValorCatalogByCodigo(context,"CausaEstadoDevolucion","REGISTRADA");
+            dev.setObjCausaEstadoID(vc.Id);
+            dev.setDescCausaEstado(vc.getDescripcion()); 
+            dev.setNumeroCentral(0); 
+            
+        }    	
+		 DatabaseProvider.RegistrarDevolucion(dev,context);
+		 ModelConfiguracion.ActualizarSecuenciaDevolucion(context,devolucionmax, dev.isDeVencido());
+		 if(dev.getObjPedido()!=null && dev.getObjPedido().getId()!=0)
+			 ModelPedido.RegistrarPedido(dev.getObjPedido(),context);
 		 
 		 return dev;
     }

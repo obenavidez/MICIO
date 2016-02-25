@@ -67,6 +67,8 @@ public class Usuario implements KvmSerializable
     {
     	return ModelConfiguracion.getUser(NMApp.getContext());
     }
+     
+    
     public static void guardarInfoUsuario(Context cntx,Usuario user) throws Exception{
     	ModelConfiguracion.saveUser(cntx, user);
     }

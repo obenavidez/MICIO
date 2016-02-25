@@ -118,7 +118,8 @@ import com.panzyma.nordismobile.R;
 @SuppressWarnings({ "unchecked", "rawtypes", "deprecation", "unused" })
 @InvokeBridge(bridgeName = "BDevolucionM")
 public class ViewDevolucionEdit extends ActionBarActivity implements
-		Handler.Callback, Editable {
+		Handler.Callback, Editable 
+		{
 
 	private static final String TAG = ViewDevolucionEdit.class.getSimpleName();
 	private static final int ID_SELECCIONAR_CLIENTE = 0;

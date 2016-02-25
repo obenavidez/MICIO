@@ -25,6 +25,7 @@
             android:id="@+id/ScrollViewDev"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="20dip"
             android:layout_marginBottom="3dip"
             android:layout_weight="50" >
 
@@ -38,8 +39,10 @@
                     android:layout_width="100dp"
                     android:layout_height="30dp"
                     android:text="De Vencido"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                    
+                    android:textStyle="bold"
+                    android:selectAllOnFocus="true"
+                    android:textColor="@color/Black" />
 
                 <TextView
                     android:id="@+id/devlbl_fecha"
@@ -50,7 +53,7 @@
                     android:layout_toRightOf="@+id/devchk_typodevolucion"
                     android:text="Fecha :"
                     android:textColor="@color/Black"
-                    android:textSize="12sp"
+                    
                     android:textStyle="bold" />
 
                 <EditText
@@ -70,7 +73,7 @@
                     android:layout_marginTop="10dp"
                     android:text="No.Ref :"
                     android:textColor="@color/Black"
-                    android:textSize="12sp"
+                    
                     android:textStyle="bold" />
 
                 <EditText
@@ -95,7 +98,7 @@
                     android:layout_toRightOf="@+id/devetextv_detalle_numref"
                     android:text="Número Central :"
                     android:textColor="@color/Black"
-                    android:textSize="12sp"
+                    
                     android:textStyle="bold" />
 
                 <EditText
@@ -119,7 +122,7 @@
                     android:layout_marginTop="15dp"
                     android:text="Cliente :"
                     android:textColor="@color/Black"
-                    android:textSize="12sp"
+                    
                     android:textStyle="bold" />
 
                 <EditText
@@ -139,6 +142,7 @@
                     android:layout_height="30dp"
                     android:layout_below="@+id/devlbl_cliente"
                     android:layout_marginTop="20dp"
+                    android:layout_marginLeft="3dp"
                     android:text="Motivo :"
                     android:visibility="gone"
                     android:textColor="@color/Black"
@@ -181,6 +185,7 @@
                     android:id="@+id/devlbl_tipo"
                     android:layout_width="80dp"
                     android:layout_height="35dp"
+                    android:layout_marginLeft="3dp"
                     android:layout_below="@+id/devlbl_tramite"
                     android:layout_marginTop="20dp"
                     android:text="Tipo Devolución:"
@@ -208,7 +213,7 @@
                     android:layout_marginTop="20dp"
                     android:text="Pedido :"
                     android:textColor="@color/Black"
-                    android:textSize="12sp"
+                    
                     android:textStyle="bold" />
 
                 <EditText
@@ -231,7 +236,8 @@
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/devtextv_pedido"
                     android:text="N/C Inmediata"
-                    android:textSize="12sp"
+                    android:selectAllOnFocus="true"
+                    
                     android:textStyle="bold" />
 
                 <TextView
@@ -243,7 +249,7 @@
                     android:layout_marginTop="15dp"
                     android:text="Notas :"
                     android:textColor="@color/Black"
-                    android:textSize="12sp"
+                    
                     android:textStyle="bold" />
 
                 <EditText

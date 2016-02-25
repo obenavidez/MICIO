@@ -313,18 +313,11 @@ public class ViewDevoluciones extends ActionBarActivity implements
 								"Seleccione un registro.",
 								DialogType.DIALOGO_ALERTA);
 						return;
-					}
-					if (item_selected.isOffLine()) {
-						drawerLayout.closeDrawers();
-						AppDialog.showMessage(vd, "Información",
-								"El comprobante fue emitida offline.\n",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
+					} 
 					if (!item_selected.getEstado().equals("REGISTRADA")) {
 						drawerLayout.closeDrawers();
 						AppDialog.showMessage(vd, "Información",
-								"Este registro no tiene estado Registrado.",
+								"El registro no se puede borrar en estado "+ item_selected.getItemEstado()+" .",
 								DialogType.DIALOGO_ALERTA);
 						return;
 					}
@@ -343,7 +336,8 @@ public class ViewDevoluciones extends ActionBarActivity implements
 								DialogType.DIALOGO_ALERTA);
 						return;
 					}
-					BDevolucionM.beforeSend(item_selected.getId());
+					enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+					//BDevolucionM.beforeSend(item_selected.getId());
 					break;
 				case IMPRIMIR_COMPROBANTE:
 					if (item_selected == null) {
@@ -365,7 +359,8 @@ public class ViewDevoluciones extends ActionBarActivity implements
 					 */
 					break;
 				case BORRAR_ENVIADAS:
-					if (item_selected == null) {
+					if (item_selected == null) 
+					{
 						drawerLayout.closeDrawers();
 						AppDialog.showMessage(vd, "Información",
 								"Seleccione un registro.",
@@ -452,9 +447,8 @@ public class ViewDevoluciones extends ActionBarActivity implements
 		msg.what = arg.length != 0 ? arg[0]
 				: ControllerProtocol.ENVIARDEVOLUCION;
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
-	}
-
-	@SuppressWarnings("unchecked")
+	} 
+	
 	private void Load_Data(int what) {
 		try {
 

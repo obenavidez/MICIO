@@ -766,7 +766,7 @@ public final class BReciboM extends BBaseM {
 							{								 
 				               //Poner estado de recibo en PAGADO_OFFLINE                   
 								recibo.setCodEstado("PAGADO_OFFLINE");
-								recibo.setDescEstado("Registrado"); 	 
+								recibo.setDescEstado("Registrado");  
 				               //Guardando cambios en el Dispositivo 
 				                saveRecibo(recibo,facturasToUpdate, notasDebitoToUpdate, notasCreditoToUpdate); 
 				                //enviar los cambios en el hilo pricipal

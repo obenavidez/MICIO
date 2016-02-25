@@ -126,6 +126,171 @@ public class ModelDevolucion {
 
 		return lista;
 	}
+	
+	
+	
+	
+	public synchronized static ArrayList<Devolucion> getDevolucionesPorEstado(String Estado) {
+		
+		ArrayList<Devolucion> devoluciones=null;
+		StringBuilder query = new StringBuilder();
+
+		SQLiteDatabase db = null;
+		try {
+			db = Helper.getDatabase(NMApp.ctx);
+
+			query.append(" SELECT * FROM Devolucion AS d ");
+			query.append(" WHERE d.codEstado='" +Estado+"'");
+
+			Cursor cur = DatabaseProvider.query(db, query.toString());
+			if (cur.getCount() > 0) 
+			{
+				if (cur.moveToFirst()) 
+				{
+					do 
+					{
+						Devolucion row = new Devolucion();
+						row.setId(Long.parseLong(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.id))));
+						row.setNumeroCentral(Integer.parseInt(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.numeroCentral))));
+						row.setFecha(Long.parseLong(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.fecha))));
+						row.setObjPedidoDevueltoID(Long.parseLong(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.objPedidoDevueltoID))));
+						row.setNumeroPedidoDevuelto(Integer.parseInt(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.numeroPedidoDevuelto))));
+
+						Object value = cur
+								.getString(cur
+										.getColumnIndex(NMConfig.Devolucion.objVendedorID));
+						if (value != null)
+							row.setObjVendedorID(Integer.parseInt("" + value));
+						// row.setObjVendedorID(Integer.parseInt(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.objVendedorID))));
+						row.setObjClienteID(Integer.parseInt(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.objClienteID))));
+						row.setObjSucursalID(Integer.parseInt(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.objSucursalID))));
+						row.setNombreCliente(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.nombreCliente)));
+						row.setObjMotivoID(Long.parseLong(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.objMotivoID))));
+						row.setCodMotivo(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.codMotivo)));
+						row.setDescMotivo(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.descMotivo)));
+						row.setTipoTramite(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.tipoTramite)));
+						row.setDeVencido(cur.getInt(cur
+								.getColumnIndex(NMConfig.Devolucion.deVencido)) == 1 ? true
+								: false);
+						row.setParcial(cur.getInt(cur
+								.getColumnIndex(NMConfig.Devolucion.parcial)) == 1 ? true
+								: false);
+						row.setAplicacionInmediata(cur.getInt(cur
+								.getColumnIndex(NMConfig.Devolucion.aplicacionInmediata)) == 1 ? true
+								: false);
+						row.setNota(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.nota)));
+						row.setObservacion(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.observacion)));
+//						row.setSubtotal(Long.parseLong(cur.getString(cur
+//								.getColumnIndex(NMConfig.Devolucion.subtotal))));
+//						row.setImpuesto(Long.parseLong(cur.getString(cur
+//								.getColumnIndex(NMConfig.Devolucion.impuesto))));
+//						row.setMontoPromocion(Long.parseLong(cur.getString(cur
+//								.getColumnIndex(NMConfig.Devolucion.montoPromocion))));
+//						row.setMontoPromocionVen(Long.parseLong(cur.getString(cur
+//								.getColumnIndex(NMConfig.Devolucion.montoPromocionVen))));
+//						row.setMontoCargoAdm(Long.parseLong(cur.getString(cur
+//								.getColumnIndex(NMConfig.Devolucion.montoCargoAdm))));
+//						row.setMontoCargoAdmVen(Long.parseLong(cur.getString(cur
+//								.getColumnIndex(NMConfig.Devolucion.montoCargoAdmVen))));
+//						row.setMontoVinieta(Long.parseLong(cur.getString(cur
+//								.getColumnIndex(NMConfig.Devolucion.montoVinieta))));
+//						row.setTotal(Long.parseLong(cur.getString(cur
+//								.getColumnIndex(NMConfig.Devolucion.total))));
+//						row.setTotalVen(Long.parseLong(cur.getString(cur
+//								.getColumnIndex(NMConfig.Devolucion.totalVen))));
+						row.setSubtotal(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.subtotal))));
+						row.setImpuesto(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.impuesto))));
+						row.setMontoPromocion(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoPromocion))));
+						row.setMontoPromocionVen(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoPromocionVen))));
+						row.setMontoCargoAdm(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoCargoAdm))));
+						row.setMontoCargoAdmVen(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoCargoAdmVen))));
+						row.setMontoVinieta(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoVinieta))));
+						row.setTotal(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.total))));
+						row.setTotalVen(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.totalVen))));
+						
+						row.setObjEstadoID(Long.parseLong(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.objEstadoID))));
+						row.setDescEstado(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.descEstado)));
+						row.setCodEstado(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.codEstado)));
+						row.setObjCausaEstadoID(Long.parseLong(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.objCausaEstadoID))));
+						row.setDescCausaEstado(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.descCausaEstado)));
+						row.setEspecial(cur.getInt(cur
+								.getColumnIndex(NMConfig.Devolucion.especial)) == 1 ? true
+								: false);
+						row.setMontoCargoVendedor(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoCargoVendedor))));
+						row.setMontoBonif(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoBonif))));
+						row.setMontoBonifVen(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoBonifVen))));
+						
+						row.setImpuestoVen(Long.parseLong(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.impuestoVen))));
+						row.setClaveAutorizaAplicacionInmediata(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.claveAutorizaAplicacionInmediata)));
+						row.setFechaEnviada(Long.parseLong(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.fechaEnviada))));
+						row.setPedidoTienePromociones(cur.getInt(cur
+								.getColumnIndex(NMConfig.Devolucion.pedidoTienePromociones)) == 1 ? true
+								: false);
+						row.setPedidoYaDevuelto(cur.getInt(cur
+								.getColumnIndex(NMConfig.Devolucion.pedidoYaDevuelto)) == 1 ? true
+								: false);
+						row.setReferenciaNC(cur.getInt(cur
+								.getColumnIndex(NMConfig.Devolucion.referenciaNC)));
+						
+						row.setReferencia(cur.getInt(cur.getColumnIndex(NMConfig.Devolucion.referencia)));
+						
+						row.setPreRegistro(cur.getInt(cur
+								.getColumnIndex(NMConfig.Devolucion.preRegistro)) == 1 ? true
+								: false);
+						row.setOffLine(cur.getInt(cur
+								.getColumnIndex(NMConfig.Devolucion.offLine)) == 1 ? true
+								: false);
+						row.setFechaFacturacion(Long.parseLong(cur.getString(cur
+								.getColumnIndex(NMConfig.Devolucion.fechaFacturacion))));
+						// Get All Productos Devueltos...
+						row.setProductosDevueltos(getDevolucionProducto_byDevolucionID(row
+								.getId()));
+						devoluciones.add(row);
+					} while (cur.moveToNext());
+				}
+
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			if (db != null) {
+				if (db.isOpen())
+					db.close();
+
+				db = null;
+			}
+		}
+
+		return devoluciones;
+	}
+	
+	
+	
+	
+	
 
 	public synchronized static Devolucion getDevolucionbyID(long devolucionid) {
 		Devolucion row = new Devolucion();

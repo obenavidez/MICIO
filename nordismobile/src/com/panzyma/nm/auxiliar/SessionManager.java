@@ -213,6 +213,13 @@ public class SessionManager
 		return UserSessionManager.getCredentials();
 	}
 	
+	public static String getCredentials(Context context)
+	{		 
+		return UserSessionManager.getCredentials(context);
+	}
+	
+	
+	
 	public static void setErrorAuntentication(String _error){
 		errormessage=_error;
 	}

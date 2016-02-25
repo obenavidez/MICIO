@@ -111,10 +111,21 @@ public class UserSessionManager {
 		PASSWORD = _password;
 	}
 
-	public static String getEmpresa() {
+	public static String getEmpresa() 
+	{ 
+		if(EMPRESA==null || "".equals(EMPRESA))
+			EMPRESA=(ModelConfiguracion.getEnterprise(NMApp.getContext()));
+		return EMPRESA;
+	}
+	
+	public static String getEmpresa(Context context) 
+	{
+		if(EMPRESA==null || "".equals(EMPRESA))
+			EMPRESA=(ModelConfiguracion.getEnterprise(context));
 		return EMPRESA;
 	}
 
+	
 	public static void setEmpresa(String _empresa) {
 		 EMPRESA=_empresa;
 	}
@@ -199,6 +210,18 @@ public class UserSessionManager {
 			return "";
 		else
 			return NAMEUSER + "||" + PASSWORD + "||" + EMPRESA;
+	}
+	
+	public static String getCredentials(Context context) {
+		Usuario user = UserSessionManager.getLoginUser(context);
+		if (user != null) {
+			NAMEUSER = user.getLogin();
+			PASSWORD = user.getPassword();
+			EMPRESA = getEmpresa(context);
+			return NAMEUSER + "||" + PASSWORD + "||" + EMPRESA;
+		} else
+			return ""; 
+			
 	}
 
 	public static void bloque1(final boolean admin) {
@@ -498,6 +521,12 @@ public class UserSessionManager {
 	public static Usuario getLoginUser() {
 		if (userinfo == null)
 			userinfo = Usuario.get();
+		return userinfo;
+	}
+	
+	public static Usuario getLoginUser(Context context) {
+		if (userinfo == null)
+			userinfo = Usuario.get(context);
 		return userinfo;
 	}
 

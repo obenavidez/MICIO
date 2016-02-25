@@ -97,15 +97,25 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 		ViewHolder holder = null;
 		ViewHolderDevolucion holderdevolucion = null;
 		Item rowItem =null;
-		DevolucionItem Item=null; 
-		
+		DevolucionItem Item=null;  
+		String StatusCode=null;
 		
 	   if(SpecialItem)
 		   Item  = (DevolucionItem)getItem(position);
-	   else 
+	   else{
 		   rowItem = (Item)getItem(position);
+		   String[] values=rowItem.getItemDescription().split(",");
+		   if(values.length==3)
+		   {
+			   String[] values2=values[2].split(":");
+			   if(values2.length==2)
+				   StatusCode=values2[1].toString();
+		   }
+	   }
+		   
 	   
-
+	   
+	   
 		LayoutInflater mInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -131,7 +141,13 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 				holder.txtName = (TextView) convertView.findViewById(R.id.menu_name);
 				holder.txtDescription = (TextView) convertView.findViewById(R.id.description);
 				holder.txtExtraInfo = (TextView) convertView.findViewById(R.id.price); 
-				convertView.setTag(R.layout.list_row,holder);
+				if(StatusCode!=null && "PAGADO_OFFLINE".equals(StatusCode))
+				{
+					holder.txtName.setTextColor(convertView.getResources().getColor(R.color.Red));
+					holder.txtDescription.setTextColor(convertView.getResources().getColor(R.color.Red));
+					holder.txtExtraInfo.setTextColor(convertView.getResources().getColor(R.color.Red)); 
+				}
+				convertView.setTag(R.layout.list_row,holder); 				
 			 }
 		} 
 		
@@ -143,7 +159,7 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 				 holderdevolucion.txtcustomer.setText(Item.getItemCliente());
 				 holderdevolucion.txtmonto.setText(Item.getItemTotal());
 				 holderdevolucion.txtestado.setText(Item.getItemEstado());
-				 if(Item.getItemOffline()){
+				 if("PAGADO_OFFLINE".equals(Item.getItemEstado())){
 					 holderdevolucion.txtNumero.setTextColor(convertView.getResources().getColor(R.color.Red));
 					 holderdevolucion.txtfecha.setTextColor(convertView.getResources().getColor(R.color.Red));
 					 holderdevolucion.txtcustomer.setTextColor(convertView.getResources().getColor(R.color.Red));
@@ -153,10 +169,18 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 			 }
 			 else 
 			 {
-				 holder = ((ViewHolder) convertView.getTag(R.layout.list_row));
-				 holder.txtName.setText(rowItem.getItemName());
-				 holder.txtDescription.setText(rowItem.getItemDescription());
-				 holder.txtExtraInfo.setText(" | "+rowItem.getItemCode() + " CD");
+				holder = ((ViewHolder) convertView.getTag(R.layout.list_row));
+				holder.txtName.setText(rowItem.getItemName());
+				holder.txtDescription.setText(rowItem.getItemDescription());
+				holder.txtExtraInfo.setText(" | "+rowItem.getItemCode() + " CD");
+				 
+				if(StatusCode!=null && "PAGADO_OFFLINE".equals(StatusCode))
+				{
+					holder.txtName.setTextColor(convertView.getResources().getColor(R.color.Red));
+					holder.txtDescription.setTextColor(convertView.getResources().getColor(R.color.Red));
+					holder.txtExtraInfo.setTextColor(convertView.getResources().getColor(R.color.Red)); 
+				}
+				 
 			 }
 		
 		
