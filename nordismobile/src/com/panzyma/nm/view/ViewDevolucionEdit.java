@@ -2042,28 +2042,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					}
 				break;
 			case ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR:
-				devolucion = (Devolucion) msg.obj;
-				Intent intent = new Intent();
-				Bundle bundle = new Bundle();
-				int requescode = 0;
-				com.panzyma.nm.logic.PojoDevolucion pojo = new com.panzyma.nm.logic.PojoDevolucion();
-				pojo.setId(devolucion.getId());
-				pojo.setReferencia(devolucion.getReferencia());
-				pojo.setFecha(DateUtil.idateToStrYY(devolucion.getFecha()));
-				pojo.setNombreCliente(devolucion.getNombreCliente());
-				pojo.setTotal(devolucion.getTotal());
-				pojo.setCodigoEstado(devolucion.getCodEstado());
-				pojo.setClienteId(devolucion.getObjClienteID());
-				pojo.setOffLine(devolucion.isOffLine());
-				pojo.setSucursalId(devolucion.getObjSucursalID());
-				//agregar el objeto Serializable
-				bundle.putSerializable(ViewDevoluciones.SERIALIZE_DEVOLUCION, pojo);
-				//agregar al intent
-				intent.putExtras(bundle);
-				if (onEdit)
-					requescode = getIntent().getIntExtra("requestcode", 0);
-				setResult(requescode, intent);
-				finish();
+				devolucion = (Devolucion) msg.obj;				
+				setPojoToBack(devolucion);
 				break;
 			case ControllerProtocol.AFTERGETOBSERVACIONDEV: 	
 				if(ControllerProtocol.IMPRIMIR==msg.arg1)
@@ -2082,6 +2062,30 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			break;
 		}
 		return false;
+	}
+	
+	public void setPojoToBack(Devolucion devolucion) {
+		Intent intent = new Intent();
+		Bundle bundle = new Bundle();
+		int requescode = 0;
+		com.panzyma.nm.logic.PojoDevolucion pojo = new com.panzyma.nm.logic.PojoDevolucion();
+		pojo.setId(devolucion.getId());
+		pojo.setReferencia(devolucion.getReferencia());
+		pojo.setFecha(DateUtil.idateToStrYY(devolucion.getFecha()));
+		pojo.setNombreCliente(devolucion.getNombreCliente());
+		pojo.setTotal(devolucion.getTotal());
+		pojo.setCodigoEstado(devolucion.getCodEstado());
+		pojo.setClienteId(devolucion.getObjClienteID());
+		pojo.setOffLine(devolucion.isOffLine());
+		pojo.setSucursalId(devolucion.getObjSucursalID());
+		//agregar el objeto Serializable
+		bundle.putSerializable(ViewDevoluciones.SERIALIZE_DEVOLUCION, pojo);
+		//agregar al intent
+		intent.putExtras(bundle);
+		if (onEdit)
+			requescode = getIntent().getIntExtra("requestcode", 0);
+		setResult(requescode, intent);
+		finish();
 	}
 
 	private void enviarImprimirDevolucion(final String  mensaje,final Devolucion devolucion,final int... what) 
@@ -2501,8 +2505,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 															e.getMessage()));
 								}
 
-							} else
+							} else if(onEdit) {
+								setPojoToBack(devolucion.getOlddata());
+							} else {
 								finish();
+							}								
 							_dialog.dismiss();
 
 						}
@@ -2510,12 +2517,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					});
 
 		} else {
-			if (!onEdit)
+			setPojoToBack(devolucion);
+			/*if (!onEdit)
 				com.panzyma.nm.NMApp.getController()._notifyOutboxHandlers(
 						ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR, 0, 0,
 						devolucion);
 			else
-				finish();
+				finish();*/
 		}
 
 	}
