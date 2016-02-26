@@ -9,6 +9,8 @@ import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
+import com.panzyma.nm.auxiliar.DateUtil;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -1466,14 +1468,12 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 
 	}
 
-	public boolean hasModified(Object obj) {
-		return !this.equals(obj);
+	public boolean hasModified() {
+		return !equals(olddata);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
+	public boolean equals(Object obj) {		
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
@@ -1516,39 +1516,14 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 			return false;
 		if (Especial != other.Especial)
 			return false;
-		if (Fecha != other.Fecha)
+		if (DateUtil.time2int(Fecha) != DateUtil.time2int(other.Fecha))
 			return false;
-		if (FechaEnviada != other.FechaEnviada)
+		if (DateUtil.time2int(FechaEnviada) != DateUtil.time2int(other.FechaEnviada))
 			return false;
-		if (FechaFacturacion != other.FechaFacturacion)
+		if (DateUtil.time2int(FechaFacturacion) != DateUtil.time2int(other.FechaFacturacion))
 			return false;
 		if (Id != other.Id)
-			return false;
-		if (Impuesto != other.Impuesto)
-			return false;
-		if (ImpuestoVen != other.ImpuestoVen)
-			return false;
-		if (MontoBonif != other.MontoBonif)
-			return false;
-		if (MontoBonifVen != other.MontoBonifVen)
-			return false;
-		if (MontoCargoAdm != other.MontoCargoAdm)
-			return false;
-		if (MontoCargoAdmVen != other.MontoCargoAdmVen)
-			return false;
-		if (MontoCargoVendedor != other.MontoCargoVendedor)
-			return false;
-		if (MontoPromocion != other.MontoPromocion)
-			return false;
-		if (MontoPromocionVen != other.MontoPromocionVen)
-			return false;
-		if (MontoVinieta != other.MontoVinieta)
-			return false;
-		if (NombreCliente == null) {
-			if (other.NombreCliente != null)
-				return false;
-		} else if (!NombreCliente.equals(other.NombreCliente))
-			return false;
+			return false;		
 		if (Nota == null) {
 			if (other.Nota != null)
 				return false;
@@ -1567,8 +1542,6 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 		if (ObjEstadoID != other.ObjEstadoID)
 			return false;
 		if (ObjMotivoID != other.ObjMotivoID)
-			return false;
-		if (ObjPedidoDevueltoID != other.ObjPedidoDevueltoID)
 			return false;
 		if (ObjSucursalID != other.ObjSucursalID)
 			return false;
@@ -1595,27 +1568,16 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 			return false;
 		if (ReferenciaNC != other.ReferenciaNC)
 			return false;
-		if (Subtotal != other.Subtotal)
-			return false;
 		if (TipoTramite == null) {
 			if (other.TipoTramite != null)
 				return false;
 		} else if (!TipoTramite.equals(other.TipoTramite))
-			return false;
-		if (Total != other.Total)
-			return false;
-		if (TotalVen != other.TotalVen)
-			return false;
+			return false;		
 		if (objPedido == null) {
 			if (other.objPedido != null)
 				return false;
 		} else if (!objPedido.equals(other.objPedido))
-			return false;
-		if (olddata == null) {
-			if (other.olddata != null)
-				return false;
-		} else if (!olddata.equals(other.olddata))
-			return false;
+			return false;		
 		return true;
 	}
 

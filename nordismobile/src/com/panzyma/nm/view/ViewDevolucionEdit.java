@@ -69,6 +69,7 @@ import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.auxiliar.Util;
 import com.panzyma.nm.controller.Controller;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.custom.model.SpinnerModel;
@@ -131,10 +132,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_VER_COSTEO = 5;
 	private static final int ID_GUARDAR = 6;
 	private static final int ID_ENVIAR = 7;
-	private static final int ID_FICHACLIENTE = 8;
-	private static final int ID_CUENTASXCOBRAR = 9;
-	private static final int ID_CERRAR = 10;
-	private static final int ID_IMPRIMIR = 11;
+	private static final int ID_FICHACLIENTE = 9;
+	private static final int ID_CUENTASXCOBRAR = 10;
+	private static final int ID_CERRAR = 11;
+	private static final int ID_IMPRIMIR = 8;
 
 	private BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
 	private BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
@@ -801,7 +802,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				EstimarCostosDev(true);
 				CalTotalDevolucion();
 				CalMontoCargoVendedor();
-
+				//devolucion.setOlddata(devolucion);
 			} catch (Exception e) {
 				AppDialog.showMessage(this, "Alerta", e.getMessage(),
 						DialogType.DIALOGO_ALERTA);
@@ -1363,6 +1364,57 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		
 		return true;
 	}
+	
+	public void setDataBeforeBack() 
+	{	
+		devolucion.setObjClienteID((cliente==null?0:cliente.getIdCliente()));
+		devolucion.setFecha(DateUtil.dt2i(new Date()));
+
+		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
+			devolucion.setTipoTramite("NC");
+		} else if("RE".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
+			devolucion.setTipoTramite("RE");
+		} else {
+			devolucion.setTipoTramite("");
+		}
+
+		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtipodev.getSelectedItem()).getCodigo())) ? false : true);
+		devolucion.setDeVencido(ckboxvencidodev.isChecked());
+		if (this.pedido == null || this.pedido.getId() == 0L) {
+			devolucion.setObjPedidoDevueltoID(0);
+		} else {
+			devolucion.setObjPedidoDevueltoID(pedido.getId());
+			devolucion.setObjVendedorID(pedido.getObjVendedorID());
+		}
+		
+		devolucion.setObjClienteID((cliente==null?0:cliente.getIdCliente()));
+		devolucion.setObjSucursalID((cliente==null?0:cliente.getIdSucursal()));
+		
+		devolucion.setEspecial(!"".equals(devolucion.getObservacion()));
+		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado())) 
+		{
+			EstimarCostosDev(false); 
+			CalMontoCargoVendedor();
+		    CalMontoPromocion();
+		    CalTotalDevolucion();
+		}
+		
+		devolucion.setMontoCargoVendedor(costeoMontoCargoVen.longValue());
+		devolucion.setTotalVen(costeoMontoTotalVen.longValue());
+		devolucion.setMontoVinieta(costeoMontoVinieta.longValue());
+		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen.longValue());
+		devolucion.setMontoPromocionVen(costeoMontoPromocionVen.longValue());
+		devolucion.setImpuestoVen(costeoMontoImpuestoVen.longValue());
+		devolucion.setMontoBonifVen(costeoMontoBonificacionVen.longValue()); 
+		 
+		devolucion.setTotal(costeoMontoTotal.longValue()); 
+		devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo.longValue());
+		devolucion.setMontoPromocion(costeoMontoPromocion.longValue());
+		devolucion.setImpuesto(costeoMontoImpuesto.longValue());
+		devolucion.setMontoBonif(costeoMontoBonificacion.longValue());
+		devolucion.setSubtotal(costeoMontoSubTotal.longValue());
+		
+	}
 
 	public void EstimarCostosDev(boolean calBonif) {
 		// Estimar costo devolucion
@@ -1454,15 +1506,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				}
 
 			}
-
-			_dp.setSubtotal((long) (_dp.getCantidadDevolver()
-					* (_dp.getPrecio() / 100.00) * 100.00));
-			long boniL = (long) (_dp.getBonificacion()
-					* (_dp.getPrecio() / 100.00) * 100.00);
-
+			float value = (float) (_dp.getCantidadDevolver() * (_dp.getPrecio() / 100.0));
+			_dp.setSubtotal((long)(Util.Numero.redondear(value, 2)  * 100));
+			value = (float) (_dp.getBonificacion() * (_dp.getPrecio() / 100.0));
+			long boniL = (long)(Util.Numero.redondear(value, 2)  * 100);
 			_dp.setMontoBonif(boniL);
-			boniL = (long) (_dp.getBonificacionVen()
-					* (_dp.getPrecio() / 100.00) * 100.00);
+			value = (float) (_dp.getBonificacionVen() * (_dp.getPrecio() / 100.0));
+			boniL = (long)(Util.Numero.redondear(value, 2)  * 100);
 			_dp.setMontoBonifVen(boniL);
 
 			if (_dp.isGravable()) {
@@ -1579,12 +1629,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			return;
 		if (ENVIADA.equals(devolucion.getCodEstado())) {
 			double cargo = 0d;
-			for (DevolucionProducto dp : devolucion.getProductosDevueltos()) {
-				double value1 = 0d, value2 = 0d;
-				value1 = (dp.getCantidadDevolver() - dp.getPrecio());
-				value2 = (value1 * dp.getImpuesto()) / 100;
-				cargo += value1 + value2;
-
+			if(devolucion.getProductosDevueltos()!=null){
+				for (DevolucionProducto dp : devolucion.getProductosDevueltos()) {
+					double value1 = 0d, value2 = 0d;
+					value1 = (dp.getCantidadDevolver() - dp.getPrecio());
+					value2 = (value1 * dp.getImpuesto()) / 100;
+					cargo += value1 + value2;
+				}
 			}
 			costeoMontoCargoVen = new BigDecimal(cargo);
 		} else if (costeoMontoTotalVen.longValue() > costeoMontoTotal
@@ -1720,6 +1771,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			else {
 				ft.remove(ficha);
 				ft.commit();
+				getSupportActionBar().show();
 			}
 			
 			
@@ -1962,7 +2014,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					dev_prod = new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
 					initComponent();
 					initExpandableListView(true);
-					devolucion.setOldData(devolucion);
+					//devolucion.setOlddata(devolucion);
 				}
 				break;
 	
@@ -2446,8 +2498,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		ocultarDialogos();
 		NMApp.getThreadPool().stopRequestAllWorkers();
 		Log.d(TAG, "Activity quitting");
-
-		if (devolucion.hasModified(devolucion.getOldData())) {
+		setDataBeforeBack();
+		if (devolucion.hasModified()) {
 
 			AppDialog.showMessage(me, "",
 					"¿Desea guardar la información antes de salir?",
