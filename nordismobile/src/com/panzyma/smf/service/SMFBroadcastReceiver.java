@@ -25,7 +25,5 @@ public class SMFBroadcastReceiver extends BroadcastReceiver
 		    cal.add(Calendar.MINUTE, 10); 
 		
 		    service.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REPEAT_TIME, pending);
-
-
 	  }
 }

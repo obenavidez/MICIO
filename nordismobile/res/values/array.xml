@@ -104,6 +104,15 @@
         <item >Ver Costeo</item>
         <item >Guardar</item>
         <item >Enviar</item>
+        <item >Imprimir Comprobante</item> 
+        <item >Ficha del Cliente</item>
+        <item >Cuentas por Cobrar</item>
+        <item >Cerrar</item> 
+    </string-array>
+    
+    <string-array name="devolucioneditoptions2">    
+        <item >Ver Costeo</item> 
+        <item >Imprimir Comprobante</item> 
         <item >Ficha del Cliente</item>
         <item >Cuentas por Cobrar</item>
         <item >Cerrar</item> 
@@ -120,6 +129,7 @@
         <item >Cuentas por Cobrar</item>
         <item >Cerrar</item> 
     </string-array>
+     
     
    <string-array name="meses_anio">
         <item>Ene</item>
