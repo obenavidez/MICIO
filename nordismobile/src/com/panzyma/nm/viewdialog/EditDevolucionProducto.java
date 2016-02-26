@@ -2,7 +2,9 @@ package com.panzyma.nm.viewdialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
@@ -216,8 +218,7 @@ public class EditDevolucionProducto extends DialogFragment {
 				public void onClick(View v) {
 					try {
 						if (validarDatos()) {
-							accept();
-							dismiss();
+							accept();							
 						}
 					} catch (InterruptedException e) {
 						try {
@@ -429,6 +430,7 @@ public class EditDevolucionProducto extends DialogFragment {
 		String anio = "";
 		String fechaVencimiento = "";
 		long fechaVencimientoL;
+		long date = 0;
 		/**************************************************************************************************************************************************************/
 		DevolucionProductoLote dvl = new DevolucionProductoLote();
 		dvl.setCantidadDespachada(0);
@@ -437,18 +439,35 @@ public class EditDevolucionProducto extends DialogFragment {
 					cmbLote.getSelectedItemPosition()).getObj();
 			numeroLote.setText(lote.getNumeroLote());
 			dvl.setFechaVencimiento(lote.getFechaVencimiento());
+			date = lote.getFechaVencimiento();
 			dvl.setObjLoteID(lote.getId());
-		} else {
+		} else {			
 			anio = anioVencimiento.getText().toString();
 			mes = String
 					.valueOf(cmbMesVencimiento.getSelectedItemPosition() + 1);
 			if (mes.length() == 1)
 				mes = "0" + mes;
 			fechaVencimiento = anio + mes + "01";
-			long date = DateUtil.getLastDayOfMonth(Long
+			date = DateUtil.getLastDayOfMonth(Long
 					.valueOf(fechaVencimiento));
 			dvl.setFechaVencimiento((int) date);
 		}
+		if(me.getCkboxvencidodev().isChecked()) {
+			if( date > DateUtil.dt2iFC(new Date())  ) {
+				cantidad.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
+				numeroLote.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
+				anioVencimiento.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
+				return;
+			}
+		} else {
+			if( date < DateUtil.dt2iFC(new Date())  ) {
+				cantidad.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
+				numeroLote.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
+				anioVencimiento.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");	
+				return;
+			}
+		}
+		
 		dvl.setCantidadDevuelta(Integer.valueOf(cantidad.getText().toString()));
 		dvl.setNumeroLote(numeroLote.getText().toString());
 		/**************************************************************************************************************************************************************/
@@ -481,7 +500,7 @@ public class EditDevolucionProducto extends DialogFragment {
 		}
 	    //me.refreshExpandable();
 		me.initExpandableListView(true);
-
+		dismiss();
 	}
 
 	private List<DevolucionProductoLote> addLote(
@@ -552,6 +571,7 @@ public class EditDevolucionProducto extends DialogFragment {
 			cantidad.setError("Debe indicar la cantidad a devolver");
 			return false;
 		}
+		
 		return true;
 	}
 

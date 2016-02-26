@@ -2772,5 +2772,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		}
 		
 	}
+	
+	public CheckBox getCkboxvencidodev() {
+		return ckboxvencidodev;
+	}
+
+	public void setCkboxvencidodev(CheckBox ckboxvencidodev) {
+		this.ckboxvencidodev = ckboxvencidodev;
+	}
 }
 

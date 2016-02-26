@@ -67,7 +67,7 @@ public class ModelConfiguracion {
 	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		//return pref.getString("url_server2", "http://www.panzyma.com/Simfactest/SimfacService.svc/");
-		return pref.getString("url_server2", "http://192.168.43.154:8081/SimfacService.svc/");		
+		return pref.getString("url_server2", "http://192.168.43.159:8081/SimfacService.svc/");		
 
 	}
 
