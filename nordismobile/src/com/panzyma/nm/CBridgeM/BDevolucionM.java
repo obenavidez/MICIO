@@ -837,7 +837,7 @@ public class BDevolucionM extends BBaseM
 		 ModelConfiguracion.ActualizarSecuenciaDevolucion(devolucionmax, dev.isDeVencido());
 		 if(dev.getObjPedido()!=null && dev.getObjPedido().getId()!=0)
 			 ModelPedido.RegistrarPedido(dev.getObjPedido(), NMApp.getContext());
-		 
+		 dev.setOlddata(dev);
 		 return dev;
     }
     
@@ -918,8 +918,9 @@ public class BDevolucionM extends BBaseM
 							 DatabaseProvider.RegistrarDevolucion(dev, NMApp.getContext());
 							 ModelConfiguracion.ActualizarSecuenciaDevolucion(devolucionmax, dev.isDeVencido());
 							 if(dev.getObjPedido()!=null && dev.getObjPedido().getId()!=0)
-								 ModelPedido.RegistrarPedido(dev.getObjPedido(), NMApp.getContext());
-							  			 
+								 ModelPedido.RegistrarPedido(dev.getObjPedido(), NMApp.getContext());							 
+							dev.setOlddata(dev);
+							Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev); 
 							Processor.notifyToView(
 									NMApp.getController(),
 									((args!=null && args.length!=0 && args[0]==ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR)?ControllerProtocol.SALVARDEVOLUCIONANTESDEIMPRIMIR:
