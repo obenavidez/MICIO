@@ -11,10 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal">
-        <ImageView
+        <!-- <ImageView
             android:id="@+id/imageView0"
             android:layout_height="wrap_content"     
-            android:src="@drawable/ic_launcher_large" />
+            android:src="@drawable/ic_launcher_large" /> -->
     </TableRow>
     
     <include

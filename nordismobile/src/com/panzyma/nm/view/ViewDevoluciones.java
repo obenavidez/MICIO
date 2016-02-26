@@ -627,15 +627,14 @@ public class ViewDevoluciones extends ActionBarActivity implements
 			com.panzyma.nm.NMApp.getController().setView(this);
 			request_code = requestcode;
 			if ((NUEVO_DEVOLUCION == request_code || ABRIR_DEVOLUCION == request_code)
-					&& data != null)
-				;
-			Bundle bundle = data.getExtras();
-			bundle.setClassLoader(com.panzyma.nm.serviceproxy.Devolucion.class
-					.getClassLoader());
-			PojoDevolucion dev = (PojoDevolucion) bundle
-					.getSerializable(SERIALIZE_DEVOLUCION);
-			establecer(dev, false);
-
+					&& data != null) {
+				Bundle bundle = data.getExtras();
+				bundle.setClassLoader(com.panzyma.nm.serviceproxy.Devolucion.class
+						.getClassLoader());
+				PojoDevolucion dev = (PojoDevolucion) bundle
+						.getSerializable(SERIALIZE_DEVOLUCION);
+				establecer(dev, false);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
