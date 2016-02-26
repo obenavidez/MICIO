@@ -1131,7 +1131,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				// Ponemos el titulo del Menú
 				getSupportActionBar().setTitle(tituloSeccion);
 				Controller controller = com.panzyma.nm.NMApp.getController();
-				
+				drawerItemAction(position);
 			}
 		});
 
