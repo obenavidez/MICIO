@@ -1768,7 +1768,6 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		}
 		if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive != FragmentActive.EDIT)
 		{
-			fragmentActive = FragmentActive.EDIT;
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			if(fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR){
 				android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
@@ -1782,7 +1781,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				getSupportActionBar().show();
 			}
 			
-			
+			fragmentActive = FragmentActive.EDIT;	
 			return true;
 		}
 		
@@ -2719,7 +2718,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					if (NMNetWork.isPhoneConnected(NMApp.getContext())
 							&& NMNetWork.CheckConnection(NMApp.getController())) {
 						LOAD_CUENTASXPAGAR();
-						fragmentActive = fragmentActive.FICHACLIENTE;
+						fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
 					}
 					break;
 				case ID_CERRAR:
@@ -2761,7 +2760,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					if (NMNetWork.isPhoneConnected(NMApp.getContext())
 							&& NMNetWork.CheckConnection(NMApp.getController())) {
 						LOAD_CUENTASXPAGAR();
-						fragmentActive = fragmentActive.FICHACLIENTE;
+						fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
 					}
 					break;
 				case ID_CERRAR2:
