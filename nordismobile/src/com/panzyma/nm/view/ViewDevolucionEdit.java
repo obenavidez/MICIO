@@ -91,6 +91,7 @@ import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.ViewDevoluciones.FragmentActive;
 import com.panzyma.nm.view.adapter.CustomAdapter;
 import com.panzyma.nm.view.adapter.ExpandListAdapterOriginal;
 import com.panzyma.nm.view.adapter.ExpandListChild;
@@ -130,10 +131,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_VER_COSTEO = 5;
 	private static final int ID_GUARDAR = 6;
 	private static final int ID_ENVIAR = 7;
-	private static final int ID_IMPRIMIR = 8;
-	private static final int ID_FICHACLIENTE = 9;
-	private static final int ID_CUENTASXCOBRAR = 10;
-	private static final int ID_CERRAR = 11;
+	private static final int ID_FICHACLIENTE = 8;
+	private static final int ID_CUENTASXCOBRAR = 9;
+	private static final int ID_CERRAR = 10;
+	private static final int ID_IMPRIMIR = 11;
 
 	private BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
 	private BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
@@ -266,6 +267,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 
+	public enum FragmentActive {
+		EDIT,  FICHACLIENTE, CONSULTAR_CUENTA_COBRAR
+	};
+	private FragmentActive fragmentActive = null;
+	FichaClienteFragment ficha;
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -275,7 +283,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		SessionManager.setContext(this);
 		UserSessionManager.setContext(this);
 		com.panzyma.nm.NMApp.getController().setView(this);
-
+		fragmentActive = FragmentActive.EDIT;
 		iddevolucion = getIntent().getLongExtra("iddevolucion", 0l);
 
 		if (iddevolucion != 0l) {
@@ -1164,6 +1172,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					if (NMNetWork.isPhoneConnected(NMApp.getContext())
 							&& NMNetWork.CheckConnection(NMApp.getController())) {
 						ShowFichCliente();
+						fragmentActive = fragmentActive.FICHACLIENTE;
 					}
 					break;
 				case ID_CUENTASXCOBRAR:
@@ -1176,6 +1185,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					if (NMNetWork.isPhoneConnected(NMApp.getContext())
 							&& NMNetWork.CheckConnection(NMApp.getController())) {
 						LOAD_CUENTASXPAGAR();
+						fragmentActive = fragmentActive.FICHACLIENTE;
 					}
 					break;
 				case ID_CERRAR:
@@ -1752,12 +1762,31 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	{
 		if (keyCode == KeyEvent.KEYCODE_MENU)
 			drawerLayout.openDrawer(Gravity.LEFT);
-		if (keyCode == KeyEvent.KEYCODE_BACK) 
+		if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.EDIT) 
 		{			
 			FINISH_ACTIVITY(); 
 			NMApp.getThreadPool().stopRequestAllWorkers();
 			return true;
 		}
+		if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive != FragmentActive.EDIT)
+		{
+			fragmentActive = FragmentActive.EDIT;
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			if(fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR){
+				android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+				if (prev != null) {
+					ft.remove(prev);
+				}
+			}
+			else {
+				ft.remove(ficha);
+				ft.commit();
+			}
+			
+			
+			return true;
+		}
+		
  
 		return super.onKeyUp(keyCode, event);
 	}
@@ -2317,7 +2346,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		// establecemos el titulo
 		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
 
-		FichaClienteFragment ficha;
+		//FichaClienteFragment ficha;
 		FragmentTransaction transaction = getSupportFragmentManager()
 				.beginTransaction();
 
