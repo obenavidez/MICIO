@@ -598,6 +598,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 									ExpandableListView _parent, View v,
 									int groupPosition, int childPosition,
 									long id) {
+								if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
+									return false;
 								
 								if (_lastColored != null) {
 									_lastColored
@@ -664,6 +666,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								int flatpost;
 								int ajustPos;
 								long value = 0;
+								
+								if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
+									return false;
+								
 								elv = (ExpandableListView) _parent;
 								if (ExpandableListView
 										.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
@@ -1096,8 +1102,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	public void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
-		opcionesMenu = getResources().getStringArray(
-				R.array.devolucioneditoptions);
+		int idarray=(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado()))?R.array.devolucioneditoptions2:R.array.devolucioneditoptions;
+		opcionesMenu = getResources().getStringArray(idarray); 
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// Buscamos nuestro menu lateral
 		drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -1121,11 +1127,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				case ID_SELECCIONAR_CLIENTE:
 					seleccionarCliente();
 					break;
-				case ID_DEVOLVER_PEDIDO:
-					//devolverdocumento();
+				case ID_DEVOLVER_PEDIDO:					
 					devolverPedido();
 					break;
 				case ID_AGREGAR_PRODUCTO:
+					if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
+						return;
 					agregarProducto();
 					break;
 				case ID_AGREGAR_LOTE:
@@ -2079,6 +2086,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				devolucion = ((Devolucion) msg.obj);
 				devolucion.setOlddata(devolucion);
 				actualizarOnUINumRef(devolucion);  
+				updateControls(devolucion);
 			break;
 		}
 		return false;
@@ -2536,7 +2544,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			public void run() 
 			{
 				boolean enabled = true;
-				if(devolucion.getNumeroCentral()!=0) enabled = false;
+				if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) enabled = false;
 				
 				ckboxvencidodev.setChecked(devolucion.isDeVencido());
 				tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
@@ -2598,11 +2606,6 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				tbxNota.setText(""+devolucion.getNota());
 				ckboxncinmeditata.setChecked(devolucion.isAplicacionInmediata());
 				
-//				cboxmotivodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
-//				cboxtramitedev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
-//				cboxtipodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
-//				ckboxncinmeditata.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
-				
 				cboxmotivodev.setEnabled(enabled);
 				cboxtramitedev.setEnabled(enabled);
 				cboxtipodev.setEnabled(enabled);
@@ -2613,8 +2616,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				tbxCentralNum.setEnabled(enabled);
 				tbxNombreDelCliente.setEnabled(enabled);
 				cboxmotivodev.setEnabled(enabled);
-				tbxPedidoNum.setEnabled(enabled);
-				
+				tbxPedidoNum.setEnabled(enabled);		 
+				if(!enabled)
+					CreateMenu();
 			}
 		});
 		
