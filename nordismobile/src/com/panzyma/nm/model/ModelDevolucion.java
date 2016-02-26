@@ -369,15 +369,15 @@ public class ModelDevolucion {
 //								.getColumnIndex(NMConfig.Devolucion.total))));
 //						row.setTotalVen(Long.parseLong(cur.getString(cur
 //								.getColumnIndex(NMConfig.Devolucion.totalVen))));
-						row.setSubtotal(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.subtotal))));
-						row.setImpuesto(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.impuesto))));
-						row.setMontoPromocion(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoPromocion))));
-						row.setMontoPromocionVen(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoPromocionVen))));
-						row.setMontoCargoAdm(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoCargoAdm))));
+						row.setSubtotal(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.subtotal)))));
+						row.setImpuesto(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.impuesto)))));
+						row.setMontoPromocion(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.montoPromocion)))));
+						row.setMontoPromocionVen(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.montoPromocionVen)))));
+						row.setMontoCargoAdm(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.montoCargoAdm)))));
 						row.setMontoCargoAdmVen(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoCargoAdmVen))));
 						row.setMontoVinieta(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoVinieta))));
-						row.setTotal(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.total))));
-						row.setTotalVen(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.totalVen))));
+						row.setTotal(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.total)))));
+						row.setTotalVen(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.totalVen)))));
 						
 						row.setObjEstadoID(Long.parseLong(cur.getString(cur
 								.getColumnIndex(NMConfig.Devolucion.objEstadoID))));
@@ -392,9 +392,9 @@ public class ModelDevolucion {
 						row.setEspecial(cur.getInt(cur
 								.getColumnIndex(NMConfig.Devolucion.especial)) == 1 ? true
 								: false);
-						row.setMontoCargoVendedor(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoCargoVendedor))));
-						row.setMontoBonif(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoBonif))));
-						row.setMontoBonifVen(Long.parseLong(String.valueOf(cur.getColumnIndex(NMConfig.Devolucion.montoBonifVen))));
+						row.setMontoCargoVendedor(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.montoCargoVendedor)))));
+						row.setMontoBonif(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.montoBonif)))));
+						row.setMontoBonifVen(Long.parseLong(String.valueOf(cur.getString(cur.getColumnIndex(NMConfig.Devolucion.montoBonifVen)))));
 						
 						row.setImpuestoVen(Long.parseLong(cur.getString(cur
 								.getColumnIndex(NMConfig.Devolucion.impuestoVen))));
