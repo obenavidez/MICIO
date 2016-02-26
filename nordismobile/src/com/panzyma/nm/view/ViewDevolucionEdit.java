@@ -131,10 +131,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_VER_COSTEO = 5;
 	private static final int ID_GUARDAR = 6;
 	private static final int ID_ENVIAR = 7;
-	private static final int ID_FICHACLIENTE = 8;
-	private static final int ID_CUENTASXCOBRAR = 9;
-	private static final int ID_CERRAR = 10;
-	private static final int ID_IMPRIMIR = 11;
+	private static final int ID_FICHACLIENTE = 9;
+	private static final int ID_CUENTASXCOBRAR = 10;
+	private static final int ID_CERRAR = 11;
+	private static final int ID_IMPRIMIR = 8;
 
 	private BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
 	private BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
@@ -1788,6 +1788,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			else {
 				ft.remove(ficha);
 				ft.commit();
+				getSupportActionBar().show();
 			}
 			
 			
