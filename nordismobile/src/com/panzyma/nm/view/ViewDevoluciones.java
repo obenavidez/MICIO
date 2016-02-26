@@ -347,12 +347,15 @@ public class ViewDevoluciones extends ActionBarActivity implements
 								DialogType.DIALOGO_ALERTA);
 						return;
 					}
+					devolucion = ModelDevolucion.getDevolucionbyID(item_selected.getId());
 					if (devolucion.getNumeroCentral() == 0)
 						enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
-					else
+					else {						
 						enviarImprimirDevolucion(
 								"Se mandara a imprimir el comprobante de la Devolución",
 								devolucion);
+					}
+						
 					/*
 					 * BDevolucionM.ImprimirDevolucion(item_selected.getId(),
 					 * false);
