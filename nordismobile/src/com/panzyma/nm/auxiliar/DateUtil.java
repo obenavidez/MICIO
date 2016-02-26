@@ -247,6 +247,29 @@ public class DateUtil {
 		String sdate = sy + sm + sd;
 		return Integer.parseInt(sdate);
 	}
+	
+	public static long dt2iFC(Date dt) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dt);
+		int d = cal.get(Calendar.DAY_OF_MONTH);
+		int m = cal.get(Calendar.MONTH) + 1; // Cuenta de 0 a 11
+		int y = cal.get(Calendar.YEAR);
+		int h = cal.get(Calendar.HOUR_OF_DAY);
+		int min = cal.get(Calendar.MINUTE);
+		int seg = cal.get(Calendar.SECOND);
+
+		String sd = d + "";
+		if (d < 10)
+			sd = "0" + sd;
+		String sm = m + "";
+		if (m < 10)
+			sm = "0" + sm;
+		String sy = y + "";
+		
+
+		String sdate = sy + sm + sd;
+		return Long.parseLong(sdate);
+	}
 
 	public static long dt2i(Date dt) {
 		Calendar cal = Calendar.getInstance();
