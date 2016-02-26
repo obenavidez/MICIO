@@ -1647,12 +1647,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			return;
 		if (ENVIADA.equals(devolucion.getCodEstado())) {
 			double cargo = 0d;
-			for (DevolucionProducto dp : devolucion.getProductosDevueltos()) {
-				double value1 = 0d, value2 = 0d;
-				value1 = (dp.getCantidadDevolver() - dp.getPrecio());
-				value2 = (value1 * dp.getImpuesto()) / 100;
-				cargo += value1 + value2;
-
+			if(devolucion.getProductosDevueltos()!=null){
+				for (DevolucionProducto dp : devolucion.getProductosDevueltos()) {
+					double value1 = 0d, value2 = 0d;
+					value1 = (dp.getCantidadDevolver() - dp.getPrecio());
+					value2 = (value1 * dp.getImpuesto()) / 100;
+					cargo += value1 + value2;
+				}
 			}
 			costeoMontoCargoVen = new BigDecimal(cargo);
 		} else if (costeoMontoTotalVen.longValue() > costeoMontoTotal
