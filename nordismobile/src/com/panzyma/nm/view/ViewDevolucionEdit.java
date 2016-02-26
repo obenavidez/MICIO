@@ -137,6 +137,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_CERRAR = 11;
 	private static final int ID_IMPRIMIR = 8;
 
+	private static final int ID_VER_COSTEO2 = 0;
+	private static final int ID_IMPRIMIR2 = 1;
+	private static final int ID_FICHACLIENTE2 = 2;
+	private static final int ID_CUENTASXCOBRAR2 = 3;
+	private static final int ID_CERRAR2 = 4;
+	
+	
 	private BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
 	private BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
 	private BigDecimal costeoMontoImpuesto = BigDecimal.ZERO;
@@ -1133,6 +1140,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				getSupportActionBar().setTitle(tituloSeccion);
 				Controller controller = com.panzyma.nm.NMApp.getController();
 				drawerItemAction(position);
+				drawerLayout.closeDrawers();
 			}
 		});
 
@@ -2723,14 +2731,14 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		{
 			switch (position) 
 			{	
-				case ID_VER_COSTEO:
+				case ID_VER_COSTEO2:
 					VerCosteoDevolucion();
 					break;  
-				case ID_IMPRIMIR:
+				case ID_IMPRIMIR2:
 					if(devolucion.getNumeroCentral()!=0)
 						enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
 						break;
-				case ID_FICHACLIENTE:
+				case ID_FICHACLIENTE2:
 					if (cliente == null) {
 						AppDialog.showMessage(getContext(), "Información",
 								"Seleccione un cliente.",
@@ -2743,7 +2751,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						fragmentActive = fragmentActive.FICHACLIENTE;
 					}
 					break;
-				case ID_CUENTASXCOBRAR:
+				case ID_CUENTASXCOBRAR2:
 					if (cliente == null) {
 						AppDialog.showMessage(getContext(), "Información",
 								"Seleccione un cliente.",
@@ -2756,7 +2764,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						fragmentActive = fragmentActive.FICHACLIENTE;
 					}
 					break;
-				case ID_CERRAR:
+				case ID_CERRAR2:
 					FINISH_ACTIVITY();
 					break;
 
