@@ -1115,6 +1115,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// Buscamos nuestro menu lateral
 		drawerList = (ListView) findViewById(R.id.left_drawer);
+		 
 		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
 				.getThemedContext(), android.R.layout.simple_list_item_1,
 				opcionesMenu));
@@ -1130,76 +1131,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				// Ponemos el titulo del Menú
 				getSupportActionBar().setTitle(tituloSeccion);
 				Controller controller = com.panzyma.nm.NMApp.getController();
-				switch (position) {
-
-				case ID_SELECCIONAR_CLIENTE:
-					seleccionarCliente();
-					break;
-				case ID_DEVOLVER_PEDIDO:					
-					devolverPedido();
-					break;
-				case ID_AGREGAR_PRODUCTO:
-					if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
-						return;
-					agregarProducto();
-					break;
-				case ID_AGREGAR_LOTE:
-					if (groupselected != null) {
-						EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(
-								groupselected, me);
-						FragmentManager fragmentManager = getSupportFragmentManager();
-						dialogDevolucion.show(fragmentManager, "");
-					}
-					break;
-				case ID_EDITAR_NOTA:
-					EditarNotaDevolucion();
-					break;
-				case ID_VER_COSTEO:
-					VerCosteoDevolucion();
-					break;
-				case ID_GUARDAR:
-					salvarDevolucion();
-					break;
-				case ID_ENVIAR: 
-				    enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV); 
-					break;  
-				case ID_IMPRIMIR:
-					if(devolucion.getNumeroCentral()==0)
-						enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
-					else
-						enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
-						break;
-				case ID_FICHACLIENTE:
-					if (cliente == null) {
-						AppDialog.showMessage(getContext(), "Información",
-								"Seleccione un cliente.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if (NMNetWork.isPhoneConnected(NMApp.getContext())
-							&& NMNetWork.CheckConnection(NMApp.getController())) {
-						ShowFichCliente();
-						fragmentActive = fragmentActive.FICHACLIENTE;
-					}
-					break;
-				case ID_CUENTASXCOBRAR:
-					if (cliente == null) {
-						AppDialog.showMessage(getContext(), "Información",
-								"Seleccione un cliente.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if (NMNetWork.isPhoneConnected(NMApp.getContext())
-							&& NMNetWork.CheckConnection(NMApp.getController())) {
-						LOAD_CUENTASXPAGAR();
-						fragmentActive = fragmentActive.FICHACLIENTE;
-					}
-					break;
-				case ID_CERRAR:
-					// FINISH_ACTIVITY();
-					break;
-
-				}
+				
 			}
 		});
 
@@ -2658,6 +2590,126 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					CreateMenu();
 			}
 		});
+		
+	}
+	
+	public void drawerItemAction(int position)
+	{
+		if(drawerList!=null  && drawerList.getAdapter()!=null && drawerList.getAdapter().getCount()>5)
+		{
+			switch (position) 
+			{	
+				case ID_SELECCIONAR_CLIENTE:
+					seleccionarCliente();
+					break;
+				case ID_DEVOLVER_PEDIDO:					
+					devolverPedido();
+					break;
+				case ID_AGREGAR_PRODUCTO:
+					if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
+						return;
+					agregarProducto();
+					break;
+				case ID_AGREGAR_LOTE:
+					if (groupselected != null) {
+						EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(
+								groupselected, me);
+						FragmentManager fragmentManager = getSupportFragmentManager();
+						dialogDevolucion.show(fragmentManager, "");
+					}
+					break;
+				case ID_EDITAR_NOTA:
+					EditarNotaDevolucion();
+					break;
+				case ID_VER_COSTEO:
+					VerCosteoDevolucion();
+					break;
+				case ID_GUARDAR:
+					salvarDevolucion();
+					break;
+				case ID_ENVIAR: 
+				    enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV); 
+					break;  
+				case ID_IMPRIMIR:
+					if(devolucion.getNumeroCentral()==0)
+						enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+					else
+						enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
+						break;
+				case ID_FICHACLIENTE:
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información",
+								"Seleccione un cliente.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						ShowFichCliente();
+						fragmentActive = fragmentActive.FICHACLIENTE;
+					}
+					break;
+				case ID_CUENTASXCOBRAR:
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información",
+								"Seleccione un cliente.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						LOAD_CUENTASXPAGAR();
+						fragmentActive = fragmentActive.FICHACLIENTE;
+					}
+					break;
+				case ID_CERRAR:
+					FINISH_ACTIVITY();
+					break;
+
+			}
+		}else
+		{
+			switch (position) 
+			{	
+				case ID_VER_COSTEO:
+					VerCosteoDevolucion();
+					break;  
+				case ID_IMPRIMIR:
+					if(devolucion.getNumeroCentral()!=0)
+						enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
+						break;
+				case ID_FICHACLIENTE:
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información",
+								"Seleccione un cliente.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						ShowFichCliente();
+						fragmentActive = fragmentActive.FICHACLIENTE;
+					}
+					break;
+				case ID_CUENTASXCOBRAR:
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información",
+								"Seleccione un cliente.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						LOAD_CUENTASXPAGAR();
+						fragmentActive = fragmentActive.FICHACLIENTE;
+					}
+					break;
+				case ID_CERRAR:
+					FINISH_ACTIVITY();
+					break;
+
+			}
+		}
 		
 	}
 }
