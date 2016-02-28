@@ -77,10 +77,10 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
     public void setOnDialogProductButtonClickListener(OnButtonClickListener listener) {
 		mButtonClickListener = listener;
 	} 
-	
-    
+	public  ArrayList<Producto> get_ProdsExcluir(){ return _idsProdsExcluir;   }
+	public  ArrayList<Producto> get_Lproducto(){ return Lproducto;   }
     private String codTipoPrecio;
-    
+    private DialogProducto me;
     private String filtro = "";  
     private int[] dataIndex; 
     private long _idCategCliente;
@@ -100,7 +100,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
         try 
         {           	
 			setContentView(R.layout.mainproducto);   
-			parent=vpe;      	 
+			parent=vpe;   me = this;   	 
 	        NMApp.getController().setView(this);
 	        pd = ProgressDialog.show(vpe.getContext(), "Espere por favor", "Trayendo Info...", true, false); 
 			WindowManager wm = (WindowManager) vpe.getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -343,7 +343,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 								dp.getWindow().setLayout(display.getWidth()-40,display.getHeight()-110);  
 								dp.show(); 
 			            	} else {
-			            		EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(product_selected, ((ViewDevolucionEdit)parent));
+			            		EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(product_selected, ((ViewDevolucionEdit)parent),me);
 			            		FragmentManager fragmentManager =  ((ViewDevolucionEdit)parent).getSupportFragmentManager();
 								dialogDevolucion.show(fragmentManager, "");
 			            	}
@@ -369,5 +369,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 		Log.d(TAG, "Exit from DialogProducto"); 
 	}  
  
-
+	public void rebind(){
+		LoadData();
+	}
 }

@@ -206,7 +206,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	private ViewDevolucionEdit me;
 	ArrayList<Producto> aprodselected;
-
+	public List<Producto> get_aprodselected(){ return  aprodselected == null ?aprodselected = new ArrayList<Producto>() : aprodselected;  }
 	private ExpandListGroup groupselected;
 
 	DrawerLayout drawerLayout;
