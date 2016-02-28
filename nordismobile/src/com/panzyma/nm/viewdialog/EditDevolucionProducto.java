@@ -91,7 +91,7 @@ public class EditDevolucionProducto extends DialogFragment {
 	private static ViewDevolucionEdit me;
 	private DevolucionProducto devolucionProducto;
 	private ExpandListGroup groupselected;
-
+	DialogProducto dialogproduct;
 	public static final String SELECTED_PRODUCT = "OBJ_PRODUCT";
 	public static final String PRODUCT_LOTE = "OBJ_PRODUCT_LOTE";
 	private Cliente cliente;
@@ -162,6 +162,18 @@ public class EditDevolucionProducto extends DialogFragment {
 		me = vde;
 		cliente = vde.getCliente();
 		tipo = Type.ADD;
+		this.setDevolucionProducto(null);
+		Bundle parametros = new Bundle();
+		parametros.putParcelable(SELECTED_PRODUCT, product_selected);
+		this.setArguments(parametros);
+	}
+	
+	public EditDevolucionProducto(Producto ps, ViewDevolucionEdit vde , DialogProducto dialogproduct) {
+		product_selected = ps;
+		me = vde;
+		cliente = vde.getCliente();
+		tipo = Type.ADD;
+		this.dialogproduct = dialogproduct;
 		this.setDevolucionProducto(null);
 		Bundle parametros = new Bundle();
 		parametros.putParcelable(SELECTED_PRODUCT, product_selected);
@@ -495,6 +507,11 @@ public class EditDevolucionProducto extends DialogFragment {
 			dp.setNombreProducto(product_selected.getNombre());
 			dp.setObjProveedorID(product_selected.getObjProveedorID());
 			me.getDev_prod().add(dp);
+			me.get_aprodselected().add(product_selected);
+			this.dialogproduct.get_ProdsExcluir().add(product_selected);
+			this.dialogproduct.filterData(this.dialogproduct.get_Lproducto());
+			this.dialogproduct.rebind();
+			
 		} else {
 			me.getDev_prod().set(obj.getIndex(), dp);
 		}
