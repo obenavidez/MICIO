@@ -25,7 +25,7 @@
             android:id="@+id/ScrollViewDev"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="20dip"
+            android:paddingTop="5dp"
             android:layout_marginBottom="3dip"
             android:layout_weight="50" >
 
@@ -38,8 +38,7 @@
                     android:id="@+id/devchk_typodevolucion"
                     android:layout_width="100dp"
                     android:layout_height="30dp"
-                    android:text="De Vencido"
-                    
+                    android:text="Vencido"                    
                     android:textStyle="bold"
                     android:selectAllOnFocus="true"
                     android:textColor="@color/Black" />
@@ -49,11 +48,10 @@
                     android:layout_width="55dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:layout_toRightOf="@+id/devchk_typodevolucion"
                     android:text="Fecha :"
-                    android:textColor="@color/Black"
-                    
+                    android:textColor="@color/Black"                    
                     android:textStyle="bold" />
 
                 <EditText
@@ -236,8 +234,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/devtextv_pedido"
                     android:text="N/C Inmediata"
-                    android:selectAllOnFocus="true"
-                    
+                    android:selectAllOnFocus="true" 
                     android:textStyle="bold" />
 
                 <TextView

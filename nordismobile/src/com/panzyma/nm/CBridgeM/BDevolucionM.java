@@ -294,7 +294,36 @@ public class BDevolucionM extends BBaseM
 					Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.IMPRIMIR,0,"La devolución no será enviada por falta de cobertura\r\n, esta será impresa y quedará pendiente de enviarse."); 
 	                return;
 	            }
-				String respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev);  
+				String respuesta=null;
+				try {
+					 respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev);
+				} catch (Exception e) 
+				{
+					 //Poner estado de recibo en PAGADO_OFFLINE                   
+					dev.setCodEstado("PAGADO_OFFLINE");
+					dev.setDescEstado("Registrado"); 	
+					dev.setOffLine(true);
+					
+					if (dev.isOffLine()) 
+						dev.setDescEstado(NMApp.getContext().getSharedPreferences(
+								"SystemParams", android.content.Context.MODE_PRIVATE)
+								.getString("EtiquetaDevolucionesOffline", "")); 
+					
+					if (dev.isAplicacionInmediata() && dev.isOffLine()) 
+						dev.setDescEstado(NMApp.getContext().getSharedPreferences(
+								"SystemParams", android.content.Context.MODE_PRIVATE)
+								.getString("EtiquetaDevolucionesOfflineNCI", ""));
+				 
+					dev.setOlddata(dev);
+	               //Guardando cambios en el Dispositivo 
+			        guardarDevolucion(dev); 
+			        Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
+	                //enviar los cambios en el hilo pricipal 	                
+					Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.IMPRIMIR,0,"La devolución no será enviada por falta de cobertura\r\n, esta será impresa y quedará pendiente de enviarse."); 
+	                return;
+
+				}
+				  
 				dev.setObservacion(respuesta);
 				
 				if(respuesta!=null && !"".equals(respuesta))

@@ -6,7 +6,7 @@
 
 <LinearLayout
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
 
     <!-- Included header.xml here -->
@@ -21,21 +21,22 @@
   <LinearLayout
       android:layout_width="fill_parent"
       android:layout_height="fill_parent" 
-      
+      android:gravity="center"      
       android:orientation="vertical" >
 
 	      <LinearLayout
 	          android:layout_width="fill_parent"
 	          android:layout_height="match_parent"
 	          android:layout_marginBottom="20dp"
+	          
 	          android:gravity="center_horizontal"
 	          android:orientation="horizontal" >
 	
 	          <LinearLayout
 	              android:layout_width="wrap_content"
-	              android:layout_height="wrap_content"
-	              android:layout_margin="10dp"
+	              android:layout_height="wrap_content"	          
 	              android:gravity="center_horizontal"
+	              android:layout_weight="1"
 	              android:orientation="vertical" > 
 	              <Button
 	                  android:id="@+id/hbtnpedido"
@@ -57,8 +58,8 @@
 	
 	          <LinearLayout
 	              android:layout_width="wrap_content"
-	              android:layout_height="wrap_content"
-	              android:layout_margin="10dp"
+	              android:layout_height="wrap_content" 
+	              android:layout_weight="1"
 	              android:gravity="center_horizontal"
 	              android:orientation="vertical" >
 	
@@ -83,9 +84,9 @@
 	
 	          <LinearLayout
 	              android:layout_width="wrap_content"
-	              android:layout_height="wrap_content"
-	              android:layout_marginTop="10dp"
+	              android:layout_height="wrap_content" 
 	              android:gravity="center_horizontal"
+	              android:layout_weight="1"
 	              android:orientation="vertical" >
 	
 
@@ -123,12 +124,9 @@
 	
 	          <LinearLayout
 	              android:layout_width="wrap_content"
-	              android:layout_height="wrap_content"
-	              android:layout_marginTop="10dp"
-	              android:layout_marginLeft="10dp"
-	              android:layout_marginBottom="10dp"
-	              android:layout_marginRight="28dp"
+	              android:layout_height="wrap_content" 
 	              android:gravity="center_horizontal"
+	              android:layout_weight="1"
 	              android:orientation="vertical" >
 	
 
@@ -151,12 +149,9 @@
 	
 	          <LinearLayout
 	              android:layout_width="wrap_content"
-	              android:layout_height="wrap_content"
-	              android:layout_marginTop="10dp"
-	              android:layout_marginLeft="10dp"
-	              android:layout_marginBottom="10dp"
-	              android:layout_marginRight="20dp"
+	              android:layout_height="wrap_content" 
 	              android:gravity="center_horizontal"
+	              android:layout_weight="1"
 	              android:orientation="vertical" >
 	
 
@@ -179,9 +174,9 @@
 	
 	          <LinearLayout
 	              android:layout_width="wrap_content"
-	              android:layout_height="wrap_content"
-	          	  android:layout_margin="10dp"
+	              android:layout_height="wrap_content" 
 	              android:gravity="center_horizontal"
+	              android:layout_weight="1"
 	              android:orientation="vertical" >
 	
 

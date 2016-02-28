@@ -325,7 +325,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 
-	public void initComponent() {
+	public void initComponent() 
+	{
 		ckboxvencidodev = (CheckBox) findViewById(R.id.devchk_typodevolucion);
 		tbxRefNum = (EditText) findViewById(R.id.devetextv_detalle_numref);
 		tbxCentralNum = (EditText) findViewById(R.id.devtextv_detallenumero);
@@ -442,27 +443,21 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
+					int position, long id) 
+			{
 				if (position == 0)
 					return;
-
-				if (adapter == null
-						|| (adapter != null && adapter.getGroupCount() == 0))
-					return;
-				if ("RE".equals(((SpinnerModel) cboxtramitedev
-						.getSelectedItem()).getCodigo())) {
+  
 				if ("RE".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()))
 				{
 
 					ckboxncinmeditata.setChecked(false);
 					ckboxncinmeditata.setEnabled(false);
 					ValidarTipoTramite();
-				} else if ("NC".equals(((SpinnerModel) cboxtramitedev
-						.getSelectedItem()).getCodigo())) {
+				} else if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
 					ckboxncinmeditata.setEnabled(true);
 				}
-
-			}}
+			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
@@ -477,23 +472,14 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
-
-						if (adapter == null
-								|| (adapter != null && adapter.getGroupCount() == 0))
-							return;
-						if (REPOSICIONCODE
-								.equals(((SpinnerModel) cboxtramitedev
-										.getSelectedItem()).getCodigo()))
+ 
+						if (REPOSICIONCODE.equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()))
 							ckboxncinmeditata.setChecked(false);
 						EstimarCostosDev(true);
 					}
 
 				});
-
-		ckboxncinmeditata.setEnabled(false);
-		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem())
-				.getCodigo()))
-			ckboxncinmeditata.setEnabled(true);
+ 
 
 		cboxtipodev.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -587,7 +573,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		}
 
 		CreateMenu();
-
+		ckboxncinmeditata.setChecked(false);
+		ckboxncinmeditata.setEnabled(false);
+		
 	}
 
 	public void initExpandableListView(boolean render) {
@@ -837,7 +825,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				.obtenerProductoModificado(new escucharModificacionProducto() {
 
 					@Override
-					public void onButtonClick(int cantidadbonificacion) {
+					public void onButtonClick(int cantidadbonificacion) 
+					{
 						actualizarProductoBonificacion(cantidadbonificacion);
 						EstimarCostosDev(false);
 						CalTotalDevolucion();
@@ -965,7 +954,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	}
 
 	public void actualizarProductoBonificacion(int cantidadbonificacion) {
-		DevolucionProducto _dp = (DevolucionProducto) groupselected.getObject();
+		DevolucionProducto _dp = (DevolucionProducto) groupselected.getObject();		
 		_dp.setBonificacionVen(cantidadbonificacion);
 		groupselected.setObject(_dp);
 		lgroups.set(positioncache[0], groupselected);
@@ -1383,7 +1372,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		} else if("RE".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
 			devolucion.setTipoTramite("RE");
 		} else {
-			devolucion.setTipoTramite("");
+			devolucion.setTipoTramite(null);
 		}
 
 		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtipodev.getSelectedItem()).getCodigo())) ? false : true);
@@ -1398,7 +1387,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setObjClienteID((cliente==null?0:cliente.getIdCliente()));
 		devolucion.setObjSucursalID((cliente==null?0:cliente.getIdSucursal()));
 		
-		devolucion.setEspecial(!"".equals(devolucion.getObservacion()));
+		devolucion.setEspecial(devolucion.getObservacion()==null?false:!"".equals(devolucion.getObservacion().toString()));
 		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado())) 
 		{
 			EstimarCostosDev(false); 
@@ -1469,7 +1458,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				} else {
 					if (calBonif) {
 						int qtybonif = 0;
-						Bonificacion bonif = DevolucionBL.getBonificacion(prod,
+						Bonificacion bonif = DevolucionBL.getBonificacion2(prod,
 								cliente.getObjCategoriaClienteID(),
 								_dp.getCantidadDevolver());
 						if (bonif != null && bonif.getCantBonificacion() != 0) {
@@ -1486,7 +1475,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 			if (pedido == null || pedido.getId() == 0
 					|| _dp.getCantidadOrdenada() <= 0) {
-				if (!ckboxvencidodev.isChecked()) {
+				if (!ckboxvencidodev.isChecked()) 
+				{
 					// Calcular precio IdTipoClienteMayorista
 					long idTP = pedido == null || pedido.getId() == 0 ? 0
 							: pedido.getObjTipoPrecioVentaID();
@@ -1503,12 +1493,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,
 							idTP, _dp.getCantidadDevolver()) * 100));
 				} else {
-					List<Catalogo> catalogo = ModelLogic
-							.getValorCatalogo(new String("VEN"));
-					long idTP = pedido == null || pedido.getId() == 0 ? 0
-							: pedido.getObjTipoPrecioVentaID();
-					if (catalogo != null)
-						idTP = catalogo.get(0).getId();
+					ValorCatalogo vcatalogo = ModelLogic.getValorByCatalogo("TipoPrecio",new String("VEN"));
+					long idTP = pedido == null || pedido.getId() == 0 ? 0: pedido.getObjTipoPrecioVentaID();
+					if (vcatalogo != null)
+						idTP = vcatalogo.getId();
 					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,
 							idTP, _dp.getCantidadDevolver()) * 100));
 				}
@@ -1809,7 +1797,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	
 	private void devolverPedido()
 	{
-		
+		if (cliente == null) {
+			AppDialog.showMessage(this, "Alerta",
+					"Por favor seleccione un cliente primero.",
+					DialogType.DIALOGO_ALERTA);
+			return;
+		}
 		runOnUiThread(new Runnable() {
 			
 			@Override
@@ -2134,8 +2127,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 									try {
 										Message msg = new Message();
 										Bundle b = new Bundle();
-										msg.obj = devolucion;
-										msg.obj = devolucion;
+										msg.obj = devolucion; 
 										msg.what = what.length != 0 ? what[0] : ControllerProtocol.IMPRIMIR; 
 										NMApp.getController().getInboxHandler()
 												.sendMessage(msg);
@@ -2273,7 +2265,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setTotal(costeoMontoTotal.longValue());
 		devolucion.setTotalVen(costeoMontoTotalVen.longValue());
 		devolucion.setAplicacionInmediata(ckboxncinmeditata.isChecked());
-		if (devolucion.getId() == 0) 
+		if (devolucion.getReferencia() == 0) 
 		{
 			ValorCatalogo catalogo = ModelLogic.getValorByCatalogo(
 					"EstadoDevolucion", "REGISTRADA");
@@ -2284,10 +2276,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setDescEstado(catalogo.getCodigo());
 			devolucion.setObjCausaEstadoID(catalogo2.getId());
 			devolucion.setDescCausaEstado(catalogo2.getDescripcion());
-
-			if (devolucion.getObservacion() != null
-					&& !devolucion.getObservacion().equals(""))
-
+ 
 			if(devolucion.getObservacion()!=null && !"".equals(devolucion.getObservacion()))
 				devolucion.setEspecial(true);
 			if (ckboxncinmeditata.isChecked() && devolucion.isOffLine()) {
@@ -2566,8 +2555,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	public void updateControls(final Devolucion devolucion)
 	{
 		runOnUiThread(new Runnable() 
-		{
-			
+		{			
 			@Override
 			public void run() 
 			{
@@ -2637,7 +2625,14 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				cboxmotivodev.setEnabled(enabled);
 				cboxtramitedev.setEnabled(enabled);
 				cboxtipodev.setEnabled(enabled);
-				ckboxncinmeditata.setEnabled(enabled);
+				
+				if(enabled &&  ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())))
+				{
+					ckboxncinmeditata.setEnabled(true);
+				}
+				else
+					ckboxncinmeditata.setEnabled(false);
+					 
 				ckboxvencidodev.setEnabled(enabled);
 				tbxFecha.setEnabled(enabled);
 				tbxRefNum.setEnabled(enabled);

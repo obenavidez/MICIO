@@ -1392,7 +1392,8 @@ public class DatabaseProvider extends ContentProvider
 	public static ReciboColector registrarRecibo(ReciboColector recibo, Context cnt, ArrayList<Factura> facturasToUpdate, ArrayList<CCNotaDebito> notasDebitoToUpdate, ArrayList<CCNotaCredito> notasCreditoToUpdate) throws Exception 
 	{
 		SQLiteDatabase bdd = null;
-		Integer recibomax=0,recibomax2=0; 
+		Integer recibomax=0; 
+		boolean newitem=false;
 		try 
 		{			
 			ContentValues values;
@@ -1401,7 +1402,7 @@ public class DatabaseProvider extends ContentProvider
 			ContentValues notaCredito;
 			ContentValues formasPago;
 			
-			bdd = Helper.getDatabase(cnt);
+			long idrecibo=0;
 			
 			bdd.beginTransaction();
 			
@@ -1438,17 +1439,24 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.Recibo.TOTAL_IMPUESTO_EXONERADO, recibo.getTotalImpuestoExonerado());
 			values.put(NMConfig.Recibo.EXENTO, recibo.isExento());
 			values.put(NMConfig.Recibo.AUTORIZA_DGI, recibo.getAutorizacionDGI());
+			
+			Cursor _c=bdd.rawQuery("select id from Recibo where referencia="+recibo.getReferencia(), null);
+			bdd = Helper.getDatabase(cnt);
+			if(_c.moveToNext())
+				idrecibo=_c.getInt(0);
+		  
+			if(recibo.getNumero()!=0)
+				values.put(NMConfig.Recibo.ID, recibo.getId());	
 					 //174
 					 //1741756
 			 Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
-	         recibomax=Ventas.getMaxReciboId(NMApp.getContext());
-	         recibomax2=new Integer(recibomax);
+	         recibomax=Ventas.getMaxReciboId(NMApp.getContext()); 
 	          
 			 //Generar Id del recibo
-	       if (recibo.getReferencia() == 0 || recibo.getId() == 0) 
+	       if (recibo.getReferencia() == 0) 
 	       {            	 
-	    	   
-	    	   //Salvando el tipo de pedido (crédito contado)		    	   
+	    	   newitem=true;
+	    	   //Salvando el tipo de recibo 	    	   
                if (recibomax == null) 
                	recibomax = Integer.valueOf(1);
                else{ 
@@ -1456,28 +1464,27 @@ public class DatabaseProvider extends ContentProvider
                }
                	
                String strIdMovil = prefijo.intValue() + "" + recibomax.intValue();
-               int idMovil = Integer.parseInt(strIdMovil); 
+               int idMovil = Integer.parseInt(strIdMovil);          
 	           
-	           recibo.setId(idMovil);
-	           recibo.setReferencia(idMovil);
-	           recibo.setObjEstadoID(0); 
+	           recibo.setReferencia(idMovil); 
 	           recibo.setCodEstado("REGISTRADO");
-	           recibo.setDescEstado("Registrado");
-	           values.put(NMConfig.Recibo.ID, recibo.getId());
+	           recibo.setDescEstado("Registrado"); 
 	           values.put(NMConfig.Recibo.REFERENCIA, recibo.getReferencia());
 	           values.put(NMConfig.Recibo.ESTADO_ID, recibo.getObjEstadoID());
 	           values.put(NMConfig.Recibo.CODIGO_ESTADO, recibo.getCodEstado());
-	   		   values.put(NMConfig.Recibo.DESCRICION_ESTADO, recibo.getDescEstado()); 
-	   		   bdd.insert(TABLA_RECIBO, null, values);
-	   		   
-	        }else {
-	        	values.put(NMConfig.Recibo.ID, recibo.getId());
+	   		   values.put(NMConfig.Recibo.DESCRICION_ESTADO, recibo.getDescEstado()); 	   		   
+	   		   recibo.setId(bdd.insert(TABLA_RECIBO, null, values));
+	        }else 
+	        {
+	        					
+	        	newitem=false; 
 	        	//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
-				bdd.delete(TABLA_RECIBO, NMConfig.Recibo.ID+"="+String.valueOf(recibo.getId()) ,null);
-				// ACTUALIZANDO RECIBO
-				bdd.insert(TABLA_RECIBO, null, values);
+				bdd.delete(TABLA_RECIBO, NMConfig.Recibo.REFERENCIA+"="+String.valueOf(recibo.getReferencia()) ,null);
+				// ACTUALIZANDO RECIBO 
+				recibo.setId(bdd.insert(TABLA_RECIBO, null, values));
 			}	
-			
+			 
+	       
 			String where = NMConfig.Recibo.DetalleFactura.RECIBO_ID+"="+String.valueOf(recibo.getId());
 			
 			//BORRAR LOS DETALLES DE LAS FACTURAS DEL RECIBO
@@ -1622,13 +1629,14 @@ public class DatabaseProvider extends ContentProvider
 				bdd.endTransaction();
 				bdd.close();
 			}
-			//Actualizando el id máximo de recibo generado 					
-			ModelConfiguracion.setMaxReciboId(NMApp.getContext(),recibomax);	
+			//Actualizando el id máximo de recibo generado 				
+			if(newitem)
+				ModelConfiguracion.setMaxReciboId(NMApp.getContext(),recibomax);	
 			
 		} catch (Exception e) 
 		{
 			//Actualizando el id máximo de recibo generado 					
-			ModelConfiguracion.setMaxReciboId(NMApp.getContext(),recibomax2);	
+			//ModelConfiguracion.setMaxReciboId(NMApp.getContext(),recibomax2);	
 			if (bdd != null || (bdd.isOpen())) 
 			{
 				bdd.endTransaction();
