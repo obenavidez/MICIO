@@ -169,6 +169,9 @@ public class ViewDevoluciones extends ActionBarActivity implements
 			});
 			break;
 		case AFTERGETOBSERVACIONDEV:
+			if (dlg != null)
+				dlg.dismiss();
+			
 			if (msg.arg1 == ControllerProtocol.IMPRIMIR) {
 				enviarImprimirDevolucion(msg.obj.toString(), devolucion);
 			} else if (msg.arg1 == ControllerProtocol.ENVIARDEVOLUCION) {
@@ -177,12 +180,19 @@ public class ViewDevoluciones extends ActionBarActivity implements
 			}
 			break;
 		case ControllerProtocol.ID_REQUEST_ENVIAR:
+			if (dlg != null)
+				dlg.dismiss();
 			if (msg.arg1 == ControllerProtocol.IMPRIMIR)
 				enviarImprimirDevolucion(msg.obj.toString(), devolucion);
 			else {
 				enviarImprimirDevolucion(msg.obj.toString(), devolucion,
 						msg.arg1);
 			}
+			break;
+		case NOTIFICATION_DIALOG2:
+			
+			showStatus("Enviando devolución....");  
+			
 			break;
 		}
 		return result;
@@ -336,6 +346,7 @@ public class ViewDevoluciones extends ActionBarActivity implements
 								DialogType.DIALOGO_ALERTA);
 						return;
 					}
+					
 					enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
 					//BDevolucionM.beforeSend(item_selected.getId());
 					break;
@@ -445,6 +456,8 @@ public class ViewDevoluciones extends ActionBarActivity implements
 	}
 
 	private void enviarDevolucion(int... arg) {
+		//showStatus("Enviando devolución....",true);  
+		
 		Message msg = new Message();
 		msg.obj = devolucion;
 		msg.what = arg.length != 0 ? arg[0]
@@ -736,4 +749,38 @@ public class ViewDevoluciones extends ActionBarActivity implements
 
 	}
 
+	
+	public void showStatus(final String mensaje, boolean... confirmacion) {		 
+		if (confirmacion.length != 0 && confirmacion[0]) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					AppDialog.showMessage(vd, "", mensaje,
+							AppDialog.DialogType.DIALOGO_ALERTA,
+							new AppDialog.OnButtonClickListener() {
+								@Override
+								public void onButtonClick(
+										AlertDialog _dialog, int actionId) 
+								{
+									if (AppDialog.OK_BUTTOM == actionId) 
+									{
+										_dialog.dismiss();
+									}
+								}
+							});
+				}
+			});
+		} else 
+		{
+			runOnUiThread(new Runnable() 
+			{
+				@Override
+				public void run() {
+					dlg =  new CustomDialog(vd, mensaje, false,
+							NOTIFICATION_DIALOG);
+					dlg.show();
+				}
+			});
+		} 
+}
 }
