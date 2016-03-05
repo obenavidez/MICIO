@@ -1395,7 +1395,9 @@ public class DatabaseProvider extends ContentProvider
 		Integer recibomax=0; 
 		boolean newitem=false;
 		try 
-		{			
+		{	
+			bdd = Helper.getDatabase(cnt);
+			
 			ContentValues values;
 			ContentValues factura;
 			ContentValues notaDebito;
