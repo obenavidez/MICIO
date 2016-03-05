@@ -164,7 +164,7 @@ public class DatabaseProvider extends ContentProvider
 	private NM_SQLiteHelper dbhelper;
 	private SQLiteDatabase db; 
 	private static final String DATABASE_NAME = "SIMFAC";
-	private static final int BD_VERSION = 18; 
+	private static final int BD_VERSION = 19; 
 	
 	public static final String TABLA_CLIENTE = "Cliente";
 	public static final String TABLA_FACTURA = "Factura";
@@ -1529,8 +1529,9 @@ public class DatabaseProvider extends ContentProvider
 				factura.put(NMConfig.Recibo.DetalleFactura.SALDO_FACTURA, dt.getSaldofactura());
 				factura.put(NMConfig.Recibo.DetalleFactura.SALDO_TOTAL, dt.getSaldoTotal());
 				factura.put(NMConfig.Recibo.DetalleFactura.SUB_TOTAL, dt.getSubTotal());
-				factura.put(NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA, dt.getTotalfactura());			
-				
+				factura.put(NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA, dt.getTotalfactura());
+				factura.put(NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA, dt.getTotalfactura());
+				factura.put(NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA_ORIGEN, dt.getTotalFacturaOrigen());
 				bdd.insert(TABLA_RECIBO_DETALLE_FACTURA, null, factura);
 			}
 			
