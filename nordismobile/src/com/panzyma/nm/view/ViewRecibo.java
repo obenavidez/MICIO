@@ -351,7 +351,7 @@ public class ViewRecibo extends ActionBarActivity implements
 					break;
 				case IMPRIMIR_RECIBO:
 					if( recibo_selected != null ){
-						ReciboColector recibo = ModelRecibo.getReciboByRef(NMApp.getContext().getContentResolver(), recibo_selected.getId());
+						ReciboColector recibo = ModelRecibo.getReciboByRef(NMApp.getContext().getContentResolver(), recibo_selected.getNumero());
 						enviarImprimirRecibo(recibo);
 					}					
 					break;

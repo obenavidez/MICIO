@@ -237,6 +237,7 @@ public class NM_SQLiteHelper extends SQLiteOpenHelper
 			+ "       saldoTotal FLOAT, " 
 			+ "       montoImpuestoExento FLOAT, " 
 			+ "       montoDescEspecificoCalc FLOAT, " 			
+			+ "       totalfacturaOrigen FLOAT, " 			
             + "       FOREIGN KEY(objReciboID) REFERENCES Recibo(id) " 
 			+ ");";
     

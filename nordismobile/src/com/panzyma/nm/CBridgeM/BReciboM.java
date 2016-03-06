@@ -859,6 +859,19 @@ public final class BReciboM extends BBaseM {
 		
 	}
 	
+	private String toUnicode(String str) {
+		String characters = "αινσϊρ";
+		String [] unicode = {"a", "e", "i", "o", "u", "n"}; 
+		int i = 0;
+		for(char c: characters.toCharArray()) {
+			if(str.contains(""+c)) {
+				str = str.replace(""+c, unicode[i]);
+			}
+			i++;
+		}
+		return str;
+	}
+	
 	@SuppressLint("UseValueOf")
 	@SuppressWarnings({ "unchecked", "unused" })
 	public  void ImprimirReciboColector(ReciboColector rcol,boolean reimpresion) 
@@ -886,6 +899,7 @@ public final class BReciboM extends BBaseM {
 	        
 	        //Nombre del cliente
 	        String nombreCliente = rcol.getCliente().getNombreLegalCliente();
+	       // nombreCliente = toUnicode(nombreCliente);
 	        String linea1 = nombreCliente;
 	        String linea2 = "";
 	        if (nombreCliente.length() > 35) {
@@ -903,7 +917,8 @@ public final class BReciboM extends BBaseM {
 	        }
 	        
 	        //Monto en letras        
-	        String montoLetras = NumberUtil.convertNumberToLetter(rcol.getTotalRecibo());
+	        double totalRecibo =  StringUtil.round(Double.parseDouble(rcol.getTotalRecibo()+""),2);
+	        String montoLetras = NumberUtil.convertNumberToLetter(totalRecibo);
 	        linea1 = montoLetras;
 	        linea2 = "";
 	        String linea3 = "";
