@@ -59,15 +59,13 @@ public class ModelConfiguracion {
 	public static String getURL_SERVER(Context cnt)
 	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
-		//return pref.getString("url_server", "http://www.panzyma.com/nordisservertest/mobileservice.asmx");
-		return pref.getString("url_server", "http://192.168.43.71/nordisserver/mobileservice.asmx");		
+		return pref.getString("url_server", "http://www.panzyma.com/nordisservertest/mobileservice.asmx"); 	
 	}
 	
 	public static String getURL_SERVER2(Context cnt)
 	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
-		//return pref.getString("url_server2", "http://www.panzyma.com/Simfactest/SimfacService.svc/");
-		return pref.getString("url_server2", "http://192.168.43.159:8081/SimfacService.svc/");		
+		return pref.getString("url_server2", "http://www.panzyma.com/Simfactest/SimfacService.svc/"); 	
 
 	}
 

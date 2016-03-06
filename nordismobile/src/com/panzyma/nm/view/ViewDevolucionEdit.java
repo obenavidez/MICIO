@@ -206,7 +206,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	private ViewDevolucionEdit me;
 	ArrayList<Producto> aprodselected;
-	public List<Producto> get_aprodselected(){ return  aprodselected == null ?aprodselected = new ArrayList<Producto>() : aprodselected;  }
+	public List<Producto> get_aprodselected()
+	{ 
+		return  aprodselected == null ?aprodselected = new ArrayList<Producto>() : aprodselected;  
+	}
 	private ExpandListGroup groupselected;
 
 	DrawerLayout drawerLayout;
@@ -1458,7 +1461,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				} else {
 					if (calBonif) {
 						int qtybonif = 0;
-						Bonificacion bonif = DevolucionBL.getBonificacion2(prod,
+						Bonificacion bonif = DevolucionBL.getBonificacion3(prod,
 								cliente.getObjCategoriaClienteID(),
 								_dp.getCantidadDevolver());
 						if (bonif != null && bonif.getCantBonificacion() != 0) {
@@ -1480,18 +1483,19 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					// Calcular precio IdTipoClienteMayorista
 					long idTP = pedido == null || pedido.getId() == 0 ? 0
 							: pedido.getObjTipoPrecioVentaID();
-					long idTipoCliente = cliente.getObjTipoClienteID();
+					long idPrecioVenta = cliente.getObjPrecioVentaID();
 					long IdTipoClienteMayorista = Long.parseLong(this
 							.getSharedPreferences("SystemParams",
 									android.content.Context.MODE_PRIVATE)
 							.getString("IdTipoClienteMayorista", "0"));
-					if (IdTipoClienteMayorista == idTipoCliente)
+					
+					if (IdTipoClienteMayorista == cliente.getObjTipoClienteID())
 						idTP = Long.parseLong(this.getSharedPreferences(
 								"SystemParams",
 								android.content.Context.MODE_PRIVATE)
 								.getString("IdTipoPrecioGeneral", "0"));
-					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,
-							idTP, _dp.getCantidadDevolver()) * 100));
+					idTP=idTP==0?idPrecioVenta:idTP;
+					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,idTP, _dp.getCantidadDevolver()) * 100));
 				} else {
 					ValorCatalogo vcatalogo = ModelLogic.getValorByCatalogo("TipoPrecio",new String("VEN"));
 					long idTP = pedido == null || pedido.getId() == 0 ? 0: pedido.getObjTipoPrecioVentaID();

@@ -16,6 +16,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.logic.DevolucionBL;
 import com.panzyma.nm.serviceproxy.Bonificacion;
 import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.PrecioProducto;
@@ -196,7 +197,8 @@ public class DetalleProducto extends Dialog{
 
 						if ((chkViaPrecio == null) || (!chkViaPrecio.isChecked())) 
 						{
-							Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
+							Bonificacion b=DevolucionBL.getBonificacion3(_producto, _idCategCliente, nuevaCantidadOrdenada);
+							//Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
 							if (b != null) 
 							{
 								_det.setCantidadBonificada(b.getCantBonificacion());
@@ -232,8 +234,8 @@ public class DetalleProducto extends Dialog{
 						{
 							int bonifProd = 0;
 							if ((chkViaPrecio == null)|| (!chkViaPrecio.isChecked())) 
-							{
-								Bonificacion b = getBonificacion(_producto,_idCategCliente,nuevaCantidadOrdenada);
+							{Bonificacion b=DevolucionBL.getBonificacion3(_producto, _idCategCliente, nuevaCantidadOrdenada);
+								//Bonificacion b = getBonificacion(_producto,_idCategCliente,nuevaCantidadOrdenada);
 								if (b != null)
 									bonifProd = b.getCantBonificacion();
 							}
@@ -251,7 +253,8 @@ public class DetalleProducto extends Dialog{
 							int bonifProd = 0;
 							if ((chkViaPrecio == null) || (!chkViaPrecio.isChecked())) 
 							{
-								Bonificacion b = getBonificacion(_producto,_idCategCliente,nuevaCantidadOrdenada);
+								Bonificacion b=DevolucionBL.getBonificacion3(_producto, _idCategCliente, nuevaCantidadOrdenada);
+								//Bonificacion b = getBonificacion(_producto,_idCategCliente,nuevaCantidadOrdenada);
 								if (b != null)
 									bonifProd = b.getCantBonificacion();
 							}
@@ -314,7 +317,8 @@ public class DetalleProducto extends Dialog{
 
 					if ((chkViaPrecio == null)|| (!chkViaPrecio.isChecked())) 
 					{
-						Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
+						Bonificacion b=DevolucionBL.getBonificacion3(_producto, _idCategCliente, nuevaCantidadOrdenada);
+						//Bonificacion b = getBonificacion(_producto,_idCategCliente, nuevaCantidadOrdenada);
 						if (b != null) 
 						{
 							_det.setCantidadBonificada(b.getCantBonificacion());
