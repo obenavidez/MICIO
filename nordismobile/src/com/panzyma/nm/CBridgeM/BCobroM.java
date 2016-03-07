@@ -27,7 +27,7 @@ public class BCobroM extends BBaseM{
 	public BCobroM(){}
 	
 	public enum Accion {
-		COBROS_DEL_DIA(0), COBROS_DEL_SEMANA(1), COBROS_DEL_MES(2) , PAGOS_DEL_DIA(3), PAGOS_DE_SEMANA(4), PAGOS_DEL_MES(5) , IMPRIMIR(6);
+		COBROS_DEL_DIA(0), COBROS_DEL_SEMANA(1), COBROS_DEL_MES(2) , PAGOS_DEL_DIA(3), PAGOS_DE_SEMANA(4), PAGOS_DEL_MES(5) , IMPRIMIR(6), ERROR(600);
 		int result;
 
 		Accion(int result) {
@@ -39,7 +39,7 @@ public class BCobroM extends BBaseM{
 		}
 
 		public static Accion toInt(int x) {
-			
+			if(x==600) return Accion.values()[7];
 			return Accion.values()[x];
 		}
 	}

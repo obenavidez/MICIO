@@ -1,5 +1,7 @@
 package com.panzyma.nm.fragments;
 
+import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,8 +11,12 @@ import java.util.List;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BCobroM.Accion;
+import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
+import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.serviceproxy.CCobro;
@@ -203,7 +209,7 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 
 	@Override
 	public boolean handleMessage(Message msg) {
-		if( msg.what < 6) 
+		if( msg.what != 888) 
 		{
 			Accion response = Accion.toInt(msg.what);
 			
@@ -222,6 +228,11 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 					if(pagos!=null )pagos.clear();
 					pagos = (ArrayList<CFormaPago>)msg.obj;
 					 MostrarCobros();
+					break;
+				case ERROR:
+					AppDialog.showMessage(getActivity(), ((ErrorMessage) msg.obj).getTittle(),
+							((ErrorMessage) msg.obj).getMessage(),
+							DialogType.DIALOGO_ALERTA);
 					break;
 			}
 		}
@@ -319,9 +330,9 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	
 	private void initMenu() {
 		quickAction = new QuickAction(this.getActivity(), QuickAction.VERTICAL, 1);
-		quickAction.addActionItem(new ActionItem(MOSTRAR_COBROS_DEL_DIA, "Mostrar Ventas del Día"));
-		quickAction.addActionItem(new ActionItem(MOSTRAR_COBROS_SEMANA, "Mostrar Ventas de la Semana"));
-		quickAction.addActionItem(new ActionItem(MOSTRAR_COBROS_MES, "Mostrar Ventas del Mes"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_COBROS_DEL_DIA, "Mostrar Cobros del Día"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_COBROS_SEMANA, "Mostrar Cobros de la Semana"));
+		quickAction.addActionItem(new ActionItem(MOSTRAR_COBROS_MES, "Mostrar Cobros del Mes"));
 		quickAction.addActionItem(null);
 		quickAction.addActionItem(new ActionItem(IMPRIMIR, "Imprimir"));			
 		quickAction.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
@@ -336,20 +347,16 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 
 						switch (actionItem.getActionId()) {
 						case MOSTRAR_COBROS_DEL_DIA:
-							menuSelected = ActionMenu.COBROS_DIA;
-							CargarCobros(Accion.COBROS_DEL_DIA.getActionCode());
+							CargarCobrosDia();
 							break;
 						case MOSTRAR_COBROS_SEMANA:
-							menuSelected = ActionMenu.COBROS_SEMANA;
-							CargarCobros(Accion.COBROS_DEL_SEMANA.getActionCode());
+							CargarCobrosSemana();
 							break;
 						case MOSTRAR_COBROS_MES:
-							menuSelected = ActionMenu.COBROS_MES;
-							CargarCobros(Accion.COBROS_DEL_MES.getActionCode());
+							CargarCobrosMes();
 							break;
 						case IMPRIMIR:
-							menuSelected = ActionMenu.IMPRIMIR; 
-							Imprimir(Accion.IMPRIMIR.getActionCode()); 
+							IMPRIMIR();
 							break;							
 						}
 					}
@@ -436,5 +443,23 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 		msg.what = opt ;
 		msg.obj = new CobroDetalle(cobros,pagos);
 		NMApp.getController().getInboxHandler().sendMessage(msg); 
+	}
+
+	public void CargarCobrosDia(){
+		menuSelected = ActionMenu.COBROS_DIA;
+		CargarCobros(Accion.COBROS_DEL_DIA.getActionCode());
+	}
+	public void CargarCobrosSemana(){
+		menuSelected = ActionMenu.COBROS_SEMANA;
+		CargarCobros(Accion.COBROS_DEL_SEMANA.getActionCode());
+	}
+	public void CargarCobrosMes(){
+		menuSelected = ActionMenu.COBROS_MES;
+		CargarCobros(Accion.COBROS_DEL_MES.getActionCode());
+	
+	}
+	public void IMPRIMIR(){
+		menuSelected = ActionMenu.IMPRIMIR; 
+		Imprimir(Accion.IMPRIMIR.getActionCode()); 
 	}
 }

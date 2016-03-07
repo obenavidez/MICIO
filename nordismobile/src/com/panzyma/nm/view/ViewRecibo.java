@@ -23,6 +23,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -43,6 +44,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -73,6 +75,7 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.fragments.consultaCobroFragment;
 import com.panzyma.nm.interfaces.Filterable;
+import com.panzyma.nm.menu.ActionItem;
 import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
@@ -243,6 +246,11 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int MOSTRAR_PEDIDOS = 3;
 	private static final int MOSTRAR_RECIBOS = 4;	
 	
+	private static final int MOSTRAR_COBROS_DEL_DIA = 0;
+	private static final int MOSTRAR_COBROS_SEMANA = 1;
+	private static final int MOSTRAR_COBROS_MES = 2;
+	private static final int IMPRIMIR = 3;
+	
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -290,199 +298,223 @@ public class ViewRecibo extends ActionBarActivity implements
 				//OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
 				recibo_selected = customArrayAdapter.getItem(pos);
 				
-				switch (position) {
-				case NUEVO_RECIBO:
-					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
-					//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
-					intento.putExtra(RECIBO_ID, 0);
-					//startActivity(intento);
-					startActivityForResult(intento, NUEVO_RECIBO); 
-					break;
-				case ABRIR_RECIBO:
-					intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
-					if(recibo_selected != null) {
-						//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
-						intento.putExtra(RECIBO_ID, recibo_selected.getNumero());
-						//startActivity(intento);	
-						startActivityForResult(intento, ABRIR_RECIBO);
-					} else {
-						Toast.makeText(getApplicationContext(), "No existen recibos para editar", Toast.LENGTH_SHORT).show();
-					}			
-				    //abrirRecibo(true);
-					break;
-				case BORRAR_RECIBO:
-					//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
-					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
-					if ("registrado".compareTo(recibo_selected.getCodEstado().toLowerCase()) == 0) 
-					{
-						Message msg = new Message();
-						Bundle b = new Bundle();
-						b.putInt("idrecibo", recibo_selected.getId());  
-						msg.setData(b);
-						msg.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
-						
-						NMApp.getController().removeBridgeByName(BReciboM.class.toString());
-						NMApp.getController().addOutboxHandler(new Handler($this));
-						try {
-							NMApp.getController().setEntities($this, new BReciboM());
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						NMApp.getController()
-								.getInboxHandler()
-								.sendMessage(msg);
-						
-					} else {
-						Toast.makeText(getApplicationContext(), String.format("Los recibos con estado '%s'.\n No se pueden eliminar.", recibo_selected.getDescEstado()), Toast.LENGTH_SHORT).show();
-						return;
-					} 
-					break;	
-				case ENVIAR_RECIBO: 
-					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
-					
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
-		            {
-						if ( !("PAGADO".compareTo(recibo_selected.getCodEstado()) == 0) ) {
-							// ENVIAR SOLO SI EL ESTADO DEL RECIBO ES DISTINTO A PAGADO
-							enviarRecibo(recibo_selected);
-						}				
-					}	
-					break;
-				case IMPRIMIR_RECIBO:
-					if( recibo_selected != null ){
-						ReciboColector recibo = ModelRecibo.getReciboByRef(NMApp.getContext().getContentResolver(), recibo_selected.getId());
-						enviarImprimirRecibo(recibo);
-					}					
-					break;
-				case FICHA_CLIENTE :			
-					
-					if(recibo_selected== null)
-					{
-						AppDialog.showMessage(vr,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					//SI SE ESTÁ FUERA DE LA COBERTURA
-		            if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-		            {
-//		            	AppDialog.showMessage(vr,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
-//		            	return;
-		            
-			            long sucursal=recibo_selected.getObjSucursalID();
-			            
-			            args = new Bundle();
-						args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
-						args.putLong(FichaClienteFragment.ARG_SUCURSAL, sucursal);
-			            
-						FichaClienteFragment ficha;	
-			            FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
-			            
-						fragmentActive = FragmentActive.FICHA_CLIENTE;
-						if (findViewById(R.id.dynamic_fragment) != null) {
-						}
-						else{
-							ficha = new FichaClienteFragment();
-							ficha.setArguments(args);
-							mytransaction.addToBackStack(null);
-							mytransaction.replace(R.id.fragment_container,ficha);
-							mytransaction.commit();	
-						}
-						gridheader.setVisibility(View.INVISIBLE);
-		            }
-					/*
-					if (findViewById(R.id.fragment_container) != null) 
-					{
-						mytransaction.replace(R.id.fragment_container,ficha);
-					}
-					mytransaction.addToBackStack(null);
-					mytransaction.commit();*/	
-					
-					
-					//OCULTAR LA BARRA DE ACCION
-					//getSupportActionBar().hide();
-					break;
-				case CUENTAS_POR_COBRAR:
-					if(recibo_selected== null)
-					{
-						AppDialog.showMessage(vr,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-		            {
-						fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
-						if (findViewById(R.id.fragment_container) != null) 
-						{	
-							transaction = getSupportFragmentManager().beginTransaction();
-							
-							fragmentActive =FragmentActive.CUENTAS_POR_COBRAR;
-							cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
-							
-							android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-							if (prev != null){
-								transaction.remove(prev);
-							}
-							
-							Bundle msg = new Bundle();
-							msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
-							msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
-							
-							
-							transaction.addToBackStack(null);
-							cuentasPorCobrar.setArguments(msg); 
-						    cuentasPorCobrar.show(transaction, "dialog");
-						    
-							/*
-							cuentasPorCobrar = new CuentasPorCobrarFragment();						
-							Bundle msg = new Bundle();
-							msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
-							msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
-							cuentasPorCobrar.setArguments(msg);	
-							transaction = getSupportFragmentManager().beginTransaction();
-							transaction.replace(R.id.fragment_container,cuentasPorCobrar);
-							transaction.addToBackStack(null);
-							transaction.commit();
-							*/						
-						}
-						//OCULTAR LA BARRA DE ACCION
-						getSupportActionBar().hide();
-		            }
-					break;
-				case CONSULTA_COBROS :
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-		            {
-						fragmentActive = FragmentActive.CONSULTAR_COBROS;
-						if (findViewById(R.id.dynamic_fragment) != null) {}
-						else
+				if(fragmentActive == FragmentActive.LIST)
+				{
+					switch (position) {
+					case NUEVO_RECIBO:
+						intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
+						//ENVIAR UN RECIBO VACIO EN CASO DE AGREGAR UNO
+						intento.putExtra(RECIBO_ID, 0);
+						//startActivity(intento);
+						startActivityForResult(intento, NUEVO_RECIBO); 
+						break;
+					case ABRIR_RECIBO:
+						intento = new Intent(ViewRecibo.this, ViewReciboEdit.class);
+						if(recibo_selected != null) {
+							//ENVIAR EL RECIBO SELECCIONADO EN CASO DE VER DEL DETALLE
+							intento.putExtra(RECIBO_ID, recibo_selected.getNumero());
+							//startActivity(intento);	
+							startActivityForResult(intento, ABRIR_RECIBO);
+						} else {
+							Toast.makeText(getApplicationContext(), "No existen recibos para editar", Toast.LENGTH_SHORT).show();
+						}			
+					    //abrirRecibo(true);
+						break;
+					case BORRAR_RECIBO:
+						//NO PERMITIR ELIMINAR RECIBOS DONDE EL ESTADO SEA DISTINTO A REGISTRADO 
+						if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
+						if ("registrado".compareTo(recibo_selected.getCodEstado().toLowerCase()) == 0) 
 						{
-							FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
-							cobros = new consultaCobroFragment();
-							mytransaction.replace(R.id.fragment_container,cobros);
-							mytransaction.addToBackStack(null);
-							mytransaction.commit();
-							footerView.setVisibility(View.GONE);
-						}
-						//CERRAR EL MENU DEL DRAWER
-		            }
-					drawerLayout.closeDrawers();
-					break;
-				case TASA_CAMBIO :
-				
-					transaction = getSupportFragmentManager().beginTransaction();
-					TasaCambioFragment dialog = TasaCambioFragment.newInstance();
-					dialog.show(transaction, "dialog");
-					
+							Message msg = new Message();
+							Bundle b = new Bundle();
+							b.putInt("idrecibo", recibo_selected.getId());  
+							msg.setData(b);
+							msg.what=ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;	
+							
+							NMApp.getController().removeBridgeByName(BReciboM.class.toString());
+							NMApp.getController().addOutboxHandler(new Handler($this));
+							try {
+								NMApp.getController().setEntities($this, new BReciboM());
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							NMApp.getController()
+									.getInboxHandler()
+									.sendMessage(msg);
+							
+						} else {
+							Toast.makeText(getApplicationContext(), String.format("Los recibos con estado '%s'.\n No se pueden eliminar.", recibo_selected.getDescEstado()), Toast.LENGTH_SHORT).show();
+							return;
+						} 
+						break;	
+					case ENVIAR_RECIBO: 
+						if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
 						
-					//CERRAR EL MENU DEL DRAWER
-					drawerLayout.closeDrawers();
-					break;
-				case CERRAR:
-					FINISH_ACTIVITY();
-					break;
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+			            {
+							if ( !("PAGADO".compareTo(recibo_selected.getCodEstado()) == 0) ) {
+								// ENVIAR SOLO SI EL ESTADO DEL RECIBO ES DISTINTO A PAGADO
+								enviarRecibo(recibo_selected);
+							}				
+						}	
+						break;
+					case IMPRIMIR_RECIBO:
+						if( recibo_selected != null ){
+							ReciboColector recibo = ModelRecibo.getReciboByRef(NMApp.getContext().getContentResolver(), recibo_selected.getId());
+							enviarImprimirRecibo(recibo);
+						}					
+						break;
+					case FICHA_CLIENTE :			
+						
+						if(recibo_selected== null)
+						{
+							AppDialog.showMessage(vr,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						//SI SE ESTÁ FUERA DE LA COBERTURA
+			            if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+	//		            	AppDialog.showMessage(vr,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
+	//		            	return;
+			            
+				            long sucursal=recibo_selected.getObjSucursalID();
+				            
+				            args = new Bundle();
+							args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
+							args.putLong(FichaClienteFragment.ARG_SUCURSAL, sucursal);
+				            
+							FichaClienteFragment ficha;	
+				            FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
+				            
+							fragmentActive = FragmentActive.FICHA_CLIENTE;
+							if (findViewById(R.id.dynamic_fragment) != null) {
+							}
+							else{
+								ficha = new FichaClienteFragment();
+								ficha.setArguments(args);
+								mytransaction.addToBackStack(null);
+								mytransaction.replace(R.id.fragment_container,ficha);
+								mytransaction.commit();	
+							}
+							gridheader.setVisibility(View.INVISIBLE);
+			            }
+						/*
+						if (findViewById(R.id.fragment_container) != null) 
+						{
+							mytransaction.replace(R.id.fragment_container,ficha);
+						}
+						mytransaction.addToBackStack(null);
+						mytransaction.commit();*/	
+						
+						
+						//OCULTAR LA BARRA DE ACCION
+						//getSupportActionBar().hide();
+						break;
+					case CUENTAS_POR_COBRAR:
+						if(recibo_selected== null)
+						{
+							AppDialog.showMessage(vr,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
+							if (findViewById(R.id.fragment_container) != null) 
+							{	
+								transaction = getSupportFragmentManager().beginTransaction();
+								
+								fragmentActive =FragmentActive.CUENTAS_POR_COBRAR;
+								cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+								
+								android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+								if (prev != null){
+									transaction.remove(prev);
+								}
+								
+								Bundle msg = new Bundle();
+								msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+								msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
+								
+								
+								transaction.addToBackStack(null);
+								cuentasPorCobrar.setArguments(msg); 
+							    cuentasPorCobrar.show(transaction, "dialog");
+							    
+								/*
+								cuentasPorCobrar = new CuentasPorCobrarFragment();						
+								Bundle msg = new Bundle();
+								msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
+								msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
+								cuentasPorCobrar.setArguments(msg);	
+								transaction = getSupportFragmentManager().beginTransaction();
+								transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+								transaction.addToBackStack(null);
+								transaction.commit();
+								*/						
+							}
+							//OCULTAR LA BARRA DE ACCION
+							getSupportActionBar().hide();
+			            }
+						break;
+					case CONSULTA_COBROS :
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							fragmentActive = FragmentActive.CONSULTAR_COBROS;
+							if (findViewById(R.id.dynamic_fragment) != null) {}
+							else
+							{
+								FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
+								cobros = new consultaCobroFragment();
+								mytransaction.replace(R.id.fragment_container,cobros);
+								mytransaction.addToBackStack(null);
+								mytransaction.commit();
+								footerView.setVisibility(View.GONE);
+								
+								//if((Build.VERSION.SDK_INT <= 10 || (Build.VERSION.SDK_INT >= 14 &&   ViewConfiguration.get(vr).hasPermanentMenuKey()))==false) {
+									EstablecerMenu(fragmentActive);
+								//}
+							}
+							//CERRAR EL MENU DEL DRAWER
+			            }
+						drawerLayout.closeDrawers();
+						break;
+					case TASA_CAMBIO :
+					
+						transaction = getSupportFragmentManager().beginTransaction();
+						TasaCambioFragment dialog = TasaCambioFragment.newInstance();
+						dialog.show(transaction, "dialog");
+						
+							
+						//CERRAR EL MENU DEL DRAWER
+						drawerLayout.closeDrawers();
+						break;
+					case CERRAR:
+						FINISH_ACTIVITY();
+						break;
+					}
+				
 				}
-
+				else {
+					
+					switch (position) {
+						case MOSTRAR_COBROS_DEL_DIA:
+							cobros.CargarCobrosDia();
+						break;
+						case MOSTRAR_COBROS_SEMANA:
+							cobros.CargarCobrosSemana();
+						break;
+						case MOSTRAR_COBROS_MES:
+							cobros.CargarCobrosMes();
+						break;
+						case IMPRIMIR: 
+							cobros.IMPRIMIR();
+						break;
+					}
+				}
 				drawerList.setItemChecked(position, true);
-				tituloSeccion = opcionesMenu[position];
+				//tituloSeccion = opcionesMenu[position];
 				getSupportActionBar().setTitle(tituloSeccion);
 
 			}
@@ -1185,7 +1217,13 @@ public class ViewRecibo extends ActionBarActivity implements
 				
 			} 
 		break;
-			
+		case ControllerProtocol.NOTIFICATION:
+			showStatus(msg.obj.toString(), true);
+			break;
+		case ControllerProtocol.NOTIFICATION_DIALOG2:
+			showStatus(((ErrorMessage)msg.obj).getMessage(), true);
+			break;
+
 			
 		}
 		return false;
@@ -1311,8 +1349,14 @@ public class ViewRecibo extends ActionBarActivity implements
 		} 
 		if (keyCode == KeyEvent.KEYCODE_MENU && fragmentActive == FragmentActive.CONSULTAR_COBROS) {			
 			cobros.mostrarMenu();
+			drawerLayout.closeDrawer(Gravity.LEFT);
 			return true;
 		} 
+		if(keyCode == KeyEvent.KEYCODE_MENU &&fragmentActive == FragmentActive.FICHA_CLIENTE){
+			drawerLayout.closeDrawer(Gravity.LEFT);
+			return false;
+		}
+		
 		else if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.LIST) {        	
 		  	FINISH_ACTIVITY();	
 		  	finish();
@@ -1327,7 +1371,9 @@ public class ViewRecibo extends ActionBarActivity implements
 			transaction.addToBackStack(null);
 			transaction.commit();
 			getSupportActionBar().show();
+			EstablecerMenu(fragmentActive);
 			setList();
+			
 		}
 		
 		return super.onKeyUp(keyCode, event);
@@ -1361,7 +1407,9 @@ public class ViewRecibo extends ActionBarActivity implements
 			FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
 			mytransaction.replace(R.id.fragment_container, firstFragment);
 			mytransaction.commit();
+			EstablecerMenu(fragmentActive);
 			setList();
+			
 		} 
 	}
 
@@ -1421,5 +1469,19 @@ public class ViewRecibo extends ActionBarActivity implements
 		});
 
 	}
+	
+	public void EstablecerMenu(FragmentActive fragmentActive){
+		if(fragmentActive == FragmentActive.LIST)
+		opcionesMenu = new String[] { "Nuevo Recibo", "Abrir Recibo",
+				"Borrar Recibo", "Enviar Recibo", "Imprimir Recibo",
+				"Ficha del Cliente", "Cuentas por Cobrar","Consultar Cobros","Tasa Cambio" ,"Cerrar" };
+		
+		if(fragmentActive == FragmentActive.CONSULTAR_COBROS)
+			opcionesMenu = new String[] { "Mostrar Cobros del Día", "Mostrar Cobros de la Semana", "Mostrar Cobros del Mes", "Imprimir" };
+		
+
+		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
+	}
+	
 }
 

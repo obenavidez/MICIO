@@ -16,12 +16,11 @@ public class CobroViewHolder {
 	@InvokeView(viewId = R.id.cxctextv_detalle_fecha)
 	public TextView fecha;
 	
-	@InvokeView(viewId = R.id.cxctext_cobro_cliente)
-	public TextView Cliente;
-	
 	@InvokeView(viewId = R.id.cxctext_detalle_total)
 	public TextView Total;
 	
+	@InvokeView(viewId = R.id.cxctext_cobro_cliente)
+	public TextView Cliente;
 	
 	public void mappingData(Object entity) {
 		
