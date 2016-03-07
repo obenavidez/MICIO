@@ -219,4 +219,10 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 		return filter;
 	}  
   
+	public List<E> getOriginal(){
+		return this.mOriginalValues;
+	}
+	
+	
+	
 }
