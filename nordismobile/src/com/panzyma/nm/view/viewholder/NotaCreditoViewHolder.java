@@ -24,6 +24,8 @@ public class NotaCreditoViewHolder {
 	public TextView concepto;
 	@InvokeView(viewId = R.id.cxctext_monto)
 	public TextView monto;
+	@InvokeView(viewId = R.id.cxctext_descripcion)
+	public TextView descripcion;
 
 	public void mappingData(Object entity) {
 		// PREGUNTAR SI SE TIENE UNA INSTANCIA ADECUADA
@@ -46,7 +48,7 @@ public class NotaCreditoViewHolder {
 			noRecibo.setText("" +  cnota.getNumRColAplic() == null ? "" : cnota.getNumRColAplic()  );
 			concepto.setText("" + cnota.getConcepto());
 			monto.setText("" + StringUtil.formatReal(cnota.getMonto()) );
-			
+			descripcion.setText(cnota.getDescripcion());
 		}
 
 	}
