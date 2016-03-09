@@ -43,6 +43,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,14 +51,19 @@ import android.os.Parcelable;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -124,7 +130,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 
 	public final static String ARG_POSITION = "position";
 	public final static String SUCURSAL_ID = "sucursalID";
-	 
+	 View me ;
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -167,7 +173,8 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 			objSucursalID = savedInstanceState.getLong(SUCURSAL_ID);
 		}
-		return inflater.inflate(R.layout.cuentas_x_cobrar, container, false);
+		me = inflater.inflate(R.layout.cuentas_x_cobrar, container, false);
+		return me;
 	}	
 	
 	@Override
@@ -595,6 +602,22 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			listaGenerica.setAdapter(adapter);
 			mostrarDetalleConsulta("facturas", true, fechaInicFac, fechaFinFac,
 					estadoFac);
+			listaGenerica.setOnItemLongClickListener(new OnItemLongClickListener() {
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+					Factura f  =(Factura) adapter.getItem(position);
+					
+					FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+					detalleFacturaFragment dialog = detalleFacturaFragment.newInstance(f.getId());
+					dialog.show(transaction, "dialog");
+					
+					//TasaCambioFragment dialog = TasaCambioFragment.newInstance();
+					//dialog.show(transaction, "dialog");
+					
+					return false;
+				}
+				
+			});			
 		} else 
 		{
 			headerGrid.setText(String.format(title,0));
@@ -738,18 +761,23 @@ public class CuentasPorCobrarFragment extends Fragment implements
 								
 								switch (actionItem.getActionId()) {
 								case MOSTRAR_FACTURAS:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarFacturasCliente();
 									break;
 								case MOSTRAR_NOTAS_DEBITO:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarNotasDebito();
 									break;
 								case MOSTRAR_NOTAS_CREDITO:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarNotasCredito();
 									break;
 								case MOSTRAR_RECIBOS:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarRecibosColector();
 									break;
 								case MOSTRAR_PEDIDOS:
+									listaGenerica.setOnItemLongClickListener(null);
 									cargarPedidos();
 									break;								
 								}
@@ -978,5 +1006,5 @@ public class CuentasPorCobrarFragment extends Fragment implements
 		 public ArrayList<Factura>  facturaspendientes;
 
 	 }
-	
+	 
 }
