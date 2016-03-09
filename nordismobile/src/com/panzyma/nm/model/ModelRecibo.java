@@ -695,7 +695,8 @@ public class ModelRecibo {
 				NMConfig.Recibo.DetalleFactura.INTERES_MORATORIO,
 				NMConfig.Recibo.DetalleFactura.SALDO_TOTAL,
 				NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO_EXONERADO,
-				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO };
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO,
+				NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA_ORIGEN};
 		ReciboDetFactura detalleFactura = null;
 		try {
 			String uriString = DatabaseProvider.CONTENT_URI_RECIBODETALLEFACTURA
@@ -764,6 +765,8 @@ public class ModelRecibo {
 							.getString(cur.getColumnIndex(projection[24]))));
 					detalleFactura.setMontoImpuestoExento(Float.parseFloat(cur
 							.getString(cur.getColumnIndex(projection[25]))));
+					detalleFactura.setTotalFacturaOrigen(Float.parseFloat(cur
+							.getString(cur.getColumnIndex(projection[26]))));
 					// detalleFactura.setMontoImpuestoExento(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[26]))));
 
 				} while (cur.moveToNext());
@@ -805,9 +808,9 @@ public class ModelRecibo {
 				NMConfig.Recibo.DetalleFactura.INTERES_MORATORIO,
 				NMConfig.Recibo.DetalleFactura.SALDO_TOTAL,
 				NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO_EXONERADO,
-				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO };
-		
-		
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO,
+				NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA_ORIGEN};
+				
 		String projection1 =
 				NMConfig.Recibo.DetalleFactura.ID+","+
 				NMConfig.Recibo.DetalleFactura.FACTURA_ID+","+
@@ -835,7 +838,8 @@ public class ModelRecibo {
 				NMConfig.Recibo.DetalleFactura.INTERES_MORATORIO+","+
 				NMConfig.Recibo.DetalleFactura.SALDO_TOTAL+","+
 				NMConfig.Recibo.DetalleFactura.MONTO_IMPUESTO_EXONERADO+","+
-				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO;
+				NMConfig.Recibo.DetalleFactura.MONTO_DESCUENTO_ESPECIFICO_CALCULADO+","+
+				NMConfig.Recibo.DetalleFactura.TOTAL_FACTURA_ORIGEN;
 		
 		ReciboDetFactura detalleFactura = null;
 		try {
@@ -903,6 +907,8 @@ public class ModelRecibo {
 							.getString(cur.getColumnIndex(projection[24]))));
 					detalleFactura.setMontoImpuestoExento(Float.parseFloat(cur
 							.getString(cur.getColumnIndex(projection[25]))));
+					detalleFactura.setTotalFacturaOrigen(Float.parseFloat(cur
+							.getString(cur.getColumnIndex(projection[27]))));
 					// detalleFactura.setMontoImpuestoExento(Float.parseFloat(cur.getString(cur.getColumnIndex(projection[26]))));
 					facturas.add(detalleFactura);
 				} while (cur.moveToNext());

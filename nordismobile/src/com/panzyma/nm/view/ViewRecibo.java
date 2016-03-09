@@ -351,33 +351,33 @@ public class ViewRecibo extends ActionBarActivity implements
 							return;
 						} 
 						break;	
-					case ENVIAR_RECIBO: 
-						if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
-						
-						if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
-			            {
-							if ( !("PAGADO".compareTo(recibo_selected.getCodEstado()) == 0) ) {
-								// ENVIAR SOLO SI EL ESTADO DEL RECIBO ES DISTINTO A PAGADO
-								enviarRecibo(recibo_selected);
-							}				
-						}	
-						break;
-					case IMPRIMIR_RECIBO:
-						if( recibo_selected != null ){
-							ReciboColector recibo = ModelRecibo.getReciboByRef(NMApp.getContext().getContentResolver(), recibo_selected.getId());
-							enviarImprimirRecibo(recibo);
-						}					
-						break;
-					case FICHA_CLIENTE :			
-						
-						if(recibo_selected== null)
-						{
-							AppDialog.showMessage(vr,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						//SI SE ESTÁ FUERA DE LA COBERTURA
-			            if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-			            {
+				case ENVIAR_RECIBO: 
+					if(recibo_selected==null || (customArrayAdapter!=null && customArrayAdapter.getCount()==0)) return;
+					
+					if(NMNetWork.isPhoneConnected(NMApp.getContext()) /*&& NMNetWork.CheckConnection(NMApp.getController())*/)
+		            {
+						if ( !("PAGADO".compareTo(recibo_selected.getCodEstado()) == 0) ) {
+							// ENVIAR SOLO SI EL ESTADO DEL RECIBO ES DISTINTO A PAGADO
+							enviarRecibo(recibo_selected);
+						}				
+					}	
+					break;
+				case IMPRIMIR_RECIBO:
+					if( recibo_selected != null ){
+						ReciboColector recibo = ModelRecibo.getReciboByRef(NMApp.getContext().getContentResolver(), recibo_selected.getNumero());
+						enviarImprimirRecibo(recibo);
+					}					
+					break;
+				case FICHA_CLIENTE :			
+					
+					if(recibo_selected== null)
+					{
+						AppDialog.showMessage(vr,"Información","Seleccione un registro.",DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					//SI SE ESTÁ FUERA DE LA COBERTURA
+			        if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			        {
 	//		            	AppDialog.showMessage(vr,"Información","La operación no puede ser realizada ya que está fuera de cobertura.",DialogType.DIALOGO_ALERTA);
 	//		            	return;
 			            

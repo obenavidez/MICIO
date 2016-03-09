@@ -142,6 +142,58 @@ public class DevolucionBL
 		return bb;
 	} 
 	
+	/*
+	 * Devuelve la bonificación de un producto dada la cantidad que se está
+	 * ordenando y la categoría de cliente
+	 */
+	public static Bonificacion getBonificacion3(Producto prod,
+			long idCatCliente, int cantidad) 
+	{
+		ArrayList<Bonificacion> bonificaciones = DevolucionBL.parseListaBonificaciones(prod,
+				idCatCliente);
+		if (bonificaciones == null)
+			return null;
+
+		Bonificacion bb = null;
+		for (int i = bonificaciones.size() - 1; i >= 0; i--) 
+		{
+			Bonificacion b = bonificaciones.get(i);
+			//(Cantidad + Bonificacion)<=100
+			if ((b.getCantidad()+b.getCantBonificacion())<=cantidad) 
+			{
+				bb = b; // Encontrada
+				break; // Salir del ciclo
+			}
+		}
+
+		// Si se encontró bonificación aplicada
+		// Recalcular cantidad real a aplicar para la cantidad ordenada
+		// Recordar traer valor de parámetro DecimalRedondeoBonif (por el
+		// momento se usa 0.8)
+		if (bb != null) {
+			float decimalRedondeoBonif = 0.8F;
+			float cb = bb.getCantBonificacion();
+			float c = bb.getCantidad();
+			float factor = (cb / c)+new Float(1.00);
+			float cant =cantidad-( cantidad/factor) ;
+			String sCant = String.valueOf(cant);
+			String[] arrCant = StringUtil.split(sCant, ".");
+			String sInt = arrCant[0];
+			String sDec = "0.0";
+
+			int cantReal = Integer.parseInt(sInt);
+			if (arrCant.length > 1) {
+				sDec = "0." + arrCant[1];
+				float decimalPart = Float.parseFloat(sDec);
+				if (decimalPart >= decimalRedondeoBonif)
+					cantReal = cantReal + 1;
+			}
+			bb.setCantBonificacion(cantReal);
+		}
+
+		return bb;
+	} 
+	
 	
 	/*
 	 * Devuelve la bonificación de un producto dada la cantidad que se está

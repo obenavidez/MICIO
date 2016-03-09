@@ -397,12 +397,13 @@ public class NMConfig
 			public static final java.lang.String FECHA_APLICA_DESCUENTO_PRONTO_PAGO = "fechaAplicaDescPP";
 			public static final java.lang.String SUB_TOTAL = "subTotal";
 			public static final java.lang.String IMPUESTO = "impuesto";
-			public static final java.lang.String TOTAL_FACTURA = "totalfactura";
+			public static final java.lang.String TOTAL_FACTURA = "totalfactura";			
 			public static final java.lang.String SALDO_FACTURA = "saldofactura";
 			public static final java.lang.String INTERES_MORATORIO = "interesMoratorio";
 			public static final java.lang.String SALDO_TOTAL = "saldoTotal";
 			public static final java.lang.String MONTO_IMPUESTO_EXONERADO = "montoImpuestoExento";
 			public static final java.lang.String MONTO_DESCUENTO_ESPECIFICO_CALCULADO = "montoDescEspecificoCalc";
+			public static final java.lang.String TOTAL_FACTURA_ORIGEN = "totalfacturaOrigen";
 		}
 		
 		public static final class DetalleNotaDebito {
