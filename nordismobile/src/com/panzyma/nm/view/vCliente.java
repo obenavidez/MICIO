@@ -56,6 +56,7 @@ import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Cliente;
+import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmCliente;
 import com.panzyma.nordismobile.R;
@@ -84,7 +85,7 @@ public class vCliente extends ActionBarActivity implements
 	List<vmCliente> clientes = new ArrayList<vmCliente>();
 	vmCliente cliente_selected;
 	private static CustomDialog dlg;
-
+	CuentasPorCobrarFragment cuentasPorCobrar;
 	public enum FragmentActive {
 		LIST, FICHACLIENTE, CONSULTAR_CUENTA_COBRAR
 	};
@@ -108,6 +109,12 @@ public class vCliente extends ActionBarActivity implements
 	public static final String PEDIDO_ID = "pedido_id";
 	public static final String RECIBO_ID = "recibo_id";
 	public static final String CLIENTE = "cliente";
+	
+	private static final int MOSTRAR_FACTURAS = 0;
+	private static final int MOSTRAR_NOTAS_DEBITO = 1;
+	private static final int MOSTRAR_NOTAS_CREDITO = 2;
+	private static final int MOSTRAR_PEDIDOS = 3;
+	private static final int MOSTRAR_RECIBOS = 4;	
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -468,97 +475,118 @@ public class vCliente extends ActionBarActivity implements
 				int pos = customArrayAdapter.getSelectedPosition();
 				// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
 				cliente_selected = (vmCliente) customArrayAdapter.getItem(pos);
-
-				switch (position) {
-				case NUEVO_PEDIDO:
-					if (cliente_selected == null) {
-						drawerLayout.closeDrawers();
-						AppDialog.showMessage(vc, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
+				if(fragmentActive == FragmentActive.LIST) {
+					switch (position) {
+					case NUEVO_PEDIDO:
+						if (cliente_selected == null) {
+							drawerLayout.closeDrawers();
+							AppDialog.showMessage(vc, "Información",
+									"Seleccione un registro.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						intent = new Intent(vCliente.this, ViewPedidoEdit.class);
+						intent.putExtra(PEDIDO_ID, 0);
+						intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
+						startActivity(intent);
+						break;
+					case NUEVO_RECIBO:
+						if (cliente_selected == null) {
+							AppDialog.showMessage(vc, "Información",
+									"Seleccione un registro.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						intent = new Intent(vCliente.this, ViewReciboEdit.class);
+						intent.putExtra(RECIBO_ID, 0);
+						intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
+						startActivity(intent);
+						break;
+					case NUEVO_DEVOLUCION:					
+						if (cliente_selected == null) {
+							AppDialog.showMessage(vc, "Información",
+									"Seleccione un registro.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						intent = new Intent(vCliente.this, ViewDevolucionEdit.class);
+						intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
+						startActivity(intent);
+						
+						break;
+					case FICHA_CLIENTE:
+						if (cliente_selected == null) {
+	
+							AppDialog.showMessage(vc, "Información",
+									"Seleccione un registro.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							setDrawerState(false);
+							fragmentActive = FragmentActive.FICHACLIENTE;
+							LOAD_FICHACLIENTE_FROMSERVER();
+			            }
+						
+						break;
+					case CONSULTAR_CUENTA_COBRAR:
+						if (cliente_selected == null) {
+							AppDialog.showMessage(vc, "Información",
+									"Seleccione un registro.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+							LOAD_CUENTASXPAGAR();
+			            }
+						
+						break;
+					case SINCRONIZAR_ITEM:
+						if (cliente_selected == null) {
+							AppDialog.showMessage(vc, "Información",
+									"Seleccione un registro.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							UPDATE_SELECTEDITEM_FROMSERVER();
+			            }
+						
+						break;
+					case SINCRONIZAR_TODOS:
+						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
+			            {
+							Load_Data(LOAD_DATA_FROM_SERVER);
+			            }
+						
+						break;
+					case CERRAR:
+						FINISH_ACTIVITY();
+						break;
 					}
-					intent = new Intent(vCliente.this, ViewPedidoEdit.class);
-					intent.putExtra(PEDIDO_ID, 0);
-					intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
-					startActivity(intent);
+				}
+				if(fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR) {
+					switch (position) {
+					case MOSTRAR_FACTURAS:
+						cuentasPorCobrar.cargarFacturasCliente();
+						break;
+					case MOSTRAR_NOTAS_DEBITO: 
+						cuentasPorCobrar.cargarNotasDebito(); 
 					break;
-				case NUEVO_RECIBO:
-					if (cliente_selected == null) {
-						AppDialog.showMessage(vc, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
+					case MOSTRAR_NOTAS_CREDITO: 
+						cuentasPorCobrar.cargarNotasCredito(); 
+					break;
+					case MOSTRAR_PEDIDOS: 
+						cuentasPorCobrar.cargarPedidos();
+					break;
+					case MOSTRAR_RECIBOS: 
+						cuentasPorCobrar.cargarRecibosColector(); 
+					break;
 					}
-					intent = new Intent(vCliente.this, ViewReciboEdit.class);
-					intent.putExtra(RECIBO_ID, 0);
-					intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
-					startActivity(intent);
-					break;
-				case NUEVO_DEVOLUCION:					
-					if (cliente_selected == null) {
-						AppDialog.showMessage(vc, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					intent = new Intent(vCliente.this, ViewDevolucionEdit.class);
-					intent.putExtra(CLIENTE, cliente_selected.IdSucursal);
-					startActivity(intent);
-					
-					break;
-				case FICHA_CLIENTE:
-					if (cliente_selected == null) {
-
-						AppDialog.showMessage(vc, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-		            {
-						fragmentActive = FragmentActive.FICHACLIENTE;
-						LOAD_FICHACLIENTE_FROMSERVER();
-		            }
-					
-					break;
-				case CONSULTAR_CUENTA_COBRAR:
-					if (cliente_selected == null) {
-						AppDialog.showMessage(vc, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-		            {
-						fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
-						LOAD_CUENTASXPAGAR();
-		            }
-					
-					break;
-				case SINCRONIZAR_ITEM:
-					if (cliente_selected == null) {
-						AppDialog.showMessage(vc, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-		            {
-						UPDATE_SELECTEDITEM_FROMSERVER();
-		            }
-					
-					break;
-				case SINCRONIZAR_TODOS:
-					if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
-		            {
-						Load_Data(LOAD_DATA_FROM_SERVER);
-		            }
-					
-					break;
-				case CERRAR:
-					FINISH_ACTIVITY();
-					break;
 				}
 			}
 		});
@@ -842,6 +870,9 @@ public class vCliente extends ActionBarActivity implements
 		if (fragment instanceof FichaClienteFragment
 				|| fragment instanceof CuentasPorCobrarFragment) {
 			gridheader.setVisibility(View.VISIBLE);
+			if(fragmentActive== FragmentActive.FICHACLIENTE){
+				setDrawerState(true);
+			}
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 			//transaction.detach(fragment);
 			transaction.replace(R.id.fragment_container, firstFragment);
@@ -849,6 +880,7 @@ public class vCliente extends ActionBarActivity implements
 			transaction.commit();
 			fragmentActive = FragmentActive.LIST;
 			getSupportActionBar().show();
+			EstablecerMenu(fragmentActive);
 		} else {
 			FINISH_ACTIVITY();
 		}
@@ -858,21 +890,21 @@ public class vCliente extends ActionBarActivity implements
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		
-		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+		//CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
 		
-		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-		if (prev != null){
-			transaction.remove(prev);
-		}
-		
-		Bundle msg = new Bundle();
-		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
-		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, cliente_selected.getIdSucursal());
-		
-		
-		transaction.addToBackStack(null);
-		cuentasPorCobrar.setArguments(msg); 
-	    cuentasPorCobrar.show(transaction, "dialog");
+//		android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+//		if (prev != null){
+//			transaction.remove(prev);
+//		}
+//		
+//		Bundle msg = new Bundle();
+//		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+//		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, cliente_selected.getIdSucursal());
+//		
+//		
+//		transaction.addToBackStack(null);
+//		cuentasPorCobrar.setArguments(msg); 
+//	    cuentasPorCobrar.show(transaction, "dialog");
 		
 		/*
 		CuentasPorCobrarFragment cuentasPorCobrar = new CuentasPorCobrarFragment();
@@ -887,5 +919,46 @@ public class vCliente extends ActionBarActivity implements
 		transaction.addToBackStack(null);
 		transaction.commit();
 		*/
+		
+		fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+		if (findViewById(R.id.fragment_container) != null) 
+		{	
+			cuentasPorCobrar = new CuentasPorCobrarFragment();						
+			Bundle msg = new Bundle();
+			msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, cliente_selected.getIdSucursal());
+			cuentasPorCobrar.setArguments(msg);	
+			transaction = getSupportFragmentManager().beginTransaction();
+			transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+			transaction.addToBackStack(null);
+			transaction.commit();	
+			EstablecerMenu(fragmentActive);
+		}
+		
+	}
+	
+	public void EstablecerMenu(FragmentActive fragmentActive){
+		if(fragmentActive == FragmentActive.LIST)
+			opcionesMenu = getResources().getStringArray(R.array.customeroptions);
+		
+		if(fragmentActive ==FragmentActive.CONSULTAR_CUENTA_COBRAR)
+			opcionesMenu = new String[] { "Mostrar Facturas", "Mostrar Notas Débito", "Mostrar Crédito", "Mostrar Pedido" ,"Mostrar Recibos" };
+
+		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
+	}
+	public void setDrawerState(boolean isEnabled) {
+	    if ( isEnabled ) {
+	        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED);
+	        drawerToggle.setDrawerIndicatorEnabled(true);
+	        drawerToggle.syncState();
+
+	    }
+	    else {
+	    	drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+	        drawerToggle.setDrawerIndicatorEnabled(false);
+	        drawerToggle.syncState();
+	    }
 	}
 }

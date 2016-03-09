@@ -28,6 +28,7 @@ import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -142,7 +143,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_FICHACLIENTE2 = 2;
 	private static final int ID_CUENTASXCOBRAR2 = 3;
 	private static final int ID_CERRAR2 = 4;
-	
+	CuentasPorCobrarFragment cuentasPorCobrar = null;
 	
 	private BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
 	private BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
@@ -231,6 +232,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final String TOTALCODE = "TT";
 	private static final String PARCIALCODE = "PC";
 	Cliente cliente;
+	
+	private static final int MOSTRAR_FACTURAS = 0;
+	private static final int MOSTRAR_NOTAS_DEBITO = 1;
+	private static final int MOSTRAR_NOTAS_CREDITO = 2;
+	private static final int MOSTRAR_PEDIDOS = 3;
+	private static final int MOSTRAR_RECIBOS = 4;	
 
 	public Cliente getCliente() {
 		return cliente;
@@ -1746,8 +1753,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) 
 	{
-		if (keyCode == KeyEvent.KEYCODE_MENU)
-			drawerLayout.openDrawer(Gravity.LEFT);
+		if (keyCode == KeyEvent.KEYCODE_MENU ){
+			if(fragmentActive != FragmentActive.FICHACLIENTE)
+				drawerLayout.openDrawer(Gravity.LEFT);
+		}
 		if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.EDIT) 
 		{			
 			FINISH_ACTIVITY(); 
@@ -1758,18 +1767,20 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		{
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			if(fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR){
-				android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-				if (prev != null) {
-					ft.remove(prev);
-				}
+				Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+				ft.detach(fragment);
+				ft.addToBackStack(null);
+				ft.commit();
+				fragmentActive = FragmentActive.EDIT;
+				EstablecerMenu(fragmentActive);
+				
 			}
 			else {
+				setDrawerState(true);
 				ft.remove(ficha);
 				ft.commit();
-				getSupportActionBar().show();
+				fragmentActive = FragmentActive.EDIT;
 			}
-			
-			fragmentActive = FragmentActive.EDIT;	
 			return true;
 		}
 		
@@ -2345,7 +2356,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		if (findViewById(R.id.dynamic_fragment) != null) {
 		} else {
 			transaction = getSupportFragmentManager().beginTransaction();
-
+			 setDrawerState(false);
 			// if (fragment instanceof ListaFragment) {
 			ficha = new FichaClienteFragment();
 			ficha.setArguments(args);
@@ -2364,23 +2375,39 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		FragmentTransaction transaction = getSupportFragmentManager()
 				.beginTransaction();
 
-		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment
-				.Instancia();
+//		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment
+//				.Instancia();
 
-		android.support.v4.app.Fragment prev = getSupportFragmentManager()
-				.findFragmentByTag("dialog");
-		if (prev != null) {
-			transaction.remove(prev);
+//		android.support.v4.app.Fragment prev = getSupportFragmentManager()
+//				.findFragmentByTag("dialog");
+//		if (prev != null) {
+//			transaction.remove(prev);
+//		}
+//
+//		Bundle msg = new Bundle();
+//		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
+//		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
+//				cliente.getIdSucursal());
+//
+//		transaction.addToBackStack(null);
+//		cuentasPorCobrar.setArguments(msg);
+//		cuentasPorCobrar.show(transaction, "dialog");
+		
+		
+		if (findViewById(R.id.fragment_container) != null) 
+		{	
+			fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+			cuentasPorCobrar = new CuentasPorCobrarFragment();						
+			Bundle msg = new Bundle();
+			msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
+			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, cliente.getIdSucursal());
+			cuentasPorCobrar.setArguments(msg);	
+			transaction = getSupportFragmentManager().beginTransaction();
+			transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+			transaction.addToBackStack(null);
+			transaction.commit();	
+			EstablecerMenu(fragmentActive);
 		}
-
-		Bundle msg = new Bundle();
-		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
-		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
-				cliente.getIdSucursal());
-
-		transaction.addToBackStack(null);
-		cuentasPorCobrar.setArguments(msg);
-		cuentasPorCobrar.show(transaction, "dialog");
 	}
 
 	public BigDecimal getCosteoMontoSubTotal() {
@@ -2649,122 +2676,146 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	
 	public void drawerItemAction(int position)
 	{
-		if(drawerList!=null  && drawerList.getAdapter()!=null && drawerList.getAdapter().getCount()>5)
-		{
-			switch (position) 
-			{	
-				case ID_SELECCIONAR_CLIENTE:
-					seleccionarCliente();
-					break;
-				case ID_DEVOLVER_PEDIDO:					
-					devolverPedido();
-					break;
-				case ID_AGREGAR_PRODUCTO:
-					if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
-						return;
-					agregarProducto();
-					break;
-				case ID_AGREGAR_LOTE:
-					if (groupselected != null) {
-						EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(
-								groupselected, me);
-						FragmentManager fragmentManager = getSupportFragmentManager();
-						dialogDevolucion.show(fragmentManager, "");
-					}
-					break;
-				case ID_EDITAR_NOTA:
-					EditarNotaDevolucion();
-					break;
-				case ID_VER_COSTEO:
-					VerCosteoDevolucion();
-					break;
-				case ID_GUARDAR:
-					salvarDevolucion();
-					break;
-				case ID_ENVIAR: 
-				    enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV); 
-					break;  
-				case ID_IMPRIMIR:
-					if(devolucion.getNumeroCentral()==0)
-						enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
-					else
-						enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
+		if(fragmentActive == FragmentActive.EDIT){
+		
+			if(drawerList!=null  && drawerList.getAdapter()!=null && drawerList.getAdapter().getCount()>5)
+			{
+				switch (position) 
+				{	
+					case ID_SELECCIONAR_CLIENTE:
+						seleccionarCliente();
 						break;
-				case ID_FICHACLIENTE:
-					if (cliente == null) {
-						AppDialog.showMessage(getContext(), "Información",
-								"Seleccione un cliente.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if (NMNetWork.isPhoneConnected(NMApp.getContext())
-							&& NMNetWork.CheckConnection(NMApp.getController())) {
-						ShowFichCliente();
-						fragmentActive = fragmentActive.FICHACLIENTE;
-					}
-					break;
-				case ID_CUENTASXCOBRAR:
-					if (cliente == null) {
-						AppDialog.showMessage(getContext(), "Información",
-								"Seleccione un cliente.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if (NMNetWork.isPhoneConnected(NMApp.getContext())
-							&& NMNetWork.CheckConnection(NMApp.getController())) {
-						LOAD_CUENTASXPAGAR();
-						fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
-					}
-					break;
-				case ID_CERRAR:
-					FINISH_ACTIVITY();
-					break;
-
+					case ID_DEVOLVER_PEDIDO:					
+						devolverPedido();
+						break;
+					case ID_AGREGAR_PRODUCTO:
+						if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
+							return;
+						agregarProducto();
+						break;
+					case ID_AGREGAR_LOTE:
+						if (groupselected != null) {
+							EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(
+									groupselected, me);
+							FragmentManager fragmentManager = getSupportFragmentManager();
+							dialogDevolucion.show(fragmentManager, "");
+						}
+						break;
+					case ID_EDITAR_NOTA:
+						EditarNotaDevolucion();
+						break;
+					case ID_VER_COSTEO:
+						VerCosteoDevolucion();
+						break;
+					case ID_GUARDAR:
+						salvarDevolucion();
+						break;
+					case ID_ENVIAR: 
+					    enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV); 
+						break;  
+					case ID_IMPRIMIR:
+						if(devolucion.getNumeroCentral()==0)
+							enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+						else
+							enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
+							break;
+					case ID_FICHACLIENTE:
+						if (cliente == null) {
+							AppDialog.showMessage(getContext(), "Información",
+									"Seleccione un cliente.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						if (NMNetWork.isPhoneConnected(NMApp.getContext())
+								&& NMNetWork.CheckConnection(NMApp.getController())) {
+							ShowFichCliente();
+							fragmentActive = fragmentActive.FICHACLIENTE;
+						}
+						break;
+					case ID_CUENTASXCOBRAR:
+						if (cliente == null) {
+							AppDialog.showMessage(getContext(), "Información",
+									"Seleccione un cliente.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						if (NMNetWork.isPhoneConnected(NMApp.getContext())
+								&& NMNetWork.CheckConnection(NMApp.getController())) {
+							LOAD_CUENTASXPAGAR();
+							fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
+							EstablecerMenu(fragmentActive);
+						}
+						break;
+					case ID_CERRAR:
+						FINISH_ACTIVITY();
+						break;
+	
+				}
+			}else
+			{
+				switch (position) 
+				{	
+					case ID_VER_COSTEO2:
+						VerCosteoDevolucion();
+						break;  
+					case ID_IMPRIMIR2:
+						if(devolucion.getNumeroCentral()!=0)
+							enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
+							break;
+					case ID_FICHACLIENTE2:
+						if (cliente == null) {
+							AppDialog.showMessage(getContext(), "Información",
+									"Seleccione un cliente.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						if (NMNetWork.isPhoneConnected(NMApp.getContext())
+								&& NMNetWork.CheckConnection(NMApp.getController())) {
+							ShowFichCliente();
+							fragmentActive = fragmentActive.FICHACLIENTE;
+						}
+						break;
+					case ID_CUENTASXCOBRAR2:
+						if (cliente == null) {
+							AppDialog.showMessage(getContext(), "Información",
+									"Seleccione un cliente.",
+									DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						if (NMNetWork.isPhoneConnected(NMApp.getContext())
+								&& NMNetWork.CheckConnection(NMApp.getController())) {
+							fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
+							LOAD_CUENTASXPAGAR();
+							EstablecerMenu(fragmentActive);
+						}
+						break;
+					case ID_CERRAR2:
+						FINISH_ACTIVITY();
+						break;
+	
+				}
 			}
-		}else
-		{
-			switch (position) 
-			{	
-				case ID_VER_COSTEO2:
-					VerCosteoDevolucion();
-					break;  
-				case ID_IMPRIMIR2:
-					if(devolucion.getNumeroCentral()!=0)
-						enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
-						break;
-				case ID_FICHACLIENTE2:
-					if (cliente == null) {
-						AppDialog.showMessage(getContext(), "Información",
-								"Seleccione un cliente.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if (NMNetWork.isPhoneConnected(NMApp.getContext())
-							&& NMNetWork.CheckConnection(NMApp.getController())) {
-						ShowFichCliente();
-						fragmentActive = fragmentActive.FICHACLIENTE;
-					}
-					break;
-				case ID_CUENTASXCOBRAR2:
-					if (cliente == null) {
-						AppDialog.showMessage(getContext(), "Información",
-								"Seleccione un cliente.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if (NMNetWork.isPhoneConnected(NMApp.getContext())
-							&& NMNetWork.CheckConnection(NMApp.getController())) {
-						LOAD_CUENTASXPAGAR();
-						fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
-					}
-					break;
-				case ID_CERRAR2:
-					FINISH_ACTIVITY();
-					break;
-
+		}	
+		if(fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR){
+			
+			switch (position) {
+			case MOSTRAR_FACTURAS:
+				cuentasPorCobrar.cargarFacturasCliente();
+				break;
+			case MOSTRAR_NOTAS_DEBITO: 
+				cuentasPorCobrar.cargarNotasDebito(); 
+			break;
+			case MOSTRAR_NOTAS_CREDITO: 
+				cuentasPorCobrar.cargarNotasCredito(); 
+			break;
+			case MOSTRAR_PEDIDOS: 
+				cuentasPorCobrar.cargarPedidos();
+			break;
+			case MOSTRAR_RECIBOS: 
+				cuentasPorCobrar.cargarRecibosColector(); 
+			break;
 			}
 		}
-		
 	}
 	
 	public CheckBox getCkboxvencidodev() {
@@ -2773,6 +2824,32 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	public void setCkboxvencidodev(CheckBox ckboxvencidodev) {
 		this.ckboxvencidodev = ckboxvencidodev;
+	}
+	
+	public void EstablecerMenu(FragmentActive fragmentActive){
+		if(fragmentActive == FragmentActive.EDIT){
+			int idarray=(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado()))?R.array.devolucioneditoptions2:R.array.devolucioneditoptions;
+			opcionesMenu = getResources().getStringArray(idarray);
+		}
+		if(fragmentActive ==FragmentActive.CONSULTAR_CUENTA_COBRAR)
+			opcionesMenu = new String[] { "Mostrar Facturas", "Mostrar Notas Débito", "Mostrar Crédito", "Mostrar Pedido" ,"Mostrar Recibos" };
+
+		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
+	}
+	public void setDrawerState(boolean isEnabled) {
+	    if ( isEnabled ) {
+	        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED);
+	        drawerToggle.setDrawerIndicatorEnabled(true);
+	        drawerToggle.syncState();
+
+	    }
+	    else {
+	    	drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+	        drawerToggle.setDrawerIndicatorEnabled(false);
+	        drawerToggle.syncState();
+	    }
 	}
 }
 

@@ -80,6 +80,7 @@ import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelRecibo;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.ReciboDetFactura;
+import com.panzyma.nm.view.ViewPedido.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewdialog.TasaCambioFragment;
 import com.panzyma.nm.viewmodel.vmRecibo;
@@ -251,6 +252,8 @@ public class ViewRecibo extends ActionBarActivity implements
 	private static final int MOSTRAR_COBROS_MES = 2;
 	private static final int IMPRIMIR = 3;
 	
+	
+	
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -379,7 +382,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	//		            	return;
 			            
 				            long sucursal=recibo_selected.getObjSucursalID();
-				            
+				            setDrawerState(false);
 				            args = new Bundle();
 							args.putInt(FichaClienteFragment.ARG_POSITION, positioncache);
 							args.putLong(FichaClienteFragment.ARG_SUCURSAL, sucursal);
@@ -426,21 +429,39 @@ public class ViewRecibo extends ActionBarActivity implements
 								transaction = getSupportFragmentManager().beginTransaction();
 								
 								fragmentActive =FragmentActive.CUENTAS_POR_COBRAR;
-								cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+								//cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
 								
-								android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-								if (prev != null){
-									transaction.remove(prev);
+//								android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+//								if (prev != null){
+//									transaction.remove(prev);
+//								}
+								
+//								Bundle msg = new Bundle();
+//								msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+//								msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
+//								
+//								
+//								transaction.addToBackStack(null);
+//								cuentasPorCobrar.setArguments(msg);
+//								transaction.addToBackStack(null);
+//								transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+//								transaction.commit();
+							    //cuentasPorCobrar.show(transaction, "dialog");
+							    
+								fragmentActive = FragmentActive.CUENTAS_POR_COBRAR;
+								if (findViewById(R.id.fragment_container) != null) 
+								{	
+									cuentasPorCobrar = new CuentasPorCobrarFragment();						
+									Bundle msg = new Bundle();
+									msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, pos);
+									msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
+									cuentasPorCobrar.setArguments(msg);	
+									transaction = getSupportFragmentManager().beginTransaction();
+									transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+									transaction.addToBackStack(null);
+									transaction.commit();	
+									EstablecerMenu(fragmentActive);
 								}
-								
-								Bundle msg = new Bundle();
-								msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
-								msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, recibo_selected.getObjSucursalID());
-								
-								
-								transaction.addToBackStack(null);
-								cuentasPorCobrar.setArguments(msg); 
-							    cuentasPorCobrar.show(transaction, "dialog");
 							    
 								/*
 								cuentasPorCobrar = new CuentasPorCobrarFragment();						
@@ -455,7 +476,7 @@ public class ViewRecibo extends ActionBarActivity implements
 								*/						
 							}
 							//OCULTAR LA BARRA DE ACCION
-							getSupportActionBar().hide();
+							//getSupportActionBar().hide();
 			            }
 						break;
 					case CONSULTA_COBROS :
@@ -496,7 +517,7 @@ public class ViewRecibo extends ActionBarActivity implements
 					}
 				
 				}
-				else {
+				if(fragmentActive == FragmentActive.CONSULTAR_COBROS) {
 					
 					switch (position) {
 						case MOSTRAR_COBROS_DEL_DIA:
@@ -511,6 +532,25 @@ public class ViewRecibo extends ActionBarActivity implements
 						case IMPRIMIR: 
 							cobros.IMPRIMIR();
 						break;
+					}
+				}
+				if(fragmentActive == FragmentActive.CUENTAS_POR_COBRAR) {
+					switch (position) {
+					case MOSTRAR_FACTURAS:
+						cuentasPorCobrar.cargarFacturasCliente();
+						break;
+					case MOSTRAR_NOTAS_DEBITO: 
+						cuentasPorCobrar.cargarNotasDebito(); 
+					break;
+					case MOSTRAR_NOTAS_CREDITO: 
+						cuentasPorCobrar.cargarNotasCredito(); 
+					break;
+					case MOSTRAR_PEDIDOS: 
+						cuentasPorCobrar.cargarPedidos();
+					break;
+					case MOSTRAR_RECIBOS: 
+						cuentasPorCobrar.cargarRecibosColector(); 
+					break;
 					}
 				}
 				drawerList.setItemChecked(position, true);
@@ -1367,13 +1407,15 @@ public class ViewRecibo extends ActionBarActivity implements
 			gridheader.setVisibility(View.VISIBLE);
 			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);	
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			transaction.detach(fragment);
             transaction.replace(R.id.fragment_container, firstFragment);
 			transaction.addToBackStack(null);
 			transaction.commit();
 			getSupportActionBar().show();
 			EstablecerMenu(fragmentActive);
 			setList();
-			
+			cuentasPorCobrar = null;
+			cobros=null;
 		}
 		
 		return super.onKeyUp(keyCode, event);
@@ -1400,6 +1442,9 @@ public class ViewRecibo extends ActionBarActivity implements
 	public void onBackPressed() {
 		Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 		if (fragment instanceof FichaClienteFragment || fragment instanceof CuentasPorCobrarFragment || fragmentActive == FragmentActive.CONSULTAR_COBROS) {
+			if(fragmentActive== FragmentActive.FICHA_CLIENTE){
+				setDrawerState(true);
+			}
 			fragmentActive = FragmentActive.LIST;
 			gridheader.setText(String.format("LISTA RECIBOS (%s)",recibos.size()));
 			gridheader.setVisibility(View.VISIBLE);
@@ -1479,9 +1524,26 @@ public class ViewRecibo extends ActionBarActivity implements
 		if(fragmentActive == FragmentActive.CONSULTAR_COBROS)
 			opcionesMenu = new String[] { "Mostrar Cobros del Día", "Mostrar Cobros de la Semana", "Mostrar Cobros del Mes", "Imprimir" };
 		
+		if(fragmentActive ==FragmentActive.CUENTAS_POR_COBRAR)
+			opcionesMenu = new String[] { "Mostrar Facturas", "Mostrar Notas Débito", "Mostrar Crédito", "Mostrar Pedido" ,"Mostrar Recibos" };
 
 		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
 	}
-	
+
+	public void setDrawerState(boolean isEnabled) {
+	    if ( isEnabled ) {
+	        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED);
+	        drawerToggle.setDrawerIndicatorEnabled(true);
+	        drawerToggle.syncState();
+
+	    }
+	    else {
+	    	drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+	        drawerToggle.setDrawerIndicatorEnabled(false);
+	        drawerToggle.syncState();
+	    }
+	}
 }
 

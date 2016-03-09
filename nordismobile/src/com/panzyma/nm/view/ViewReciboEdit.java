@@ -55,6 +55,7 @@ import com.panzyma.nm.serviceproxy.ReciboDetNC;
 import com.panzyma.nm.serviceproxy.ReciboDetND;
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
@@ -80,6 +81,7 @@ import com.panzyma.nordismobile.R;
 
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -194,6 +196,12 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	private static final int ID_EDITAR_DOCUMENTO = 0;
 	private static final int ID_ELIMINAR_DOCUMENTO = 1;
 	private static final int ID_EDITAR_DESCUENTOV2 = 2;
+	
+	private static final int MOSTRAR_FACTURAS = 0;
+	private static final int MOSTRAR_NOTAS_DEBITO = 1;
+	private static final int MOSTRAR_NOTAS_CREDITO = 2;
+	private static final int MOSTRAR_PEDIDOS = 3;
+	private static final int MOSTRAR_RECIBOS = 4;
 	
 	FragmentTransaction transaction ;
 	private ViewReciboEdit me;
@@ -442,78 +450,100 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 							DialogType.DIALOGO_ALERTA);
 					return;
 				}
-				
-				switch (position) 
-				{   
-				case ID_SELECCIONAR_CLIENTE:
-					seleccionarCliente();
-					break;
-				case ID_AGREGAR_DOCUMENTOS:
-					agregarDocumentosPendientesCliente();
-					break;
-				case ID_AGREGAR_PAGOS:
-					agregarPago();
-					break;
-				case ID_EDITAR_PAGOS:
-					editarPagos();
-					break;
-				case ID_EDITAR_DESCUENTO:
-					editarDescuento(true);
-					break;
+				if(fragmentActive == FragmentActive.LIST)
+				{				
+					switch (position) 
+					{   
+					case ID_SELECCIONAR_CLIENTE:
+						seleccionarCliente();
+						break;
+					case ID_AGREGAR_DOCUMENTOS:
+						agregarDocumentosPendientesCliente();
+						break;
+					case ID_AGREGAR_PAGOS:
+						agregarPago();
+						break;
+					case ID_EDITAR_PAGOS:
+						editarPagos();
+						break;
+					case ID_EDITAR_DESCUENTO:
+						editarDescuento(true);
+						break;
+						
+					case ID_EDITAR_NOTAS:
+						EditarNotaRecibo();
+						break;
+						
+					case ID_PAGAR_TODO:
+						if (cliente == null) {
+							AppDialog
+									.showMessage(
+											me,
+											"Información",
+											"Por favor seleccione un cliente.",
+											DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						PagarTodo();
+						break;
+					case ID_PAGAR_MONTO:
+						if (cliente == null) {
+							AppDialog
+									.showMessage(
+											me,
+											"Información",
+											"Por favor seleccione un cliente.",
+											DialogType.DIALOGO_ALERTA);
+							return;
+						}
+						PagarMonto();
+	
+						break;
+					case ID_SOLICITAR_DESCUENTO_OCASIONAL:
+						solicitardescuento();
+						break;
+					case ID_APLICAR_DESCUENTO_OCASIONAL:
+						aplicardescuento();
+						break;
+					case ID_SALVAR_RECIBO:
+						if(Validar_Cancelar_Con_Notas_Creditos())
+							guardarRecibo();
+						salvado = true;
+						break;
+					case ID_ENVIAR_RECIBO:
+						enviarRecibo();
+						break;
+					case ID_IMPRIMIR_COMPROBANTE:
+						enviarImprimirRecibo(recibo);
+						break;
+					case ID_CONSULTAR_CUENTAS_POR_PAGAR:
+						ShowCuentasporPagar();
+						break;
+					case ID_CERRAR:
+							finish();
+						break; 
 					
-				case ID_EDITAR_NOTAS:
-					EditarNotaRecibo();
-					break;
-					
-				case ID_PAGAR_TODO:
-					if (cliente == null) {
-						AppDialog
-								.showMessage(
-										me,
-										"Información",
-										"Por favor seleccione un cliente.",
-										DialogType.DIALOGO_ALERTA);
-						return;
 					}
-					PagarTodo();
+				}
+				if(fragmentActive== FragmentActive.CUENTAS_POR_COBRAR){
+					switch (position) {
+					case MOSTRAR_FACTURAS:
+						cuentasPorCobrar.cargarFacturasCliente();
+						break;
+					case MOSTRAR_NOTAS_DEBITO: 
+						cuentasPorCobrar.cargarNotasDebito(); 
 					break;
-				case ID_PAGAR_MONTO:
-					if (cliente == null) {
-						AppDialog
-								.showMessage(
-										me,
-										"Información",
-										"Por favor seleccione un cliente.",
-										DialogType.DIALOGO_ALERTA);
-						return;
+					case MOSTRAR_NOTAS_CREDITO: 
+						cuentasPorCobrar.cargarNotasCredito(); 
+					break;
+					case MOSTRAR_PEDIDOS: 
+						cuentasPorCobrar.cargarPedidos();
+					break;
+					case MOSTRAR_RECIBOS: 
+						cuentasPorCobrar.cargarRecibosColector(); 
+					break;
 					}
-					PagarMonto();
 
-					break;
-				case ID_SOLICITAR_DESCUENTO_OCASIONAL:
-					solicitardescuento();
-					break;
-				case ID_APLICAR_DESCUENTO_OCASIONAL:
-					aplicardescuento();
-					break;
-				case ID_SALVAR_RECIBO:
-					if(Validar_Cancelar_Con_Notas_Creditos())
-						guardarRecibo();
-					salvado = true;
-					break;
-				case ID_ENVIAR_RECIBO:
-					enviarRecibo();
-					break;
-				case ID_IMPRIMIR_COMPROBANTE:
-					enviarImprimirRecibo(recibo);
-					break;
-				case ID_CONSULTAR_CUENTAS_POR_PAGAR:
-					ShowCuentasporPagar();
-					break;
-				case ID_CERRAR:
-						finish();
-					break; 
-				
 				}
 			}
 		});
@@ -996,9 +1026,16 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		case KeyEvent.KEYCODE_BACK :
 			if(fragmentActive != FragmentActive.CUENTAS_POR_COBRAR) 
 				FINISH_ACTIVITY();
-			else 
+			else {
 				fragmentActive = FragmentActive.LIST;
-			
+				Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);	
+				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+				transaction.detach(fragment);
+	           // transaction.replace(R.id.fragment_container, firstFragment);
+				transaction.addToBackStack(null);
+				transaction.commit();
+				EstablecerMenu(fragmentActive);
+			}
 			
 			respuesta = true;
 			
@@ -3796,24 +3833,62 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 		{
 			fragmentActive =FragmentActive.CUENTAS_POR_COBRAR;
-			cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
-			
-			FragmentTransaction Fragtransaction = getSupportFragmentManager().beginTransaction();
-			android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-			if (prev != null){
-			   Fragtransaction.remove(prev);
-			}
-			
-			Bundle msg = new Bundle();
-			msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
-			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, this.recibo.getObjSucursalID());
-			
-			
-			Fragtransaction.addToBackStack(null);
-			cuentasPorCobrar.setArguments(msg); 
-		    cuentasPorCobrar.show(Fragtransaction, "dialog");
+//			cuentasPorCobrar = CuentasPorCobrarFragment.Instancia();
+//			
+//			FragmentTransaction Fragtransaction = getSupportFragmentManager().beginTransaction();
+//			android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+//			if (prev != null){
+//			   Fragtransaction.remove(prev);
+//			}
+//			
+//			Bundle msg = new Bundle();
+//			msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
+//			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, this.recibo.getObjSucursalID());
+//			
+//			
+//			Fragtransaction.addToBackStack(null);
+//			cuentasPorCobrar.setArguments(msg); 
+//		    cuentasPorCobrar.show(Fragtransaction, "dialog");
 		    //Fragtransaction.commit();
+			
+			
+			if (findViewById(R.id.fragment_container) != null) 
+			{	
+				cuentasPorCobrar = new CuentasPorCobrarFragment();						
+				Bundle msg = new Bundle();
+				msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, this.positioncache);
+				msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, this.recibo.getObjSucursalID());
+				cuentasPorCobrar.setArguments(msg);	
+				transaction = getSupportFragmentManager().beginTransaction();
+				transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+				transaction.addToBackStack(null);
+				transaction.commit();	
+				EstablecerMenu(fragmentActive);
+			}
 		}
 	    
 	}
+	
+	public void EstablecerMenu(FragmentActive fragmentActive){
+		if(fragmentActive == FragmentActive.LIST){
+			opcionesMenu = getResources().getStringArray(R.array.reciboeditoptions);
+			String[] copy=new String[opcionesMenu.length];
+			if (recibo != null && recibo.getCodEstado().equals("PAGADO")) 
+				
+			{	if(opcionesMenu.length!=0 && opcionesMenu.length>2)
+					copy[0]=opcionesMenu[opcionesMenu.length-2];
+					copy[1]=opcionesMenu[opcionesMenu.length-1];
+			}
+			else
+				copy=opcionesMenu.clone();
+
+		}
+						
+
+		if(fragmentActive ==FragmentActive.CUENTAS_POR_COBRAR)
+			opcionesMenu = new String[] { "Mostrar Facturas", "Mostrar Notas Débito", "Mostrar Crédito", "Mostrar Pedido" ,"Mostrar Recibos" };
+
+		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
+	}
+	
 }

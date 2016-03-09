@@ -21,6 +21,7 @@ import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.logic.PojoDevolucion;
 import com.panzyma.nm.model.ModelDevolucion;
 import com.panzyma.nm.serviceproxy.Devolucion;
+import com.panzyma.nm.view.ViewRecibo.FragmentActive;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.viewmodel.vmDevolucion;
 import com.panzyma.nordismobile.R;
@@ -102,6 +103,12 @@ public class ViewDevoluciones extends ActionBarActivity implements
 
 	Devolucion devolucion;
 	private int request_code;
+	CuentasPorCobrarFragment cuentasPorCobrar;
+	private static final int MOSTRAR_FACTURAS = 0;
+	private static final int MOSTRAR_NOTAS_DEBITO = 1;
+	private static final int MOSTRAR_NOTAS_CREDITO = 2;
+	private static final int MOSTRAR_PEDIDOS = 3;
+	private static final int MOSTRAR_RECIBOS = 4;	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -304,124 +311,147 @@ public class ViewDevoluciones extends ActionBarActivity implements
 				// OBTENER EL RECIBO DE LA LISTA DE RECIBOS DEL ADAPTADOR
 				item_selected = (vmDevolucion) customArrayAdapter
 						.getItem(positioncache);
-
-				switch (position) {
-				case NUEVO_DEVOLUCION:
-					intent = new Intent(ViewDevoluciones.this,
-							ViewDevolucionEdit.class);
-					intent.putExtra("requestcode", NUEVO_DEVOLUCION);
-					startActivityForResult(intent, NUEVO_DEVOLUCION);
-					break;
-				case ABRIR_DEVOLUCION:
-					abrirDevolucion();
-
-					break;
-				case BORRAR_DEVOLUCION:
-					if (item_selected == null) {
-						drawerLayout.closeDrawers();
-						AppDialog.showMessage(vd, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					} 
-					if (!item_selected.getEstado().equals("REGISTRADA")) {
-						drawerLayout.closeDrawers();
-						AppDialog.showMessage(vd, "Información",
-								"El registro no se puede borrar en estado "+ item_selected.getItemEstado()+" .",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					Message msg = new Message();
-					Bundle b = new Bundle();
-					b.putInt("id", (int) item_selected.getId());
-					msg.setData(b);
-					msg.what = ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
-					NMApp.getController().getInboxHandler().sendMessage(msg);
-					break;
-				case ENVIAR_DEVOLUCION:
-					if (item_selected == null) {
-						drawerLayout.closeDrawers();
-						AppDialog.showMessage(vd, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					
-					enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
-					//BDevolucionM.beforeSend(item_selected.getId());
-					break;
-				case IMPRIMIR_COMPROBANTE:
-					if (item_selected == null) {
-						drawerLayout.closeDrawers();
-						AppDialog.showMessage(vd, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					devolucion = ModelDevolucion.getDevolucionbyID(item_selected.getId());
-					if (devolucion.getNumeroCentral() == 0)
-						enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
-					else {						
-						enviarImprimirDevolucion(
-								"Se mandara a imprimir el comprobante de la Devolución",
-								devolucion);
-					}
-						
-					/*
-					 * BDevolucionM.ImprimirDevolucion(item_selected.getId(),
-					 * false);
-					 */
-					break;
-				case BORRAR_ENVIADAS:
-					if (item_selected == null) 
+				if(fragmentActive== FragmentActive.LIST){
+				
+					switch (position) 
 					{
-						drawerLayout.closeDrawers();
-						AppDialog.showMessage(vd, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
+						case NUEVO_DEVOLUCION:
+							intent = new Intent(ViewDevoluciones.this,
+									ViewDevolucionEdit.class);
+							intent.putExtra("requestcode", NUEVO_DEVOLUCION);
+							startActivityForResult(intent, NUEVO_DEVOLUCION);
+							break;
+						case ABRIR_DEVOLUCION:
+							abrirDevolucion();
+		
+							break;
+						case BORRAR_DEVOLUCION:
+							if (item_selected == null) {
+								drawerLayout.closeDrawers();
+								AppDialog.showMessage(vd, "Información",
+										"Seleccione un registro.",
+										DialogType.DIALOGO_ALERTA);
+								return;
+							} 
+							if (!item_selected.getEstado().equals("REGISTRADA")) {
+								drawerLayout.closeDrawers();
+								AppDialog.showMessage(vd, "Información",
+										"El registro no se puede borrar en estado "+ item_selected.getItemEstado()+" .",
+										DialogType.DIALOGO_ALERTA);
+								return;
+							}
+							Message msg = new Message();
+							Bundle b = new Bundle();
+							b.putInt("id", (int) item_selected.getId());
+							msg.setData(b);
+							msg.what = ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
+							NMApp.getController().getInboxHandler().sendMessage(msg);
+							break;
+						case ENVIAR_DEVOLUCION:
+							if (item_selected == null) {
+								drawerLayout.closeDrawers();
+								AppDialog.showMessage(vd, "Información",
+										"Seleccione un registro.",
+										DialogType.DIALOGO_ALERTA);
+								return;
+							}
+							
+							enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+							//BDevolucionM.beforeSend(item_selected.getId());
+							break;
+						case IMPRIMIR_COMPROBANTE:
+							if (item_selected == null) {
+								drawerLayout.closeDrawers();
+								AppDialog.showMessage(vd, "Información",
+										"Seleccione un registro.",
+										DialogType.DIALOGO_ALERTA);
+								return;
+							}
+							devolucion = ModelDevolucion.getDevolucionbyID(item_selected.getId());
+							if (devolucion.getNumeroCentral() == 0)
+								enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+							else {						
+								enviarImprimirDevolucion(
+										"Se mandara a imprimir el comprobante de la Devolución",
+										devolucion);
+							}
+								
+							/*
+							 * BDevolucionM.ImprimirDevolucion(item_selected.getId(),
+							 * false);
+							 */
+							break;
+						case BORRAR_ENVIADAS:
+							if (item_selected == null) 
+							{
+								drawerLayout.closeDrawers();
+								AppDialog.showMessage(vd, "Información",
+										"Seleccione un registro.",
+										DialogType.DIALOGO_ALERTA);
+								return;
+							}
+		
+							Message msg2 = new Message();
+							Bundle b2 = new Bundle();
+							b2.putInt("id", -1);
+							msg2.setData(b2);
+							msg2.what = ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
+							NMApp.getController().getInboxHandler().sendMessage(msg2);
+							break;
+						case FICHA_DEL_CLIENTE:
+							if (item_selected == null) {
+								drawerLayout.closeDrawers();
+								AppDialog.showMessage(vd, "Información",
+										"Seleccione un registro.",
+										DialogType.DIALOGO_ALERTA);
+								return;
+							}
+		
+							if (NMNetWork.isPhoneConnected(NMApp.getContext())
+									&& NMNetWork.CheckConnection(NMApp.getController())) {
+								fragmentActive = FragmentActive.FICHACLIENTE;
+								ShowCustomerDetails();
+							}
+							break;
+						case CUENTAS_POR_COBRAR:
+							if (item_selected == null) {
+								drawerLayout.closeDrawers();
+								AppDialog.showMessage(vd, "Información",
+										"Seleccione un registro.",
+										DialogType.DIALOGO_ALERTA);
+								return;
+							}
+							if (NMNetWork.isPhoneConnected(NMApp.getContext())
+									&& NMNetWork.CheckConnection(NMApp.getController())) {
+								fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+								LOAD_CUENTASXPAGAR();
+							}
+		
+							break;
+						case CERRAR:
+							finish();
+							break;
 					}
-
-					Message msg2 = new Message();
-					Bundle b2 = new Bundle();
-					b2.putInt("id", -1);
-					msg2.setData(b2);
-					msg2.what = ControllerProtocol.DELETE_DATA_FROM_LOCALHOST;
-					NMApp.getController().getInboxHandler().sendMessage(msg2);
+				}
+				if(fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR){
+					
+					switch (position) {
+					case MOSTRAR_FACTURAS:
+						cuentasPorCobrar.cargarFacturasCliente();
+						break;
+					case MOSTRAR_NOTAS_DEBITO: 
+						cuentasPorCobrar.cargarNotasDebito(); 
 					break;
-				case FICHA_DEL_CLIENTE:
-					if (item_selected == null) {
-						drawerLayout.closeDrawers();
-						AppDialog.showMessage(vd, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-
-					if (NMNetWork.isPhoneConnected(NMApp.getContext())
-							&& NMNetWork.CheckConnection(NMApp.getController())) {
-						fragmentActive = FragmentActive.FICHACLIENTE;
-						ShowCustomerDetails();
-					}
+					case MOSTRAR_NOTAS_CREDITO: 
+						cuentasPorCobrar.cargarNotasCredito(); 
 					break;
-				case CUENTAS_POR_COBRAR:
-					if (item_selected == null) {
-						drawerLayout.closeDrawers();
-						AppDialog.showMessage(vd, "Información",
-								"Seleccione un registro.",
-								DialogType.DIALOGO_ALERTA);
-						return;
-					}
-					if (NMNetWork.isPhoneConnected(NMApp.getContext())
-							&& NMNetWork.CheckConnection(NMApp.getController())) {
-						fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
-						LOAD_CUENTASXPAGAR();
-					}
-
+					case MOSTRAR_PEDIDOS: 
+						cuentasPorCobrar.cargarPedidos();
 					break;
-				case CERRAR:
-					finish();
+					case MOSTRAR_RECIBOS: 
+						cuentasPorCobrar.cargarRecibosColector(); 
 					break;
+					}
 				}
 			}
 		});
@@ -516,6 +546,7 @@ public class ViewDevoluciones extends ActionBarActivity implements
 				transaction.addToBackStack(null);
 				transaction.replace(R.id.fragment_container, ficha, "ficha");
 				gridheader.setVisibility(View.INVISIBLE);
+				setDrawerState(false);
 			}
 		}
 		// Commit the transaction transaction.commit();
@@ -535,25 +566,41 @@ public class ViewDevoluciones extends ActionBarActivity implements
 		// transaction.addToBackStack(null);
 		// transaction.commit();
 
-		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment
-				.Instancia();
-		FragmentTransaction transaction = getSupportFragmentManager()
-				.beginTransaction();
-
-		android.support.v4.app.Fragment prev = getSupportFragmentManager()
-				.findFragmentByTag("dialog");
-		if (prev != null) {
-			transaction.remove(prev);
+//		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment
+//				.Instancia();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//
+//		android.support.v4.app.Fragment prev = getSupportFragmentManager()
+//				.findFragmentByTag("dialog");
+//		if (prev != null) {
+//			transaction.remove(prev);
+//		}
+//
+//		Bundle msg = new Bundle();
+//		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+//		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
+//				item_selected.getIdSucursal());
+//
+//		transaction.addToBackStack(null);
+//		cuentasPorCobrar.setArguments(msg);
+//		cuentasPorCobrar.show(transaction, "dialog");
+		
+		
+		fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
+		if (findViewById(R.id.fragment_container) != null) 
+		{	
+			cuentasPorCobrar = new CuentasPorCobrarFragment();						
+			Bundle msg = new Bundle();
+			msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
+			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, item_selected.getIdSucursal());
+			cuentasPorCobrar.setArguments(msg);	
+			transaction = getSupportFragmentManager().beginTransaction();
+			transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+			transaction.addToBackStack(null);
+			transaction.commit();	
+			EstablecerMenu(fragmentActive);
 		}
-
-		Bundle msg = new Bundle();
-		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, positioncache);
-		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
-				item_selected.getIdSucursal());
-
-		transaction.addToBackStack(null);
-		cuentasPorCobrar.setArguments(msg);
-		cuentasPorCobrar.show(transaction, "dialog");
+		
 	}
 
 	@Override
@@ -569,7 +616,11 @@ public class ViewDevoluciones extends ActionBarActivity implements
 			transaction.replace(R.id.fragment_container, firstFragment);
 			transaction.addToBackStack(null);
 			transaction.commit();
+			if(fragmentActive== FragmentActive.FICHACLIENTE){
+				setDrawerState(true);
+			}
 			fragmentActive = FragmentActive.LIST;
+			EstablecerMenu(fragmentActive);
 			getSupportActionBar().show();
 		} else
 			FINISH_ACTIVITY();
@@ -782,5 +833,32 @@ public class ViewDevoluciones extends ActionBarActivity implements
 				}
 			});
 		} 
-}
+	}
+	
+	public void EstablecerMenu(FragmentActive fragmentActive){
+		if(fragmentActive == FragmentActive.LIST)
+			opcionesMenu = getResources().getStringArray(R.array.devoluciones_lista_options);
+		
+		if(fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR)
+			opcionesMenu = new String[] { "Mostrar Facturas", "Mostrar Notas Débito", "Mostrar Crédito", "Mostrar Pedido" ,"Mostrar Recibos" };
+		
+		
+		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
+	}
+	
+	public void setDrawerState(boolean isEnabled) {
+	    if ( isEnabled ) {
+	        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED);
+	        drawerToggle.setDrawerIndicatorEnabled(true);
+	        drawerToggle.syncState();
+
+	    }
+	    else {
+	    	drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+	        drawerToggle.setDrawerIndicatorEnabled(false);
+	        drawerToggle.syncState();
+	    }
+	}
 }

@@ -116,8 +116,8 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 			super.onStart();
 			NMApp.controller.setView(this); 
 			Bundle args = getArguments();
-			android.support.v7.app.ActionBar a =((ActionBarActivity)getActivity()).getSupportActionBar();
-			a.hide();
+//			android.support.v7.app.ActionBar a =((ActionBarActivity)getActivity()).getSupportActionBar();
+//			a.hide();
 			if (args != null) 
 			{
 				if(DetailCustomerSelected!=null){
