@@ -197,9 +197,12 @@ public class ViewDevoluciones extends ActionBarActivity implements
 			}
 			break;
 		case NOTIFICATION_DIALOG2:
-			
-			showStatus("Enviando devolución....");  
-			
+			if(msg.obj instanceof ErrorMessage){
+				showStatus(((ErrorMessage)msg.obj).getMessage() ,true);  
+			}
+			else {
+				showStatus(msg.obj.toString(), true);
+			}
 			break;
 		}
 		return result;

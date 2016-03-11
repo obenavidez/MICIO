@@ -750,7 +750,12 @@ public class ViewPedido extends ActionBarActivity implements
 					showStatus(msg.obj.toString(), true);
 					break;
 				case ControllerProtocol.NOTIFICATION_DIALOG2:
-					showStatus(msg.obj.toString());
+					if(msg.obj instanceof ErrorMessage){
+						showStatus(((ErrorMessage)msg.obj).getMessage() ,true);  
+					}
+					else {
+						showStatus(msg.obj.toString(), true);
+					}
 					break;
 				case ControllerProtocol.ID_REQUEST_ENVIAR:
 					request_code = ABRIR_PEDIDO;
