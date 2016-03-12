@@ -1258,10 +1258,18 @@ public class ViewRecibo extends ActionBarActivity implements
 			} 
 		break;
 		case ControllerProtocol.NOTIFICATION:
-			showStatus(msg.obj.toString(), true);
+			if (dlg!= null) dlg.dismiss();
+			if(msg.obj instanceof ErrorMessage )
+				showStatus(msg.obj.toString(), true);
+			else 
+				showStatus(msg.obj.toString());
 			break;
 		case ControllerProtocol.NOTIFICATION_DIALOG2:
-			showStatus(((ErrorMessage)msg.obj).getMessage(), true);
+			if (dlg!= null) dlg.dismiss();
+			if(msg.obj instanceof ErrorMessage )
+				showStatus(((ErrorMessage)msg.obj).getMessage(), true);
+			else 
+				showStatus(msg.obj.toString());
 			break;
 
 			
