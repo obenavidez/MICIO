@@ -747,15 +747,18 @@ public class ViewPedido extends ActionBarActivity implements
 					val = true;
 					break;
 				case ControllerProtocol.NOTIFICATION:
-					showStatus(msg.obj.toString(), true);
+//					if (dlg!= null) dlg.dismiss();
+					if(msg.obj instanceof ErrorMessage )
+						showStatus(msg.obj.toString(), true);
+					else 
+						showStatus(msg.obj.toString());
 					break;
 				case ControllerProtocol.NOTIFICATION_DIALOG2:
-					if(msg.obj instanceof ErrorMessage){
-						showStatus(((ErrorMessage)msg.obj).getMessage() ,true);  
-					}
-					else {
+//					if (dlg!= null) dlg.dismiss();
+					if(msg.obj instanceof ErrorMessage )
 						showStatus(msg.obj.toString(), true);
-					}
+					else 
+						showStatus(msg.obj.toString());
 					break;
 				case ControllerProtocol.ID_REQUEST_ENVIAR:
 					request_code = ABRIR_PEDIDO;
@@ -1179,6 +1182,7 @@ public class ViewPedido extends ActionBarActivity implements
 	{
 		try 
 		{
+			
 			if (pedido_selected == null)
 				return;
 			
@@ -1209,6 +1213,7 @@ public class ViewPedido extends ActionBarActivity implements
 			if (!isDataValid(pedido))
 				return;
 
+			
 			Message msg = new Message();
 			Bundle b = new Bundle();
 			b.putParcelable("pedido", pedido);
