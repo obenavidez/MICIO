@@ -385,13 +385,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								.getObjMotivoID() : 0);
 						devolucion.setDeVencido(isChecked);
 						cboxtramitedev.setEnabled(true);
-						///////////////////////////////
+						/**/
 						lgroups.clear();
 						if(dev_prod!=null){
-							dev_prod.clear();
-							
-							if(devolucion.getProductosDevueltos()!=null)
-								dev_prod =new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
+							dev_prod = new ArrayList();// dev_prod.clear();
+//							
+//							if(devolucion.getProductosDevueltos()!=null)
+//								dev_prod =new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
 						}
 						if(adapter!=null)
 							adapter.updateData(lgroups);
