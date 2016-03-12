@@ -654,7 +654,7 @@ public class BDevolucionM extends BBaseM
 		try
 		{          
     		String devolucion = ""; 
-    		devolucion += "T 7 1 123 5 Distribuidora Panzyma - DISPAN\r\n";
+    		devolucion += "T 7 1 123 5 Distribuidora De Productos - DISPRO\r\n";
     		devolucion += "T 7 0 123 54 Comprobante de Devoluci\u00f3n\r\n";
     		devolucion += "LINE 0 80 576 80 1\r\n";
     		

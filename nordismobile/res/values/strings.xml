@@ -7,7 +7,7 @@
     <string name="txtDemo">SIMFAC by Osmar David Benavidez Zelaya | osmar.benavidez@gmail.com</string>
 
     <!-- Activity Titles -->
-    <string name="HomeActivityTitle">PANZYMA LAB</string>
+    <string name="HomeActivityTitle">DEMO EMPRESA</string>
     <string name="FeedbackActivityTitle">Feedback</string>
     <string name="ClientActivityTitle">SIMFAC | CLIENTE</string>
     <string name="ProductoActivityTitle">SIMFAC | PRODUCTO</string>
