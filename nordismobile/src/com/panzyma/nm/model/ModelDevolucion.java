@@ -22,7 +22,8 @@ import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.viewmodel.vmDevolucion;
 
 @SuppressWarnings("unused")
-public class ModelDevolucion {
+public class ModelDevolucion 
+{
 
 	static String TAG = ModelDevolucion.class.getSimpleName();
 
