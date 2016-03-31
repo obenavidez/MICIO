@@ -1,7 +1,10 @@
 package com.panzyma.nm.viewdialog;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -463,22 +466,15 @@ public class EditDevolucionProducto extends DialogFragment {
 			date = DateUtil.getLastDayOfMonth(Long
 					.valueOf(fechaVencimiento));
 			dvl.setFechaVencimiento((int) date);
+		}  
+		if(!DateUtil.isValidExpiredDate(DateUtil.getCalendar2(date).getTime(), me.getCkboxvencidodev().isChecked())) 
+		{
+			cantidad.setError("Fecha Vencimiento del Lote, no valido para devolución"+( me.getCkboxvencidodev().isChecked()?"de vencido":"de vencido"));
+			numeroLote.setError("Fecha Vencimiento del Lote, no valido para devolución"+( me.getCkboxvencidodev().isChecked()?"de vencido":"de vencido"));
+			anioVencimiento.setError("Fecha Vencimiento del Lote, no valido para devolución"+( me.getCkboxvencidodev().isChecked()?"de vencido":"de vencido"));
+			return;
 		}
-		if(me.getCkboxvencidodev().isChecked()) {
-			if( date > DateUtil.dt2iFC(new Date())  ) {
-				cantidad.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
-				numeroLote.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
-				anioVencimiento.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
-				return;
-			}
-		} else {
-			if( date < DateUtil.dt2iFC(new Date())  ) {
-				cantidad.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
-				numeroLote.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");
-				anioVencimiento.setError("La Fecha de Vencimiento en conflicto con tipo de vencimiento");	
-				return;
-			}
-		}
+		 
 		
 		dvl.setCantidadDevuelta(Integer.valueOf(cantidad.getText().toString()));
 		dvl.setNumeroLote(numeroLote.getText().toString());

@@ -952,7 +952,7 @@ public class vCliente extends ActionBarActivity implements
 			opcionesMenu = getResources().getStringArray(R.array.customeroptions);
 		
 		if(fragmentActive ==FragmentActive.CONSULTAR_CUENTA_COBRAR)
-			opcionesMenu = new String[] { "Mostrar Facturas", "Mostrar Notas Débito", "Mostrar Crédito", "Mostrar Pedido" ,"Mostrar Recibos" };
+			opcionesMenu = new String[] { "Mostrar Facturas", "Mostrar Notas Débito", "Mostrar Notas de Crédito", "Mostrar Pedido" ,"Mostrar Recibos" };
 
 		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
 	}

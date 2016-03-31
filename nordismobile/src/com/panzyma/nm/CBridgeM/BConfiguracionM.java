@@ -33,8 +33,7 @@ import com.panzyma.nm.serviceproxy.DataConfigurationResult;
 import com.panzyma.nm.serviceproxy.Impresora;
 import com.panzyma.nm.serviceproxy.Usuario;
 import com.panzyma.nm.viewmodel.vmConfiguracion;
-
-@SuppressWarnings({ "rawtypes", "unused" })
+ 
 public class BConfiguracionM extends BBaseM {
 
 	String TAG = BConfiguracionM.class.getSimpleName();

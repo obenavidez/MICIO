@@ -160,6 +160,21 @@ public class DateUtil {
 		cal.set(Calendar.MILLISECOND, 0);
 		return cal;
 	}
+	
+	public static Calendar getCalendar2(long idate) {
+		Calendar cal = Calendar.getInstance();
+		String sdate = idate + "";
+		String anio = sdate.substring(0, 4);
+		String mes = sdate.substring(4, 6);
+		mes = (Integer.parseInt(mes) - 1) + "";
+		String dia = sdate.substring(6, 8); 
+
+		cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dia));
+		cal.set(Calendar.MONTH, Integer.parseInt(mes));
+		cal.set(Calendar.YEAR, Integer.parseInt(anio)); 
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal;
+	}
 
 	public static long getTime() {
 		return getCalendar().getTime().getTime();
@@ -271,6 +286,58 @@ public class DateUtil {
 		return Long.parseLong(sdate);
 	}
 
+	public static Date getFirstDateOfCurrentMonth()
+	{
+		Calendar cal=Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.set(cal.DAY_OF_MONTH,cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+		return cal.getTime();
+	}
+	
+	public static Date getLastDateOfCurrentMonth()
+	{
+		Calendar cal=Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.set(cal.DAY_OF_MONTH,cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+		return cal.getTime();
+	}
+	
+	public static boolean isValidExpiredDate(Date fechavencimiento,boolean esdevencido)
+	{
+		Calendar today=Calendar.getInstance();
+		today.setTime(new Date());
+		
+		Calendar fechavence=Calendar.getInstance();
+		fechavence.setTime(fechavencimiento);
+		 
+		if(esdevencido)
+		{
+			if(fechavence.get(Calendar.MONTH)==today.get(Calendar.MONTH) 
+					&& fechavence.get(Calendar.YEAR)==today.get(Calendar.YEAR))
+				return true;	 
+
+			today.add(Calendar.MONTH, 1);
+	        
+			if(fechavence.get(Calendar.MONTH)==today.get(Calendar.MONTH)
+					&& fechavence.get(Calendar.YEAR)==today.get(Calendar.YEAR))
+				return true;
+		}else
+		{
+			today.setTime(new Date());
+			if((fechavence.get(Calendar.MONTH)>today.get(Calendar.MONTH) 
+					&& fechavence.get(Calendar.YEAR)>=today.get(Calendar.YEAR)
+				) ||  fechavence.get(Calendar.YEAR)>today.get(Calendar.YEAR))
+			{
+				today.add(Calendar.MONTH, 1);
+				if((fechavence.get(Calendar.MONTH)>today.get(Calendar.MONTH) 
+						&& fechavence.get(Calendar.YEAR)>=today.get(Calendar.YEAR)
+						) ||  fechavence.get(Calendar.YEAR)>today.get(Calendar.YEAR))
+					return true;
+			} 
+		}		
+		 return false; 
+	}
+	
 	public static long dt2i(Date dt) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(dt);

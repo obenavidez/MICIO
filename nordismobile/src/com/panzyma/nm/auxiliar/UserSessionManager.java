@@ -363,8 +363,7 @@ public class UserSessionManager {
 																	+ "-"
 																	+ empresa,
 															nombreUsuario,
-															"21C5D535",
-															//NMNetWork.getDeviceId(NMApp.getContext()),
+															NMNetWork.getDeviceId(NMApp.getContext()),
 															SessionManager.getImpresora());
 
 											boolean _esAdmin = res.IsAdmin();

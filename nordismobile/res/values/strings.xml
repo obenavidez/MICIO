@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello everyone, SIMFAC!</string>
-    <string name="app_name">SIMFAC</string>
+    <string name="app_name">NORDIS</string>
     <string name="tipoped">selecione tipo pedido</string>
     <string name="txtDemo">SIMFAC by Osmar David Benavidez Zelaya | osmar.benavidez@gmail.com</string>
 

@@ -78,6 +78,8 @@ import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.interfaces.Editable;
 import com.panzyma.nm.logic.DevolucionBL;
+import com.panzyma.nm.menu.ActionItem;
+import com.panzyma.nm.menu.QuickAction;
 import com.panzyma.nm.model.ModelLogic;
 import com.panzyma.nm.model.ModelProducto;
 import com.panzyma.nm.serviceproxy.Bonificacion;
@@ -189,7 +191,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	CustomAdapter adapter_tramite;
 	CustomAdapter adapter_tipodev;
 	List<Catalogo> catalogos;
-
+	QuickAction quickAction2;
 	private CustomDialog dlg;
 	public static ProductoDevolucion pd;
 	List<DevolucionProducto> dev_prod;
@@ -255,6 +257,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private ProgressDialog pdialog;
 
 	public static final Display display;
+	protected static final int ID_EDITAR_BONIFICACION = 1;
+	protected static final int ID_ELIMINAR_PRODUCTO = 2;
+	protected static final int ID_EDITAR_LOTE = 3;
+	protected static final int ID_ELIMINAR_LOTE = 4;
 
 	List<ExpandListGroup> lgroups = new LinkedList<ExpandListGroup>();
 	private long iddevolucion;
@@ -293,7 +299,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		context = this;
 		me = this;
@@ -588,30 +595,42 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		
 	}
 
-	public void initExpandableListView(boolean render) {
-		if (adapter == null || render) {
+	public void initExpandableListView(boolean render) 
+	{
+		if (adapter == null || render) 
+		{
 			ArrayList<SetViewHolderWLayout> layouts = new ArrayList<SetViewHolderWLayout>();
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_productolote,
 					ProductoLoteViewHolder.class, true, 0));
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_loteproducto,
 					ProductoLoteDetalleViewHolder.class, false, 0));
-			try {
+			try 
+			{
 				adapter = new ExpandListAdapterOriginal(context,
 						lgroups = SetStandardGroups(), layouts);
 				lvdevproducto.setAdapter(adapter);
 
-				for (int g = 0; g < adapter.getGroupCount(); g++) {
+				for (int g = 0; g < adapter.getGroupCount(); g++) 
+				{
 					lvdevproducto.expandGroup(g);
 				}
 
 				lvdevproducto
-						.setOnChildClickListener(new OnChildClickListener() {
+						.setOnChildClickListener(new OnChildClickListener() 
+						{
 
 							@Override
 							public boolean onChildClick(
 									ExpandableListView _parent, View v,
 									int groupPosition, int childPosition,
-									long id) {
+									long id) 
+							{
+								if(positioncache==null){
+									positioncache = new int[2];
+									positioncache[0] =-1;
+									positioncache[1] =-1;
+								}
+								
 								if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
 									return false;
 								
@@ -627,16 +646,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								int flatpost;
 								int ajustPos;
 								if (_parent == null)
-									return false;
-
-								if (positioncache != null
-										&& positioncache.length != 0) {
-									long value = ExpandableListView
-											.getPackedPositionForChild(
-													positioncache[0],
+									return false; 
+								
+								if (positioncache != null && positioncache.length != 0 && positioncache[1]!=-1) 
+								{
+									long value = ExpandableListView.getPackedPositionForChild(positioncache[0],
 													positioncache[1]);
-									flatpost = _parent
-											.getFlatListPosition(value);
+									flatpost = _parent.getFlatListPosition(value);
 									ajustPos = flatpost
 											- _parent.getFirstVisiblePosition();
 									View oldview = _parent.getChildAt(ajustPos);
@@ -681,41 +697,39 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								int ajustPos;
 								long value = 0;
 								
+								if(positioncache==null){
+									positioncache = new int[2];
+									positioncache[0] =-1;
+									positioncache[1] =-1;
+								}
+									 
+								
 								if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
 									return false;
 								
 								elv = (ExpandableListView) _parent;
-								if (ExpandableListView
-										.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+								if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) 
+								{
 
-									if (view.getTag() instanceof ProductoLoteDetalleViewHolder) {
-										ProductoLoteDetalleViewHolder pld = (ProductoLoteDetalleViewHolder) view
-												.getTag();
+									if (view.getTag() instanceof ProductoLoteDetalleViewHolder) 
+									{
+										ProductoLoteDetalleViewHolder pld = (ProductoLoteDetalleViewHolder) view.getTag();
 										if (elv == null)
 											return false;
 
-										if (positioncache != null
-												&& positioncache.length != 0) {
-											if (positioncache[1] != -1) {
-												value = ExpandableListView
-														.getPackedPositionForChild(
-																positioncache[0],
-																positioncache[1]);
-												flatpost = elv
-														.getFlatListPosition(value);
-												ajustPos = flatpost
-														- elv.getFirstVisiblePosition();
-												View oldview = elv
-														.getChildAt(ajustPos);
-												if (oldview != null
-														&& oldview.getTag() != null
-														&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) {
-													oldview.setBackgroundColor(oldview.getResources().getColor(R.color.White));
-													oldview.setSelected(false);
-												}
-
+										if (positioncache != null && positioncache.length != 0  && positioncache[1]!=-1) 
+										{ 
+											value = ExpandableListView.getPackedPositionForChild(positioncache[0],positioncache[1]);
+											flatpost = elv.getFlatListPosition(value);
+											ajustPos = flatpost - elv.getFirstVisiblePosition();
+											View oldview = elv.getChildAt(ajustPos);
+											if (oldview != null
+													&& oldview.getTag() != null
+													&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) {
+												oldview.setBackgroundColor(oldview.getResources().getColor(R.color.White));
+												oldview.setSelected(false);
 											}
-
+ 
 										}
 										view.setSelected(true);
 										view.setBackgroundColor(view.getResources().getColor(R.color.Gold));
@@ -730,16 +744,17 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 														positioncache[1]);
 										groupselected = (ExpandListGroup) adapter
 												.getGroup(positioncache[0]);
-										EditarProductoLote(
+										/*EditarProductoLote(
 												groupselected.getName(),
-												childselected);
-
+												childselected);*/
+										showMenu(view, false, groupselected, childselected);
 									}
 
 									return true;
 								} else {
 
-									if (view.getTag() instanceof ProductoLoteViewHolder) {
+									if (view.getTag() instanceof ProductoLoteViewHolder) 
+									{
 										if (elv == null)
 											return false;
 
@@ -768,9 +783,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 										groupselected = (ExpandListGroup) adapter
 												.getGroup(positioncache[0]);
 
-										EditarProductoBonificacion(
+										showMenu(view, true, groupselected, childselected);
+										
+										/*EditarProductoBonificacion(
 												groupselected.getName(),
-												groupselected);
+												groupselected);*/
 									}
 
 								}
@@ -807,6 +824,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				EstimarCostosDev(true);
 				CalTotalDevolucion();
 				CalMontoCargoVendedor();
+				Actualizardevolucion();
+				adapter.notifyDataSetChanged();
 				//devolucion.setOlddata(devolucion);
 			} catch (Exception e) {
 				AppDialog.showMessage(this, "Alerta", e.getMessage(),
@@ -880,7 +899,6 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		
 		for (DevolucionProducto dp : getDev_prod()) 
 		{
-
 			ExpandListGroup group = new ExpandListGroup();
 			LinkedList<ExpandListChild> groupchild = new LinkedList<ExpandListChild>();
 			group.setName(dp.getNombreProducto());
@@ -897,10 +915,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		return _lgroups;
 	}
 
-	public void refreshExpandable() {
+	public void refreshExpandable() 
+	{
 		if (adapter != null) {
 			lgroups = SetStandardGroups();
 			adapter.updateData(lgroups);
+			adapter.notifyDataSetChanged();
 		}
 	}
 
@@ -967,7 +987,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		DevolucionProducto _dp = (DevolucionProducto) groupselected.getObject();		
 		_dp.setBonificacionVen(cantidadbonificacion);
 		groupselected.setObject(_dp);
-		lgroups.set(positioncache[0], groupselected);
+		lgroups.set(positioncache[0], groupselected); 
 		adapter.notifyDataSetChanged();
 	}
 
@@ -1028,8 +1048,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		ch.setName(dpl.getNumeroLote());
 		ch.setObject(dpl);
 		groupselected.getItems().set(positioncache[1], ch);
-		// sumar todas las cantidades a devolver de sus lote del producto
-		// seleccionado.
+		// sumar todas las cantidades a devolver de sus lote del producto seleccionado.
 		for (ExpandListChild _ch : groupselected.getItems())
 			cantidadTotalDevolver += ((DevolucionProductoLote) _ch.getObject())
 					.getCantidadDevuelta();
@@ -1581,9 +1600,15 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 
-	public void CalTotalDevolucion() {
+	public void CalTotalDevolucion() 
+	{
 		if (lgroups.isEmpty())
+		{
+			tbxtotaldev.setText(""+ new BigDecimal(0.0D).divide(new BigDecimal(100.00)).setScale(2,
+							RoundingMode.UNNECESSARY));
 			return;
+		}
+			
 		double sumatotal = 0.d;
 		double sumatotalv = 0.d;
 		double sumasubtotal = 0.d;
@@ -2854,6 +2879,86 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	        drawerToggle.setDrawerIndicatorEnabled(false);
 	        drawerToggle.syncState();
 	    }
+	}
+	
+	public void showMenu(final View view,final boolean idheader,final ExpandListGroup parent,final ExpandListChild child) 
+	{
+
+		runOnUiThread(new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				if (devolucion != null && devolucion.getCodEstado().equals("REGISTRADA")) 
+				{
+				    quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1);					 
+					quickAction2.addActionItem(new ActionItem(idheader?ID_EDITAR_BONIFICACION:ID_EDITAR_LOTE,idheader?"Editar Bonificación":"Editar Lote"));
+					quickAction2.addActionItem(new ActionItem(idheader?ID_ELIMINAR_PRODUCTO:ID_ELIMINAR_LOTE,idheader?"Eliminar Producto":"Eliminar Lote"));
+				 
+					
+					quickAction2.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() 
+					{
+	
+								@Override
+								public void onItemClick(QuickAction source,
+										final int pos, final int actionId) 
+								{
+									ActionItem actionItem = quickAction2.getActionItem(pos);
+									if (actionId == ID_EDITAR_BONIFICACION)
+										EditarProductoBonificacion(parent.getName(),parent);
+									else if (actionId == ID_ELIMINAR_PRODUCTO)
+										eliminarProducto();
+									if (actionId == ID_EDITAR_LOTE) 
+										EditarProductoLote(
+												groupselected.getName(),
+												childselected); 
+									else if (actionId == ID_ELIMINAR_LOTE)
+										eliminarLote();
+	
+								}
+							});
+					quickAction2.show(view, display, false);
+				}
+			}
+		});
+	}
+	
+	public void eliminarProducto()
+	{ 
+		dev_prod.remove(positioncache[0]);
+		positioncache=null;
+		initExpandableListView(true); 
+		
+	}
+	
+	public void eliminarLote()
+	{
+		int cantidadTotalDevolver=0;
+		int index=0;
+		
+		DevolucionProducto _dp=(DevolucionProducto) groupselected.getObject();
+		DevolucionProductoLote lote=(DevolucionProductoLote) ((ExpandListChild)(groupselected.getItems().get(positioncache[1]))).getObject();
+		if(_dp.getProductoLotes().length==1 && _dp.getProductoLotes()[0].getObjLoteID()==lote.getObjLoteID())
+		{
+			eliminarProducto();
+			return;
+		}
+		  
+		DevolucionProductoLote[] lotes=new DevolucionProductoLote[_dp.getProductoLotes().length-1];
+		for(DevolucionProductoLote item:_dp.getProductoLotes())
+		{ 
+			if (item.getObjLoteID() != lote.getObjLoteID())
+			{
+				lotes[index]=item;
+				cantidadTotalDevolver += item.getCantidadDevuelta();
+			}
+			index++; 			 
+		}		 
+		_dp.setCantidadDevolver(cantidadTotalDevolver);
+		_dp.setProductoLotes(lotes); 
+		dev_prod.set(positioncache[0], _dp);
+		positioncache=null;
+		initExpandableListView(true);  		
 	}
 }
 
