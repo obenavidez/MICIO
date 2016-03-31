@@ -129,4 +129,9 @@ public class vmCliente implements Parcelable, Item {
 		return Codigo;
 	}
 
+	@Override
+	public String getItemCodeStado() {
+		return getItemCode();
+	}
+
 }

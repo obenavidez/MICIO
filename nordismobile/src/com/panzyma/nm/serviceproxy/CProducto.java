@@ -230,5 +230,10 @@ public class CProducto implements Parcelable, Item {
 			parcel.writeString(Especialidades);
 			parcel.writeParcelableArray(Notas,flags);
 		}
+		@Override
+		public String getItemCodeStado() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 }

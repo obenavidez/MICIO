@@ -786,7 +786,12 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 						:message, true);
 				break;
 			case ControllerProtocol.NOTIFICATION_DIALOG2:
-				showStatus(msg.obj.toString());
+				if(msg.obj instanceof ErrorMessage){
+					showStatus(((ErrorMessage)msg.obj).getMessage() ,true);  
+				}
+					else {
+						showStatus(msg.obj.toString(), true);
+				}
 				break;
 			case ControllerProtocol.ERROR:
 				AppDialog.showMessage(me, ((ErrorMessage) msg.obj).getTittle(),

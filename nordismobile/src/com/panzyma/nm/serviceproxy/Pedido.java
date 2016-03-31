@@ -831,4 +831,8 @@ public class Pedido  implements KvmSerializable,Item,Parcelable,Cloneable{
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	@Override
+	public String getItemCodeStado() {
+		return getCodEstado();
+	}
 }

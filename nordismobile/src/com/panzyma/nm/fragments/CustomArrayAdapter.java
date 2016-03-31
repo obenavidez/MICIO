@@ -141,11 +141,14 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 				holder.txtName = (TextView) convertView.findViewById(R.id.menu_name);
 				holder.txtDescription = (TextView) convertView.findViewById(R.id.description);
 				holder.txtExtraInfo = (TextView) convertView.findViewById(R.id.price); 
-				if(StatusCode!=null && "PAGADO_OFFLINE".equals(StatusCode))
-				{
-					holder.txtName.setTextColor(convertView.getResources().getColor(R.color.Red));
-					holder.txtDescription.setTextColor(convertView.getResources().getColor(R.color.Red));
-					holder.txtExtraInfo.setTextColor(convertView.getResources().getColor(R.color.Red)); 
+				//if(StatusCode!=null && "PAGADO_OFFLINE".equals(StatusCode))
+				if(rowItem.getItemCodeStado()!=null){
+					if(rowItem.getItemCodeStado().equals("PAGADO_OFFLINE"))
+					{
+						holder.txtName.setTextColor(convertView.getResources().getColor(R.color.Red));
+						holder.txtDescription.setTextColor(convertView.getResources().getColor(R.color.Red));
+						holder.txtExtraInfo.setTextColor(convertView.getResources().getColor(R.color.Red)); 
+					}
 				}
 				convertView.setTag(R.layout.list_row,holder); 				
 			 }
@@ -174,11 +177,12 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 				holder.txtDescription.setText(rowItem.getItemDescription());
 				holder.txtExtraInfo.setText(" | "+rowItem.getItemCode() + " CD");
 				 
-				if(StatusCode!=null && "PAGADO_OFFLINE".equals(StatusCode))
-				{
-					holder.txtName.setTextColor(convertView.getResources().getColor(R.color.Red));
-					holder.txtDescription.setTextColor(convertView.getResources().getColor(R.color.Red));
-					holder.txtExtraInfo.setTextColor(convertView.getResources().getColor(R.color.Red)); 
+				if(rowItem.getItemCodeStado()!=null){
+					if(rowItem.getItemCodeStado().equals("PAGADO_OFFLINE")){
+						holder.txtName.setTextColor(convertView.getResources().getColor(R.color.Red));
+						holder.txtDescription.setTextColor(convertView.getResources().getColor(R.color.Red));
+						holder.txtExtraInfo.setTextColor(convertView.getResources().getColor(R.color.Red)); 
+					}
 				}
 				 
 			 }

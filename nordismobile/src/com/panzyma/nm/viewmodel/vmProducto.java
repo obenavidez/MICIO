@@ -95,4 +95,10 @@ public class vmProducto implements Item, Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 	}
+
+	@Override
+	public String getItemCodeStado() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

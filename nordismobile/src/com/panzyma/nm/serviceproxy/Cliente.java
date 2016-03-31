@@ -680,5 +680,11 @@ public final class Cliente implements KvmSerializable, Item, Parcelable {
       	 
       	 
    };
+
+	@Override
+	public String getItemCodeStado() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

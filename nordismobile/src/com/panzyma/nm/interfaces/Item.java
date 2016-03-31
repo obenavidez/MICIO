@@ -9,5 +9,6 @@ public interface Item extends BaseHolder {
 
 	String getItemCode();
 	
+	String getItemCodeStado();
 	//Item parseJSONToItem();
 }
