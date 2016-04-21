@@ -12,7 +12,8 @@ public class Moneda {
 	}
 
 	public static String getSimbol() {
-		return Currency.getInstance(locale).getSymbol();
+		//return Currency.getInstance(locale).getCurrencyCode();
+		return "$C";
 	}
 
 	public static Locale getLocale() {
