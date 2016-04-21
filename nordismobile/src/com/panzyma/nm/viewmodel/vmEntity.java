@@ -5,6 +5,7 @@ import java.io.Serializable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.panzyma.nm.auxiliar.Moneda;
 import com.panzyma.nm.interfaces.Item;
 
 public class vmEntity implements Item, Parcelable, Serializable {
@@ -154,7 +155,7 @@ public class vmEntity implements Item, Parcelable, Serializable {
 
 	@Override
 	public String getItemDescription() {
-		return "Fecha: " + getFecha() + ", Total: " + getTotal() + ", Estado: "
+		return "Fecha: " + getFecha() + " | Total: " + Moneda.toCurrency(getTotal()) + " | Estado: "
 				+ getDescEstado();
 	}
 
