@@ -30,6 +30,16 @@ public class Util {
 					/ Math.pow(10, decimales);
 		}
 
+		public static int CompareDouble(Double a, Double b) {
+			Double epsilon = 0.00000001; // maximum error allowed
+			if ((a < b + epsilon) && (a > b - epsilon)) {
+				return 0;
+			} else if (a < b + epsilon) {
+				return -1;
+			} else
+				return 1;
+		}
+
 	}
 
 }
