@@ -437,6 +437,12 @@ public class Producto implements Parcelable,KvmSerializable,Item {
 		this.DiasDespuesVen = parcel.readInt();
 	}
 
+	@Override
+	public String getItemCodeStado() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 

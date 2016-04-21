@@ -193,4 +193,10 @@ public class vmRecibo implements Item, Parcelable {
 		return "REF: " + getNumero();
 	}
 
+	@Override
+	public String getItemCodeStado() {
+		// TODO Auto-generated method stub
+		return getCodEstado();
+	}
+
 }

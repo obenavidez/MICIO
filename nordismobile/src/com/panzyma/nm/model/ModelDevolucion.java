@@ -31,18 +31,18 @@ public class ModelDevolucion
 	}
 
 	public synchronized static Devolucion BuscarDevolucionDePedido(
-			String Credentials, long idSucursal, long nopedido, long nofactura)
-			throws Exception {
+			String Credentials, long idSucursal, int nopedido, int nofactura)
+			throws Exception 
+	{
 		Parameters params = new Parameters(
 				(new String[] { "Credentials", "SucursalID", "NumeroPedido",
 						"NumeroFactura" }),
 				(new Object[] { Credentials, idSucursal, nopedido, nofactura }),
 				(new Type[] { PropertyInfo.STRING_CLASS,
-						PropertyInfo.LONG_CLASS, PropertyInfo.LONG_CLASS,
-						PropertyInfo.LONG_CLASS }));
+						PropertyInfo.LONG_CLASS, PropertyInfo.INTEGER_CLASS,
+						PropertyInfo.INTEGER_CLASS }));
 
-		return NMTranslate
-				.ToObject(NMComunicacion.InvokeMethod(params.getParameters(),
+		return NMTranslate.ToObject(NMComunicacion.InvokeMethod(params.getParameters(),
 						NMConfig.URL, NMConfig.NAME_SPACE,
 						NMConfig.MethodName.BuscarDevolucionDePedido),
 						new Devolucion());

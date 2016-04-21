@@ -21,6 +21,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
+import com.panzyma.nm.view.viewholder.ProductoLoteViewHolder;
 import com.panzyma.nordismobile.R;
 
 @SuppressWarnings({"unused"})
@@ -310,8 +312,16 @@ public class QuickAction extends PopupWindows implements OnDismissListener
 		else
 		showArrow(((onTop) ? R.id.arrow_down : R.id.arrow_up), arrowPos);
 		
-		setAnimationStyle(screenWidth, anchorRect.centerX(), onTop);
-		 
+		
+		 /*if(anchor.getTag() instanceof ProductoLoteViewHolder || anchor.getTag() instanceof ProductoLoteDetalleViewHolder)
+		 {
+			 yPos=yPos-100;
+			 setAnimationStyle(screenWidth, anchorRect.centerX(), true);
+		 }
+		 else
+			 setAnimationStyle(screenWidth, anchorRect.centerX(), onTop);*/
+		yPos=yPos-150;
+		setAnimationStyle(screenWidth, anchorRect.centerX(), true);
 		mWindow.showAtLocation(anchor, Gravity.LEFT,xPos,yPos);
 		//mWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
 	}

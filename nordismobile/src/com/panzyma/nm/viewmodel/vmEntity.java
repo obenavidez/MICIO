@@ -163,4 +163,10 @@ public class vmEntity implements Item, Parcelable, Serializable {
 		return "REF: " + getNumero();
 	}
 
+	@Override
+	public String getItemCodeStado() {
+		// TODO Auto-generated method stub
+		return getCodEstado();
+	}
+
 }

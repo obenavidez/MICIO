@@ -882,7 +882,7 @@ public final class BReciboM extends BBaseM {
 	        String monedaNac = Cobro.getMoneda(getContext());
 	          
 	        //Encabezado del recibo    
-	        recibo += "T 7 0 120 2 Distribuidora Panzyma - DISPAN\r\n";        
+	        recibo += "T 7 0 120 2 Distribuidora de Productos - DISPRO\r\n";        
 	        recibo += "T 7 0 170 33 Recibo de Colector\r\n";
 	        recibo += "LINE 0 70 575 70 1\r\n";
 	        

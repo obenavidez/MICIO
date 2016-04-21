@@ -29,6 +29,7 @@ import com.panzyma.nm.serviceproxy.CCNotaCredito;
 import com.panzyma.nm.serviceproxy.CCNotaDebito;
 import com.panzyma.nm.serviceproxy.CCPedido;
 import com.panzyma.nm.serviceproxy.CCReciboColector;
+import com.panzyma.nm.serviceproxy.DetallePedido;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.view.adapter.GenericAdapter;
 import com.panzyma.nm.view.adapter.InvokeBridge;
@@ -63,6 +64,7 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
@@ -131,6 +133,7 @@ public class CuentasPorCobrarFragment extends Fragment implements
 	public final static String ARG_POSITION = "position";
 	public final static String SUCURSAL_ID = "sucursalID";
 	 View me ;
+	protected int positioncache;
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -617,7 +620,24 @@ public class CuentasPorCobrarFragment extends Fragment implements
 					return false;
 				}
 				
-			});			
+			});		
+			listaGenerica.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) 
+				{
+					if ((parent.getChildAt(positioncache)) != null)
+						(parent.getChildAt(positioncache))
+								.setBackgroundResource(android.R.color.transparent);
+					positioncache = position;
+					adapter.setSelectedPosition(position);
+					view.setBackgroundDrawable(parent.getResources().getDrawable(
+							R.drawable.action_item_selected));
+					
+				}
+
+			});
 		} else 
 		{
 			headerGrid.setText(String.format(title,0));
@@ -670,6 +690,25 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			listaGenerica.setAdapter(adapter);
 			mostrarDetalleConsulta("notas crédito", true, fechaInicNC, fechaFinNC,
 					estadoNC);
+			
+			listaGenerica.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) 
+				{
+					if ((parent.getChildAt(positioncache)) != null)
+						(parent.getChildAt(positioncache))
+								.setBackgroundResource(android.R.color.transparent);
+					positioncache = position;
+					adapter.setSelectedPosition(position);
+					view.setBackgroundDrawable(parent.getResources().getDrawable(
+							R.drawable.action_item_selected));
+					
+				}
+
+			});
+			
 		} else {
 			headerGrid.setText(String.format(title,0));
 			txtenty.setText("No existen registros");
@@ -694,6 +733,24 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			txtenty.setVisibility(View.INVISIBLE);
 			headerGrid.setText(String.format(title, pedidos.size()));
 			listaGenerica.setAdapter(adapter);
+			listaGenerica.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) 
+				{
+					if ((parent.getChildAt(positioncache)) != null)
+						(parent.getChildAt(positioncache))
+								.setBackgroundResource(android.R.color.transparent);
+					positioncache = position;
+					adapter.setSelectedPosition(position);
+					view.setBackgroundDrawable(parent.getResources().getDrawable(
+							R.drawable.action_item_selected));
+					
+				}
+
+			});
+			
 			mostrarDetalleConsulta("pedidos", true, fechaInicPedidos, fechaFinPedidos,
 					estadoPedidos);
 		} else {
@@ -720,6 +777,23 @@ public class CuentasPorCobrarFragment extends Fragment implements
 			txtenty.setVisibility(View.INVISIBLE);
 			headerGrid.setText(String.format(title, recibos.size()));
 			listaGenerica.setAdapter(adapter);
+			listaGenerica.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) 
+				{
+					if ((parent.getChildAt(positioncache)) != null)
+						(parent.getChildAt(positioncache))
+								.setBackgroundResource(android.R.color.transparent);
+					positioncache = position;
+					adapter.setSelectedPosition(position);
+					view.setBackgroundDrawable(parent.getResources().getDrawable(
+							R.drawable.action_item_selected));
+					
+				}
+
+			});
 			mostrarDetalleConsulta("recibos", true, fechaInicRCol, fechaFinRCol,
 					estadoRCol);
 		} else {

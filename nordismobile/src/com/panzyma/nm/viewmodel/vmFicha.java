@@ -305,4 +305,9 @@ public class vmFicha implements Parcelable, Item {
 
 	}
 
+	@Override
+	public String getItemCodeStado() {
+		return getItemCode();
+	}
+
 }

@@ -5,6 +5,7 @@ import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import java.util.ArrayList;
 import java.util.HashMap;  
 import java.util.List;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
@@ -69,8 +70,8 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 	
 	private ProgressDialog pdialog=null;
 	
-	private long numpedido;
-	private long numfactura;
+	private int numpedido;
+	private int numfactura;
 	
 	public interface DialogListener 
 	{ 
@@ -133,45 +134,50 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 			
 			@Override
 			public void onClick(View v) 
-			{ 
-				long nopedido = 0; 	
-				devolucion.setOffLine(offline);
-				String numeroFactura = (tboxFactura.getText() != null ? tboxFactura
-						.getText().toString() : "");
-				if (!"".equals(numeroFactura.trim())) {
-					if(numeroFactura.indexOf("-") != -1) {
-						String parts[] = numeroFactura.split("-"); 
-						numeroFactura = parts[parts.length-1];
+			{ 	
+				try {
+					
+					devolucion.setOffLine(offline);
+					String numeroFactura = (tboxFactura.getText() != null ? tboxFactura
+							.getText().toString() : "");
+					if (!"".equals(numeroFactura.trim())) {
+						if(numeroFactura.indexOf("-") != -1) 
+						{
+							String parts[] = numeroFactura.split("-"); 
+							numeroFactura = parts[parts.length-1];
+						} 
+					} else {
+						numeroFactura = "0";
+					}				
+					numfactura = Integer.valueOf(numeroFactura);
+					numpedido = (tboxPedido.getText()!=null && (!tboxPedido.getText().toString().equals("")))?Integer.valueOf(tboxPedido.getText().toString()):0;
+					
+					if( offline ) {
+						if(!validar())
+							return;
+						
+						devolucion.setNumeroFacturaDevuelta(Integer.parseInt(""+numfactura));
+						devolucion.setNumeroPedidoDevuelto(Integer.parseInt(""+numpedido));
+						listener.onDialogPositiveClick(devolucion); 
+						dismiss();
+					} else 
+					{
+						if(!validar())
+							return;
+						Parametro  parametros = new Parametro(objSucursalID,numpedido,numfactura);				
+						Message m=new Message();
+						m.what=ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO; 
+						m.obj=parametros;
+						NMApp.getController().getInboxHandler().sendMessage(m); 
+						pdialog=ProgressDialog.show(getActivity(), "Buscando productos lotes con pedido/factura "+ numpedido+"/"+numfactura,"buscando en el servidor central !!!");
 					}
-				} else {
-					numeroFactura = "0";
-				}				
-				numfactura = Long.valueOf(numeroFactura); 
-				if( offline ) {
-					if(!validar())
-						return;
-					nopedido = (tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0;
-					//numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
-					devolucion.setNumeroFacturaDevuelta(Integer.parseInt(""+numfactura));
-					devolucion.setNumeroPedidoDevuelto(Integer.parseInt(""+nopedido));
-					listener.onDialogPositiveClick(devolucion); 
-					dismiss();
-				} else 
-				{
-					if(!validar())
-						return;
-					HashMap<String,Long> parametros = new HashMap<String,Long>();				
-					Message m=new Message();
-					m.what=ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO;
-					parametros.put("idsucursal",objSucursalID);
-					numpedido=(tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0;
-					//numfactura=(long)((tboxFactura.getText()!=null && (!tboxFactura.getText().toString().equals("")))?Long.valueOf(tboxFactura.getText().toString()):0);
-					parametros.put("nopedido",numpedido);
-					parametros.put("nofactura",numfactura);
-					m.obj=parametros;
-					NMApp.getController().getInboxHandler().sendMessage(m);
-					pdialog=ProgressDialog.show(getActivity(), "Buscando productos lotes para el pedido",""+((tboxPedido.getText()!=null && (!tboxPedido.getText().equals("")))?Long.valueOf(tboxPedido.getText().toString()):0));
+					
+				} catch (Exception e) {
+					AppDialog.showMessage($this.getActivity(), e.getCause().toString(),
+							e.getMessage().toString(),
+							DialogType.DIALOGO_ALERTA);
 				}
+				
 			}
 		});
 		
@@ -232,6 +238,23 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 	public boolean validar() {
 
 		if ((tboxPedido.getText().toString().trim().length() == 0
+				|| "0".equals(tboxPedido.getText().toString())
+				|| "".equals(tboxPedido.getText().toString()))
+				&&
+				(tboxFactura.getText().toString().trim().length() == 0
+				|| "0".equals(tboxFactura.getText().toString())
+				|| "".equals(tboxFactura.getText().toString()))) 
+		{
+			tboxPedido.setError("Debe ingresar el número del pedido o factura.");
+			tboxPedido.requestFocus();
+			return false;
+		}  
+		return true;
+	}
+	
+	public boolean validar(int nopedido,int nofactura) {
+
+		if ((tboxPedido.getText().toString().trim().length() == 0
 				|| "0".equals(tboxPedido.getText().toString()))
 				&&
 				(tboxFactura.getText().toString().trim().length() == 0
@@ -274,6 +297,16 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 				}else
 					showStatus("El pedido/factura "+ numpedido+"/"+numfactura+" no se encontro en el servidor central...",true);
 				
+				break;
+			case ControllerProtocol.NOTIFICATION:
+				
+				String message = "";
+				if (msg.obj != null && msg.obj instanceof Devolucion) {
+					devolucion = (Devolucion) msg.obj;
+				} else if (msg.obj != null && msg.obj instanceof String)
+					message = msg.obj.toString();	 
+				if (!message.equals(""))				
+					showStatus(message, true);
 				break;
 			case ControllerProtocol.ERROR:
 				AppDialog.showMessage(this.getActivity(), ((ErrorMessage) msg.obj).getTittle(),
@@ -384,5 +417,55 @@ public class DevolverDocumento extends DialogFragment implements Handler.Callbac
 				}
 			});
 		}
+	}
+	
+	public class Parametro
+	{
+		Parametro(){}
+		/**
+		 * @return the sucursalid
+		 */
+		public long getSucursalid() {
+			return sucursalid;
+		}
+		/**
+		 * @param sucursalid the sucursalid to set
+		 */
+		public void setSucursalid(long sucursalid) {
+			this.sucursalid = sucursalid;
+		}
+		/**
+		 * @return the pedidoid
+		 */
+		public int getPedidoid() {
+			return pedidoid;
+		}
+		/**
+		 * @param pedidoid the pedidoid to set
+		 */
+		public void setPedidoid(int pedidoid) {
+			this.pedidoid = pedidoid;
+		}
+		/**
+		 * @return the facturaid
+		 */
+		public int getFacturaid() {
+			return facturaid;
+		}
+		/**
+		 * @param facturaid the facturaid to set
+		 */
+		public void setFacturaid(int facturaid) {
+			this.facturaid = facturaid;
+		}
+		public Parametro(long sucursalid, int pedidoid, int facturaid) 
+		{ 
+			this.sucursalid = sucursalid;
+			this.pedidoid = pedidoid;
+			this.facturaid = facturaid;
+		}
+		long sucursalid;
+		int  pedidoid;
+		int  facturaid;
 	}
 }

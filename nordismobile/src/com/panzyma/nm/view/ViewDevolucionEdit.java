@@ -9,6 +9,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -21,11 +22,13 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -38,9 +41,11 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -2051,7 +2056,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					cliente = objdev.getCliente();
 					pedido = devolucion.getObjPedido();
 					catalogos = objdev.getMotivodev();
-					dev_prod = new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
+					dev_prod = devolucion.getProductosDevueltos()!=null && devolucion.getProductosDevueltos().length>0 ?new ArrayList(Arrays.asList(devolucion.getProductosDevueltos())):new ArrayList();
 					initComponent();
 					initExpandableListView(true);
 					//devolucion.setOlddata(devolucion);
@@ -2881,6 +2886,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	    }
 	}
 	
+
 	public void showMenu(final View view,final boolean idheader,final ExpandListGroup parent,final ExpandListChild child) 
 	{
 
@@ -2958,7 +2964,52 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		_dp.setProductoLotes(lotes); 
 		dev_prod.set(positioncache[0], _dp);
 		positioncache=null;
-		initExpandableListView(true);  		
+		initExpandableListView(true);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		Parcelable[] objects = new Parcelable[dev_prod.size()];
+		dev_prod.toArray(objects);
+		outState.putParcelableArray("detallepedido", objects);
+		outState.putParcelable("devolucion", devolucion); 
+		outState.putParcelable("cliente", cliente);  
+		Log.d(TAG,"onSaveInstanceState");
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);  
+		
+		 Parcelable [] objects = savedInstanceState.getParcelableArray("detallepedido");
+		 dev_prod = new ArrayList<DevolucionProducto>((Collection<? extends DevolucionProducto>) Arrays.asList(objects) ); 
+		 devolucion = (Devolucion)savedInstanceState.getParcelable("devolucion");
+		 cliente =(Cliente) savedInstanceState.getParcelable("cliente");
+		 pedido =(Pedido)devolucion.getObjPedido();  
+//		 gridheader.setText(String.format("PRODUCTOS A FACTURAR (%s)", Lvmpproducto.size()));
+		 setInformacionCliente();
+		 initExpandableListView(true);
+		
+		Log.d(TAG,"Restore");
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	        super.onConfigurationChanged(newConfig);
+	        LayoutInflater inflater = LayoutInflater.from(this);
+	        populateViewForOrientation(inflater, (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
+	 }
+	 
+	private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+	        viewGroup.removeAllViewsInLayout();
+	        _view= inflater.inflate(R.layout.devolucion_edit, viewGroup);
+//	        initComponent();
+//	        CreateMenu();
+	        initExpandableListView(true);
+//	        SetDetalle(Lvmpproducto);
 	}
 }
 

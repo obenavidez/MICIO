@@ -31,6 +31,7 @@ import com.panzyma.nm.serviceproxy.DevolucionProductoLote;
 import com.panzyma.nm.serviceproxy.Pedido;
 import com.panzyma.nm.serviceproxy.ValorCatalogo;
 import com.panzyma.nm.serviceproxy.Ventas;
+import com.panzyma.nm.viewdialog.DevolverDocumento;
 import com.panzyma.nm.viewmodel.vmDevolucionEdit;
 
 import android.annotation.SuppressLint;
@@ -181,30 +182,46 @@ public class BDevolucionM extends BBaseM
     
     private void BuscarDevolucionDePedido(Object obj) 
     {
-		HashMap<String, Long> parametros = (HashMap<String, Long>) obj;
-		long idsucursal, nopedido, nofactura;
-		idsucursal = parametros.get("idsucursal");
-		nopedido = parametros.get("nopedido");
-		nofactura = parametros.get("nofactura");
+		DevolverDocumento.Parametro parametros = (DevolverDocumento.Parametro) obj;
+		int nopedido, nofactura;
+		long idsucursal;
+		idsucursal = parametros.getSucursalid();
+		nopedido = parametros.getPedidoid();
+		nofactura = parametros.getFacturaid();
 
 		String credenciales = "";
 		Devolucion dev;
 		Pedido pedido;
-		credenciales = SessionManager.getCredentials();
+		credenciales = SessionManager.getCredentials(); 
+		
 		if (credenciales == "")
 			return;
 		try 
 		{
 			dev = ModelDevolucion.BuscarDevolucionDePedido(credenciales,
 					idsucursal, nopedido, nofactura);
-			pedido = obtenerPedido(dev.getObjPedidoDevueltoID());
-			if (pedido != null && pedido.getId()!=0)
-				dev.setObjPedido(pedido);
-			else
+			if(dev==null || dev.getObjPedidoDevueltoID()<=0)
+			{
 				Processor.notifyToView(getController(),
-						ControllerProtocol.NOTIFICATION, 0, 0,"No se encontro pedido alguno...");
-			Processor.notifyToView(getController(),
-					ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO, 0, 0, dev);
+						ControllerProtocol.NOTIFICATION, 0, 0," No se encontro pedido/factura("+ nopedido+"/"+nofactura+") en el servidor central.");
+				 
+			}else
+			{
+				pedido = obtenerPedido(dev.getObjPedidoDevueltoID());
+				
+				if (pedido != null && pedido.getId()!=0)
+				{
+					dev.setObjPedido(pedido);
+					Processor.notifyToView(getController(),
+						ControllerProtocol.BUSCARDEVOLUCIONDEPEDIDO, 0, 0, dev);
+				}
+				else	
+				{
+					Processor.notifyToView(getController(),
+							ControllerProtocol.NOTIFICATION, 0, 0,"No se encontro pedido alguno."); 
+				}
+
+			}			
 
 		} catch (Exception e) {
 			Log.e(TAG, "Error interno trayendo datos desde el servidor", e);
@@ -654,7 +671,7 @@ public class BDevolucionM extends BBaseM
 		try
 		{          
     		String devolucion = ""; 
-    		devolucion += "T 7 1 123 5 Distribuidora Panzyma - DISPAN\r\n";
+    		devolucion += "T 7 1 123 5 Distribuidora De Productos - DISPRO\r\n";
     		devolucion += "T 7 0 123 54 Comprobante de Devoluci\u00f3n\r\n";
     		devolucion += "LINE 0 80 576 80 1\r\n";
     		

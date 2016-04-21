@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:background="@color/White"
     android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:orientation="vertical" >
         
         <EditText
@@ -33,12 +33,13 @@
         <ListView
             android:id="@+id/listview_detalle_factura"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:choiceMode="singleChoice"
             android:divider="@color/DarkGray"
             android:dividerHeight="0.3sp"
-            android:listSelector="@drawable/statelist"
+            android:listSelector="@drawable/statelist" 
             android:scrollingCache="false" >
+            
         </ListView>
 
         <TextView

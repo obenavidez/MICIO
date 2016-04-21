@@ -11,6 +11,7 @@ import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.DetallesFacturaHolder;
 import com.panzyma.nordismobile.R;
 
+import android.R.layout;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -18,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnKeyListener;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,7 +27,10 @@ import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
 @InvokeBridge(bridgeName = "BVentaM")
 public class detalleFacturaFragment extends DialogFragment  implements Handler.Callback {
@@ -40,17 +45,23 @@ public class detalleFacturaFragment extends DialogFragment  implements Handler.C
 	private GenericAdapter adapter;
 	private ListView listviewdetalle;
 	long  factura_id;
+	protected int positioncache;
 	
 	// Singleton 
 	public static detalleFacturaFragment newInstance (long pfactura_id){
 			if(detalle == null) detalle = new detalleFacturaFragment(pfactura_id);	
+			else
+				detalle.setFacturaID(pfactura_id);
 			return detalle;
 	} 
 	
 	private detalleFacturaFragment(long pfactura_id){
-		factura_id = pfactura_id;
+		setFacturaID(pfactura_id);
 	}
 	
+	public void setFacturaID(long pfactura_id){
+		factura_id = pfactura_id;
+	}
 	
 	@Override
 	public void onStart()
@@ -61,13 +72,22 @@ public class detalleFacturaFragment extends DialogFragment  implements Handler.C
 	}
 	
 	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
+	public Dialog onCreateDialog(Bundle savedInstanceState) 
+	{
 		NMApp.controller.setView(this); 
+		Rect rectangle=new Rect();
+		Window window=getActivity().getWindow();
+		window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
+		
 		SessionManager.setContext(getActivity());
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		view = inflater.inflate(R.layout.lista_detalle_factura, null);
+		
+		view.setMinimumWidth((int)(rectangle.width()*0.9f));
+		view.setMinimumHeight((int)(rectangle.height()*0.9f)); 
 		builder.setView(view);
+		
 		builder.setPositiveButton("ACEPTAR", new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -130,7 +150,23 @@ public class detalleFacturaFragment extends DialogFragment  implements Handler.C
 	
 		adapter = new GenericAdapter(getActivity(),DetallesFacturaHolder.class,listadetalle, R.layout.detalles_factura_item);  
 		listviewdetalle.setAdapter(adapter);   
-		
+		listviewdetalle.setOnItemClickListener(new OnItemClickListener() {
+
+			
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) 
+			{
+				if ((parent.getChildAt(positioncache)) != null)
+					(parent.getChildAt(positioncache)).setBackgroundResource(android.R.color.transparent);
+				positioncache = position;
+				adapter.setSelectedPosition(position);
+				view.setBackgroundDrawable(parent.getResources().getDrawable(
+						R.drawable.action_item_selected));
+				
+			}
+
+		});
 		
 	}
 	

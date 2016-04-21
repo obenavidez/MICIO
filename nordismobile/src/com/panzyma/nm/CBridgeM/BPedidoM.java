@@ -585,7 +585,7 @@ public class BPedidoM extends BBaseM {
     		String _pedido = "";
 //    		_pedido+="PCX 20 0\r\n";
 //    		_pedido+= getImage();
-    		_pedido += "T 7 1 123 5 Distribuidora Panzyma - DISPAN\r\n";
+    		_pedido += "T 7 1 123 5 Distribuidora de Productos - DISPRO\r\n";
     		_pedido += "T 7 0 189 54 Orden de Pedido\r\n";
     		_pedido += "LINE 0 80 576 80 1\r\n";
     		_pedido += "T 0 0 0 90 Fecha:\r\n";

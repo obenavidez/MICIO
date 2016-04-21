@@ -1253,7 +1253,7 @@ public class ViewPedido extends ActionBarActivity implements
  
 	protected void RefrescarPedido() 
 	{        
-        if (getPedidoSelected()==null) 
+        if (getPedidoSelected()==null || getPedidoSelected().getId()==0) 
         {	 
 			AppDialog.showMessage(this,
 					"Para realizar esta acción debe seleccionar un item....",

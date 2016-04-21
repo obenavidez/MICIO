@@ -125,7 +125,7 @@ public class ViewRecibo extends ActionBarActivity implements
 	private void establecer(Object _obj) {
 		if (_obj == null)
 			return;
-
+		
 		if (_obj instanceof Message) 
 		{
 			Message msg = (Message) _obj;
@@ -651,7 +651,7 @@ public class ViewRecibo extends ActionBarActivity implements
 			if (recibo== null) 
 			{
 				AppDialog.showMessage(this, "Información",
-						"Error al obtener el pedido localmente...", DialogType.DIALOGO_ALERTA);
+						"Error al obtener el recibo localmente...", DialogType.DIALOGO_ALERTA);
 				return;
 			}
 			
@@ -929,6 +929,14 @@ public class ViewRecibo extends ActionBarActivity implements
 	private void enviarRecibo(vmRecibo recibe)
 	{   
 		ReciboColector recibo = ModelRecibo.getReciboByRef(this.getContentResolver(), recibe.getNumero());
+		
+		if (recibo== null) 
+		{
+			AppDialog.showMessage(this, "Información",
+					"Error al obtener el recibo localmente...", DialogType.DIALOGO_ALERTA);
+			return;
+		}
+		
 		if(!valido(recibo)) return;  
 		
 		if (recibo.getCodEstado().compareTo("PAGADO") == 0) 
