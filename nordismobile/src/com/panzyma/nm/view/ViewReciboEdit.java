@@ -5,6 +5,8 @@ import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.SAVE_DATA_FROM_LOCALHOST;
 import static com.panzyma.nm.controller.ControllerProtocol.SEND_DATA_FROM_SERVER;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -440,7 +442,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				getSupportActionBar().setTitle(tituloSeccion);
 				Controller controller = NMApp.getController();
 				
-				if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+				if ((recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO"))
+						&& (position != ID_ENVIAR_RECIBO)) 
 				{
 					AppDialog
 					.showMessage(
@@ -917,7 +920,8 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 							{
 								ActionItem actionItem = quickAction
 										.getActionItem(pos);
-								if (recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+								if ((recibo != null && !recibo.getCodEstado().equals("REGISTRADO") && !recibo.getCodEstado().equals("APROBADO")) 
+										&& (actionItem.getActionId() != ID_ENVIAR_RECIBO) ) // si la acción a realizar es de envio permitirla 
 								{
 									AppDialog
 									.showMessage(
@@ -2010,21 +2014,29 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 				return false;
 			}
 			
-			if(!ok)
-			if (Cobro.getTotalPagoRecibo(recibo) != StringUtil.round(recibo.getTotalRecibo(),2))
-			{
-				NMApp.getController()
-						.notifyOutboxHandlers(
-								ControllerProtocol.ERROR,
-								0,
-								0,
-								new ErrorMessage(
-										"Problema con el Monto Total del Recibo",
-										""
-												+ "El monto pagado no cuadra con el total del recibo.",
-										"")); 
-				return false;
+			if(!ok){								
+				Double totalRecibo = (double)Math.round(recibo.getTotalRecibo() * 100d) / 100d;
+				Double totalPagado =  (double) Cobro.getTotalPagoRecibo(recibo);
+				totalPagado = (double)Math.round(totalPagado * 100d) / 100d;
+				boolean descuadre = Cobro.getTotalPagoRecibo(recibo) != StringUtil.round(recibo.getTotalRecibo(),2);
+				descuadre = (Math.abs(totalRecibo - totalPagado) > 0.00000001d);
+				//descuadre = (Util.Numero.CompareDouble(totalRecibo, totalPagado) != 1);
+				if (descuadre)
+				{
+					NMApp.getController()
+							.notifyOutboxHandlers(
+									ControllerProtocol.ERROR,
+									0,
+									0,
+									new ErrorMessage(
+											"Problema con el Monto Total del Recibo",
+											""
+													+ "El monto pagado no cuadra con el total del recibo.",
+											"")); 
+					return false;
+				}
 			}
+			
 			return true;
 
 		} catch (Exception e) {
