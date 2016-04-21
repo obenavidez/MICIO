@@ -1880,13 +1880,13 @@ public class DatabaseProvider extends ContentProvider
 			sdb.beginTransaction();
 			 	 
 			 Integer prefijo=Ventas.getPrefijoIds(NMApp.getContext());
-	         devolucionmax=Ventas.getMaxDevolucionVId(NMApp.getContext());
+	         devolucionmax=devolucion.isDeVencido()?Ventas.getMaxDevolucionVId(NMApp.getContext()):Ventas.getMaxDevolucionNVId(NMApp.getContext()); //Ventas.getMaxDevolucionVId(NMApp.getContext());
 	         
 	         if (devolucionmax == null)  devolucionmax = Integer.valueOf(1);
 	         else
 	         {
-	            	 Integer rmax=NumberUtil.getNumeroMaxRecibo(devolucionmax, prefijo);
-	            	 devolucionmax =rmax+1; 
+	            	 //Integer rmax=NumberUtil.getNumeroMaxRecibo(devolucionmax, prefijo);
+	        	 devolucionmax = devolucionmax + 1; //devolucionmax =rmax+1; 
 	         }	               	
 	         
 	         String strIdMovil = prefijo.intValue() + "" + devolucionmax.intValue();
@@ -1914,7 +1914,8 @@ public class DatabaseProvider extends ContentProvider
 			else {
 				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
 			}
-			devolucion.setReferencia(idMovil);
+			if (devolucion.getReferencia() == 0) 
+				devolucion.setReferencia(idMovil);
 //			if(devolucion.getNumeroCentral()!=0) 
 //				devolucion_value.put(NMConfig.Devolucion.id, devolucion.getId());
 			
