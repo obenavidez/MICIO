@@ -201,7 +201,13 @@ public class ViewDevoluciones extends ActionBarActivity implements
 				showStatus(((ErrorMessage)msg.obj).getMessage() ,true);  
 			}
 			else {
-				showStatus(msg.obj.toString(), true);
+				showStatus(msg.obj.toString()/*, true*/);
+			}
+			break;
+		case UPDATOBJECT :
+			// Si msg.arg1==1 entonces significa que cambia el estado del registro
+			if(msg.obj instanceof Devolucion && msg.arg1==1 ){
+				UpdateRegistro((Devolucion)msg.obj);
 			}
 			break;
 		}
@@ -863,5 +869,21 @@ public class ViewDevoluciones extends ActionBarActivity implements
 	        drawerToggle.setDrawerIndicatorEnabled(false);
 	        drawerToggle.syncState();
 	    }
+	}
+	
+
+	private void UpdateRegistro(final Devolucion dev){
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				for (int i = 0; i < devoluciones.size() ; i++ ){
+					if(devoluciones.get(i).getId() == dev.getId()){
+						devoluciones.get(i).setEstado(dev.getCodEstado());
+						firstFragment.setItems(devoluciones, true);
+						firstFragment.getAdapter().notifyDataSetChanged();
+					}
+				}
+			}
+		});
 	}
 }

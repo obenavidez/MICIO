@@ -169,6 +169,13 @@ public class CustomArrayAdapter<E> extends ArrayAdapter<E> implements Serializab
 					 holderdevolucion.txtmonto.setTextColor(convertView.getResources().getColor(R.color.Red));
 					 holderdevolucion.txtestado.setTextColor(convertView.getResources().getColor(R.color.Red));
 				 }
+				 else{
+					 holderdevolucion.txtNumero.setTextColor(convertView.getResources().getColor(R.color.Black));
+					 holderdevolucion.txtfecha.setTextColor(convertView.getResources().getColor(R.color.Black));
+					 holderdevolucion.txtcustomer.setTextColor(convertView.getResources().getColor(R.color.Black));
+					 holderdevolucion.txtmonto.setTextColor(convertView.getResources().getColor(R.color.Black));
+					 holderdevolucion.txtestado.setTextColor(convertView.getResources().getColor(R.color.Black));
+				 }
 			 }
 			 else 
 			 {

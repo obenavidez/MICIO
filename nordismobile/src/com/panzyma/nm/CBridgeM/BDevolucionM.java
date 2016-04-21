@@ -347,7 +347,7 @@ public class BDevolucionM extends BBaseM
 					dev.setEspecial(true);
 				
 				guardarDevolucion(dev);
-			    Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
+			    Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,1,0,dev);
 				Processor.notifyToView(NMApp.getController(),ControllerProtocol.AFTERGETOBSERVACIONDEV,ControllerProtocol.ENVIARDEVOLUCION,0,"".equals(respuesta)?"Desea enviar la devolución?":"Se obtubieron las siguientes observaciones:"+respuesta+"\n Desea Enviar la devolución?"); 
   
 			}else
@@ -452,7 +452,7 @@ public class BDevolucionM extends BBaseM
 						
 						//Guardando cambios en el Dispositivo   				        
 				        guardarDevolucion(dev);
-				        Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,0,0,dev);
+				        Processor.notifyToView(NMApp.getController(),ControllerProtocol.UPDATOBJECT,1,0,dev);
 		                //Salvar los cambios en el hilo pricipal
 		                Processor.notifyToView(NMApp.getController(),ControllerProtocol.ID_REQUEST_ENVIAR,imprimir?ControllerProtocol.IMPRIMIR:0,0,imprimir?"¿Desea imprimir comprobante devolución?":"Devolución enviada con exito.");
 					}
