@@ -6,6 +6,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.panzyma.nm.auxiliar.DateUtil;
+import com.panzyma.nm.auxiliar.Moneda;
 import com.panzyma.nm.interfaces.Item;
 
 public class vmRecibo implements Item, Parcelable {
@@ -184,8 +185,8 @@ public class vmRecibo implements Item, Parcelable {
 
 	@Override
 	public String getItemDescription() {
-		return "Fecha: " + DateUtil.idateToStr( getFecha() ) + ", Total: " + getTotalRecibo()
-				+ ", Estado: " + getDescEstado();
+		return "Fecha: " + DateUtil.idateToStr( getFecha() ) + " | Total: " + Moneda.toCurrency(getTotalRecibo()) //+ Moneda.getSimbol()+" "+  getTotalRecibo()
+				+ " | Estado: " + getDescEstado();
 	}
 
 	@Override

@@ -71,6 +71,7 @@ import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
+import com.panzyma.nm.auxiliar.Moneda;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.UserSessionManager;
@@ -1655,9 +1656,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		total = new BigDecimal(sumatotalv);
 		costeoMontoTotalVen = total.subtract(costeoMontoPromocionVen)
 				.subtract(costeoMontoCargoAdministrativoVen).subtract(vinietas);
-		tbxtotaldev.setText(""
-				+ costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2,
-						RoundingMode.UNNECESSARY));
+		double valor = costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2,
+				RoundingMode.UNNECESSARY).doubleValue();
+		tbxtotaldev.setText(Moneda.toCurrency(valor));
 
 	}
 

@@ -3,6 +3,7 @@ package com.panzyma.nm.viewmodel;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.panzyma.nm.auxiliar.Moneda;
 import com.panzyma.nm.auxiliar.StringUtil;
 import com.panzyma.nm.interfaces.DevolucionItem; 
 
@@ -204,13 +205,15 @@ public class vmDevolucion  implements Parcelable , DevolucionItem  {
 	@Override
 	public String getItemTotal() {
 		// TODO Auto-generated method stub
-		return StringUtil.formatReal(getTotal());
+		//return StringUtil.formatReal(getTotal());
+		return Moneda.toCurrency(getTotal());
 	}
 	
 	
 	public String getItemTotalformato() {
 		// TODO Auto-generated method stub
-		return StringUtil.formatReal(getTotal());
+		//return StringUtil.formatReal(getTotal());
+		return Moneda.toCurrency(getTotal());
 	}
 
 	@Override
