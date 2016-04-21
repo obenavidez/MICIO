@@ -591,7 +591,7 @@ public class BDevolucionM extends BBaseM
     		
     		
     		devolucion += "T 7 0 0 270 Motivo:\r\n";
-    		devolucion += "T 7 0 170 270"+dev.getDescMotivo()+"\r\n";
+    		devolucion += "T 7 0 170 270"+(dev.getDescMotivo()==null?"":dev.getDescMotivo())+"\r\n";
     		
 
     		devolucion += "T 7 0 0 300 Cliente:\r\n";
@@ -619,8 +619,8 @@ public class BDevolucionM extends BBaseM
     			for(DevolucionProductoLote lote:detl)
         		{
     				String nombreProd = det.getNombreProducto();
-        			if (nombreProd.length() > 40)
-        				nombreProd = nombreProd.substring(0, 40) + "...";
+        			if (nombreProd.length() > 26)
+        				nombreProd = nombreProd.substring(0, 26) + "...";
         			devolucion += "T 7 0 0 " + y + " " + nombreProd + "\r\n";
         			devolucion += "RIGHT 458\r\n";
         			devolucion += "T 7 0 0 " + y + " "
@@ -703,7 +703,7 @@ public class BDevolucionM extends BBaseM
     		
     		
     		devolucion += "T 7 0 0 270 Motivo:\r\n";
-    		devolucion += "T 7 0 170 270"+dev.getDescMotivo()+"\r\n";
+    		devolucion += "T 7 0 170 270"+(dev.getDescMotivo() == null ? "" : dev.getDescMotivo())+"\r\n";
     		
 
     		devolucion += "T 7 0 0 300 Cliente:\r\n";
@@ -731,8 +731,8 @@ public class BDevolucionM extends BBaseM
     			for(DevolucionProductoLote lote:detl)
         		{
     				String nombreProd = det.getNombreProducto();
-        			if (nombreProd.length() > 40)
-        				nombreProd = nombreProd.substring(0, 40) + "...";
+        			if (nombreProd.length() > 26)
+        				nombreProd = nombreProd.substring(0, 26) + "...";
         			devolucion += "T 7 0 0 " + y + " " + nombreProd + "\r\n";
         			devolucion += "RIGHT 458\r\n";
         			devolucion += "T 7 0 0 " + y + " "
