@@ -24,7 +24,9 @@ import android.util.Log;
 public class BCobroM extends BBaseM{
 
 	protected String TAG= BCobroM.class.toString();
-	public BCobroM(){}
+	public BCobroM(){
+		
+	}
 	
 	public enum Accion {
 		COBROS_DEL_DIA(0), COBROS_DEL_SEMANA(1), COBROS_DEL_MES(2) , PAGOS_DEL_DIA(3), PAGOS_DE_SEMANA(4), PAGOS_DEL_MES(5) , IMPRIMIR(6), ERROR(600);
@@ -183,7 +185,7 @@ public class BCobroM extends BBaseM{
                 
                 String nombreCliente = c.getNombreCliente();
                 if (nombreCliente.length() > 18) 
-                    nombreCliente = nombreCliente.substring(0, 18);
+                    nombreCliente = nombreCliente.substring(0, 16)+"...";
                     
                 recibo += "T 7 0 220 " + y + " " + nombreCliente + "\r\n";
                 
@@ -256,8 +258,8 @@ public class BCobroM extends BBaseM{
 	         new BluetoothConnection(recibo); 
 		}
 		catch (Exception e) 
-		 { 
-			 NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,ErrorMessage.newInstance("",e.getMessage(),(e.getCause()==null)?"":e.getCause().toString()));
+		{ 
+			// NMApp.getController().notifyOutboxHandlers(ControllerProtocol.ERROR, 0, 0,ErrorMessage.newInstance("",e.getMessage(),(e.getCause()==null)?"":e.getCause().toString()));
 			Log.d(TAG,"ERROR al tratar de envia el recibo", e);
 		}
 	}

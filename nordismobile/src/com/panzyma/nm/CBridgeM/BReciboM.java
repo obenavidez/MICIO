@@ -882,7 +882,7 @@ public final class BReciboM extends BBaseM {
 	        String monedaNac = Cobro.getMoneda(getContext());
 	          
 	        //Encabezado del recibo    
-	        recibo += "T 7 0 120 2 Distribuidora de Productos - DISPRO\r\n";        
+	        recibo += "T 7 0 120 2 Distribuidora Panzyma - DISPANO\r\n";        
 	        recibo += "T 7 0 170 33 Recibo de Colector\r\n";
 	        recibo += "LINE 0 70 575 70 1\r\n";
 	        
@@ -949,9 +949,9 @@ public final class BReciboM extends BBaseM {
 	        //Concepto
 	        y += 30;
 	        recibo += "T 7 0 0 " + y + " En concepto:\r\n";
-	        recibo += "T 7 0 155 " + y + " Abono/cancelación de facturas y/o\r\n";
+	        recibo += "T 7 0 155 " + y + " Abono/cancelacion de facturas y/o\r\n";
 	        y += 20;
-	        recibo += "T 7 0 155 " + y + " notas de débito que se detallan.\r\n";
+	        recibo += "T 7 0 155 " + y + " notas de debito que se detallan.\r\n";
 	        
 	        //Encabezados de detalle de documentos que se están pagando
 	        y += 45;
@@ -1154,7 +1154,7 @@ public final class BReciboM extends BBaseM {
 	        
 	        if (rcol.getTotalInteres() > 0) {
 	            recibo += "LEFT\r\n";
-	            recibo += "T 7 0 0 " + y + " +Interés Moratorio:\r\n";
+	            recibo += "T 7 0 0 " + y + " +Interes Moratorio:\r\n";
 	            recibo += "T 7 0 200 " + y + " " + StringUtil.formatReal(rcol.getTotalInteres()) + "\r\n";
 	            y += 30;
 	        }
@@ -1177,7 +1177,7 @@ public final class BReciboM extends BBaseM {
 	        
 	        if (rcol.getTotalRetenido() > 0) {
 	            recibo += "LEFT\r\n";
-	            recibo += "T 7 0 0 " + y + " -Retención:\r\n";
+	            recibo += "T 7 0 0 " + y + " -Retencion:\r\n";
 	            recibo += "RIGHT 400\r\n";
 	            recibo += "T 7 0 0 " + y + " " + StringUtil.formatReal(rcol.getTotalRetenido()) + "\r\n";        
 	            y += 30;        

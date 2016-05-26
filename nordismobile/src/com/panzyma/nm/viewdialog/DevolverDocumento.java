@@ -3,7 +3,6 @@ package com.panzyma.nm.viewdialog;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
 import java.util.ArrayList;
-import java.util.HashMap;  
 import java.util.List;
 
 import com.panzyma.nm.NMApp;

@@ -560,7 +560,7 @@ public class BDevolucionM extends BBaseM
 			
     		String devolucion = ""; 
     		devolucion += "T 7 1 123 5 Distribuidora Panzyma - DISPAN\r\n";
-    		devolucion += "T 7 0 123 54 Comprobante de Devoluci\u00f3n\r\n";
+    		devolucion += "T 7 0 123 54 Comprobante de Devolucion\r\n";
     		devolucion += "LINE 0 80 576 80 1\r\n";
     		
     		devolucion += "T 7 0 0 90 Tipo Devolucion:\r\n";    		
@@ -617,20 +617,23 @@ public class BDevolucionM extends BBaseM
     		{
     			DevolucionProductoLote[] detl=det.getProductoLotes();
     			for(DevolucionProductoLote lote:detl)
-        		{
-    				String nombreProd = det.getNombreProducto();
+        		{ 
+        			
+        			String nombreProd = det.getNombreProducto();
         			if (nombreProd.length() > 26)
         				nombreProd = nombreProd.substring(0, 26) + "...";
         			devolucion += "T 7 0 0 " + y + " " + nombreProd + "\r\n";
-        			devolucion += "RIGHT 458\r\n";
+        			devolucion += "RIGHT 462\r\n";
         			devolucion += "T 7 0 0 " + y + " "
         					+ (lote.getNumeroLote()) + "\r\n";
-        			devolucion += "RIGHT 445d\r\n";
+        			devolucion += "RIGHT 540d\r\n";
         			devolucion += "T 7 0 0 " + y + " "
         					+ StringUtil.formatInt(lote.getCantidadDevuelta())
         					+ "\r\n";
         			devolucion += "LEFT\r\n";
         			y += 26;
+        			
+        			
         		}
     		}  
     		devolucion += "LINE 0 " + y + " 576 " + y + " 1\r\n";
@@ -671,8 +674,8 @@ public class BDevolucionM extends BBaseM
 		try
 		{          
     		String devolucion = ""; 
-    		devolucion += "T 7 1 123 5 Distribuidora De Productos - DISPRO\r\n";
-    		devolucion += "T 7 0 123 54 Comprobante de Devoluci\u00f3n\r\n";
+    		devolucion += "T 7 1 123 5 Distribuidora Panzyma - DISPAN\r\n";
+    		devolucion += "T 7 0 123 54 Comprobante de Devolucion\r\n";
     		devolucion += "LINE 0 80 576 80 1\r\n";
     		
     		devolucion += "T 7 0 0 90 Tipo Devolucion:\r\n";    		
@@ -734,10 +737,10 @@ public class BDevolucionM extends BBaseM
         			if (nombreProd.length() > 26)
         				nombreProd = nombreProd.substring(0, 26) + "...";
         			devolucion += "T 7 0 0 " + y + " " + nombreProd + "\r\n";
-        			devolucion += "RIGHT 458\r\n";
+        			devolucion += "RIGHT 462\r\n";
         			devolucion += "T 7 0 0 " + y + " "
         					+ (lote.getNumeroLote()) + "\r\n";
-        			devolucion += "RIGHT 445d\r\n";
+        			devolucion += "RIGHT 540d\r\n";
         			devolucion += "T 7 0 0 " + y + " "
         					+ StringUtil.formatInt(lote.getCantidadDevuelta())
         					+ "\r\n";
@@ -749,7 +752,7 @@ public class BDevolucionM extends BBaseM
     		y += 10;
     		devolucion += "LINE 0 " + y + " 576 " + y + " 1\r\n";
     		y += 10;
-    		devolucion += "T 7 0 169 " + y + " Gracias por su pedido\r\n";
+    		devolucion += "T 7 0 169 " + y + " Gracias por su preferencia\r\n";
     		y += 30;
     		devolucion += "T 7 0 119 " + y + " Panzyma. Al cuidado de la salud\r\n";
     		devolucion += "FORM\r\n";

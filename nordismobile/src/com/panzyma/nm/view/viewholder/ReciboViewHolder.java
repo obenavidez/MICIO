@@ -44,7 +44,7 @@ public class ReciboViewHolder{
 			if(recibo.getNombreSucursal() != null && recibo.getNombreSucursal().length() > 10 ){
 				sucursal.setText(""+recibo.getNombreSucursal().substring(0,10)+".."); 
 			}			
-			noRecibo.setText(""+recibo.getNetoRecibo());	    
+			noRecibo.setText(""+recibo.getNumero());	    
 			totalNotaDebito.setText(""+StringUtil.formatReal(recibo.getTotalND())); 
 			totalNotaCredito.setText(""+StringUtil.formatReal(recibo.getTotalNC()));
 			estado.setText(""+recibo.getEstado()); 
