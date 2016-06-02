@@ -48,7 +48,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	ReciboColector recibo;
 	DescuentoProveedor[] ldp;
 	DescuentoProveedor dp;
-	private GenericAdapter adapter;
+	private GenericAdapter<SolicitudDescuento,SolicitudDescuentoViewHolder> adapter;
 	
 	private int positioncache;
 	
@@ -111,7 +111,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
     }	
 	
 	public void initComponents()
-	{ 	    
+	{ 	
 		if(facturas==null)
         	facturas=new ArrayList<Factura>();		
 		detallesolicitud=new ArrayList<SolicitudDescuento>();
@@ -302,19 +302,20 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 
 	@Override
 	public boolean handleMessage(Message msg) 
-	{		 
+	{	
+		if(pDialog != null) pDialog.hide();
 		switch (msg.what) 
 		{
 			case C_DATA: 
 				establecerDatos((msg.obj!=null)? (EncabezadoSolicitud) msg.obj:null);
 				break; 
 			case ControllerProtocol.REQUEST_SOLICITUD_DESCUENTO:
-				pDialog.hide();
+				//pDialog.hide();
 				mButtonClickListener.onButtonClick((String) msg.obj);
 				dismiss();
 				break;
 			case ControllerProtocol.C_QUIT :
-				pDialog.hide();
+				//pDialog.hide();
 				dismiss();
 				break;
 			case ControllerProtocol.ERROR:
@@ -322,6 +323,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 						((ErrorMessage) msg.obj).getMessage(),
 						DialogType.DIALOGO_ALERTA);
 		}
+		
 		return false;
 	} 
 	

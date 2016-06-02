@@ -8,12 +8,16 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnFocusChangeListener;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
+import com.panzyma.nm.view.viewholder.SolicitudDescuentoViewHolder;
 import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
 import com.panzyma.nordismobile.R;
 
@@ -22,6 +26,8 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 	   
 	private int layoutid;
 	private Class<V> viewclass;
+	
+
 	private LayoutInflater inflater; 
 	private List<E> items;
 	private List<E> mOriginalValues;
@@ -111,6 +117,13 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 			ex.printStackTrace();
 		}
 	}	
+	@Override
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		return super.getDropDownView(position, convertView, parent);
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public View getView(int position, View convertview, ViewGroup parent) 
@@ -123,10 +136,11 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 				convertview=this.inflater.inflate(layoutid,null);
 				viewHolder=viewclass.newInstance(); 
 				invokeView(convertview,viewHolder);
-				convertview.setTag(viewHolder);				
+				convertview.setTag(viewHolder);								
 			}
 			else
-				viewHolder=(V)convertview.getTag();
+				viewHolder=(V)convertview.getTag(); 
+			
 			
 			if(getSelectedPosition() == position) {
 				if( NMApp.getController().getView()!=null && NMApp.getController().getView() instanceof DialogSolicitudDescuento)
