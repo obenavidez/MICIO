@@ -3,19 +3,23 @@ package com.panzyma.nm.CBridgeM;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 
 import java.util.ArrayList;
+
 import com.panzyma.nm.NMApp;
+import com.panzyma.nm.auxiliar.AppDialog;
 import com.panzyma.nm.auxiliar.DateUtil;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.NMNetWork;
 import com.panzyma.nm.auxiliar.Processor;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
+import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.bluetooth.BluetoothConnection;
 import com.panzyma.nm.controller.ControllerProtocol;
 import com.panzyma.nm.model.ModelCobro;
 import com.panzyma.nm.serviceproxy.CCobro;
 import com.panzyma.nm.serviceproxy.CFormaPago;
 import com.panzyma.nm.serviceproxy.CobroDetalle;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Message;
@@ -29,7 +33,7 @@ public class BCobroM extends BBaseM{
 	}
 	
 	public enum Accion {
-		COBROS_DEL_DIA(0), COBROS_DEL_SEMANA(1), COBROS_DEL_MES(2) , PAGOS_DEL_DIA(3), PAGOS_DE_SEMANA(4), PAGOS_DEL_MES(5) , IMPRIMIR(6), ERROR(600);
+		COBROS_DEL_DIA(0), COBROS_DEL_SEMANA(1), COBROS_DEL_MES(2) , PAGOS_DEL_DIA(3), PAGOS_DE_SEMANA(4), PAGOS_DEL_MES(5) , IMPRIMIR(6), ERROR(600), NOTIFICATION(601);
 		int result;
 
 		Accion(int result) {
@@ -42,6 +46,8 @@ public class BCobroM extends BBaseM{
 
 		public static Accion toInt(int x) {
 			if(x==600) return Accion.values()[7];
+			if(x==601) return Accion.values()[8];
+			//if(x==0) return Accion.values()[9];
 			return Accion.values()[x];
 		}
 	}
@@ -70,6 +76,10 @@ public class BCobroM extends BBaseM{
 			break;
 		case IMPRIMIR: 
 				ImprimirCobro((CobroDetalle)msg.obj);
+			break;
+		case NOTIFICATION :
+			
+			//AppDialog.showMessage(getContext(),"Información",msg.obj,DialogType.DIALOGO_ALERTA);
 			break;
 		}
 		return false;

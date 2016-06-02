@@ -1,6 +1,7 @@
 package com.panzyma.nm.fragments;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
+import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.List;
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.CBridgeM.BCobroM.Accion;
 import com.panzyma.nm.auxiliar.AppDialog;
+import com.panzyma.nm.auxiliar.CustomDialog;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.StringUtil;
@@ -81,6 +83,7 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	private static final int MOSTRAR_COBROS_SEMANA = 2;
 	private static final int MOSTRAR_COBROS_MES = 3;
 	private static final int IMPRIMIR = 6;
+	private static final int NOTIFICATION=601;
 	private ActionMenu menuSelected;
 	TextView txt_footer ;
 	TextView txt_footer2 ;
@@ -93,7 +96,7 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 	public enum ActionMenu {
 		COBROS_DIA, COBROS_SEMANA, COBROS_MES, IMPRIMIR 
 	}
-	
+	CustomDialog dlg = null;
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		
@@ -234,6 +237,18 @@ public class consultaCobroFragment extends Fragment implements Handler.Callback 
 							((ErrorMessage) msg.obj).getMessage(),
 							DialogType.DIALOGO_ALERTA);
 					break;
+				case NOTIFICATION: 
+					
+//					dlg =  new CustomDialog(getActivity(),(String) msg.obj, false,NOTIFICATION_DIALOG);
+//					dlg.show();
+					break;
+					
+//				case HIDE : 
+//					
+//					if(dlg !=null){
+//						dlg.hide();
+//					}
+//					break;
 			}
 		}
 		

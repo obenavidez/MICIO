@@ -198,6 +198,7 @@ public class BluetoothConnection
 		public void cancelarConexion() throws Exception {
 			try {
 				socket.close();
+//				NMApp.getController().notifyOutboxHandlers(0, 0, 0, null);
 			} catch (Exception e) 
 			{ 
 				Log.e(TAG,"HiloCliente.cancelarConexion(): Error al cerrar el socket",e);
@@ -308,7 +309,7 @@ public class BluetoothConnection
 			try {
 				// Forzamos el cierre del socket
 				socket.close();
-
+//				NMApp.getController().notifyOutboxHandlers(0, 0, 0, null);
 				// Cambiamos el estado del servicio
 				estado_bluetooth = ESTADO_BLUETOOTH.NINGUNO;
 			} catch (IOException e) {
