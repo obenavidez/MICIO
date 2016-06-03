@@ -64,6 +64,7 @@
         <activity
             android:name="com.panzyma.nm.view.ViewReciboEdit"
             android:label="@string/app_name"  
+            android:windowSoftInputMode="adjustPan"
            android:configChanges="orientation|screenSize|keyboardHidden"
            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>

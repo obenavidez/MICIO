@@ -1,3 +1,4 @@
+
 package com.panzyma.nm.CBridgeM;
 
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
@@ -60,7 +61,6 @@ public class BConfiguracionM extends BBaseM {
 	 * dispositivo) throws Exception
 	 */
 
-	@Override
 	public boolean handleMessage(Message msg) throws Exception 
 	{ 
 		

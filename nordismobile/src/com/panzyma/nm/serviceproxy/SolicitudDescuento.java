@@ -9,6 +9,7 @@ public class SolicitudDescuento
 	private String justificacion;
 	private long fecha;
 	private String docstatus;
+   
 
 	protected Factura factura;
 	

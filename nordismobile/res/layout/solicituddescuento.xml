@@ -32,7 +32,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:choiceMode="singleChoice"
-            android:divider="@color/DarkGray"
+            android:divider="@color/DarkGray"            
             android:dividerHeight="0.3sp"
             android:drawSelectorOnTop="false"
             android:fastScrollEnabled="true"

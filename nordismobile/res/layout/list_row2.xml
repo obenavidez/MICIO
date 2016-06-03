@@ -44,7 +44,9 @@
         android:hint="@string/descuento"
         android:inputType="number"
         android:textColor="#343434"
-        android:textSize="10sp" />
+        android:textSize="10sp">
+        <requestFocus />
+     </EditText>
     
      <TextView
         android:id="@+id/tvjustificacion"

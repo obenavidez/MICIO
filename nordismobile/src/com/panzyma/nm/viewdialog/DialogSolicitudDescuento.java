@@ -2,6 +2,7 @@ package com.panzyma.nm.viewdialog;
      
 import static com.panzyma.nm.controller.ControllerProtocol.C_DATA;
 import static com.panzyma.nm.controller.ControllerProtocol.LOAD_DATA_FROM_LOCALHOST;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,12 +139,14 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 						return;
 					}
 						
-					int childCount = lvfacturas.getChildCount(); 
+					int childCount = facturas.size();//lvfacturas.getChildCount(); 
 					boolean OK=false;
 				    for (int i = 0; i < childCount; i++)
 				    {			    	
-				        View doc =lvfacturas.getChildAt(i);
-				        SolicitudDescuento sd=(SolicitudDescuento) lvfacturas.getItemAtPosition(i);
+				        View doc = null;
+				        v = getViewByPosition(i, lvfacturas);
+				        SolicitudDescuento sd=(SolicitudDescuento) adapter.getItem(i);
+				        //SolicitudDescuento sd=(SolicitudDescuento) lvfacturas.getItemAtPosition(i);
 				        EditText d=((EditText) doc.findViewById(R.id.descuento));
 				        EditText j=((EditText) doc.findViewById(R.id.justificacion));
 				        
@@ -194,7 +197,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			@Override
 			public void onClick(View _v) 
 			{
-				int childCount = lvfacturas.getChildCount(); 
+				int childCount = facturas.size();//lvfacturas.getChildCount(); 
 				int error=0;
 				
 				if(cboxall.isChecked() && porcentajeglobal>0.0f && (!"".equals(justificacionglobal)))
@@ -204,13 +207,18 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 					cboxall.setChecked(false);
 					for (int i = 0; i < childCount; i++)
 				    {			    	
-				        View v =lvfacturas.getChildAt(i);
-				        SolicitudDescuento sd=(SolicitudDescuento) lvfacturas.getItemAtPosition(i);
+				        View v = null;				        
+			        	//v = lvfacturas.getChildAt(i);
+				        v = getViewByPosition(i,lvfacturas);
+				        SolicitudDescuento sd=(SolicitudDescuento) adapter.getItem(i);
+				        		//lvfacturas.getItemAtPosition(i);
 				        EditText d=((EditText) v.findViewById(R.id.descuento));
 				        EditText j=((EditText) v.findViewById(R.id.justificacion));
-				        
-				        String td=d.getText().toString().trim();
-				        String tj=j.getText().toString().trim();
+				        /* String td=d.getText().toString().trim();
+				        String tj=j.getText().toString().trim();*/				        
+				        				        
+				        String td=""+sd.getPorcentaje();
+				        String tj=sd.getJustificacion().trim();
 				        float pd=Float.parseFloat((td.equals(""))?"0.0F":td);
 				        
 				        if(td.equals("") && tj.equals(""))
@@ -274,6 +282,18 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
             	largest=dp.getPrcDescuento();
             }
         } 
+	}
+	
+	public View getViewByPosition(int pos, ListView listView) {
+	    final int firstListItemPosition = listView.getFirstVisiblePosition();
+	    final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+	    if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+	        return listView.getAdapter().getView(pos, null, listView);
+	    } else {
+	        final int childIndex = pos - firstListItemPosition;
+	        return listView.getChildAt(childIndex);
+	    }
 	}
 	
 	private void enviarSolicitud(boolean...otherprocess)
