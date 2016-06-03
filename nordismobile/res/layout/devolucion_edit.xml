@@ -11,15 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="100" >
-
-    <!--     <ViewStub
-            android:id="@+id/vsHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="10"
-            android:inflatedId="@+id/header"
-            android:layout="@layout/header" /> -->
+        android:weightSum="100" > 
 
         <ScrollView
             android:id="@+id/ScrollViewDev"
@@ -262,18 +254,24 @@
 
                
             </RelativeLayout>
-        </ScrollView>
-
-
-         
+        </ScrollView> 
         <include
             android:id="@+id/pdevgrilla"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="50"
+            android:layout_weight="49"
             layout="@layout/productodevolucion" />
+        
+        <Button
+	          android:id="@+id/btnmenu"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_gravity="left"
+	          android:layout_weight="1"
+	          android:visibility="gone"/>
+        
     	</LinearLayout>
-
+       
      <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

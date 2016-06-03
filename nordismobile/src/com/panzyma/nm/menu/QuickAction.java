@@ -313,16 +313,22 @@ public class QuickAction extends PopupWindows implements OnDismissListener
 		showArrow(((onTop) ? R.id.arrow_down : R.id.arrow_up), arrowPos);
 		
 		
-		 /*if(anchor.getTag() instanceof ProductoLoteViewHolder || anchor.getTag() instanceof ProductoLoteDetalleViewHolder)
+		/* if(anchor.getTag() instanceof ProductoLoteViewHolder || anchor.getTag() instanceof ProductoLoteDetalleViewHolder)
 		 {
-			 yPos=yPos-100;
+			 yPos=yPos-200;
 			 setAnimationStyle(screenWidth, anchorRect.centerX(), true);
 		 }
 		 else
 			 setAnimationStyle(screenWidth, anchorRect.centerX(), onTop);*/
-		yPos=yPos-150;
+		//yPos=yPos-150;
 		setAnimationStyle(screenWidth, anchorRect.centerX(), true);
+	  
+		//anchor.setY(anchor.getY()-200);
+		if(anchor.getTag() instanceof ProductoLoteViewHolder || anchor.getTag() instanceof ProductoLoteDetalleViewHolder)
+		mWindow.showAtLocation(anchor, Gravity.LEFT,(int)anchor.getX(),(int)anchor.getY()-50);
+		else
 		mWindow.showAtLocation(anchor, Gravity.LEFT,xPos,yPos);
+		
 		//mWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
 	}
 	

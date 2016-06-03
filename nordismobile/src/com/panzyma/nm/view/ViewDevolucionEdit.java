@@ -54,6 +54,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -302,6 +303,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	};
 	private FragmentActive fragmentActive = null;
 	FichaClienteFragment ficha;
+	private Button Menu;
 	
 	
 	@Override
@@ -376,6 +378,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		cboxtipodev.setAdapter(adapter_tipodev);
 		cboxmotivodev.setVisibility(View.GONE);
 		labelMotivo.setVisibility(View.GONE);
+		
+		Menu = (Button) findViewById(R.id.btnmenu);
+	
+		
 		ckboxvencidodev.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 					@Override
@@ -2923,8 +2929,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 										eliminarLote();
 	
 								}
-							});
+							}); 
 					quickAction2.show(view, display, false);
+					//quickAction2.show(view, display, true);
 				}
 			}
 		});
