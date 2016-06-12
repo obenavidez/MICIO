@@ -544,8 +544,9 @@ public class ViewDevoluciones extends ActionBarActivity implements
 		FragmentTransaction transaction = getSupportFragmentManager()
 				.beginTransaction();
 
-		if (findViewById(R.id.dynamic_fragment) != null) {
-		} else {
+		/*if (findViewById(R.id.dynamic_fragment) != null) {
+		} else */
+		{
 			Fragment fragment = getSupportFragmentManager().findFragmentById(
 					R.id.fragment_container);
 			if (fragment instanceof ListaFragment) {

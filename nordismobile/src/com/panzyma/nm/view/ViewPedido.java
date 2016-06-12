@@ -221,7 +221,7 @@ public class ViewPedido extends ActionBarActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		SessionManager.setContext(this);
 		UserSessionManager.setContext(this);
 		context = getApplicationContext();
@@ -587,10 +587,11 @@ public class ViewPedido extends ActionBarActivity implements
 		if (findViewById(R.id.fragment_container) != null) {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, firstFragment).commit();
-		} else {
+		} 
+		/*else {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.item_client_fragment, firstFragment).commit();
-		}
+		}*/
 	}
 
 	@Override
@@ -638,11 +639,12 @@ public class ViewPedido extends ActionBarActivity implements
 						.findFragmentById(R.id.fragment_container))
 						.getAdapter();
 
-			} else {
+			} 
+			/*else {
 				customArrayAdapter = (CustomArrayAdapter<vmEntity>) ((Filterable) getSupportFragmentManager()
 						.findFragmentById(R.id.item_client_fragment))
 						.getAdapter();
-			}
+			}*/
 
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
 				@Override

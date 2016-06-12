@@ -141,10 +141,11 @@ public class ProductoView extends ActionBarActivity implements
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, firstFragment).commit();
 			firstFragment.setRetainInstance(true);
-		} else {
+		} 
+		/*else {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.item_client_fragment, firstFragment).commit();
-		}
+		}*/
 	}
 
 	@SuppressWarnings("unchecked")
@@ -162,10 +163,11 @@ public class ProductoView extends ActionBarActivity implements
 				customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
 						.findFragmentById(R.id.fragment_container)).getAdapter();
 	
-			} else {
+			} 
+			/*else {
 				customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
 						.findFragmentById(R.id.item_client_fragment)).getAdapter();
-			}
+			}*/
 	
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
 				@Override
@@ -562,7 +564,7 @@ public class ProductoView extends ActionBarActivity implements
 				    FichaProductoFragment productFrag;
 				    
 				    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-				    if (findViewById(R.id.dynamic_fragment) != null) {
+				   /* if (findViewById(R.id.dynamic_fragment) != null) {
 				        productFrag = (FichaProductoFragment) getSupportFragmentManager().findFragmentById(R.id.dynamic_fragment);
 				        if (productFrag != null) {
 				            //productFrag.updateArticleView(product_selected, position);
@@ -576,7 +578,7 @@ public class ProductoView extends ActionBarActivity implements
 				        }
 				        
 				    }
-				    else 
+				    else */
 				    {
 				        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 				        gridheader.setVisibility(View.INVISIBLE);

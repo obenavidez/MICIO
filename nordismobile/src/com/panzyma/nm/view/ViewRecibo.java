@@ -391,9 +391,10 @@ public class ViewRecibo extends ActionBarActivity implements
 				            FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
 				            
 							fragmentActive = FragmentActive.FICHA_CLIENTE;
-							if (findViewById(R.id.dynamic_fragment) != null) {
+							/*if (findViewById(R.id.dynamic_fragment) != null) {
 							}
-							else{
+							else*/
+							{
 								ficha = new FichaClienteFragment();
 								ficha.setArguments(args);
 								mytransaction.addToBackStack(null);
@@ -483,8 +484,8 @@ public class ViewRecibo extends ActionBarActivity implements
 						if(NMNetWork.isPhoneConnected(NMApp.getContext()) && NMNetWork.CheckConnection(NMApp.getController()))
 			            {
 							fragmentActive = FragmentActive.CONSULTAR_COBROS;
-							if (findViewById(R.id.dynamic_fragment) != null) {}
-							else
+							/*if (findViewById(R.id.dynamic_fragment) != null) {}
+							else*/
 							{
 								FragmentTransaction mytransaction = getSupportFragmentManager().beginTransaction();
 								cobros = new consultaCobroFragment();
@@ -620,10 +621,11 @@ public class ViewRecibo extends ActionBarActivity implements
 		if (findViewById(R.id.fragment_container) != null) {			
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.fragment_container, firstFragment).commit();
-		} else {
+		} 
+		/*else {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.item_client_fragment, firstFragment).commit();
-		}
+		}*/
 	}
 	
 	public void mandarObtenerRecibo(int arg)
@@ -1073,10 +1075,11 @@ public class ViewRecibo extends ActionBarActivity implements
 				}
 				
 
-			} else {
+			} else 
+			/*{
 				customArrayAdapter = (CustomArrayAdapter<vmRecibo>) ((Filterable) getSupportFragmentManager()
 						.findFragmentById(R.id.item_client_fragment)).getAdapter();
-			}
+			}*/
 
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
 				@Override

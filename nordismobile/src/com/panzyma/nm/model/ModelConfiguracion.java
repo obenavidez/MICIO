@@ -59,13 +59,13 @@ public class ModelConfiguracion {
 	public static String getURL_SERVER(Context cnt)
 	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE); 
-		return pref.getString("url_server", "http://www.panzyma.com/nordisservertest/mobileservice.asmx"); 
+		return pref.getString("url_server", "http://www.panzyma.com/nordisserver/mobileservice.asmx"); 
 	}
 	
 	public static String getURL_SERVER2(Context cnt)
 	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE); 
-		return pref.getString("url_server2", "http://www.panzyma.com/Simfactest/SimfacService.svc/"); 
+		return pref.getString("url_server2", "http://www.panzyma.com/Simfacprod/SimfacService.svc/"); 
 
 	}
 
@@ -73,8 +73,8 @@ public class ModelConfiguracion {
 	{
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		vmConfiguracion config=vmConfiguracion.setConfiguration( 
-				pref.getString("url_server", "http://www.panzyma.com/nordisservertest/mobileservice.asmx"),
-				pref.getString("url_server2","http://www.panzyma.com/Simfactest/SimfacService.svc/"),
+				pref.getString("url_server", "http://www.panzyma.com/nordisserver/mobileservice.asmx"),
+				pref.getString("url_server2","http://www.panzyma.com/Simfacprod/SimfacService.svc/"),
 				pref.getString("device_id", ""),
 				pref.getString("enterprise", "dp"),
 				pref.getString("name_user", ""),
@@ -160,7 +160,7 @@ public class ModelConfiguracion {
 	
 	public static DataConfigurationResult getDataConfiguration(String Credentials, String LoginUsuario, String PIN)	throws Exception 
 	{
-		PIN = "21C5D535";
+		//PIN = "21C5D535";
 		return NMTranslate.ToObject
 				(
 					AppNMComunication.InvokeService
@@ -175,7 +175,7 @@ public class ModelConfiguracion {
 
 	public static DataConfigurationResult getDataConfiguration(String URL2,String Credentials, String LoginUsuario, String PIN)	throws Exception 
 	{
-		PIN = "21C5D535";
+		//PIN = "21C5D535";
 		return NMTranslate.ToObject
 				(
 					AppNMComunication.InvokeService

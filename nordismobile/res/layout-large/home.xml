@@ -4,7 +4,7 @@
     android:id="@+id/tableLayout1"  
     android:layout_width="match_parent"  
     android:layout_height="match_parent"  
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:shrinkColumns="*"  
     android:stretchColumns="*"
     android:background="@color/White">  
@@ -147,36 +147,7 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" 
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical" >
-
-                    <Button
-                        android:id="@+id/hbtnpreferencia"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/btnpreferencia_state"
-                        android:focusable="true"
-                        android:onClick="onButtonClicker" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:text="Preferencia"
-                        android:textColor="@color/Black"
-                        android:textStyle="bold" />
-                </LinearLayout> 
-        </TableRow>  
-        <TableRow  
-            android:layout_height="wrap_content"  
-            android:id="@+id/tableRow2"  
-            android:layout_width="match_parent">  
-            
-            
-            	<LinearLayout 
+                <LinearLayout 
 	              android:layout_width="wrap_content"
 	              android:layout_height="wrap_content"      
 	              android:gravity="center_horizontal"     
@@ -199,6 +170,36 @@
 		                  android:textStyle="bold"/>
 	
 	          </LinearLayout>
-            
         </TableRow>  
+<!--         <TableRow   -->
+<!--             android:layout_height="wrap_content"   -->
+<!--             android:id="@+id/tableRow22"   -->
+<!--             android:layout_width="match_parent">   -->
+            
+            
+<!--             	<LinearLayout  -->
+<!-- 	              android:layout_width="wrap_content" -->
+<!-- 	              android:layout_height="wrap_content"       -->
+<!-- 	              android:gravity="center_horizontal"      -->
+<!-- 	              android:orientation="vertical" >   -->
+
+<!-- 		              <Button -->
+<!-- 		                  android:id="@+id/hbtnconfiguracion" -->
+<!-- 		                  android:layout_width="wrap_content" -->
+<!-- 		                  android:layout_height="wrap_content" -->
+<!-- 		                  android:background="@drawable/btnconfiguracion_state" -->
+<!-- 		                  android:focusable="true" -->
+<!-- 		                  android:onClick="onButtonClicker" /> -->
+		
+<!-- 		              <TextView -->
+<!-- 		                  android:layout_width="wrap_content" -->
+<!-- 		                  android:layout_height="wrap_content" -->
+<!-- 		                  android:gravity="center_horizontal" -->
+<!-- 		                  android:text="Configuracion"  -->
+<!-- 		                  android:textColor="@color/Black" -->
+<!-- 		                  android:textStyle="bold"/> -->
+	
+<!-- 	          </LinearLayout> -->
+            
+<!--         </TableRow>   -->
     </TableLayout>  

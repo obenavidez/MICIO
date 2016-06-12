@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"    
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/White"   
+    android:gravity="center"
+    android:id="@+id/p_mainproducto"
+    > 
+     
+    <!-- Included header.xml here -->
+	<ViewStub android:id="@+id/vsHeader" 
+	    android:inflatedId="@+id/header" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 
+		android:layout="@layout/header" />
+	
+   	<LinearLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content" 
+		    android:orientation="vertical"
+		    android:background="@color/White"
+		    android:id="@+id/p_llheader">
+		    
+		    <EditText android:id="@+id/p_editextfilter_prod"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:inputType="textPersonName"
+				android:singleLine="true"   
+				android:gravity="left"
+				android:hint="Filtrar Productos" >
+			</EditText>
+	 	    
+		     <TextView 
+         	android:id="@+id/p_textv_gridheader"
+			style="StyleFontTextViewActionBar"
+			android:layout_width="fill_parent"
+			android:layout_height="30dp"
+			android:text="LISTA PRODUCTOS"
+			android:gravity="center"
+			android:textColor="@color/White"
+			 android:background="@drawable/bg_actionbar29" 	             
+            />
+		    
+     </LinearLayout>	
+      <LinearLayout  
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:id="@+id/p_llbody"
+			android:background="@color/White"
+			>
+			
+			<ListView 
+			    android:id="@+id/p_lvproducto"  
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"	
+			    android:divider="@color/DarkGray"
+			    android:dividerHeight="0.3sp"
+			    android:scrollingCache="false" 
+			    android:choiceMode="singleChoice"
+			    android:listSelector="@drawable/statelist"
+			    android:fastScrollEnabled="true"
+	 	        android:drawSelectorOnTop="false"> 
+			    
+			</ListView>
+				 
+			<TextView
+			 android:id="@+id/p_txtview_enty"
+			 android:textSize="12dp"
+			 android:textColor="@color/Black"
+			 android:layout_width="fill_parent"
+			 android:layout_height="wrap_content"
+			 android:gravity="center"
+			 android:text="@string/txtclient_entymessage"
+			 android:visibility="gone"
+			 />
+        	
+	  </LinearLayout>
+
+      <Button
+          android:id="@+id/p_btnmenu"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="left"
+          android:visibility="gone"/>
+    
+</LinearLayout>

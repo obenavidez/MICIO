@@ -98,10 +98,10 @@ public class ListaFragment<E> extends ListFragment implements Filterable,
 		// (We do this during onStart because at the point the listview is
 		// available.)
 
-		if (getFragmentManager().findFragmentById(R.id.dynamic_fragment) != null) {
+		/*if (getFragmentManager().findFragmentById(R.id.dynamic_fragment) != null) {
 			// getListView().setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
 			getListView().setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-		}
+		}*/
 	}
 
 	@Override

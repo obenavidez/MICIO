@@ -2394,8 +2394,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		FragmentTransaction transaction = getSupportFragmentManager()
 				.beginTransaction();
 
-		if (findViewById(R.id.dynamic_fragment) != null) {
-		} else {
+		/*if (findViewById(R.id.dynamic_fragment) != null) {
+		} else*/ 
+		{
 			transaction = getSupportFragmentManager().beginTransaction();
 			 setDrawerState(false);
 			// if (fragment instanceof ListaFragment) {
