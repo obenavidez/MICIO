@@ -5,23 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnFocusChangeListener;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.controller.ControllerProtocol;
-import com.panzyma.nm.serviceproxy.SolicitudDescuento;
-import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
-import com.panzyma.nm.view.viewholder.SolicitudDescuentoViewHolder;
 import com.panzyma.nm.viewdialog.DialogSolicitudDescuento;
 import com.panzyma.nordismobile.R;
 
@@ -30,8 +22,6 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 	   
 	private int layoutid;
 	private Class<V> viewclass;
-	private List<E> arrTemp;
-
 	private LayoutInflater inflater; 
 	private List<E> items;
 	private List<E> mOriginalValues;
@@ -46,7 +36,6 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 		this.viewclass=viewclass;
 		this.layoutid=layoutid[0]; 
 		notifyDataSetChanged();
-		arrTemp=items.subList(0,items.size()-1);
 	}	
 	public List<E> AddAllToListViewDataSource(List<E> obj)
 	{ 
@@ -122,14 +111,6 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 			ex.printStackTrace();
 		}
 	}	
-	/*
-	@Override
-	public View getDropDownView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		return super.getDropDownView(position, convertView, parent);
-	}
-	*/
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public View getView(int position, View convertview, ViewGroup parent) 
@@ -137,106 +118,27 @@ public class GenericAdapter<E, V> extends BaseAdapter implements Filterable {
 		V viewHolder = null;
 		try
 		{
-			
-			if( NMApp.getController().getView()!=null && NMApp.getController().getView() instanceof DialogSolicitudDescuento )
+			if (null== convertview)
 			{
-				if (null== convertview)
-				{
-					convertview=this.inflater.inflate(layoutid,null);
-					viewHolder=viewclass.newInstance(); 
-					invokeView(convertview,viewHolder);
-					convertview.setTag(viewHolder);								
-				}
-				else
-					viewHolder=(V)convertview.getTag(); 
-				
-				SolicitudDescuento actualvalue=(SolicitudDescuento) items.get(position);
-				final SolicitudDescuentoViewHolder tmp=((SolicitudDescuentoViewHolder)viewHolder); 
-				tmp.setIndex(position); 
-				tmp.title.setText("#"+actualvalue.getFactura().getNoFactura()); 
-				tmp.descuento.setText(""+actualvalue.getPorcentaje());
-				tmp.justificacion.setText(""+actualvalue.getJustificacion()); 
-				tmp.descuento.addTextChangedListener(new TextWatcher() {
-					
-					@Override
-					public void onTextChanged(CharSequence s, int start, int before, int count) {
-						if(!"".equals(s.toString()))							 
-							((SolicitudDescuento)items.get(tmp.getIndex())).setPorcentaje(Float.valueOf(s.toString()));
-					}
-					
-					@Override
-					public void beforeTextChanged(CharSequence s, int start, int count,
-							int after) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void afterTextChanged(Editable s) {
-						
-						
-					}
-				});
-				
-				tmp.justificacion.addTextChangedListener(new TextWatcher() {
-					
-					@Override
-					public void onTextChanged(CharSequence s, int start, int before, int count) {
-						((SolicitudDescuento)items.get(tmp.getIndex())).setJustificacion(s.toString());
-					}
-					
-					@Override
-					public void beforeTextChanged(CharSequence s, int start, int count,
-							int after) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void afterTextChanged(Editable s) {
-						
-						
-					}
-				}); 
-				if(getSelectedPosition() == position) {
-					if( NMApp.getController().getView()!=null && NMApp.getController().getView() instanceof DialogSolicitudDescuento)
-					{
-						convertview.setBackgroundResource(android.R.color.transparent); 
-					}
-					else
-					convertview.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.action_item_selected));
-				} else {
-					convertview.setBackgroundResource(android.R.color.transparent); 
-				}	 			 
-
-			}else
-			{
-				if (null== convertview)
-				{
-					convertview=this.inflater.inflate(layoutid,null);
-					viewHolder=viewclass.newInstance(); 
-					invokeView(convertview,viewHolder);
-					convertview.setTag(viewHolder);								
-				}
-				else
-					viewHolder=(V)convertview.getTag(); 
-				
-				
-				if(getSelectedPosition() == position) {
-					if( NMApp.getController().getView()!=null && NMApp.getController().getView() instanceof DialogSolicitudDescuento)
-					{
-						convertview.setBackgroundResource(android.R.color.transparent); 
-					}
-					else
-					convertview.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.action_item_selected));
-				} else {
-					convertview.setBackgroundResource(android.R.color.transparent); 
-				}				 
-				viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,items.get(position));
-
+				convertview=this.inflater.inflate(layoutid,null);
+				viewHolder=viewclass.newInstance(); 
+				invokeView(convertview,viewHolder);
+				convertview.setTag(viewHolder);				
 			}
-			 
-					
+			else
+				viewHolder=(V)convertview.getTag();
+			
+			if(getSelectedPosition() == position) {
+				if( NMApp.getController().getView()!=null && NMApp.getController().getView() instanceof DialogSolicitudDescuento)
+					convertview.setBackgroundResource(android.R.color.transparent); 
+				else
+				convertview.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.action_item_selected));
+			} else {
+				convertview.setBackgroundResource(android.R.color.transparent); 
+			}				
+		    
+		    viewHolder.getClass().getMethod("mappingData",Object.class).invoke(viewHolder,items.get(position));
+		
 		} 
 		catch (Exception e) 
 		{

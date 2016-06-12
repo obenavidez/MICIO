@@ -18,12 +18,11 @@ import com.panzyma.nm.serviceproxy.EncabezadoSolicitud;
 import com.panzyma.nm.serviceproxy.Factura;
 import com.panzyma.nm.serviceproxy.ReciboColector;
 import com.panzyma.nm.serviceproxy.SolicitudDescuento;
-import com.panzyma.nm.view.ViewReciboEdit;
-import com.panzyma.nm.view.adapter.GenericAdapter;
+import com.panzyma.nm.view.ViewReciboEdit; 
+import com.panzyma.nm.view.adapter.GenericAdapter2;
 import com.panzyma.nm.view.adapter.InvokeBridge;
 import com.panzyma.nm.view.viewholder.SolicitudDescuentoViewHolder;
 import com.panzyma.nordismobile.R;
-
 import android.app.Dialog; 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -49,7 +48,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 	ReciboColector recibo;
 	DescuentoProveedor[] ldp;
 	DescuentoProveedor dp;
-	private GenericAdapter<SolicitudDescuento,SolicitudDescuentoViewHolder> adapter;
+	private GenericAdapter2<SolicitudDescuento,SolicitudDescuentoViewHolder> adapter;
 	
 	private int positioncache;
 	
@@ -387,7 +386,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 			solicitud.setDetalles(detallesolicitud);
 	    gridheader.setText("FACTURAS A SOLICITAR DESCUENTO("+facturas.size()+")");		
 	    if(adapter==null){
-	    	adapter = new GenericAdapter(parent, SolicitudDescuentoViewHolder.class,detallesolicitud,  R.layout.list_row2);
+	    	adapter = new GenericAdapter2(parent, SolicitudDescuentoViewHolder.class,detallesolicitud,  R.layout.list_row2);
 			lvfacturas.setAdapter(adapter);
 	    }
 	    else
