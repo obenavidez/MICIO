@@ -84,14 +84,14 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		super.onDestroy();
 	}
 
-	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			FINISH_ACTIVITY(); 
-			return true;
-		}
-		return super.onKeyUp(keyCode, event);
-	}
+//	@Override
+//	public boolean onKeyUp(int keyCode, KeyEvent event) {
+//		if (keyCode == KeyEvent.KEYCODE_BACK) {
+//			FINISH_ACTIVITY(); 
+//			return true;
+//		}
+//		return super.onKeyUp(keyCode, event);
+//	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
