@@ -997,66 +997,62 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 		case 10:
 			return NombreCliente;
 		case 11:
-			return ObjMotivoID;
+			return ObjMotivoID; 
 		case 12:
-			return CodMotivo;
-		case 13:
 			return DescMotivo;
-		case 14:
+		case 13:
 			return TipoTramite;
-		case 15:
+		case 14:
 			return DeVencido;
-		case 16:
+		case 15:
 			return Parcial;
-		case 17:
+		case 16:
 			return AplicacionInmediata;
-		case 18:
+		case 17:
 			return Nota;
-		case 19:
+		case 18:
 			return Observacion;
-		case 20:
+		case 19:
 			return Subtotal;
-		case 21:
+		case 20:
 			return Impuesto;
-		case 22:
+		case 21:
 			return MontoPromocion;
-		case 23:
+		case 22:
 			return MontoPromocionVen;
-		case 24:
+		case 23:
 			return MontoCargoAdm;
-		case 25:
+		case 24:
 			return MontoCargoAdmVen;
-		case 26:
-			return MontoVinieta;
-		case 27:
+		
+		case 25:
 			return Total;
-		case 28:
+		case 26:
 			return TotalVen;
-		case 29:
+		case 27:
 			return ObjEstadoID;
-		case 30:
+		case 28:
 			return DescEstado;
-		case 31:
-			return CodEstado;
-		case 32:
+		
+		case 29:
 			return ObjCausaEstadoID;
-		case 33:
+		case 30:
 			return DescCausaEstado;
-		case 34:
+		case 31:
 			return Especial;
-		case 35:
+		case 32:
 			return MontoCargoVendedor;
-		case 36:
+		case 33:
 			return MontoBonif;
-		case 37:
+		case 34:
 			return MontoBonifVen;
-		case 38:
+		case 35:
 			return ImpuestoVen;
-		case 39:
+		case 36:
 			return ClaveAutorizaAplicacionInmediata;
-		case 40:
+		case 37:
 			return FechaEnviada;
-		case 41:
+		case 38:
 			if (ProductosDevueltos != null && ProductosDevueltos.length > 0) {
 
 				SoapObject _detalle = new SoapObject("", "");
@@ -1084,16 +1080,24 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 			}
 
 			break;
-		case 42:
+		case 39:
+			return CodEstado;
+		case 40:
+			return CodMotivo;
+		
+		
+		case 41:
 			return FechaFacturacion;
-		case 43:
+		case 42:
 			return PedidoTienePromociones;
-		case 44:
+		case 43:
 			return PedidoYaDevuelto;
+		case 44:
+			return MontoVinieta;
 		case 45:
 			return ReferenciaNC;
 		case 46:
-			return PreRegistro;
+			return PreRegistro;			
 		case 47:
 			return OffLine;
 
@@ -1160,141 +1164,146 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 				_info.type = java.lang.Long.class;
 				break;
 			case 12:
-				_info.name = "CodMotivo";
-				_info.type = java.lang.String.class;
-				break;
-			case 13:
 				_info.name = "DescMotivo";
 				_info.type = java.lang.String.class;
-				break;
-			case 14:
+				break; 
+			case 13:
 				_info.name = "TipoTramite";
 				_info.type = java.lang.String.class;
 				break;
-			case 15:
+			case 14:
 				_info.name = "DeVencido";
 				_info.type = java.lang.Boolean.class;
 				break;
-			case 16:
+			case 15:
 				_info.name = "Parcial";
 				_info.type = java.lang.Boolean.class;
 				break;
-			case 17:
+			case 16:
 				_info.name = "AplicacionInmediata";
 				_info.type = java.lang.Boolean.class;
 				break;
-			case 18:
+			case 17:
 				_info.name = "Nota";
 				_info.type = java.lang.String.class;
 				break;
-			case 19:
+			case 18:
 				_info.name = "Observacion";
 				_info.type = java.lang.String.class;
 				break;
-			case 20:
-				_info.name = "SubTotal";
+			case 19:
+				_info.name = "Subtotal";
 				_info.type = java.lang.Long.class;
 				break;
-			case 21:
+			case 20:
 				_info.name = "Impuesto";
 				_info.type = java.lang.Long.class;
 				break;
-			case 22:
+			case 21:
 				_info.name = "MontoPromocion";
 				_info.type = java.lang.Long.class;
 				break;
-			case 23:
+			case 22:
 				_info.name = "MontoPromocionVen";
 				_info.type = java.lang.Long.class;
 				break;
-			case 24:
+			case 23:
 				_info.name = "MontoCargoAdm";
 				_info.type = java.lang.Long.class;
 				break;
-			case 25:
+			case 24:
 				_info.name = "MontoCargoAdmVen";
 				_info.type = java.lang.Long.class;
 				break;
-			case 26:
-				_info.name = "MontoVinieta";
-				_info.type = java.lang.Long.class;
-				break;
-			case 27:
+			
+			case 25:
 				_info.name = "Total";
 				_info.type = java.lang.Long.class;
 				break;
-			case 28:
+			case 26:
 				_info.name = "TotalVen";
 				_info.type = java.lang.Long.class;
 				break;
-			case 29:
+			case 27:
 				_info.name = "ObjEstadoID";
 				_info.type = java.lang.Long.class;
 				break;
-			case 30:
+			case 28:
 				_info.name = "DescEstado";
 				_info.type = java.lang.String.class;
 				break;
-			case 31:
-				_info.name = "CodEstado";
-				_info.type = java.lang.String.class;
-				break;
-			case 32:
+			case 29:
 				_info.name = "ObjCausaEstadoID";
 				_info.type = java.lang.Long.class;
 				break;
-			case 33:
+			
+			
+			case 30:
 				_info.name = "DescCausaEstado";
 				_info.type = java.lang.String.class;
 				break;
-			case 34:
+				
+			case 31:
 				_info.name = "Especial";
 				_info.type = java.lang.Boolean.class;
 				break;
-			case 35:
+			case 32:
 				_info.name = "MontoCargoVendedor";
 				_info.type = java.lang.Long.class;
 				break;
-			case 36:
+			case 33:
 				_info.name = "MontoBonif";
 				_info.type = java.lang.Long.class;
 				break;
-			case 37:
+			case 34:
 				_info.name = "MontoBonifVen";
 				_info.type = java.lang.Long.class;
 				break;
-			case 38:
+			case 35:
 				_info.name = "ImpuestoVen";
 				_info.type = java.lang.Long.class;
 				break;
 
-			case 39:
+			case 36:
 				_info.name = "ClaveAutorizaAplicacionInmediata";
 				_info.type = java.lang.String.class;
 				break;
-			case 40:
+			case 37:
 				_info.name = "FechaEnviada";
 				_info.type = java.lang.Long.class;
 				break;
 
-			case 41:
+			case 38:
 				if (ProductosDevueltos != null && ProductosDevueltos.length > 0) {
 					_info.name = "ProductosDevueltos";
 					_info.type = DevolucionProducto[].class;
 					break;
 				}
 				break;
-			case 42:
+			case 39:
+				_info.name = "CodEstado";
+				_info.type = java.lang.String.class;
+				break;
+			case 40:
+				_info.name = "CodMotivo";
+				_info.type = java.lang.String.class;
+				break;
+				
+			case 41:
 				_info.name = "FechaFacturacion";
 				_info.type = java.lang.Long.class;
 				break;
-			case 43:
+			case 42:
 				_info.name = "PedidoTienePromociones";
 				_info.type = java.lang.Boolean.class;
 				break;
-			case 44:
+			case 43:
 				_info.name = "PedidoYaDevuelto";
 				_info.type = java.lang.Boolean.class;
+				break;
+			case 44:
+				_info.name = "MontoVinieta";
+				_info.type = java.lang.Long.class;
 				break;
 			case 45:
 				_info.name = "ReferenciaNC";
@@ -1307,8 +1316,8 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 			case 47:
 				_info.name = "OffLine";
 				_info.type = java.lang.Boolean.class;
-				break;
-
+				break; 
+			
 			}
 
 		} catch (Exception e) {
@@ -1356,104 +1365,108 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 		case 11:
 			ObjMotivoID = java.lang.Long.parseLong(_.toString());
 			break;
+		
 		case 12:
-			CodMotivo = (java.lang.String) _;
-			break;
-		case 13:
 			DescMotivo = (java.lang.String) _;
 			break;
-		case 14:
+		case 13:
 			TipoTramite = (java.lang.String) _;
 			break;
-		case 15:
+		case 14:
 			DeVencido = "true".equals(_.toString());
 			break;
-		case 16:
+		case 15:
 			Parcial = "true".equals(_.toString());
 			break;
-		case 17:
+		case 16:
 			AplicacionInmediata = "true".equals(_.toString());
 			break;
-		case 18:
+		case 17:
 			Nota = (java.lang.String) _;
 			break;
-		case 19:
+		case 18:
 			Observacion = (java.lang.String) _;
 			break;
-		case 20:
+		case 19:
 			Subtotal = java.lang.Long.parseLong(_.toString());
 			break;
-		case 21:
+		case 20:
 			Impuesto = java.lang.Long.parseLong(_.toString());
 			break;
-		case 22:
+		case 21:
 			MontoPromocion = java.lang.Long.parseLong(_.toString());
 			break;
-		case 23:
+		case 22:
 			MontoPromocionVen = java.lang.Long.parseLong(_.toString());
 			break;
-		case 24:
+		case 23:
 			MontoCargoAdm = java.lang.Long.parseLong(_.toString());
 			break;
-		case 25:
+		case 24:
 			MontoCargoAdmVen = java.lang.Long.parseLong(_.toString());
 			break;
-		case 26:
-			MontoVinieta = java.lang.Long.parseLong(_.toString());
-			break;
-		case 27:
+		
+		case 25:
 			Total = java.lang.Long.parseLong(_.toString());
 			break;
-		case 28:
+		case 26:
 			TotalVen = java.lang.Long.parseLong(_.toString());
 			break;
-		case 29:
+		case 27:
 			ObjEstadoID = java.lang.Long.parseLong(_.toString());
 			break;
-		case 30:
+		case 28:
 			DescEstado = (java.lang.String) _;
 			break;
-		case 31:
-			CodEstado = (java.lang.String) _;
-			break;
-		case 32:
+		
+		case 29:
 			ObjCausaEstadoID = java.lang.Long.parseLong(_.toString());
 			break;
-		case 33:
+		case 30:
 			DescCausaEstado = (java.lang.String) _;
 			break;
-		case 34:
+		case 31:
 			Especial = "true".equals(_.toString());
 			break;
-		case 35:
+		case 32:
 			MontoCargoVendedor = java.lang.Long.parseLong(_.toString());
 			break;
-		case 36:
+		case 33:
 			MontoBonif = java.lang.Long.parseLong(_.toString());
 			break;
-		case 37:
+		case 34:
 			MontoBonifVen = java.lang.Long.parseLong(_.toString());
 			break;
-		case 38:
+		case 35:
 			ImpuestoVen = java.lang.Long.parseLong(_.toString());
 			break;
-		case 39:
+		case 36:
 			ClaveAutorizaAplicacionInmediata = (java.lang.String) _;
 			break;
-		case 40:
+		case 37:
 			FechaEnviada = java.lang.Long.parseLong(_.toString());
 			break;
-		case 41:
+		case 38:
 			ProductosDevueltos = (DevolucionProducto[]) (_);
 			break;
-		case 42:
+			
+		case 39:
+			CodEstado = (java.lang.String) _;
+			break;
+		case 40:
+			CodMotivo = (java.lang.String) _;
+			break;
+		case 41:
 			FechaFacturacion = java.lang.Long.parseLong(_.toString());
 			break;
-		case 43:
+		case 42:
 			PedidoTienePromociones = "true".equals(_.toString());
 			break;
-		case 44:
+		case 43:
 			PedidoYaDevuelto = "true".equals(_.toString());
+			break;
+		case 44:
+			MontoVinieta = java.lang.Long.parseLong(_.toString());
 			break;
 		case 45:
 			ReferenciaNC = java.lang.Integer.parseInt(_.toString());
@@ -1464,6 +1477,9 @@ public class Devolucion implements KvmSerializable, Cloneable, Parcelable {
 		case 47:
 			OffLine = "true".equals(_.toString());
 			break;
+		
+		
+		
 		}
 
 	}
