@@ -177,12 +177,12 @@ public class LoginScreen extends ActionBarActivity implements Handler.Callback {
 							@Override
 							public void run() 
 							{
-								/*if (UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim())) {
+								if (UserSessionManager.checkLogin(txtusername.getText().toString().trim(), txtpassword.getText().toString().trim())) {
 									UserSessionManager.guardarSession(new Session(UserSessionManager.getLoginUser(),true));
 									if (UserSessionManager.isUserLoggedIn())
 										goHome();
-								}*/
-								goHome();
+								}
+								//goHome();
 							}
 						});
 					} catch (InterruptedException e) {

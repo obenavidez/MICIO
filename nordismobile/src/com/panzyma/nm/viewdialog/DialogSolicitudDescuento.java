@@ -143,7 +143,7 @@ public class DialogSolicitudDescuento extends Dialog  implements Handler.Callbac
 				    for (int i = 0; i < childCount; i++)
 				    {			    	
 				        View doc = null;
-				        v = getViewByPosition(i, lvfacturas);
+				        doc = getViewByPosition(i, lvfacturas);
 				        SolicitudDescuento sd=(SolicitudDescuento) adapter.getItem(i);
 				        //SolicitudDescuento sd=(SolicitudDescuento) lvfacturas.getItemAtPosition(i);
 				        EditText d=((EditText) doc.findViewById(R.id.descuento));

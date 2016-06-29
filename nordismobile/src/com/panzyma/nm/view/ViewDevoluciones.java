@@ -710,7 +710,13 @@ public class ViewDevoluciones extends ActionBarActivity implements
 						.getClassLoader());
 				PojoDevolucion dev = (PojoDevolucion) bundle
 						.getSerializable(SERIALIZE_DEVOLUCION);
-				establecer(dev, false);
+				if (!(dev.getClienteId() == 0L 
+						|| dev.getSucursalId() == 0L
+						|| dev.getNombreCliente() == null 
+						|| dev.getTotal() == 0.0f)) {
+					establecer(dev, false);
+				}
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

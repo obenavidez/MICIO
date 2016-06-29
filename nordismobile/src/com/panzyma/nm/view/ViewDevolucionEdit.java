@@ -1381,10 +1381,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		{
 			EstimarCostosDev(false); 
 			CalMontoCargoVendedor();
-		    CalMontoPromocion();
-		    CalTotalDevolucion();
+		    CalMontoPromocion();		    
 		}
-		
+		CalTotalDevolucion();
 		devolucion.setMontoCargoVendedor(costeoMontoCargoVen.longValue());
 		devolucion.setTotalVen(costeoMontoTotalVen.longValue());
 		devolucion.setMontoVinieta(costeoMontoVinieta.longValue());
