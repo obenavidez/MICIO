@@ -1351,16 +1351,16 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 	}
 
 	private void DesaplicarDescuentoOcasional() {
-		float descuentoOcasionoal = 0.00F;
+		float Ocasionoal = 0.00F;
 		for (ReciboDetFactura reciboDetFactura : recibo.getFacturasRecibo()) {
 			// los porcentajes y montos de descuento ocasional
 			// son puestos en cero en las facturas y se resta el mismo del
 			// descuento total del recibo.
 			float prcDescOca = reciboDetFactura.getPorcDescOcasional();
 			if (prcDescOca != 0) {
-				descuentoOcasionoal = prcDescOca;
+				//descuentoOcasionoal = prcDescOca;
 				reciboDetFactura.setPorcDescOcasional(0);
-				descuentoOcasionoal += reciboDetFactura.getMontoDescOcasional();
+				//descuentoOcasionoal += reciboDetFactura.getMontoDescOcasional();
 				reciboDetFactura.setMontoDescOcasional(0.0F);
 				continue;
 			}
@@ -2610,7 +2610,7 @@ public class ViewReciboEdit extends ActionBarActivity implements Handler.Callbac
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1);
+				quickAction2 = new QuickAction(me, QuickAction.RECT_ARROWS_STYLE, 1);
 				quickAction2.addActionItem(new ActionItem(ID_EDITAR_DOCUMENTO,
 						"Editar Documento"));
 				quickAction2.addActionItem(new ActionItem(

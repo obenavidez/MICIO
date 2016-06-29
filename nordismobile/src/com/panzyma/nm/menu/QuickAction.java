@@ -7,6 +7,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,10 +23,12 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.panzyma.nm.view.viewholder.DocumentoViewHolder;
 import com.panzyma.nm.view.viewholder.ProductoLoteDetalleViewHolder;
 import com.panzyma.nm.view.viewholder.ProductoLoteViewHolder;
 import com.panzyma.nordismobile.R;
 
+@SuppressLint("NewApi")
 @SuppressWarnings({"unused"})
 public class QuickAction extends PopupWindows implements OnDismissListener 
 {
@@ -324,8 +328,25 @@ public class QuickAction extends PopupWindows implements OnDismissListener
 		setAnimationStyle(screenWidth, anchorRect.centerX(), true);
 	  
 		//anchor.setY(anchor.getY()-200);
-		if(anchor.getTag() instanceof ProductoLoteViewHolder || anchor.getTag() instanceof ProductoLoteDetalleViewHolder)
-		mWindow.showAtLocation(anchor, Gravity.LEFT,(int)anchor.getX(),(int)anchor.getY()-50);
+		if(anchor.getTag() instanceof ProductoLoteViewHolder 
+				|| anchor.getTag() instanceof ProductoLoteDetalleViewHolder) {
+			mWindow.showAtLocation(anchor, Gravity.LEFT,(int)anchor.getX(),(int)anchor.getY()-50);
+		} else if(anchor.getTag() instanceof DocumentoViewHolder) {
+			int rootWidth = mRootView.getMeasuredWidth();
+			   rootHeight = mRootView.getMeasuredHeight();
+			   screenWidth = mWindowManager.getDefaultDisplay().getWidth();
+		       xPos = (screenWidth - rootWidth) / 2;
+			   yPos = anchorRect.top - rootHeight;
+			   onTop = true;
+			   if (rootHeight > anchor.getTop()) {
+			       yPos = anchorRect.bottom;
+			       onTop = false;
+			   }
+			   showArrow(((onTop) ? R.id.arrow_down : R.id.arrow_up),
+			           anchorRect.centerX());
+			   setAnimationStyle(screenWidth, anchorRect.centerX(), onTop);
+			   mWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
+		}
 		else
 		mWindow.showAtLocation(anchor, Gravity.LEFT,xPos,yPos);
 		

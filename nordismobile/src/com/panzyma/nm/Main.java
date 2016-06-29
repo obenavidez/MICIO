@@ -115,8 +115,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		NMApp.modulo = NMApp.Modulo.HOME;
 		buttonActive = v.getId();
 		Session session=UserSessionManager.getSession();
-		if (session!=null && session.isLoged()) 
-		{
+		/*if (session!=null && session.isLoged()) 
+		{*/
 			switch (v.getId()) {
 
 			case R.id.hbtnpedido:
@@ -155,7 +155,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 			default:
 				break;
 			}
-		} else 	FINISH_ACTIVITY(); 
+		/*} else 	FINISH_ACTIVITY(); */
 	}
 	
 	public void dialogLogin(){
