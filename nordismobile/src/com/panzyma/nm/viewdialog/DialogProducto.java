@@ -66,7 +66,7 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 	protected Producto product_selected;  
 	protected TypeCall tipoLLamado;
 	
-	public enum TypeCall {
+	public static enum TypeCall {
 		Default, Devolucion
 	}
 
@@ -146,6 +146,10 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 			//buildCustomDialog("Error !!!","Error Message:"+e.getMessage()+"\n Cause:"+e.getCause(),ALERT_DIALOG).show();			  
 		}	 
     } 
+	
+    public TypeCall getTipoLlamado(){
+    	return tipoLLamado.Devolucion;
+    }
     
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) 

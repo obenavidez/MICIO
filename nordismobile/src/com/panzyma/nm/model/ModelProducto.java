@@ -19,6 +19,7 @@ import android.util.Log;
 
 import com.comunicator.AppNMComunication;
 import com.comunicator.Parameters;
+import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.NMConfig; 
 import com.panzyma.nm.auxiliar.NMTranslate;
 import com.panzyma.nm.datastore.DatabaseProvider; 
@@ -26,6 +27,8 @@ import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 import com.panzyma.nm.serviceproxy.CProducto;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.view.ViewDevolucionEdit;
+import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewmodel.vmProducto;
 @SuppressWarnings({"unused"})
 public class ModelProducto 
@@ -195,9 +198,9 @@ public class ModelProducto
 			query = new StringBuilder();
 			query.append(" SELECT * ");
 			query.append(" FROM Producto p ");
-			query.append(" WHERE p.Disponible <> 0  "); 
-			Cursor cur = DatabaseProvider.query(bd, query.toString());
-		 
+			if(!(NMApp.getController().getView() instanceof DialogProducto && ((DialogProducto)NMApp.getController().getView()).getTipoLlamado().equals(DialogProducto.TypeCall.Devolucion)))
+				query.append(" WHERE p.Disponible <> 0  "); 
+			Cursor cur = DatabaseProvider.query(bd, query.toString());		 
 
 			 if (cur.moveToFirst()) 
 			 {  

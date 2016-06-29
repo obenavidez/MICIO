@@ -794,6 +794,21 @@ public class CuentasPorCobrarFragment extends Fragment implements
 				}
 
 			});
+			listaGenerica.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent,
+						View view, int position, long id) {
+					if ((parent.getChildAt(positioncache)) != null)
+						(parent.getChildAt(positioncache))
+								.setBackgroundResource(android.R.color.transparent);
+					positioncache = position;
+					adapter.setSelectedPosition(position);
+					view.setBackgroundDrawable(parent.getResources().getDrawable(
+							R.drawable.action_item_selected));
+					return true;
+				}
+			});
 			mostrarDetalleConsulta("recibos", true, fechaInicRCol, fechaFinRCol,
 					estadoRCol);
 		} else {
