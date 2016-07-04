@@ -469,9 +469,9 @@ public class EditDevolucionProducto extends DialogFragment {
 		}  
 		if(!DateUtil.isValidExpiredDate(DateUtil.getCalendar2(date).getTime(), me.getCkboxvencidodev().isChecked())) 
 		{
-			cantidad.setError("Fecha Vencimiento del Lote, no valido para devolución"+( me.getCkboxvencidodev().isChecked()?"de vencido":"de vencido"));
-			numeroLote.setError("Fecha Vencimiento del Lote, no valido para devolución"+( me.getCkboxvencidodev().isChecked()?"de vencido":"de vencido"));
-			anioVencimiento.setError("Fecha Vencimiento del Lote, no valido para devolución"+( me.getCkboxvencidodev().isChecked()?"de vencido":"de vencido"));
+			cantidad.setError("Fecha Vencimiento del Lote, no valido para devolución"+( me.getCkboxvencidodev().isChecked()?" de vencido":" de no vencido"));
+			numeroLote.setError("Fecha Vencimiento del Lote, no valido para devolución"+( me.getCkboxvencidodev().isChecked()?" de vencido":" de no vencido"));
+			anioVencimiento.setError("Fecha Vencimiento del Lote, no valido para devolución"+( me.getCkboxvencidodev().isChecked()?" de vencido":" de no vencido"));
 			return;
 		}
 		 
