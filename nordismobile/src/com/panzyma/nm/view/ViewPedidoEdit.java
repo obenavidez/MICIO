@@ -790,7 +790,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 					showStatus(((ErrorMessage)msg.obj).getMessage() ,true);  
 				}
 					else {
-						showStatus(msg.obj.toString(), true);
+						showStatus(msg.obj.toString());
 				}
 				break;
 			case ControllerProtocol.ERROR:
