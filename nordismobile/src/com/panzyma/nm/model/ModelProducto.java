@@ -27,6 +27,7 @@ import com.panzyma.nm.datastore.DatabaseProvider.Helper;
 import com.panzyma.nm.serviceproxy.CProducto;
 import com.panzyma.nm.serviceproxy.Lote;
 import com.panzyma.nm.serviceproxy.Producto;
+import com.panzyma.nm.view.ProductoView;
 import com.panzyma.nm.view.ViewDevolucionEdit;
 import com.panzyma.nm.viewdialog.DialogProducto;
 import com.panzyma.nm.viewmodel.vmProducto;
@@ -198,7 +199,7 @@ public class ModelProducto
 			query = new StringBuilder();
 			query.append(" SELECT * ");
 			query.append(" FROM Producto p ");
-			if(!(NMApp.getController().getView() instanceof DialogProducto && ((DialogProducto)NMApp.getController().getView()).getTipoLlamado().equals(DialogProducto.TypeCall.Devolucion)))
+			if(!(NMApp.getController().getView() instanceof DialogProducto && ((DialogProducto)NMApp.getController().getView()).getTipoLlamado().equals(DialogProducto.TypeCall.Devolucion) || NMApp.getController().getView() instanceof ProductoView))
 				query.append(" WHERE p.Disponible <> 0  "); 
 			Cursor cur = DatabaseProvider.query(bd, query.toString());		 
 
