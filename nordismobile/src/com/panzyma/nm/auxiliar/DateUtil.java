@@ -311,7 +311,6 @@ public class DateUtil {
 		fechavence.setTime(fechavencimiento);
 
 		if (esdevencido) {
-			today.add(Calendar.MONTH, 1);
 			if (fechavence.get(Calendar.YEAR) < today.get(Calendar.YEAR))
 				return true;
 			else if (fechavence.get(Calendar.YEAR) == today.get(Calendar.YEAR)
@@ -319,7 +318,6 @@ public class DateUtil {
 				return true;
 
 		} else {
-			today.add(Calendar.MONTH, 1);
 			if (fechavence.get(Calendar.YEAR) > today.get(Calendar.YEAR))
 				return true;
 			else if (fechavence.get(Calendar.YEAR) == today.get(Calendar.YEAR)
