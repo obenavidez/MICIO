@@ -837,6 +837,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				CalTotalDevolucion();
 				CalMontoCargoVendedor();
 				Actualizardevolucion();
+				//updateControls(devolucion);
 				adapter.notifyDataSetChanged();
 				//devolucion.setOlddata(devolucion);
 			} catch (Exception e) {
@@ -2287,6 +2288,23 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setTipoTramite(((SpinnerModel) cboxtramitedev
 					.getSelectedItem()).getCodigo());
 
+		if(adapter_motdev == null){
+			adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = catalogos));
+			cboxmotivodev.setAdapter(adapter_motdev);
+		} else {
+			adapter_motdev.notifyDataSetChanged();
+		}
+		SpinnerModel cmbMotivo = ((SpinnerModel) cboxmotivodev.getSelectedItem());
+		if (devolucion.getCodMotivo() != null) {			
+			cmbMotivo.setCodigo(devolucion.getCodMotivo());
+		}		
+		if (devolucion.getDescMotivo() != null) {
+			cmbMotivo.setDescripcion(devolucion.getDescMotivo());
+		}
+		if(devolucion.getObjMotivoID() != 0) {
+			cmbMotivo.setId(devolucion.getObjMotivoID());
+		}
+		
 		if (cboxmotivodev!=null && cboxmotivodev.getSelectedItem()!=null && cboxmotivodev.getSelectedItemPosition() > 0) {
 			devolucion.setDescMotivo(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getDescripcion());
@@ -2980,10 +2998,26 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		Parcelable[] objects = new Parcelable[dev_prod.size()];
+		Parcelable[] catalogs = new Parcelable[catalogos.size()];
 		dev_prod.toArray(objects);
+		catalogos.toArray(catalogs);
+		if (cboxmotivodev!=null && cboxmotivodev.getSelectedItem()!=null && cboxmotivodev.getSelectedItemPosition() > 0) {
+			devolucion.setDescMotivo(((SpinnerModel) cboxmotivodev
+					.getSelectedItem()).getDescripcion());
+			devolucion.setCodMotivo(((SpinnerModel) cboxmotivodev
+					.getSelectedItem()).getCodigo());
+			devolucion.setObjMotivoID(((SpinnerModel) cboxmotivodev
+					.getSelectedItem()).getId());
+		}else
+		{  
+			devolucion.setDescMotivo(null);
+			devolucion.setCodMotivo(null);
+			devolucion.setObjMotivoID(0);  
+		}
 		outState.putParcelableArray("detallepedido", objects);
 		outState.putParcelable("devolucion", devolucion); 
 		outState.putParcelable("cliente", cliente);  
+		outState.putParcelableArray("catalogos", catalogs);
 		Log.d(TAG,"onSaveInstanceState");
 	}
 
@@ -2993,17 +3027,21 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		super.onRestoreInstanceState(savedInstanceState);  
 		
 		 Parcelable [] objects = savedInstanceState.getParcelableArray("detallepedido");
-		 dev_prod = new ArrayList<DevolucionProducto>((Collection<? extends DevolucionProducto>) Arrays.asList(objects) ); 
+		 Parcelable [] catalogs = savedInstanceState.getParcelableArray("catalogos");
+		 dev_prod = new ArrayList<DevolucionProducto>((Collection<? extends DevolucionProducto>) Arrays.asList(objects) );
+		 catalogos = new ArrayList<Catalogo>((Collection<? extends Catalogo>) Arrays.asList(catalogs) );
 		 devolucion = (Devolucion)savedInstanceState.getParcelable("devolucion");
+		 
 		 cliente =(Cliente) savedInstanceState.getParcelable("cliente");
 		 pedido =(Pedido)devolucion.getObjPedido();  
 //		 gridheader.setText(String.format("PRODUCTOS A FACTURAR (%s)", Lvmpproducto.size()));
 		 setInformacionCliente();
+		 //updateControls(devolucion);
 		 initExpandableListView(true);
 		
 		Log.d(TAG,"Restore");
 	}
-
+    /*
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	        super.onConfigurationChanged(newConfig);
@@ -3018,6 +3056,6 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 //	        CreateMenu();
 	        initExpandableListView(true);
 //	        SetDetalle(Lvmpproducto);
-	}
+	}*/
 }
 
