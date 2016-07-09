@@ -340,24 +340,23 @@ public class DatabaseProvider extends ContentProvider
 
 		public static SQLiteDatabase getDatabase(Context view) {
 			// OBTENER LA RUTA DE LA BASE DE DATOS
-			String dataBasePath = view.getDatabasePath(DATABASE_NAME).getPath();	
+			String dataBasePath = view.getDatabasePath(DATABASE_NAME).getPath();
 			// SI NO EXISTE NINGUNA INSTANCIA DE LA BASE DE DATOS, CREAR UNA
-			if ( db == null ) {
-				NM_SQLiteHelper d = new NM_SQLiteHelper(
-						view,
-						DATABASE_NAME,
-						null,
-						BD_VERSION);
-				db = d.getWritableDatabase();
+			if (db == null) {
+				synchronized (Helper.class) {
+					if (db == null) {
+						NM_SQLiteHelper d = new NM_SQLiteHelper(view,
+								DATABASE_NAME, null, BD_VERSION);
+						db = d.getWritableDatabase();
+					}
+				}
 			}
-			//SI LA BASE DE DATOS NO SE ENCUENTRA ABIERTA, ABRIRLA 
-			if ( !db.isOpen() ) {
-				db = view.openOrCreateDatabase(
-						dataBasePath,
-						SQLiteDatabase.CREATE_IF_NECESSARY,
-						null);
-			}	
-			//REGRESAR UNA UNICA INSTANCIA DE LA BASE DE DATOS
+			// SI LA BASE DE DATOS NO SE ENCUENTRA ABIERTA, ABRIRLA
+			if (!db.isOpen()) {
+				db = view.openOrCreateDatabase(dataBasePath,
+						SQLiteDatabase.CREATE_IF_NECESSARY, null);
+			}
+			// REGRESAR UNA UNICA INSTANCIA DE LA BASE DE DATOS
 			return db;
 		}
 
