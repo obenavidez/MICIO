@@ -304,27 +304,38 @@ public class DateUtil {
 	
 	public static boolean isValidExpiredDate(Date fechavencimiento,
 			boolean esdevencido) {
-		Calendar today = Calendar.getInstance();
+		Calendar today=Calendar.getInstance();
 		today.setTime(new Date());
-
-		Calendar fechavence = Calendar.getInstance();
+		
+		Calendar fechavence=Calendar.getInstance();
 		fechavence.setTime(fechavencimiento);
+		 
+		if(esdevencido)
+		{
+			if(fechavence.get(Calendar.MONTH)==today.get(Calendar.MONTH) 
+					&& fechavence.get(Calendar.YEAR)==today.get(Calendar.YEAR))
+				return true;	 
 
-		if (esdevencido) {
-			if (fechavence.get(Calendar.YEAR) < today.get(Calendar.YEAR))
+			today.add(Calendar.MONTH, 1);
+	        
+			if(fechavence.get(Calendar.MONTH)==today.get(Calendar.MONTH)
+					&& fechavence.get(Calendar.YEAR)==today.get(Calendar.YEAR))
 				return true;
-			else if (fechavence.get(Calendar.YEAR) == today.get(Calendar.YEAR)
-					&& fechavence.get(Calendar.MONTH) < today.get(Calendar.MONTH))
-				return true;
-
-		} else {
-			if (fechavence.get(Calendar.YEAR) > today.get(Calendar.YEAR))
-				return true;
-			else if (fechavence.get(Calendar.YEAR) == today.get(Calendar.YEAR)
-					&& fechavence.get(Calendar.MONTH) > today.get(Calendar.MONTH))
-				return true;
-		}
-		return false;
+		}else
+		{
+			today.setTime(new Date());
+			if((fechavence.get(Calendar.MONTH)>today.get(Calendar.MONTH) 
+					&& fechavence.get(Calendar.YEAR)>=today.get(Calendar.YEAR)
+				) ||  fechavence.get(Calendar.YEAR)>today.get(Calendar.YEAR))
+			{
+				today.add(Calendar.MONTH, 1);
+				if((fechavence.get(Calendar.MONTH)>today.get(Calendar.MONTH) 
+						&& fechavence.get(Calendar.YEAR)>=today.get(Calendar.YEAR)
+						) ||  fechavence.get(Calendar.YEAR)>today.get(Calendar.YEAR))
+					return true;
+			} 
+		}		
+		 return false;
 	}
 	
 	public static long dt2i(Date dt) {
