@@ -5,7 +5,10 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
-public class ValorCatalogo implements KvmSerializable{
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ValorCatalogo implements KvmSerializable, Parcelable {
 
 	public long Id;
     public String Codigo;
@@ -19,6 +22,12 @@ public class ValorCatalogo implements KvmSerializable{
 		Id = id;
 		Codigo = codigo;
 		Descripcion = descripcion;
+	}
+
+	public ValorCatalogo(Parcel parcel) {
+		this.Id = parcel.readLong();
+		this.Codigo = parcel.readString();
+		this.Descripcion = parcel.readString();
 	}
 
 	public long getId(){
@@ -78,5 +87,31 @@ public class ValorCatalogo implements KvmSerializable{
 	@Override
 	public void setProperty(int arg0, Object arg1) {		 
 		
+	}
+	
+	public static final Parcelable.Creator<ValorCatalogo> CREATOR = new Parcelable.Creator<ValorCatalogo>() {
+		@Override
+		public ValorCatalogo createFromParcel(
+				Parcel parcel) {
+			return new ValorCatalogo(parcel);
+		}
+
+		@Override
+		public ValorCatalogo[] newArray(int size) {
+			return new ValorCatalogo[size];
+		}
+	};
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeLong(this.Id);
+		parcel.writeString(this.Codigo);
+		parcel.writeString(this.Descripcion);		
 	}
 }

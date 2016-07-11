@@ -92,7 +92,7 @@ public class FichaClienteFragment extends Fragment implements Handler.Callback {
 		 Log.d(TAG, "onCreateView");
         return _view;
     }
-	
+	 
 	 @Override
 	 public void onConfigurationChanged(Configuration newConfig) {
 	        super.onConfigurationChanged(newConfig);

@@ -34,25 +34,23 @@
         <ScrollView
             android:id="@+id/ScrollView01"
             android:layout_width="fill_parent"
-            android:layout_height="80dp"
-            android:layout_marginBottom="3dip" >
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal|vertical">"
 
             <HorizontalScrollView
                 android:id="@+id/HorizontalScrollView01"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="fill_parent" >
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
                     <RelativeLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp" 
-                        android:orientation="vertical" >
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1">
 
                         <TextView
                             android:id="@+id/fclbl_cliente"
@@ -60,7 +58,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="3dp"
                             android:gravity="left"
-                            android:text="Cliente"
+                            android:text="Cliente :"
                             android:textColor="@color/Black"
                             android:width="112dp" />
 
@@ -71,8 +69,8 @@
                             android:layout_toRightOf="@+id/fclbl_cliente"
                             android:isScrollContainer="true"
                             android:lines="2"
-                            android:text="Detalle Cliente"
-                            android:textColor="@color/DarkGray" />
+                            android:text="Detalle Cliente :"
+                            android:textColor="@color/Blue" />
 
                         <TextView
                             android:id="@+id/fclbl_sucursal"
@@ -92,8 +90,8 @@
                             android:layout_below="@+id/fclbl_cliente"
                             android:layout_toRightOf="@+id/fclbl_sucursal"
                             android:lines="2"
-                            android:text="Detalle Sucursal"
-                            android:textColor="@color/DarkGray" />
+                            android:text="Detalle Sucursal :"
+                            android:textColor="@color/Blue" />
 
                         <TextView
                             android:id="@+id/fclbl_direccion"
@@ -113,7 +111,7 @@
                             android:layout_below="@+id/fclbl_sucursal"
                             android:layout_toRightOf="@+id/fclbl_direccion"
                             android:text="Detalle Dirección"
-                            android:textColor="@color/DarkGray" />
+                            android:textColor="@color/Blue" />
 
                         <TextView
                             android:id="@+id/fclbl_telefono"
@@ -133,21 +131,15 @@
                             android:layout_below="@+id/fclbl_direccion"
                             android:layout_toRightOf="@+id/fclbl_telefono"
                             android:text="Detalle Teléfono"
-                            android:textColor="@color/DarkGray" />
-                        
-                        
-	
-	
-			            
+                            android:textColor="@color/Blue" />
+                         
                         
                     </RelativeLayout>
                     
                     <RelativeLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp" 
-                        android:orientation="vertical" >
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1">
                         
                         <TextView
 			                android:id="@+id/fclbl_tipo"
@@ -165,7 +157,7 @@
 			                android:layout_height="wrap_content" 
 			                android:layout_toRightOf="@+id/fclbl_tipo"
 			                android:text="Detalle Tipo"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 	
 	
 			            <TextView
@@ -186,7 +178,7 @@
 			                android:layout_below="@+id/fclbl_tipo"
 			                android:layout_toRightOf="@+id/fclbl_categoria"
 			                android:text="Detalle Categoria"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 			            
 			            <TextView
 			                android:id="@+id/fclbl_precioventa"
@@ -206,7 +198,7 @@
 			                android:layout_toRightOf="@+id/fclbl_precioventa"
 			                android:layout_below="@+id/fclbl_categoria"
 			                android:text="Detalle Precio Venta"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 			            
 			            <TextView
 			                android:id="@+id/fclbl_limitecredito"
@@ -226,18 +218,15 @@
 			                android:layout_below="@+id/fclbl_precioventa"
 			                android:layout_toRightOf="@+id/fclbl_limitecredito"
 			                android:text="Detalle Limite Credito"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
                     
                     </RelativeLayout>
                         
                     
                     <RelativeLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp"
-                        android:layout_marginTop="3dp"
-                        android:orientation="vertical" > 
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"> 
 	
 			            <TextView
 			                android:id="@+id/fclbl_plazocredito"
@@ -255,7 +244,7 @@
 			                android:layout_height="wrap_content" 
 			                android:layout_toRightOf="@+id/fclbl_plazocredito"
 			                android:text="Detalle Plazo Credito"
-			                android:textColor="@color/DarkGray" /> 
+			                android:textColor="@color/Blue" /> 
 	
 			            <TextView
 			                android:id="@+id/fclbl_plazodescuento"
@@ -266,7 +255,7 @@
 			                android:gravity="left"
 			                android:text="Plazo Descuento :"
 			                android:textColor="@color/Black"
-			                android:width="112dp" />
+			                android:width="113dp" />
 	
 			            <TextView
 			                android:id="@+id/fctextv_detalleplazodescuento"
@@ -275,7 +264,7 @@
 			                android:layout_below="@+id/fclbl_plazocredito"
 			                android:layout_toRightOf="@+id/fclbl_plazodescuento"
 			                android:text="Detalle Plazo Descuento"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 	
 	
 			             <TextView
@@ -296,7 +285,7 @@
 			                android:layout_below="@+id/fclbl_plazodescuento"
 			                android:layout_toRightOf="@+id/fclbl_minabono"
 			                android:text="Detalle Min Abono"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
 	
 	
 			             <TextView
@@ -320,7 +309,7 @@
 			                android:layout_toRightOf="@+id/fclbl_descuentos"
 			                android:lines="2"
 			                android:text="Detalle Descuentos"
-			                android:textColor="@color/DarkGray" />
+			                android:textColor="@color/Blue" />
                         
                     </RelativeLayout>
                 </LinearLayout>
