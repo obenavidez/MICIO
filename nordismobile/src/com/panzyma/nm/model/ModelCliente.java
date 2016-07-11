@@ -580,9 +580,8 @@ public class ModelCliente
 	
 	private static Factura[] getDocumentosPendientes(SQLiteDatabase db,long objSucursalID, long reciboID)
 	{
-		int cont=0;  
-		Factura[] afact=null;
 	    List<Long> facturasGravadas = new ArrayList<Long>();
+	    List<Factura> listFacturas = new ArrayList<Factura>();
 	    try
 	    {
 	    	 
@@ -599,48 +598,20 @@ public class ModelCliente
 			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
 			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );
 			sQuery.append("       AND r.id <> " + reciboID );
-			/*sQuery.append("SELECT rdf.objFacturaID ");
-			sQuery.append(" FROM ReciboDetalleFactura AS rdf ");
-			sQuery.append("      INNER JOIN Recibo r ");
-			sQuery.append("      ON  r.id = rdf.objReciboID ");
-			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);		
-			sQuery.append("       AND r.codEstado <> 'ANULADO' ");*/
+			
 			if(!db.isOpen())
 				db = Helper.getDatabase(NMApp.ctx);
-			Cursor c = DatabaseProvider.query(db, sQuery.toString());
 			
-			if (c.moveToFirst()) {
-				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
-				do {				
-					facturasGravadas.add(c.getLong(0));
-				} while (c.moveToNext());
-			}
-			
-			
-			
-			
-		    //Factura[] afact=new Factura[cur_fact.getCount() - facturasGravadas.size()];
-		       //Recorremos el cursor
-		    sQuery=new StringBuilder();
-		    sQuery.append(" SELECT * ");
-			sQuery.append(" FROM Factura AS f ");
-			sQuery.append(" WHERE f.objSucursalID = " + objSucursalID);
 			Cursor cur_fact = DatabaseProvider.query(db, sQuery.toString());
-			int size =cur_fact.getCount(); //facturasGravadas.size(); 
-		    afact=new Factura[size];
+					    
 	 	    if (cur_fact.moveToFirst()) 
 			{   	    	   			 
 	            do
 	            {
 	        	    int value;
-	        	    boolean agregar = true;
+	        	   
 	            	Factura fact=new Factura();		       	            	
 	            	fact.setId(Long.parseLong(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.Id))));   
-	            	
-	            	/*for(Long facturaID : facturasGravadas) {
-	            		if(fact.getId() == facturaID)
-	            			agregar = false;
-	            	}*/
 	            	
 	            	fact.setNombreSucursal(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NombreSucursal)));
 	            	fact.setNoFactura(cur_fact.getString(cur_fact.getColumnIndex(NMConfig.Cliente.Factura.NoFactura)));
@@ -667,24 +638,19 @@ public class ModelCliente
 	        		fact.setPuedeAplicarDescPP(value==1?true:false);       	            	
 	        		
 	        		fact.setDetallePromocionCobro(getPromocionesCobro(db,fact.getId()));
-	        		fact.setDetalleMontoProveedor(getMontosProveedor(db,fact.getId()));
-	        	
-	        		if(agregar) {
-	        			afact[cont]=fact; 
-	                	cont++;
-	        		}        		
-	            	
+	        		fact.setDetalleMontoProveedor(getMontosProveedor(db,fact.getId()));	        	
+	        		
+	        		listFacturas.add(fact);	        		
 		            	
 		         }while (cur_fact.moveToNext());
-		      } 	    
-	 	    
-			
-			
+		      } 
 		} catch (Exception e) {
 			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
 		} 
-	    
-		return afact.length==0?null:afact;
+		Factura[] array = listFacturas
+				.toArray(new Factura[listFacturas.size()]);
+
+		return array.length == 0 ? null : array;
 	}
 	
 	private static PromocionCobro[] getPromocionesCobro(SQLiteDatabase db,long objFacturaID)
@@ -742,10 +708,9 @@ public class ModelCliente
 	}
 	
 	private static CCNotaCredito[] getCCNotasDeCredito(SQLiteDatabase db,long objSucursalID,long reciboID)
-	{
-		int cont=0; 
+	{		
 	    List<Long> notasCreditoGravadas = new ArrayList<Long>();
-	    CCNotaCredito[] anc=null;
+	    List<CCNotaCredito> listNotasCredito = new ArrayList<CCNotaCredito>();
 	    try{
 	    	 
 		    StringBuilder sQuery = new StringBuilder();
@@ -761,44 +726,19 @@ public class ModelCliente
 			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
 			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );
 			sQuery.append("       AND r.id <> " + reciboID );
+			
 			if(!db.isOpen())
 				db = Helper.getDatabase(NMApp.ctx);
-			Cursor c = DatabaseProvider.query(db, sQuery.toString());
 			
-			if (c.moveToFirst()) {
-				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
-				do {				
-					notasCreditoGravadas.add(c.getLong(0));
-				} while (c.moveToNext());
-			}
-			
-			
-			
-			
-			
-			sQuery=new StringBuilder();
-		    sQuery.append(" SELECT * ");
-			sQuery.append(" FROM CCNotaCredito AS nc ");
-			sQuery.append(" WHERE nc.objSucursalID = " + objSucursalID);
 			Cursor cur_nc = DatabaseProvider.query(db, sQuery.toString());
-			 //int size = notasCreditoGravadas.size();
-		    int size = cur_nc.getCount();
-			anc=new CCNotaCredito[size]; 
 			
 	 	    if (cur_nc.moveToFirst()) 
 			{   	    	   			 
 	            do
-	            {
-	            	boolean agregar = true;
+	            {	
 	        	    CCNotaCredito nc=new CCNotaCredito();        	    
 	        	    nc.setId(Long.parseLong(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Id))));
 
-	        	    /*for(Long id : notasCreditoGravadas) {
-	        	    	if(id == nc.getId() && reciboID != 0) {
-	        	    		agregar = true;
-	        	    	}
-	        	    }*/
-	        	    
 	        	    nc.setNombreSucursal(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.NombreSucursal)));
 	        	    nc.setEstado(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Estado)));
 	        	    nc.setNumero(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Numero)));        	    
@@ -812,10 +752,7 @@ public class ModelCliente
 	        	    nc.setReferencia(cur_nc.getInt(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.Referencia)));
 	        	    nc.setCodConcepto(cur_nc.getString(cur_nc.getColumnIndex(NMConfig.Cliente.CCNotaCredito.CodConcepto)));
 	        	    
-	        	    if(agregar) {
-	        	    	anc[cont]=nc;
-	            	    cont++;
-	        	    }        	    
+	        	   listNotasCredito.add(nc);
 
 	            }while (cur_nc.moveToNext());
 			}
@@ -823,8 +760,9 @@ public class ModelCliente
 		} catch (Exception e) {
 			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
 		} 
-	   
- 	    return anc.length==0?null:anc;
+		CCNotaCredito[] array = listNotasCredito
+				.toArray(new CCNotaCredito[listNotasCredito.size()]);
+		return array.length == 0 ? null : array;
 	}
 		
 	private static CCNotaDebito[] getCCNotasDeDebitoPendiente(long objSucursalID,long reciboID)
@@ -902,10 +840,9 @@ public class ModelCliente
 	}
 	
 	private static CCNotaDebito[] getCCNotasDeDebito(SQLiteDatabase db,long objSucursalID, long reciboID)
-	{
-		int cont=0;
-		  
+	{	  
 	    List<Long> notasDebitoGravadas = new ArrayList<Long>();CCNotaDebito[] array_nd=null;
+	    List<CCNotaDebito> listNotasDebito =  new ArrayList<CCNotaDebito>();
 	    try{
 	    	 
 		    StringBuilder sQuery = new StringBuilder();
@@ -921,39 +858,19 @@ public class ModelCliente
 			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
 			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );	
 			sQuery.append("       AND r.id <> " + reciboID );
+			
 			if(!db.isOpen())
 				db = Helper.getDatabase(NMApp.ctx);
 			
-			Cursor c = DatabaseProvider.query(db, sQuery.toString());
-			
-			if (c.moveToFirst()) {
-				// Recorremos el cursor hasta que no haya más registro(_db[0]==null)s
-				do {				
-					notasDebitoGravadas.add(c.getLong(0));
-				} while (c.moveToNext());
-			}
-			
-			sQuery = new StringBuilder();
-			sQuery.append(" SELECT * ");
-			sQuery.append(" FROM CCNotaDebito AS nd ");
-			sQuery.append(" WHERE nd.objSucursalID = " + objSucursalID);
 			Cursor cur_nd= DatabaseProvider.query(db, sQuery.toString());
-		    int  size=cur_nd.getCount();
-			array_nd = new CCNotaDebito[size]; 
+
 	 	    if (cur_nd.moveToFirst()) 
 			{   	    	   			 
 	            do
 	            {
-	            	boolean agregar = true;
 	            	CCNotaDebito nd=new CCNotaDebito();        	    
 	        	    nd.setId(Long.parseLong(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Id))));   
-	        	    
-	        	    /*for(Long id : notasDebitoGravadas) {
-	        	    	if(id == nd.getId() && reciboID != 0) {
-	        	    		agregar = true;
-	        	    	}
-	        	    }*/
-	        	    
+	        	    	        	    
 	        	    nd.setNombreSucursal(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.NombreSucursal)));
 	        	    nd.setEstado(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Estado)));
 	        	    nd.setNumero(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Numero)));        	    
@@ -966,21 +883,19 @@ public class ModelCliente
 	        	    nd.setSaldo(cur_nd.getFloat(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Saldo)));
 	        	    nd.setCodEstado(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.CodEstado)));
 	        	    nd.setDescripcion(cur_nd.getString(cur_nd.getColumnIndex(NMConfig.Cliente.CCNotaDebito.Descripcion)));
-	        	    
-	        	    if(agregar) {
-	        	    	array_nd[cont]=nd;
-	            	    cont++;
-	        	    }
-	        	    
-
+	        	   
+	        	    listNotasDebito.add(nd);
+	        	   
 	            }while (cur_nd.moveToNext());
 			}
 			
 		} catch (Exception e) {
 			Log.d(ModelValorCatalogo.class.getName(), e.getMessage());
-		}  
-	   
- 	    return  array_nd.length==0?null:array_nd;
+		} 
+	    
+		CCNotaDebito[] array = listNotasDebito
+				.toArray(new CCNotaDebito[listNotasDebito.size()]);
+		return array.length == 0 ? null : array;
 	}
 	
 	private static DescuentoProveedor[] getDescuentosProveedor(SQLiteDatabase db,long objSucursalID)
