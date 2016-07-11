@@ -201,10 +201,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	QuickAction quickAction2;
 	private CustomDialog dlg;
 	public static ProductoDevolucion pd;
-	List<DevolucionProducto> dev_prod;
+	ArrayList<DevolucionProducto> dev_prod;
 	public static final String CLIENTE = "cliente";
 
-	public List<DevolucionProducto> getDev_prod() {
+	public ArrayList<DevolucionProducto> getDev_prod() {
 		return dev_prod == null ? dev_prod = new ArrayList() : dev_prod;
 	}
 
@@ -2636,8 +2636,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				tbxCentralNum.setText(""+devolucion.getNumeroCentral());
 				tbxNombreDelCliente.setText(devolucion.getNombreCliente());				
 				
-				if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0)
-					dev_prod=Arrays.asList(devolucion.getProductosDevueltos());
+				if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0){ 
+					dev_prod=new ArrayList<DevolucionProducto>(Arrays.asList(devolucion.getProductosDevueltos()));
+				}
+					
 				if(adapter_motdev == null){
 					adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = catalogos));
 					cboxmotivodev.setAdapter(adapter_motdev);
@@ -2939,6 +2941,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	
 	public void eliminarProducto()
 	{ 
+		if(positioncache==null && positioncache.length<=0)
+			return;
 		dev_prod.remove(positioncache[0]);
 		positioncache=null;
 		initExpandableListView(true); 
@@ -2964,9 +2968,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			if (item.getObjLoteID() != lote.getObjLoteID())
 			{
 				lotes[index]=item;
+				index++; 	
 				cantidadTotalDevolver += item.getCantidadDevuelta();
 			}
-			index++; 			 
+					 
 		}		 
 		_dp.setCantidadDevolver(cantidadTotalDevolver);
 		_dp.setProductoLotes(lotes); 

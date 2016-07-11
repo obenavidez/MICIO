@@ -47,6 +47,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
+import android.widget.Toast;
 
 public class EditDevolucionProducto extends DialogFragment {
 
@@ -122,7 +123,7 @@ public class EditDevolucionProducto extends DialogFragment {
 
 		@Override
 		protected void onPostExecute(List<Lote> objectResult) {
-			establecer(objectResult);
+			establecer(objectResult,false);
 			super.onPostExecute(objectResult);
 		}
 
@@ -196,7 +197,7 @@ public class EditDevolucionProducto extends DialogFragment {
 
 					}
 				});
-		builder.setNegativeButton("CANCELAR",
+		builder.setNegativeButton("CERRAR",
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface d, int which) {
@@ -388,10 +389,14 @@ public class EditDevolucionProducto extends DialogFragment {
 		return exist;
 	}
 
-	private List<Lote> lotesSinRepetir(List<Lote> lotes) {
+	private List<Lote> lotesSinRepetir(List<Lote> lotes,boolean... adddefault) {
 		List<Lote> lts = new ArrayList();
-		lts.add(0,new Lote(0, "OTRO", 0));
-		lts.add(1,new Lote(-1, "OTRO", 0));
+		if(!(adddefault!=null && adddefault.length>0 && adddefault[0]))
+		{
+			lts.add(0,new Lote(0, "OTRO", 0));
+			lts.add(1,new Lote(-1, "OTRO", 0));
+		}
+		
 		if (this.devolucionProducto != null) {
 			if (lotesInDevolution.size() > 0) {
 				for (Lote lote : lotes) {
@@ -406,8 +411,8 @@ public class EditDevolucionProducto extends DialogFragment {
 		return lts;
 	}
 
-	private void establecer(List<Lote> ltes) {
-		lotes = lotesSinRepetir(ltes);
+	private void establecer(List<Lote> ltes,boolean... adddefault) {
+		lotes = lotesSinRepetir(ltes,adddefault);
 		// lotes = ltes;
 		//lotes.add(lotes.size(), new Lote(-1, "OTRO", 0));
 		lotesAdapter = new CustomAdapter(getActivity(), R.layout.spinner_rows,
@@ -498,7 +503,8 @@ public class EditDevolucionProducto extends DialogFragment {
 		dp.setProductoLotes(new DevolucionProductoLote[l.size()]);
 		l.toArray(dp.getProductoLotes());
 
-		if (dp.getObjProductoID() == 0) {
+		if (dp.getObjProductoID() == 0) 
+		{
 			dp.setObjProductoID(product_selected.getId());
 			dp.setNombreProducto(product_selected.getNombre());
 			dp.setObjProveedorID(product_selected.getObjProveedorID());
@@ -510,10 +516,22 @@ public class EditDevolucionProducto extends DialogFragment {
 			
 		} else {
 			me.getDev_prod().set(obj.getIndex(), dp);
+			
+		} 		
+		
+		lotesInDevolution = new ArrayList<DevolucionProductoLote>(
+				Arrays.asList(dp.getProductoLotes()));
+		clearControls();
+		this.devolucionProducto=dp;
+		establecer(lotes,true);
+		try {
+			showStatusOnUI("Lote agregado correctamente.");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-	    //me.refreshExpandable();
 		me.initExpandableListView(true);
-		dismiss();
+	//	dismiss();
 	}
 
 	private List<DevolucionProductoLote> addLote(
@@ -555,7 +573,8 @@ public class EditDevolucionProducto extends DialogFragment {
 		_recibo.getFormasPagoRecibo().remove(index);
 	}
 
-	private boolean validarDatos() throws InterruptedException {
+	private boolean validarDatos() throws InterruptedException 
+	{
 		// SI ESTAMOS EN OTRO LOTE
 		if ((lotes.size() - 1) == cmbLote.getSelectedItemPosition() || cmbLote.getSelectedItemPosition()<=1) 
 		{
@@ -587,6 +606,14 @@ public class EditDevolucionProducto extends DialogFragment {
 		
 		return true;
 	}
+	
+	private void clearControls(){
+		numeroLote.setText("");
+		anioVencimiento.setText("");
+		cantidad.setText("");		
+	}
+	
+	
 
 	public int getFecha() {
 		return pagoRecibo.getFecha();
@@ -597,9 +624,16 @@ public class EditDevolucionProducto extends DialogFragment {
 	}
 
 	public void showStatusOnUI(Object msg) throws InterruptedException {
-
-		final String titulo = "" + ((ErrorMessage) msg).getTittle();
-		final String mensaje = "" + ((ErrorMessage) msg).getMessage();
+ 
+		String message="";
+		if(msg instanceof ErrorMessage)
+			message=(String) msg;
+		else if(msg instanceof String)
+		{
+			message=((ErrorMessage) msg).getMessage();
+		}
+		
+		final String mensaje = message; 
 
 		NMApp.getThreadPool().execute(new Runnable() {
 			@Override
@@ -610,7 +644,7 @@ public class EditDevolucionProducto extends DialogFragment {
 					getActivity().runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							AppDialog.showMessage(getActivity(), titulo,
+							AppDialog.showMessage(getActivity(), "",
 									mensaje,
 									AppDialog.DialogType.DIALOGO_CONFIRMACION,
 									new AppDialog.OnButtonClickListener() {
