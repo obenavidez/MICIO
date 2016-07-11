@@ -160,7 +160,7 @@ public class ModelConfiguracion {
 	
 	public static DataConfigurationResult getDataConfiguration(String Credentials, String LoginUsuario, String PIN)	throws Exception 
 	{
-		PIN = "21C5D535";
+		//PIN = "21C5D535";
 		return NMTranslate.ToObject
 				(
 					AppNMComunication.InvokeService
@@ -175,7 +175,7 @@ public class ModelConfiguracion {
 
 	public static DataConfigurationResult getDataConfiguration(String URL2,String Credentials, String LoginUsuario, String PIN)	throws Exception 
 	{
-		PIN = "21C5D535";
+		//PIN = "21C5D535";
 		return NMTranslate.ToObject
 				(
 					AppNMComunication.InvokeService

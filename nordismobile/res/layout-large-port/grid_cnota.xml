@@ -20,7 +20,7 @@
           android:layout_toRightOf="@+id/cntextv_fecha"
           android:text="Datalle..."
           android:textColor="@color/Blue"
-          android:textSize="15sp" />
+          android:textSize="15sp"/>
 
 
       <TextView
