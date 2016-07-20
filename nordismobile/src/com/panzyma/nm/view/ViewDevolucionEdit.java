@@ -2289,7 +2289,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					.getSelectedItem()).getCodigo());
 		
 		SpinnerModel cmbMotivo = ((SpinnerModel) cboxmotivodev.getSelectedItem());
-		if (devolucion.getCodMotivo() != null) {			
+		if (devolucion.getCodMotivo() != null && !"".equals(devolucion.getCodMotivo()) ) {			
 			cmbMotivo.setCodigo(devolucion.getCodMotivo());
 		} else {
 			if(cboxmotivodev.getSelectedItemPosition() > 0) {
@@ -2298,7 +2298,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				devolucion.setCodMotivo(null);
 			}
 		}		
-		if (devolucion.getDescMotivo() != null) {
+		if (devolucion.getDescMotivo() != null && !"".equals(devolucion.getDescMotivo())) {
 			cmbMotivo.setDescripcion(devolucion.getDescMotivo());
 		} else {
 			if(cboxmotivodev.getSelectedItemPosition() > 0) {
@@ -2307,7 +2307,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				devolucion.setDescMotivo(null);				 
 			}
 		}	
-		if(devolucion.getObjMotivoID() != 0) {
+		if(devolucion.getObjMotivoID() != -1) {
 			cmbMotivo.setId(devolucion.getObjMotivoID());
 		} else {
 			if(cboxmotivodev.getSelectedItemPosition() > 0) {
