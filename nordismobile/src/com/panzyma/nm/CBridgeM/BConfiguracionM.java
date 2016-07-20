@@ -713,8 +713,30 @@ public class BConfiguracionM extends BBaseM {
 	
 	private void sincronizarPendientesDeEnvio() {		
 		try {
-			Context cntx = NMApp.getContext();
-			BDevolucionM.EnviarDevolucion(cntx.getApplicationContext(), lock);			
+			NMApp.getThreadPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					Context cntx = NMApp.getContext();
+					try {
+						BDevolucionM.EnviarDevolucion(cntx.getApplicationContext());
+						Thread.sleep(1000);
+					} catch (Exception e) {
+						
+					} finally {						
+						if (lock != null) {
+							synchronized (lock) {
+								if (lock != null) {
+									try {
+										lock.notify();
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								}
+							}
+						}
+					}
+				}
+			});
 		} catch (Exception e1) {
 		}		
 	}

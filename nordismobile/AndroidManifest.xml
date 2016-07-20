@@ -137,10 +137,10 @@
           <provider  android:name="com.panzyma.nm.datastore.DatabaseProvider"              
                      android:authorities="com.panzyma.nm.datastore.databaseprovider">              
           </provider>
-          <service android:name="com.panzyma.smf.service.SMFService" android:enabled="true"></service>
+          <!-- <service android:name="com.panzyma.smf.service.SMFService" android:enabled="true"></service>
           <receiver android:name="com.panzyma.smf.service.SMFBroadcastReceiver" android:enabled="true">
               
-          </receiver>  
+          </receiver>   -->
       
           
     </application>
