@@ -39,8 +39,7 @@ import android.content.Context;
 import android.os.Bundle; 
 import android.os.Message;
 import android.util.Log;
-
-@SuppressWarnings("unchecked")
+ 
 public class BDevolucionM extends BBaseM
 {
 	private static String TAG=BDevolucionM.class.getSimpleName();

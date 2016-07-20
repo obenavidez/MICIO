@@ -1372,7 +1372,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setObjPedidoDevueltoID(0);
 		} else {
 			devolucion.setObjPedidoDevueltoID(pedido.getId());
-			devolucion.setObjVendedorID(pedido.getObjVendedorID());
+			//devolucion.setObjVendedorID(pedido.getObjVendedorID());
 		}
 		
 		devolucion.setObjClienteID(cliente.getIdCliente());
@@ -1422,7 +1422,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setObjPedidoDevueltoID(0);
 		} else {
 			devolucion.setObjPedidoDevueltoID(pedido.getId());
-			devolucion.setObjVendedorID(pedido.getObjVendedorID());
+			//devolucion.setObjVendedorID(pedido.getObjVendedorID());
 		}
 		
 		devolucion.setObjClienteID((cliente==null?0:cliente.getIdCliente()));

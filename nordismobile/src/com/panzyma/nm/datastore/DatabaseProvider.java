@@ -1692,7 +1692,8 @@ public class DatabaseProvider extends ContentProvider
 			values.put(NMConfig.Pedido.objTipoPrecioVentaID, pedido.getObjTipoPrecioVentaID());
 			values.put(NMConfig.Pedido.CodTipoPrecio, pedido.getCodTipoPrecio());
 			values.put(NMConfig.Pedido.DescTipoPrecio, pedido.getDescTipoPrecio());
-			values.put(NMConfig.Pedido.objVendedorID, pedido.getObjVendedorID());
+			//values.put(NMConfig.Pedido.objVendedorID, pedido.getObjVendedorID());
+			values.put(NMConfig.Pedido.objVendedorID, 0);
 			values.put(NMConfig.Pedido.BonificacionEspecial, pedido.getBonificacionEspecial());
 			values.put(NMConfig.Pedido.BonificacionSolicitada, pedido.getBonificacionSolicitada());
 			values.put(NMConfig.Pedido.PrecioEspecial, pedido.getPrecioEspecial());
