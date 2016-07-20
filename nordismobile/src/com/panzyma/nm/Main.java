@@ -84,11 +84,6 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 		NMApp.modulo = NMApp.Modulo.HOME;
 		String phone_ID = NMNetWork.getDeviceId(this);
 		configureBroadcastReceiver();
-		//broadCastReceiver=new SMFBroadcastReceiver();
-		/*registerBroadcastReceiver();
-		intent=new Intent();
-		intent.setAction( "com.panzyma.smf.service.CUSTOM_INTENT");
-        sendBroadcast(intent);*/
         
 	}
 
