@@ -486,8 +486,12 @@ public class BDevolucionM extends BBaseM
 		} 
     }
     
-    public static void EnviarDevolucion(Context context) throws Exception
+    public static void EnviarDevolucion(Context context, Object... objects) throws Exception
     { 
+    	Object lock = null;
+    	if(objects != null && (objects.length > 0) ){
+    		lock = objects[0];
+    	}
 		try 
 		{  						
 			ArrayList<Devolucion> devoluciones=ModelDevolucion.getDevolucionesPorEstado("PAGADO_OFFLINE");
@@ -536,7 +540,17 @@ public class BDevolucionM extends BBaseM
 				 }
 					 
 			}
-	 
+			if (lock != null) {
+				synchronized (lock) {
+					if (lock != null) {
+						try {
+							lock.notify();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}				 
 	
 		} catch (Exception e) 
 		{ 
@@ -547,6 +561,17 @@ public class BDevolucionM extends BBaseM
 									  + e.getMessage()
 									 )
 			      );
+			if (lock != null) {
+				synchronized (lock) {
+					if (lock != null) {
+						try {
+							lock.notify();
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			}	
 		} 
     }
     

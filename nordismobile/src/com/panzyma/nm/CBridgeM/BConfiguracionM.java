@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
 
@@ -486,6 +487,15 @@ public class BConfiguracionM extends BBaseM {
 					@Override
 					public void run() {
 						try {
+							
+							sincronizarPendientesDeEnvio();
+							synchronized (lock) {
+								try {
+									lock.wait();
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
 
 							Integer page = 1;
 							while (true) {
@@ -703,17 +713,10 @@ public class BConfiguracionM extends BBaseM {
 	
 	private void sincronizarPendientesDeEnvio() {		
 		try {
-			BDevolucionM.EnviarDevolucion(NMApp.getContext()
-					.getApplicationContext());
+			Context cntx = NMApp.getContext();
+			BDevolucionM.EnviarDevolucion(cntx.getApplicationContext(), lock);			
 		} catch (Exception e1) {
-		}
-		synchronized (lock) {
-			try {
-				lock.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		}		
 	}
 
 	private void SINCRONIZE_TODOS() {
@@ -721,11 +724,16 @@ public class BConfiguracionM extends BBaseM {
 			
 			NMApp.getThreadPool().execute(new Runnable() {
 				@Override
-				public void run() {
-					
+				public void run() {					
 					//Antes de sincronizar, enviar los documuentos pagados fuera de linea
 					sincronizarPendientesDeEnvio();
-
+					synchronized (lock) {
+						try {
+							lock.wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
 					SINCRONIZE_PARAMETROS();
 					synchronized (lock) {
 						try {
