@@ -3,15 +3,23 @@ package com.panzyma.smf.service;
 import com.panzyma.nm.CBridgeM.BDevolucionM;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
 public class SMFService extends Service{
 
+	 private boolean isRunning;
+	 private Context context;
+	 Thread backgroundThread;
+	    
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
+		 this.context = this;
+	     this.isRunning = false;
+	     this.backgroundThread = new Thread(myTask);
 	}
 
 	@Override
@@ -23,47 +31,35 @@ public class SMFService extends Service{
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
-		try 
-		{
-			BDevolucionM.EnviarDevolucion(getApplicationContext());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return super.onStartCommand(intent, flags, startId);
+		if(!this.isRunning) {
+            this.isRunning = true;
+            this.backgroundThread.start();
+        }
+        return START_STICKY; 
 	}
 
 	@Override
 	public void onDestroy() {
-		// TODO Auto-generated method stub
+		
 		super.onDestroy();
+		this.isRunning = false;
 	}
-
+	
 	@Override
-	public boolean onUnbind(Intent intent) {
-		// TODO Auto-generated method stub
-		return super.onUnbind(intent);
-	}
-
-	@Override
-	public void onRebind(Intent intent) {
-		// TODO Auto-generated method stub
-		super.onRebind(intent);
-	}
- 
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		
-		try 
-		{
-			BDevolucionM.EnviarDevolucion(getApplicationContext());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+	public IBinder onBind(Intent intent) { 
 		return null;
 	}
 
+	private Runnable myTask = new Runnable() {
+        public void run() {
+        	try 
+        	{
+				BDevolucionM.EnviarDevolucion(context);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            stopSelf();
+        }
+    };
 }

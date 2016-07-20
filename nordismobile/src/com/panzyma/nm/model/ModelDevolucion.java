@@ -288,7 +288,7 @@ public class ModelDevolucion
 			}
 		}
 
-		return devoluciones;
+		return devoluciones==null?new ArrayList<Devolucion>():devoluciones;
 	}
 	
 	
