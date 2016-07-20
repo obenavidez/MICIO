@@ -3,13 +3,21 @@ package com.panzyma.nm;
 import static com.panzyma.nm.controller.ControllerProtocol.ALERT_DIALOG;
 import static com.panzyma.nm.controller.ControllerProtocol.ERROR;
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
+
+import java.util.Calendar;
+
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -37,6 +45,7 @@ import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.vCliente;
 import com.panzyma.nordismobile.R;
 import com.panzyma.smf.service.SMFBroadcastReceiver;
+import com.panzyma.smf.service.SMFService;
 
 @SuppressLint("ShowToast")
 @SuppressWarnings({ "unused" })
@@ -52,6 +61,7 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 	private boolean onPause;	
 	public int buttonActive;
 	private static CustomDialog dlg;
+	SMFBroadcastReceiver broadCastReceiver;
 	Intent intent;
 
 	@Override
@@ -73,11 +83,64 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 
 		NMApp.modulo = NMApp.Modulo.HOME;
 		String phone_ID = NMNetWork.getDeviceId(this);
-		Intent i = new Intent(this, SMFBroadcastReceiver.class);
-        startActivity(i);
+		configureBroadcastReceiver();
+		//broadCastReceiver=new SMFBroadcastReceiver();
+		/*registerBroadcastReceiver();
+		intent=new Intent();
+		intent.setAction( "com.panzyma.smf.service.CUSTOM_INTENT");
+        sendBroadcast(intent);*/
+        
 	}
 
+	 /**
+	    * This method enables the Broadcast receiver for
+	    * "android.intent.action.TIME_TICK" intent. This intent get
+	    * broadcasted every minute.
+	    *
+	    * @param view
+	    */
+	   public void registerBroadcastReceiver() {
 
+	      this.registerReceiver(broadCastReceiver, new IntentFilter(
+	            "com.panzyma.smf.service.CUSTOM_INTENT")); 
+	      
+	   }
+	   /**
+	    * fire alarm to wake up at 12 PM  hours
+	      and then repeating at 6 PM
+	    * */
+	   public void configureBroadcastReceiver()
+	   {
+		// restart service every half a hours.
+		   long REPEAT_TIME =(3600*1000)*6;
+		   Intent alarm = new Intent(context, SMFBroadcastReceiver.class);
+	       boolean alarmRunning = (PendingIntent.getBroadcast(context, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
+	       if(alarmRunning == false) 
+	       {	    	   
+	    	   Calendar calendar = Calendar.getInstance(); 
+	    	   
+	    	   calendar.setTimeInMillis(System.currentTimeMillis());
+	    	    
+	    	   calendar.set(Calendar.HOUR_OF_DAY, 12); 
+	    	     
+	    	   calendar.set(Calendar.MINUTE,30);  
+	    	   
+	           PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarm, 0);
+	           AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE); 
+	           alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), REPEAT_TIME, pendingIntent);
+	       } 
+	   }
+
+	   /**
+	    * This method disables the Broadcast receiver
+	    *
+	    * @param view
+	    */
+	   public void unregisterBroadcastReceiver() {
+
+	      this.unregisterReceiver(broadCastReceiver); 
+	   }
+	   
 	@Override
 	protected void onDestroy() {
 
