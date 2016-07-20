@@ -486,15 +486,11 @@ public class BDevolucionM extends BBaseM
 		} 
     }
     
-    public static void EnviarDevolucion(Context context, Object... objects) throws Exception
-    { 
-    	Object lock = null;
-    	if(objects != null && (objects.length > 0) ){
-    		lock = objects[0];
-    	}
+    public static void EnviarDevolucion(Context context) throws Exception
+    {     	
 		try 
 		{  						
-			ArrayList<Devolucion> devoluciones=ModelDevolucion.getDevolucionesPorEstado("PAGADO_OFFLINE");
+			List<Devolucion> devoluciones= ModelDevolucion.getDevolucionesPorEstado("PAGADO_OFFLINE");
 			String credenciales="";
 			credenciales=SessionManager.getCredentials(context);	
 			for(Devolucion dev:devoluciones)
@@ -540,18 +536,6 @@ public class BDevolucionM extends BBaseM
 				 }
 					 
 			}
-			if (lock != null) {
-				synchronized (lock) {
-					if (lock != null) {
-						try {
-							lock.notify();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}				 
-	
 		} catch (Exception e) 
 		{ 
 			Processor.notifyToView(NMApp.getController(),ERROR,0,0,
@@ -560,18 +544,7 @@ public class BDevolucionM extends BBaseM
 							          "Error en el proceso de envio de la devolución", "\nCausa: "
 									  + e.getMessage()
 									 )
-			      );
-			if (lock != null) {
-				synchronized (lock) {
-					if (lock != null) {
-						try {
-							lock.notify();
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
-					}
-				}
-			}	
+			      );				
 		} 
     }
     

@@ -272,7 +272,7 @@ public class ViewConfiguracion extends ActionBarActivity implements
 			showStatus(msg.obj.toString());
 			break;
 
-		case ControllerProtocol.ERROR:
+		case ControllerProtocol.ERROR:			
 			AppDialog.showMessage(context,
 					((ErrorMessage) msg.obj).getTittle(),
 					((ErrorMessage) msg.obj).getMessage(),

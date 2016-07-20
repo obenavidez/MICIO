@@ -2,7 +2,10 @@ package com.panzyma.nm.model;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.ksoap2.serialization.PropertyInfo;
+
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -131,9 +134,9 @@ public class ModelDevolucion
 	
 	
 	
-	public synchronized static ArrayList<Devolucion> getDevolucionesPorEstado(String Estado) {
+	public synchronized static List<Devolucion> getDevolucionesPorEstado(String Estado) {
 		
-		ArrayList<Devolucion> devoluciones=null;
+		List<Devolucion> devoluciones = new ArrayList<Devolucion>();
 		StringBuilder query = new StringBuilder();
 
 		SQLiteDatabase db = null;

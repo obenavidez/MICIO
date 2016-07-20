@@ -109,6 +109,7 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	public static void showMessage (Context mContext,String title,String msg, DialogType type)
 	{
 		mybuilder = new AlertDialog.Builder(mContext);
+			
 		//inflater = mContext.getLayoutInflater();
 		inflater = LayoutInflater.from(mContext);
 		Tittle = title;
@@ -130,7 +131,10 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 			
 		}
 		alert = mybuilder.create();
-		alert.setCancelable(false);
+		if(type == DialogType.DIALOGO_ALERTA)
+			alert.setCancelable(true);
+		else 
+			alert.setCancelable(false);		
 		int margen = -2;
 		alert.setView(vDialog, margen, margen, margen, margen);
 		alert.getWindow().setBackgroundDrawable(new ColorDrawable(0));
@@ -238,16 +242,28 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 		tvmessage =(TextView)vDialog.findViewById(R.id.bodymessage_dialog_alert);
 		tvmessage.setText(Message.toString());
 		btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_alert);
-		btn_aceptar.setOnClickListener(new Button.OnClickListener()
+		btn_aceptar.setVisibility(View.INVISIBLE);
+		((Builder) mybuilder).setNeutralButton("Aceptar", new DialogInterface.OnClickListener() { // define the 'Cancel' button
+		    public void onClick(DialogInterface dialog, int which) {
+		        //Either of the following two lines should work.
+		    	if(mylistener!=null){
+					mylistener.onButtonClick(alert, OK_BUTTOM);
+				} 
+		        dialog.cancel();
+		        //dialog.dismiss();
+		    } 
+		});
+		/*btn_aceptar.setOnClickListener(new Button.OnClickListener()
     	{
 			@Override
 			public void onClick(View v) {
 				if(mylistener!=null){
 					mylistener.onButtonClick(alert, OK_BUTTOM);
 				} 
-				alert.dismiss();
+				if(alert != null && alert.isShowing())
+					alert.dismiss();				
 			}	
-    	});
+    	});*/
 		/*mybuilder.setView(vDialog);
 		alert = mybuilder.create();*/
 	}
