@@ -1246,7 +1246,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		if(!ckboxvencidodev.isChecked() && 
 				((cboxmotivodev == null || (cboxmotivodev != null && cboxmotivodev
 				.getSelectedItem() == null)) ||
-				(cboxmotivodev != null && "-1".equals(((SpinnerModel) cboxmotivodev.getSelectedItem()).getCodigo()))))
+				(cboxmotivodev != null && (-1 == ((SpinnerModel) cboxmotivodev.getSelectedItem()).getId() ))))
 		{
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
@@ -1983,7 +1983,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		// Now i have taken static values by loop.
 		// For further inhancement we can take data by webservice / json / xml;
 		valores.get(0).getValoresCatalogo()
-				.add(0, new ValorCatalogo(0, "-1", ""));
+				.add(0, new ValorCatalogo(-1, "", ""));
 		for (ValorCatalogo valor : valores.get(0).getValoresCatalogo()) {
 
 			final SpinnerModel sched = new SpinnerModel();

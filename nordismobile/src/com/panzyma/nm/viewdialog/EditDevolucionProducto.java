@@ -627,10 +627,10 @@ public class EditDevolucionProducto extends DialogFragment {
  
 		String message="";
 		if(msg instanceof ErrorMessage)
-			message=(String) msg;
+			message= ((ErrorMessage) msg).getMessage();
 		else if(msg instanceof String)
 		{
-			message=((ErrorMessage) msg).getMessage();
+			message=(String)msg;
 		}
 		
 		final String mensaje = message; 
