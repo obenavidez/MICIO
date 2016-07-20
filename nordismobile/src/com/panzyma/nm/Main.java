@@ -36,6 +36,7 @@ import com.panzyma.nm.view.ViewPedido;
 import com.panzyma.nm.view.ViewRecibo;
 import com.panzyma.nm.view.vCliente;
 import com.panzyma.nordismobile.R;
+import com.panzyma.smf.service.SMFBroadcastReceiver;
 
 @SuppressLint("ShowToast")
 @SuppressWarnings({ "unused" })
@@ -72,6 +73,8 @@ public class Main extends DashBoardActivity implements Handler.Callback {
 
 		NMApp.modulo = NMApp.Modulo.HOME;
 		String phone_ID = NMNetWork.getDeviceId(this);
+		Intent i = new Intent(this, SMFBroadcastReceiver.class);
+        startActivity(i);
 	}
 
 
