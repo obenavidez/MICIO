@@ -20,6 +20,7 @@ import org.json.JSONArray;
 
 import android.os.Bundle;
 import android.os.Message;
+
 import com.panzyma.nm.NMApp;
 import com.panzyma.nm.auxiliar.ErrorMessage;
 import com.panzyma.nm.auxiliar.Processor;
@@ -699,12 +700,31 @@ public class BConfiguracionM extends BBaseM {
 		}
 
 	}
+	
+	private void sincronizarPendientesDeEnvio() {		
+		try {
+			BDevolucionM.EnviarDevolucion(NMApp.getContext()
+					.getApplicationContext());
+		} catch (Exception e1) {
+		}
+		synchronized (lock) {
+			try {
+				lock.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	private void SINCRONIZE_TODOS() {
-		try {
+		try {			
+			
 			NMApp.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
+					
+					//Antes de sincronizar, enviar los documuentos pagados fuera de linea
+					sincronizarPendientesDeEnvio();
 
 					SINCRONIZE_PARAMETROS();
 					synchronized (lock) {
