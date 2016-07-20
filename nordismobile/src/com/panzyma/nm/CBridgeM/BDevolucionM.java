@@ -783,8 +783,6 @@ public class BDevolucionM extends BBaseM
 		return ModelPedido.getPedido(SessionManager.getCredentials(),
 				idPedido);
 	}
-	
-	
 
     private void onLoadALLData_From_LocalHost()
 	{		
