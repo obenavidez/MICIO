@@ -2316,7 +2316,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				devolucion.setObjMotivoID(0);
 			}
 		}	
-		adapter_motdev.notifyDataSetChanged();
+		//adapter_motdev.notifyDataSetChanged();
 		/*if (cboxmotivodev!=null && cboxmotivodev.getSelectedItem()!=null && cboxmotivodev.getSelectedItemPosition() > 0) {
 			devolucion.setDescMotivo(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getDescripcion());
