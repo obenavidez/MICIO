@@ -586,18 +586,19 @@ public class ModelCliente
 	    {
 	    	 
 		    StringBuilder sQuery = new StringBuilder();
-		    
-		    sQuery.append(" SELECT Id ");
-			sQuery.append(" FROM Factura AS f ");
-			sQuery.append(" WHERE f.objSucursalID = " + objSucursalID);
-			sQuery.append(" EXCEPT ");
-			sQuery.append(" SELECT rdf.objFacturaID " );		
-			sQuery.append(" FROM ReciboDetalleFactura AS rdf ");
-			sQuery.append("      INNER JOIN Recibo r ");
-			sQuery.append("      ON  r.id = rdf.objReciboID ");
-			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
-			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );
-			sQuery.append("       AND r.id <> " + reciboID );
+		    sQuery.append(" SELECT * FROM Factura WHERE Id IN ( ");
+		    sQuery.append("		 SELECT Id ");
+			sQuery.append("		 FROM Factura AS f ");
+			sQuery.append("		 WHERE f.objSucursalID = " + objSucursalID);
+			sQuery.append("		 EXCEPT ");
+			sQuery.append("		 SELECT rdf.objFacturaID " );		
+			sQuery.append("		 FROM ReciboDetalleFactura AS rdf ");
+			sQuery.append("		      INNER JOIN Recibo r ");
+			sQuery.append("		      ON  r.id = rdf.objReciboID ");
+			sQuery.append("		 WHERE r.objSucursalID = " + objSucursalID);			
+			sQuery.append("		       AND r.codEstado = 'REGISTRADO' " );
+			sQuery.append("		       AND r.id <> " + reciboID );
+			sQuery.append(" )");
 			
 			if(!db.isOpen())
 				db = Helper.getDatabase(NMApp.ctx);
@@ -714,18 +715,19 @@ public class ModelCliente
 	    try{
 	    	 
 		    StringBuilder sQuery = new StringBuilder();
-			
-		    sQuery.append(" SELECT Id ");
-			sQuery.append(" FROM CCNotaCredito AS nd ");
-			sQuery.append(" WHERE nd.objSucursalID = " + objSucursalID);
-			sQuery.append(" EXCEPT ");
-			sQuery.append(" SELECT rdf.objNotaCreditoID " );		
-			sQuery.append(" FROM ReciboDetalleNotaCredito AS rdf ");
-			sQuery.append("      INNER JOIN Recibo r ");
-			sQuery.append("      ON  r.id = rdf.objReciboID ");
-			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
-			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );
-			sQuery.append("       AND r.id <> " + reciboID );
+		    sQuery.append(" SELECT * FROM CCNotaCredito WHERE Id IN ( ");
+		    sQuery.append("		 SELECT Id ");
+			sQuery.append("		 FROM CCNotaCredito AS nd ");
+			sQuery.append("		 WHERE nd.objSucursalID = " + objSucursalID);
+			sQuery.append("		 EXCEPT ");
+			sQuery.append("		 SELECT rdf.objNotaCreditoID " );		
+			sQuery.append("		 FROM ReciboDetalleNotaCredito AS rdf ");
+			sQuery.append("		      INNER JOIN Recibo r ");
+			sQuery.append(" 		  ON  r.id = rdf.objReciboID ");
+			sQuery.append("		 WHERE r.objSucursalID = " + objSucursalID);			
+			sQuery.append("  		   AND r.codEstado = 'REGISTRADO' " );
+			sQuery.append(" 		   AND r.id <> " + reciboID );
+			sQuery.append(" )");
 			
 			if(!db.isOpen())
 				db = Helper.getDatabase(NMApp.ctx);
@@ -846,18 +848,19 @@ public class ModelCliente
 	    try{
 	    	 
 		    StringBuilder sQuery = new StringBuilder();
-		    
-		    sQuery.append(" SELECT nd.Id ");
-			sQuery.append(" FROM CCNotaDebito AS nd ");
-			sQuery.append(" WHERE nd.objSucursalID = " + objSucursalID);
-			sQuery.append(" EXCEPT ");
-			sQuery.append(" SELECT rdf.objNotaDebitoID " );		
-			sQuery.append(" FROM ReciboDetalleNotaDebito AS rdf ");
-			sQuery.append("      INNER JOIN Recibo r ");
-			sQuery.append("      ON  r.id = rdf.objReciboID ");
-			sQuery.append(" WHERE r.objSucursalID = " + objSucursalID);			
-			sQuery.append("       AND r.codEstado = 'REGISTRADO' " );	
-			sQuery.append("       AND r.id <> " + reciboID );
+		    sQuery.append(" SELECT * FROM CCNotaDebito WHERE Id IN ( ");
+		    sQuery.append(" 		SELECT nd.Id ");
+			sQuery.append(" 		FROM CCNotaDebito AS nd ");
+			sQuery.append(" 		WHERE nd.objSucursalID = " + objSucursalID);
+			sQuery.append(" 		EXCEPT ");
+			sQuery.append(" 		SELECT rdf.objNotaDebitoID " );		
+			sQuery.append(" 		FROM ReciboDetalleNotaDebito AS rdf ");
+			sQuery.append(" 		     INNER JOIN Recibo r ");
+			sQuery.append(" 		     ON  r.id = rdf.objReciboID ");
+			sQuery.append(" 		WHERE r.objSucursalID = " + objSucursalID);			
+			sQuery.append("			      AND r.codEstado = 'REGISTRADO' " );	
+			sQuery.append("       		  AND r.id <> " + reciboID );
+			sQuery.append(" )");
 			
 			if(!db.isOpen())
 				db = Helper.getDatabase(NMApp.ctx);
