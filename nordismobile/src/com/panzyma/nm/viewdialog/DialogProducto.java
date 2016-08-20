@@ -334,8 +334,11 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 											mButtonClickListener.onButtonClick(det_p,product_selected);
 											Lproducto.remove(positioncache);
 											adapter.getData().remove(positioncache);
-											if(adapter.getOriginal()!=null)
-												adapter.getOriginal().remove(positioncache);
+											if(adapter.getOriginal()!=null){
+												int index = adapter.getOriginal().indexOf(product_selected);
+												//adapter.getOriginal().remove(product_selected);//.remove(positioncache);
+												adapter.getOriginal().remove(index);
+											}
 											adapter.getCount();
 											adapter.notifyDataSetChanged(); 
 											filterEditText.setText("");
