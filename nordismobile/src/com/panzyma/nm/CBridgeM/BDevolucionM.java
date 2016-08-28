@@ -312,6 +312,7 @@ public class BDevolucionM extends BBaseM
 	            }
 				String respuesta=null;
 				try {
+					if(dev.getObjPedido() == null) dev.setObjPedidoDevueltoID(0);
 					 respuesta=ModelDevolucion.getObservacionesDevolucion(credenciales, dev);
 				} catch (Exception e) 
 				{
@@ -413,7 +414,8 @@ public class BDevolucionM extends BBaseM
 						 Processor.notifyToView(NMApp.getController(),ControllerProtocol.NOTIFICATION_DIALOG2,
 							0,0,"Enviando devolución al servidor central");
 						 
-							 
+						if(dev.getObjPedido() == null) dev.setObjPedidoDevueltoID(0);
+						 
 						String respuesta=ModelDevolucion.enviarDevolucion(credenciales, dev); 
 						  
 						if (respuesta == null) 

@@ -1,4 +1,3 @@
-
 package com.panzyma.nm.view;
 
 import static com.panzyma.nm.controller.ControllerProtocol.NOTIFICATION_DIALOG;
@@ -16,7 +15,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map; 
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -130,8 +129,7 @@ import com.panzyma.nordismobile.R;
 @SuppressWarnings({ "unchecked", "rawtypes", "deprecation", "unused" })
 @InvokeBridge(bridgeName = "BDevolucionM")
 public class ViewDevolucionEdit extends ActionBarActivity implements
-		Handler.Callback, Editable 
-		{
+		Handler.Callback, Editable {
 
 	private static final String TAG = ViewDevolucionEdit.class.getSimpleName();
 	private static final int ID_SELECCIONAR_CLIENTE = 0;
@@ -153,7 +151,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final int ID_CUENTASXCOBRAR2 = 3;
 	private static final int ID_CERRAR2 = 4;
 	CuentasPorCobrarFragment cuentasPorCobrar = null;
-	
+
 	private BigDecimal costeoMontoSubTotal = BigDecimal.ZERO;
 	private BigDecimal costeoMontoBonificacion = BigDecimal.ZERO;
 	private BigDecimal costeoMontoImpuesto = BigDecimal.ZERO;
@@ -216,10 +214,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	private ViewDevolucionEdit me;
 	ArrayList<Producto> aprodselected;
-	public List<Producto> get_aprodselected()
-	{ 
-		return  aprodselected == null ?aprodselected = new ArrayList<Producto>() : aprodselected;  
+
+	public List<Producto> get_aprodselected() {
+		return aprodselected == null ? aprodselected = new ArrayList<Producto>()
+				: aprodselected;
 	}
+
 	private ExpandListGroup groupselected;
 
 	DrawerLayout drawerLayout;
@@ -244,12 +244,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	private static final String TOTALCODE = "TT";
 	private static final String PARCIALCODE = "PC";
 	Cliente cliente;
-	
+
 	private static final int MOSTRAR_FACTURAS = 0;
 	private static final int MOSTRAR_NOTAS_DEBITO = 1;
 	private static final int MOSTRAR_NOTAS_CREDITO = 2;
 	private static final int MOSTRAR_PEDIDOS = 3;
-	private static final int MOSTRAR_RECIBOS = 4;	
+	private static final int MOSTRAR_RECIBOS = 4;
 
 	public Cliente getCliente() {
 		return cliente;
@@ -299,16 +299,15 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	}
 
 	public enum FragmentActive {
-		EDIT,  FICHACLIENTE, CONSULTAR_CUENTA_COBRAR
+		EDIT, FICHACLIENTE, CONSULTAR_CUENTA_COBRAR
 	};
+
 	private FragmentActive fragmentActive = null;
 	FichaClienteFragment ficha;
 	private Button Menu;
-	
-	
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) 
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		context = this;
 		me = this;
@@ -350,8 +349,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 
-	public void initComponent() 
-	{
+	public void initComponent() {
 		ckboxvencidodev = (CheckBox) findViewById(R.id.devchk_typodevolucion);
 		tbxRefNum = (EditText) findViewById(R.id.devetextv_detalle_numref);
 		tbxCentralNum = (EditText) findViewById(R.id.devtextv_detallenumero);
@@ -378,24 +376,24 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		cboxtipodev.setAdapter(adapter_tipodev);
 		cboxmotivodev.setVisibility(View.GONE);
 		labelMotivo.setVisibility(View.GONE);
-		
+
 		Menu = (Button) findViewById(R.id.btnmenu);
-	
-		
-		ckboxvencidodev.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+		ckboxvencidodev
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) 
-					{
+							boolean isChecked) {
 						cboxmotivodev.setVisibility(isChecked ? View.GONE
 								: View.VISIBLE);
 						labelMotivo.setVisibility(isChecked ? View.GONE
 								: View.VISIBLE);
 						cboxmotivodev.setSelection(isChecked ? 0
 								: cboxmotivodev.getSelectedItemPosition());
-						if(adapter_motdev!=null)
-							adapter_motdev.setSelectedPosition(isChecked ? 0 : cboxmotivodev.getSelectedItemPosition());
+						if (adapter_motdev != null)
+							adapter_motdev.setSelectedPosition(isChecked ? 0
+									: cboxmotivodev.getSelectedItemPosition());
 						devolucion.setDescMotivo(isChecked ? devolucion
 								.getDescMotivo() : null);
 						devolucion.setCodMotivo(isChecked ? devolucion
@@ -406,18 +404,20 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 						cboxtramitedev.setEnabled(true);
 						/**/
 						lgroups.clear();
-						if(dev_prod!=null){
+						if (dev_prod != null) {
 							dev_prod = new ArrayList();// dev_prod.clear();
-//							
-//							if(devolucion.getProductosDevueltos()!=null)
-//								dev_prod =new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
+							//
+							// if(devolucion.getProductosDevueltos()!=null)
+							// dev_prod =new
+							// ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
 						}
-						if(adapter!=null)
+						if (adapter != null)
 							adapter.updateData(lgroups);
 						costeoMontoTotal = BigDecimal.ZERO;
 						tbxtotaldev.setText(""
-								+ costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2,
-										RoundingMode.UNNECESSARY));						
+								+ costeoMontoTotal.divide(
+										new BigDecimal(100.00)).setScale(2,
+										RoundingMode.UNNECESSARY));
 						updateObject();
 						initExpandableListView(false);
 					}
@@ -472,18 +472,18 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) 
-			{
+					int position, long id) {
 				if (position == 0)
 					return;
-  
-				if ("RE".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()))
-				{
+
+				if ("RE".equals(((SpinnerModel) cboxtramitedev
+						.getSelectedItem()).getCodigo())) {
 
 					ckboxncinmeditata.setChecked(false);
 					ckboxncinmeditata.setEnabled(false);
 					ValidarTipoTramite();
-				} else if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
+				} else if ("NC".equals(((SpinnerModel) cboxtramitedev
+						.getSelectedItem()).getCodigo())) {
 					ckboxncinmeditata.setEnabled(true);
 				}
 			}
@@ -501,14 +501,15 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
- 
-						if (REPOSICIONCODE.equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo()))
+
+						if (REPOSICIONCODE
+								.equals(((SpinnerModel) cboxtramitedev
+										.getSelectedItem()).getCodigo()))
 							ckboxncinmeditata.setChecked(false);
 						EstimarCostosDev(true);
 					}
 
 				});
- 
 
 		cboxtipodev.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -525,12 +526,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							|| (adapter != null && adapter.getGroupCount() == 0))
 						return;
 
-					//if (pedido != null) {
+					// if (pedido != null) {
 					establecerCantidadDev();
 					EstimarCostosDev(true);
 					CalTotalDevolucion();
 					adapter.notifyDataSetChanged();
-					//}
+					// }
 
 					ValidarTipoTramite();
 					if ("TT".equals(((Map.Entry<String, String>) adapter_tipodev
@@ -566,7 +567,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion = new Devolucion();
 			devolucion.setCodEstado(REGISTRADA);
 			devolucion.setId(0);
-			devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
+			devolucion
+					.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 			devolucion.setNumeroCentral(0);
 			devolucion.setReferencia(0);
 			devolucion.setOffLine(true);
@@ -581,71 +583,69 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setMontoVinieta(0);
 			devolucion.setNota("");
 			devolucion.setParcial(PARTIAL);
-			devolucion.setSubtotal(costeoMontoSubTotal.longValue());	 
-			devolucion.setImpuesto(costeoMontoImpuesto.longValue());	
+			devolucion.setSubtotal(costeoMontoSubTotal.longValue());
+			devolucion.setImpuesto(costeoMontoImpuesto.longValue());
 			devolucion.setImpuestoVen(costeoMontoImpuestoVen.longValue());
 			devolucion.setMontoPromocion(costeoMontoBonificacion.longValue());
-			devolucion.setMontoPromocionVen(costeoMontoBonificacionVen.longValue());
-			devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo.longValue());
-			devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen.longValue()); 
+			devolucion.setMontoPromocionVen(costeoMontoBonificacionVen
+					.longValue());
+			devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo
+					.longValue());
+			devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen
+					.longValue());
 			devolucion.setTotal(costeoMontoTotal.longValue());
-			devolucion.setTotalVen(costeoMontoTotalVen.longValue()); 
+			devolucion.setTotalVen(costeoMontoTotalVen.longValue());
 			devolucion.setReferenciaNC(0);
-			
-			devolucion.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
+
+			devolucion
+					.setFecha(DateUtil.dt2i(Calendar.getInstance().getTime()));
 			tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
-			
-		}
-		else
-		{ 
+
+		} else {
 			updateControls(devolucion);
 		}
 
 		CreateMenu();
 		ckboxncinmeditata.setChecked(false);
 		ckboxncinmeditata.setEnabled(false);
-		
+
 	}
 
-	public void initExpandableListView(boolean render) 
-	{
-		if (adapter == null || render) 
-		{
+	public void initExpandableListView(boolean render) {
+		if (adapter == null || render) {
 			ArrayList<SetViewHolderWLayout> layouts = new ArrayList<SetViewHolderWLayout>();
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_productolote,
 					ProductoLoteViewHolder.class, true, 0));
 			layouts.add(new SetViewHolderWLayout(R.layout.detalle_loteproducto,
 					ProductoLoteDetalleViewHolder.class, false, 0));
-			try 
-			{
+			try {
 				adapter = new ExpandListAdapterOriginal(context,
 						lgroups = SetStandardGroups(), layouts);
 				lvdevproducto.setAdapter(adapter);
 
-				for (int g = 0; g < adapter.getGroupCount(); g++) 
-				{
+				for (int g = 0; g < adapter.getGroupCount(); g++) {
 					lvdevproducto.expandGroup(g);
 				}
 
 				lvdevproducto
-						.setOnChildClickListener(new OnChildClickListener() 
-						{
+						.setOnChildClickListener(new OnChildClickListener() {
 
 							@Override
 							public boolean onChildClick(
 									ExpandableListView _parent, View v,
 									int groupPosition, int childPosition,
-									long id) 
-							{
-								if(positioncache==null){
+									long id) {
+								if (positioncache == null) {
 									positioncache = new int[2];
-									positioncache[0] =-1;
-									positioncache[1] =-1;
+									positioncache[0] = -1;
+									positioncache[1] = -1;
 								}
-								
-								if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
+
+								if (devolucion.getNumeroCentral() != 0
+										|| "PAGADO_OFFLINE".equals(devolucion
+												.getCodEstado()))
 									return false;
-								
+
 								if (_lastColored != null) {
 									_lastColored
 											.setBackgroundColor(Color.TRANSPARENT);
@@ -654,38 +654,41 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								_lastColored = v;
 								v.setBackgroundColor(Color.rgb(214, 214, 214));
 
-								
 								int flatpost;
 								int ajustPos;
 								if (_parent == null)
-									return false; 
-								
-								if (positioncache != null && positioncache.length != 0 && positioncache[1]!=-1) 
-								{
-									long value = ExpandableListView.getPackedPositionForChild(positioncache[0],
+									return false;
+
+								if (positioncache != null
+										&& positioncache.length != 0
+										&& positioncache[1] != -1) {
+									long value = ExpandableListView
+											.getPackedPositionForChild(
+													positioncache[0],
 													positioncache[1]);
-									flatpost = _parent.getFlatListPosition(value);
+									flatpost = _parent
+											.getFlatListPosition(value);
 									ajustPos = flatpost
 											- _parent.getFirstVisiblePosition();
 									View oldview = _parent.getChildAt(ajustPos);
 									if (oldview != null
 											&& oldview.getTag() != null
-											&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) 
-									{
-										 
-										oldview.setBackgroundColor(oldview.getResources().getColor(R.color.White));
-										 
+											&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) {
+
+										oldview.setBackgroundColor(oldview
+												.getResources().getColor(
+														R.color.White));
+
 										oldview.setSelected(false);
 									}
 
 								}
 								v.setSelected(true);
-								v.setBackgroundColor(v.getResources().getColor(R.color.Gold));
-//								v.setBackgroundDrawable(context.getResources()
-//										.getDrawable(R.color.LighBlueMarine));
-								
-								
-								
+								v.setBackgroundColor(v.getResources().getColor(
+										R.color.Gold));
+								// v.setBackgroundDrawable(context.getResources()
+								// .getDrawable(R.color.LighBlueMarine));
+
 								positioncache[0] = groupPosition;
 								positioncache[1] = childPosition;
 
@@ -708,43 +711,55 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 								int flatpost;
 								int ajustPos;
 								long value = 0;
-								
-								if(positioncache==null){
-									positioncache = new int[2];
-									positioncache[0] =-1;
-									positioncache[1] =-1;
-								}
-									 
-								
-								if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
-									return false;
-								
-								elv = (ExpandableListView) _parent;
-								if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) 
-								{
 
-									if (view.getTag() instanceof ProductoLoteDetalleViewHolder) 
-									{
-										ProductoLoteDetalleViewHolder pld = (ProductoLoteDetalleViewHolder) view.getTag();
+								if (positioncache == null) {
+									positioncache = new int[2];
+									positioncache[0] = -1;
+									positioncache[1] = -1;
+								}
+
+								if (devolucion.getNumeroCentral() != 0
+										|| "PAGADO_OFFLINE".equals(devolucion
+												.getCodEstado()))
+									return false;
+
+								elv = (ExpandableListView) _parent;
+								if (ExpandableListView
+										.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+
+									if (view.getTag() instanceof ProductoLoteDetalleViewHolder) {
+										ProductoLoteDetalleViewHolder pld = (ProductoLoteDetalleViewHolder) view
+												.getTag();
 										if (elv == null)
 											return false;
 
-										if (positioncache != null && positioncache.length != 0  && positioncache[1]!=-1) 
-										{ 
-											value = ExpandableListView.getPackedPositionForChild(positioncache[0],positioncache[1]);
-											flatpost = elv.getFlatListPosition(value);
-											ajustPos = flatpost - elv.getFirstVisiblePosition();
-											View oldview = elv.getChildAt(ajustPos);
+										if (positioncache != null
+												&& positioncache.length != 0
+												&& positioncache[1] != -1) {
+											value = ExpandableListView
+													.getPackedPositionForChild(
+															positioncache[0],
+															positioncache[1]);
+											flatpost = elv
+													.getFlatListPosition(value);
+											ajustPos = flatpost
+													- elv.getFirstVisiblePosition();
+											View oldview = elv
+													.getChildAt(ajustPos);
 											if (oldview != null
 													&& oldview.getTag() != null
 													&& oldview.getTag() instanceof ProductoLoteDetalleViewHolder) {
-												oldview.setBackgroundColor(oldview.getResources().getColor(R.color.White));
+												oldview.setBackgroundColor(oldview
+														.getResources()
+														.getColor(R.color.White));
 												oldview.setSelected(false);
 											}
- 
+
 										}
 										view.setSelected(true);
-										view.setBackgroundColor(view.getResources().getColor(R.color.Gold));
+										view.setBackgroundColor(view
+												.getResources().getColor(
+														R.color.Gold));
 
 										positioncache[0] = ExpandableListView
 												.getPackedPositionGroup(id);
@@ -756,17 +771,19 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 														positioncache[1]);
 										groupselected = (ExpandListGroup) adapter
 												.getGroup(positioncache[0]);
-										/*EditarProductoLote(
-												groupselected.getName(),
-												childselected);*/
-										showMenu(view, false, groupselected, childselected);
+										/*
+										 * EditarProductoLote(
+										 * groupselected.getName(),
+										 * childselected);
+										 */
+										showMenu(view, false, groupselected,
+												childselected);
 									}
 
 									return true;
 								} else {
 
-									if (view.getTag() instanceof ProductoLoteViewHolder) 
-									{
+									if (view.getTag() instanceof ProductoLoteViewHolder) {
 										if (elv == null)
 											return false;
 
@@ -795,11 +812,14 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 										groupselected = (ExpandListGroup) adapter
 												.getGroup(positioncache[0]);
 
-										showMenu(view, true, groupselected, childselected);
-										
-										/*EditarProductoBonificacion(
-												groupselected.getName(),
-												groupselected);*/
+										showMenu(view, true, groupselected,
+												childselected);
+
+										/*
+										 * EditarProductoBonificacion(
+										 * groupselected.getName(),
+										 * groupselected);
+										 */
 									}
 
 								}
@@ -837,9 +857,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				CalTotalDevolucion();
 				CalMontoCargoVendedor();
 				Actualizardevolucion();
-				//updateControls(devolucion);
+				// updateControls(devolucion);
 				adapter.notifyDataSetChanged();
-				//devolucion.setOlddata(devolucion);
+				// devolucion.setOlddata(devolucion);
 			} catch (Exception e) {
 				AppDialog.showMessage(this, "Alerta", e.getMessage(),
 						DialogType.DIALOGO_ALERTA);
@@ -867,8 +887,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				.obtenerProductoModificado(new escucharModificacionProducto() {
 
 					@Override
-					public void onButtonClick(int cantidadbonificacion) 
-					{
+					public void onButtonClick(int cantidadbonificacion) {
 						actualizarProductoBonificacion(cantidadbonificacion);
 						EstimarCostosDev(false);
 						CalTotalDevolucion();
@@ -909,9 +928,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	public List<ExpandListGroup> SetStandardGroups() {
 		LinkedList<ExpandListGroup> _lgroups = new LinkedList<ExpandListGroup>();
-		
-		for (DevolucionProducto dp : getDev_prod()) 
-		{
+
+		for (DevolucionProducto dp : getDev_prod()) {
 			ExpandListGroup group = new ExpandListGroup();
 			LinkedList<ExpandListChild> groupchild = new LinkedList<ExpandListChild>();
 			group.setName(dp.getNombreProducto());
@@ -928,8 +946,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		return _lgroups;
 	}
 
-	public void refreshExpandable() 
-	{
+	public void refreshExpandable() {
 		if (adapter != null) {
 			lgroups = SetStandardGroups();
 			adapter.updateData(lgroups);
@@ -973,8 +990,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 
-	public void updateObject() 
-	{
+	public void updateObject() {
 		List<ExpandListGroup> _lgroups = lgroups;
 		ExpandListGroup group = null;
 		DevolucionProducto[] adp = new DevolucionProducto[lgroups.size()];
@@ -997,10 +1013,10 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	}
 
 	public void actualizarProductoBonificacion(int cantidadbonificacion) {
-		DevolucionProducto _dp = (DevolucionProducto) groupselected.getObject();		
+		DevolucionProducto _dp = (DevolucionProducto) groupselected.getObject();
 		_dp.setBonificacionVen(cantidadbonificacion);
 		groupselected.setObject(_dp);
-		lgroups.set(positioncache[0], groupselected); 
+		lgroups.set(positioncache[0], groupselected);
 		adapter.notifyDataSetChanged();
 	}
 
@@ -1061,7 +1077,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		ch.setName(dpl.getNumeroLote());
 		ch.setObject(dpl);
 		groupselected.getItems().set(positioncache[1], ch);
-		// sumar todas las cantidades a devolver de sus lote del producto seleccionado.
+		// sumar todas las cantidades a devolver de sus lote del producto
+		// seleccionado.
 		for (ExpandListChild _ch : groupselected.getItems())
 			cantidadTotalDevolver += ((DevolucionProductoLote) _ch.getObject())
 					.getCantidadDevuelta();
@@ -1149,12 +1166,14 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	public void CreateMenu() {
 		// Obtenemos las opciones desde el recurso
-		int idarray=(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado()))?R.array.devolucioneditoptions2:R.array.devolucioneditoptions;
-		opcionesMenu = getResources().getStringArray(idarray); 
+		int idarray = (devolucion.getNumeroCentral() != 0 || "PAGADO_OFFLINE"
+				.equals(devolucion.getCodEstado())) ? R.array.devolucioneditoptions2
+				: R.array.devolucioneditoptions;
+		opcionesMenu = getResources().getStringArray(idarray);
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// Buscamos nuestro menu lateral
 		drawerList = (ListView) findViewById(R.id.left_drawer);
-		 
+
 		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
 				.getThemedContext(), android.R.layout.simple_list_item_1,
 				opcionesMenu));
@@ -1202,36 +1221,33 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
- 
+
 	protected void salvarDevolucion(int... arg) {
 		updateObject();
 		if (!validarDevolucion())
-			return; 
+			return;
 		Message msg = new Message();
 		msg.obj = devolucion;
 		msg.what = arg.length != 0 ? arg[0] : SAVE_DATA_FROM_LOCALHOST;
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 
-	private void enviarDevolucion(int... arg) 
-	{
+	private void enviarDevolucion(int... arg) {
 		updateObject();
-		if (!validarDevolucion()) 
-		{
+		if (!validarDevolucion()) {
 			return;
 		}
 		Message msg = new Message();
 		msg.obj = devolucion;
-		msg.what  = arg.length != 0 ? arg[0] :ControllerProtocol.ENVIARDEVOLUCION;
+		msg.what = arg.length != 0 ? arg[0]
+				: ControllerProtocol.ENVIARDEVOLUCION;
 		com.panzyma.nm.NMApp.getController().getInboxHandler().sendMessage(msg);
 	}
 
-	public boolean validarDevolucion() 
-	{
+	public boolean validarDevolucion() {
 
 		devolucion.setFecha(DateUtil.dt2i(new Date()));
-		if (cliente == null) 
-		{
+		if (cliente == null) {
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
 					0,
@@ -1242,12 +1258,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							""));
 			return false;
 		}
-		
-		if(!ckboxvencidodev.isChecked() && 
-				((cboxmotivodev == null || (cboxmotivodev != null && cboxmotivodev
-				.getSelectedItem() == null)) ||
-				(cboxmotivodev != null && (-1 == ((SpinnerModel) cboxmotivodev.getSelectedItem()).getId() ))))
-		{
+
+		if (!ckboxvencidodev.isChecked()
+				&& ((cboxmotivodev == null || (cboxmotivodev != null && cboxmotivodev
+						.getSelectedItem() == null)) || (cboxmotivodev != null && (-1 == ((SpinnerModel) cboxmotivodev
+						.getSelectedItem()).getId())))) {
 			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
 					0,
@@ -1257,20 +1272,22 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							"Debe seleccionar la causa de la devolución", ""));
 			return false;
 		}
-		
-		
-		if ("-1".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) 
-		{
-			com.panzyma.nm.NMApp.getController().notifyOutboxHandlers(
-					ControllerProtocol.ERROR,
-					0,
-					0,
-					new ErrorMessage(
-							"Debe seleccionar tipo de tramite de la devolución",
-							"Debe seleccionar tipo de tramite de la devolución", ""));
+
+		if ("-1".equals(((SpinnerModel) cboxtramitedev.getSelectedItem())
+				.getCodigo())) {
+			com.panzyma.nm.NMApp
+					.getController()
+					.notifyOutboxHandlers(
+							ControllerProtocol.ERROR,
+							0,
+							0,
+							new ErrorMessage(
+									"Debe seleccionar tipo de tramite de la devolución",
+									"Debe seleccionar tipo de tramite de la devolución",
+									""));
 			return false;
-		}		
-			
+		}
+
 		if (devolucion.getProductosDevueltos() == null
 				|| (devolucion.getProductosDevueltos() != null && devolucion
 						.getProductosDevueltos().length == 0)) {
@@ -1360,98 +1377,109 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			}
 		}
 
-		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
+		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem())
+				.getCodigo())) {
 			devolucion.setTipoTramite("NC");
 		} else {
 			devolucion.setTipoTramite("RE");
 		}
 
-		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtipodev.getSelectedItem()).getCodigo())) ? false : true);
+		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtipodev
+				.getSelectedItem()).getCodigo())) ? false : true);
 		devolucion.setDeVencido(ckboxvencidodev.isChecked());
 		if (this.pedido == null || this.pedido.getId() == 0L) {
 			devolucion.setObjPedidoDevueltoID(0);
 		} else {
 			devolucion.setObjPedidoDevueltoID(pedido.getId());
-			//devolucion.setObjVendedorID(pedido.getObjVendedorID());
+			// devolucion.setObjVendedorID(pedido.getObjVendedorID());
 		}
-		
+
 		devolucion.setObjClienteID(cliente.getIdCliente());
 		devolucion.setObjSucursalID(cliente.getIdSucursal());
 		devolucion.setEspecial(!"".equals(devolucion.getObservacion()));
-		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado())) 
-		{
-			EstimarCostosDev(false); 
+		if (!ckboxncinmeditata.isChecked()
+				&& "REGISTRADA".equals(devolucion.getCodEstado())) {
+			EstimarCostosDev(false);
 			CalMontoCargoVendedor();
-		    CalMontoPromocion();		    
+			CalMontoPromocion();
 		}
 		CalTotalDevolucion();
 		devolucion.setMontoCargoVendedor(costeoMontoCargoVen.longValue());
 		devolucion.setTotalVen(costeoMontoTotalVen.longValue());
 		devolucion.setMontoVinieta(costeoMontoVinieta.longValue());
-		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen.longValue());
+		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen
+				.longValue());
 		devolucion.setMontoPromocionVen(costeoMontoPromocionVen.longValue());
 		devolucion.setImpuestoVen(costeoMontoImpuestoVen.longValue());
-		devolucion.setMontoBonifVen(costeoMontoBonificacionVen.longValue()); 
-		 
-		devolucion.setTotal(costeoMontoTotal.longValue()); 
+		devolucion.setMontoBonifVen(costeoMontoBonificacionVen.longValue());
+
+		devolucion.setTotal(costeoMontoTotal.longValue());
 		devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo.longValue());
 		devolucion.setMontoPromocion(costeoMontoPromocion.longValue());
 		devolucion.setImpuesto(costeoMontoImpuesto.longValue());
 		devolucion.setMontoBonif(costeoMontoBonificacion.longValue());
 		devolucion.setSubtotal(costeoMontoSubTotal.longValue());
-		
+
 		return true;
 	}
-	
-	public void setDataBeforeBack() 
-	{	
-		devolucion.setObjClienteID((cliente==null?0:cliente.getIdCliente()));
+
+	public void setDataBeforeBack() {
+		devolucion.setObjClienteID((cliente == null ? 0 : cliente
+				.getIdCliente()));
 		devolucion.setFecha(DateUtil.dt2i(new Date()));
 
-		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
+		if ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem())
+				.getCodigo())) {
 			devolucion.setTipoTramite("NC");
-		} else if("RE".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())) {
+		} else if ("RE"
+				.equals(((SpinnerModel) cboxtramitedev.getSelectedItem())
+						.getCodigo())) {
 			devolucion.setTipoTramite("RE");
 		} else {
 			devolucion.setTipoTramite(null);
 		}
 
-		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtipodev.getSelectedItem()).getCodigo())) ? false : true);
+		devolucion.setParcial(("TT".equals(((SpinnerModel) cboxtipodev
+				.getSelectedItem()).getCodigo())) ? false : true);
 		devolucion.setDeVencido(ckboxvencidodev.isChecked());
 		if (this.pedido == null || this.pedido.getId() == 0L) {
 			devolucion.setObjPedidoDevueltoID(0);
 		} else {
 			devolucion.setObjPedidoDevueltoID(pedido.getId());
-			//devolucion.setObjVendedorID(pedido.getObjVendedorID());
+			// devolucion.setObjVendedorID(pedido.getObjVendedorID());
 		}
-		
-		devolucion.setObjClienteID((cliente==null?0:cliente.getIdCliente()));
-		devolucion.setObjSucursalID((cliente==null?0:cliente.getIdSucursal()));
-		
-		devolucion.setEspecial(devolucion.getObservacion()==null?false:!"".equals(devolucion.getObservacion().toString()));
-		if (!ckboxncinmeditata.isChecked() && "REGISTRADA".equals(devolucion.getCodEstado())) 
-		{
-			EstimarCostosDev(false); 
+
+		devolucion.setObjClienteID((cliente == null ? 0 : cliente
+				.getIdCliente()));
+		devolucion.setObjSucursalID((cliente == null ? 0 : cliente
+				.getIdSucursal()));
+
+		devolucion.setEspecial(devolucion.getObservacion() == null ? false
+				: !"".equals(devolucion.getObservacion().toString()));
+		if (!ckboxncinmeditata.isChecked()
+				&& "REGISTRADA".equals(devolucion.getCodEstado())) {
+			EstimarCostosDev(false);
 			CalMontoCargoVendedor();
-		    CalMontoPromocion();
-		    CalTotalDevolucion();
+			CalMontoPromocion();
+			CalTotalDevolucion();
 		}
-		
+
 		devolucion.setMontoCargoVendedor(costeoMontoCargoVen.longValue());
 		devolucion.setTotalVen(costeoMontoTotalVen.longValue());
 		devolucion.setMontoVinieta(costeoMontoVinieta.longValue());
-		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen.longValue());
+		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen
+				.longValue());
 		devolucion.setMontoPromocionVen(costeoMontoPromocionVen.longValue());
 		devolucion.setImpuestoVen(costeoMontoImpuestoVen.longValue());
-		devolucion.setMontoBonifVen(costeoMontoBonificacionVen.longValue()); 
-		 
-		devolucion.setTotal(costeoMontoTotal.longValue()); 
+		devolucion.setMontoBonifVen(costeoMontoBonificacionVen.longValue());
+
+		devolucion.setTotal(costeoMontoTotal.longValue());
 		devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo.longValue());
 		devolucion.setMontoPromocion(costeoMontoPromocion.longValue());
 		devolucion.setImpuesto(costeoMontoImpuesto.longValue());
 		devolucion.setMontoBonif(costeoMontoBonificacion.longValue());
 		devolucion.setSubtotal(costeoMontoSubTotal.longValue());
-		
+
 	}
 
 	public void EstimarCostosDev(boolean calBonif) {
@@ -1499,8 +1527,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				} else {
 					if (calBonif) {
 						int qtybonif = 0;
-						Bonificacion bonif = DevolucionBL.getBonificacion3(prod,
-								cliente.getObjCategoriaClienteID(),
+						Bonificacion bonif = DevolucionBL.getBonificacion3(
+								prod, cliente.getObjCategoriaClienteID(),
 								_dp.getCantidadDevolver());
 						if (bonif != null && bonif.getCantBonificacion() != 0) {
 							qtybonif = bonif.getCantBonificacion();
@@ -1516,8 +1544,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 			if (pedido == null || pedido.getId() == 0
 					|| _dp.getCantidadOrdenada() <= 0) {
-				if (!ckboxvencidodev.isChecked()) 
-				{
+				if (!ckboxvencidodev.isChecked()) {
 					// Calcular precio IdTipoClienteMayorista
 					long idTP = pedido == null || pedido.getId() == 0 ? 0
 							: pedido.getObjTipoPrecioVentaID();
@@ -1526,17 +1553,20 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 							.getSharedPreferences("SystemParams",
 									android.content.Context.MODE_PRIVATE)
 							.getString("IdTipoClienteMayorista", "0"));
-					
+
 					if (IdTipoClienteMayorista == cliente.getObjTipoClienteID())
 						idTP = Long.parseLong(this.getSharedPreferences(
 								"SystemParams",
 								android.content.Context.MODE_PRIVATE)
 								.getString("IdTipoPrecioGeneral", "0"));
-					idTP=idTP==0?idPrecioVenta:idTP;
-					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,idTP, _dp.getCantidadDevolver()) * 100));
+					idTP = idTP == 0 ? idPrecioVenta : idTP;
+					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,
+							idTP, _dp.getCantidadDevolver()) * 100));
 				} else {
-					ValorCatalogo vcatalogo = ModelLogic.getValorByCatalogo("TipoPrecio",new String("VEN"));
-					long idTP = pedido == null || pedido.getId() == 0 ? 0: pedido.getObjTipoPrecioVentaID();
+					ValorCatalogo vcatalogo = ModelLogic.getValorByCatalogo(
+							"TipoPrecio", new String("VEN"));
+					long idTP = pedido == null || pedido.getId() == 0 ? 0
+							: pedido.getObjTipoPrecioVentaID();
 					if (vcatalogo != null)
 						idTP = vcatalogo.getId();
 					_dp.setPrecio((long) (DevolucionBL.getPrecioProducto(prod,
@@ -1545,12 +1575,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 			}
 			float value = (float) (_dp.getCantidadDevolver() * (_dp.getPrecio() / 100.0));
-			_dp.setSubtotal((long)(Util.Numero.redondear(value, 2)  * 100));
+			_dp.setSubtotal((long) (Util.Numero.redondear(value, 2) * 100));
 			value = (float) (_dp.getBonificacion() * (_dp.getPrecio() / 100.0));
-			long boniL = (long)(Util.Numero.redondear(value, 2)  * 100);
+			long boniL = (long) (Util.Numero.redondear(value, 2) * 100);
 			_dp.setMontoBonif(boniL);
 			value = (float) (_dp.getBonificacionVen() * (_dp.getPrecio() / 100.0));
-			boniL = (long)(Util.Numero.redondear(value, 2)  * 100);
+			boniL = (long) (Util.Numero.redondear(value, 2) * 100);
 			_dp.setMontoBonifVen(boniL);
 
 			if (_dp.isGravable()) {
@@ -1612,15 +1642,14 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 	}
 
-	public void CalTotalDevolucion() 
-	{
-		if (lgroups.isEmpty())
-		{
-			tbxtotaldev.setText(""+ new BigDecimal(0.0D).divide(new BigDecimal(100.00)).setScale(2,
-							RoundingMode.UNNECESSARY));
+	public void CalTotalDevolucion() {
+		if (lgroups.isEmpty()) {
+			tbxtotaldev.setText(""
+					+ new BigDecimal(0.0D).divide(new BigDecimal(100.00))
+							.setScale(2, RoundingMode.UNNECESSARY));
 			return;
 		}
-			
+
 		double sumatotal = 0.d;
 		double sumatotalv = 0.d;
 		double sumasubtotal = 0.d;
@@ -1662,8 +1691,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		total = new BigDecimal(sumatotalv);
 		costeoMontoTotalVen = total.subtract(costeoMontoPromocionVen)
 				.subtract(costeoMontoCargoAdministrativoVen).subtract(vinietas);
-		double valor = costeoMontoTotal.divide(new BigDecimal(100.00)).setScale(2,
-				RoundingMode.UNNECESSARY).doubleValue();
+		double valor = costeoMontoTotal.divide(new BigDecimal(100.00))
+				.setScale(2, RoundingMode.UNNECESSARY).doubleValue();
 		tbxtotaldev.setText(Moneda.toCurrency(valor));
 
 	}
@@ -1673,7 +1702,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			return;
 		if (ENVIADA.equals(devolucion.getCodEstado())) {
 			double cargo = 0d;
-			if(devolucion.getProductosDevueltos()!=null){
+			if (devolucion.getProductosDevueltos() != null) {
 				for (DevolucionProducto dp : devolucion.getProductosDevueltos()) {
 					double value1 = 0d, value2 = 0d;
 					value1 = (dp.getCantidadDevolver() - dp.getPrecio());
@@ -1792,31 +1821,31 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	}
 
 	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) 
-	{
-		if (keyCode == KeyEvent.KEYCODE_MENU ){
-			if(fragmentActive != FragmentActive.FICHACLIENTE)
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			if (fragmentActive != FragmentActive.FICHACLIENTE)
 				drawerLayout.openDrawer(Gravity.LEFT);
 		}
-		if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive == FragmentActive.EDIT) 
-		{			
-			FINISH_ACTIVITY(); 
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& fragmentActive == FragmentActive.EDIT) {
+			FINISH_ACTIVITY();
 			NMApp.getThreadPool().stopRequestAllWorkers();
 			return true;
 		}
-		if (keyCode == KeyEvent.KEYCODE_BACK && fragmentActive != FragmentActive.EDIT)
-		{
-			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			if(fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR){
-				Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& fragmentActive != FragmentActive.EDIT) {
+			FragmentTransaction ft = getSupportFragmentManager()
+					.beginTransaction();
+			if (fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR) {
+				Fragment fragment = getSupportFragmentManager()
+						.findFragmentById(R.id.fragment_container);
 				ft.detach(fragment);
 				ft.addToBackStack(null);
 				ft.commit();
 				fragmentActive = FragmentActive.EDIT;
 				EstablecerMenu(fragmentActive);
-				
-			}
-			else {
+
+			} else {
 				setDrawerState(true);
 				ft.remove(ficha);
 				ft.commit();
@@ -1824,8 +1853,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			}
 			return true;
 		}
-		
- 
+
 		return super.onKeyUp(keyCode, event);
 	}
 
@@ -1846,9 +1874,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 		showClientDialog();
 	}
-	
-	private void devolverPedido()
-	{
+
+	private void devolverPedido() {
 		if (cliente == null) {
 			AppDialog.showMessage(this, "Alerta",
 					"Por favor seleccione un cliente primero.",
@@ -1856,38 +1883,37 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			return;
 		}
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
 					NMApp.getThreadPool().execute(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
 
-							boolean isoffline = false; 
-							
-							if ((!NMNetWork.CheckConnectionV2()) && UserSessionManager.HAS_ERROR)
+							boolean isoffline = false;
+
+							if ((!NMNetWork.CheckConnectionV2())
+									&& UserSessionManager.HAS_ERROR)
 								isoffline = true;
 							devolverdocumento(isoffline);
 						}
 					});
-				} catch (InterruptedException e) { 
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		});
 		showStatus("Probando conexion.");
-		return; 
-		
+		return;
+
 	}
 
-	private void devolverdocumento(boolean... _isoffline) 
-	{
-		
-		try 
-		{
+	private void devolverdocumento(boolean... _isoffline) {
+
+		try {
 			if (cliente == null) {
 				AppDialog.showMessage(this, "Alerta",
 						"Por favor seleccione un cliente primero.",
@@ -1895,30 +1921,38 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				return;
 			}
 
-			boolean isoffline = _isoffline!=null && _isoffline.length!=0?_isoffline[0]:false;  
-			
-			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			boolean isoffline = _isoffline != null && _isoffline.length != 0 ? _isoffline[0]
+					: false;
+
+			FragmentTransaction ft = getSupportFragmentManager()
+					.beginTransaction();
 			android.support.v4.app.Fragment prev = getSupportFragmentManager()
 					.findFragmentByTag("DialogDevolverDocumento");
 			if (prev != null) {
 				ft.remove(prev);
 			}
-			ft.addToBackStack(null); 
+			ft.addToBackStack(null);
 			DevolverDocumento newFragment = DevolverDocumento.newInstance(this,
 					cliente.getIdSucursal(), devolucion, isoffline);
 			newFragment
 					.setOnDialogClickListener(new DevolverDocumento.DialogListener() {
 						@Override
 						public void onDialogPositiveClick(Devolucion _dev) {
-							if (_dev != null) 
-							{
+							if (_dev != null) {
 								devolucion = _dev;
-								devolucion.setDescEstado((devolucion.getDescEstado() == null ? REGISTRADA : devolucion.getDescEstado() ));
-								devolucion.setCodEstado( "".equals(devolucion.getDescEstado()) ? REGISTRADA : devolucion.getDescEstado());
+								devolucion.setDescEstado((devolucion
+										.getDescEstado() == null ? REGISTRADA
+										: devolucion.getDescEstado()));
+								devolucion.setCodEstado("".equals(devolucion
+										.getDescEstado()) ? REGISTRADA
+										: devolucion.getDescEstado());
 								pedido = devolucion.getObjPedido();
-								if(_dev.getProductosDevueltos() != null && _dev.getProductosDevueltos().length != 0)
-									dev_prod =new ArrayList(Arrays.asList(devolucion.getProductosDevueltos()));
-								//devolucion.setOlddata(_dev); 
+								if (_dev.getProductosDevueltos() != null
+										&& _dev.getProductosDevueltos().length != 0)
+									dev_prod = new ArrayList(Arrays
+											.asList(devolucion
+													.getProductosDevueltos()));
+								// devolucion.setOlddata(_dev);
 								setInformacionCliente();
 								Actualizardevolucion();
 								updateControls(devolucion);
@@ -1932,20 +1966,16 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				NMApp.getController()._notifyOutboxHandlers(0, 0, 0,
 						"Dispositivo fuera de cobertura");
 			ocultarDialogos();
-		} catch (Exception e) 
-		{
-			ocultarDialogos();	
-			NMApp.getController()
-			.notifyOutboxHandlers(
+		} catch (Exception e) {
+			ocultarDialogos();
+			NMApp.getController().notifyOutboxHandlers(
 					ControllerProtocol.ERROR,
 					0,
 					0,
-					new ErrorMessage(
-							"Error al intentar devolver pedido.",
-							e.getMessage(),
-							e.getMessage()));
+					new ErrorMessage("Error al intentar devolver pedido.", e
+							.getMessage(), e.getMessage()));
 		}
-		
+
 	}
 
 	public void showClientDialog(final AlertDialog... _dialog) {
@@ -2052,91 +2082,93 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	@Override
 	public boolean handleMessage(Message msg) {
 		dismiss();
-		switch (msg.what) 
-		{
-			case ControllerProtocol.C_DATA:
-				if (msg.arg1 == ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST)				
-				{
-					vmDevolucionEdit objdev = (vmDevolucionEdit) msg.obj;
-					devolucion = objdev.getDevolucion();
-					devolucion.setOlddata(devolucion);
-					cliente = objdev.getCliente();
-					pedido = devolucion.getObjPedido();
-					catalogos = objdev.getMotivodev();
-					dev_prod = devolucion.getProductosDevueltos()!=null && devolucion.getProductosDevueltos().length>0 ?new ArrayList(Arrays.asList(devolucion.getProductosDevueltos())):new ArrayList();
-					initComponent();
-					initExpandableListView(true);
-					//devolucion.setOlddata(devolucion);
-				}
-				break;
-	
-			case ControllerProtocol.OBTENERVALORCATALOGO:
+		switch (msg.what) {
+		case ControllerProtocol.C_DATA:
+			if (msg.arg1 == ControllerProtocol.LOAD_ITEM_FROM_LOCALHOST) {
+				vmDevolucionEdit objdev = (vmDevolucionEdit) msg.obj;
+				devolucion = objdev.getDevolucion();
 				devolucion.setOlddata(devolucion);
-				adapter_motdev = new CustomAdapter(getContext(),
-						R.layout.spinner_rows,
-						setListData(catalogos = (ArrayList<Catalogo>) msg.obj));
-				cboxmotivodev.setAdapter(adapter_motdev);
-				break;
-			case ControllerProtocol.NOTIFICATION:
-	
-				String message = "";
-				if (msg.obj != null && msg.obj instanceof Devolucion) {
-					devolucion = (Devolucion) msg.obj;
-				} else if (msg.obj != null && msg.obj instanceof String)
-					message = msg.obj.toString();
-	
-				if (ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1) {
-					devolucion.setOlddata(devolucion);
-					actualizarOnUINumRef(devolucion);
-				}
-				if ((!message.equals(""))
-						|| ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1)
-					showStatus(
-							(ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1) ? "La devolución fue registrada satisfactoriamente."
-									: message, true);
-				break;
-			case ControllerProtocol.NOTIFICATION_DIALOG2:
-				showStatus(msg.obj.toString());
-				break;
-			case ControllerProtocol.ERROR:
-				if (msg.obj instanceof ErrorMessage)
-					showStatus(((ErrorMessage) msg.obj).getMessage(), true);
-				else if (msg.obj instanceof String)
-					showStatus(((String) msg.obj), true);
-	
-				break;
-			case ControllerProtocol.ID_REQUEST_ENVIAR: 		
-					if(msg.arg1==ControllerProtocol.IMPRIMIR)
-						enviarImprimirDevolucion(msg.obj.toString(),devolucion); 
-					else
-					{
-						enviarImprimirDevolucion(msg.obj.toString(),devolucion,msg.arg1); 
-					}
-				break;
-			case ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR:
-				devolucion = (Devolucion) msg.obj;				
-				setPojoToBack(devolucion);
-				break;
-			case ControllerProtocol.AFTERGETOBSERVACIONDEV: 	
-				if(ControllerProtocol.IMPRIMIR==msg.arg1)
-					enviarImprimirDevolucion(msg.obj.toString(),devolucion);
-				else if(ControllerProtocol.ENVIARDEVOLUCION==msg.arg1)
-					enviarImprimirDevolucion(msg.obj.toString(),devolucion,ControllerProtocol.ENVIARDEVOLUCION);  
-				break;
-			case ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR:
-				enviarDevolucion();
-				break;
-				
-			case ControllerProtocol.UPDATOBJECT:
-				devolucion = ((Devolucion) msg.obj);
+				cliente = objdev.getCliente();
+				pedido = devolucion.getObjPedido();
+				catalogos = objdev.getMotivodev();
+				dev_prod = devolucion.getProductosDevueltos() != null
+						&& devolucion.getProductosDevueltos().length > 0 ? new ArrayList(
+						Arrays.asList(devolucion.getProductosDevueltos()))
+						: new ArrayList();
+				initComponent();
+				initExpandableListView(true);
+				// devolucion.setOlddata(devolucion);
+			}
+			break;
+
+		case ControllerProtocol.OBTENERVALORCATALOGO:
+			devolucion.setOlddata(devolucion);
+			adapter_motdev = new CustomAdapter(getContext(),
+					R.layout.spinner_rows,
+					setListData(catalogos = (ArrayList<Catalogo>) msg.obj));
+			cboxmotivodev.setAdapter(adapter_motdev);
+			break;
+		case ControllerProtocol.NOTIFICATION:
+
+			String message = "";
+			if (msg.obj != null && msg.obj instanceof Devolucion) {
+				devolucion = (Devolucion) msg.obj;
+			} else if (msg.obj != null && msg.obj instanceof String)
+				message = msg.obj.toString();
+
+			if (ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1) {
 				devolucion.setOlddata(devolucion);
-				actualizarOnUINumRef(devolucion);  
-				updateControls(devolucion);
+				actualizarOnUINumRef(devolucion);
+			}
+			if ((!message.equals(""))
+					|| ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1)
+				showStatus(
+						(ControllerProtocol.AFTERSAVE_DATA_FROM_LOCALHOST == msg.arg1) ? "La devolución fue registrada satisfactoriamente."
+								: message, true);
+			break;
+		case ControllerProtocol.NOTIFICATION_DIALOG2:
+			showStatus(msg.obj.toString());
+			break;
+		case ControllerProtocol.ERROR:
+			if (msg.obj instanceof ErrorMessage)
+				showStatus(((ErrorMessage) msg.obj).getMessage(), true);
+			else if (msg.obj instanceof String)
+				showStatus(((String) msg.obj), true);
+
+			break;
+		case ControllerProtocol.ID_REQUEST_ENVIAR:
+			if (msg.arg1 == ControllerProtocol.IMPRIMIR)
+				enviarImprimirDevolucion(msg.obj.toString(), devolucion);
+			else {
+				enviarImprimirDevolucion(msg.obj.toString(), devolucion,
+						msg.arg1);
+			}
+			break;
+		case ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR:
+			devolucion = (Devolucion) msg.obj;
+			setPojoToBack(devolucion);
+			break;
+		case ControllerProtocol.AFTERGETOBSERVACIONDEV:
+			if (ControllerProtocol.IMPRIMIR == msg.arg1)
+				enviarImprimirDevolucion(msg.obj.toString(), devolucion);
+			else if (ControllerProtocol.ENVIARDEVOLUCION == msg.arg1)
+				enviarImprimirDevolucion(msg.obj.toString(), devolucion,
+						ControllerProtocol.ENVIARDEVOLUCION);
+			break;
+		case ControllerProtocol.SALVARDEVOLUCIONANTESDEENVIAR:
+			enviarDevolucion();
+			break;
+
+		case ControllerProtocol.UPDATOBJECT:
+			devolucion = ((Devolucion) msg.obj);
+			devolucion.setOlddata(devolucion);
+			actualizarOnUINumRef(devolucion);
+			updateControls(devolucion);
 			break;
 		}
 		return false;
 	}
-	
+
 	public void setPojoToBack(Devolucion devolucion) {
 		Intent intent = new Intent();
 		Bundle bundle = new Bundle();
@@ -2151,9 +2183,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		pojo.setClienteId(devolucion.getObjClienteID());
 		pojo.setOffLine(devolucion.isOffLine());
 		pojo.setSucursalId(devolucion.getObjSucursalID());
-		//agregar el objeto Serializable
+		// agregar el objeto Serializable
 		bundle.putSerializable(ViewDevoluciones.SERIALIZE_DEVOLUCION, pojo);
-		//agregar al intent
+		// agregar al intent
 		intent.putExtras(bundle);
 		if (onEdit)
 			requescode = getIntent().getIntExtra("requestcode", 0);
@@ -2161,15 +2193,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		finish();
 	}
 
-	private void enviarImprimirDevolucion(final String  mensaje,final Devolucion devolucion,final int... what) 
-	{ 
-		runOnUiThread(new Runnable() 
-		{ 
+	private void enviarImprimirDevolucion(final String mensaje,
+			final Devolucion devolucion, final int... what) {
+		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 
-				AppDialog.showMessage(me, "",
-						""+mensaje,
+				AppDialog.showMessage(me, "", "" + mensaje,
 						AppDialog.DialogType.DIALOGO_CONFIRMACION,
 						new AppDialog.OnButtonClickListener() {
 							@Override
@@ -2179,8 +2209,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 									try {
 										Message msg = new Message();
 										Bundle b = new Bundle();
-										msg.obj = devolucion; 
-										msg.what = what.length != 0 ? what[0] : ControllerProtocol.IMPRIMIR; 
+										msg.obj = devolucion;
+										msg.what = what.length != 0 ? what[0]
+												: ControllerProtocol.IMPRIMIR;
 										NMApp.getController().getInboxHandler()
 												.sendMessage(msg);
 										_dialog.dismiss();
@@ -2208,10 +2239,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		this.runOnUiThread(new Runnable() {
 
 			@Override
-			public void run() 
-			{ 
-				tbxRefNum.setText(""+devolucion.getReferencia()); 
-				tbxCentralNum.setText(""+devolucion.getNumeroCentral()); 
+			public void run() {
+				tbxRefNum.setText("" + devolucion.getReferencia());
+				tbxCentralNum.setText("" + devolucion.getNumeroCentral());
 
 			}
 		});
@@ -2240,13 +2270,13 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					dlg = new CustomDialog(me, ""+mensaje, false, NOTIFICATION_DIALOG);
+					dlg = new CustomDialog(me, "" + mensaje, false,
+							NOTIFICATION_DIALOG);
 					dlg.show();
 				}
 			});
 		}
 	}
-
 
 	public void setDev_prod(ArrayList<DevolucionProducto> arrayList) {
 		this.dev_prod = arrayList;
@@ -2287,50 +2317,63 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		if (cboxtramitedev.getSelectedItemPosition() > 0)
 			devolucion.setTipoTramite(((SpinnerModel) cboxtramitedev
 					.getSelectedItem()).getCodigo());
-		
-		SpinnerModel cmbMotivo = ((SpinnerModel) cboxmotivodev.getSelectedItem());
-		if (devolucion.getCodMotivo() != null && !"".equals(devolucion.getCodMotivo()) ) {			
+
+		SpinnerModel cmbMotivo = ((SpinnerModel) cboxmotivodev
+				.getSelectedItem());
+		if (devolucion.getCodMotivo() != null
+				&& !"".equals(devolucion.getCodMotivo())) {
 			cmbMotivo.setCodigo(devolucion.getCodMotivo());
 		} else {
-			if(cboxmotivodev.getSelectedItemPosition() > 0) {
+			if (cboxmotivodev.getSelectedItemPosition() > 0) {
 				devolucion.setCodMotivo(cmbMotivo.getCodigo());
-			} else {				
+			} else {
 				devolucion.setCodMotivo(null);
 			}
-		}		
-		if (devolucion.getDescMotivo() != null && !"".equals(devolucion.getDescMotivo())) {
+		}
+		if (devolucion.getDescMotivo() != null
+				&& !"".equals(devolucion.getDescMotivo())) {
 			cmbMotivo.setDescripcion(devolucion.getDescMotivo());
 		} else {
-			if(cboxmotivodev.getSelectedItemPosition() > 0) {
+			if (cboxmotivodev.getSelectedItemPosition() > 0) {
 				devolucion.setDescMotivo(cmbMotivo.getDescripcion());
 			} else {
-				devolucion.setDescMotivo(null);				 
+				devolucion.setDescMotivo(null);
 			}
-		}	
-		if(devolucion.getObjMotivoID() != -1) {
-			cmbMotivo.setId(devolucion.getObjMotivoID());
-		} else {
-			if(cboxmotivodev.getSelectedItemPosition() > 0) {
-				devolucion.setObjMotivoID(cmbMotivo.getId());
-			} else {
-				devolucion.setObjMotivoID(0);
-			}
-		}	
-		//adapter_motdev.notifyDataSetChanged();
-		/*if (cboxmotivodev!=null && cboxmotivodev.getSelectedItem()!=null && cboxmotivodev.getSelectedItemPosition() > 0) {
-			devolucion.setDescMotivo(((SpinnerModel) cboxmotivodev
-					.getSelectedItem()).getDescripcion());
-			devolucion.setCodMotivo(((SpinnerModel) cboxmotivodev
-					.getSelectedItem()).getCodigo());
-			devolucion.setObjMotivoID(((SpinnerModel) cboxmotivodev
-					.getSelectedItem()).getId());
-		}else
-		{  
-			devolucion.setDescMotivo(null);
-			devolucion.setCodMotivo(null);
-			devolucion.setObjMotivoID(0);  
-		}*/
-		if(cliente!=null){
+		}
+		/*
+		 * if(devolucion.getObjMotivoID() != -1) {
+		 * 
+		 * cmbMotivo.setId(devolucion.getObjMotivoID()); } else {
+		 * if(cboxmotivodev.getSelectedItemPosition() > 0) {
+		 * devolucion.setObjMotivoID(cmbMotivo.getId()); } else {
+		 * devolucion.setObjMotivoID(0); } }
+		 */
+
+		long idvalorcat = 0;
+		ValorCatalogo cat = null;
+		if (cmbMotivo != null && cmbMotivo.getObj() != null)
+			cat = (ValorCatalogo) cmbMotivo.getObj();
+		idvalorcat = cmbMotivo == null ? 0
+				: ((cmbMotivo.getId() == 0 && cat != null) ? cat.getId()
+						: cmbMotivo.getId());
+		if (cmbMotivo != null && idvalorcat > 0)
+			cmbMotivo.setId(idvalorcat);
+		if (idvalorcat > 0)
+			devolucion.setObjMotivoID(idvalorcat);
+
+		// adapter_motdev.notifyDataSetChanged();
+		/*
+		 * if (cboxmotivodev!=null && cboxmotivodev.getSelectedItem()!=null &&
+		 * cboxmotivodev.getSelectedItemPosition() > 0) {
+		 * devolucion.setDescMotivo(((SpinnerModel) cboxmotivodev
+		 * .getSelectedItem()).getDescripcion());
+		 * devolucion.setCodMotivo(((SpinnerModel) cboxmotivodev
+		 * .getSelectedItem()).getCodigo());
+		 * devolucion.setObjMotivoID(((SpinnerModel) cboxmotivodev
+		 * .getSelectedItem()).getId()); }else { devolucion.setDescMotivo(null);
+		 * devolucion.setCodMotivo(null); devolucion.setObjMotivoID(0); }
+		 */
+		if (cliente != null) {
 			devolucion.setObjClienteID(cliente.getIdCliente());
 			devolucion.setObjSucursalID(cliente.getIdSucursal());
 		}
@@ -2342,12 +2385,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		devolucion.setMontoPromocion(costeoMontoBonificacion.longValue());
 		devolucion.setMontoPromocionVen(costeoMontoBonificacionVen.longValue());
 		devolucion.setMontoCargoAdm(costeoMontoCargoAdministrativo.longValue());
-		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen.longValue());
+		devolucion.setMontoCargoAdmVen(costeoMontoCargoAdministrativoVen
+				.longValue());
 		devolucion.setTotal(costeoMontoTotal.longValue());
 		devolucion.setTotalVen(costeoMontoTotalVen.longValue());
 		devolucion.setAplicacionInmediata(ckboxncinmeditata.isChecked());
-		if (devolucion.getReferencia() == 0) 
-		{
+		if (devolucion.getReferencia() == 0) {
 			ValorCatalogo catalogo = ModelLogic.getValorByCatalogo(
 					"EstadoDevolucion", "REGISTRADA");
 			ValorCatalogo catalogo2 = ModelLogic.getValorByCatalogo(
@@ -2357,8 +2400,9 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			devolucion.setDescEstado(catalogo.getCodigo());
 			devolucion.setObjCausaEstadoID(catalogo2.getId());
 			devolucion.setDescCausaEstado(catalogo2.getDescripcion());
- 
-			if(devolucion.getObservacion()!=null && !"".equals(devolucion.getObservacion()))
+
+			if (devolucion.getObservacion() != null
+					&& !"".equals(devolucion.getObservacion()))
 				devolucion.setEspecial(true);
 			if (ckboxncinmeditata.isChecked() && devolucion.isOffLine()) {
 				devolucion.setDescEstado(this.getSharedPreferences(
@@ -2371,8 +2415,8 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 			}
 		}
 		devolucion.setObjEstadoID(Integer.valueOf(this.getSharedPreferences(
-						"SystemParams", android.content.Context.MODE_PRIVATE)
-						.getString("ID_CONCEPTO_DEVOLUCIONNV", "0")));
+				"SystemParams", android.content.Context.MODE_PRIVATE)
+				.getString("ID_CONCEPTO_DEVOLUCIONNV", "0")));
 	}
 
 	private void EditarNotaDevolucion() {
@@ -2419,15 +2463,16 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		// establecemos el titulo
 		getSupportActionBar().setTitle(R.string.FichaClienteDialogTitle);
 
-		//FichaClienteFragment ficha;
+		// FichaClienteFragment ficha;
 		FragmentTransaction transaction = getSupportFragmentManager()
 				.beginTransaction();
 
-		/*if (findViewById(R.id.dynamic_fragment) != null) {
-		} else*/ 
+		/*
+		 * if (findViewById(R.id.dynamic_fragment) != null) { } else
+		 */
 		{
 			transaction = getSupportFragmentManager().beginTransaction();
-			 setDrawerState(false);
+			setDrawerState(false);
 			// if (fragment instanceof ListaFragment) {
 			ficha = new FichaClienteFragment();
 			ficha.setArguments(args);
@@ -2446,37 +2491,36 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		FragmentTransaction transaction = getSupportFragmentManager()
 				.beginTransaction();
 
-//		CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment
-//				.Instancia();
+		// CuentasPorCobrarFragment cuentasPorCobrar = CuentasPorCobrarFragment
+		// .Instancia();
 
-//		android.support.v4.app.Fragment prev = getSupportFragmentManager()
-//				.findFragmentByTag("dialog");
-//		if (prev != null) {
-//			transaction.remove(prev);
-//		}
-//
-//		Bundle msg = new Bundle();
-//		msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
-//		msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
-//				cliente.getIdSucursal());
-//
-//		transaction.addToBackStack(null);
-//		cuentasPorCobrar.setArguments(msg);
-//		cuentasPorCobrar.show(transaction, "dialog");
-		
-		
-		if (findViewById(R.id.fragment_container) != null) 
-		{	
+		// android.support.v4.app.Fragment prev = getSupportFragmentManager()
+		// .findFragmentByTag("dialog");
+		// if (prev != null) {
+		// transaction.remove(prev);
+		// }
+		//
+		// Bundle msg = new Bundle();
+		// msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
+		// msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
+		// cliente.getIdSucursal());
+		//
+		// transaction.addToBackStack(null);
+		// cuentasPorCobrar.setArguments(msg);
+		// cuentasPorCobrar.show(transaction, "dialog");
+
+		if (findViewById(R.id.fragment_container) != null) {
 			fragmentActive = FragmentActive.CONSULTAR_CUENTA_COBRAR;
-			cuentasPorCobrar = new CuentasPorCobrarFragment();						
+			cuentasPorCobrar = new CuentasPorCobrarFragment();
 			Bundle msg = new Bundle();
 			msg.putInt(CuentasPorCobrarFragment.ARG_POSITION, 0);
-			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID, cliente.getIdSucursal());
-			cuentasPorCobrar.setArguments(msg);	
+			msg.putLong(CuentasPorCobrarFragment.SUCURSAL_ID,
+					cliente.getIdSucursal());
+			cuentasPorCobrar.setArguments(msg);
 			transaction = getSupportFragmentManager().beginTransaction();
-			transaction.replace(R.id.fragment_container,cuentasPorCobrar);
+			transaction.replace(R.id.fragment_container, cuentasPorCobrar);
 			transaction.addToBackStack(null);
-			transaction.commit();	
+			transaction.commit();
 			EstablecerMenu(fragmentActive);
 		}
 	}
@@ -2620,11 +2664,11 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 															e.getMessage()));
 								}
 
-							} else if(onEdit) {
+							} else if (onEdit) {
 								setPojoToBack(devolucion.getOlddata());
 							} else {
 								finish();
-							}								
+							}
 							_dialog.dismiss();
 
 						}
@@ -2633,12 +2677,12 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 
 		} else {
 			setPojoToBack(devolucion);
-			/*if (!onEdit)
-				com.panzyma.nm.NMApp.getController()._notifyOutboxHandlers(
-						ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR, 0, 0,
-						devolucion);
-			else
-				finish();*/
+			/*
+			 * if (!onEdit)
+			 * com.panzyma.nm.NMApp.getController()._notifyOutboxHandlers(
+			 * ControllerProtocol.SALVARDEVOLUCIONANTESDESALIR, 0, 0,
+			 * devolucion); else finish();
+			 */
 		}
 
 	}
@@ -2649,248 +2693,256 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		if (pd != null)
 			pd.dismiss();
 	}
-	
-	public void updateControls(final Devolucion devolucion)
-	{
-		runOnUiThread(new Runnable() 
-		{			
+
+	public void updateControls(final Devolucion devolucion) {
+		runOnUiThread(new Runnable() {
 			@Override
-			public void run() 
-			{
+			public void run() {
 				boolean enabled = true;
-				if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) enabled = false;
-				
+				if (devolucion.getNumeroCentral() != 0
+						|| "PAGADO_OFFLINE".equals(devolucion.getCodEstado()))
+					enabled = false;
+
 				ckboxvencidodev.setChecked(devolucion.isDeVencido());
-				tbxFecha.setText("" + DateUtil.idateToStrYY(devolucion.getFecha()));
-				tbxRefNum.setText(""+devolucion.getReferencia());
-				tbxCentralNum.setText(""+devolucion.getNumeroCentral());
-				tbxNombreDelCliente.setText(devolucion.getNombreCliente());				
-				
-				if(devolucion.getProductosDevueltos()!=null  && devolucion.getProductosDevueltos().length!=0){ 
-					dev_prod=new ArrayList<DevolucionProducto>(Arrays.asList(devolucion.getProductosDevueltos()));
+				tbxFecha.setText(""
+						+ DateUtil.idateToStrYY(devolucion.getFecha()));
+				tbxRefNum.setText("" + devolucion.getReferencia());
+				tbxCentralNum.setText("" + devolucion.getNumeroCentral());
+				tbxNombreDelCliente.setText(devolucion.getNombreCliente());
+
+				if (devolucion.getProductosDevueltos() != null
+						&& devolucion.getProductosDevueltos().length != 0) {
+					dev_prod = new ArrayList<DevolucionProducto>(
+							Arrays.asList(devolucion.getProductosDevueltos()));
 				}
-					
-				if(adapter_motdev == null){
-					adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = catalogos));
+
+				if (adapter_motdev == null) {
+					adapter_motdev = new CustomAdapter(getContext(),
+							R.layout.spinner_rows,
+							setListData(catalogos = catalogos));
 					cboxmotivodev.setAdapter(adapter_motdev);
 				} else {
 					adapter_motdev.notifyDataSetChanged();
-				}			
-				
-				cboxmotivodev.setEnabled(devolucion.getNumeroCentral()!=0?false:true);
-				
-				int index=0;
-				if(devolucion.getCodMotivo()!=null)
-				{
-					for(ValorCatalogo vc:catalogos.get(0).getValoresCatalogo())
-					{
-						if(devolucion.getCodMotivo().equals(vc.getCodigo()))
+				}
+
+				cboxmotivodev
+						.setEnabled(devolucion.getNumeroCentral() != 0 ? false
+								: true);
+
+				int index = 0;
+				if (devolucion.getCodMotivo() != null) {
+					for (ValorCatalogo vc : catalogos.get(0)
+							.getValoresCatalogo()) {
+						if (devolucion.getCodMotivo().equals(vc.getCodigo()))
 							break;
-							index++;
-					} 
-					if(index==catalogos.get(0).getValoresCatalogo().size())
-						index=0;
+						index++;
+					}
+					if (index == catalogos.get(0).getValoresCatalogo().size())
+						index = 0;
 					cboxmotivodev.setSelection(index);
 					adapter_motdev.setSelectedPosition(index);
 					adapter_motdev.notifyDataSetChanged();
 				}
-				
-				
-				index=0;
-				if(devolucion.getTipoTramite()!=null){
-					for(int i=0;i<adapter_tramite.getData().size();i++)
-					{
-						SpinnerModel item=adapter_tramite.getItem(i);				
-						if(devolucion.getTipoTramite().equals(item.getCodigo()))
+
+				index = 0;
+				if (devolucion.getTipoTramite() != null) {
+					for (int i = 0; i < adapter_tramite.getData().size(); i++) {
+						SpinnerModel item = adapter_tramite.getItem(i);
+						if (devolucion.getTipoTramite()
+								.equals(item.getCodigo()))
 							break;
-							index++;
-					} 
-					if(index==adapter_tramite.getData().size())
-						index=0;			
+						index++;
+					}
+					if (index == adapter_tramite.getData().size())
+						index = 0;
 					cboxtramitedev.setSelection(index);
 					adapter_tramite.setSelectedPosition(index);
 					adapter_tramite.notifyDataSetChanged();
-					
-				}		
-				
-				index=0; 				
-				cboxtipodev.setSelection(index=devolucion.isParcial()?2:1);
+
+				}
+
+				index = 0;
+				cboxtipodev
+						.setSelection(index = devolucion.isParcial() ? 2 : 1);
 				adapter_tipodev.setSelectedPosition(index);
 				adapter_tipodev.notifyDataSetChanged();
-				
-				tbxPedidoNum.setText(""+devolucion.getNumeroPedidoDevuelto());
-				tbxNota.setText(""+devolucion.getNota());
-				ckboxncinmeditata.setChecked(devolucion.isAplicacionInmediata());
-				
+
+				tbxPedidoNum.setText("" + devolucion.getNumeroPedidoDevuelto());
+				tbxNota.setText("" + devolucion.getNota());
+				ckboxncinmeditata
+						.setChecked(devolucion.isAplicacionInmediata());
+
 				cboxmotivodev.setEnabled(enabled);
 				cboxtramitedev.setEnabled(enabled);
 				cboxtipodev.setEnabled(enabled);
-				
-				if(enabled &&  ("NC".equals(((SpinnerModel) cboxtramitedev.getSelectedItem()).getCodigo())))
-				{
+
+				if (enabled
+						&& ("NC".equals(((SpinnerModel) cboxtramitedev
+								.getSelectedItem()).getCodigo()))) {
 					ckboxncinmeditata.setEnabled(true);
-				}
-				else
+				} else
 					ckboxncinmeditata.setEnabled(false);
-					 
+
 				ckboxvencidodev.setEnabled(enabled);
 				tbxFecha.setEnabled(enabled);
 				tbxRefNum.setEnabled(enabled);
 				tbxCentralNum.setEnabled(enabled);
 				tbxNombreDelCliente.setEnabled(enabled);
 				cboxmotivodev.setEnabled(enabled);
-				tbxPedidoNum.setEnabled(enabled);		 
-				if(!enabled)
+				tbxPedidoNum.setEnabled(enabled);
+				if (!enabled)
 					CreateMenu();
 			}
 		});
-		
+
 	}
-	
-	public void drawerItemAction(int position)
-	{
-		if(fragmentActive == FragmentActive.EDIT){
-		
-			if(drawerList!=null  && drawerList.getAdapter()!=null && drawerList.getAdapter().getCount()>5)
-			{
-				switch (position) 
-				{	
-					case ID_SELECCIONAR_CLIENTE:
-						seleccionarCliente();
-						break;
-					case ID_DEVOLVER_PEDIDO:					
-						devolverPedido();
-						break;
-					case ID_AGREGAR_PRODUCTO:
-						if(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado())) 
-							return;
-						agregarProducto();
-						break;
-					case ID_AGREGAR_LOTE:
-						if (groupselected != null) {
-							EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(
-									groupselected, me);
-							FragmentManager fragmentManager = getSupportFragmentManager();
-							dialogDevolucion.show(fragmentManager, "");
-						}
-						break;
-					case ID_EDITAR_NOTA:
-						EditarNotaDevolucion();
-						break;
-					case ID_VER_COSTEO:
-						VerCosteoDevolucion();
-						break;
-					case ID_GUARDAR:
-						salvarDevolucion();
-						break;
-					case ID_ENVIAR: 
-					    enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV); 
-						break;  
-					case ID_IMPRIMIR:
-						if(devolucion.getNumeroCentral()==0)
-							enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
-						else
-							enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
-							break;
-					case ID_FICHACLIENTE:
-						if (cliente == null) {
-							AppDialog.showMessage(getContext(), "Información",
-									"Seleccione un cliente.",
-									DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						if (NMNetWork.isPhoneConnected(NMApp.getContext())
-								&& NMNetWork.CheckConnection(NMApp.getController())) {
-							ShowFichCliente();
-							fragmentActive = fragmentActive.FICHACLIENTE;
-						}
-						break;
-					case ID_CUENTASXCOBRAR:
-						if (cliente == null) {
-							AppDialog.showMessage(getContext(), "Información",
-									"Seleccione un cliente.",
-									DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						if (NMNetWork.isPhoneConnected(NMApp.getContext())
-								&& NMNetWork.CheckConnection(NMApp.getController())) {
-							LOAD_CUENTASXPAGAR();
-							fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
-							EstablecerMenu(fragmentActive);
-						}
-						break;
-					case ID_CERRAR:
-						FINISH_ACTIVITY();
-						break;
-	
+
+	public void drawerItemAction(int position) {
+		if (fragmentActive == FragmentActive.EDIT) {
+
+			if (drawerList != null && drawerList.getAdapter() != null
+					&& drawerList.getAdapter().getCount() > 5) {
+				switch (position) {
+				case ID_SELECCIONAR_CLIENTE:
+					seleccionarCliente();
+					break;
+				case ID_DEVOLVER_PEDIDO:
+					devolverPedido();
+					break;
+				case ID_AGREGAR_PRODUCTO:
+					if (devolucion.getNumeroCentral() != 0
+							|| "PAGADO_OFFLINE".equals(devolucion
+									.getCodEstado()))
+						return;
+					agregarProducto();
+					break;
+				case ID_AGREGAR_LOTE:
+					if (groupselected != null) {
+						EditDevolucionProducto dialogDevolucion = new EditDevolucionProducto(
+								groupselected, me);
+						FragmentManager fragmentManager = getSupportFragmentManager();
+						dialogDevolucion.show(fragmentManager, "");
+					}
+					break;
+				case ID_EDITAR_NOTA:
+					EditarNotaDevolucion();
+					break;
+				case ID_VER_COSTEO:
+					VerCosteoDevolucion();
+					break;
+				case ID_GUARDAR:
+					salvarDevolucion();
+					break;
+				case ID_ENVIAR:
+					enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+					break;
+				case ID_IMPRIMIR:
+					if (devolucion.getNumeroCentral() == 0)
+						enviarDevolucion(ControllerProtocol.GETOBSERVACIONDEV);
+					else
+						enviarImprimirDevolucion(
+								"Se mandara a imprimir el comprobante de la Devolución",
+								devolucion);
+					break;
+				case ID_FICHACLIENTE:
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información",
+								"Seleccione un cliente.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						ShowFichCliente();
+						fragmentActive = fragmentActive.FICHACLIENTE;
+					}
+					break;
+				case ID_CUENTASXCOBRAR:
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información",
+								"Seleccione un cliente.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						LOAD_CUENTASXPAGAR();
+						fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
+						EstablecerMenu(fragmentActive);
+					}
+					break;
+				case ID_CERRAR:
+					FINISH_ACTIVITY();
+					break;
+
 				}
-			}else
-			{
-				switch (position) 
-				{	
-					case ID_VER_COSTEO2:
-						VerCosteoDevolucion();
-						break;  
-					case ID_IMPRIMIR2:
-						if(devolucion.getNumeroCentral()!=0)
-							enviarImprimirDevolucion("Se mandara a imprimir el comprobante de la Devolución",devolucion);
-							break;
-					case ID_FICHACLIENTE2:
-						if (cliente == null) {
-							AppDialog.showMessage(getContext(), "Información",
-									"Seleccione un cliente.",
-									DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						if (NMNetWork.isPhoneConnected(NMApp.getContext())
-								&& NMNetWork.CheckConnection(NMApp.getController())) {
-							ShowFichCliente();
-							fragmentActive = fragmentActive.FICHACLIENTE;
-						}
-						break;
-					case ID_CUENTASXCOBRAR2:
-						if (cliente == null) {
-							AppDialog.showMessage(getContext(), "Información",
-									"Seleccione un cliente.",
-									DialogType.DIALOGO_ALERTA);
-							return;
-						}
-						if (NMNetWork.isPhoneConnected(NMApp.getContext())
-								&& NMNetWork.CheckConnection(NMApp.getController())) {
-							fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
-							LOAD_CUENTASXPAGAR();
-							EstablecerMenu(fragmentActive);
-						}
-						break;
-					case ID_CERRAR2:
-						FINISH_ACTIVITY();
-						break;
-	
+			} else {
+				switch (position) {
+				case ID_VER_COSTEO2:
+					VerCosteoDevolucion();
+					break;
+				case ID_IMPRIMIR2:
+					if (devolucion.getNumeroCentral() != 0)
+						enviarImprimirDevolucion(
+								"Se mandara a imprimir el comprobante de la Devolución",
+								devolucion);
+					break;
+				case ID_FICHACLIENTE2:
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información",
+								"Seleccione un cliente.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						ShowFichCliente();
+						fragmentActive = fragmentActive.FICHACLIENTE;
+					}
+					break;
+				case ID_CUENTASXCOBRAR2:
+					if (cliente == null) {
+						AppDialog.showMessage(getContext(), "Información",
+								"Seleccione un cliente.",
+								DialogType.DIALOGO_ALERTA);
+						return;
+					}
+					if (NMNetWork.isPhoneConnected(NMApp.getContext())
+							&& NMNetWork.CheckConnection(NMApp.getController())) {
+						fragmentActive = fragmentActive.CONSULTAR_CUENTA_COBRAR;
+						LOAD_CUENTASXPAGAR();
+						EstablecerMenu(fragmentActive);
+					}
+					break;
+				case ID_CERRAR2:
+					FINISH_ACTIVITY();
+					break;
+
 				}
 			}
-		}	
-		if(fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR){
-			
+		}
+		if (fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR) {
+
 			switch (position) {
 			case MOSTRAR_FACTURAS:
 				cuentasPorCobrar.cargarFacturasCliente();
 				break;
-			case MOSTRAR_NOTAS_DEBITO: 
-				cuentasPorCobrar.cargarNotasDebito(); 
-			break;
-			case MOSTRAR_NOTAS_CREDITO: 
-				cuentasPorCobrar.cargarNotasCredito(); 
-			break;
-			case MOSTRAR_PEDIDOS: 
+			case MOSTRAR_NOTAS_DEBITO:
+				cuentasPorCobrar.cargarNotasDebito();
+				break;
+			case MOSTRAR_NOTAS_CREDITO:
+				cuentasPorCobrar.cargarNotasCredito();
+				break;
+			case MOSTRAR_PEDIDOS:
 				cuentasPorCobrar.cargarPedidos();
-			break;
-			case MOSTRAR_RECIBOS: 
-				cuentasPorCobrar.cargarRecibosColector(); 
-			break;
+				break;
+			case MOSTRAR_RECIBOS:
+				cuentasPorCobrar.cargarRecibosColector();
+				break;
 			}
 		}
 	}
-	
+
 	public CheckBox getCkboxvencidodev() {
 		return ckboxvencidodev;
 	}
@@ -2898,115 +2950,123 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	public void setCkboxvencidodev(CheckBox ckboxvencidodev) {
 		this.ckboxvencidodev = ckboxvencidodev;
 	}
-	
-	public void EstablecerMenu(FragmentActive fragmentActive){
-		if(fragmentActive == FragmentActive.EDIT){
-			int idarray=(devolucion.getNumeroCentral()!=0 || "PAGADO_OFFLINE".equals(devolucion.getCodEstado()))?R.array.devolucioneditoptions2:R.array.devolucioneditoptions;
+
+	public void EstablecerMenu(FragmentActive fragmentActive) {
+		if (fragmentActive == FragmentActive.EDIT) {
+			int idarray = (devolucion.getNumeroCentral() != 0 || "PAGADO_OFFLINE"
+					.equals(devolucion.getCodEstado())) ? R.array.devolucioneditoptions2
+					: R.array.devolucioneditoptions;
 			opcionesMenu = getResources().getStringArray(idarray);
 		}
-		if(fragmentActive ==FragmentActive.CONSULTAR_CUENTA_COBRAR)
-			opcionesMenu = new String[] { "Mostrar Facturas", "Mostrar Notas Débito", "Mostrar Crédito", "Mostrar Pedido" ,"Mostrar Recibos" };
+		if (fragmentActive == FragmentActive.CONSULTAR_CUENTA_COBRAR)
+			opcionesMenu = new String[] { "Mostrar Facturas",
+					"Mostrar Notas Débito", "Mostrar Crédito",
+					"Mostrar Pedido", "Mostrar Recibos" };
 
-		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
+		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar()
+				.getThemedContext(), android.R.layout.simple_list_item_1,
+				opcionesMenu));
 	}
+
 	public void setDrawerState(boolean isEnabled) {
-	    if ( isEnabled ) {
-	        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED);
-	        drawerToggle.setDrawerIndicatorEnabled(true);
-	        drawerToggle.syncState();
+		if (isEnabled) {
+			drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+			drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED);
+			drawerToggle.setDrawerIndicatorEnabled(true);
+			drawerToggle.syncState();
 
-	    }
-	    else {
-	    	drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-	        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-	        drawerToggle.setDrawerIndicatorEnabled(false);
-	        drawerToggle.syncState();
-	    }
+		} else {
+			drawerLayout
+					.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+			drawerToggle
+					.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+			drawerToggle.setDrawerIndicatorEnabled(false);
+			drawerToggle.syncState();
+		}
 	}
-	
 
-	public void showMenu(final View view,final boolean idheader,final ExpandListGroup parent,final ExpandListChild child) 
-	{
+	public void showMenu(final View view, final boolean idheader,
+			final ExpandListGroup parent, final ExpandListChild child) {
 
-		runOnUiThread(new Runnable() 
-		{
+		runOnUiThread(new Runnable() {
 			@Override
-			public void run() 
-			{
-				if (devolucion != null && devolucion.getCodEstado().equals("REGISTRADA")) 
-				{
-				    quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1);					 
-					quickAction2.addActionItem(new ActionItem(idheader?ID_EDITAR_BONIFICACION:ID_EDITAR_LOTE,idheader?"Editar Bonificación":"Editar Lote"));
-					quickAction2.addActionItem(new ActionItem(idheader?ID_ELIMINAR_PRODUCTO:ID_ELIMINAR_LOTE,idheader?"Eliminar Producto":"Eliminar Lote"));
-				 
-					
-					quickAction2.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() 
-					{
-	
+			public void run() {
+				if (devolucion != null
+						&& devolucion.getCodEstado().equals("REGISTRADA")) {
+					quickAction2 = new QuickAction(me, QuickAction.VERTICAL, 1);
+					quickAction2.addActionItem(new ActionItem(
+							idheader ? ID_EDITAR_BONIFICACION : ID_EDITAR_LOTE,
+							idheader ? "Editar Bonificación" : "Editar Lote"));
+					quickAction2.addActionItem(new ActionItem(
+							idheader ? ID_ELIMINAR_PRODUCTO : ID_ELIMINAR_LOTE,
+							idheader ? "Eliminar Producto" : "Eliminar Lote"));
+
+					quickAction2
+							.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+
 								@Override
 								public void onItemClick(QuickAction source,
-										final int pos, final int actionId) 
-								{
-									ActionItem actionItem = quickAction2.getActionItem(pos);
+										final int pos, final int actionId) {
+									ActionItem actionItem = quickAction2
+											.getActionItem(pos);
 									if (actionId == ID_EDITAR_BONIFICACION)
-										EditarProductoBonificacion(parent.getName(),parent);
+										EditarProductoBonificacion(
+												parent.getName(), parent);
 									else if (actionId == ID_ELIMINAR_PRODUCTO)
 										eliminarProducto();
-									if (actionId == ID_EDITAR_LOTE) 
+									if (actionId == ID_EDITAR_LOTE)
 										EditarProductoLote(
 												groupselected.getName(),
-												childselected); 
+												childselected);
 									else if (actionId == ID_ELIMINAR_LOTE)
 										eliminarLote();
-	
+
 								}
-							}); 
+							});
 					quickAction2.show(view, display, false);
-					//quickAction2.show(view, display, true);
+					// quickAction2.show(view, display, true);
 				}
 			}
 		});
 	}
-	
-	public void eliminarProducto()
-	{ 
-		if(positioncache==null && positioncache.length<=0)
+
+	public void eliminarProducto() {
+		if (positioncache == null && positioncache.length <= 0)
 			return;
 		dev_prod.remove(positioncache[0]);
-		positioncache=null;
-		initExpandableListView(true); 
-		
+		positioncache = null;
+		initExpandableListView(true);
+
 	}
-	
-	public void eliminarLote()
-	{
-		int cantidadTotalDevolver=0;
-		int index=0;
-		
-		DevolucionProducto _dp=(DevolucionProducto) groupselected.getObject();
-		DevolucionProductoLote lote=(DevolucionProductoLote) ((ExpandListChild)(groupselected.getItems().get(positioncache[1]))).getObject();
-		if(_dp.getProductoLotes().length==1 && _dp.getProductoLotes()[0].getObjLoteID()==lote.getObjLoteID())
-		{
+
+	public void eliminarLote() {
+		int cantidadTotalDevolver = 0;
+		int index = 0;
+
+		DevolucionProducto _dp = (DevolucionProducto) groupselected.getObject();
+		DevolucionProductoLote lote = (DevolucionProductoLote) ((ExpandListChild) (groupselected
+				.getItems().get(positioncache[1]))).getObject();
+		if (_dp.getProductoLotes().length == 1
+				&& _dp.getProductoLotes()[0].getObjLoteID() == lote
+						.getObjLoteID()) {
 			eliminarProducto();
 			return;
 		}
-		  
-		DevolucionProductoLote[] lotes=new DevolucionProductoLote[_dp.getProductoLotes().length-1];
-		for(DevolucionProductoLote item:_dp.getProductoLotes())
-		{ 
-			if (item.getObjLoteID() != lote.getObjLoteID())
-			{
-				lotes[index]=item;
-				index++; 	
+
+		DevolucionProductoLote[] lotes = new DevolucionProductoLote[_dp
+				.getProductoLotes().length - 1];
+		for (DevolucionProductoLote item : _dp.getProductoLotes()) {
+			if (item.getObjLoteID() != lote.getObjLoteID()) {
+				lotes[index] = item;
+				index++;
 				cantidadTotalDevolver += item.getCantidadDevuelta();
 			}
-					 
-		}		 
+
+		}
 		_dp.setCantidadDevolver(cantidadTotalDevolver);
-		_dp.setProductoLotes(lotes); 
+		_dp.setProductoLotes(lotes);
 		dev_prod.set(positioncache[0], _dp);
-		positioncache=null;
+		positioncache = null;
 		initExpandableListView(true);
 	}
 
@@ -3018,45 +3078,54 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 		Parcelable[] catalogs = new Parcelable[catalogos.size()];
 		dev_prod.toArray(objects);
 		catalogos.toArray(catalogs);
-		if (cboxmotivodev!=null && cboxmotivodev.getSelectedItem()!=null && cboxmotivodev.getSelectedItemPosition() > 0) {
+		if (cboxmotivodev != null && cboxmotivodev.getSelectedItem() != null
+				&& cboxmotivodev.getSelectedItemPosition() > 0) {
 			devolucion.setDescMotivo(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getDescripcion());
 			devolucion.setCodMotivo(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getCodigo());
 			devolucion.setObjMotivoID(((SpinnerModel) cboxmotivodev
 					.getSelectedItem()).getId());
-		}else
-		{  
+		} else {
 			devolucion.setDescMotivo(null);
 			devolucion.setCodMotivo(null);
-			devolucion.setObjMotivoID(0);  
+			devolucion.setObjMotivoID(0);
 		}
 		outState.putParcelableArray("detallepedido", objects);
-		outState.putParcelable("devolucion", devolucion); 
-		outState.putParcelable("cliente", cliente);  
+		outState.putParcelable("devolucion", devolucion);
+		outState.putParcelable("cliente", cliente);
 		outState.putParcelableArray("catalogos", catalogs);
 		outState.putInt("item_mot_dev", cboxmotivodev.getSelectedItemPosition());
-		Log.d(TAG,"onSaveInstanceState");
+		Log.d(TAG, "onSaveInstanceState");
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		super.onRestoreInstanceState(savedInstanceState);  
-		
-		 Parcelable [] objects = savedInstanceState.getParcelableArray("detallepedido");
-		 Parcelable [] catalogs = savedInstanceState.getParcelableArray("catalogos");
-		 dev_prod = new ArrayList<DevolucionProducto>((Collection<? extends DevolucionProducto>) Arrays.asList(objects) );
-		 catalogos = new ArrayList<Catalogo>((Collection<? extends Catalogo>) Arrays.asList(catalogs) );
-		 devolucion = (Devolucion)savedInstanceState.getParcelable("devolucion");
-		 final int item_mot_dev = Integer.valueOf(savedInstanceState.get("item_mot_dev").toString());
-		 cliente =(Cliente) savedInstanceState.getParcelable("cliente");
-		 pedido =(Pedido)devolucion.getObjPedido();  
-//		 gridheader.setText(String.format("PRODUCTOS A FACTURAR (%s)", Lvmpproducto.size()));
-		 setInformacionCliente();
-		 //updateControls(devolucion);
-		 if(adapter_motdev == null){
-			adapter_motdev = new CustomAdapter(getContext(),R.layout.spinner_rows,setListData(catalogos = catalogos));
+		super.onRestoreInstanceState(savedInstanceState);
+
+		Parcelable[] objects = savedInstanceState
+				.getParcelableArray("detallepedido");
+		Parcelable[] catalogs = savedInstanceState
+				.getParcelableArray("catalogos");
+		dev_prod = new ArrayList<DevolucionProducto>(
+				(Collection<? extends DevolucionProducto>) Arrays
+						.asList(objects));
+		catalogos = new ArrayList<Catalogo>(
+				(Collection<? extends Catalogo>) Arrays.asList(catalogs));
+		devolucion = (Devolucion) savedInstanceState
+				.getParcelable("devolucion");
+		final int item_mot_dev = Integer.valueOf(savedInstanceState.get(
+				"item_mot_dev").toString());
+		cliente = (Cliente) savedInstanceState.getParcelable("cliente");
+		pedido = (Pedido) devolucion.getObjPedido();
+		// gridheader.setText(String.format("PRODUCTOS A FACTURAR (%s)",
+		// Lvmpproducto.size()));
+		setInformacionCliente();
+		// updateControls(devolucion);
+		if (adapter_motdev == null) {
+			adapter_motdev = new CustomAdapter(getContext(),
+					R.layout.spinner_rows, setListData(catalogos = catalogos));
 			cboxmotivodev.setAdapter(adapter_motdev);
 		} else {
 			adapter_motdev.notifyDataSetChanged();
@@ -3067,26 +3136,22 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 				cboxmotivodev.setSelection(item_mot_dev);
 			}
 		});
-		//cboxmotivodev.setSelection(item_mot_dev);
+		// cboxmotivodev.setSelection(item_mot_dev);
 		initExpandableListView(true);
-		
-		Log.d(TAG,"Restore");
-	}
-    /*
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-	        super.onConfigurationChanged(newConfig);
-	        LayoutInflater inflater = LayoutInflater.from(this);
-	        populateViewForOrientation(inflater, (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content));
-	 }
-	 
-	private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
-	        viewGroup.removeAllViewsInLayout();
-	        _view= inflater.inflate(R.layout.devolucion_edit, viewGroup);
-//	        initComponent();
-//	        CreateMenu();
-	        initExpandableListView(true);
-//	        SetDetalle(Lvmpproducto);
-	}*/
-}
 
+		Log.d(TAG, "Restore");
+	}
+	/*
+	 * @Override public void onConfigurationChanged(Configuration newConfig) {
+	 * super.onConfigurationChanged(newConfig); LayoutInflater inflater =
+	 * LayoutInflater.from(this); populateViewForOrientation(inflater,
+	 * (ViewGroup)
+	 * getWindow().getDecorView().findViewById(android.R.id.content)); }
+	 * 
+	 * private void populateViewForOrientation(LayoutInflater inflater,
+	 * ViewGroup viewGroup) { viewGroup.removeAllViewsInLayout(); _view=
+	 * inflater.inflate(R.layout.devolucion_edit, viewGroup); //
+	 * initComponent(); // CreateMenu(); initExpandableListView(true); //
+	 * SetDetalle(Lvmpproducto); }
+	 */
+}

@@ -1922,7 +1922,7 @@ public class DatabaseProvider extends ContentProvider
 			devolucion_value.put(NMConfig.Devolucion.referencia, devolucion.getReferencia());
 			devolucion_value.put(NMConfig.Devolucion.numeroCentral, devolucion.getNumeroCentral());
 			devolucion_value.put(NMConfig.Devolucion.fecha, devolucion.getFecha());
-			devolucion_value.put(NMConfig.Devolucion.objPedidoDevueltoID, devolucion.getObjCausaEstadoID());
+			devolucion_value.put(NMConfig.Devolucion.objPedidoDevueltoID, devolucion.getObjPedidoDevueltoID());
 			devolucion_value.put(NMConfig.Devolucion.numeroPedidoDevuelto, devolucion.getNumeroPedidoDevuelto());
 			devolucion_value.put(NMConfig.Devolucion.numeroFacturaDevuelta, devolucion.getNumeroFacturaDevuelta());
 	        devolucion_value.put(NMConfig.Devolucion.objClienteID , devolucion.getObjClienteID());

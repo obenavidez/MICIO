@@ -238,34 +238,40 @@ public class AppDialog  extends DialogFragment  implements OnDismissListener{
 	
 	private static void CreateDialog(final OnButtonClickListener mylistener)
 	{
-		vDialog =inflater.inflate(R.layout.alert_dialog2, null, false);
-		tvmessage =(TextView)vDialog.findViewById(R.id.bodymessage_dialog_alert);
-		tvmessage.setText(Message.toString());
-		btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_alert);
-		btn_aceptar.setVisibility(View.INVISIBLE);
-		((Builder) mybuilder).setNeutralButton("Aceptar", new DialogInterface.OnClickListener() { // define the 'Cancel' button
-		    public void onClick(DialogInterface dialog, int which) {
-		        //Either of the following two lines should work.
-		    	if(mylistener!=null){
-					mylistener.onButtonClick(alert, OK_BUTTOM);
-				} 
-		        dialog.cancel();
-		        //dialog.dismiss();
-		    } 
-		});
-		/*btn_aceptar.setOnClickListener(new Button.OnClickListener()
-    	{
-			@Override
-			public void onClick(View v) {
-				if(mylistener!=null){
-					mylistener.onButtonClick(alert, OK_BUTTOM);
-				} 
-				if(alert != null && alert.isShowing())
-					alert.dismiss();				
-			}	
-    	});*/
-		/*mybuilder.setView(vDialog);
-		alert = mybuilder.create();*/
+		try {
+			vDialog =inflater.inflate(R.layout.alert_dialog2, null, false);
+			tvmessage =(TextView)vDialog.findViewById(R.id.bodymessage_dialog_alert);
+			tvmessage.setText(Message.toString());
+			btn_aceptar = (Button)vDialog.findViewById(R.id.btnaceptar_dialog_alert);
+			btn_aceptar.setVisibility(View.INVISIBLE);
+			((Builder) mybuilder).setNeutralButton("Aceptar", new DialogInterface.OnClickListener() { // define the 'Cancel' button
+			    public void onClick(DialogInterface dialog, int which) {
+			        //Either of the following two lines should work.
+			    	if(mylistener!=null){
+						mylistener.onButtonClick(alert, OK_BUTTOM);
+					} 
+			        dialog.cancel();
+			        //dialog.dismiss();
+			    } 
+			});
+			/*btn_aceptar.setOnClickListener(new Button.OnClickListener()
+	    	{
+				@Override
+				public void onClick(View v) {
+					if(mylistener!=null){
+						mylistener.onButtonClick(alert, OK_BUTTOM);
+					} 
+					if(alert != null && alert.isShowing())
+						alert.dismiss();				
+				}	
+	    	});*/
+			/*mybuilder.setView(vDialog);
+			alert = mybuilder.create();*/
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 	}
 		
 	private static void CreateOcationalDiscountDialog(final OnButtonClickListener mylistener){

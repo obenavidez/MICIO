@@ -176,7 +176,7 @@ public class ViewDevoluciones extends ActionBarActivity implements
 			});
 			break;
 		case AFTERGETOBSERVACIONDEV:
-			if (dlg != null)
+ 			if (dlg != null)
 				dlg.dismiss();
 			
 			if (msg.arg1 == ControllerProtocol.IMPRIMIR) {
@@ -217,10 +217,9 @@ public class ViewDevoluciones extends ActionBarActivity implements
 	@Override
 	public void onItemSelected(Object obj, int position) {
 		item_selected = (vmDevolucion) obj;
-		if (devolucion != null
-				&& devolucion.getReferencia() != item_selected.getReferencia())
-			devolucion = ModelDevolucion.getDevolucionbyID(item_selected
-					.getId());
+		if ((devolucion == null)
+				|| (devolucion != null && devolucion.getReferencia() != item_selected.getReferencia()))
+			devolucion = ModelDevolucion.getDevolucionbyID(item_selected.getId());
 		posicion = position;
 	}
 
@@ -524,11 +523,10 @@ public class ViewDevoluciones extends ActionBarActivity implements
 		firstFragment.setItems(devoluciones, true);
 		gridheader.setText(String.format("LISTA DEVOLUCIONES (%s)",
 				devoluciones.size()));
-		if (list != null && list.size() > 0) {
+		/*if (list != null && list.size() > 0) {
 			vmDevolucion dev = devoluciones.get(0);
 			devolucion = ModelDevolucion.getDevolucionbyID(dev.getId());
-		}
-
+		}*/
 	}
 
 	private void ShowCustomerDetails() {
@@ -763,6 +761,7 @@ public class ViewDevoluciones extends ActionBarActivity implements
 				positioncache = devoluciones.size() - 1;
 				customArrayAdapter.setSelectedPosition(positioncache);
 			}
+			onItemSelected(objDev, positioncache);
 		}
 
 		runOnUiThread(new Runnable() {
