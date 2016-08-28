@@ -361,7 +361,8 @@ public class vCliente extends ActionBarActivity implements
 	protected void onPause() {
 		NMApp.ciclo=NMApp.lifecycle.ONPAUSE;
 		ocultarDialogos();
-		customArrayAdapter.notifyDataSetChanged();
+		if(customArrayAdapter!=null)
+			customArrayAdapter.notifyDataSetChanged();
 		super.onPause();
 	}
 	
@@ -389,26 +390,35 @@ public class vCliente extends ActionBarActivity implements
 
 		if (searchItem != null) {
 			searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-			if (fragmentActive == FragmentActive.LIST) {
-				customArrayAdapter = ((Filterable) getSupportFragmentManager()
-						.findFragmentById(R.id.fragment_container))
-						.getAdapter();
-																
-				searchView.setOnQueryTextListener(new OnQueryTextListener() {
-					@Override
-					public boolean onQueryTextChange(String s) {
-						customArrayAdapter.getFilter().filter(s);
-						return false;
-					}
+			//if (fragmentActive == FragmentActive.LIST) {
+				
+				
+														
+					searchView.setOnQueryTextListener(new OnQueryTextListener() {
+						@Override
+						public boolean onQueryTextChange(String s) {
+							
+							if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof Filterable){
+							customArrayAdapter = ((Filterable) getSupportFragmentManager()
+									.findFragmentById(R.id.fragment_container))
+									.getAdapter();
+							
+							customArrayAdapter.getFilter().filter(s);
+							}
+							
+							return false;
+						}
 
-					@Override
-					public boolean onQueryTextSubmit(String s) {
-						customArrayAdapter.getFilter().filter(s);
-						return false;
-					}
-				});
-			}
-		}
+						@Override
+						public boolean onQueryTextSubmit(String s) {
+							customArrayAdapter.getFilter().filter(s);
+							return false;
+						}
+					});
+				}
+				
+			
+		//}
 
 		return true;
 	}
@@ -781,6 +791,7 @@ public class vCliente extends ActionBarActivity implements
 				ficha.setArguments(args);
 				ficha.setRetainInstance(true);
 				transaction.addToBackStack(null);
+				//transaction.remove(fragment);
 				transaction.replace(R.id.fragment_container, ficha, "ficha");
 				gridheader.setVisibility(View.INVISIBLE);
 			}
@@ -874,24 +885,26 @@ public class vCliente extends ActionBarActivity implements
 		pDialog.show();
 	}
 
-	@Override
+		@Override
 	public void onBackPressed() {
 		Fragment fragment = getSupportFragmentManager().findFragmentById(
 				R.id.fragment_container);
-		if (fragment instanceof FichaClienteFragment
-				|| fragment instanceof CuentasPorCobrarFragment) {
+		if (fragment instanceof FichaClienteFragment || fragment instanceof CuentasPorCobrarFragment) {
 			gridheader.setVisibility(View.VISIBLE);
 			if(fragmentActive== FragmentActive.FICHACLIENTE){
 				setDrawerState(true);
 			}
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-			//transaction.detach(fragment);
 			transaction.replace(R.id.fragment_container, firstFragment);
 			transaction.addToBackStack(null);
 			transaction.commit();
+			
+			//customArrayAdapter.getFilter().filter("");
 			fragmentActive = FragmentActive.LIST;
 			getSupportActionBar().show();
 			EstablecerMenu(fragmentActive);
+			//invalidateOptionsMenu();
+			CreateMenu();
 		} else {
 			FINISH_ACTIVITY();
 		}
@@ -944,6 +957,7 @@ public class vCliente extends ActionBarActivity implements
 			transaction.addToBackStack(null);
 			transaction.commit();	
 			EstablecerMenu(fragmentActive);
+			//CreateMenu();
 		}
 		
 	}
@@ -956,6 +970,7 @@ public class vCliente extends ActionBarActivity implements
 			opcionesMenu = new String[] { "Mostrar Facturas", "Mostrar Notas Débito", "Mostrar Notas de Crédito", "Mostrar Pedido" ,"Mostrar Recibos" };
 
 		drawerList.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(), android.R.layout.simple_list_item_1,opcionesMenu));
+		
 	}
 	public void setDrawerState(boolean isEnabled) {
 	    if ( isEnabled ) {
