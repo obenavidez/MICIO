@@ -44,12 +44,15 @@ import com.panzyma.nm.auxiliar.SessionManager;
 import com.panzyma.nm.auxiliar.AppDialog.DialogType;
 import com.panzyma.nm.auxiliar.UserSessionManager;
 import com.panzyma.nm.controller.ControllerProtocol;
+import com.panzyma.nm.fragments.CuentasPorCobrarFragment;
 import com.panzyma.nm.fragments.CustomArrayAdapter;
+import com.panzyma.nm.fragments.FichaClienteFragment;
 import com.panzyma.nm.fragments.FichaProductoFragment;
 import com.panzyma.nm.fragments.ListaFragment;
 import com.panzyma.nm.interfaces.Filterable;
 import com.panzyma.nm.serviceproxy.Producto;
 import com.panzyma.nm.view.adapter.InvokeBridge;
+import com.panzyma.nm.view.vCliente.FragmentActive;
 import com.panzyma.nm.viewdialog.ConsultaBonificacionesProducto;
 import com.panzyma.nm.viewdialog.ConsultaPrecioProducto;
 import com.panzyma.nordismobile.R;
@@ -158,12 +161,8 @@ public class ProductoView extends ActionBarActivity implements
 		MenuItem searchItem = menu.findItem(R.id.action_search);
 
 		searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-		if (fragmentActive == FragmentActive.LIST) {
-			if (findViewById(R.id.fragment_container) != null) {
-				customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
-						.findFragmentById(R.id.fragment_container)).getAdapter();
-	
-			} 
+		//if (fragmentActive == FragmentActive.LIST) {
+			
 			/*else {
 				customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
 						.findFragmentById(R.id.item_client_fragment)).getAdapter();
@@ -172,7 +171,13 @@ public class ProductoView extends ActionBarActivity implements
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
 				@Override
 				public boolean onQueryTextChange(String s) {
-					customArrayAdapter.getFilter().filter(s);
+					if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof Filterable){
+						customArrayAdapter = (CustomArrayAdapter<Producto>) ((Filterable) getSupportFragmentManager()
+								.findFragmentById(R.id.fragment_container)).getAdapter();
+			
+					
+						customArrayAdapter.getFilter().filter(s);
+					}
 					return false;
 				}
 	
@@ -182,7 +187,7 @@ public class ProductoView extends ActionBarActivity implements
 					return false;
 				}
 			});
-		}
+		
 		return true;
 	}
 	
@@ -428,10 +433,31 @@ public class ProductoView extends ActionBarActivity implements
 		}
 
 	}
-
+	
+	@Override
+	public void onBackPressed() {
+		Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		if (fragment instanceof FichaProductoFragment) {
+			 
+     		  gridheader.setVisibility(View.VISIBLE);
+     		  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+     		  transaction.replace(R.id.fragment_container, firstFragment);
+     		  transaction.addToBackStack(null);
+     		  transaction.commit();
+     		  fragmentActive = FragmentActive.LIST;
+     		  getSupportActionBar().show();
+     		  CreateMenu();
+		}
+		else {
+			 FINISH_ACTIVITY();
+   	   }
+       
+	}
+	
 	@Override 
     public boolean onKeyUp(int keyCode, KeyEvent event) 
     {
+		/*
         if (keyCode == KeyEvent.KEYCODE_BACK) 
 	    {        	
           Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
@@ -444,12 +470,13 @@ public class ProductoView extends ActionBarActivity implements
       		  transaction.addToBackStack(null);
       		  transaction.commit();
       		  getSupportActionBar().show();
+      		  CreateMenu();
       	  }
       	  else{
       		  FINISH_ACTIVITY();
       	   }
            return true;
-	    }
+	    } */
         if(keyCode== KeyEvent.KEYCODE_MENU)
         	drawerLayout.openDrawer(Gravity.LEFT);
         
