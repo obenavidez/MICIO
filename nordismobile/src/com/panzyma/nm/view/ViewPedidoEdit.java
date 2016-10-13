@@ -179,12 +179,25 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 			SessionManager.setContext(this);
 			UserSessionManager.setContext(this);
 			com.panzyma.nm.NMApp.getController().setView(this);
-			aprodselected = new ArrayList<Producto>();
+			
 			me = this;
 			
-			pedido = (getIntent().getParcelableExtra("pedido") != null) ? (Pedido) getIntent()
-					.getParcelableExtra("pedido") : null;
+			if (getIntent().hasExtra("cliente")) {
+				long IdCliente = getIntent().getLongExtra("cliente", 0);
+				cliente = Ventas.getClienteBySucursalID(IdCliente,
+						me.getContentResolver());
+			}
+			
+			aprodselected = new ArrayList<Producto>();
 			Lvmpproducto = new ArrayList<DetallePedido>();
+			
+			if (savedInstanceState != null) {
+				onRestoreInstanceState(savedInstanceState);
+			} 
+			
+			/*pedido = (getIntent().getParcelableExtra("pedido") != null) ? (Pedido) getIntent()
+					.getParcelableExtra("pedido") : null;
+			Lvmpproducto = new ArrayList<DetallePedido>();*/
 			if (pedido != null) 
 			{
 				DetallePedido[] detPed = pedido.getDetalles();
@@ -204,11 +217,7 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 				
 			}
 			// BUscamos si
-			if (getIntent().hasExtra("cliente")) {
-				long IdCliente = getIntent().getLongExtra("cliente", 0);
-				cliente = Ventas.getClienteBySucursalID(IdCliente,
-						me.getContentResolver());
-			}
+			
 			onNew = !onEdit;
 			WindowManager wm = (WindowManager) this.getApplicationContext()
 					.getSystemService(Context.WINDOW_SERVICE);
@@ -1910,10 +1919,9 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 		 Lvmpproducto = new ArrayList<DetallePedido>((Collection<? extends DetallePedido>) Arrays.asList(objects) ); 
 		 positioncache = savedInstanceState.getInt("positioncache");	
 		 pedido=savedInstanceState.getParcelable("pedido");  
-		 gridheader.setText(String.format("PRODUCTOS A FACTURAR (%s)", Lvmpproducto.size()));
-		 
-		
-		Log.d(TAG,"Restore");
+		 gridheader.setText(String.format("PRODUCTOS A FACTURAR (%s)", Lvmpproducto.size()));		 
+		 agregarDetalleDePedido();
+		 Log.d(TAG,"Restore");
 	}
 
 	@Override
@@ -1929,6 +1937,17 @@ public class ViewPedidoEdit extends ActionBarActivity implements
 	        initComponent();
 	        CreateMenu();
 	        SetDetalle(Lvmpproducto);
+	}
+	
+	private void agregarDetalleDePedido() {
+		adapter = new GenericAdapter(this, PProductoViewHolder.class,
+				Lvmpproducto, R.layout.gridproductosavender);
+		grid_dp.setAdapter(adapter);
+		adapter.setSelectedPosition(0);
+		
+		if (Lvmpproducto.size() > 0)
+			dpselected = Lvmpproducto.get(0);
+		gridheader.setText("PRODUCTOS A FACTURAR(" + adapter.getCount() + ")");
 	}
 	
 	
