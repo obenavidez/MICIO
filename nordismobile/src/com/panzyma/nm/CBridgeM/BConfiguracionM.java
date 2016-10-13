@@ -254,7 +254,11 @@ public class BConfiguracionM extends BBaseM {
 					try 
 					{
 						final String credentials = SessionManager.getCredenciales();
+						
 						if (credentials.trim() != "") {
+							Processor.notifyToView(getController(),
+									ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
+									"Sincronizando parametros del sistema");
 							// user =
 							// GET_DATAUSER(SessionManager.getCredentials(),view.getUserName());
 							// ModelConfiguracion.saveUser(view, user);
@@ -282,9 +286,7 @@ public class BConfiguracionM extends BBaseM {
 					}
 				}
 			});
-			Processor.notifyToView(getController(),
-					ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
-					"Sincronizando parametros del sistema");
+			
 
 		} catch (Exception e) {
 			getController()._notifyOutboxHandlers(0, 0, 0, 0);
@@ -295,7 +297,12 @@ public class BConfiguracionM extends BBaseM {
 	private void SINCRONIZE_CATALOGOSBASICOS() {
 		try {
 			final String credentials = SessionManager.getCredenciales();
-			if (credentials.trim() != "") {
+			if (credentials.trim() != "") 
+			{
+				Processor
+				.notifyToView(getController(),
+						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
+						"Sincronizando Catálogo FormaPago-Moneda-EntidadBancaria-Devoluciones");
 				NMApp.getThreadPool().execute(new Runnable() {
 					@Override
 					public void run() {
@@ -333,10 +340,7 @@ public class BConfiguracionM extends BBaseM {
 					}
 				});
 
-				Processor
-						.notifyToView(getController(),
-								ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
-								"Sincronizando Catálogo FormaPago-Moneda-EntidadBancaria-Devoluciones");
+				
 			} else
 				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 
@@ -483,6 +487,10 @@ public class BConfiguracionM extends BBaseM {
 
 			if (credentials.trim() != "") {
 
+				Processor.notifyToView(getController(),
+						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
+						"Sincronizando Clientes");
+				
 				NMApp.getThreadPool().execute(new Runnable() {
 					@Override
 					public void run() {
@@ -552,9 +560,7 @@ public class BConfiguracionM extends BBaseM {
 						}
 					}
 				});
-				Processor.notifyToView(getController(),
-						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
-						"Sincronizando Clientes");
+				
 			} else
 				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 		} catch (Exception e) {
@@ -568,6 +574,9 @@ public class BConfiguracionM extends BBaseM {
 
 			final String Credentials = SessionManager.getCredenciales();
 			if (Credentials.trim() != "") {
+				Processor.notifyToView(getController(),
+						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
+						"Sincronizando Productos"); 
 				NMApp.getThreadPool().execute(new Runnable() {
 					@Override
 					public void run() {
@@ -626,9 +635,7 @@ public class BConfiguracionM extends BBaseM {
 					}
 
 				});
-				Processor.notifyToView(getController(),
-						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
-						"Sincronizando Productos");
+				
 			} else
 				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 		} catch (Exception e) {
@@ -642,6 +649,9 @@ public class BConfiguracionM extends BBaseM {
 
 			final String credentials = SessionManager.getCredenciales();
 			if (credentials.trim() != "") {
+				Processor.notifyToView(getController(),
+						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
+						"Sincronizando Promociones");
 				NMApp.getThreadPool().execute(new Runnable() {
 					@Override
 					public void run() {
@@ -699,9 +709,7 @@ public class BConfiguracionM extends BBaseM {
 					}
 				});
 
-				Processor.notifyToView(getController(),
-						ControllerProtocol.NOTIFICATION_DIALOG2, 0, 0,
-						"Sincronizando Promociones");
+				
 			} else
 				getController()._notifyOutboxHandlers(0, 0, 0, 0);
 

@@ -332,10 +332,13 @@ public class UserSessionManager {
 				@Override 
 				public void run() {
 
+					NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2,
+							0, 0, "Probando Conexión.");
 					if ((NMNetWork.isPhoneConnected() && NMNetWork
 							.CheckConnection(url))) {
-						try {
-							NMApp.getThreadPool().execute(new Runnable() {
+						try 
+						{
+							new Thread( new Runnable() {
 								@Override
 								public void run() {
 									LoginUserResult res = null;
@@ -441,9 +444,9 @@ public class UserSessionManager {
 									}
 								}
 
-							});
+							}).start();
 
-						} catch (InterruptedException e) {
+						} catch (Exception e) {
 							NMApp.getController().notifyOutboxHandlers(
 									ControllerProtocol.ERROR,
 									0,
@@ -462,8 +465,7 @@ public class UserSessionManager {
 						unlock();
 				}
 			});
-			NMApp.getController()._notifyOutboxHandlers(NOTIFICATION_DIALOG2,
-					0, 0, "Probando Conexión.");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			sendErrorMessage(new ErrorMessage(
