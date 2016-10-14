@@ -337,7 +337,8 @@ public class DialogProducto extends Dialog  implements Handler.Callback{
 											if(adapter.getOriginal()!=null){
 												int index = adapter.getOriginal().indexOf(product_selected);
 												//adapter.getOriginal().remove(product_selected);//.remove(positioncache);
-												adapter.getOriginal().remove(index);
+												if(index>=0)
+													adapter.getOriginal().remove(index);
 											}
 											adapter.getCount();
 											adapter.notifyDataSetChanged(); 

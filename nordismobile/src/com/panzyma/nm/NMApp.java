@@ -42,7 +42,7 @@ public class NMApp extends Application{
 	
 	public static Modulo modulo;
 	
-	public static final int numberThread=5;
+	public static final int numberThread=10;
 	
 	@Override
 	public void onCreate() {

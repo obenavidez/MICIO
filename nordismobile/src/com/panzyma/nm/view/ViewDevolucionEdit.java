@@ -3074,6 +3074,7 @@ public class ViewDevolucionEdit extends ActionBarActivity implements
 	protected void onSaveInstanceState(Bundle outState) {
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
+		updateObject();
 		Parcelable[] objects = new Parcelable[dev_prod.size()];
 		Parcelable[] catalogs = new Parcelable[catalogos.size()];
 		dev_prod.toArray(objects);
