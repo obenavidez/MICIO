@@ -59,13 +59,13 @@ public class ModelConfiguracion {
 	public static String getURL_SERVER(Context cnt)
 	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE); 
-		return pref.getString("url_server", "http://www.panzyma.com.ni/nordisservertests/mobileservice.asmx"); 
+		return pref.getString("url_server", "http://www.panzyma.com.ni/nordisserverprod/mobileservice.asmx"); 
 	}
 	
 	public static String getURL_SERVER2(Context cnt)
 	{ 
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE); 
-		return pref.getString("url_server2", "http://www.panzyma.com.ni/Simfactests/SimfacService.svc/"); 
+		return pref.getString("url_server2", "http://www.panzyma.com.ni/Simfacprod/SimfacService.svc/"); 
 
 	}
 
@@ -73,8 +73,8 @@ public class ModelConfiguracion {
 	{
 		pref = cnt.getSharedPreferences("VConfiguracion", Context.MODE_PRIVATE);
 		vmConfiguracion config=vmConfiguracion.setConfiguration( 
-				pref.getString("url_server", "http://www.panzyma.com.ni/nordisservertests/mobileservice.asmx"),
-				pref.getString("url_server2","http://www.panzyma.com.ni/Simfactests/SimfacService.svc/"),
+				pref.getString("url_server", "http://www.panzyma.com.ni/nordisserverprod/mobileservice.asmx"),
+				pref.getString("url_server2","http://www.panzyma.com.ni/Simfacprod/SimfacService.svc/"),
 				pref.getString("device_id", ""),
 				pref.getString("enterprise", "dp"),
 				pref.getString("name_user", ""),
